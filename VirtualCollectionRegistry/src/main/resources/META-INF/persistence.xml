@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence xmlns="http://java.sun.com/xml/ns/persistence"
+  xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_1_0.xsd"
+  version="1.0">
+  <persistence-unit name="VirtualCollectionStore"
+    transaction-type="RESOURCE_LOCAL">
+    <provider>org.hibernate.ejb.HibernatePersistence</provider>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.User</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.Creator</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.Resource</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.ResourceProxy</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.ResourceMetadata</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.Handle</class>
+    <properties>
+      <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5InnoDBDialect" />
+      <property name="hibernate.connection.driver_class" value="com.mysql.jdbc.Driver" />
+      <property name="hibernate.max_fetch_depth" value="3" />
+      <property name="hibernate.connection.url" value="jdbc:mysql://localhost/vcr" />
+      <property name="hibernate.connection.username" value="vcr" />
+      <property name="hibernate.connection.password" value="vcr" />
+      <property name="hibernate.hbm2ddl.auto" value="update" />
+      <property name="hibernate.show.sql" value="true" />
+      <property name="hibernate.format.sql" value="true"/>
+      <!--  C3P0 Pool -->
+      <property name="hibernate.connection.provider_class"
+                value="org.hibernate.connection.C3P0ConnectionProvider" />
+      <property name="hibernate.c3p0.initialPoolSize" value="1"/>
+      <property name="hibernate.c3p0.minPoolSize" value="1"/>
+      <property name="hibernate.c3p0.maxPoolSize" value="3"/>
+      <property name="hibernate.c3p0.preferredTestQuery" value="SELECT 1"/>
+      <property name="hibernate.c3p0.testConnectionOnCheckout" value="true"/>        
+    </properties>
+  </persistence-unit>
+</persistence>

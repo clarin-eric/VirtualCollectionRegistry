@@ -1,0 +1,74 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+  xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+  id="WebApp_ID" version="2.5">
+  <display-name>CLARIN Virtual Collection Registry</display-name>
+
+  <filter>
+    <filter-name>PersistenceFilter</filter-name>
+    <filter-class>eu.clarin.cmdi.virtualcollectionregistry.rest.PersistenceFilter</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>PersistenceFilter</filter-name>
+    <servlet-name>REST-Web-Service</servlet-name>
+  </filter-mapping>
+
+  <listener>
+    <listener-class>eu.clarin.cmdi.virtualcollectionregistry.rest.ContextListener</listener-class>
+  </listener>
+
+  <servlet>
+    <display-name>Virtual Collection Registry REST web service</display-name>
+    <servlet-name>REST-Web-Service</servlet-name>
+    <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+    <init-param>
+      <param-name>com.sun.jersey.config.property.packages</param-name>
+      <param-value>eu.clarin.cmdi.virtualcollectionregistry.rest</param-value>
+    </init-param>
+    <load-on-startup>1</load-on-startup>
+  </servlet>
+
+  <servlet-mapping>
+    <servlet-name>REST-Web-Service</servlet-name>
+    <url-pattern>/service/*</url-pattern>
+  </servlet-mapping>
+
+  <security-constraint>
+    <display-name>REST-Web-Service</display-name>
+    <web-resource-collection>
+      <web-resource-name>REST-Web-Service</web-resource-name>
+      <description></description>
+      <url-pattern>/service/virtualcollection</url-pattern>
+      <http-method>POST</http-method>
+    </web-resource-collection>
+    <web-resource-collection>
+      <web-resource-name>REST-Web-Service</web-resource-name>
+      <description></description>
+      <url-pattern>/service/virtualcollection/*</url-pattern>
+      <http-method>DELETE</http-method>
+      <http-method>PUT</http-method>
+    </web-resource-collection>
+    <auth-constraint>
+      <role-name>*</role-name>
+    </auth-constraint>
+  </security-constraint>
+
+  <login-config>
+    <auth-method>BASIC</auth-method>
+  </login-config>
+
+  <security-role>
+    <role-name>*</role-name>
+  </security-role>
+
+  <mime-mapping>
+    <extension>xsd</extension>
+    <mime-type>application/xml</mime-type>
+  </mime-mapping>
+
+  <welcome-file-list>
+    <welcome-file>index.html</welcome-file>
+  </welcome-file-list>
+</web-app>
