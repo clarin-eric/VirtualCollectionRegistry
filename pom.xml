@@ -161,27 +161,15 @@
     	<scope>runtime</scope>
     </dependency>
     <dependency>
-    	<groupId>org.hibernate</groupId>
-    	<artifactId>hibernate-c3p0</artifactId>
-    	<version>3.3.2.GA</version>
-    	<scope>runtime</scope>
+        <groupId>org.hibernate</groupId>
+        <artifactId>ejb3-persistence</artifactId>
+        <version>3.3.2.Beta1</version>
+        <scope>runtime</scope>
     </dependency>
     <dependency>
     	<groupId>org.hibernate</groupId>
     	<artifactId>hibernate-core</artifactId>
     	<version>3.3.2.GA</version>
-    	<scope>runtime</scope>
-    </dependency>
-    <dependency>
-    	<groupId>org.hibernate</groupId>
-    	<artifactId>ejb3-persistence</artifactId>
-    	<version>3.3.2.Beta1</version>
-    	<scope>runtime</scope>
-    </dependency>
-    <dependency>
-    	<groupId>mysql</groupId>
-    	<artifactId>mysql-connector-java</artifactId>
-    	<version>5.1.10</version>
     	<scope>runtime</scope>
     </dependency>
   </dependencies>
