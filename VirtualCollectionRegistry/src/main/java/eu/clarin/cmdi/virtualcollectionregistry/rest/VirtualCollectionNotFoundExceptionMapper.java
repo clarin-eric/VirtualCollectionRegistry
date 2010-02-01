@@ -10,7 +10,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionNotFoundExcepti
 public class VirtualCollectionNotFoundExceptionMapper implements
 		ExceptionMapper<VirtualCollectionNotFoundException> {
 
-	@Override
 	public Response toResponse(VirtualCollectionNotFoundException e) {
 		RestResponse response = new RestResponse();
 		response.setIsSuccess(false);

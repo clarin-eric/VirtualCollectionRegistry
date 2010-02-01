@@ -11,7 +11,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermiss
 public class VirtualCollectionRegistryPermissionExceptionMapper implements
 		ExceptionMapper<VirtualCollectionRegistryPermissionException> {
 
-	@Override
 	public Response toResponse(VirtualCollectionRegistryPermissionException e) {
 		RestResponse response = new RestResponse();
 		response.setIsSuccess(false);
