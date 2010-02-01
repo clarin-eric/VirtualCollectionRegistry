@@ -13,12 +13,10 @@ import eu.clarin.cmdi.virtualcollectionregistry.DataStore;
 
 public class PersistenceFilter implements Filter {
 
-	@Override
 	public void init(FilterConfig config) throws ServletException {
 		// DO NOTHING
 	}
 
-	@Override
 	public void doFilter(ServletRequest req, ServletResponse res,
 			FilterChain chain) throws IOException, ServletException {
 		try {
@@ -32,7 +30,6 @@ public class PersistenceFilter implements Filter {
 		}
 	}
 
-	@Override
 	public void destroy() {
 		// DO NOTHING
 	}

@@ -9,7 +9,6 @@ import javax.ws.rs.ext.Provider;
 @Provider
 public class IllegalArgumentExceptionMapper implements ExceptionMapper<IllegalArgumentException> {
 
-	@Override
 	public Response toResponse(IllegalArgumentException e) {
 		RestResponse response = new RestResponse();
 		response.setIsSuccess(false);
