@@ -17,6 +17,7 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
+import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
@@ -34,6 +35,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.ClarinVirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Handle;
 import eu.clarin.cmdi.virtualcollectionregistry.model.ResourceMetadata;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.vcrql.Search;
 
 @Path("/")
 public class VirtualCollectionRegistryRestService {
@@ -132,8 +134,11 @@ public class VirtualCollectionRegistryRestService {
 	@Produces({ MediaType.TEXT_XML,
 				MediaType.APPLICATION_XML,
 				MediaType.APPLICATION_JSON })
-	public Response getVirtualCollections()
+	public Response getVirtualCollections(@QueryParam("q") String query)
 			throws VirtualCollectionRegistryException {
+		if ( query != null ) {
+			Search.doSearch(query);
+		}
 		final List<VirtualCollection> vcs = registry.getVirtualCollections();
 		StreamingOutput writer = new StreamingOutput() {
 			public void write(OutputStream stream) throws IOException,

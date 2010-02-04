@@ -11,10 +11,23 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
+        <version>2.1</version>
         <configuration>
           <source>1.5</source>
           <target>1.5</target>
         </configuration>
+      </plugin>
+      <plugin>
+      	<groupId>org.antlr</groupId>
+      	<artifactId>antlr3-maven-plugin</artifactId>
+      	<version>3.2</version>
+      	<executions>
+      		<execution>
+      			<goals>
+      				<goal>antlr</goal>
+      			</goals>
+      		</execution>
+      	</executions>
       </plugin>
     </plugins>
   </build>
@@ -27,12 +40,6 @@
       <url>http://download.java.net/maven/2</url>
     </repository>
     <repository>
-      <id>maven-repository.dev.java.net</id>
-      <name>Java.net Maven 1 Repository (legacy)</name>
-      <url>http://download.java.net/maven/1</url>
-      <layout>legacy</layout>
-    </repository>
-    <repository>
       <id>maven2-repository.jboss</id>
       <name>JBoss Maven 2 Repository</name>
       <url>repository.jboss.com/maven2/</url>
@@ -43,12 +50,6 @@
       <id>maven2-repository.dev.java.net</id>
       <name>Java.net Maven 2 Repository</name>
       <url>http://download.java.net/maven/2</url>
-    </pluginRepository>
-    <pluginRepository>
-      <id>maven-repository.dev.java.net</id>
-      <name>Java.net Maven 1 Repository (legacy)</name>
-      <url>http://download.java.net/maven/1</url>
-      <layout>legacy</layout>
     </pluginRepository>
     <pluginRepository>
       <id>maven2-repository.jboss</id>
@@ -162,9 +163,17 @@
         <version>3.3.2.Beta1</version>
     </dependency>
     <dependency>
+    	<groupId>org.antlr</groupId>
+    	<artifactId>antlr-runtime</artifactId>
+    	<version>3.2</version>
+    	<type>jar</type>
+    </dependency>
+    <dependency>
     	<groupId>org.hibernate</groupId>
-    	<artifactId>hibernate-core</artifactId>
-    	<version>3.3.2.GA</version>
+    	<artifactId>hibernate-annotations</artifactId>
+    	<version>3.4.0.GA</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
     </dependency>
   </dependencies>
   <dependencyManagement>
