@@ -47,7 +47,15 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.mapper.DateAdapter;
 @Table(name = "virtual_collection")
 @NamedQueries({
 	@NamedQuery(name = "VirtualCollection.findAll",
-			    query = "SELECT c FROM VirtualCollection c")
+				query = "SELECT c FROM VirtualCollection c"),
+    @NamedQuery(name = "VirtualCollection.countAll",
+    			query = "SELECT COUNT(c) FROM VirtualCollection c"),
+    @NamedQuery(name = "VirtualCollection.findByOwner",
+    			query = "SELECT c FROM VirtualCollection c " +
+    			        "WHERE c.owner = :owner"),
+	@NamedQuery(name = "VirtualCollection.countByOwner",
+    			query = "SELECT COUNT(c) FROM VirtualCollection c " +
+    			        "WHERE c.owner = :owner")
 })
 @XmlRootElement(name = "VirtualCollection")
 @XmlAccessorType(XmlAccessType.FIELD)
