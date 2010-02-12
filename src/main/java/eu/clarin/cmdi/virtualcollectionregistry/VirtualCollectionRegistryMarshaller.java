@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.List;
 import java.util.logging.Level;
 import java.util.logging.Logger;
 
@@ -28,6 +27,7 @@ import org.codehaus.jettison.mapped.MappedXMLOutputFactory;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.ClarinVirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 
 public class VirtualCollectionRegistryMarshaller {
 	public static enum Format {
@@ -84,7 +84,8 @@ public class VirtualCollectionRegistryMarshaller {
 			writer.writeEndDocument();
 			writer.close();
 		} catch (Exception e) {
-			logger.log(Level.WARNING, "error marshalling virtual collection", e);
+			logger
+				.log(Level.WARNING, "error marshalling virtual collection", e);
 			throw new IOException("error marshalling virtual collection", e);
 		}
 	}
@@ -102,8 +103,10 @@ public class VirtualCollectionRegistryMarshaller {
 			VirtualCollection vc = (VirtualCollection) m.unmarshal(reader);
 			return vc;
 		} catch (UnmarshalException e) {
-			logger.log(Level.WARNING, "error unmarshalling virtual collection", e.getLinkedException());
-			throw new IOException("error unmarshalling virtual collection", e.getLinkedException());
+			logger.log(Level.WARNING, "error unmarshalling virtual collection",
+					e.getLinkedException());
+			throw new IOException("error unmarshalling virtual collection",
+					e.getLinkedException());
 		} catch (Exception e) {
 			logger.log(Level.WARNING, "error unmarshalling virtual collection", e);
 			throw new IOException("error unmarshalling virtual collection", e);
@@ -111,7 +114,7 @@ public class VirtualCollectionRegistryMarshaller {
 	}
 
 	public void marshal(OutputStream output, Format format,
-			List<VirtualCollection> vcs) throws IOException {
+			VirtualCollectionList vcs) throws IOException {
 		if (output == null) {
 			throw new IllegalArgumentException("output == null");
 		}
@@ -123,6 +126,12 @@ public class VirtualCollectionRegistryMarshaller {
 			XMLStreamWriter writer = createWriter(output, format);
 			writer.writeStartDocument(ENCODING, VERSION);
 			writer.writeStartElement("VirtualCollections");
+			writer.writeAttribute("totalCount",
+					Integer.toString(vcs.getTotalCount()));
+			writer.writeAttribute("offset",
+					Integer.toString(vcs.getOffset()));
+			writer.writeAttribute("result",
+					(vcs.isPartialList() ? "partial" : "full"));
 			for (VirtualCollection vc : vcs) {
 				m.marshal(vc, writer);
 				writer.flush();

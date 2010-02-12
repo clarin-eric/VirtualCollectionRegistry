@@ -5,12 +5,12 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.security.Principal;
-import java.util.List;
 
 import javax.persistence.EntityManager;
 import javax.persistence.Query;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
+import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.PUT;
@@ -35,6 +35,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.ClarinVirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Handle;
 import eu.clarin.cmdi.virtualcollectionregistry.model.ResourceMetadata;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 import eu.clarin.cmdi.virtualcollectionregistry.vcrql.Search;
 
 @Path("/")
@@ -134,12 +135,41 @@ public class VirtualCollectionRegistryRestService {
 	@Produces({ MediaType.TEXT_XML,
 				MediaType.APPLICATION_XML,
 				MediaType.APPLICATION_JSON })
-	public Response getVirtualCollections(@QueryParam("q") String query)
+	public Response getVirtualCollections(@QueryParam("q") String query,
+			@DefaultValue("0") @QueryParam("offset") int offset,
+			@DefaultValue("-1") @QueryParam("count") int count)
 			throws VirtualCollectionRegistryException {
 		if ( query != null ) {
 			Search.doSearch(query);
 		}
-		final List<VirtualCollection> vcs = registry.getVirtualCollections();
+		final VirtualCollectionList vcs =
+			registry.getVirtualCollections((offset > 0) ? offset : 0, count);
+		StreamingOutput writer = new StreamingOutput() {
+			public void write(OutputStream stream) throws IOException,
+					WebApplicationException {
+				Format format = getOutputFormat();
+				registry.getMarshaller().marshal(stream, format, vcs);
+			}
+		};
+		return Response.ok(writer).build();
+	}
+
+	@GET
+	@Path("/my-virtualcollections")
+	@Produces({ MediaType.TEXT_XML,
+				MediaType.APPLICATION_XML,
+				MediaType.APPLICATION_JSON })
+	public Response getMyVirtualCollections(
+			@DefaultValue("0") @QueryParam("offset") int offset,
+			@DefaultValue("-1") @QueryParam("count") int count)
+			throws VirtualCollectionRegistryException {
+		Principal principal = security.getUserPrincipal();
+		if (principal == null) {
+			throw new IllegalArgumentException("princial == null");
+		}
+		final VirtualCollectionList vcs =
+				registry.getVirtualCollections(principal,
+						(offset > 0) ? offset : 0, count);
 		StreamingOutput writer = new StreamingOutput() {
 			public void write(OutputStream stream) throws IOException,
 					WebApplicationException {

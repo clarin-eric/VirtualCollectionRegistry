@@ -9,6 +9,16 @@
         <xs:sequence maxOccurs="unbounded">
             <xs:element ref="VirtualCollection"/>
         </xs:sequence>
+        <xs:attribute name="totalCount" type="xs:integer"/>
+        <xs:attribute name="offset" type="xs:integer"/>
+        <xs:attribute name="result">
+            <xs:simpleType>
+                <xs:restriction base="xs:string">
+                    <xs:enumeration value="full"></xs:enumeration>
+                    <xs:enumeration value="partial"></xs:enumeration>
+                </xs:restriction>
+            </xs:simpleType>
+        </xs:attribute>
     </xs:complexType>
 
     <xs:complexType name="VirtualCollectionType">

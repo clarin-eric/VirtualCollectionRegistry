@@ -17,6 +17,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.ResourceMetadata;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionValidator;
 
 public class VirtualCollectionRegistry {
@@ -82,19 +83,16 @@ public class VirtualCollectionRegistry {
 
 		try {
 			EntityManager em = DataStore.instance().getEntityManager();
-			User user = null;
-
-			
 			em.getTransaction().begin();
-			// FIXME: use TypedQuery variant when migrating to JPA 2.0
-			Query q = em.createNamedQuery("User.findByName");
-			q.setParameter("name", principal.getName());
-			try {
-				user = (User) q.getSingleResult();
-			} catch (NoResultException e) {
+
+			// fetch user, if user does not exist create new
+			User user = fetchUser(em, principal);
+			if (user == null) {
 				user = new User(principal.getName());
 				em.persist(user);
 			}
+
+			// store virtual collection
 			vc.setOwner(user);
 			vc.setPid(Handle.createPid());
 			for (Resource resource : vc.getResources()) {
@@ -263,20 +261,84 @@ public class VirtualCollectionRegistry {
 	}
 
 	@SuppressWarnings("unchecked")
-	public List<VirtualCollection> getVirtualCollections()
+	public VirtualCollectionList getVirtualCollections(int offset, int count)
 			throws VirtualCollectionRegistryException {
 		EntityManager em = DataStore.instance().getEntityManager();
 		try {
 			em.getTransaction().begin();
 			// FIXME: use TypedQuery variant when migrating to JPA 2.0
-			return (List<VirtualCollection>) em.createNamedQuery(
-					"VirtualCollection.findAll").getResultList();
+			long totalCount = 
+				(Long) em.createNamedQuery("VirtualCollection.countAll")
+							.getSingleResult();
+			Query q = em.createNamedQuery("VirtualCollection.findAll");
+			if (offset > 0) {
+				q.setFirstResult(offset);
+			}
+			if (count > 0) {
+				q.setMaxResults(count);
+			}
+			List<VirtualCollection> results =
+				(List<VirtualCollection>) q.getResultList();
+			return new VirtualCollectionList(results, offset, (int) totalCount);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "list", e);
 			throw new VirtualCollectionRegistryException("list", e);
 		} finally {
 			em.getTransaction().commit();
 		}
+	}
+
+	@SuppressWarnings("unchecked")
+	public VirtualCollectionList getVirtualCollections(Principal principal,
+			int offset, int count) throws VirtualCollectionRegistryException {
+		if (principal == null) {
+			throw new IllegalArgumentException("principal == null");
+		}
+		EntityManager em = DataStore.instance().getEntityManager();
+		try {
+			em.getTransaction().begin();
+			User user = fetchUser(em, principal);
+			if (user == null) {
+				throw new VirtualCollectionRegistryException("user does not exist");
+			}
+
+			// FIXME: use TypedQuery variant when migrating to JPA 2.0
+			long totalCount = 
+				(Long) em.createNamedQuery("VirtualCollection.countByOwner")
+					.setParameter("owner", user)
+					.getSingleResult();
+			Query q = em.createNamedQuery("VirtualCollection.findByOwner");
+			q.setParameter("owner", user);
+			if (offset > 0) {
+				q.setFirstResult(offset);
+			}
+			if (count > 0) {
+				q.setMaxResults(count);
+			}
+			List<VirtualCollection> results =
+				(List<VirtualCollection>) q.getResultList();
+			return new VirtualCollectionList(results, offset, (int) totalCount);
+		} catch (VirtualCollectionRegistryException e) {
+			throw e;
+		} catch (Exception e) {
+			logger.log(Level.SEVERE, "list", e);
+			throw new VirtualCollectionRegistryException("list", e);
+		} finally {
+			em.getTransaction().commit();
+		}
+	}
+	
+	private static User fetchUser(EntityManager em, Principal principal) {
+		User user = null;
+		try {
+			// FIXME: use TypedQuery variant when migrating to JPA 2.0
+			Query q = em.createNamedQuery("User.findByName");
+			q.setParameter("name", principal.getName());
+			user = (User) q.getSingleResult();
+		} catch (NoResultException e) {
+			/* IGNORE */
+		}
+		return user;
 	}
 
 } // class VirtualCollectionRegistry
