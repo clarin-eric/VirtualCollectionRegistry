@@ -1,11 +1,13 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0"
+    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.clarin.cmdi</groupId>
   <artifactId>VirtualCollectionRegistry</artifactId>
   <packaging>war</packaging>
   <name>CLARIN Virtual Collection Registry</name>
   <version>0.0.1-SNAPSHOT</version>
+
   <build>
     <plugins>
       <plugin>
@@ -13,50 +15,60 @@
         <artifactId>maven-compiler-plugin</artifactId>
         <version>2.1</version>
         <configuration>
-          <source>1.5</source>
-          <target>1.5</target>
+          <source>${maven.compiler.source}</source>
+          <target>${maven.compiler.target}</target>
         </configuration>
       </plugin>
       <plugin>
-      	<groupId>org.antlr</groupId>
-      	<artifactId>antlr3-maven-plugin</artifactId>
-      	<version>3.2</version>
-      	<executions>
-      		<execution>
-      			<goals>
-      				<goal>antlr</goal>
-      			</goals>
-      		</execution>
-      	</executions>
+        <groupId>org.antlr</groupId>
+        <artifactId>antlr3-maven-plugin</artifactId>
+        <version>3.2</version>
+        <executions>
+          <execution>
+            <goals>
+              <goal>antlr</goal>
+            </goals>
+          </execution>
+        </executions>
       </plugin>
     </plugins>
   </build>
-  <profiles>
-  </profiles>
+
   <repositories>
     <repository>
-      <id>maven2-repository.dev.java.net</id>
-      <name>Java.net Maven 2 Repository</name>
+      <id>repository.maven-central</id>
+      <name>Maven Central Repository</name>
+      <url>http://repo1.maven.org/maven2/</url>
+    </repository>
+    <repository>
+      <id>repository.java-net</id>
+      <name>Java.net Repository</name>
       <url>http://download.java.net/maven/2</url>
     </repository>
     <repository>
-      <id>maven2-repository.jboss</id>
-      <name>JBoss Maven 2 Repository</name>
+      <id>repository.jboss</id>
+      <name>JBoss Repository</name>
       <url>http://repository.jboss.com/maven2/</url>
     </repository>
   </repositories>
   <pluginRepositories>
     <pluginRepository>
-      <id>maven2-repository.dev.java.net</id>
-      <name>Java.net Maven 2 Repository</name>
+      <id>repository.maven-central</id>
+      <name>Maven Central Repository</name>
+      <url>http://repo1.maven.org/maven2/</url>
+    </pluginRepository>
+    <pluginRepository>
+      <id>repository.java-net</id>
+      <name>Java.net Repository</name>
       <url>http://download.java.net/maven/2</url>
     </pluginRepository>
     <pluginRepository>
-      <id>maven2-repository.jboss</id>
-      <name>JBoss Maven 2 Repository</name>
+      <id>repository.jboss</id>
+      <name>JBoss Repository</name>
       <url>http://repository.jboss.com/maven2/</url>
     </pluginRepository>
   </pluginRepositories>
+
   <dependencies>
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -66,22 +78,16 @@
       <scope>provided</scope>
     </dependency>
     <dependency>
-        <groupId>org.hibernate.javax.persistence</groupId>
-        <artifactId>hibernate-jpa-2.0-api</artifactId>
-        <version>${hibernateJpaVersion}</version>
+      <groupId>org.hibernate.javax.persistence</groupId>
+      <artifactId>hibernate-jpa-2.0-api</artifactId>
+      <version>${hibernate.jpaVersion}</version>
     </dependency>
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-entitymanager</artifactId>
-      <version>${hibernateVersion}</version>
+      <version>${hibernate.version}</version>
       <scope>runtime</scope>
       <exclusions>
-        <!--
-          Jersey has dependencies with different group ids therefore
-          maven cannot resolve the conflict and gives me both jars (two
-          of stax and two of jaxb-impl). Excluding them manually to
-          overcome the problem
-        -->
         <exclusion>
           <groupId>org.slf4j</groupId>
           <artifactId>slf4j-api</artifactId>
@@ -117,18 +123,12 @@
         </exclusion>
       </exclusions>
     </dependency>
-    <dependency> <!-- Needed for "automatic" json support -->
+    <dependency>
       <groupId>com.sun.jersey</groupId>
       <artifactId>jersey-json</artifactId>
       <version>1.1.5</version>
       <scope>runtime</scope>
       <exclusions>
-        <!--
-          Jersey has dependencies with different group ids therefore
-          maven cannot resolve the conflict and gives me both jars (two
-          of stax and two of jaxb-impl). Excluding them manually to
-          overcome the problem
-        -->
         <exclusion>
           <groupId>stax</groupId>
           <artifactId>stax-api</artifactId>
@@ -151,30 +151,31 @@
       </exclusions>
     </dependency>
     <dependency>
-    	<groupId>org.slf4j</groupId>
-    	<artifactId>slf4j-jdk14</artifactId>
-    	<version>1.5.10</version>
-    	<scope>runtime</scope>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <version>1.5.10</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
-    	<groupId>org.slf4j</groupId>
-    	<artifactId>slf4j-api</artifactId>
-    	<version>1.5.10</version>
-    	<scope>runtime</scope>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-api</artifactId>
+      <version>1.5.10</version>
+      <scope>runtime</scope>
     </dependency>
     <dependency>
-    	<groupId>org.antlr</groupId>
-    	<artifactId>antlr-runtime</artifactId>
-    	<version>3.2</version>
-    	<type>jar</type>
+      <groupId>org.antlr</groupId>
+      <artifactId>antlr-runtime</artifactId>
+      <version>3.2</version>
+      <type>jar</type>
     </dependency>
   </dependencies>
-  <dependencyManagement>
-    <dependencies>
-    </dependencies>
-  </dependencyManagement>
+
   <properties>
-  	<hibernateVersion>3.5.0-CR-1</hibernateVersion>
-  	<hibernateJpaVersion>1.0.0-CR-1</hibernateJpaVersion>
+    <!-- plug-in settings -->
+    <maven.compiler.source>1.5</maven.compiler.source>
+    <maven.compiler.target>1.5</maven.compiler.target>
+    <!-- dependency versions -->
+    <hibernate.version>3.5.0-CR-1</hibernate.version>
+    <hibernate.jpaVersion>1.0.0-CR-1</hibernate.jpaVersion>
   </properties>
 </project>
