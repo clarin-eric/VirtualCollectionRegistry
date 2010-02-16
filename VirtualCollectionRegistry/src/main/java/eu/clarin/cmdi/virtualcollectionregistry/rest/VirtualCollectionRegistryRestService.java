@@ -36,7 +36,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.Handle;
 import eu.clarin.cmdi.virtualcollectionregistry.model.ResourceMetadata;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
-import eu.clarin.cmdi.virtualcollectionregistry.vcrql.Search;
+import eu.clarin.cmdi.virtualcollectionregistry.query.Search;
 
 @Path("/")
 public class VirtualCollectionRegistryRestService {
