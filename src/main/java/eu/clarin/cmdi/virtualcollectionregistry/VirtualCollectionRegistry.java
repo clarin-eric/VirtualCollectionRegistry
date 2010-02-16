@@ -266,19 +266,25 @@ public class VirtualCollectionRegistry {
 		EntityManager em = DataStore.instance().getEntityManager();
 		try {
 			em.getTransaction().begin();
+
+			List<VirtualCollection> results = null;
 			// FIXME: use TypedQuery variant when migrating to JPA 2.0
-			long totalCount = 
-				(Long) em.createNamedQuery("VirtualCollection.countAll")
-							.getSingleResult();
-			Query q = em.createNamedQuery("VirtualCollection.findAll");
-			if (offset > 0) {
-				q.setFirstResult(offset);
+			Query cq = em.createNamedQuery("VirtualCollection.countAll");
+			long totalCount = (Long) cq.getSingleResult();
+
+			// optimization; don't query, if we won't get any results
+			if ( totalCount > 0) {
+				// FIXME: use TypedQuery variant when migrating to JPA 2.0
+				Query q  = em.createNamedQuery("VirtualCollection.findAll");
+
+				if (offset > 0) {
+					q.setFirstResult(offset);
+				}
+				if (count > 0) {
+					q.setMaxResults(count);
+				}
+				results = (List<VirtualCollection>) q.getResultList();
 			}
-			if (count > 0) {
-				q.setMaxResults(count);
-			}
-			List<VirtualCollection> results =
-				(List<VirtualCollection>) q.getResultList();
 			return new VirtualCollectionList(results, offset, (int) totalCount);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "list", e);
@@ -297,26 +303,32 @@ public class VirtualCollectionRegistry {
 		EntityManager em = DataStore.instance().getEntityManager();
 		try {
 			em.getTransaction().begin();
+
 			User user = fetchUser(em, principal);
 			if (user == null) {
 				throw new VirtualCollectionRegistryException("user does not exist");
 			}
+			List<VirtualCollection> results = null;
 
 			// FIXME: use TypedQuery variant when migrating to JPA 2.0
-			long totalCount = 
-				(Long) em.createNamedQuery("VirtualCollection.countByOwner")
-					.setParameter("owner", user)
-					.getSingleResult();
-			Query q = em.createNamedQuery("VirtualCollection.findByOwner");
-			q.setParameter("owner", user);
-			if (offset > 0) {
-				q.setFirstResult(offset);
+			Query cq = em.createNamedQuery("VirtualCollection.countByOwner");
+			cq.setParameter("owner", user);
+			long totalCount = (Long) cq.getSingleResult();
+
+			// optimization; don't query, if we won't get any results
+			if (totalCount > 0) {
+				// FIXME: use TypedQuery variant when migrating to JPA 2.0
+				Query q  = em.createNamedQuery("VirtualCollection.findByOwner");
+				q.setParameter("owner", user);
+			
+				if (offset > 0) {
+					q.setFirstResult(offset);
+				}
+				if (count > 0) {
+					q.setMaxResults(count);
+				}
+				results = (List<VirtualCollection>) q.getResultList();
 			}
-			if (count > 0) {
-				q.setMaxResults(count);
-			}
-			List<VirtualCollection> results =
-				(List<VirtualCollection>) q.getResultList();
 			return new VirtualCollectionList(results, offset, (int) totalCount);
 		} catch (VirtualCollectionRegistryException e) {
 			throw e;
@@ -327,7 +339,7 @@ public class VirtualCollectionRegistry {
 			em.getTransaction().commit();
 		}
 	}
-	
+
 	private static User fetchUser(EntityManager em, Principal principal) {
 		User user = null;
 		try {
