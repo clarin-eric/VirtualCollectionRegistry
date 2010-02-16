@@ -39,8 +39,6 @@ import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import org.hibernate.annotations.Cascade;
-
 import eu.clarin.cmdi.virtualcollectionregistry.model.mapper.DateAdapter;
 
 @Entity
@@ -121,12 +119,11 @@ public class VirtualCollection {
 	@Embedded
 	@XmlElement(name = "Creator")
 	private Creator creator;
-	@OneToMany(cascade = CascadeType.ALL, fetch = FetchType.LAZY)
+	@OneToMany(cascade = CascadeType.ALL,
+			   fetch = FetchType.LAZY,
+			   orphanRemoval = true)
 	@JoinColumn(name = "vc_id", nullable = false)
-    // FIXME: maybe use OrderColumn when migrating to JPA 2.0
 	@OrderBy("id")
-	// FIXME: is there something alike in JPA 2.0?
-	@Cascade(org.hibernate.annotations.CascadeType.DELETE_ORPHAN)
 	@XmlElementWrapper(name = "Resources")
 	@XmlElements({ @XmlElement(name = "ResourceProxy",
                                type = ResourceProxy.class),
