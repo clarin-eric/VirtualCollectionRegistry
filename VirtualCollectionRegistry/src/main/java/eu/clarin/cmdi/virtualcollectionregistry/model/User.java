@@ -16,9 +16,6 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
-import org.hibernate.annotations.OnDelete;
-import org.hibernate.annotations.OnDeleteAction;
-
 @Entity
 @Table(name = "user")
 @NamedQueries({
@@ -33,10 +30,11 @@ public class User {
 	@Column(name = "name", nullable = false, unique = true)
 	private String name;
 	@OneToMany(mappedBy = "owner",
-               cascade = CascadeType.ALL, fetch = FetchType.LAZY)
-    // FIXME: proprietary, JPA 2.0 provides orphanRemoval, but it's yet available
-    @OnDelete(action=OnDeleteAction.CASCADE)               
-	private Set<VirtualCollection> collections = new LinkedHashSet<VirtualCollection>();
+               cascade = CascadeType.ALL,
+               fetch = FetchType.LAZY,
+               orphanRemoval = true)
+	private Set<VirtualCollection> collections =
+		new LinkedHashSet<VirtualCollection>();
 
 	@SuppressWarnings("unused")
 	private User() {
@@ -84,4 +82,4 @@ public class User {
 		return name.equals(principal.getName()); 
 	}
 
-} // class USer
+} // class User

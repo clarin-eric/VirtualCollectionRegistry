@@ -10,7 +10,7 @@ import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
-import javax.persistence.Query;
+import javax.persistence.TypedQuery;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.Handle;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
@@ -260,7 +260,6 @@ public class VirtualCollectionRegistry {
 			
 	}
 
-	@SuppressWarnings("unchecked")
 	public VirtualCollectionList getVirtualCollections(int offset, int count)
 			throws VirtualCollectionRegistryException {
 		EntityManager em = DataStore.instance().getEntityManager();
@@ -268,22 +267,22 @@ public class VirtualCollectionRegistry {
 			em.getTransaction().begin();
 
 			List<VirtualCollection> results = null;
-			// FIXME: use TypedQuery variant when migrating to JPA 2.0
-			Query cq = em.createNamedQuery("VirtualCollection.countAll");
-			long totalCount = (Long) cq.getSingleResult();
+			TypedQuery<Long> cq =
+				em.createNamedQuery("VirtualCollection.countAll", Long.class);
+			long totalCount = cq.getSingleResult();
 
 			// optimization; don't query, if we won't get any results
 			if ( totalCount > 0) {
-				// FIXME: use TypedQuery variant when migrating to JPA 2.0
-				Query q  = em.createNamedQuery("VirtualCollection.findAll");
-
+				TypedQuery<VirtualCollection> q =
+					em.createNamedQuery("VirtualCollection.findAll",
+										VirtualCollection.class);
 				if (offset > 0) {
 					q.setFirstResult(offset);
 				}
 				if (count > 0) {
 					q.setMaxResults(count);
 				}
-				results = (List<VirtualCollection>) q.getResultList();
+				results = q.getResultList();
 			}
 			return new VirtualCollectionList(results, offset, (int) totalCount);
 		} catch (Exception e) {
@@ -294,7 +293,6 @@ public class VirtualCollectionRegistry {
 		}
 	}
 
-	@SuppressWarnings("unchecked")
 	public VirtualCollectionList getVirtualCollections(Principal principal,
 			int offset, int count) throws VirtualCollectionRegistryException {
 		if (principal == null) {
@@ -308,26 +306,27 @@ public class VirtualCollectionRegistry {
 			if (user == null) {
 				throw new VirtualCollectionRegistryException("user does not exist");
 			}
-			List<VirtualCollection> results = null;
 
-			// FIXME: use TypedQuery variant when migrating to JPA 2.0
-			Query cq = em.createNamedQuery("VirtualCollection.countByOwner");
+			List<VirtualCollection> results = null;
+			TypedQuery<Long> cq =
+				em.createNamedQuery("VirtualCollection.countByOwner",
+									Long.class);
 			cq.setParameter("owner", user);
-			long totalCount = (Long) cq.getSingleResult();
+			long totalCount = cq.getSingleResult();
 
 			// optimization; don't query, if we won't get any results
 			if (totalCount > 0) {
-				// FIXME: use TypedQuery variant when migrating to JPA 2.0
-				Query q  = em.createNamedQuery("VirtualCollection.findByOwner");
+				TypedQuery<VirtualCollection> q =
+					em.createNamedQuery("VirtualCollection.findByOwner",
+										VirtualCollection.class);
 				q.setParameter("owner", user);
-			
 				if (offset > 0) {
 					q.setFirstResult(offset);
 				}
 				if (count > 0) {
 					q.setMaxResults(count);
 				}
-				results = (List<VirtualCollection>) q.getResultList();
+				results = q.getResultList();
 			}
 			return new VirtualCollectionList(results, offset, (int) totalCount);
 		} catch (VirtualCollectionRegistryException e) {
@@ -343,10 +342,10 @@ public class VirtualCollectionRegistry {
 	private static User fetchUser(EntityManager em, Principal principal) {
 		User user = null;
 		try {
-			// FIXME: use TypedQuery variant when migrating to JPA 2.0
-			Query q = em.createNamedQuery("User.findByName");
+			TypedQuery<User> q =
+				em.createNamedQuery("User.findByName", User.class);
 			q.setParameter("name", principal.getName());
-			user = (User) q.getSingleResult();
+			user = q.getSingleResult();
 		} catch (NoResultException e) {
 			/* IGNORE */
 		}
