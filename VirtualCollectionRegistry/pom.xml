@@ -162,8 +162,8 @@
 
   <properties>
     <!-- plug-in settings -->
-    <maven.compiler.source>1.5</maven.compiler.source>
-    <maven.compiler.target>1.5</maven.compiler.target>
+  	<maven.compiler.source>1.6</maven.compiler.source>
+  	<maven.compiler.target>1.6</maven.compiler.target>
     <!-- dependency versions -->
     <hibernate.version>3.5.0-CR-1</hibernate.version>
     <hibernate.jpaVersion>1.0.0-CR-1</hibernate.jpaVersion>
