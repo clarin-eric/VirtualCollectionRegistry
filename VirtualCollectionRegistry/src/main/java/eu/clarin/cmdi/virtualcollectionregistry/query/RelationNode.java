@@ -3,10 +3,8 @@ package eu.clarin.cmdi.virtualcollectionregistry.query;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.CommonTree;
 
-import eu.clarin.cmdi.virtualcollectionregistry.query.VCRQLLexer;
-
 class RelationNode extends CommonTree implements ParseTreeNode {
-	public static enum Relation { EQ, LT, GT };
+	public static enum Relation { EQ, NE };
 	private Relation relation;
 	
 	public RelationNode(Token token) {
@@ -26,12 +24,10 @@ class RelationNode extends CommonTree implements ParseTreeNode {
 		switch (type) {
 		case VCRQLLexer.EQ:
 			return Relation.EQ;
-		case VCRQLLexer.LT:
-			return Relation.LT;			
-		case VCRQLLexer.GT:
-			return Relation.GT;
+		case VCRQLLexer.NE:
+			return Relation.NE;			
 		default:
-			throw new IllegalArgumentException("inavlid relation type");
+			throw new IllegalArgumentException("bad relation type: " + type);
 		}
 	}
 

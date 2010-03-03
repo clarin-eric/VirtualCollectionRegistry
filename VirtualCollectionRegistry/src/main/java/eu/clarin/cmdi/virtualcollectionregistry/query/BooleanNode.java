@@ -29,7 +29,7 @@ class BooleanNode extends CommonTree implements ParseTreeNode {
 		case VCRQLLexer.OR:
 			return Operator.OR;
 		default:
-			throw new IllegalArgumentException("invalid type");
+			throw new IllegalArgumentException("bad type: " + type);
 		}
 	}
 

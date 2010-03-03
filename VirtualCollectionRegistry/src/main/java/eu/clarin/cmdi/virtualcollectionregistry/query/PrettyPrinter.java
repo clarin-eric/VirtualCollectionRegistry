@@ -23,19 +23,6 @@ class PrettyPrinter implements ParseTreeNodeVisitor {
 		}
 	}
 
-	public void visit(RelationNode node) {
-		doIndent(node);
-		out.print("[");
-		out.print(node.getRelation());
-		out.println("]");
-		parents.push(node);
-		for (int i = 0; i < node.getChildCount(); i++) {
-			ParseTreeNode child = (ParseTreeNode) node.getChild(i);
-			child.accept(this);
-		}
-		parents.pop();
-	}
-
 	public void visit(BooleanNode node) {
 		doIndent(node);
 		out.print("[");
@@ -49,14 +36,34 @@ class PrettyPrinter implements ParseTreeNodeVisitor {
 		parents.pop();
 	}
 
+	public void visit(RelationNode node) {
+		doIndent(node);
+		out.print("[");
+		out.print(node.getRelation());
+		out.println("]");
+		parents.push(node);
+		for (int i = 0; i < node.getChildCount(); i++) {
+			ParseTreeNode child = (ParseTreeNode) node.getChild(i);
+			child.accept(this);
+		}
+		parents.pop();
+	}
+
 	public void visit(EntityNode node) {
 		doIndent(node);
-		out.print(node.getEntity());
+		switch (node.getEntity()) {
+		case VC:
+			out.print("virtualcollection");
+			break;
+		case CREATOR:
+			out.print("creator");
+			break;
+		}
 		out.print(".");
 		out.println(node.getProperty());
 	}
 
-	public void visit(StringNode node) {
+	public void visit(ValueNode node) {
 		doIndent(node);
 		out.println(node.getValue());
 	}
