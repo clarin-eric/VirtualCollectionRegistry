@@ -16,7 +16,6 @@ import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Entity
-@Table(name = "resource_proxy")
 @DiscriminatorValue("P")
 @XmlRootElement(name = "ResourceProxy")
 @XmlAccessorType(XmlAccessType.NONE)

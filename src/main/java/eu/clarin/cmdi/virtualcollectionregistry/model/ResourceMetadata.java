@@ -15,7 +15,6 @@ import javax.xml.bind.annotation.XmlType;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Entity
-@Table(name = "resource_metadata")
 @DiscriminatorValue("M")
 @XmlRootElement(name = "ResourceMetadata")
 @XmlAccessorType(XmlAccessType.NONE)
