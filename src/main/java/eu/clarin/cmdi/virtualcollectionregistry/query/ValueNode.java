@@ -3,20 +3,18 @@ package eu.clarin.cmdi.virtualcollectionregistry.query;
 import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.CommonTree;
 
-class StringNode extends CommonTree implements ParseTreeNode {
+class ValueNode extends CommonTree implements ParseTreeNode {
 	private String value;
 	
-	StringNode(Token token) {
+	ValueNode(Token token) {
 		super(token);
 		String s = token.getText();
 		int spos = s.indexOf('"');
 		int epos = s.lastIndexOf('"');
 		if ((spos != -1) && (epos != -1)) {
-			value = s.substring(spos + 1, epos);
-		} else {
-			value = s;
+			s = s.substring(spos + 1, epos);
 		}
-		// TODO: check escaping
+		value = s;
 	}
 
 	public String getValue() {

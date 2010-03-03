@@ -7,8 +7,7 @@ options {
 
 tokens {
     EQ = '=';
-    LT = '<';
-    GT = '>';
+    NE = '!=';
     OR = 'or';
     AND = 'and';
     OPEN = '(';
@@ -27,7 +26,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.query;
 }
 
 query
-    : expression EOF -> ^(QUERY<QueryNode> expression)
+    : expression -> ^(QUERY<QueryNode> expression)
     ;
 
 expression
@@ -48,9 +47,8 @@ primaryExpression
     ;
 
 atom
-    : component EQ<RelationNode>^ STRING<StringNode>
-    | component LT<RelationNode>^ STRING<StringNode>
-    | component GT<RelationNode>^ STRING<StringNode>
+    : component EQ<RelationNode>^ STRING<ValueNode>
+    | component NE<RelationNode>^ STRING<ValueNode>
     ;
 
 component
@@ -67,7 +65,7 @@ PROPERTY_NAME
     ;
 
 STRING
-    : '"' ( ESCAPE_SEQUENCE | ~('\u0000'..'\u001f' | '\\' | '\"' ) )* '"'
+    : '"' ( ESCAPE_SEQUENCE | ~( '\u0000'..'\u001f' | '\\' | '\"' ) )* '"'
     ;
 
 fragment

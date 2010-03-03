@@ -36,11 +36,10 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.Handle;
 import eu.clarin.cmdi.virtualcollectionregistry.model.ResourceMetadata;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
-import eu.clarin.cmdi.virtualcollectionregistry.query.Search;
 
 @Path("/")
 public class VirtualCollectionRegistryRestService {
-	private VirtualCollectionRegistry registry =
+	private final VirtualCollectionRegistry registry =
 		VirtualCollectionRegistry.instance();
 	@Context
 	SecurityContext security;
@@ -139,11 +138,9 @@ public class VirtualCollectionRegistryRestService {
 			@DefaultValue("0") @QueryParam("offset") int offset,
 			@DefaultValue("-1") @QueryParam("count") int count)
 			throws VirtualCollectionRegistryException {
-		if ( query != null ) {
-			Search.doSearch(query);
-		}
 		final VirtualCollectionList vcs =
-			registry.getVirtualCollections((offset > 0) ? offset : 0, count);
+			registry.getVirtualCollections(query,
+										   (offset > 0) ? offset : 0, count);
 		StreamingOutput writer = new StreamingOutput() {
 			public void write(OutputStream stream) throws IOException,
 					WebApplicationException {
@@ -159,7 +156,7 @@ public class VirtualCollectionRegistryRestService {
 	@Produces({ MediaType.TEXT_XML,
 				MediaType.APPLICATION_XML,
 				MediaType.APPLICATION_JSON })
-	public Response getMyVirtualCollections(
+	public Response getMyVirtualCollections(@QueryParam("q") String query,
 			@DefaultValue("0") @QueryParam("offset") int offset,
 			@DefaultValue("-1") @QueryParam("count") int count)
 			throws VirtualCollectionRegistryException {
@@ -168,8 +165,8 @@ public class VirtualCollectionRegistryRestService {
 			throw new IllegalArgumentException("princial == null");
 		}
 		final VirtualCollectionList vcs =
-				registry.getVirtualCollections(principal,
-						(offset > 0) ? offset : 0, count);
+			registry.getVirtualCollections(principal, query,
+										   (offset > 0) ? offset : 0, count);
 		StreamingOutput writer = new StreamingOutput() {
 			public void write(OutputStream stream) throws IOException,
 					WebApplicationException {

@@ -19,6 +19,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionValidator;
+import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
 
 public class VirtualCollectionRegistry {
 	private static final Logger logger = Logger
@@ -260,22 +261,32 @@ public class VirtualCollectionRegistry {
 			
 	}
 
-	public VirtualCollectionList getVirtualCollections(int offset, int count)
-			throws VirtualCollectionRegistryException {
+	public VirtualCollectionList getVirtualCollections(String query,
+			int offset, int count) throws VirtualCollectionRegistryException {
 		EntityManager em = DataStore.instance().getEntityManager();
 		try {
 			em.getTransaction().begin();
 
+			// setup queries
+			TypedQuery<Long>              cq = null;
+			TypedQuery<VirtualCollection>  q = null;
+			if (query != null) {
+				ParsedQuery parsedQuery = ParsedQuery.parseQuery(em, query);
+				cq = parsedQuery.getCountQuery(null);
+				q = parsedQuery.getQuery(null);
+			} else {
+				cq = em.createNamedQuery("VirtualCollection.countAll",
+						Long.class);
+				q = em.createNamedQuery("VirtualCollection.findAll",
+						VirtualCollection.class);
+			}
+
+			// commence query ...
 			List<VirtualCollection> results = null;
-			TypedQuery<Long> cq =
-				em.createNamedQuery("VirtualCollection.countAll", Long.class);
 			long totalCount = cq.getSingleResult();
 
 			// optimization; don't query, if we won't get any results
 			if ( totalCount > 0) {
-				TypedQuery<VirtualCollection> q =
-					em.createNamedQuery("VirtualCollection.findAll",
-										VirtualCollection.class);
 				if (offset > 0) {
 					q.setFirstResult(offset);
 				}
@@ -294,7 +305,8 @@ public class VirtualCollectionRegistry {
 	}
 
 	public VirtualCollectionList getVirtualCollections(Principal principal,
-			int offset, int count) throws VirtualCollectionRegistryException {
+			String query, int offset, int count)
+			throws VirtualCollectionRegistryException {
 		if (principal == null) {
 			throw new IllegalArgumentException("principal == null");
 		}
@@ -302,24 +314,33 @@ public class VirtualCollectionRegistry {
 		try {
 			em.getTransaction().begin();
 
+			// fetch user
 			User user = fetchUser(em, principal);
 			if (user == null) {
 				throw new VirtualCollectionRegistryException("user does not exist");
 			}
 
+			// setup queries
+			TypedQuery<Long>              cq = null;
+			TypedQuery<VirtualCollection>  q = null;
+			if (query != null) {
+				ParsedQuery parsedQuery = ParsedQuery.parseQuery(em, query);
+				cq = parsedQuery.getCountQuery(user);
+				q = parsedQuery.getQuery(user);
+			} else {
+				cq = em.createNamedQuery("VirtualCollection.countByOwner", Long.class);
+				cq.setParameter("owner", user);
+				q = em.createNamedQuery("VirtualCollection.findByOwner",
+						VirtualCollection.class);
+				q.setParameter("owner", user);
+			}
+
+			// commence query ...
 			List<VirtualCollection> results = null;
-			TypedQuery<Long> cq =
-				em.createNamedQuery("VirtualCollection.countByOwner",
-									Long.class);
-			cq.setParameter("owner", user);
 			long totalCount = cq.getSingleResult();
 
 			// optimization; don't query, if we won't get any results
 			if (totalCount > 0) {
-				TypedQuery<VirtualCollection> q =
-					em.createNamedQuery("VirtualCollection.findByOwner",
-										VirtualCollection.class);
-				q.setParameter("owner", user);
 				if (offset > 0) {
 					q.setFirstResult(offset);
 				}

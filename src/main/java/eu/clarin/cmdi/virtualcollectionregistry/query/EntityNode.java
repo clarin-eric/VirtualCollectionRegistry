@@ -5,17 +5,17 @@ import org.antlr.runtime.Token;
 import org.antlr.runtime.tree.CommonTree;
 
 class EntityNode extends CommonTree implements ParseTreeNode {
-	private String entity;
+	public static enum Entity { VC, CREATOR };
+	private Entity entity;
 	private String property;
 	
 	public EntityNode(int type, Token entity, Token property) {
 		super(new CommonToken(type, "ENTITY"));
-		// check values for sanity!
-		this.entity   = entity.getText();
-		this.property = property.getText();
+		this.entity    = entityFromString(entity.getText());
+		this.property  = propertyFromString(property.getText());
 	}
 
-	public String getEntity() {
+	public Entity getEntity() {
 		return entity;
 	}
 	
@@ -27,4 +27,28 @@ class EntityNode extends CommonTree implements ParseTreeNode {
 		visitor.visit(this);
 	}
 
+	private static Entity entityFromString(String s) {
+		if (s == null) {
+			throw new NullPointerException("s == null");
+		}
+		s = s.trim();
+		if (s.equalsIgnoreCase("vc")) {
+			 return Entity.VC;
+		} else if (s.equalsIgnoreCase("creator")) {
+			return Entity.CREATOR;
+		} else {
+			throw new IllegalArgumentException("unknown entity: " + s);
+		}
+	}
+
+	private static String propertyFromString(String s) {
+		if (s != null) {
+			s = s.trim();
+		}
+		if ((s == null) || (s.length() < 1)) {
+			throw new IllegalArgumentException("property is null or empty");
+		}
+		return s.toLowerCase();
+	}
+	
 } // class EntityNode
