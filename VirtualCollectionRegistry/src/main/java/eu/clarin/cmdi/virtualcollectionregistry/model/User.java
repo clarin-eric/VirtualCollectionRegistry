@@ -51,11 +51,15 @@ public class User {
 	
 	public void setName(String name) {
 		if (name == null) {
-			throw new IllegalArgumentException("name == null");
+			throw new NullPointerException("name == null");
+		}
+		name = name.trim();
+		if (name.isEmpty()) {
+			throw new IllegalArgumentException("empty name is not allowed");
 		}
 		this.name = name;
 	}
-	
+
 	public String getName() {
 		return name;
 	}
@@ -66,7 +70,7 @@ public class User {
 
 	public boolean equals(Object o) {
 		if (o == null) {
-			throw new IllegalArgumentException("o == null");
+			throw new NullPointerException("o == null");
 		}
 		if (o instanceof User) {
 			return (name.equals(((User) o).getName()) ||
@@ -77,7 +81,7 @@ public class User {
 	
 	public boolean equalsPrincipal(Principal principal) {
 		if (principal == null) {
-			throw new IllegalArgumentException("principal == null");
+			throw new NullPointerException("principal == null");
 		}
 		return name.equals(principal.getName()); 
 	}

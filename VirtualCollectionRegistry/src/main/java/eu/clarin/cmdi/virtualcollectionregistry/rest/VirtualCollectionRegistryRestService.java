@@ -57,7 +57,7 @@ public class VirtualCollectionRegistryRestService {
 			throws VirtualCollectionRegistryException {
 		Principal principal = security.getUserPrincipal();
 		if (principal == null) {
-			throw new IllegalArgumentException("princial == null");
+			throw new NullPointerException("princial == null");
 		}
 		try {
 			Format format = getInputFormat();
@@ -102,7 +102,7 @@ public class VirtualCollectionRegistryRestService {
 			VirtualCollection vc) throws VirtualCollectionRegistryException {
 		Principal principal = security.getUserPrincipal();
 		if (principal == null) {
-			throw new IllegalArgumentException("princial == null");
+			throw new NullPointerException("princial == null");
 		}
 		registry.updateVirtualCollection(principal, id, vc);
 		RestResponse response = new RestResponse();
@@ -119,7 +119,7 @@ public class VirtualCollectionRegistryRestService {
 			throws VirtualCollectionRegistryException {
 		Principal principal = security.getUserPrincipal();
 		if (principal == null) {
-			throw new IllegalArgumentException("princial == null");
+			throw new NullPointerException("princial == null");
 		}
 		registry.deleteVirtualCollection(principal, id);
 		RestResponse response = new RestResponse();
@@ -162,7 +162,7 @@ public class VirtualCollectionRegistryRestService {
 			throws VirtualCollectionRegistryException {
 		Principal principal = security.getUserPrincipal();
 		if (principal == null) {
-			throw new IllegalArgumentException("princial == null");
+			throw new NullPointerException("princial == null");
 		}
 		final VirtualCollectionList vcs =
 			registry.getVirtualCollections(principal, query,

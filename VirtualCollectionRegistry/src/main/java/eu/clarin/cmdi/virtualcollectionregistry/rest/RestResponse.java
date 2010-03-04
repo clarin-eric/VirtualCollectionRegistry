@@ -48,7 +48,9 @@ public class RestResponse {
 	}
 	
 	public void setError(List<String> errors) {
-		this.errors = errors;
+		if ((errors != null) && !errors.isEmpty()) {
+			this.errors = errors;
+		}
 	}
 
 	@XmlElementWrapper(name = "Errors")
