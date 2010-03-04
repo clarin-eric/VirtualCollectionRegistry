@@ -13,8 +13,11 @@ public class IllegalArgumentExceptionMapper implements ExceptionMapper<IllegalAr
 		RestResponse response = new RestResponse();
 		response.setIsSuccess(false);
 		response.setInfo(e.getMessage());
-		return Response.status(Response.Status.BAD_REQUEST)
-			.entity(e.getMessage()).type(MediaType.APPLICATION_XML).entity(response).build();
+		return Response
+				.status(Response.Status.BAD_REQUEST)
+				.type(MediaType.APPLICATION_XML)
+				.entity(response)
+				.build();
 	}
-	
+
 } // class IllegalArgumentExceptionMapper

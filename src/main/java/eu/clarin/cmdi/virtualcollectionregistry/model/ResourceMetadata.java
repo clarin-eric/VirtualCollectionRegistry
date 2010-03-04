@@ -50,7 +50,7 @@ public class ResourceMetadata extends Resource {
 	
 	public void setName(String name) {
 		if (name == null) {
-			throw new IllegalArgumentException("name == null");
+			throw new NullPointerException("name == null");
 		}
 		this.name = name;
 	}
@@ -80,7 +80,7 @@ public class ResourceMetadata extends Resource {
 
 	public void setRef(String ref) {
 		if (ref == null) {
-			throw new IllegalArgumentException("ref == null");
+			throw new NullPointerException("ref == null");
 		}
 		this.ref = ref;
 	}
@@ -92,9 +92,9 @@ public class ResourceMetadata extends Resource {
 	
 	public void setPid(String pid) {
 		if (pid == null) {
-			throw new IllegalArgumentException("pid == null");
+			throw new NullPointerException("pid == null");
 		}
-		this.pid = pid;
+		this.pid = pid.trim();
 	}
 	
 	public String getPid() {

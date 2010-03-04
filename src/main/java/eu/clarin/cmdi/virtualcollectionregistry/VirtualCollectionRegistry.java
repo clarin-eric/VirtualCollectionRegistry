@@ -20,6 +20,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionValidator;
 import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
+import eu.clarin.cmdi.virtualcollectionregistry.query.QueryException;
 
 public class VirtualCollectionRegistry {
 	private static final Logger logger = Logger
@@ -45,7 +46,7 @@ public class VirtualCollectionRegistry {
 		}
 		logger.fine("initialize ...");
 		if (config == null) {
-			throw new IllegalArgumentException("config may not be null");
+			throw new NullPointerException("config == null");
 		}
 		for (String key : config.keySet()) {
 			logger.fine("XXX: " + key + " = \"" + config.get(key) + "\"");
@@ -72,10 +73,10 @@ public class VirtualCollectionRegistry {
 	public long createVirtualCollection(Principal principal,
 			VirtualCollection vc) throws VirtualCollectionRegistryException {
 		if (principal == null) {
-			throw new IllegalArgumentException("principal == null");
+			throw new NullPointerException("principal == null");
 		}
 		if (vc == null) {
-			throw new IllegalArgumentException("vc == null");
+			throw new NullPointerException("vc == null");
 		}
 
 		VirtualCollectionValidator validator =
@@ -118,21 +119,23 @@ public class VirtualCollectionRegistry {
 			em.getTransaction().commit();
 			return vc.getId();
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "create", e);
-			throw new VirtualCollectionRegistryException("create", e);
+			logger.log(Level.SEVERE,
+					   "error while creating virtual collection", e);
+			throw new VirtualCollectionRegistryException(
+					"error while creating virtual collection", e);
 		}
 	}
 
-	public long updateVirtualCollection(Principal principal, long id, VirtualCollection vc)
-			throws VirtualCollectionRegistryException {
+	public long updateVirtualCollection(Principal principal, long id,
+			VirtualCollection vc) throws VirtualCollectionRegistryException {
 		if (principal == null) {
-			throw new IllegalArgumentException("principal == null");
+			throw new NullPointerException("principal == null");
 		}
 		if (id <= 0) {
 			throw new IllegalArgumentException("id <= 0");
 		}
 		if (vc == null) {
-			throw new IllegalArgumentException("vc == null");
+			throw new NullPointerException("vc == null");
 		}
 		
 		VirtualCollectionValidator validator =
@@ -148,7 +151,8 @@ public class VirtualCollectionRegistry {
 			}
 			if (!c.getOwner().equalsPrincipal(principal)) {
 				throw new VirtualCollectionRegistryPermissionException(
-						"permission denied for user " + principal.getName());
+						"permission denied for user \"" +
+						principal.getName() + "\"");
 			}
 			c.updateFrom(vc);
 			HashSet<String> newPids = new HashSet<String>();
@@ -178,15 +182,17 @@ public class VirtualCollectionRegistry {
 		} catch (VirtualCollectionRegistryException e) {
 			throw e;
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "update", e);
-			throw new VirtualCollectionRegistryException("update", e);
+			logger.log(Level.SEVERE,
+                       "error while updating virtual collection", e);
+			throw new VirtualCollectionRegistryException(
+					"error while updating virtual collection", e);
 		}
 	}
 
 	public long deleteVirtualCollection(Principal principal, long id)
 			throws VirtualCollectionRegistryException {
 		if (principal == null) {
-			throw new IllegalArgumentException("principal == null");
+			throw new NullPointerException("principal == null");
 		}
 		if (id <= 0) {
 			throw new IllegalArgumentException("id <= 0");
@@ -201,7 +207,8 @@ public class VirtualCollectionRegistry {
 			}
 			if (!vc.getOwner().equalsPrincipal(principal)) {
 				throw new VirtualCollectionRegistryPermissionException(
-						"permission denied for user " + principal.getName());
+						"permission denied for user \"" +
+						principal.getName() + "\"");
 			}
 			em.remove(vc);
 			em.getTransaction().commit();
@@ -209,8 +216,10 @@ public class VirtualCollectionRegistry {
 		} catch (VirtualCollectionRegistryException e) {
 			throw e;
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "delete", e);
-			throw new VirtualCollectionRegistryException("delete", e);
+			logger.log(Level.SEVERE,
+					   "error while deleting virtual collection", e);
+			throw new VirtualCollectionRegistryException(
+					"error while deleting virtual collection", e);
 		}
 	}
 
@@ -233,8 +242,10 @@ public class VirtualCollectionRegistry {
 		} catch (VirtualCollectionRegistryException e) {
 			throw e;
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "get", e);
-			throw new VirtualCollectionRegistryException("get", e);
+			logger.log(Level.SEVERE,
+					   "error while retrieving virtual collection", e);
+			throw new VirtualCollectionRegistryException(
+					"error while retrieving virtual collection", e);
 		}
 	}
 
@@ -250,13 +261,16 @@ public class VirtualCollectionRegistry {
 			ResourceMetadata md = em.find(ResourceMetadata.class, new Long(id));
 			em.getTransaction().commit();
 			if (md == null) {
-				throw new VirtualCollectionNotFoundException(id);
+				throw new VirtualCollectionMetadataNotFoundException(id);
 			}
 			return md;
 		} catch (VirtualCollectionRegistryException e) {
 			throw e;
 		} catch (Exception e) {
-			throw new VirtualCollectionRegistryException("get metadata", e);
+			logger.log(Level.SEVERE,
+					   "error while retrieving metadata resource", e);
+			throw new VirtualCollectionRegistryException(
+					"error while retrieving metadata resource", e);
 		}
 			
 	}
@@ -296,9 +310,14 @@ public class VirtualCollectionRegistry {
 				results = q.getResultList();
 			}
 			return new VirtualCollectionList(results, offset, (int) totalCount);
+		} catch (QueryException e) {
+			throw new VirtualCollectionRegistryUsageException(
+			        "query invalid", e);
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "list", e);
-			throw new VirtualCollectionRegistryException("list", e);
+			logger.log(Level.SEVERE,
+					   "error while enumerating virtual collections", e);
+			throw new VirtualCollectionRegistryException(
+					"error while enumerating virtual collections", e);
 		} finally {
 			em.getTransaction().commit();
 		}
@@ -308,7 +327,7 @@ public class VirtualCollectionRegistry {
 			String query, int offset, int count)
 			throws VirtualCollectionRegistryException {
 		if (principal == null) {
-			throw new IllegalArgumentException("principal == null");
+			throw new NullPointerException("principal == null");
 		}
 		EntityManager em = DataStore.instance().getEntityManager();
 		try {
@@ -317,7 +336,8 @@ public class VirtualCollectionRegistry {
 			// fetch user
 			User user = fetchUser(em, principal);
 			if (user == null) {
-				throw new VirtualCollectionRegistryException("user does not exist");
+				throw new VirtualCollectionRegistryPermissionException("user " +
+						principal.getName() + " does not exist");
 			}
 
 			// setup queries
@@ -350,11 +370,16 @@ public class VirtualCollectionRegistry {
 				results = q.getResultList();
 			}
 			return new VirtualCollectionList(results, offset, (int) totalCount);
+		} catch (QueryException e) {
+			throw new VirtualCollectionRegistryUsageException(
+			        "query invalid", e);
 		} catch (VirtualCollectionRegistryException e) {
 			throw e;
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "list", e);
-			throw new VirtualCollectionRegistryException("list", e);
+			logger.log(Level.SEVERE,
+					   "error while enumerating virtual collections", e);
+			throw new VirtualCollectionRegistryException(
+					"error while enumerating virtual collections", e);
 		} finally {
 			em.getTransaction().commit();
 		}

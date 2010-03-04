@@ -146,7 +146,7 @@ public class VirtualCollection {
 
 	public void setOwner(User owner) {
 		if (owner == null) {
-			throw new IllegalArgumentException("owner == null");
+			throw new NullPointerException("owner == null");
 		}
 		this.owner = owner;
 	}
@@ -157,7 +157,11 @@ public class VirtualCollection {
 
 	public void setPid(String pid) {
 		if (name == null) {
-			throw new IllegalArgumentException("name == null");
+			throw new NullPointerException("name == null");
+		}
+		pid = pid.trim();
+		if (pid.length() < 1) {
+			throw new IllegalArgumentException("empty pid is not allowed");
 		}
 		this.pid = pid;
 	}
@@ -168,7 +172,7 @@ public class VirtualCollection {
 
 	public void setName(String name) {
 		if (name == null) {
-			throw new IllegalArgumentException("name == null");
+			throw new NullPointerException("name == null");
 		}
 		this.name = name;
 	}
@@ -187,7 +191,7 @@ public class VirtualCollection {
 
 	public void setCreationDate(Date creationDate) {
 		if (creationDate == null) {
-			throw new IllegalArgumentException("creationDate == null");
+			throw new NullPointerException("creationDate == null");
 		}
 		this.creationDate = creationDate;
 	}
@@ -198,7 +202,7 @@ public class VirtualCollection {
 
 	public void setVisibility(Visibility visibility) {
 		if (visibility == null) {
-			throw new IllegalArgumentException("visibility == null");
+			throw new NullPointerException("visibility == null");
 		}
 		this.visibility = visibility;
 	}
@@ -209,7 +213,7 @@ public class VirtualCollection {
 
 	public void setType(Type style) {
 		if (style == null) {
-			throw new IllegalArgumentException("style == null");
+			throw new NullPointerException("style == null");
 		}
 		this.type = style;
 	}
@@ -244,7 +248,7 @@ public class VirtualCollection {
 
 	public void setModifiedDate(Date modifiedDate) {
 		if (modifiedDate == null) {
-			throw new IllegalArgumentException("modifiedDate == null");
+			throw new NullPointerException("modifiedDate == null");
 		}
 		this.modifedDate = modifiedDate;
 	}

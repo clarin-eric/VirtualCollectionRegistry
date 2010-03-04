@@ -71,7 +71,7 @@ public class VirtualCollectionRegistryMarshaller {
 	public void marshal(OutputStream output, Format format,
 			VirtualCollection vc) throws IOException {
 		if (output == null) {
-			throw new IllegalArgumentException("output == null");
+			throw new NullPointerException("output == null");
 		}
 		try {
 			JAXBContext ctx = JAXBContext.newInstance(VirtualCollection.class);
@@ -93,7 +93,7 @@ public class VirtualCollectionRegistryMarshaller {
 	public VirtualCollection unmarshal(InputStream input, Format format,
 			String encoding) throws IOException {
 		if (input == null) {
-			throw new IllegalArgumentException("input == null");
+			throw new NullPointerException("input == null");
 		}
 		try {
 			JAXBContext ctx = JAXBContext.newInstance(VirtualCollection.class);
@@ -148,7 +148,7 @@ public class VirtualCollectionRegistryMarshaller {
 	public void marshal(OutputStream output, Format format,
 			ClarinVirtualCollection vc) throws IOException {
 		if (output == null) {
-			throw new IllegalArgumentException("output == null");
+			throw new NullPointerException("output == null");
 		}
 		try {
 			JAXBContext ctx =
@@ -169,7 +169,7 @@ public class VirtualCollectionRegistryMarshaller {
 	private XMLStreamWriter createWriter(OutputStream output, Format format)
 			throws Exception {
 		if (format == null) {
-			throw new IllegalArgumentException("format == null");
+			throw new NullPointerException("format == null");
 		}
 		switch (format) {
 		case XML:
@@ -177,18 +177,19 @@ public class VirtualCollectionRegistryMarshaller {
 		case JSON:
 			return jsonWriterFactory.createXMLStreamWriter(output, ENCODING);
 		default:
-			// this should never happen
-			throw new InternalError("bad writer format " + format);
+			// should never happen
+			throw new IllegalArgumentException("output format " + format
+					+ " is not supported");
 		} // switch
 	}
 
 	private XMLStreamReader createReader(InputStream input, Format format,
 			String encoding) throws Exception {
 		if (format == null) {
-			throw new IllegalArgumentException("format == null");
+			throw new NullPointerException("format == null");
 		}
 		if (encoding == null) {
-			throw new IllegalArgumentException("encoding == null");
+			throw new NullPointerException("encoding == null");
 		}
 
 		XMLStreamReader reader = null;
@@ -200,8 +201,9 @@ public class VirtualCollectionRegistryMarshaller {
 			reader = jsonReaderFactory.createXMLStreamReader(input, encoding);
 			break;
 		default:
-			// this should never happen
-			throw new InternalError("bad reader format " + format);
+			// should never happen
+			throw new IllegalArgumentException("input format " + format
+					+ " is not supported");
 		} // switch
 
 		// custom filter. clears all attributes from VirtualCollection elements

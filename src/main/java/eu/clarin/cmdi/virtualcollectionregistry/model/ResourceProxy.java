@@ -41,7 +41,7 @@ public class ResourceProxy extends Resource {
 
 	public void setType(ResourceType type) {
 		if (type == null) {
-			throw new IllegalArgumentException("type == null");
+			throw new NullPointerException("type == null");
 		}
 		this.type = type;
 	}
@@ -53,7 +53,7 @@ public class ResourceProxy extends Resource {
 
 	public void setRef(String ref) {
 		if (ref == null) {
-			throw new IllegalArgumentException("ref == null");
+			throw new NullPointerException("ref == null");
 		}
 		this.ref = ref;
 	}
