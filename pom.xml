@@ -127,7 +127,9 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-jpamodelgen</artifactId>
       <version>${hibernate.jpaVersion}</version>
-      <scope>compile</scope>
+      <!-- "provided" is actually a lie, but this dependency is only
+           needed at compile time, and "provided" does the trick -->
+      <scope>provided</scope>
       <exclusions>
         <exclusion>
           <!-- Use the jpa-api defined here, crossing fingers they match up signature-wise -->
