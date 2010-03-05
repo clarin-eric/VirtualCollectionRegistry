@@ -7,7 +7,6 @@ import javax.servlet.ServletContext;
 import javax.servlet.ServletContextEvent;
 import javax.servlet.ServletContextListener;
 
-import eu.clarin.cmdi.virtualcollectionregistry.DataStore;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 
@@ -26,7 +25,6 @@ public class ContextListener implements ServletContextListener {
 			}
 		}
 		try {
-			DataStore.instance().initalize(config);
 			VirtualCollectionRegistry.initalize(config);
 		} catch (VirtualCollectionRegistryException e) {
 			ctx.log("error initializing registry", e);
@@ -37,9 +35,9 @@ public class ContextListener implements ServletContextListener {
 		ServletContext ctx = event.getServletContext();
 		try {
 			VirtualCollectionRegistry.instance().destroy();
-			DataStore.instance().destroy();
 		} catch (VirtualCollectionRegistryException e) {
 			ctx.log("error destroying registry", e);
 		}
 	}
-}
+
+} // class ContextListener

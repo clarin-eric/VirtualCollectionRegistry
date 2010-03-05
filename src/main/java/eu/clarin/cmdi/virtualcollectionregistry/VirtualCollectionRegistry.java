@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
 import java.security.Principal;
+import java.util.Collections;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
@@ -28,7 +29,8 @@ public class VirtualCollectionRegistry {
 	private static VirtualCollectionRegistry s_instance =
 		new VirtualCollectionRegistry();
 	private AtomicBoolean intialized = new AtomicBoolean(false);
-	private VirtualCollectionRegistryMarshaller marshaller;
+	private DataStore datastore = null;
+	private VirtualCollectionRegistryMarshaller marshaller = null;
 	
 	private VirtualCollectionRegistry() {
 		super();
@@ -46,16 +48,20 @@ public class VirtualCollectionRegistry {
 		}
 		logger.fine("initialize ...");
 		if (config == null) {
-			throw new NullPointerException("config == null");
+			config = Collections.emptyMap();
 		}
 		for (String key : config.keySet()) {
 			logger.fine("XXX: " + key + " = \"" + config.get(key) + "\"");
 		}
+		datastore  = new DataStore(config);
 		marshaller = new VirtualCollectionRegistryMarshaller();
 		intialized.set(true);
 	}
 
 	public void destroy() throws VirtualCollectionRegistryException {
+		if (datastore != null) {
+			datastore.destroy();
+		}
 	}
 
 	public static VirtualCollectionRegistry instance() {
@@ -64,6 +70,10 @@ public class VirtualCollectionRegistry {
 					"to initialize correctly");
 		}
 		return s_instance;
+	}
+
+	public DataStore getDataStore() {
+		return datastore;
 	}
 
 	public VirtualCollectionRegistryMarshaller getMarshaller() {
@@ -84,7 +94,7 @@ public class VirtualCollectionRegistry {
 		validator.validate(vc);
 
 		try {
-			EntityManager em = DataStore.instance().getEntityManager();
+			EntityManager em = datastore.getEntityManager();
 			em.getTransaction().begin();
 
 			// fetch user, if user does not exist create new
@@ -143,7 +153,7 @@ public class VirtualCollectionRegistry {
 		validator.validate(vc);
 
 		try {
-			EntityManager em = DataStore.instance().getEntityManager();
+			EntityManager em = datastore.getEntityManager();
 			em.getTransaction().begin();
 			VirtualCollection c = em.find(VirtualCollection.class, new Long(id));
 			if (c == null) {
@@ -199,7 +209,7 @@ public class VirtualCollectionRegistry {
 		}
 
 		try {
-			EntityManager em = DataStore.instance().getEntityManager();
+			EntityManager em = datastore.getEntityManager();
 			em.getTransaction().begin();
 			VirtualCollection vc = em.find(VirtualCollection.class, new Long(id));
 			if (vc == null) {
@@ -230,7 +240,7 @@ public class VirtualCollectionRegistry {
 		}
 
 		try {
-			EntityManager em = DataStore.instance().getEntityManager();
+			EntityManager em = datastore.getEntityManager();
 			em.getTransaction().begin();
 			VirtualCollection vc = em.find(VirtualCollection.class,
 					new Long(id));
@@ -256,7 +266,7 @@ public class VirtualCollectionRegistry {
 		}
 
 		try {
-			EntityManager em = DataStore.instance().getEntityManager();
+			EntityManager em = datastore.getEntityManager();
 			em.getTransaction().begin();
 			ResourceMetadata md = em.find(ResourceMetadata.class, new Long(id));
 			em.getTransaction().commit();
@@ -277,7 +287,7 @@ public class VirtualCollectionRegistry {
 
 	public VirtualCollectionList getVirtualCollections(String query,
 			int offset, int count) throws VirtualCollectionRegistryException {
-		EntityManager em = DataStore.instance().getEntityManager();
+		EntityManager em = datastore.getEntityManager();
 		try {
 			em.getTransaction().begin();
 
@@ -329,7 +339,7 @@ public class VirtualCollectionRegistry {
 		if (principal == null) {
 			throw new NullPointerException("principal == null");
 		}
-		EntityManager em = DataStore.instance().getEntityManager();
+		EntityManager em = datastore.getEntityManager();
 		try {
 			em.getTransaction().begin();
 

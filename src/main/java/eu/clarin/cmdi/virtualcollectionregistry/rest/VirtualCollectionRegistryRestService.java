@@ -27,7 +27,6 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
-import eu.clarin.cmdi.virtualcollectionregistry.DataStore;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryMarshaller.Format;
@@ -209,7 +208,7 @@ public class VirtualCollectionRegistryRestService {
 	@Path("/handle/{pid}")
 	public Response getHandle(@PathParam("pid") String pid) {
 		System.err.println("Pid: " + pid);
-		EntityManager em = DataStore.instance().getEntityManager();
+		EntityManager em = registry.getDataStore().getEntityManager();
 		try {
 			em.getTransaction().begin();
 			Query q = em.createNamedQuery("Handle.findByPid");
