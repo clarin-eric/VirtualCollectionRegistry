@@ -1,6 +1,5 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
-import java.util.HashMap;
 import java.util.Map;
 import java.util.logging.Level;
 import java.util.logging.Logger;
@@ -19,28 +18,20 @@ public class DataStore {
 			return emf.createEntityManager();
 		}
 	} // inner class ThreadLocalEntityManager
-	private static final Logger logger = Logger.getLogger(DataStore.class
-			.getName());
-	private static DataStore s_instance = new DataStore();
-	private EntityManagerFactory emf = null;
-	private ThreadLocalEntityManager em = new ThreadLocalEntityManager();
+	private static final Logger logger =
+		Logger.getLogger(DataStore.class.getName());
+	private final EntityManagerFactory emf;
+	private final ThreadLocalEntityManager em = new ThreadLocalEntityManager();
 
-	private DataStore() {
-	}
-
-	public void initalize(Map<String, String> config)
-			throws VirtualCollectionRegistryException {
-		logger.fine("initializing");
-		if (config != null) {
-			config = new HashMap<String, String>();
-		}
+	DataStore(Map<String, String> config)
+		throws VirtualCollectionRegistryException {
 		try {
 			emf = Persistence.createEntityManagerFactory(
 					"VirtualCollectionStore", config);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE, "error initializing data store", e);
-			throw new VirtualCollectionRegistryException(
-					"error initializing", e);
+			throw new VirtualCollectionRegistryException("error initializing",
+					e);
 		}
 		logger.finer("data store was successfully initialized");
 	}
@@ -51,10 +42,6 @@ public class DataStore {
 		}
 	}
 
-	public static DataStore instance() {
-		return s_instance;
-	}
-	
 	public EntityManager getEntityManager() {
 		return em.get();
 	}
@@ -70,4 +57,5 @@ public class DataStore {
 			manager.close();
 		}
 	}
-}
+
+} // class DataStore

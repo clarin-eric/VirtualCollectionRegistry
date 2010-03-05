@@ -9,7 +9,7 @@ import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
 
-import eu.clarin.cmdi.virtualcollectionregistry.DataStore;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 
 public class PersistenceFilter implements Filter {
 
@@ -26,11 +26,13 @@ public class PersistenceFilter implements Filter {
 		} catch (Throwable e) {
 			throw new ServletException("error while processing request", e);
 		} finally {
-			DataStore.instance().closeEntityManager();
+			VirtualCollectionRegistry.instance().getDataStore()
+					.closeEntityManager();
 		}
 	}
 
 	public void destroy() {
 		// DO NOTHING
 	}
-} // class PersitenceFilter
+
+} // class PersistenceFilter
