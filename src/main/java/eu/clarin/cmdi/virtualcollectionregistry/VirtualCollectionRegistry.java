@@ -165,6 +165,8 @@ public class VirtualCollectionRegistry {
 						principal.getName() + "\"");
 			}
 			c.updateFrom(vc);
+			validator.validate(c);
+
 			HashSet<String> newPids = new HashSet<String>();
 			for (Resource resource : c.getResources()) {
 				if (resource instanceof ResourceMetadata) {
