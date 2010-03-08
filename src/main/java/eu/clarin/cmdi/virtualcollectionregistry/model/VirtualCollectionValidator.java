@@ -13,6 +13,10 @@ public class VirtualCollectionValidator {
 	
 	public void validate(VirtualCollection vc)
 			throws VirtualCollectionRegistryException {
+		// reset internal state
+		reset();
+		
+		// proceed to validate ...
 		if ((vc.getName() == null) || vc.getName().trim().isEmpty()) {
 			throw new VirtualCollectionRegistryUsageException(
 					"collection has an empty name");
@@ -35,6 +39,11 @@ public class VirtualCollectionValidator {
 			}
 			uniqueResourceRefs.put(ref, resource);
 		}
+	}
+
+	private void reset() {
+		uniqueResources.clear();
+		uniqueResourceRefs.clear();
 	}
 
 } // class VirtualCollectionValidator
