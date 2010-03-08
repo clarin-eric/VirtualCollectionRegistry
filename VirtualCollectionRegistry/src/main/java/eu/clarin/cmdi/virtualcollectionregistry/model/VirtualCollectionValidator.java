@@ -13,6 +13,10 @@ public class VirtualCollectionValidator {
 	
 	public void validate(VirtualCollection vc)
 			throws VirtualCollectionRegistryException {
+		if (vc == null) {
+			throw new NullPointerException("vc == null");
+		}
+
 		// reset internal state
 		reset();
 		
