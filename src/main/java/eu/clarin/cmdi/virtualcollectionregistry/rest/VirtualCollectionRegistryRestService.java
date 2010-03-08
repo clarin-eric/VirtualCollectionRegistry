@@ -56,7 +56,20 @@ public class VirtualCollectionRegistryRestService {
 			throws VirtualCollectionRegistryException {
 		Principal principal = security.getUserPrincipal();
 		if (principal == null) {
-			throw new NullPointerException("princial == null");
+			String path = uriInfo.getPath();
+			if (path.endsWith("/")) {
+				/*
+				 * fix bad client request and remove tailing slash 
+				 */
+				path = path.substring(0, path.length() - 1);
+				URI uri = uriInfo.getBaseUriBuilder().path(path).build();
+				return Response.temporaryRedirect(uri).build();
+			}
+			/*
+			 * should never happen, because servlet container should
+			 * supply a valid principal
+			 */
+			throw new AssertionError("prinicial == null");
 		}
 		try {
 			Format format = getInputFormat();
@@ -161,7 +174,20 @@ public class VirtualCollectionRegistryRestService {
 			throws VirtualCollectionRegistryException {
 		Principal principal = security.getUserPrincipal();
 		if (principal == null) {
-			throw new NullPointerException("princial == null");
+			String path = uriInfo.getPath();
+			if (path.endsWith("/")) {
+				/*
+				 * fix bad client request and remove tailing slash 
+				 */
+				path = path.substring(0, path.length() - 1);
+				URI uri = uriInfo.getBaseUriBuilder().path(path).build();
+				return Response.seeOther(uri).build();
+			}
+			/*
+			 * should never happen, because servlet container should
+			 * supply a valid principal
+			 */
+			throw new AssertionError("prinicial == null");
 		}
 		final VirtualCollectionList vcs =
 			registry.getVirtualCollections(principal, query,
