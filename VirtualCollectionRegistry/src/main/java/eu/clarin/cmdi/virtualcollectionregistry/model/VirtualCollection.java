@@ -267,19 +267,24 @@ public class VirtualCollection {
 		this.setVisibility(vc.getVisibility());
 		this.setType(vc.getType());
 		this.setOrigin(vc.getOrigin());
-		this.creator.setName(vc.getCreator().getName());
-		this.creator.setEMail(vc.getCreator().getEMail());
-		this.creator.setOrganisation(vc.getCreator().getOrganisation());
+		Creator c = vc.getCreator();
+		if (c != null) {
+			this.creator.setName(c.getName());
+			this.creator.setEMail(c.getEMail());
+			this.creator.setOrganisation(c.getOrganisation());
+		} else {
+			this.creator = null;
+		}
 
 		HashMap<Integer, Resource> old_res =
 			new HashMap<Integer, Resource>(this.resources.size());
-		for(Resource r : this.resources) {
+		for (Resource r : this.resources) {
 			old_res.put(r.getSignature(), r);
-			
+
 		}
 		HashMap<Integer, Resource> new_res =
 			new HashMap<Integer, Resource>(vc.getResources().size());
-		for(Resource r : vc.getResources()) {
+		for (Resource r : vc.getResources()) {
 			new_res.put(r.getSignature(), r);
 		}
 		for (Resource r : new_res.values()) {
