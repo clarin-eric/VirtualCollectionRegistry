@@ -24,9 +24,9 @@ import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.query.QueryException;
 
 public class VirtualCollectionRegistry {
-	private static final Logger logger = Logger
-			.getLogger(VirtualCollectionRegistry.class.getName());
-	private static VirtualCollectionRegistry s_instance =
+	private static final Logger logger =
+		Logger.getLogger(VirtualCollectionRegistry.class.getName());
+	private static final VirtualCollectionRegistry s_instance =
 		new VirtualCollectionRegistry();
 	private AtomicBoolean intialized = new AtomicBoolean(false);
 	private DataStore datastore = null;
