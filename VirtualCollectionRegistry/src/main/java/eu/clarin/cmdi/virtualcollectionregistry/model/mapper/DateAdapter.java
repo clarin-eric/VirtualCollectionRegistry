@@ -8,7 +8,7 @@ import java.util.GregorianCalendar;
 import javax.xml.bind.annotation.adapters.XmlAdapter;
 
 public class DateAdapter extends XmlAdapter<String, Date> {
-	final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+	private final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
 
 	public Date unmarshal(String date) throws Exception {
 		Date utilDate = df.parse(date);
