@@ -35,7 +35,6 @@ import javax.xml.bind.annotation.XmlEnum;
 import javax.xml.bind.annotation.XmlEnumValue;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlTransient;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
@@ -56,7 +55,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.mapper.DateAdapter;
     			        "WHERE c.owner = :owner")
 })
 @XmlRootElement(name = "VirtualCollection")
-@XmlAccessorType(XmlAccessType.FIELD)
+@XmlAccessorType(XmlAccessType.NONE)
 @XmlType(propOrder = { "name", "description", "creationDate", "visibility",
 		"type", "origin", "creator", "resources" })
 @XmlSeeAlso({ Creator.class, Resource.class })
@@ -82,62 +81,47 @@ public class VirtualCollection {
 	@Id
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id")
-	@XmlAttribute(name = "id")
 	private long id = -1;
 	@ManyToOne(cascade = { CascadeType.PERSIST,
 						   CascadeType.REFRESH,
                            CascadeType.MERGE },
                fetch = FetchType.EAGER)
 	@JoinColumn(name = "owner_id", nullable = false)
-	@XmlTransient
 	private User owner;
 	@Column(name = "pid", nullable = false)
-	@XmlAttribute(name = "persistentId")
 	private String pid;
 	@Column(name = "name", nullable = false)
-	@XmlElement(name = "Name")
 	private String name;
 	@Column(name = "description")
-	@XmlElement(name = "Description")
 	private String description;
 	@Column(name = "creation_date")
 	@Temporal(TemporalType.DATE)
-	@XmlElement(name = "CreationDate")
-	@XmlJavaTypeAdapter(DateAdapter.class)
 	private Date creationDate;
 	@Column(name = "visibility")
 	@Enumerated(EnumType.ORDINAL)
-	@XmlElement(name = "Visibility")
 	private Visibility visibility = Visibility.ADVERTISED;
 	@Column(name = "type")
 	@Enumerated(EnumType.ORDINAL)
-	@XmlElement(name = "Type")
 	private Type type = Type.EXTENSIONAL;
 	@Column(name = "origin")
-	@XmlElement(name = "Origin")
 	private String origin;
 	@Embedded
-	@XmlElement(name = "Creator")
 	private Creator creator;
 	@OneToMany(cascade = CascadeType.ALL,
 			   fetch = FetchType.LAZY,
 			   orphanRemoval = true)
 	@JoinColumn(name = "vc_id", nullable = false)
 	@OrderBy("id")
-	@XmlElementWrapper(name = "Resources")
-	@XmlElements({ @XmlElement(name = "Resource",
-                               type = Resource.class) })
 	private Set<Resource> resources = new LinkedHashSet<Resource>();
 	@Column(name = "created", nullable = false, updatable = false)
 	@Temporal(TemporalType.TIMESTAMP)
-	@XmlTransient
 	private Date createdDate = new Date();
 	@Column(name = "modified", nullable = false)
 	@Temporal(TemporalType.TIMESTAMP)
 	@Version
-	@XmlTransient
 	private Date modifedDate;
 
+	@XmlAttribute(name = "id")
 	public long getId() {
 		return id;
 	}
@@ -164,6 +148,7 @@ public class VirtualCollection {
 		this.pid = pid;
 	}
 	
+	@XmlAttribute(name = "persistentId")
 	public String getPid() {
 		return pid;
 	}
@@ -175,6 +160,7 @@ public class VirtualCollection {
 		this.name = name;
 	}
 
+	@XmlElement(name = "Name")
 	public String getName() {
 		return name;
 	}
@@ -183,6 +169,7 @@ public class VirtualCollection {
 		this.description = description;
 	}
 
+	@XmlElement(name = "Description")
 	public String getDescription() {
 		return description;
 	}
@@ -194,6 +181,8 @@ public class VirtualCollection {
 		this.creationDate = creationDate;
 	}
 
+	@XmlElement(name = "CreationDate")
+	@XmlJavaTypeAdapter(DateAdapter.class)
 	public Date getCreationDate() {
 		return creationDate;
 	}
@@ -205,6 +194,7 @@ public class VirtualCollection {
 		this.visibility = visibility;
 	}
 
+	@XmlElement(name = "Visibility")
 	public Visibility getVisibility() {
 		return visibility;
 	}
@@ -216,6 +206,7 @@ public class VirtualCollection {
 		this.type = style;
 	}
 
+	@XmlElement(name = "Type")
 	public Type getType() {
 		return type;
 	}
@@ -224,6 +215,7 @@ public class VirtualCollection {
 		this.origin = origin;
 	}
 
+	@XmlElement(name = "Origin")
 	public String getOrigin() {
 		return origin;
 	}
@@ -232,10 +224,14 @@ public class VirtualCollection {
 		this.creator = creator;
 	}
 
+	@XmlElement(name = "Creator")
 	public Creator getCreator() {
 		return creator;
 	}
 
+	@XmlElementWrapper(name = "Resources")
+	@XmlElements({ @XmlElement(name = "Resource",
+                               type = Resource.class) })
 	public Set<Resource> getResources() {
 		return resources;
 	}
