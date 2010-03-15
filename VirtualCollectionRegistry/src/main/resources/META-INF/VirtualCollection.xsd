@@ -1,101 +1,88 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema">
 
-    <xs:element name="VirtualCollection" type="VirtualCollectionType"/>
+	<xs:element name="VirtualCollection" type="VirtualCollectionType" />
 
-    <xs:element name="VirtualCollections" type="VirtualCollectionsType"/>
+	<xs:element name="VirtualCollections" type="VirtualCollectionsType" />
 
-    <xs:complexType name="VirtualCollectionsType">
-        <xs:sequence maxOccurs="unbounded">
-            <xs:element ref="VirtualCollection"/>
-        </xs:sequence>
-        <xs:attribute name="totalCount" type="xs:integer"/>
-        <xs:attribute name="offset" type="xs:integer"/>
-        <xs:attribute name="result">
-            <xs:simpleType>
-                <xs:restriction base="xs:string">
-                    <xs:enumeration value="full"></xs:enumeration>
-                    <xs:enumeration value="partial"></xs:enumeration>
-                </xs:restriction>
-            </xs:simpleType>
-        </xs:attribute>
-    </xs:complexType>
+	<xs:complexType name="VirtualCollectionsType">
+		<xs:sequence maxOccurs="unbounded">
+			<xs:element ref="VirtualCollection" />
+		</xs:sequence>
+		<xs:attribute name="totalCount" type="xs:integer" />
+		<xs:attribute name="offset" type="xs:integer" />
+		<xs:attribute name="result">
+			<xs:simpleType>
+				<xs:restriction base="xs:string">
+					<xs:enumeration value="full" />
+					<xs:enumeration value="partial" />
+				</xs:restriction>
+			</xs:simpleType>
+		</xs:attribute>
+	</xs:complexType>
 
-    <xs:complexType name="VirtualCollectionType">
-        <xs:sequence>
-            <xs:element name="Name" type="xs:string"/>
-            <xs:element minOccurs="0" name="Description" type="xs:string"/>
-            <xs:element minOccurs="0" name="CreationDate" type="xs:date"/>
-            <xs:element minOccurs="0" name="Visibility" type="VisibilityType"/>
-            <xs:element name="Type" type="TypeType"/>
-            <xs:element minOccurs="0" name="Origin" type="xs:string"/>
-            <xs:element minOccurs="0" name="Creator" type="CreatorType"/>
-            <xs:element name="Resources" type="ResourcesType"/>
-        </xs:sequence>
-        <xs:attribute name="id" type="xs:long"/>
-        <xs:attribute name="persistentId" type="xs:string"/>
-    </xs:complexType>
+	<xs:complexType name="VirtualCollectionType">
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string" />
+			<xs:element minOccurs="0" name="Description" type="xs:string" />
+			<xs:element minOccurs="0" name="CreationDate" type="xs:date" />
+			<xs:element minOccurs="0" name="Visibility" type="VisibilityType" />
+			<xs:element name="Type" type="TypeType" />
+			<xs:element minOccurs="0" name="Origin" type="xs:string" />
+			<xs:element minOccurs="0" name="Creator" type="CreatorType" />
+			<xs:element name="Resources" type="ResourcesType" />
+		</xs:sequence>
+		<xs:attribute name="id" type="xs:long" use="optional" />
+		<xs:attribute name="persistentId" type="xs:string" use="optional" />
+	</xs:complexType>
 
 
-    <xs:complexType name="ResourcesType">
-        <xs:sequence maxOccurs="unbounded">
-            <xs:choice>
-                <xs:element name="ResourceProxy" type="ResourceProxyType"/>
-                <xs:element name="ResourceMetadata" type="ResourceMetadataType"/>
-            </xs:choice>
-        </xs:sequence>
-    </xs:complexType>
+	<xs:complexType name="ResourcesType">
+		<xs:sequence maxOccurs="unbounded">
+			<xs:element name="Resource" type="ResourceType" />
+		</xs:sequence>
+	</xs:complexType>
 
-    <xs:complexType name="ResourceProxyType">
-        <xs:sequence>
-            <xs:element name="ResourceType" type="ResourceTypeType"/>
-            <xs:element name="ResourceRef" type="ResourceRefType"/>
-        </xs:sequence>
-        <xs:attribute name="id" type="xs:ID"/>
-    </xs:complexType>
+	<xs:complexType name="ResourceType">
+		<xs:sequence>
+			<xs:element name="ResourceType" type="ResourceTypeType" />
+			<xs:element name="ResourceRef" type="ResourceRefType" />
+		</xs:sequence>
+		<xs:attribute name="id" type="xs:ID" use="required" />
+	</xs:complexType>
 
-    <xs:complexType name="ResourceMetadataType">
-        <xs:sequence>
-            <xs:element name="Name" type="xs:string"/>
-            <xs:element name="Description" type="xs:string" minOccurs="0"/>
-            <xs:element name="Creator" type="CreatorType" minOccurs="0"/>
-            <xs:element name="ResourceRef" type="ResourceRefType"/>
-        </xs:sequence>
-        <xs:attribute name="id" type="xs:ID"/>
-    </xs:complexType>
+	<xs:complexType name="CreatorType">
+		<xs:sequence>
+			<xs:element name="Name" type="xs:string" />
+			<xs:element minOccurs="0" name="Email" type="xs:string" />
+			<xs:element minOccurs="0" name="Organisation" type="xs:string" />
+		</xs:sequence>
+		<xs:attribute name="ref" type="xs:IDREF" />
+	</xs:complexType>
 
-    <xs:complexType name="CreatorType">
-        <xs:sequence>
-            <xs:element name="Name" type="xs:string"/>
-            <xs:element minOccurs="0" name="Email" type="xs:string"/>
-            <xs:element minOccurs="0" name="Organisation" type="xs:string"/>
-        </xs:sequence>
-        <xs:attribute name="ref" type="xs:IDREF"/>
-    </xs:complexType>
+	<xs:simpleType name="ResourceTypeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="Metadata" />
+			<xs:enumeration value="Resource" />
+		</xs:restriction>
+	</xs:simpleType>
 
-    <xs:simpleType name="ResourceTypeType">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="Metadata"/>
-            <xs:enumeration value="Resource"/>
-        </xs:restriction>
-    </xs:simpleType>
+	<xs:simpleType name="ResourceRefType">
+		<xs:restriction base="xs:anyURI" />
+	</xs:simpleType>
 
-    <xs:simpleType name="ResourceRefType">
-        <xs:restriction base="xs:anyURI"/>
-    </xs:simpleType>
+	<xs:simpleType name="VisibilityType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="advertised" />
+			<xs:enumeration value="non-advertised" />
+		</xs:restriction>
+	</xs:simpleType>
 
-    <xs:simpleType name="VisibilityType">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="advertised"/>
-            <xs:enumeration value="non-advertised"/>
-        </xs:restriction>
-    </xs:simpleType>
-
-    <xs:simpleType name="TypeType">
-        <xs:restriction base="xs:string">
-            <xs:enumeration value="extensional"/>
-            <xs:enumeration value="intensional"/>
-        </xs:restriction>
-    </xs:simpleType>
+	<xs:simpleType name="TypeType">
+		<xs:restriction base="xs:string">
+			<xs:enumeration value="extensional" />
+			<xs:enumeration value="intensional" />
+		</xs:restriction>
+	</xs:simpleType>
 
 </xs:schema>

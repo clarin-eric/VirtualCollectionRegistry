@@ -2,7 +2,6 @@ package eu.clarin.cmdi.virtualcollectionregistry;
 
 import java.security.Principal;
 import java.util.Collections;
-import java.util.HashSet;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -14,8 +13,6 @@ import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.Handle;
-import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
-import eu.clarin.cmdi.virtualcollectionregistry.model.ResourceMetadata;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
@@ -107,25 +104,12 @@ public class VirtualCollectionRegistry {
 			// store virtual collection
 			vc.setOwner(user);
 			vc.setPid(Handle.createPid());
-			for (Resource resource : vc.getResources()) {
-				if (resource instanceof ResourceMetadata) {
-					ResourceMetadata md = (ResourceMetadata) resource;
-					md.setPid(Handle.createPid());
-				}
-			}
 			em.persist(vc);			
 			em.getTransaction().commit();
 
 			// XXX: for test PID service
 			em.getTransaction().begin();
 			em.persist(new Handle(vc.getPid(), Handle.Type.COLLECTION, vc.getId()));
-			for (Resource resource : vc.getResources()) {
-				if (resource instanceof ResourceMetadata) {
-					ResourceMetadata md = (ResourceMetadata) resource;
-					em.persist(new Handle(md.getPid(), Handle.Type.METADATA,
-											md.getId()));
-				}
-			}
 			em.getTransaction().commit();
 			return vc.getId();
 		} catch (Exception e) {
@@ -166,29 +150,6 @@ public class VirtualCollectionRegistry {
 			}
 			c.updateFrom(vc);
 			validator.validate(c);
-
-			HashSet<String> newPids = new HashSet<String>();
-			for (Resource resource : c.getResources()) {
-				if (resource instanceof ResourceMetadata) {
-					ResourceMetadata md = (ResourceMetadata) resource;
-					if (md.getPid() == null) {
-						String pid = Handle.createPid();
-						md.setPid(pid);
-						newPids.add(pid);
-					}
-				}
-			}
-			em.getTransaction().commit();
-			em.getTransaction().begin();
-			for (Resource resource : c.getResources()) {
-				if (resource instanceof ResourceMetadata) {
-					ResourceMetadata md = (ResourceMetadata) resource;
-					if (newPids.contains(md.getPid())) {
-						em.persist(new Handle(md.getPid(),
-								Handle.Type.METADATA, md.getId()));
-					}
-				}
-			}
 			em.getTransaction().commit();
 			return vc.getId();
 		} catch (VirtualCollectionRegistryException e) {
@@ -259,32 +220,6 @@ public class VirtualCollectionRegistry {
 			throw new VirtualCollectionRegistryException(
 					"error while retrieving virtual collection", e);
 		}
-	}
-
-	public ResourceMetadata retrieveMetadataResource(long id)
-			throws VirtualCollectionRegistryException {
-		if (id <= 0) {
-			throw new IllegalArgumentException("id <= 0");
-		}
-
-		try {
-			EntityManager em = datastore.getEntityManager();
-			em.getTransaction().begin();
-			ResourceMetadata md = em.find(ResourceMetadata.class, new Long(id));
-			em.getTransaction().commit();
-			if (md == null) {
-				throw new VirtualCollectionMetadataNotFoundException(id);
-			}
-			return md;
-		} catch (VirtualCollectionRegistryException e) {
-			throw e;
-		} catch (Exception e) {
-			logger.log(Level.SEVERE,
-					   "error while retrieving metadata resource", e);
-			throw new VirtualCollectionRegistryException(
-					"error while retrieving metadata resource", e);
-		}
-			
 	}
 
 	public VirtualCollectionList getVirtualCollections(String query,

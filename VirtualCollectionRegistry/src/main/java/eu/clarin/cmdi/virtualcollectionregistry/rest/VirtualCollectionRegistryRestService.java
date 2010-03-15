@@ -32,7 +32,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryExcepti
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryMarshaller.Format;
 import eu.clarin.cmdi.virtualcollectionregistry.model.ClarinVirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Handle;
-import eu.clarin.cmdi.virtualcollectionregistry.model.ResourceMetadata;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 
@@ -218,16 +217,6 @@ public class VirtualCollectionRegistryRestService {
 			}
 		};
 		return Response.ok(writer).build();
-	}
-
-	@GET
-	@Path("/clarin-metadata/{id}")
-	@Produces({ MediaType.TEXT_XML, MediaType.APPLICATION_XML })
-	public Response getClarinMetadata(@PathParam("id") long id)
-			throws VirtualCollectionRegistryException {
-		System.err.println("Metadata!");
-		ResourceMetadata md = registry.retrieveMetadataResource(id);
-		return Response.ok(md).build();
 	}
 
 	@GET

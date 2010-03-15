@@ -83,7 +83,7 @@ public class VirtualCollection {
 	@GeneratedValue(strategy = GenerationType.AUTO)
 	@Column(name = "id")
 	@XmlAttribute(name = "id")
-	private long id;
+	private long id = -1;
 	@ManyToOne(cascade = { CascadeType.PERSIST,
 						   CascadeType.REFRESH,
                            CascadeType.MERGE },
@@ -125,10 +125,8 @@ public class VirtualCollection {
 	@JoinColumn(name = "vc_id", nullable = false)
 	@OrderBy("id")
 	@XmlElementWrapper(name = "Resources")
-	@XmlElements({ @XmlElement(name = "ResourceProxy",
-                               type = ResourceProxy.class),
-                   @XmlElement(name = "ResourceMetadata",
-                		       type = ResourceMetadata.class) })
+	@XmlElements({ @XmlElement(name = "Resource",
+                               type = Resource.class) })
 	private Set<Resource> resources = new LinkedHashSet<Resource>();
 	@Column(name = "created", nullable = false, updatable = false)
 	@Temporal(TemporalType.TIMESTAMP)
