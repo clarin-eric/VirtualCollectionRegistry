@@ -48,7 +48,8 @@ public class ClarinVirtualCollection {
 
 		@XmlElement(name = "MdSelfLink")
 		public URI getSelfLink() {
-			return cvc.createHandleURI(cvc.getVirtualCollection().getPid());
+			// FIXME: wrong link
+			return cvc.createHandleURI(cvc.getVirtualCollection().getUUID());
 		}
 
 		@XmlElement(name = "MdProfile")

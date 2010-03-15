@@ -33,6 +33,7 @@
 			<xs:element name="Resources" type="ResourcesType" />
 		</xs:sequence>
 		<xs:attribute name="id" type="xs:long" use="optional" />
+		<xs:attribute name="uuid" type="xs:string" use="optional" />
 		<xs:attribute name="persistentId" type="xs:string" use="optional" />
 	</xs:complexType>
 
