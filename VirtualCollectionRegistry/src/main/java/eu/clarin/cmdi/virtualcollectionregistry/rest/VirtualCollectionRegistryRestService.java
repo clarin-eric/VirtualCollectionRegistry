@@ -51,6 +51,9 @@ public class VirtualCollectionRegistryRestService {
 	@Consumes({ MediaType.TEXT_XML,
 				MediaType.TEXT_XML,
 				MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.TEXT_XML,
+				MediaType.APPLICATION_XML,
+				MediaType.APPLICATION_JSON })
 	public Response createVirtualCollection(InputStream input)
 			throws VirtualCollectionRegistryException {
 		Principal principal = security.getUserPrincipal();
@@ -108,7 +111,12 @@ public class VirtualCollectionRegistryRestService {
 
 	@PUT
 	@Path("/virtualcollection/{id}")
-	@Produces({ MediaType.TEXT_XML, MediaType.APPLICATION_XML })
+	@Consumes({ MediaType.TEXT_XML,
+                MediaType.TEXT_XML,
+                MediaType.APPLICATION_JSON })
+	@Produces({ MediaType.TEXT_XML,
+				MediaType.APPLICATION_XML,
+				MediaType.APPLICATION_JSON })
 	public Response updateVirtualCollection(@PathParam("id") long id,
 			VirtualCollection vc) throws VirtualCollectionRegistryException {
 		Principal principal = security.getUserPrincipal();
