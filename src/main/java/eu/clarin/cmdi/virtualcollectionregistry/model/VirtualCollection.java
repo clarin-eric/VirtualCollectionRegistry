@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
+import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -88,8 +89,9 @@ public class VirtualCollection {
                fetch = FetchType.EAGER)
 	@JoinColumn(name = "owner_id", nullable = false)
 	private User owner;
-	@Column(name = "pid", nullable = false)
-	private String pid;
+	@Column(name = "uuid", unique = true, nullable = false,
+                           updatable = false, length = 36)
+	private String uuid;
 	@Column(name = "name", nullable = false)
 	private String name;
 	@Column(name = "description")
@@ -137,20 +139,16 @@ public class VirtualCollection {
 		return owner;
 	}
 
-	public void setPid(String pid) {
-		if (name == null) {
-			throw new NullPointerException("name == null");
+	public String createUUID() {
+		if (this.uuid == null) {
+			this.uuid = UUID.randomUUID().toString();
 		}
-		pid = pid.trim();
-		if (pid.length() < 1) {
-			throw new IllegalArgumentException("empty pid is not allowed");
-		}
-		this.pid = pid;
+		return this.uuid;
 	}
-	
-	@XmlAttribute(name = "persistentId")
-	public String getPid() {
-		return pid;
+
+	@XmlAttribute(name = "uuid")
+	public String getUUID() {
+		return this.uuid;
 	}
 
 	public void setName(String name) {

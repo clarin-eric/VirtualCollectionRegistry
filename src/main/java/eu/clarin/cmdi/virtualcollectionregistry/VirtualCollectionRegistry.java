@@ -103,13 +103,13 @@ public class VirtualCollectionRegistry {
 
 			// store virtual collection
 			vc.setOwner(user);
-			vc.setPid(Handle.createPid());
+			String uuid = vc.createUUID();
 			em.persist(vc);			
 			em.getTransaction().commit();
 
 			// XXX: for test PID service
 			em.getTransaction().begin();
-			em.persist(new Handle(vc.getPid(), Handle.Type.COLLECTION, vc.getId()));
+			em.persist(new Handle(uuid, Handle.Type.COLLECTION, vc.getId()));
 			em.getTransaction().commit();
 			return vc.getId();
 		} catch (Exception e) {
