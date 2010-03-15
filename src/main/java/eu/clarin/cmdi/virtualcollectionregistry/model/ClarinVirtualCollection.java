@@ -11,7 +11,6 @@ import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlIDREF;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.xml.bind.annotation.XmlType;
 import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
@@ -65,14 +64,12 @@ public class ClarinVirtualCollection {
 		@XmlType(namespace = "urn:x-vcr:clarin-virtualcollection:resources:proxy",
 				 propOrder = { "type", "ref" })
 		public static class Proxy {
-			private ClarinVirtualCollection cvc;
 			private Resource resource;
 
 			private Proxy() {
 			}
 
-			private Proxy(ClarinVirtualCollection cvc, Resource resource) {
-				this.cvc = cvc;
+			private Proxy(Resource resource) {
 				this.resource = resource;
 			}
 
@@ -88,12 +85,7 @@ public class ClarinVirtualCollection {
 
 			@XmlElement(name = "ResourceRef")
 			public String getRef() {
-				if (resource instanceof ResourceMetadata) {
-					return cvc.createHandleURI(
-							((ResourceMetadata) resource).getPid()).toString();
-				} else {
-					return ((ResourceProxy) resource).getRef();
-				}
+				return resource.getRef();
 			}
 		} // inner class Proxy
 		private List<Proxy> proxies = new ArrayList<Proxy>();
@@ -103,7 +95,7 @@ public class ClarinVirtualCollection {
 
 		private Resources(ClarinVirtualCollection cvc) {
 			for (Resource r : cvc.getVirtualCollection().getResources()) {
-				proxies.add(new Proxy(cvc, r));
+				proxies.add(new Proxy(r));
 			}
 		}
 
@@ -119,37 +111,12 @@ public class ClarinVirtualCollection {
 	public static class Components {
 		@XmlAccessorType(XmlAccessType.NONE)
 		@XmlType(namespace = "urn:x-vcr:clarin-virtualcollection:components:vc",
-				propOrder = { "name", "description", "creationDate", "visibility", "origin", "creator", "copyOfResourceMetadata" })
+				propOrder = { "name", "description", "creationDate", "visibility", "origin", "creator" })
 		public static class VC {
-			@XmlAccessorType(XmlAccessType.NONE)
-			public static class CopyOfResources {
-				private List<Resource> copyRefs = new ArrayList<Resource>();
-
-				private void init(VirtualCollection vc) {
-					for (Resource resource : vc.getResources()) {
-						if (resource instanceof ResourceMetadata) {
-							copyRefs.add(resource);
-						}
-					}
-				}
-
-				@XmlIDREF
-				@XmlAttribute(name = "ref")
-				public List<Resource> getRefs() {
-					return copyRefs;
-				}
-				
-				public boolean isEmpty() {
-					return copyRefs.isEmpty();
-				}
-			} // inner class CopyOfResources
-
-			private CopyOfResources copyRefs = new CopyOfResources();
 			private VirtualCollection vc;
 
 			private void init(VirtualCollection vc) {
 				this.vc = vc;
-				this.copyRefs.init(vc);
 			}
 			
 			@XmlElement(name = "Name")
@@ -181,12 +148,6 @@ public class ClarinVirtualCollection {
 			@XmlElement(name = "Creator")
 			public Creator getCreator() {
 				return vc.getCreator();
-			}
-
-			
-			@XmlElement(name = "CopyOfResourceMetadata")
-			public CopyOfResources getCopyOfResourceMetadata() {
-				return copyRefs.isEmpty() ? null : copyRefs;
 			}
 		}
 		private ClarinVirtualCollection cvc;
