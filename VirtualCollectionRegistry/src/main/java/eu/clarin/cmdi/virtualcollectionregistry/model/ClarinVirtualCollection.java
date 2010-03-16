@@ -48,8 +48,9 @@ public class ClarinVirtualCollection {
 
 		@XmlElement(name = "MdSelfLink")
 		public URI getSelfLink() {
-			// FIXME: wrong link
-			return cvc.createHandleURI(cvc.getVirtualCollection().getUUID());
+			return cvc.getVirtualCollection()
+                      .getPersistentIdentifier()
+                      .createURI();
 		}
 
 		@XmlElement(name = "MdProfile")
@@ -168,7 +169,6 @@ public class ClarinVirtualCollection {
 		}
 	}
 
-	private URI handleBaseUri;
 	private VirtualCollection vc;
 	private Header header;
 	private Resources resources;
@@ -179,19 +179,14 @@ public class ClarinVirtualCollection {
 		super();
 	}
 
-	public ClarinVirtualCollection(VirtualCollection vc, URI handleBaseUri) {
+	public ClarinVirtualCollection(VirtualCollection vc) {
 		if (vc == null) {
 			throw new NullPointerException("vc == null");
 		}
 		this.vc = vc;
-		this.handleBaseUri = handleBaseUri;
 		this.header = new Header(this);
 		this.resources = new Resources(this);
 		this.components = new Components(this);
-	}
-
-	URI createHandleURI(String pid) {
-		return URI.create(handleBaseUri.toString() + "/" + pid);
 	}
 
 	VirtualCollection getVirtualCollection() {

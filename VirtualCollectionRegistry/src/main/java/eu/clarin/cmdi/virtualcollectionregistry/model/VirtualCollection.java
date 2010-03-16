@@ -21,6 +21,7 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
+import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
@@ -92,6 +93,9 @@ public class VirtualCollection {
 	@Column(name = "uuid", unique = true, nullable = false,
                            updatable = false, length = 36)
 	private String uuid;
+	@OneToOne(fetch = FetchType.EAGER, orphanRemoval = true, optional = true,
+			  mappedBy = "collection")
+	private PersistentIdentifier pid;
 	@Column(name = "name", nullable = false)
 	private String name;
 	@Column(name = "description")
@@ -148,7 +152,18 @@ public class VirtualCollection {
 
 	@XmlAttribute(name = "uuid")
 	public String getUUID() {
-		return this.uuid;
+		return uuid;
+	}
+
+	public void setPersistentIdentifier(PersistentIdentifier pid) {
+		if (pid == null) {
+			throw new NullPointerException("pid == null");
+		}
+		this.pid = pid;
+	}
+
+	public PersistentIdentifier getPersistentIdentifier() {
+		return pid;
 	}
 
 	public void setName(String name) {
