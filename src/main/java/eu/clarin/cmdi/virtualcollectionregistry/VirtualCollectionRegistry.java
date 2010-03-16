@@ -12,7 +12,9 @@ import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
-import eu.clarin.cmdi.virtualcollectionregistry.model.Handle;
+import eu.clarin.cmdi.virtualcollectionregistry.model.InternalPersistentIdentifierProvider;
+import eu.clarin.cmdi.virtualcollectionregistry.model.PersistentIdentifier;
+import eu.clarin.cmdi.virtualcollectionregistry.model.PersistentIdentifierProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
@@ -27,8 +29,9 @@ public class VirtualCollectionRegistry {
 		new VirtualCollectionRegistry();
 	private AtomicBoolean intialized = new AtomicBoolean(false);
 	private DataStore datastore = null;
+	private PersistentIdentifierProvider pid_provider = null;
 	private VirtualCollectionRegistryMarshaller marshaller = null;
-	
+
 	private VirtualCollectionRegistry() {
 		super();
 	}
@@ -44,15 +47,15 @@ public class VirtualCollectionRegistry {
 			throw new VirtualCollectionRegistryException("already initialized");
 		}
 		logger.fine("initialize ...");
-		if (config == null) {
+		if (config != null) {
+			config = Collections.unmodifiableMap(config);
+		} else {
 			config = Collections.emptyMap();
 		}
-		for (String key : config.keySet()) {
-			logger.fine("XXX: " + key + " = \"" + config.get(key) + "\"");
-		}
-		datastore  = new DataStore(config);
-		marshaller = new VirtualCollectionRegistryMarshaller();
-		intialized.set(true);
+		this.datastore    = new DataStore(config);
+		this.pid_provider = new InternalPersistentIdentifierProvider(config);
+		this.marshaller   = new VirtualCollectionRegistryMarshaller();
+		this.intialized.set(true);
 	}
 
 	public void destroy() throws VirtualCollectionRegistryException {
@@ -103,14 +106,16 @@ public class VirtualCollectionRegistry {
 
 			// store virtual collection
 			vc.setOwner(user);
-			String uuid = vc.createUUID();
+			vc.createUUID();
 			em.persist(vc);			
 			em.getTransaction().commit();
 
-			// XXX: for test PID service
+			PersistentIdentifier pid =
+				pid_provider.createPersistentIdentifier(vc);
 			em.getTransaction().begin();
-			em.persist(new Handle(uuid, Handle.Type.COLLECTION, vc.getId()));
+			em.persist(pid);
 			em.getTransaction().commit();
+
 			return vc.getId();
 		} catch (Exception e) {
 			logger.log(Level.SEVERE,

@@ -6,8 +6,6 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.security.Principal;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Query;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
@@ -31,7 +29,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryMarshaller.Format;
 import eu.clarin.cmdi.virtualcollectionregistry.model.ClarinVirtualCollection;
-import eu.clarin.cmdi.virtualcollectionregistry.model.Handle;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 
@@ -215,9 +212,7 @@ public class VirtualCollectionRegistryRestService {
 	public Response getClarinVirtualCollection(
 			@PathParam("id") long id) throws VirtualCollectionRegistryException {
 		VirtualCollection vc = registry.retrieveVirtualCollection(id);
-		URI handleBaseUri = uriInfo.getBaseUriBuilder().path("handle").build();  
-		final ClarinVirtualCollection cvc =
-			new ClarinVirtualCollection(vc, handleBaseUri);
+		final ClarinVirtualCollection cvc = new ClarinVirtualCollection(vc);
 		StreamingOutput writer = new StreamingOutput() {
 			public void write(OutputStream output) throws IOException,
 					WebApplicationException {
@@ -225,38 +220,6 @@ public class VirtualCollectionRegistryRestService {
 			}
 		};
 		return Response.ok(writer).build();
-	}
-
-	@GET
-	@Path("/handle/{pid}")
-	public Response getHandle(@PathParam("pid") String pid) {
-		System.err.println("Pid: " + pid);
-		EntityManager em = registry.getDataStore().getEntityManager();
-		try {
-			em.getTransaction().begin();
-			Query q = em.createNamedQuery("Handle.findByPid");
-			q.setParameter("pid", pid);
-			Handle handle = (Handle) q.getSingleResult();
-			System.err.println("handle: " + handle.getType());
-			URI target;
-			switch (handle.getType()) {
-			case COLLECTION:
-				target = uriInfo.getBaseUriBuilder().path(
-						"clarin-virtualcollection/" + handle.getTarget()).build();
-				break;
-			case METADATA:
-				target = uriInfo.getBaseUriBuilder().path(
-						"clarin-metadata/" + handle.getTarget()).build();
-				break;
-			default:
-				throw new VirtualCollectionRegistryException("internel error");
-			} // switch
-			return Response.seeOther(target).build();
-		} catch (Exception e) {
-			throw new WebApplicationException(e);
-		} finally {
-			em.getTransaction().commit();
-		}
 	}
 
 	private Format getInputFormat() {
