@@ -246,7 +246,7 @@ public class VirtualCollection {
 	}
 
 	@XmlElementWrapper(name = "Resources")
-	@XmlElements({ @XmlElement(name = "Resource",
+	@XmlElements({ @XmlElement(name = "ResourceProxy",
                                type = Resource.class) })
 	public Set<Resource> getResources() {
 		return resources;
