@@ -12,7 +12,6 @@ import javax.xml.stream.XMLStreamException;
 
 import org.xml.sax.SAXParseException;
 
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionMetadataNotFoundException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionNotFoundException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermissionException;
@@ -31,8 +30,6 @@ public class VirtualCollectionRegistryExceptionMapper implements
 		} else if (e instanceof VirtualCollectionRegistryPermissionException) {
 			status = Status.FORBIDDEN;
 		} else if (e instanceof VirtualCollectionNotFoundException) {
-			status = Status.NOT_FOUND;
-		} else if (e instanceof VirtualCollectionMetadataNotFoundException) {
 			status = Status.NOT_FOUND;
 		} else {
 			if (hasCause(e.getCause(), XMLStreamException.class)) {
