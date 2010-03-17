@@ -5,12 +5,13 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 import java.util.concurrent.atomic.AtomicBoolean;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.InternalPersistentIdentifierProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.model.PersistentIdentifier;
@@ -24,7 +25,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.query.QueryException;
 
 public class VirtualCollectionRegistry {
 	private static final Logger logger =
-		Logger.getLogger(VirtualCollectionRegistry.class.getName());
+		LoggerFactory.getLogger(VirtualCollectionRegistry.class);
 	private static final VirtualCollectionRegistry s_instance =
 		new VirtualCollectionRegistry();
 	private AtomicBoolean intialized = new AtomicBoolean(false);
@@ -46,7 +47,7 @@ public class VirtualCollectionRegistry {
 		if (intialized.get()) {
 			throw new VirtualCollectionRegistryException("already initialized");
 		}
-		logger.fine("initialize ...");
+		logger.debug("initializing virtual collection registry ...");
 		if (config != null) {
 			config = Collections.unmodifiableMap(config);
 		} else {
@@ -56,6 +57,7 @@ public class VirtualCollectionRegistry {
 		this.pid_provider = new InternalPersistentIdentifierProvider(config);
 		this.marshaller   = new VirtualCollectionRegistryMarshaller();
 		this.intialized.set(true);
+		logger.info("virtual collection registry successfully intialized");
 	}
 
 	public void destroy() throws VirtualCollectionRegistryException {
@@ -89,6 +91,8 @@ public class VirtualCollectionRegistry {
 			throw new NullPointerException("vc == null");
 		}
 
+		logger.debug("creating virtual collection");
+
 		VirtualCollectionValidator validator =
 			new VirtualCollectionValidator();
 		validator.validate(vc);
@@ -107,7 +111,7 @@ public class VirtualCollectionRegistry {
 			// store virtual collection
 			vc.setOwner(user);
 			vc.createUUID();
-			em.persist(vc);			
+			em.persist(vc);
 			em.getTransaction().commit();
 
 			PersistentIdentifier pid =
@@ -115,11 +119,15 @@ public class VirtualCollectionRegistry {
 			em.getTransaction().begin();
 			em.persist(pid);
 			em.getTransaction().commit();
-
+			logger.debug("created virtual collection (id={}, pid={})",
+					     vc.getId(), pid.getIdentifier());
 			return vc.getId();
+		} catch (VirtualCollectionRegistryException e) {
+			logger.debug("failed creating virtual collecion: {}",
+					     e.getMessage());
+			throw e;
 		} catch (Exception e) {
-			logger.log(Level.SEVERE,
-					   "error while creating virtual collection", e);
+			logger.error("error while creating virtual collection", e);
 			throw new VirtualCollectionRegistryException(
 					"error while creating virtual collection", e);
 		}
@@ -136,7 +144,9 @@ public class VirtualCollectionRegistry {
 		if (vc == null) {
 			throw new NullPointerException("vc == null");
 		}
-		
+
+		logger.debug("updating virtual collection (id={})", id);
+
 		VirtualCollectionValidator validator =
 			new VirtualCollectionValidator();
 		validator.validate(vc);
@@ -156,12 +166,14 @@ public class VirtualCollectionRegistry {
 			c.updateFrom(vc);
 			validator.validate(c);
 			em.getTransaction().commit();
+			logger.debug("updated virtual collection (id={})", vc.getId());
 			return vc.getId();
 		} catch (VirtualCollectionRegistryException e) {
+			logger.debug("failed updating virtual collecion (id={}): {}",
+						 id, e.getMessage());
 			throw e;
 		} catch (Exception e) {
-			logger.log(Level.SEVERE,
-                       "error while updating virtual collection", e);
+			logger.error("error while updating virtual collection", e);
 			throw new VirtualCollectionRegistryException(
 					"error while updating virtual collection", e);
 		}
@@ -176,11 +188,14 @@ public class VirtualCollectionRegistry {
 			throw new IllegalArgumentException("id <= 0");
 		}
 
+		logger.debug("deleting virtual collection (id={})", id);
+
 		try {
 			EntityManager em = datastore.getEntityManager();
 			em.getTransaction().begin();
 			VirtualCollection vc = em.find(VirtualCollection.class, new Long(id));
 			if (vc == null) {
+				logger.debug("virtual collection (id={}) not found", id);
 				throw new VirtualCollectionNotFoundException(id);
 			}
 			if (!vc.getOwner().equalsPrincipal(principal)) {
@@ -192,10 +207,11 @@ public class VirtualCollectionRegistry {
 			em.getTransaction().commit();
 			return vc.getId();
 		} catch (VirtualCollectionRegistryException e) {
+			logger.debug("failed deleting virtual collecion (id={}): {}",
+					 id, e.getMessage());
 			throw e;
 		} catch (Exception e) {
-			logger.log(Level.SEVERE,
-					   "error while deleting virtual collection", e);
+			logger.error("error while deleting virtual collection", e);
 			throw new VirtualCollectionRegistryException(
 					"error while deleting virtual collection", e);
 		}
@@ -207,6 +223,8 @@ public class VirtualCollectionRegistry {
 			throw new IllegalArgumentException("id <= 0");
 		}
 
+		logger.debug("retrieve virtual collection (id={})", id);
+
 		try {
 			EntityManager em = datastore.getEntityManager();
 			em.getTransaction().begin();
@@ -214,14 +232,14 @@ public class VirtualCollectionRegistry {
 					new Long(id));
 			em.getTransaction().commit();
 			if (vc == null) {
+				logger.debug("virtual collection (id={}) not found", id);
 				throw new VirtualCollectionNotFoundException(id);
 			}
 			return vc;
 		} catch (VirtualCollectionRegistryException e) {
 			throw e;
 		} catch (Exception e) {
-			logger.log(Level.SEVERE,
-					   "error while retrieving virtual collection", e);
+			logger.error("error while retrieving virtual collection", e);
 			throw new VirtualCollectionRegistryException(
 					"error while retrieving virtual collection", e);
 		}
@@ -237,6 +255,8 @@ public class VirtualCollectionRegistry {
 			throw new IllegalArgumentException("uuid is empty");
 		}
 
+		logger.debug("retrieve virtual collection (uuid={})", uuid);
+
 		try {
 			EntityManager em = datastore.getEntityManager();
 			em.getTransaction().begin();
@@ -248,10 +268,10 @@ public class VirtualCollectionRegistry {
 			em.getTransaction().commit();
 			return vc;
 		} catch (NoResultException e) {
+			logger.debug("virtual collection (uuid={}) not found", uuid);
 			throw new VirtualCollectionNotFoundException(uuid);
 		} catch (Exception e) {
-			logger.log(Level.SEVERE,
-					   "error while retrieving virtual collection", e);
+			logger.error("error while retrieving virtual collection", e);
 			throw new VirtualCollectionRegistryException(
 					"error while retrieving virtual collection", e);
 		}
@@ -296,8 +316,7 @@ public class VirtualCollectionRegistry {
 			throw new VirtualCollectionRegistryUsageException(
 			        "query invalid", e);
 		} catch (Exception e) {
-			logger.log(Level.SEVERE,
-					   "error while enumerating virtual collections", e);
+			logger.error("error while enumerating virtual collections", e);
 			throw new VirtualCollectionRegistryException(
 					"error while enumerating virtual collections", e);
 		} finally {
@@ -358,8 +377,7 @@ public class VirtualCollectionRegistry {
 		} catch (VirtualCollectionRegistryException e) {
 			throw e;
 		} catch (Exception e) {
-			logger.log(Level.SEVERE,
-					   "error while enumerating virtual collections", e);
+			logger.error("error while enumerating virtual collections", e);
 			throw new VirtualCollectionRegistryException(
 					"error while enumerating virtual collections", e);
 		} finally {

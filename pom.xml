@@ -208,15 +208,14 @@
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
-      <version>1.5.10</version>
+      <version>${slf4j.version}</version>
       <scope>runtime</scope>
     </dependency>
 
     <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-api</artifactId>
-      <version>1.5.10</version>
-      <scope>runtime</scope>
+      <version>${slf4j.version}</version>
     </dependency>
 
     <dependency>
@@ -234,5 +233,6 @@
     <!-- dependency versions -->
   	<hibernate.version>3.5.0-CR-2</hibernate.version>
   	<hibernate.jpaVersion>1.0.0-CR-1</hibernate.jpaVersion>
+  	<slf4j.version>1.5.11</slf4j.version>
   </properties>
 </project>

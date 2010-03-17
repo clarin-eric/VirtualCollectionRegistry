@@ -5,8 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
 import java.util.HashMap;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -24,6 +22,8 @@ import javax.xml.validation.SchemaFactory;
 
 import org.codehaus.jettison.mapped.MappedXMLInputFactory;
 import org.codehaus.jettison.mapped.MappedXMLOutputFactory;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.ClarinVirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
@@ -35,8 +35,8 @@ public class VirtualCollectionRegistryMarshaller {
 	} // public enum Format
 	private static final String ENCODING = "UTF-8";
 	private static final String VERSION = "1.0";
-	private static final Logger logger = Logger
-			.getLogger(VirtualCollectionRegistryMarshaller.class.getName());
+	private static final Logger logger =
+		LoggerFactory.getLogger(VirtualCollectionRegistryMarshaller.class);
 	private Schema schema = null;
 	private XMLInputFactory xmlReaderFactory;
 	private XMLOutputFactory xmlWriterFactory;
@@ -45,7 +45,7 @@ public class VirtualCollectionRegistryMarshaller {
 
 	VirtualCollectionRegistryMarshaller()
 			throws VirtualCollectionRegistryException {
-		logger.fine("initializing schemas for marshaller ...");
+		logger.debug("initializing schemas for marshaller ...");
 		try {
 			SchemaFactory sf = SchemaFactory
 					.newInstance(XMLConstants.W3C_XML_SCHEMA_NS_URI);
@@ -62,7 +62,7 @@ public class VirtualCollectionRegistryMarshaller {
 			jsonReaderFactory = new MappedXMLInputFactory(mapping);
 			jsonWriterFactory = new MappedXMLOutputFactory(mapping);
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "error initializing marshaller", e);
+			logger.error("error initializing marshaller", e);
 			throw new VirtualCollectionRegistryException(
 					"error initializing marshaller", e);
 		}
@@ -84,8 +84,7 @@ public class VirtualCollectionRegistryMarshaller {
 			writer.writeEndDocument();
 			writer.close();
 		} catch (Exception e) {
-			logger
-				.log(Level.WARNING, "error marshalling virtual collection", e);
+			logger.error("error marshalling virtual collection", e);
 			throw new IOException("error marshalling virtual collection", e);
 		}
 	}
@@ -106,7 +105,7 @@ public class VirtualCollectionRegistryMarshaller {
 			throw new VirtualCollectionRegistryUsageException("invalid " +
 					"virtual collection format", e.getLinkedException());
 		} catch (Exception e) {
-			logger.log(Level.WARNING, "error unmarshalling virtual collection", e);
+			logger.error("error unmarshalling virtual collection", e);
 			throw new IOException("error unmarshalling virtual collection", e);
 		}
 	}
@@ -138,7 +137,7 @@ public class VirtualCollectionRegistryMarshaller {
 			writer.writeEndDocument();
 			writer.close();
 		} catch (Exception e) {
-			logger.log(Level.WARNING, "error marshalling virtual collections", e);
+			logger.error("error marshalling virtual collections", e);
 			throw new IOException("error marshalling virtual collections", e);
 		}
 	}
@@ -159,7 +158,7 @@ public class VirtualCollectionRegistryMarshaller {
 			writer.writeEndDocument();
 			writer.close();
 		} catch (Exception e) {
-			logger.log(Level.WARNING, "error marshalling clarin virtual collections", e);
+			logger.error("error marshalling clarin virtual collections", e);
 			throw new IOException("error marshalling clarin virtual collections", e);
 		}
 	}
