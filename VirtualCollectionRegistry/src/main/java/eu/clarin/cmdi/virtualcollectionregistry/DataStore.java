@@ -1,13 +1,14 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
 import java.util.Map;
-import java.util.logging.Level;
-import java.util.logging.Logger;
 
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class DataStore {
 	private class ThreadLocalEntityManager extends ThreadLocal<EntityManager> {
@@ -19,7 +20,7 @@ public class DataStore {
 		}
 	} // inner class ThreadLocalEntityManager
 	private static final Logger logger =
-		Logger.getLogger(DataStore.class.getName());
+		LoggerFactory.getLogger(DataStore.class);
 	private final EntityManagerFactory emf;
 	private final ThreadLocalEntityManager em = new ThreadLocalEntityManager();
 
@@ -29,11 +30,11 @@ public class DataStore {
 			emf = Persistence.createEntityManagerFactory(
 					"VirtualCollectionStore", config);
 		} catch (Exception e) {
-			logger.log(Level.SEVERE, "error initializing data store", e);
+			logger.error("error initializing data store", e);
 			throw new VirtualCollectionRegistryException("error initializing",
 					e);
 		}
-		logger.finer("data store was successfully initialized");
+		logger.debug("data store was successfully initialized");
 	}
 
 	public void destroy() throws VirtualCollectionRegistryException {
