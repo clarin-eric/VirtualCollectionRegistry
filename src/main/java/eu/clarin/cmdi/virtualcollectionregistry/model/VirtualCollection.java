@@ -45,6 +45,9 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.mapper.DateAdapter;
 @Entity
 @Table(name = "virtual_collection")
 @NamedQueries({
+	@NamedQuery(name = "VirtualCollection.byUUID",
+				query = "SELECT c FROM VirtualCollection c " +
+					    "WHERE c.uuid = :uuid"),
 	@NamedQuery(name = "VirtualCollection.findAll",
 				query = "SELECT c FROM VirtualCollection c"),
     @NamedQuery(name = "VirtualCollection.countAll",

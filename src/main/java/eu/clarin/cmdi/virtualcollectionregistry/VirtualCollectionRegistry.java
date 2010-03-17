@@ -213,12 +213,39 @@ public class VirtualCollectionRegistry {
 			VirtualCollection vc = em.find(VirtualCollection.class,
 					new Long(id));
 			em.getTransaction().commit();
-			if (vc == null) {
-				throw new VirtualCollectionNotFoundException(id);
-			}
 			return vc;
-		} catch (VirtualCollectionRegistryException e) {
-			throw e;
+		} catch (NoResultException e) {
+			throw new VirtualCollectionNotFoundException(id);
+		} catch (Exception e) {
+			logger.log(Level.SEVERE,
+					   "error while retrieving virtual collection", e);
+			throw new VirtualCollectionRegistryException(
+					"error while retrieving virtual collection", e);
+		}
+	}
+
+	public VirtualCollection retrieveVirtualCollection(String uuid)
+			throws VirtualCollectionRegistryException {
+		if (uuid == null) {
+			throw new NullPointerException("uuid == null");
+		}
+		uuid = uuid.trim();
+		if (uuid.isEmpty()) {
+			throw new IllegalArgumentException("uuid is empty");
+		}
+
+		try {
+			EntityManager em = datastore.getEntityManager();
+			em.getTransaction().begin();
+			TypedQuery<VirtualCollection> q =
+				em.createNamedQuery("VirtualCollection.byUUID",
+									VirtualCollection.class);
+			q.setParameter("uuid", uuid);
+			VirtualCollection vc = q.getSingleResult();
+			em.getTransaction().commit();
+			return vc;
+		} catch (NoResultException e) {
+			throw new VirtualCollectionNotFoundException(uuid);
 		} catch (Exception e) {
 			logger.log(Level.SEVERE,
 					   "error while retrieving virtual collection", e);
