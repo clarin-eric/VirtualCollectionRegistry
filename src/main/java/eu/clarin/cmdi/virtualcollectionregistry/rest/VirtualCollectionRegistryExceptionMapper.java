@@ -56,9 +56,36 @@ public class VirtualCollectionRegistryExceptionMapper implements
 		ArrayList<String> errors = new ArrayList<String>();
 		while (t != null) {
 			if (t instanceof SAXParseException) {
-				SAXParseException e = (SAXParseException) t;
-				errors.add(e.getMessage() + ", line = " + e.getLineNumber()
-						+ ", column = " + e.getColumnNumber());
+				final SAXParseException e = (SAXParseException) t;
+				String message = e.getMessage();
+				if (message.startsWith("cvc")) {
+					int pos = message.indexOf(':');
+					if (pos != 0) {
+						message = message.substring(pos + 1);
+					}
+				}
+				errors.add(message +
+                           " [line = " + e.getLineNumber() +
+						   ", column = " + e.getColumnNumber() + "]");
+			} else if (t instanceof XMLStreamException) {
+				final XMLStreamException e = (XMLStreamException) t;
+				String message = e.getMessage();
+				if (message.startsWith("ParseError")) {
+					int pos = message.indexOf(':');
+					if (pos != -1) {
+						pos = message.indexOf(':', pos + 1);
+						if (pos != -1) {
+							message = message.substring(pos + 1);
+						}
+					}
+				}
+				if (e.getLocation() != null) {
+					message = message +
+						" [line = " + e.getLocation().getLineNumber() +
+						", column = " + e.getLocation().getColumnNumber() +
+                        "]";
+				}
+				errors.add(message); 
 			} else {
 				errors.add(t.getMessage());
 			}
