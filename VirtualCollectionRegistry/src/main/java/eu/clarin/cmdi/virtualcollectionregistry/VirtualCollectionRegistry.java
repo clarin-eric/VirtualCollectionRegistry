@@ -213,9 +213,12 @@ public class VirtualCollectionRegistry {
 			VirtualCollection vc = em.find(VirtualCollection.class,
 					new Long(id));
 			em.getTransaction().commit();
+			if (vc == null) {
+				throw new VirtualCollectionNotFoundException(id);
+			}
 			return vc;
-		} catch (NoResultException e) {
-			throw new VirtualCollectionNotFoundException(id);
+		} catch (VirtualCollectionRegistryException e) {
+			throw e;
 		} catch (Exception e) {
 			logger.log(Level.SEVERE,
 					   "error while retrieving virtual collection", e);
