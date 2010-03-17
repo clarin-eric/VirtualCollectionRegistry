@@ -40,7 +40,7 @@
 
 	<xs:complexType name="ResourcesType">
 		<xs:sequence maxOccurs="unbounded">
-			<xs:element name="Resource" type="ResourceType" />
+			<xs:element name="ResourceProxy" type="ResourceType" />
 		</xs:sequence>
 	</xs:complexType>
 
