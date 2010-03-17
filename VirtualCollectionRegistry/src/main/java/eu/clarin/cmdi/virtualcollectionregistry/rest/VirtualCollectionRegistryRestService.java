@@ -84,7 +84,7 @@ public class VirtualCollectionRegistryRestService {
 			URI uri = uriInfo.getRequestUriBuilder().path(Long.toString(id))
 					.build();
 			return Response.created(uri).entity(response).build();
-		} catch (Exception e) {
+		} catch (IOException e) {
 			throw new VirtualCollectionRegistryException("create", e);
 		}
 	}
@@ -116,17 +116,26 @@ public class VirtualCollectionRegistryRestService {
 				MediaType.APPLICATION_XML,
 				MediaType.APPLICATION_JSON })
 	public Response updateVirtualCollection(@PathParam("id") long id,
-			VirtualCollection vc) throws VirtualCollectionRegistryException {
+			InputStream input) throws VirtualCollectionRegistryException {
 		Principal principal = security.getUserPrincipal();
 		if (principal == null) {
 			throw new NullPointerException("princial == null");
 		}
-		registry.updateVirtualCollection(principal, id, vc);
-		RestResponse response = new RestResponse();
-		response.setIsSuccess(true);
-		response.setInfo("updated");
-		response.setId(id);
-		return Response.ok(response).build();
+		try {
+			Format format = getInputFormat();
+			String encoding = getInputEncoding();
+			VirtualCollection vc = registry.getMarshaller()
+				.unmarshal(input, format, encoding);
+			registry.updateVirtualCollection(principal, id, vc);
+			RestResponse response = new RestResponse();
+			response.setIsSuccess(true);
+			response.setInfo("updated");
+			response.setId(id);
+			return Response.ok(response).build();
+		} catch (IOException e) {
+			throw new VirtualCollectionRegistryException("update", e);
+
+		}
 	}
 
 	@DELETE

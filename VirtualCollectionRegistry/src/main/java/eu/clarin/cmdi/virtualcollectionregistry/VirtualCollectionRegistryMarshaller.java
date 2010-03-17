@@ -91,7 +91,7 @@ public class VirtualCollectionRegistryMarshaller {
 	}
 
 	public VirtualCollection unmarshal(InputStream input, Format format,
-			String encoding) throws IOException {
+			String encoding) throws VirtualCollectionRegistryException, IOException {
 		if (input == null) {
 			throw new NullPointerException("input == null");
 		}
@@ -103,10 +103,8 @@ public class VirtualCollectionRegistryMarshaller {
 			VirtualCollection vc = (VirtualCollection) m.unmarshal(reader);
 			return vc;
 		} catch (UnmarshalException e) {
-			logger.log(Level.WARNING, "error unmarshalling virtual collection",
-					e.getLinkedException());
-			throw new IOException("error unmarshalling virtual collection",
-					e.getLinkedException());
+			throw new VirtualCollectionRegistryUsageException("invalid " +
+					"virtual collection format", e.getLinkedException());
 		} catch (Exception e) {
 			logger.log(Level.WARNING, "error unmarshalling virtual collection", e);
 			throw new IOException("error unmarshalling virtual collection", e);
