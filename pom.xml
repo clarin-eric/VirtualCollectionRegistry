@@ -28,6 +28,10 @@
                        failonerror="false"
                        fork="true"
                        target="${maven.compiler.target}">
+                  <!-- hack to silence javac warnings -->
+                  <include name="**/*.java"/>
+                  <exclude name="**/VirtualCollectionValidator.java"/>
+                  <exclude name="**/*Provider.java"/>
                   <compilerarg value="-proc:only"/>
                   <classpath>
                     <path refid="maven.compile.classpath"/>
