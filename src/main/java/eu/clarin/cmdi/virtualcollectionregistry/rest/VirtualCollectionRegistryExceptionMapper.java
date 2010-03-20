@@ -64,7 +64,7 @@ public class VirtualCollectionRegistryExceptionMapper implements
 						message = message.substring(pos + 1);
 					}
 				}
-				errors.add(message +
+				errors.add(message.trim() +
                            " [line = " + e.getLineNumber() +
 						   ", column = " + e.getColumnNumber() + "]");
 			} else if (t instanceof XMLStreamException) {
@@ -80,7 +80,7 @@ public class VirtualCollectionRegistryExceptionMapper implements
 					}
 				}
 				if (e.getLocation() != null) {
-					message = message +
+					message = message.trim() +
 						" [line = " + e.getLocation().getLineNumber() +
 						", column = " + e.getLocation().getColumnNumber() +
                         "]";
