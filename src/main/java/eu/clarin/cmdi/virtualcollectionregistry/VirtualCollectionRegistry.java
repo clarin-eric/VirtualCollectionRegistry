@@ -13,7 +13,6 @@ import javax.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.clarin.cmdi.virtualcollectionregistry.model.InternalPersistentIdentifierProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.model.PersistentIdentifier;
 import eu.clarin.cmdi.virtualcollectionregistry.model.PersistentIdentifierProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
@@ -53,8 +52,9 @@ public class VirtualCollectionRegistry {
 		} else {
 			config = Collections.emptyMap();
 		}
+		// XXX: the whole config / setup stuff is not very beautiful
 		this.datastore    = new DataStore(config);
-		this.pid_provider = new InternalPersistentIdentifierProvider(config);
+		this.pid_provider = PersistentIdentifierProvider.createProvider(config);
 		this.marshaller   = new VirtualCollectionRegistryMarshaller();
 		this.intialized.set(true);
 		logger.info("virtual collection registry successfully intialized");
@@ -114,8 +114,7 @@ public class VirtualCollectionRegistry {
 			em.persist(vc);
 			em.getTransaction().commit();
 
-			PersistentIdentifier pid =
-				pid_provider.createPersistentIdentifier(vc);
+			PersistentIdentifier pid = pid_provider.createIdentifier(vc);
 			em.getTransaction().begin();
 			em.persist(pid);
 			em.getTransaction().commit();

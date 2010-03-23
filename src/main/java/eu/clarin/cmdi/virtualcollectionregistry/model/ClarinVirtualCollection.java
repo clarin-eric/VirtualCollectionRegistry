@@ -1,6 +1,5 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model;
 
-import java.net.URI;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -47,7 +46,7 @@ public class ClarinVirtualCollection {
 		}
 
 		@XmlElement(name = "MdSelfLink")
-		public URI getSelfLink() {
+		public String getSelfLink() {
 			return cvc.getVirtualCollection()
                       .getPersistentIdentifier()
                       .createURI();
