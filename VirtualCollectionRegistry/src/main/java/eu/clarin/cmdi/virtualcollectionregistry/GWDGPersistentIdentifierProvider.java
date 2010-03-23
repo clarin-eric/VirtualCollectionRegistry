@@ -1,4 +1,4 @@
-package eu.clarin.cmdi.virtualcollectionregistry.model;
+package eu.clarin.cmdi.virtualcollectionregistry;
 
 import java.net.URI;
 import java.net.URISyntaxException;
@@ -29,10 +29,11 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.model.PersistentIdentifier;
+import eu.clarin.cmdi.virtualcollectionregistry.model.PersistentIdentifierProvider;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
-public class GWDGPersistentIdentifierProvider extends
-		PersistentIdentifierProvider {
+public class GWDGPersistentIdentifierProvider extends PersistentIdentifierProvider {
 	private static enum Attribute {
 		PID, URL, CREATOR, EXPDATE;
 		
@@ -77,17 +78,11 @@ public class GWDGPersistentIdentifierProvider extends
 	private String password = null;
 	private XMLInputFactory factory;
 
-	/* XXX: refactor Internal and GWDG PID class/providers, so only one
-	 *        PID class exists.
-	 *        Maybe: store type in generic PID class
-	 *        inject dependency to PID provider in PID classes and
-	 *        make factory method in provider for creating URIs
-	 */
-	public GWDGPersistentIdentifierProvider(Map<String,String> config)
+	GWDGPersistentIdentifierProvider(Map<String,String> config)
 			throws VirtualCollectionRegistryException {
 		super(config);
 		try {
-			String base_uri = getParameter(config, BASE_URI);
+			String base_uri = getConfigParameter(config, BASE_URI);
 			if (!base_uri.endsWith("/")) {
 				base_uri = base_uri + "/";
 			}
@@ -97,8 +92,8 @@ public class GWDGPersistentIdentifierProvider extends
 			throw new VirtualCollectionRegistryException("configuration " +
 				      "parameter \"" + BASE_URI + "\" is invalid", e);
 		}
-		this.username = getParameter(config, USERNAME);
-		this.password = getParameter(config, PASSWORD);
+		this.username = getConfigParameter(config, USERNAME);
+		this.password = getConfigParameter(config, PASSWORD);
 		
 		this.factory = XMLInputFactory.newInstance();
 		factory.setProperty(XMLInputFactory.IS_COALESCING, Boolean.TRUE);
@@ -106,8 +101,11 @@ public class GWDGPersistentIdentifierProvider extends
 							Boolean.TRUE);
 	}
 
-	public PersistentIdentifier createPersistentIdentifier(VirtualCollection vc)
+	public PersistentIdentifier createIdentifier(VirtualCollection vc)
 			throws VirtualCollectionRegistryException {
+		if (vc == null) {
+			throw new NullPointerException("vc == null");
+		}
 		logger.debug("creating handle for virtual collection \"{}\"",
 				vc.getUUID());
 		try {
@@ -128,38 +126,52 @@ public class GWDGPersistentIdentifierProvider extends
 			}
 			logger.info("created handle \"{}\" for virtual collection \"{}\"",
 					pid, vc.getUUID());
-			return new GWDGPersistentIdentifier(vc, pid);
+			return doCreate(vc, PersistentIdentifier.Type.GWDG, pid);
 		} catch (VirtualCollectionRegistryException e) {
 			throw new RuntimeException("failed to create handle", e);
 		}
 	}
 
-	@SuppressWarnings("unused")
-	private void update(String pid, URI target) throws VirtualCollectionRegistryException {
+	public void updateIdentifier(String pid, URI target) throws VirtualCollectionRegistryException {
+		if (pid == null) {
+			throw new NullPointerException("pid == null");
+		}
+		if (pid.isEmpty()) {
+			throw new IllegalArgumentException("pid is empty");
+		}
+		if (target == null) {
+			throw new NullPointerException("target == null");
+		}
 		List<NameValuePair> params = new ArrayList<NameValuePair>();
 		params.add(new BasicNameValuePair("pid", pid));
 		params.add(new BasicNameValuePair("url", target.toString()));
 		URI serviceURI = URI.create(SERVICE_URI_BASE + "write/modify");
 		invokeWebService(serviceURI, params);
+		logger.info("updated handle \"{}\"", pid);
+	}
+
+	public void deleteIdentifier(String pid)
+			throws VirtualCollectionRegistryException {
+		if (pid == null) {
+			throw new NullPointerException("pid == null");
+		}
+		if (pid.isEmpty()) {
+			throw new IllegalArgumentException("pid is empty");
+		}
+		/* 
+		 * actually one cannot delete a handle, but we can set an expired
+		 * date to mark it invalid
+		 */
+		List<NameValuePair> params = new ArrayList<NameValuePair>();
+		params.add(new BasicNameValuePair("pid", pid));
+		params.add(new BasicNameValuePair("expdate", "1970-01-01"));
+		URI serviceURI = URI.create(SERVICE_URI_BASE + "write/modify");
+		invokeWebService(serviceURI, params);
+		logger.info("deleted/expired handle \"{}\"", pid);
 	}
 
 	private String makeCollectionURI(VirtualCollection vc) {
 		return base_uri + "service/clarin-virtualcollection/" + vc.getUUID();
-	}
-
-	private static String getParameter(Map<String, String> config,
-			String parameter) throws VirtualCollectionRegistryException {
-		String value = config.get(parameter);
-		if (value == null) {
-			throw new VirtualCollectionRegistryException("configuration "
-					+ "parameter \"" + parameter + "\" is not set");
-		}
-		value = value.trim();
-		if (value.isEmpty()) {
-			throw new VirtualCollectionRegistryException("configuration "
-					+ "parameter \"" + parameter + "\" is invalid");
-		}
-		return value;
 	}
 
 	private Map<Attribute, String> invokeWebService(URI serviceTargetURI,
@@ -181,7 +193,8 @@ public class GWDGPersistentIdentifierProvider extends
 			);
 			// disable expect continue, GWDG does not like very well
 			client.getParams()
-				.setParameter(HttpProtocolParams.USE_EXPECT_CONTINUE, Boolean.FALSE);
+				.setParameter(HttpProtocolParams.USE_EXPECT_CONTINUE,
+							  Boolean.FALSE);
 			// set a proper user agent
 			client.getParams()
 				.setParameter(HttpProtocolParams.USER_AGENT, USER_AGENT);
