@@ -78,7 +78,7 @@ public class GWDGPersistentIdentifierProvider extends PersistentIdentifierProvid
 	private String password = null;
 	private XMLInputFactory factory;
 
-	GWDGPersistentIdentifierProvider(Map<String,String> config)
+	public GWDGPersistentIdentifierProvider(Map<String,String> config)
 			throws VirtualCollectionRegistryException {
 		super(config);
 		try {
@@ -110,14 +110,10 @@ public class GWDGPersistentIdentifierProvider extends PersistentIdentifierProvid
 				vc.getUUID());
 		try {
 			String target  = makeCollectionURI(vc);
-			// XXX: testing
-			// URI serviceURI = URI.create(SERVICE_URI_BASE + "write/create");
-			URI serviceURI = URI.create(SERVICE_URI_BASE + "write/modify");
+			URI serviceURI = URI.create(SERVICE_URI_BASE + "write/create");
 
 			List<NameValuePair> params = new ArrayList<NameValuePair>();
 			params.add(new BasicNameValuePair("url", target));
-			// XXX: testing
-			params.add(new BasicNameValuePair("pid", "11858/00-232Z-0000-0000-40AE-F"));
 			Map<Attribute, String> props = invokeWebService(serviceURI, params);
 			String pid = props.get(Attribute.PID);
 			if (pid == null) {
