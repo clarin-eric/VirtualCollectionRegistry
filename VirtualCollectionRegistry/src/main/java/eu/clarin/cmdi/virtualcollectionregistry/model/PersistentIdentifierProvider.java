@@ -60,10 +60,11 @@ public abstract class PersistentIdentifierProvider {
 				return (PersistentIdentifierProvider) c.newInstance(config);
 			}
 		} catch (Exception e) {
-			throw new VirtualCollectionRegistryException("x", e);
+			throw new VirtualCollectionRegistryException("error initalizing " +
+					"persistent identifier provider", e);
 		}
 		throw new VirtualCollectionRegistryException("invalid persistent " +
 				"identifier provider (" + clazzName + ")" );
 	}
 
-} // interface PersistentIdentifierProvider
+} // abstract class PersistentIdentifierProvider

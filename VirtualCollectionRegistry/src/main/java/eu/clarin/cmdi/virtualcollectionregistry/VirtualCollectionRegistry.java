@@ -52,12 +52,20 @@ public class VirtualCollectionRegistry {
 		} else {
 			config = Collections.emptyMap();
 		}
-		// XXX: the whole config / setup stuff is not very beautiful
-		this.datastore    = new DataStore(config);
-		this.pid_provider = PersistentIdentifierProvider.createProvider(config);
-		this.marshaller   = new VirtualCollectionRegistryMarshaller();
-		this.intialized.set(true);
-		logger.info("virtual collection registry successfully intialized");
+		try {
+			// XXX: the whole config / setup stuff is not very beautiful
+			this.datastore    = new DataStore(config);
+			this.pid_provider = PersistentIdentifierProvider.createProvider(config);
+			this.marshaller   = new VirtualCollectionRegistryMarshaller();
+			this.intialized.set(true);
+			logger.info("virtual collection registry successfully intialized");
+		} catch (RuntimeException e) {
+			logger.error("error initalizing virtual collection registry", e);
+			throw e;
+		} catch (VirtualCollectionRegistryException e) {
+			logger.error("error initalizing virtual collection registry", e);
+			throw e;
+		}
 	}
 
 	public void destroy() throws VirtualCollectionRegistryException {
