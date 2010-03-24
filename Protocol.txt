@@ -1,0 +1,177 @@
+Virtual Collection Registry RESTful web service
+===============================================
+
+The Virtual Collection Registry (VCR) provides a RESTful web service for
+working with the registry.
+
+
+1. Prerequisite
+
+    a) Internal XML format for virtual collections:
+       A virtual collection is represented in an internal XML format, which is
+       defined by the W3C XML schema "VirtualCollection.xsd" found in the
+       "src/resources/META-INF" directory.
+       
+    b) The VCR relies on various HTTP headers:
+        - "Content-Type" must be set for POST and PUT requests. Accepted
+          values are "text/xml", "application/xml" or "application/json".
+        - "Accept" can be used all requests. Accepted values are "text/xml",
+          "application/xml" or "application/json". If the header is not set,
+          the VCR assumes "application/xml" as default.
+        - Headers for HTTP Basic Auth need to be set on POST, PUT and DELETE
+          requests.      
+
+
+2. RESTful web service operations
+
+    The following describes the RESTful web service operations. The URIs are
+    relative to a base URI ($BASE), which depends on the machine, where the
+    VCR is installed.
+
+    a) Create a virtual collection (POST) 
+                 description: A virtual collection will be created based on the
+                              representation of the virtual collection sent in
+                              the request body.
+                 HTTP method: POST
+                         URI: $BASE/service/virtualcollection
+         URI path parameters: none
+            query parameters: none 
+                HTTP headers: Content-Type (required), Accept (optional)
+              authentication: required
+                request body: Depending on Content-Type header either a valid
+                              XML instance or the JSON representation of a
+                              virtual collection conforming to the above
+                              mentioned XML schema. The root element is expected
+                              to be "VirtualCollection"
+                 result body: Depending on Accept header either an XML instance
+                              or the JSON representation of the outcome of the
+                              request. If successful, the result will contain
+                              the ID of the created virtual collection
+
+    b) Update a virtual collection (PUT)
+                 description: The virtual collection identified by the URI will
+                              be updated, actually replaced, with the
+                              representation of the virtual collection sent in
+                              the request body.
+                 HTTP method: PUT
+                         URI: $BASE/service/virtualcollection/$id
+         URI path parameters: $id := is the ID of the virtual collection,
+                                     which is to be changed
+            query parameters: none 
+                HTTP headers: Content-Type (required), Accept (optional)
+              authentication: required
+                request body: Depending on Content-Type header either a valid
+                              XML instance or the JSON representation of a
+                              virtual collection conforming to the above
+                              mentioned XML schema. The root element is expected
+                              to be "VirtualCollection"
+                 result body: Depending on Accept header either an XML instance
+                              or the JSON representation of the outcome of the
+                              request.
+
+    c) Delete a virtual collection (DELETE)
+                 description: The virtual collection referenced by the URI will
+                              be deleted.
+                 HTTP method: DELETE
+                         URI: $BASE/service/virtualcollection/$id
+         URI path parameters: $id := is the ID of the virtual collection,
+                                     which is to be deleted
+            query parameters: none
+                HTTP headers: Accept (optional)
+              authentication: required
+                request body: none
+                 result body: depending on Accept header either an XML instance
+                              or the JSON representation of the outcome of the
+                              request.
+
+    d) Retrieve a virtual collection (GET)
+                 description: The virtual collection referenced by the URI will
+                              be retrieved.
+                 HTTP method: GET
+                         URI: $BASE/service/virtualcollection/$id
+         URI path parameters: $id := is the ID of the virtual collection,
+                                     which is to be retrieved
+            query parameters: none
+                HTTP headers: Accept (optional)
+              authentication: not required
+                request body: none
+                 result body: Depending on Accept header either an XML instance
+                              or the JSON representation of the virtual
+                              collection. If the virtual collection is not found
+                              the appropriate HTTP status code is issued and an
+                              error message is returned.
+
+    e) Retrieve all / search virtual collections (GET)
+                 description: All virtual collections will be retrieved; if a
+                              query expression is used, only the virtual
+                              collections satisfying the query will be
+                              retrieved. 
+                 HTTP method: GET
+                         URI: $BASE/service/virtualcollections
+         URI path parameters: none
+            query parameters: q := URL-encoded query expression (see below)
+                HTTP headers: Accept (optional)
+              authentication: not required
+                request body: none
+                 result body: Depending on Accept header either an XML instance
+                              or the JSON representation of the virtual
+                              collection. If the virtual collection is not found
+                              the appropriate HTTP status code is issued and an
+                              error message is returned.
+
+    f) Retrieve all / search virtual collection owned by the user (GET)
+                 description: All virtual collections owned by the authenticated
+                              user will be retrieved; if a query expression is
+                              used, only the virtual collections satisfying the
+                              query will be retrieved.
+                 HTTP method: GET
+                         URI: $BASE/service/my-virtualcollections
+         URI path parameters: none
+            query parameters: q := URL-encoded query expression (see below)
+                HTTP headers: Accept (optional)
+              authentication: required
+                request body: none
+                 result body: Depending on Accept header either an XML instance
+                              or the JSON representation of the virtual
+                              collection. If the virtual collection is not found
+                              the appropriate HTTP status code is issued and an
+                              error message is returned.
+
+    g) Retrieve a virtual collection in CMDI format (GET)
+                 description: The virtual collection referenced by the URI will
+                              be retrieved in CMDI format.
+                 HTTP method: GET
+                         URI: $BASE/service/clarin-virtualcollection/$id
+         URI path parameters: $id := is the ID of the virtual collection,
+                                     which is to be retrieved
+            query parameters: none
+                HTTP headers: none
+              authentication: not required
+                request body: none
+                 result body: The virtual collection in CMDI format If the
+                              virtual collection is not found the appropriate
+                              HTTP status code is issued and an error message
+                              is returned.
+
+
+3. Virtual Collection Query language (VCRQL)
+     query            = expression
+                      | expression 'and' expression
+                      | expression 'or' expression
+
+     expression       = component '=' value
+                      | component '!=' value
+
+     component        = 'vc'      '.' vc-property
+                      | 'creator' '.' creator-property
+
+     vc-property      = 'name' | 'description'
+
+     creator-property = 'name' | 'email' | 'organization'
+      
+     value            = double quoted string value, use backslash
+                        for escaping double quotes, use "*" and "?" for
+                        wildcards.
+
+   (see "src/main/antlr3/eu/clarin/cmdi/virtualcollectionregistry/query/VCRQL.g"
+    and "src/main/main/eu/clarin/cmdi/virtualcollectionregistry/query/*.java")
