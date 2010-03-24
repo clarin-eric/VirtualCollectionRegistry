@@ -140,7 +140,9 @@ public class VirtualCollectionRegistryRestService {
 
 	@DELETE
 	@Path("/virtualcollection/{id}")
-	@Produces({ MediaType.TEXT_XML, MediaType.APPLICATION_XML })
+	@Produces({ MediaType.TEXT_XML,
+				MediaType.APPLICATION_XML,
+				MediaType.APPLICATION_JSON })
 	public Response deleteVirtualCollection(@PathParam("id") long id)
 			throws VirtualCollectionRegistryException {
 		Principal principal = security.getUserPrincipal();
