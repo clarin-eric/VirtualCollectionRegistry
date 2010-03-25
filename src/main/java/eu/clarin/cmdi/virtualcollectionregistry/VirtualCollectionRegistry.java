@@ -339,50 +339,51 @@ public class VirtualCollectionRegistry {
 		}
 		EntityManager em = datastore.getEntityManager();
 		try {
+			List<VirtualCollection> results = null;
+			long totalCount                 = 0;
+
 			em.getTransaction().begin();
 
-			// fetch user
+			/*
+			 *  fetch user. if user is not found, he has not yet registered
+			 *  any virtual collections, so just return an empty list
+			 */
 			User user = fetchUser(em, principal);
-			if (user == null) {
-				throw new VirtualCollectionRegistryPermissionException("user " +
-						principal.getName() + " does not exist");
-			}
-
-			// setup queries
-			TypedQuery<Long>              cq = null;
-			TypedQuery<VirtualCollection>  q = null;
-			if (query != null) {
-				ParsedQuery parsedQuery = ParsedQuery.parseQuery(em, query);
-				cq = parsedQuery.getCountQuery(user);
-				q = parsedQuery.getQuery(user);
-			} else {
-				cq = em.createNamedQuery("VirtualCollection.countByOwner", Long.class);
-				cq.setParameter("owner", user);
-				q = em.createNamedQuery("VirtualCollection.findByOwner",
-						VirtualCollection.class);
-				q.setParameter("owner", user);
-			}
-
-			// commence query ...
-			List<VirtualCollection> results = null;
-			long totalCount = cq.getSingleResult();
-
-			// optimization; don't query, if we won't get any results
-			if (totalCount > 0) {
-				if (offset > 0) {
-					q.setFirstResult(offset);
+			if (user != null) {
+				// setup queries
+				TypedQuery<Long>              cq = null;
+				TypedQuery<VirtualCollection>  q = null;
+				if (query != null) {
+					ParsedQuery parsedQuery = ParsedQuery.parseQuery(em, query);
+					cq = parsedQuery.getCountQuery(user);
+					q = parsedQuery.getQuery(user);
+				} else {
+					cq = em.createNamedQuery("VirtualCollection.countByOwner",
+											 Long.class);
+					cq.setParameter("owner", user);
+					q = em.createNamedQuery("VirtualCollection.findByOwner",
+							VirtualCollection.class);
+					q.setParameter("owner", user);
 				}
-				if (count > 0) {
-					q.setMaxResults(count);
+	
+				// commence query ...
+				totalCount = cq.getSingleResult();
+	
+				// optimization; don't query, if we won't get any results
+				if (totalCount > 0) {
+					if (offset > 0) {
+						q.setFirstResult(offset);
+					}
+					if (count > 0) {
+						q.setMaxResults(count);
+					}
+					results = q.getResultList();
 				}
-				results = q.getResultList();
 			}
 			return new VirtualCollectionList(results, offset, (int) totalCount);
 		} catch (QueryException e) {
 			throw new VirtualCollectionRegistryUsageException(
 			        "query invalid", e);
-		} catch (VirtualCollectionRegistryException e) {
-			throw e;
 		} catch (Exception e) {
 			logger.error("error while enumerating virtual collections", e);
 			throw new VirtualCollectionRegistryException(
