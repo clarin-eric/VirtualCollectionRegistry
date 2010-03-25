@@ -55,8 +55,8 @@ working with the registry.
                               the request body.
                  HTTP method: PUT
                          URI: $BASE/service/virtualcollection/$id
-         URI path parameters: $id := is the ID of the virtual collection,
-                                     which is to be changed
+         URI path parameters: $id := (required) is the ID of the virtual
+                                     collection, which is to be changed 
             query parameters: none 
                 HTTP headers: Content-Type (required), Accept (optional)
               authentication: required
@@ -74,8 +74,8 @@ working with the registry.
                               be deleted.
                  HTTP method: DELETE
                          URI: $BASE/service/virtualcollection/$id
-         URI path parameters: $id := is the ID of the virtual collection,
-                                     which is to be deleted
+         URI path parameters: $id := (required) is the ID of the virtual
+                                     collection, which is to be deleted  
             query parameters: none
                 HTTP headers: Accept (optional)
               authentication: required
@@ -89,8 +89,8 @@ working with the registry.
                               be retrieved.
                  HTTP method: GET
                          URI: $BASE/service/virtualcollection/$id
-         URI path parameters: $id := is the ID of the virtual collection,
-                                     which is to be retrieved
+         URI path parameters: $id := (required) is the ID of the virtual
+                                     collection, which is to be retrieved
             query parameters: none
                 HTTP headers: Accept (optional)
               authentication: not required
@@ -109,15 +109,19 @@ working with the registry.
                  HTTP method: GET
                          URI: $BASE/service/virtualcollections
          URI path parameters: none
-            query parameters: q := URL-encoded query expression (see below)
+            query parameters: q      := (optional) URL-encoded query
+                                        expression (see below)
+                              offset := (optional) start of result list at
+                                        a given position (default: 0)
+                              count  := (optional) limit the result list to
+                                        a number of entries (default: unlimited)
                 HTTP headers: Accept (optional)
               authentication: not required
                 request body: none
                  result body: Depending on Accept header either an XML instance
                               or the JSON representation of the virtual
-                              collection. If the virtual collection is not found
-                              the appropriate HTTP status code is issued and an
-                              error message is returned.
+                              collection. If no virtual collection are found
+                              an empty list will be returned.
 
     f) Retrieve all / search virtual collection owned by the user (GET)
                  description: All virtual collections owned by the authenticated
@@ -127,15 +131,19 @@ working with the registry.
                  HTTP method: GET
                          URI: $BASE/service/my-virtualcollections
          URI path parameters: none
-            query parameters: q := URL-encoded query expression (see below)
+            query parameters: q      := (optional) URL-encoded query
+                                        expression (see below)
+                              offset := (optional) start of result list at
+                                        a given position (default: 0)
+                              count  := (optional) limit the result list to
+                                        a number of entries (default: unlimited)
                 HTTP headers: Accept (optional)
               authentication: required
                 request body: none
                  result body: Depending on Accept header either an XML instance
                               or the JSON representation of the virtual
-                              collection. If the virtual collection is not found
-                              the appropriate HTTP status code is issued and an
-                              error message is returned.
+                              collection. If no virtual collection are found
+                              an empty list will be returned.
 
     g) Retrieve a virtual collection in CMDI format (GET)
                  description: The virtual collection referenced by the URI will
