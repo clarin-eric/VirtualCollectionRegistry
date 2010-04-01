@@ -31,9 +31,21 @@
     <load-on-startup>1</load-on-startup>
   </servlet>
 
+  <servlet>
+    <display-name>Virtual Collection Registry OAI-PMH Provider</display-name>
+    <servlet-name>OAI-PMH-Provider</servlet-name>
+    <servlet-class>eu.clarin.cmdi.virtualcollectionregistry.oai.OAIProviderServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
+
   <servlet-mapping>
     <servlet-name>REST-Web-Service</servlet-name>
     <url-pattern>/service/*</url-pattern>
+  </servlet-mapping>
+
+  <servlet-mapping>
+    <servlet-name>OAI-PMH-Provider</servlet-name>
+    <url-pattern>/oai</url-pattern>
   </servlet-mapping>
 
   <security-constraint>
