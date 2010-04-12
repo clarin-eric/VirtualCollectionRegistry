@@ -17,8 +17,6 @@ import javax.xml.stream.XMLStreamWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.VerbContext;
-
 public class OAIProviderServlet extends HttpServlet {
 	private static final long serialVersionUID = 1L;
 	private static final Logger logger =
@@ -52,7 +50,7 @@ public class OAIProviderServlet extends HttpServlet {
 			throws ServletException, IOException {
 		try {
 			resp.setCharacterEncoding("utf-8");
-			VerbContext ctx = new VerbContextImpl(provider, req, resp);
+			VerbContextImpl ctx = new VerbContextImpl(provider, req, resp);
 			provider.process(ctx);
 		} catch (OAIException e) {
 			logger.error("OAI-ERROR: {}", e.getMessage());
@@ -67,7 +65,7 @@ public class OAIProviderServlet extends HttpServlet {
 				new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
 			df.setTimeZone(TimeZone.getTimeZone("UTC"));
 			
-			XMLOutputFactory factory = XMLOutputFactory.newFactory();
+			XMLOutputFactory factory = XMLOutputFactory.newInstance();
 			XMLStreamWriter out = factory.createXMLStreamWriter(writer);
 			out.writeStartDocument("utf-8", "1.0");
 			out.setDefaultNamespace(NS_OAI);

@@ -12,17 +12,12 @@ public class Argument {
 		SET,             // set
 		UNTIL;           // until
 	} // enum Name
-
-	public static enum Use {
-		REQUIRED, OPTIONAL;
-	} // enum Use
-
 	private final Name name;
-	private final Use use;
+	private final boolean required;
 
-	public Argument(Name name, Use use) {
-		this.name = name;
-		this.use = use;
+	public Argument(Name name, boolean required) {
+		this.name     = name;
+		this.required = required;
 	}
 
 	public String getName() {
@@ -45,7 +40,7 @@ public class Argument {
 	}
 
 	public boolean isRequired() {
-		return (use == Use.REQUIRED);
+		return required;
 	}
 
 	public void validateArgument(String value) throws OAIException {

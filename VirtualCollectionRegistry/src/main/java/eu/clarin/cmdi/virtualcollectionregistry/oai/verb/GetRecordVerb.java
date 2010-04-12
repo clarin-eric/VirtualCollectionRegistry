@@ -4,12 +4,11 @@ import java.util.Arrays;
 import java.util.List;
 
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument.Name;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument.Use;
 
 public class GetRecordVerb extends Verb {
 	private static final List<Argument> s_arguments =
-		Arrays.asList(new Argument(Name.IDENTIFIER, Use.REQUIRED),
-					  new Argument(Name.METADATAPREFIX, Use.REQUIRED));
+		Arrays.asList(new Argument(Name.IDENTIFIER, true),
+					  new Argument(Name.METADATAPREFIX, true));
 
 	@Override
 	public String getName() {
@@ -17,12 +16,12 @@ public class GetRecordVerb extends Verb {
 	}
 
 	@Override
-	protected List<Argument> getArguments() {
+	public List<Argument> getArguments() {
 		return s_arguments;
 	}
 
 	@Override
-	protected void doProcess(VerbContext ctx) {
+	public void process(VerbContext ctx) {
 		logger.debug("process GET-RECORD");
 	}
 

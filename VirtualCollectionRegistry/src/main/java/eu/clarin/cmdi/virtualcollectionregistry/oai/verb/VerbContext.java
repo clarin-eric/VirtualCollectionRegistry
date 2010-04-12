@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.oai.verb;
 
+import java.io.Writer;
 import java.util.List;
 
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIErrorCode;
@@ -16,10 +17,14 @@ public interface VerbContext {
 
 	public String getArgument(String name);
 
+	public String getRequestURI();
+
 	public void addError(OAIErrorCode code, String message);
 
 	public boolean hasErrors();
 
 	public List<Error> getErrors();
+
+	public Writer getWriter();
 
 } // interface VerbContext

@@ -11,12 +11,12 @@ public class IdentifyVerb extends Verb {
 	}
 
 	@Override
-	protected List<Argument> getArguments() {
+	public List<Argument> getArguments() {
 		return Collections.emptyList();
 	}
 
 	@Override
-	protected void doProcess(VerbContext ctx) {
+	public void process(VerbContext ctx) {
 		logger.debug("process IDENTIFY");
 	}
 
