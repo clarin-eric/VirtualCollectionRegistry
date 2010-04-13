@@ -1,8 +1,5 @@
 package eu.clarin.cmdi.virtualcollectionregistry.oai.verb;
 
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
-
-
 public class Argument {
 	public static enum Name {
 		FROM,            // from
@@ -43,8 +40,9 @@ public class Argument {
 		return required;
 	}
 
-	public void validateArgument(String value) throws OAIException {
+	public boolean validateArgument(String value) {
 		// XXX: implement validation
+		return true;
 	}
 
 } // class Argument

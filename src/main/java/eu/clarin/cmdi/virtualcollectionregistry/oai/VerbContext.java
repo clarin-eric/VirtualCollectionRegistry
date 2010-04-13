@@ -1,10 +1,8 @@
-package eu.clarin.cmdi.virtualcollectionregistry.oai.verb;
+package eu.clarin.cmdi.virtualcollectionregistry.oai;
 
-import java.io.Writer;
 import java.util.List;
+import java.util.Map;
 
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIErrorCode;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIProvider;
 
 public interface VerbContext {
 	public static interface Error {
@@ -15,7 +13,11 @@ public interface VerbContext {
 
 	public OAIProvider getProvider();
 
+	public String getVerb();
+
 	public String getArgument(String name);
+
+	public Map<String, String> getArguments();
 
 	public String getRequestURI();
 
@@ -25,6 +27,10 @@ public interface VerbContext {
 
 	public List<Error> getErrors();
 
-	public Writer getWriter();
+	public abstract OAIOutputStream getOutputStream()
+		throws OAIException;
+
+	public abstract OAIOutputStream getOutputStream(int status)
+		throws OAIException;
 
 } // interface VerbContext

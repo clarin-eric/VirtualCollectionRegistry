@@ -1,7 +1,5 @@
-package eu.clarin.cmdi.virtualcollectionregistry.oai;
+package eu.clarin.cmdi.virtualcollectionregistry.oai.impl;
 
-import java.io.IOException;
-import java.io.Writer;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -14,7 +12,12 @@ import java.util.Set;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.VerbContext;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIErrorCode;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIProvider;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
+
 
 public class VerbContextImpl implements VerbContext {
 	private static class ErrorImpl implements Error {
@@ -40,15 +43,15 @@ public class VerbContextImpl implements VerbContext {
 	private final OAIProvider provider;
 	private final HttpServletRequest request;
 	private final HttpServletResponse response;
+	private String verb = null;
 	private Map<String, String> arguments = null;
 	private List<Error> errors = null;
 
 	VerbContextImpl(OAIProvider provider,
-				    HttpServletRequest request,
-				    HttpServletResponse response) {
-		super();
+	  			   HttpServletRequest request,
+	  			   HttpServletResponse response) {
 		this.provider = provider;
-		this.request  = request;
+		this.request = request;
 		this.response = response;
 	}
 
@@ -63,7 +66,7 @@ public class VerbContextImpl implements VerbContext {
 		return null;
 	}
 
-	public boolean isParameterMultivalued(String name) {
+	public boolean isRepeatedParameter(String name) {
 		String[] params = request.getParameterValues(name);
 		if (params != null) {
 			return params.length > 1;
@@ -84,11 +87,23 @@ public class VerbContextImpl implements VerbContext {
 		return names;
 	}
 	
+	public void setVerb(String verb) {
+		this.verb = verb;
+	}
+
 	public void setArgument(String name, String value) {
+		if ((name == null) || (value == null)) {
+			throw new NullPointerException("name == null || value == null");
+		}
 		if (arguments == null) {
 			arguments = new HashMap<String, String>();
 		}
 		arguments.put(name, value);
+	}
+
+	@Override
+	public String getVerb() {
+		return verb;
 	}
 
 	@Override
@@ -102,10 +117,15 @@ public class VerbContextImpl implements VerbContext {
 		if (arguments != null) {
 			value = arguments.get(name);
 		}
-		if (value == null) {
-			throw new NullPointerException("bad argument: value == null");
-		}
 		return value;
+	}
+
+	@Override
+	public Map<String, String> getArguments() {
+		if (arguments == null) {
+			return Collections.emptyMap();
+		}
+		return Collections.unmodifiableMap(arguments);
 	}
 
 	@Override
@@ -118,8 +138,7 @@ public class VerbContextImpl implements VerbContext {
 
 	@Override
 	public String getRequestURI() {
-		// FIXME: supposed to return request uri
-		return null;
+		return request.getRequestURL().toString();
 	}
 
 	@Override
@@ -136,16 +155,20 @@ public class VerbContextImpl implements VerbContext {
 	}
 
 	@Override
-	public Writer getWriter() {
-		// FIXME: this is for testing only, need to be re-factored
+	public OAIOutputStream getOutputStream() throws OAIException {
+		return this.getOutputStream(HttpServletResponse.SC_OK);
+	}
+
+	@Override
+	public OAIOutputStream getOutputStream(int status) throws OAIException {
 		try {
+			response.setStatus(status);
 			response.setCharacterEncoding("utf-8");
-			response.setContentType("text/plain");
-			response.setStatus(HttpServletResponse.SC_BAD_REQUEST);
-			return response.getWriter();
-		} catch (IOException e) {
+			response.setContentType("text/xml");
+			return new OAIOutputStreamImpl(this, response.getOutputStream());
+		} catch (Exception e) {
+			throw new OAIException("error creating output stream", e);
 		}
-		return null;
 	}
 
 } // class VerbContextImpl
