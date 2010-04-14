@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
 import java.util.Arrays;
+import java.util.Date;
 import java.util.List;
 
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository;
@@ -25,6 +26,21 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 	@Override
 	public String getName() {
 		return "CLARIN Virtual Collection Registry";
+	}
+
+	@Override
+	public Date getEarliestTimestamp() {
+		return new Date();
+	}
+	
+	@Override
+	public Deleted getDeletedNotion() {
+		return Deleted.NO;
+	}
+	
+	@Override
+	public Granularity getGranularity() {
+		return Granularity.SECONDS;
 	}
 
 	@Override
