@@ -5,8 +5,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.TimeZone;
 
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.Deleted;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.DeletedNotion;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.Granularity;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.MetadataFormat;
 
 
 public class OAIRepositoryAdapter {
@@ -24,6 +25,12 @@ public class OAIRepositoryAdapter {
 			throws OAIException {
 		this.provider   = provider;
 		this.repository = repository;
+
+		// check of repository supports oai_dc format
+		if (!supportsMetadataFormat("oai_dc")) {
+			throw new OAIException("repository does not supported " +
+					"mandatory \"oai_dc\" format");
+		}
 
 		// cache earliest timestamp
 		this.earliestTimestamp = repository.getEarliestTimestamp();
@@ -52,7 +59,7 @@ public class OAIRepositoryAdapter {
 		return sdf.get().format(earliestTimestamp);
 	}
 
-	public Deleted getDeletedNotion() {
+	public DeletedNotion getDeletedNotion() {
 		return repository.getDeletedNotion();
 	}
 	
@@ -60,8 +67,8 @@ public class OAIRepositoryAdapter {
 		return repository.getGranularity();
 	}
 
-	public List<String> getSupportedMetadataPrefixes() {
-		return repository.getSupportedMetadataPrefixes();
+	public List<MetadataFormat> getSupportedMetadataFormats() {
+		return repository.getSupportedMetadataFormats();
 	}
 
 	public String getDescription() {
@@ -78,6 +85,15 @@ public class OAIRepositoryAdapter {
 
 	public String makeRecordId(String recordId) {
 		return "oai:" + repository.getId() + ":" +recordId;
+	}
+
+	public boolean supportsMetadataFormat(String prefix) {
+		for (MetadataFormat format : repository.getSupportedMetadataFormats()) {
+			if (prefix.equals(format.getPrefix())) {
+				return true;
+			}
+		}
+		return false;
 	}
 
 	private static SimpleDateFormat createDateFormat(OAIRepository repository) {

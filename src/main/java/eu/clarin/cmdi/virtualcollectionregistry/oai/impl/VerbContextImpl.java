@@ -114,6 +114,15 @@ public class VerbContextImpl implements VerbContext {
 	}
 
 	@Override
+	public boolean hasArgument(Argument.Name name) {
+		boolean result = false;
+		if (arguments != null) {
+			result = arguments.containsKey(name);
+		}
+		return result;
+	}
+
+	@Override
 	public String getArgument(Argument.Name name) {
 		String value = null;
 		if (arguments != null) {
