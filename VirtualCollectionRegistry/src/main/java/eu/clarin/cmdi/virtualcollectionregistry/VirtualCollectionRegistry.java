@@ -19,6 +19,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionValidator;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.query.QueryException;
 
@@ -57,6 +58,9 @@ public class VirtualCollectionRegistry {
 			this.datastore    = new DataStore(config);
 			this.pid_provider = PersistentIdentifierProvider.createProvider(config);
 			this.marshaller   = new VirtualCollectionRegistryMarshaller();
+			// setup OAIProvider
+			OAIProvider.instance()
+				.setRepository(new VirtualColletionRegistryOAIRepository(this));
 			this.intialized.set(true);
 			logger.info("virtual collection registry successfully intialized");
 		} catch (RuntimeException e) {
