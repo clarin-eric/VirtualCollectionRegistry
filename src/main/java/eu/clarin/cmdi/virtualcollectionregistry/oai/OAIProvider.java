@@ -2,6 +2,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.oai;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import javax.servlet.http.HttpServletResponse;
@@ -54,6 +55,7 @@ public class OAIProvider {
 		Verb verb = null;
 		String verbName = ctx.getParameter("verb");
 		if (verbName != null) {
+			logger.debug("looking up verb '{}'", verbName);
 			if (!ctx.isRepeatedParameter("verb")) {
 				for (Verb v : verbs) {
 					if (verbName.equals(v.getName())) {
@@ -69,19 +71,15 @@ public class OAIProvider {
 		}
 
 		if (verb != null) {
+			logger.debug("processing arguments for verb '{}'", verbName);
 			ctx.setVerb(verbName);
 
 			// process arguments
 			Set<String> remaining = ctx.getParameterNames();
 			for (Argument arg : verb.getArguments()) {
 				String value = ctx.getParameter(arg.getNameAsString());
-				if ((value == null) && arg.isRequired()) {
-					ctx.addError(OAIErrorCode.BAD_ARGUMENT,
-								 "OAI verb '" + verbName +
-	                             "' is missing required argument '" +
-	                             arg.getName() + "'");
-				} else {
-					remaining.remove(arg.getName());
+				if (value != null) {
+					remaining.remove(arg.getNameAsString());
 					if (ctx.isRepeatedParameter(arg.getNameAsString())) {
 						ctx.addError(OAIErrorCode.BAD_ARGUMENT,
 									 "OAI verb '" + verbName +
@@ -97,13 +95,31 @@ public class OAIProvider {
 										 verbName + "' is invalid");
 						}
 					}
+				} else {
+					if (arg.isRequired()) {
+						ctx.addError(OAIErrorCode.BAD_ARGUMENT,
+									 "OAI verb '" + verbName +
+		                             "' is missing required argument '" +
+		                             arg.getName() + "'");
+					}
 				}
 			}  // for
 
 			if (remaining.isEmpty()) {
-				logger.debug("processing verb '{}'", verb.getName());
+				if (logger.isDebugEnabled()) {
+					logger.debug("processing verb '{}'", verb.getName());
+					Map<Argument.Name, String> args = ctx.getArguments();
+					if (!args.isEmpty()) {
+						int i = 0;
+						for (Argument.Name name : args.keySet()) {
+							logger.debug("argument[" + i++ + "]: {}='{}'",
+									name.toXmlString(), args.get(name));
+						}
+					}
+				}
 				verb.process(ctx);
 			} else {
+				logger.debug("received request with illegal arguments");
 				for (String key : remaining) {
 					ctx.addError(OAIErrorCode.BAD_ARGUMENT,
 								 "OAI verb '" + verbName + "' was submitted " +
@@ -111,22 +127,22 @@ public class OAIProvider {
 								 "(value='" + ctx.getParameter(key) + "')");
 				}
 			}
-			
-			if (ctx.hasErrors()) {
-				OAIOutputStream out =
-					ctx.getOutputStream(HttpServletResponse.SC_BAD_REQUEST);
-				for (VerbContext.Error error : ctx.getErrors()) {
-					out.writeStartElement("error");
-					out.writeAttribute("code",
-							OAIErrorCode.toXmlString(error.getCode()));
-					out.writeCharacters(error.getMessage());
-					out.writeEndElement(); // error element
-				}
-				out.close();
-			}
 		} else {
 			ctx.addError(OAIErrorCode.BAD_VERB, "illegal OAI verb '" +
 					verbName + "'");
+		}
+
+		if (ctx.hasErrors()) {
+			OAIOutputStream out =
+				ctx.getOutputStream(HttpServletResponse.SC_BAD_REQUEST);
+			for (VerbContext.Error error : ctx.getErrors()) {
+				out.writeStartElement("error");
+				out.writeAttribute("code",
+						OAIErrorCode.toXmlString(error.getCode()));
+				out.writeCharacters(error.getMessage());
+				out.writeEndElement(); // error element
+			}
+			out.close();
 		}
 	}
 
