@@ -19,6 +19,8 @@ public interface VerbContext {
 
 	// XXX: add method for fetching request timestamp
 
+	public boolean hasArgument(Argument.Name name);
+
 	public String getArgument(Argument.Name name);
 
 	public Map<Argument.Name, String> getArguments();
