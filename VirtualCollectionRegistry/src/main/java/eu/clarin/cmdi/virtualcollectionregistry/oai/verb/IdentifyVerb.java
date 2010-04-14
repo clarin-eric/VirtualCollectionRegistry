@@ -13,7 +13,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream.NamespaceDec
 public class IdentifyVerb extends Verb {
 	private static List<NamespaceDecl> descsNsDecls = Arrays.asList(
 			new NamespaceDecl(MetadataConstants.NS_OAI_DC, null,
-                              MetadataConstants.NS_OAI_DC_SCHEMA_LOCATION)
+                              MetadataConstants.NS_OAI_DC_SCHEMA_LOCATION),
+            new NamespaceDecl(MetadataConstants.NS_DC, "dc")
 	);
 	private static List<NamespaceDecl> identifierNsDecls = Arrays.asList(
 			new NamespaceDecl(MetadataConstants.NS_OAI_IDENTIFIER, null,
@@ -56,10 +57,35 @@ public class IdentifyVerb extends Verb {
 			out.writeEndElement(); // adminEmail element
 		}
 
-		// XXX: earliestDatestamp
-		// XXX: deletedRecord
-		// XXX: granularity
-		// XXX: compression?
+		out.writeStartElement("earliestDatestamp");
+		// FIXME: consider granularity
+		out.writeCharacters(repository.getEarliestTimestamp());
+		out.writeEndElement(); // protocolVersion element
+
+		out.writeStartElement("deletedRecord");
+		switch (repository.getDeletedNotion()) {
+		case NO:
+			out.writeCharacters("no");
+			break;
+		case PERSISTENT:
+			out.writeCharacters("persistent");
+			break;
+		case TRANSIENT:
+			out.writeCharacters("transient");
+			break;
+		}
+		out.writeEndElement(); // deletedRecord element
+
+		out.writeStartElement("granularity");
+		switch (repository.getGranularity()) {
+		case DAYS:
+			out.writeCharacters("YYYY-MM-DD");
+			break;
+		case SECONDS:
+			out.writeCharacters("YYYY-MM-DDThh:mm:ssZ");
+			break;
+		}
+		out.writeEndElement(); // granularity element
 
 		// description/oai-identifier
 		out.writeStartElement("description");
@@ -71,7 +97,7 @@ public class IdentifyVerb extends Verb {
 		out.writeCharacters("oai");
 		out.writeEndElement(); // scheme element
 		out.writeStartElement(MetadataConstants.NS_OAI_IDENTIFIER,
-						      "repository");
+						      "repositoryIdentifier");
 		out.writeCharacters(repository.getId());
 		out.writeEndElement(); // repository element
 		out.writeStartElement(MetadataConstants.NS_OAI_IDENTIFIER,
@@ -80,8 +106,7 @@ public class IdentifyVerb extends Verb {
 		out.writeEndElement(); // delimiter element
 		out.writeStartElement(MetadataConstants.NS_OAI_IDENTIFIER,
 				              "sampleIdentifier");
-		out.writeCharacters(repository
-				.makeRecordId(repository.getSampleRecordId()));
+		out.writeCharacters(repository.getSampleRecordId());
 		out.writeEndElement(); // sampleIdentifier element
 		out.writeEndElement(); // oai-identifier element
 		out.writeEndElement(); // description element
@@ -92,10 +117,10 @@ public class IdentifyVerb extends Verb {
 			out.writeStartElement(MetadataConstants.NS_OAI_DC,
 								  "dc",
 								  descsNsDecls);
-			out.writeStartElement(MetadataConstants.NS_OAI_DC, "title");
+			out.writeStartElement(MetadataConstants.NS_DC, "title");
 			out.writeCharacters(repository.getName());
 			out.writeEndElement(); // title
-			out.writeStartElement(MetadataConstants.NS_OAI_DC, "description");
+			out.writeStartElement(MetadataConstants.NS_DC, "description");
 			out.writeCharacters(repository.getDescription());
 			out.writeEndElement(); // description
 			out.writeEndElement(); // dc element

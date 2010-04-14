@@ -29,7 +29,7 @@ public class OAIProvider {
 		verbs.add(new GetRecordVerb());
 	}
 
-	public void setRepository(OAIRepository repository) {
+	public void setRepository(OAIRepository repository) throws OAIException {
 		if (repository == null) {
 			throw new NullPointerException("repository == null");
 		}
