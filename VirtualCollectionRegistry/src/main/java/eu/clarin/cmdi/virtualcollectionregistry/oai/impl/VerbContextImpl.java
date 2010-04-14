@@ -15,8 +15,9 @@ import javax.servlet.http.HttpServletResponse;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIErrorCode;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIProvider;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepositoryAdapter;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument;
 
 
 public class VerbContextImpl implements VerbContext {
@@ -40,19 +41,20 @@ public class VerbContextImpl implements VerbContext {
 			return message;
 		}
 	} // class ErrorImpl
-	private final OAIProvider provider;
 	private final HttpServletRequest request;
 	private final HttpServletResponse response;
-	private String verb = null;
-	private Map<String, String> arguments = null;
-	private List<Error> errors = null;
+	private OAIRepositoryAdapter repository;
+	private String verb;
+	private Map<Argument.Name, String> arguments;
+	private List<Error> errors;
 
-	VerbContextImpl(OAIProvider provider,
-	  			   HttpServletRequest request,
-	  			   HttpServletResponse response) {
-		this.provider = provider;
-		this.request = request;
-		this.response = response;
+	VerbContextImpl(HttpServletRequest request, HttpServletResponse response) {
+		this.request    = request;
+		this.response   = response;
+	}
+
+	public void setRepository(OAIRepositoryAdapter repository) {
+		this.repository = repository;
 	}
 
 	public String getParameter(String name) {
@@ -91,12 +93,12 @@ public class VerbContextImpl implements VerbContext {
 		this.verb = verb;
 	}
 
-	public void setArgument(String name, String value) {
+	public void setArgument(Argument.Name name, String value) {
 		if ((name == null) || (value == null)) {
 			throw new NullPointerException("name == null || value == null");
 		}
 		if (arguments == null) {
-			arguments = new HashMap<String, String>();
+			arguments = new HashMap<Argument.Name, String>();
 		}
 		arguments.put(name, value);
 	}
@@ -107,12 +109,12 @@ public class VerbContextImpl implements VerbContext {
 	}
 
 	@Override
-	public OAIProvider getProvider() {
-		return provider;
+	public OAIRepositoryAdapter getRepository() {
+		return repository;
 	}
 
 	@Override
-	public String getArgument(String name) {
+	public String getArgument(Argument.Name name) {
 		String value = null;
 		if (arguments != null) {
 			value = arguments.get(name);
@@ -121,7 +123,7 @@ public class VerbContextImpl implements VerbContext {
 	}
 
 	@Override
-	public Map<String, String> getArguments() {
+	public Map<Argument.Name, String> getArguments() {
 		if (arguments == null) {
 			return Collections.emptyMap();
 		}
@@ -165,6 +167,7 @@ public class VerbContextImpl implements VerbContext {
 			response.setStatus(status);
 			response.setCharacterEncoding("utf-8");
 			response.setContentType("text/xml");
+			response.setBufferSize(8192);
 			return new OAIOutputStreamImpl(this, response.getOutputStream());
 		} catch (Exception e) {
 			throw new OAIException("error creating output stream", e);

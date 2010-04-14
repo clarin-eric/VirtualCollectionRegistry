@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.oai.impl;
 
 import java.io.IOException;
+import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -40,9 +41,18 @@ public class OAIProviderServlet extends HttpServlet {
 			                   HttpServletResponse response)
 		throws ServletException, IOException {
 		try {
-			VerbContextImpl ctx =
-				new VerbContextImpl(provider, request, response);
-			provider.process(ctx);
+			if (provider.hasRepository()) {
+				VerbContextImpl ctx = new VerbContextImpl(request, response);
+				provider.process(ctx);
+			} else {
+				response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
+				response.setHeader("Retry-After", "3600");
+				response.setContentType("text/plain");
+				PrintWriter out = response.getWriter();
+				out.print("OAI Provider is not ready. ");
+				out.println("Please retry after 10 minutes.");
+				out.close();
+			}
 		} catch (Exception e) {
 			logger.error("OAI provider error", e);
 			response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,

@@ -20,7 +20,8 @@ public class OAIProvider {
 		LoggerFactory.getLogger(OAIProvider.class);
 	private static final OAIProvider s_instance = new OAIProvider();
 	private final List<Verb> verbs;
-
+	private OAIRepositoryAdapter repository;
+	
 	private OAIProvider() {
 		super();
 		verbs = new ArrayList<Verb>();
@@ -28,9 +29,29 @@ public class OAIProvider {
 		verbs.add(new GetRecordVerb());
 	}
 
+	public void setRepository(OAIRepository repository) {
+		if (repository == null) {
+			throw new NullPointerException("repository == null");
+		}
+		if (this.repository != null) {
+			throw new IllegalStateException("repository is already set");
+		}
+		logger.debug("setting repository '{}'", repository.getId());
+		this.repository = new OAIRepositoryAdapter(this, repository);
+	}
+
+	public boolean hasRepository() {
+		return repository != null;
+	}
+
 	public void process(VerbContextImpl ctx) throws OAIException {
+		if (repository == null) {
+			throw new OAIException("no repository configured");
+		}
+		ctx.setRepository(repository);
+
+		// process verb argument
 		Verb verb = null;
-		
 		String verbName = ctx.getParameter("verb");
 		if (verbName != null) {
 			if (!ctx.isRepeatedParameter("verb")) {
@@ -48,13 +69,12 @@ public class OAIProvider {
 		}
 
 		if (verb != null) {
-			// set verb
 			ctx.setVerb(verbName);
 
 			// process arguments
 			Set<String> remaining = ctx.getParameterNames();
 			for (Argument arg : verb.getArguments()) {
-				String value = ctx.getParameter(arg.getName());
+				String value = ctx.getParameter(arg.getNameAsString());
 				if ((value == null) && arg.isRequired()) {
 					ctx.addError(OAIErrorCode.BAD_ARGUMENT,
 								 "OAI verb '" + verbName +
@@ -62,7 +82,7 @@ public class OAIProvider {
 	                             arg.getName() + "'");
 				} else {
 					remaining.remove(arg.getName());
-					if (ctx.isRepeatedParameter(arg.getName())) {
+					if (ctx.isRepeatedParameter(arg.getNameAsString())) {
 						ctx.addError(OAIErrorCode.BAD_ARGUMENT,
 									 "OAI verb '" + verbName +
 									 "' has repeated values for argument '" +

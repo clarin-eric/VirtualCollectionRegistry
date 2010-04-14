@@ -3,6 +3,8 @@ package eu.clarin.cmdi.virtualcollectionregistry.oai;
 import java.util.List;
 import java.util.Map;
 
+import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument;
+
 
 public interface VerbContext {
 	public static interface Error {
@@ -11,13 +13,15 @@ public interface VerbContext {
 		public String getMessage();
 	} // interface Error
 
-	public OAIProvider getProvider();
+	public OAIRepositoryAdapter getRepository();
 
 	public String getVerb();
 
-	public String getArgument(String name);
+	// XXX: add method for fetching request timestamp
 
-	public Map<String, String> getArguments();
+	public String getArgument(Argument.Name name);
+
+	public Map<Argument.Name, String> getArguments();
 
 	public String getRequestURI();
 

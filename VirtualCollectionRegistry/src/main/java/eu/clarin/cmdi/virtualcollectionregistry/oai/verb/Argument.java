@@ -8,6 +8,25 @@ public class Argument {
 		RESUMPTIONTOKEN, // resumptionToken
 		SET,             // set
 		UNTIL;           // until
+		
+		public String toXmlString() {
+			switch (this) {
+			case FROM:
+				return "from";
+			case IDENTIFIER:
+				return "identifier";
+			case METADATAPREFIX:
+				return "metadataPrefix";
+			case RESUMPTIONTOKEN:
+				return "resumptionToken";
+			case SET:
+				return "set";
+			case UNTIL:
+				return "until";
+			default:
+				throw new InternalError("invalid name: " + this);
+			}
+		}
 	} // enum Name
 	private final Name name;
 	private final boolean required;
@@ -17,23 +36,12 @@ public class Argument {
 		this.required = required;
 	}
 
-	public String getName() {
-		switch (name) {
-		case FROM:
-			return "from";
-		case IDENTIFIER:
-			return "identifier";
-		case METADATAPREFIX:
-			return "metadataPrefix";
-		case RESUMPTIONTOKEN:
-			return "resumptionToken";
-		case SET:
-			return "set";
-		case UNTIL:
-			return "until";
-		default:
-			throw new InternalError("invalid name: " + name);
-		}
+	public Name getName() {
+		return name;
+	}
+
+	public String getNameAsString() {
+		return name.toXmlString();
 	}
 
 	public boolean isRequired() {

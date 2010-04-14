@@ -16,5 +16,5 @@ public abstract class Verb {
 	public abstract List<Argument> getArguments();
 
 	public abstract void process(VerbContext ctx) throws OAIException;
-	
+
 } // abstract class Verb
