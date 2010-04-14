@@ -9,8 +9,14 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository;
 class VirtualColletionRegistryOAIRepository implements OAIRepository {
 	private static final List<String> adminEmailAddresses =
 		Arrays.asList("vcr-admin@clarin.eu");
-	private static final List<String> supportedPrefixes =
-		Arrays.asList("oai_dc", "cmdi");
+	private static final List<MetadataFormat> supportedFormats = Arrays.asList(
+			new MetadataFormat("oai_dc",
+							   "http://www.openarchives.org/OAI/2.0/oai_dc/",
+							   "http://www.openarchives.org/OAI/2.0/oai_dc.xsd"),
+			new MetadataFormat("cmdi",
+							   "urn:x-clarin:cmdi-namespace",
+							   "http://www.clarin.eu/path/to/schema.xsd")
+	);
 	@SuppressWarnings("unused")
 	private final VirtualCollectionRegistry registry;
 	
@@ -34,8 +40,8 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 	}
 	
 	@Override
-	public Deleted getDeletedNotion() {
-		return Deleted.NO;
+	public DeletedNotion getDeletedNotion() {
+		return DeletedNotion.NO;
 	}
 	
 	@Override
@@ -49,8 +55,8 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 	}
 
 	@Override
-	public List<String> getSupportedMetadataPrefixes() {
-		return supportedPrefixes;
+	public List<MetadataFormat> getSupportedMetadataFormats() {
+		return supportedFormats;
 	}
 
 	@Override
