@@ -3,13 +3,16 @@ package eu.clarin.cmdi.virtualcollectionregistry.oai;
 import java.util.Date;
 import java.util.List;
 
+import javax.xml.XMLConstants;
+
 public interface OAIOutputStream {
 	public static class NamespaceDecl {
 		private final String namespaceURI;
 		private final String prefix;
 		private final String schemaLocation;
-		
-		public NamespaceDecl(String namespaceURI, String prefix, String schemaLocation) {
+
+		public NamespaceDecl(String namespaceURI, String prefix,
+				String schemaLocation) {
 			this.namespaceURI   = namespaceURI;
 			this.prefix         = prefix;
 			this.schemaLocation = schemaLocation;
@@ -22,11 +25,11 @@ public interface OAIOutputStream {
 		public String getNamespaceURI() {
 			return namespaceURI;
 		}
-		
+
 		public String getPrefix() {
-			return prefix;
+			return prefix != null ? prefix : XMLConstants.DEFAULT_NS_PREFIX;
 		}
-		
+
 		public boolean hasSchemaLocation() {
 			return schemaLocation != null;
 		}

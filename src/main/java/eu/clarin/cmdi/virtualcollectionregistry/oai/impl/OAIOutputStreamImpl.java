@@ -15,6 +15,7 @@ import javax.xml.stream.XMLStreamWriter;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument;
 
 
 public class OAIOutputStreamImpl implements OAIOutputStream {
@@ -61,14 +62,13 @@ public class OAIOutputStreamImpl implements OAIOutputStream {
 			writer.writeStartElement("request");
 			if (ctx.getVerb() != null) {
 				writer.writeAttribute("verb", ctx.getVerb());
-				Map<String, String> args = ctx.getArguments();
-				for (String key : args.keySet()) {
-					writer.writeAttribute(key, args.get(key));
+				Map<Argument.Name, String> args = ctx.getArguments();
+				for (Argument.Name key : args.keySet()) {
+					writer.writeAttribute(key.toXmlString(), args.get(key));
 				}
 			}
 			writer.writeCharacters(ctx.getRequestURI());
 			writer.writeEndElement(); // request element
-			writer.flush();
 		} catch (XMLStreamException e) {
 			throw new OAIException("error while serializing response", e);
 		}
