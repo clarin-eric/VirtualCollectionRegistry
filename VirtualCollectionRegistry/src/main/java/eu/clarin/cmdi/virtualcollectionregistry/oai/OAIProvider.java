@@ -135,8 +135,7 @@ public class OAIProvider {
 		}
 
 		if (ctx.hasErrors()) {
-			OAIOutputStream out =
-				ctx.getOutputStream(HttpServletResponse.SC_BAD_REQUEST);
+			OAIOutputStream out = ctx.getOutputStream();
 			for (VerbContext.Error error : ctx.getErrors()) {
 				out.writeStartElement("error");
 				out.writeAttribute("code",
