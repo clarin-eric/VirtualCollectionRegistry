@@ -31,10 +31,10 @@ public interface VerbContext {
 
 	public List<Error> getErrors();
 
-	public abstract OAIOutputStream getOutputStream()
+	public OAIOutputStream getOutputStream()
 		throws OAIException;
 
-	public abstract OAIOutputStream getOutputStream(int status)
+	public OAIOutputStream getOutputStream(int status)
 		throws OAIException;
 
 } // interface VerbContext

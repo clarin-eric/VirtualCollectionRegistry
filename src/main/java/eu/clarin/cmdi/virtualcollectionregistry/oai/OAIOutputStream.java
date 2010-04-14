@@ -39,29 +39,29 @@ public interface OAIOutputStream {
 		}
 	} // class NamespaceDecl
 
-	public abstract void close() throws OAIException;
+	public void close() throws OAIException;
 
-	public abstract void flush() throws OAIException;
+	public void flush() throws OAIException;
 	
-	public abstract void writeStartElement(String localName)
+	public void writeStartElement(String localName)
 			throws OAIException;
 
-	public abstract void writeStartElement(String namespaceURI,
+	public void writeStartElement(String namespaceURI,
 			String localName) throws OAIException;
 
-	public abstract void writeStartElement(String namespaceURI,
+	public void writeStartElement(String namespaceURI,
 			String localName, List<NamespaceDecl> decls) throws OAIException;
 
-	public abstract void writeEndElement() throws OAIException;
+	public void writeEndElement() throws OAIException;
 
-	public abstract void writeAttribute(String localName, String value)
+	public void writeAttribute(String localName, String value)
 		throws OAIException;
 
-	public abstract void writeAttribute(String namespaceURI, String localName,
+	public void writeAttribute(String namespaceURI, String localName,
 			String value) throws OAIException;
 
-	public abstract void writeCharacters(String text) throws OAIException;
+	public void writeCharacters(String text) throws OAIException;
 
-	public abstract void writeDateAsCharacters(Date date) throws OAIException;
+	public void writeDateAsCharacters(Date date) throws OAIException;
 
 } // interface OAIOutputStream
