@@ -19,6 +19,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionValidator;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.query.QueryException;
@@ -66,6 +67,10 @@ public class VirtualCollectionRegistry {
 		} catch (RuntimeException e) {
 			logger.error("error initalizing virtual collection registry", e);
 			throw e;
+		} catch (OAIException e) {
+			logger.error("error initalizing virtual collection registry", e);
+			throw new VirtualCollectionRegistryException(
+					"setting OAI repository failed", e);
 		} catch (VirtualCollectionRegistryException e) {
 			logger.error("error initalizing virtual collection registry", e);
 			throw e;
