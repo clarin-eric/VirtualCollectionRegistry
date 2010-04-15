@@ -13,6 +13,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.GetRecordVerb;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.IdentifyVerb;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.ListMetadataFormatsVerb;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.ListSetsVerb;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Verb;
 
 public class OAIProvider {
@@ -27,6 +28,7 @@ public class OAIProvider {
 		verbs = new ArrayList<Verb>();
 		verbs.add(new IdentifyVerb());
 		verbs.add(new ListMetadataFormatsVerb());
+		verbs.add(new ListSetsVerb());
 		verbs.add(new GetRecordVerb());
 	}
 

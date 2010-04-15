@@ -37,6 +37,12 @@ public class OAIRepositoryAdapter {
 		if (this.earliestTimestamp == null) {
 			throw new OAIException("invalid earliest timestamp");
 		}
+		
+		// XXX: for now raise error, if repository supports sets
+		if (repository.getSetDescs() != null) {
+			throw new OAIException("Repository supportes set, but set "+
+					"support is not available, yet!");
+		}
 	}
 
 	public OAIProvider getProvider() {
@@ -88,12 +94,17 @@ public class OAIRepositoryAdapter {
 	}
 
 	public boolean supportsMetadataFormat(String prefix) {
+		// XXX: maybe store prefixes in hash map for faster access?
 		for (MetadataFormat format : repository.getSupportedMetadataFormats()) {
 			if (prefix.equals(format.getPrefix())) {
 				return true;
 			}
 		}
 		return false;
+	}
+
+	public boolean isUsingSets() {
+		return repository.getSetDescs() != null;
 	}
 
 	private static SimpleDateFormat createDateFormat(OAIRepository repository) {
