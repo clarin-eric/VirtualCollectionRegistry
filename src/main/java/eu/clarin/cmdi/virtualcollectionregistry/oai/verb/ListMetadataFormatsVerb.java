@@ -3,7 +3,6 @@ package eu.clarin.cmdi.virtualcollectionregistry.oai.verb;
 import java.util.Arrays;
 import java.util.List;
 
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIErrorCode;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepositoryAdapter;
@@ -32,8 +31,8 @@ public class ListMetadataFormatsVerb extends Verb {
 		OAIRepositoryAdapter repository = ctx.getRepository();
 
 		if (ctx.hasArgument(Name.IDENTIFIER)) {
-			logger.debug("ListMetadataFormats for record not implemented, yet!");
-			ctx.addError(OAIErrorCode.ID_DOES_NOT_EXIST, "record not found");
+			throw new OAIException("ListMetadataFormats verb for a " +
+					"particular record is not implemented, yet!");
 		} else {
 			
 			OAIOutputStream out = ctx.getOutputStream();
