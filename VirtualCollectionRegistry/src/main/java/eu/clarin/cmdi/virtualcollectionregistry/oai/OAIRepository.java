@@ -46,12 +46,14 @@ public interface OAIRepository {
 		public String getSchemaLocation() {
 			return schemaLocation;
 		}
-	} // class MetadataFormat
+	} // inner class MetadataFormat
 
 	public String getId();
-	
+
 	public String getName();
-	
+
+	public String getDescription();
+
 	public List<String> getAdminAddreses();
 	
 	public Date getEarliestTimestamp();
@@ -62,8 +64,9 @@ public interface OAIRepository {
 
 	public List<MetadataFormat> getSupportedMetadataFormats();
 
-	public String getDescription();
-
 	public String getSampleRecordId();
+
+	// FIXME: define class for describing sets
+	public List<Object> getSetDescs();
 
 } // interface OAIRepository
