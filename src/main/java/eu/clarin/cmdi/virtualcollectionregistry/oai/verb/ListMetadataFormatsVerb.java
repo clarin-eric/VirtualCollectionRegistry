@@ -3,6 +3,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.oai.verb;
 import java.util.Arrays;
 import java.util.List;
 
+import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIErrorCode;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepositoryAdapter;
@@ -30,15 +31,27 @@ public class ListMetadataFormatsVerb extends Verb {
 		
 		OAIRepositoryAdapter repository = ctx.getRepository();
 
+		List<MetadataFormat> formats = null;
 		if (ctx.hasArgument(Name.IDENTIFIER)) {
-			throw new OAIException("ListMetadataFormats verb for a " +
+			String identifer =
+				repository.getInternalId(ctx.getArgument(Name.IDENTIFIER));
+			if (identifer != null) {
+				logger.info("Identifier = \"{}\"", identifer);
+				throw new OAIException("ListMetadataFormats verb for a " +
 					"particular record is not implemented, yet!");
+			} else {
+				ctx.addError(OAIErrorCode.BAD_ARGUMENT,
+							 "Invalid identifier syntax");
+			}
 		} else {
-			
+			formats = repository.getSupportedMetadataFormats();
+		}
+
+		if (!ctx.hasErrors()) {
+			// render response
 			OAIOutputStream out = ctx.getOutputStream();
 			out.writeStartElement("ListMetadataFormats");
-			for (MetadataFormat format :
-					repository.getSupportedMetadataFormats()) {
+			for (MetadataFormat format : formats) {
 				out.writeStartElement("metadataFormat");
 
 				out.writeStartElement("metadataPrefix");

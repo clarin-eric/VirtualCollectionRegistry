@@ -75,4 +75,15 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 		return null;
 	}
 
+	@Override
+	public boolean isValidInternalId(String id) {
+		try {
+			long i = Long.parseLong(id);
+			return (i >= 0);
+		} catch (NumberFormatException e) {
+			/* IGNORE */
+		}
+		return false;
+	}
+
 } // VirtualColletionRegistryOAIRepository
