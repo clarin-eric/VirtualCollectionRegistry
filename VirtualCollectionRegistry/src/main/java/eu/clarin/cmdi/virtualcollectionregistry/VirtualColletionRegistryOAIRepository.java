@@ -35,6 +35,12 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 	}
 
 	@Override
+	public String getDescription() {
+		return "The virtual collection registry is a component of the " +
+			   "CLARIN metadata initiative.";
+	}
+
+	@Override
 	public Date getEarliestTimestamp() {
 		return new Date();
 	}
@@ -60,14 +66,13 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 	}
 
 	@Override
-	public String getDescription() {
-		return "The virtual collection registry is a component of the " +
-			   "CLARIN metadata initiative.";
+	public String getSampleRecordId() {
+		return "23";
 	}
 
 	@Override
-	public String getSampleRecordId() {
-		return "23";
+	public List<Object> getSetDescs() {
+		return null;
 	}
 
 } // VirtualColletionRegistryOAIRepository
