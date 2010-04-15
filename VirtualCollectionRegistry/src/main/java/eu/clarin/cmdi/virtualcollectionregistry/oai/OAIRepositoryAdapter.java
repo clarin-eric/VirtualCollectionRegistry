@@ -93,6 +93,23 @@ public class OAIRepositoryAdapter {
 		return "oai:" + repository.getId() + ":" +recordId;
 	}
 
+	public String getInternalId(String identifier) {
+		if (identifier == null) {
+			throw new NullPointerException("identifier == null");
+		}
+		int pos = identifier.indexOf(':'); 
+		if (pos != -1) {
+			pos = identifier.indexOf(':', pos + 1);
+			if (pos != -1) {
+				String id = identifier.substring(pos + 1);
+				if (repository.isValidInternalId(id)) {
+					return id;
+				}
+			}
+		}
+		return null;
+	}
+
 	public boolean supportsMetadataFormat(String prefix) {
 		// XXX: maybe store prefixes in hash map for faster access?
 		for (MetadataFormat format : repository.getSupportedMetadataFormats()) {
@@ -106,6 +123,7 @@ public class OAIRepositoryAdapter {
 	public boolean isUsingSets() {
 		return repository.getSetDescs() != null;
 	}
+
 
 	private static SimpleDateFormat createDateFormat(OAIRepository repository) {
 		SimpleDateFormat sdf = null;

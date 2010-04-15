@@ -69,4 +69,6 @@ public interface OAIRepository {
 	// FIXME: define class for describing sets
 	public List<Object> getSetDescs();
 
+	public boolean isValidInternalId(String id);
+
 } // interface OAIRepository
