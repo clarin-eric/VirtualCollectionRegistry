@@ -13,6 +13,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument.Name;
 public class GetRecordVerb extends Verb {
 	private static final List<Argument> s_arguments =
 		Arrays.asList(new Argument(Name.IDENTIFIER, true),
+					new Argument(Name.FROM, false),
 					  new Argument(Name.METADATAPREFIX, true));
 
 	@Override
@@ -29,15 +30,18 @@ public class GetRecordVerb extends Verb {
 	public void process(VerbContext ctx) throws OAIException {
 		logger.debug("process GET-RECORD");
 		
+		String from = ctx.getUnparsedArgument(Name.FROM);
+		System.err.println("FROM: \"" + from + "\"");
+
 		// XXX: testing only ...
 		OAIOutputStream out = ctx.getOutputStream();
 		out.writeStartElement("GetRecord");
 		out.writeStartElement("record");
 		
 		out.writeStartElement("header");
-		out.writeStartElement("identifier");
-		out.writeCharacters(ctx.getArgument(Name.IDENTIFIER));
-		out.writeEndElement();
+//		out.writeStartElement("identifier");
+//		out.writeCharacters(ctx.getArgument(Name.IDENTIFIER));
+//		out.writeEndElement();
 		out.writeStartElement("datestamp");
 		out.writeDateAsCharacters(new Date());
 		out.writeEndElement(); // datestamp element

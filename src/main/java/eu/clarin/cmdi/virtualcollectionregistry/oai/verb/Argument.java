@@ -34,6 +34,11 @@ public class Argument {
 		Pattern.compile("oai:[a-z][a-z\\d\\-]*(\\.[a-z][a-z\\d\\-]*)+:" +
 	                    "[\\w\\.!~\\*'\\(\\);/\\?:&=\\+\\$,%]+",
 	                    Pattern.CASE_INSENSITIVE);
+	private static final Pattern metadataPrefixRegEx =
+		Pattern.compile("[\\w\\.!~\\*'\\(\\)]+", Pattern.CASE_INSENSITIVE);
+	private static final Pattern dateRegEx =
+		Pattern.compile("\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}Z)?");
+	
 	private final Name name;
 	private final boolean required;
 
@@ -54,14 +59,23 @@ public class Argument {
 		return required;
 	}
 
-	public boolean validateArgument(String value) {
+	public boolean checkArgument(String value) {
 		switch (name) {
+		case FROM:
+			/* FALL_THROUGH */
+		case UNTIL:
+			return dateRegEx.matcher(value).matches();
 		case IDENTIFIER:
 			return identifierRegEx.matcher(value).matches();
-		default:
-			// XXX: implement validation
+		case METADATAPREFIX:
+			return metadataPrefixRegEx.matcher(value).matches();
+		case SET:
 			return true;
-		}
+		case RESUMPTIONTOKEN:
+			return true;
+		default:
+			throw new InternalError("invalid argument name");
+		} // switch
 	}
 
 } // class Argument

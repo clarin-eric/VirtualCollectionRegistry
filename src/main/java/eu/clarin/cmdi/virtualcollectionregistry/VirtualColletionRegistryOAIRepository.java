@@ -9,7 +9,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository;
 
 class VirtualColletionRegistryOAIRepository implements OAIRepository {
-	private static class RecordImpl implements Record {
+	private class RecordImpl implements Record {
 		private final VirtualCollection vc;
 
 		public RecordImpl(VirtualCollection vc) {
@@ -17,7 +17,7 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 		}
 		
 		@Override
-		public String getId() {
+		public String getLocalId() {
 			return Long.toString(vc.getId());
 		}
 
@@ -101,7 +101,7 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 	}
 
 	@Override
-	public String getSampleRecordId() {
+	public String getSampleRecordLocalId() {
 		return "23";
 	}
 
@@ -111,7 +111,7 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 	}
 
 	@Override
-	public boolean checkLocalId(String id) {
+	public boolean validateLocalId(String id) {
 		return convertStringToId(id) != -1;
 	}
 
