@@ -1,5 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.oai.verb;
 
+import java.util.regex.Pattern;
+
 public class Argument {
 	public static enum Name {
 		FROM,            // from
@@ -28,6 +30,10 @@ public class Argument {
 			}
 		}
 	} // enum Name
+	private static final Pattern identifierRegEx =
+		Pattern.compile("oai:[a-z][a-z\\d\\-]*(\\.[a-z][a-z\\d\\-]*)+:" +
+	                    "[\\w\\.!~\\*'\\(\\);/\\?:&=\\+\\$,%]+",
+	                    Pattern.CASE_INSENSITIVE);
 	private final Name name;
 	private final boolean required;
 
@@ -49,8 +55,13 @@ public class Argument {
 	}
 
 	public boolean validateArgument(String value) {
-		// XXX: implement validation
-		return true;
+		switch (name) {
+		case IDENTIFIER:
+			return identifierRegEx.matcher(value).matches();
+		default:
+			// XXX: implement validation
+			return true;
+		}
 	}
 
 } // class Argument

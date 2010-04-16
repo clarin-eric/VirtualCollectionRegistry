@@ -8,6 +8,7 @@ import java.util.TimeZone;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.DeletedNotion;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.Granularity;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.MetadataFormat;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.Record;
 
 
 public class OAIRepositoryAdapter {
@@ -90,20 +91,24 @@ public class OAIRepositoryAdapter {
 	}
 
 	public String makeRecordId(String recordId) {
-		return "oai:" + repository.getId() + ":" +recordId;
+		return "oai:" + repository.getId() + ":" + recordId;
 	}
 
-	public String getInternalId(String identifier) {
+	public String getLocalId(String identifier) {
 		if (identifier == null) {
 			throw new NullPointerException("identifier == null");
 		}
-		int pos = identifier.indexOf(':'); 
-		if (pos != -1) {
-			pos = identifier.indexOf(':', pos + 1);
-			if (pos != -1) {
-				String id = identifier.substring(pos + 1);
-				if (repository.isValidInternalId(id)) {
-					return id;
+		int pos1 = identifier.indexOf(':'); 
+		if (pos1 != -1) {
+			int pos2 = identifier.indexOf(':', pos1 + 1);
+			if (pos2 != -1) {
+				// check of repository id matches
+				String id = repository.getId();
+				if (identifier.regionMatches(pos1 + 1, id, 0, id.length())) {
+					String localId = identifier.substring(pos2 + 1);
+					if (repository.checkLocalId(localId)) {
+						return localId;
+					}
 				}
 			}
 		}
@@ -124,7 +129,17 @@ public class OAIRepositoryAdapter {
 		return repository.getSetDescs() != null;
 	}
 
-
+	public Record getRecord(String identifier) throws OAIException {
+		String localId = getLocalId(identifier);
+		if (localId != null) {
+			OAIRepository.Record record = repository.getRecord(localId);
+			if (record != null) {
+				return record;
+			}
+		}
+		return null;
+	}
+	
 	private static SimpleDateFormat createDateFormat(OAIRepository repository) {
 		SimpleDateFormat sdf = null;
 		switch (repository.getGranularity()) {
