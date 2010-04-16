@@ -48,6 +48,20 @@ public interface OAIRepository {
 		}
 	} // inner class MetadataFormat
 
+	public interface Record {
+
+		public String getId();
+
+		public Date getDatestamp();
+
+		// FIXME: define how to represent setSpecs
+		public List<Object> getSetSpec();
+
+		public boolean isDeleted();
+		
+		public List<MetadataFormat> getSupportedMetadataFormats();
+	} // interface Record
+
 	public String getId();
 
 	public String getName();
@@ -69,6 +83,9 @@ public interface OAIRepository {
 	// FIXME: define class for describing sets
 	public List<Object> getSetDescs();
 
-	public boolean isValidInternalId(String id);
+	public boolean checkLocalId(String id);
 
+	// XXX: OAIRepositoryException?
+	public Record getRecord(String id) throws OAIException;
+	
 } // interface OAIRepository

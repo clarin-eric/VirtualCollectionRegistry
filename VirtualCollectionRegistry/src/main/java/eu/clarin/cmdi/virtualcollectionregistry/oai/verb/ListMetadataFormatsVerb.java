@@ -9,6 +9,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepositoryAdapter;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.MetadataFormat;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.Record;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument.Name;
 
 public class ListMetadataFormatsVerb extends Verb {
@@ -33,15 +34,13 @@ public class ListMetadataFormatsVerb extends Verb {
 
 		List<MetadataFormat> formats = null;
 		if (ctx.hasArgument(Name.IDENTIFIER)) {
-			String identifer =
-				repository.getInternalId(ctx.getArgument(Name.IDENTIFIER));
-			if (identifer != null) {
-				logger.info("Identifier = \"{}\"", identifer);
-				throw new OAIException("ListMetadataFormats verb for a " +
-					"particular record is not implemented, yet!");
+			String identifier = ctx.getArgument(Name.IDENTIFIER);
+			Record record = repository.getRecord(identifier);
+			if (record != null) {
+				formats = record.getSupportedMetadataFormats();
 			} else {
-				ctx.addError(OAIErrorCode.BAD_ARGUMENT,
-							 "Invalid identifier syntax");
+				ctx.addError(OAIErrorCode.ID_DOES_NOT_EXIST,
+						"Record does not exist");
 			}
 		} else {
 			formats = repository.getSupportedMetadataFormats();

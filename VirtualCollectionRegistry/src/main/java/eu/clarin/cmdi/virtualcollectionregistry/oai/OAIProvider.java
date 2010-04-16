@@ -86,15 +86,16 @@ public class OAIProvider {
 						ctx.addError(OAIErrorCode.BAD_ARGUMENT,
 									 "OAI verb '" + verbName +
 									 "' has repeated values for argument '" +
-									 arg.getName() + "'");
+									 arg.getNameAsString() + "'");
 					} else {
 						if (arg.validateArgument(value)) {
 							ctx.setArgument(arg.getName(), value);
 						} else { 
 							ctx.addError(OAIErrorCode.BAD_ARGUMENT,
 										 "Value of argument '" +
-										 arg.getName() + "' of OAI verb '" +
-										 verbName + "' is invalid");
+										 arg.getNameAsString() +
+										 "' of OAI verb '" + verbName +
+										 "' is invalid");
 						}
 					}
 				} else {
@@ -102,7 +103,7 @@ public class OAIProvider {
 						ctx.addError(OAIErrorCode.BAD_ARGUMENT,
 									 "OAI verb '" + verbName +
 		                             "' is missing required argument '" +
-		                             arg.getName() + "'");
+		                             arg.getNameAsString() + "'");
 					}
 				}
 			}  // for

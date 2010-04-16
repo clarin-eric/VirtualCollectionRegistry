@@ -4,9 +4,45 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository;
 
 class VirtualColletionRegistryOAIRepository implements OAIRepository {
+	private static class RecordImpl implements Record {
+		private final VirtualCollection vc;
+
+		public RecordImpl(VirtualCollection vc) {
+			this.vc = vc;
+		}
+		
+		@Override
+		public String getId() {
+			return Long.toString(vc.getId());
+		}
+
+		@Override
+		public Date getDatestamp() {
+			return vc.getModifiedDate();
+		}
+
+
+		@Override
+		public List<Object> getSetSpec() {
+			return null;
+		}
+
+		@Override
+		public boolean isDeleted() {
+			// FIXME: check vc state
+			return false;
+		}
+
+		@Override
+		public List<MetadataFormat> getSupportedMetadataFormats() {
+			return supportedFormats;
+		}
+	} // inner class RecordImpl
 	private static final List<String> adminEmailAddresses =
 		Arrays.asList("vcr-admin@clarin.eu");
 	private static final List<MetadataFormat> supportedFormats = Arrays.asList(
@@ -17,7 +53,6 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 							   "urn:x-clarin:cmdi-namespace",
 							   "http://www.clarin.eu/path/to/schema.xsd")
 	);
-	@SuppressWarnings("unused")
 	private final VirtualCollectionRegistry registry;
 	
 	VirtualColletionRegistryOAIRepository(VirtualCollectionRegistry registry) {
@@ -26,7 +61,7 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 
 	@Override
 	public String getId() {
-		return "eu.clarin.cmdi.VirtualCollectionRegistry";
+		return "virtualcollectionregistry.cmdi.clarin.eu";
 	}
 
 	@Override
@@ -76,14 +111,36 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 	}
 
 	@Override
-	public boolean isValidInternalId(String id) {
-		try {
-			long i = Long.parseLong(id);
-			return (i >= 0);
-		} catch (NumberFormatException e) {
-			/* IGNORE */
+	public boolean checkLocalId(String id) {
+		return convertStringToId(id) != -1;
+	}
+
+	@Override
+	public Record getRecord(String localId) throws OAIException {
+		long id = convertStringToId(localId);
+		if (id == -1) {
+			throw new OAIException("invalid localId");
 		}
-		return false;
+		try {
+			VirtualCollection vc = registry.retrieveVirtualCollection(id);
+			return new RecordImpl(vc);
+		} catch (VirtualCollectionNotFoundException e) {
+			return null;
+		} catch (VirtualCollectionRegistryException e) {
+			throw new OAIException("error", e);
+		}
+	}
+
+	private static long convertStringToId(String str) {
+		try {
+			long i = Long.parseLong(str);
+			if (i > 0) {
+				return i;
+			}
+		} catch (NumberFormatException e) {
+			/* FALL-TROUGH */
+		}
+		return -1;
 	}
 
 } // VirtualColletionRegistryOAIRepository
