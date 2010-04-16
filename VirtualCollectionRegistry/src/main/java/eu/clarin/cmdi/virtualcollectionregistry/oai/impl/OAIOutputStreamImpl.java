@@ -45,6 +45,14 @@ public class OAIOutputStreamImpl implements OAIOutputStream {
 		try {
 			writer = writerFactory.get().createXMLStreamWriter(stream, "utf-8");
 			writer.writeStartDocument("utf-8", "1.0");
+
+			StringBuilder data = new StringBuilder();
+			data.append("type=\"text/xsl\" href=\"");
+			data.append(ctx.getContextPath());
+			data.append("/oai2.xsl\"");
+			writer.writeProcessingInstruction("xml-stylesheet",
+											  data.toString());
+
 			writer.setDefaultNamespace(NS_OAI);
 			writer.writeStartElement("OAI-PMH");
 			writer.writeDefaultNamespace(NS_OAI);
@@ -62,7 +70,7 @@ public class OAIOutputStreamImpl implements OAIOutputStream {
 			writer.writeStartElement("request");
 			if (ctx.getVerb() != null) {
 				writer.writeAttribute("verb", ctx.getVerb());
-				Map<Argument.Name, String> args = ctx.getArguments();
+				Map<Argument.Name, String> args = ctx.getUnparsedArguments();
 				for (Argument.Name key : args.keySet()) {
 					writer.writeAttribute(key.toXmlString(), args.get(key));
 				}
@@ -122,9 +130,19 @@ public class OAIOutputStreamImpl implements OAIOutputStream {
 				writer.setPrefix(decl.getPrefix(), decl.getNamespaceURI());
 			}
 			writer.writeStartElement(namespaceURI, localName);
+			boolean schemaDeclWritten = false;
 			for (NamespaceDecl decl : decls) {
 				writer.writeNamespace(decl.getPrefix(), decl.getNamespaceURI());
 				if (decl.hasSchemaLocation()) {
+					/* From an XML point of view, the XSI-namespace is still in
+					 * scope and this is not needed, but all other provides
+					 * show this behavior.
+					 */
+					if (!schemaDeclWritten) {
+						writer.writeNamespace("xsi",
+								XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+						schemaDeclWritten = true;
+					}
 					writer.writeAttribute(
 							XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI,
 							"schemaLocation",

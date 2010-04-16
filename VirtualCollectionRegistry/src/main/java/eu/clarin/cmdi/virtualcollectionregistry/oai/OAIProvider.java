@@ -88,9 +88,9 @@ public class OAIProvider {
 									 "' has repeated values for argument '" +
 									 arg.getNameAsString() + "'");
 					} else {
-						if (arg.validateArgument(value)) {
-							ctx.setArgument(arg.getName(), value);
-						} else { 
+						if (arg.checkArgument(value)) {
+							ctx.setArgument(arg.getName(), value, null);
+						} else {
 							ctx.addError(OAIErrorCode.BAD_ARGUMENT,
 										 "Value of argument '" +
 										 arg.getNameAsString() +
@@ -108,20 +108,7 @@ public class OAIProvider {
 				}
 			}  // for
 
-			if (remaining.isEmpty()) {
-				if (logger.isDebugEnabled()) {
-					logger.debug("processing verb '{}'", verb.getName());
-					Map<Argument.Name, String> args = ctx.getArguments();
-					if (!args.isEmpty()) {
-						int i = 0;
-						for (Argument.Name name : args.keySet()) {
-							logger.debug("argument[" + i++ + "]: {}='{}'",
-									name.toXmlString(), args.get(name));
-						}
-					}
-				}
-				verb.process(ctx);
-			} else {
+			if (!remaining.isEmpty()) {
 				logger.debug("received request with illegal arguments");
 				for (String key : remaining) {
 					ctx.addError(OAIErrorCode.BAD_ARGUMENT,
@@ -135,7 +122,21 @@ public class OAIProvider {
 					verbName + "'");
 		}
 
-		if (ctx.hasErrors()) {
+		if (!ctx.hasErrors()) {
+			if (logger.isDebugEnabled()) {
+				logger.debug("processing verb '{}'", verb.getName());
+				Map<Argument.Name, String> args =
+					ctx.getUnparsedArguments();
+				if (!args.isEmpty()) {
+					int i = 0;
+					for (Argument.Name name : args.keySet()) {
+						logger.debug("argument[" + i++ + "]: {}='{}'",
+								name.toXmlString(), args.get(name));
+					}
+				}
+			}
+			verb.process(ctx);
+		} else {
 			OAIOutputStream out = ctx.getOutputStream();
 			for (VerbContext.Error error : ctx.getErrors()) {
 				out.writeStartElement("error");

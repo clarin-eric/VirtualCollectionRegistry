@@ -12,9 +12,9 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream.NamespaceDec
 
 public class IdentifyVerb extends Verb {
 	private static List<NamespaceDecl> descsNsDecls = Arrays.asList(
-			new NamespaceDecl(MetadataConstants.NS_OAI_DC, null,
+			new NamespaceDecl(MetadataConstants.NS_OAI_DC, "oai_dc",
                               MetadataConstants.NS_OAI_DC_SCHEMA_LOCATION),
-            new NamespaceDecl(MetadataConstants.NS_DC, "dc")
+            new NamespaceDecl(MetadataConstants.NS_DC, null)
 	);
 	private static List<NamespaceDecl> identifierNsDecls = Arrays.asList(
 			new NamespaceDecl(MetadataConstants.NS_OAI_IDENTIFIER, null,
@@ -58,9 +58,8 @@ public class IdentifyVerb extends Verb {
 		}
 
 		out.writeStartElement("earliestDatestamp");
-		// FIXME: consider granularity
 		out.writeCharacters(repository.getEarliestTimestamp());
-		out.writeEndElement(); // protocolVersion element
+		out.writeEndElement(); // earliestDatestamp element
 
 		out.writeStartElement("deletedRecord");
 		switch (repository.getDeletedNotion()) {

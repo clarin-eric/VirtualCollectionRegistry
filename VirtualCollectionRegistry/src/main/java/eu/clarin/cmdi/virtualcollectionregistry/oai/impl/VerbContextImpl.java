@@ -41,11 +41,28 @@ public class VerbContextImpl implements VerbContext {
 			return message;
 		}
 	} // class ErrorImpl
+	private class ArgumentValueImpl {
+		private String value;
+		private Object parsedValue;
+		
+		public ArgumentValueImpl(String value, Object parsedValue) {
+			this.value       = value;
+			this.parsedValue = parsedValue != null ? parsedValue : value;
+		}
+		
+		public String getValue() {
+			return value;
+		}
+		
+		public Object getParsedValue() {
+			return parsedValue;
+		}
+	} // class ArgumrntValueImpl
 	private final HttpServletRequest request;
 	private final HttpServletResponse response;
 	private OAIRepositoryAdapter repository;
 	private String verb;
-	private Map<Argument.Name, String> arguments;
+	private Map<Argument.Name, ArgumentValueImpl> arguments;
 	private List<Error> errors;
 
 	VerbContextImpl(HttpServletRequest request, HttpServletResponse response) {
@@ -93,14 +110,14 @@ public class VerbContextImpl implements VerbContext {
 		this.verb = verb;
 	}
 
-	public void setArgument(Argument.Name name, String value) {
+	public void setArgument(Argument.Name name, String value, Object parsedValue) {
 		if ((name == null) || (value == null)) {
 			throw new NullPointerException("name == null || value == null");
 		}
 		if (arguments == null) {
-			arguments = new HashMap<Argument.Name, String>();
+			arguments = new HashMap<Argument.Name, ArgumentValueImpl>();
 		}
-		arguments.put(name, value);
+		arguments.put(name, new ArgumentValueImpl(value, parsedValue));
 	}
 
 	@Override
@@ -123,20 +140,39 @@ public class VerbContextImpl implements VerbContext {
 	}
 
 	@Override
-	public String getArgument(Argument.Name name) {
-		String value = null;
+	public String getUnparsedArgument(Argument.Name name) {
 		if (arguments != null) {
-			value = arguments.get(name);
+			ArgumentValueImpl value = arguments.get(name);
+			if (value != null) {
+				return value.getValue();
+			}
 		}
-		return value;
+		return null;
 	}
 
 	@Override
-	public Map<Argument.Name, String> getArguments() {
+	public Object getParsedArgument(Argument.Name name) {
+		if (arguments != null) {
+			ArgumentValueImpl value = arguments.get(name);
+			if (value != null) {
+				return value.getParsedValue();
+			}
+		}
+		return null;
+	}
+
+	@Override
+	public Map<Argument.Name, String> getUnparsedArguments() {
 		if (arguments == null) {
 			return Collections.emptyMap();
 		}
-		return Collections.unmodifiableMap(arguments);
+		Map<Argument.Name, String> result =
+			new HashMap<Argument.Name, String>(arguments.size());
+		for (Argument.Name key : arguments.keySet()) {
+			ArgumentValueImpl value = arguments.get(key);
+			result.put(key, value.getValue());
+		}
+		return result;
 	}
 
 	@Override
@@ -145,6 +181,11 @@ public class VerbContextImpl implements VerbContext {
 			errors = new ArrayList<Error>();
 		}
 		errors.add(new ErrorImpl(code, message));
+	}
+
+	@Override
+	public String getContextPath() {
+		return request.getContextPath();
 	}
 
 	@Override

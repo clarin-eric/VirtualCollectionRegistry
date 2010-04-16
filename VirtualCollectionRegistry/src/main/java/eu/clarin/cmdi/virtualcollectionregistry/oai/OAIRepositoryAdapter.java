@@ -87,14 +87,18 @@ public class OAIRepositoryAdapter {
 	}
 
 	public String getSampleRecordId() {
-		return makeRecordId(repository.getSampleRecordId());
+		return createRecordId(repository.getSampleRecordLocalId());
 	}
 
-	public String makeRecordId(String recordId) {
-		return "oai:" + repository.getId() + ":" + recordId;
+	public String createRecordId(String recordId) {
+		StringBuilder sb = new StringBuilder("oai:");
+		sb.append(repository.getId());
+		sb.append(":");
+		sb.append(recordId);
+		return sb.toString();
 	}
 
-	public String getLocalId(String identifier) {
+	public String parseLocalId(String identifier) {
 		if (identifier == null) {
 			throw new NullPointerException("identifier == null");
 		}
@@ -106,7 +110,7 @@ public class OAIRepositoryAdapter {
 				String id = repository.getId();
 				if (identifier.regionMatches(pos1 + 1, id, 0, id.length())) {
 					String localId = identifier.substring(pos2 + 1);
-					if (repository.checkLocalId(localId)) {
+					if (repository.validateLocalId(localId)) {
 						return localId;
 					}
 				}
@@ -129,15 +133,8 @@ public class OAIRepositoryAdapter {
 		return repository.getSetDescs() != null;
 	}
 
-	public Record getRecord(String identifier) throws OAIException {
-		String localId = getLocalId(identifier);
-		if (localId != null) {
-			OAIRepository.Record record = repository.getRecord(localId);
-			if (record != null) {
-				return record;
-			}
-		}
-		return null;
+	public Record getRecord(String localId) throws OAIException {
+		return repository.getRecord(localId);
 	}
 	
 	private static SimpleDateFormat createDateFormat(OAIRepository repository) {

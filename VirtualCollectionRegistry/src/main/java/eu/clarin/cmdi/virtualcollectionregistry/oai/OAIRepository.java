@@ -50,7 +50,7 @@ public interface OAIRepository {
 
 	public interface Record {
 
-		public String getId();
+		public String getLocalId();
 
 		public Date getDatestamp();
 
@@ -78,14 +78,14 @@ public interface OAIRepository {
 
 	public List<MetadataFormat> getSupportedMetadataFormats();
 
-	public String getSampleRecordId();
+	public String getSampleRecordLocalId();
 
 	// FIXME: define class for describing sets
 	public List<Object> getSetDescs();
 
-	public boolean checkLocalId(String id);
+	public boolean validateLocalId(String localId);
 
 	// XXX: OAIRepositoryException?
-	public Record getRecord(String id) throws OAIException;
+	public Record getRecord(String localId) throws OAIException;
 	
 } // interface OAIRepository
