@@ -11,7 +11,7 @@ public class Argument {
 		SET,             // set
 		UNTIL;           // until
 		
-		public String toXmlString() {
+		public String getAsString() {
 			switch (this) {
 			case FROM:
 				return "from";
@@ -52,7 +52,7 @@ public class Argument {
 	}
 
 	public String getNameAsString() {
-		return name.toXmlString();
+		return name.getAsString();
 	}
 
 	public boolean isRequired() {

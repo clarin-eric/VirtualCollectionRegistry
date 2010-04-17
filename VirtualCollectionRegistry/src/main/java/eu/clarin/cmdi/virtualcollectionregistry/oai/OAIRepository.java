@@ -83,9 +83,9 @@ public interface OAIRepository {
 	// FIXME: define class for describing sets
 	public List<Object> getSetDescs();
 
-	public boolean validateLocalId(String localId);
+	public Object parseLocalId(String unparsedLocalId);
 
 	// XXX: OAIRepositoryException?
-	public Record getRecord(String localId) throws OAIException;
+	public Record getRecord(Object localId) throws OAIException;
 	
 } // interface OAIRepository

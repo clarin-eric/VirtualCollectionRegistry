@@ -21,11 +21,9 @@ public interface VerbContext {
 
 	public boolean hasArgument(Argument.Name name);
 
-	public String getUnparsedArgument(Argument.Name name);
+	public Object getArgument(Argument.Name name);
 
-	public Object getParsedArgument(Argument.Name name);
-
-	public Map<Argument.Name, String> getUnparsedArguments();
+	public Map<Argument.Name,String> getUnparsedArguments();
 
 	public String getContextPath();
 
