@@ -111,17 +111,22 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 	}
 
 	@Override
-	public boolean validateLocalId(String id) {
-		return convertStringToId(id) != -1;
+	public Object parseLocalId(String unparsedLocalId) {
+		try {
+			long id = Long.parseLong(unparsedLocalId);
+			if (id > 0) {
+				return new Long(id);
+			}
+		} catch (NumberFormatException e) {
+			/* FALL-THROUGH */
+		}
+		return null;
 	}
 
 	@Override
-	public Record getRecord(String localId) throws OAIException {
-		long id = convertStringToId(localId);
-		if (id == -1) {
-			throw new OAIException("invalid localId");
-		}
+	public Record getRecord(Object localId) throws OAIException {
 		try {
+			long id = (Long) localId;
 			VirtualCollection vc = registry.retrieveVirtualCollection(id);
 			return new RecordImpl(vc);
 		} catch (VirtualCollectionNotFoundException e) {
@@ -129,18 +134,6 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 		} catch (VirtualCollectionRegistryException e) {
 			throw new OAIException("error", e);
 		}
-	}
-
-	private static long convertStringToId(String str) {
-		try {
-			long i = Long.parseLong(str);
-			if (i > 0) {
-				return i;
-			}
-		} catch (NumberFormatException e) {
-			/* FALL-TROUGH */
-		}
-		return -1;
 	}
 
 } // VirtualColletionRegistryOAIRepository

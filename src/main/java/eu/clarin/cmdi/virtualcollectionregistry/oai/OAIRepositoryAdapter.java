@@ -9,6 +9,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.DeletedNotion;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.Granularity;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.MetadataFormat;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.Record;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument;
 
 
 public class OAIRepositoryAdapter {
@@ -90,33 +91,26 @@ public class OAIRepositoryAdapter {
 		return createRecordId(repository.getSampleRecordLocalId());
 	}
 
+	public Object parseArgument(Argument.Name name, String value) {
+		switch (name) {
+		case IDENTIFIER:
+			String localId = extractLocalId(value);
+			if (localId != null) {
+				return repository.parseLocalId(localId);
+			}
+			break;
+		default:
+			return value;
+		}
+		return false;
+	}
+
 	public String createRecordId(String recordId) {
 		StringBuilder sb = new StringBuilder("oai:");
 		sb.append(repository.getId());
 		sb.append(":");
 		sb.append(recordId);
 		return sb.toString();
-	}
-
-	public String parseLocalId(String identifier) {
-		if (identifier == null) {
-			throw new NullPointerException("identifier == null");
-		}
-		int pos1 = identifier.indexOf(':'); 
-		if (pos1 != -1) {
-			int pos2 = identifier.indexOf(':', pos1 + 1);
-			if (pos2 != -1) {
-				// check of repository id matches
-				String id = repository.getId();
-				if (identifier.regionMatches(pos1 + 1, id, 0, id.length())) {
-					String localId = identifier.substring(pos2 + 1);
-					if (repository.validateLocalId(localId)) {
-						return localId;
-					}
-				}
-			}
-		}
-		return null;
 	}
 
 	public boolean supportsMetadataFormat(String prefix) {
@@ -136,7 +130,22 @@ public class OAIRepositoryAdapter {
 	public Record getRecord(String localId) throws OAIException {
 		return repository.getRecord(localId);
 	}
-	
+
+	private String extractLocalId(String identifier) {
+		int pos1 = identifier.indexOf(':'); 
+		if (pos1 != -1) {
+			int pos2 = identifier.indexOf(':', pos1 + 1);
+			if (pos2 != -1) {
+				// check of repository id matches
+				String id = repository.getId();
+				if (identifier.regionMatches(pos1 + 1, id, 0, id.length())) {
+					return identifier.substring(pos2 + 1);
+				}
+			}
+		}
+		return null;
+	}
+
 	private static SimpleDateFormat createDateFormat(OAIRepository repository) {
 		SimpleDateFormat sdf = null;
 		switch (repository.getGranularity()) {

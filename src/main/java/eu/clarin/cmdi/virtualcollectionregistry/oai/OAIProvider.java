@@ -88,9 +88,7 @@ public class OAIProvider {
 									 "' has repeated values for argument '" +
 									 arg.getNameAsString() + "'");
 					} else {
-						if (arg.checkArgument(value)) {
-							ctx.setArgument(arg.getName(), value, null);
-						} else {
+						if (!ctx.setArgument(arg, value)) {
 							ctx.addError(OAIErrorCode.BAD_ARGUMENT,
 										 "Value of argument '" +
 										 arg.getNameAsString() +
@@ -122,21 +120,30 @@ public class OAIProvider {
 					verbName + "'");
 		}
 
+		/*
+		 * Execute verb, if no error occurred have been recorded.
+		 */
 		if (!ctx.hasErrors()) {
 			if (logger.isDebugEnabled()) {
 				logger.debug("processing verb '{}'", verb.getName());
-				Map<Argument.Name, String> args =
-					ctx.getUnparsedArguments();
+				Map<Argument.Name, String> args = ctx.getUnparsedArguments();
 				if (!args.isEmpty()) {
 					int i = 0;
 					for (Argument.Name name : args.keySet()) {
 						logger.debug("argument[" + i++ + "]: {}='{}'",
-								name.toXmlString(), args.get(name));
+								name.getAsString(), args.get(name));
 					}
 				}
 			}
 			verb.process(ctx);
-		} else {
+		}
+		
+		/*
+		 * If any errors occurred create a proper response.
+		 * NOTE: errors may occur, when executing verb, so this block
+		 *       cannot be moved
+		 */
+		if (ctx.hasErrors()) {
 			OAIOutputStream out = ctx.getOutputStream();
 			for (VerbContext.Error error : ctx.getErrors()) {
 				out.writeStartElement("error");

@@ -72,7 +72,7 @@ public class OAIOutputStreamImpl implements OAIOutputStream {
 				writer.writeAttribute("verb", ctx.getVerb());
 				Map<Argument.Name, String> args = ctx.getUnparsedArguments();
 				for (Argument.Name key : args.keySet()) {
-					writer.writeAttribute(key.toXmlString(), args.get(key));
+					writer.writeAttribute(key.getAsString(), args.get(key));
 				}
 			}
 			writer.writeCharacters(ctx.getRequestURI());
