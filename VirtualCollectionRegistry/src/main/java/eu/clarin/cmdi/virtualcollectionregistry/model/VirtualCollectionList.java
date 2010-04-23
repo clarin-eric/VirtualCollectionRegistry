@@ -1,10 +1,9 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model;
 
 import java.util.Collections;
-import java.util.Iterator;
 import java.util.List;
 
-public class VirtualCollectionList implements Iterable<VirtualCollection> {
+public class VirtualCollectionList {
 	private List<VirtualCollection> collections;
 	private int offset;
 	private int totalCount;
@@ -32,8 +31,8 @@ public class VirtualCollectionList implements Iterable<VirtualCollection> {
 		return collections.size() < totalCount;
 	}
 
-	public Iterator<VirtualCollection> iterator() {
-		return collections.iterator();
+	public List<VirtualCollection> getItems() {
+		return collections;
 	}
-	
+
 } // class VirtualCollectionList
