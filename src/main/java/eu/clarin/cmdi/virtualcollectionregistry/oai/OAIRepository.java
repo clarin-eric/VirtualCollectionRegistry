@@ -15,52 +15,56 @@ public interface OAIRepository {
 		SECONDS;
 	} // enum Granularity
 
-	public static class MetadataFormat {
-		private final String prefix;
-		private final String namespaceURI;
-		private final String schemaLocation;
+	public static interface MetadataFormat {
+
+		public String getPrefix();
+
+		public String getNamespaceURI();
 		
-		public MetadataFormat(String prefix, String namespaceURI, String schemaLocation) {
-			if (prefix == null) {
-				throw new NullPointerException("prefix == null");
-			}
-			this.prefix = prefix;
-			if (namespaceURI == null) {
-				throw new NullPointerException("namespaceURI == null");
-			}
-			this.namespaceURI = namespaceURI;
-			if (schemaLocation == null) {
-				throw new NullPointerException("schemaLocation == null");
-			}
-			this.schemaLocation = schemaLocation;
-		}
-		
-		public String getPrefix() {
-			return prefix;
-		}
-		
-		public String getNamespaceURI() {
-			return namespaceURI;
-		}
-		
-		public String getSchemaLocation() {
-			return schemaLocation;
-		}
-	} // inner class MetadataFormat
+		public String getSchemaLocation();
+
+		public void writeObject(OAIOutputStream stream, Object item)
+			throws OAIException;
+	} // interface MetadataFormat
 
 	public interface Record {
 
-		public String getLocalId();
+		public Object getLocalId();
 
 		public Date getDatestamp();
 
-		// FIXME: define how to represent setSpecs
-		public List<Object> getSetSpec();
+		public List<String> getSetSpec();
 
 		public boolean isDeleted();
-		
+
 		public List<MetadataFormat> getSupportedMetadataFormats();
+
+		public Object getItem();
 	} // interface Record
+
+	public class RecordList {
+		private List<Record> records;
+		private int totalCount;
+		
+		public RecordList(List<Record> records, int totalCount) {
+			if (records == null) {
+				throw new NullPointerException("records == null");
+			}
+			this.records = records;
+			if (totalCount < -1) {
+				throw new IllegalArgumentException("totalCount <= -1");
+			}
+			this.totalCount = totalCount;
+		}
+
+		public List<Record> getRecords() {
+			return records;
+		}
+
+		public int getTotalCount() {
+			return totalCount;
+		}
+	} // class RecordList
 
 	public String getId();
 
@@ -78,14 +82,31 @@ public interface OAIRepository {
 
 	public List<MetadataFormat> getSupportedMetadataFormats();
 
-	public String getSampleRecordLocalId();
+	public Object getSampleRecordLocalId();
 
 	// FIXME: define class for describing sets
 	public List<Object> getSetDescs();
 
 	public Object parseLocalId(String unparsedLocalId);
 
+	public String unparseLocalId(Object localId);
+
 	// XXX: OAIRepositoryException?
 	public Record getRecord(Object localId) throws OAIException;
-	
+
+	/*
+	 * fetch records matching the criteria. used for ListRecords and
+	 * ListIdentifiers verb.
+	 * 
+	 * @param from   optional lower date, may be <code>null</code>
+	 * @param until  optional upper date, may be <code>null</code>
+	 * @param set    optional set specification, may be <code>null</code>
+	 * @param offset start position if resumption request, is <code>-1<code>
+	 *               for first request
+	 * @returns list of matched records
+	 */
+	// XXX: identifiers only flag or different method?
+	public RecordList getRecords(Date from, Date until, String set, int offset)
+		throws OAIException;
+
 } // interface OAIRepository

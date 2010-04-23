@@ -14,6 +14,7 @@ import javax.xml.stream.XMLStreamWriter;
 
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepositoryAdapter;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument;
 
@@ -38,11 +39,13 @@ public class OAIOutputStreamImpl implements OAIOutputStream {
 			return XMLOutputFactory.newInstance();
 		}
 	};
+	private final OAIRepositoryAdapter repository;
 	private final XMLStreamWriter writer;
-	
+
 	OAIOutputStreamImpl(VerbContext ctx, OutputStream stream)
 		throws OAIException {
 		try {
+			this.repository = ctx.getRepository();
 			writer = writerFactory.get().createXMLStreamWriter(stream, "utf-8");
 			writer.writeStartDocument("utf-8", "1.0");
 
@@ -64,7 +67,7 @@ public class OAIOutputStreamImpl implements OAIOutputStream {
 					NS_OAI + " " + NS_OAI_SCHEMA_LOCATION);
 			
 			writer.writeStartElement("responseDate");
-			writeDateAsCharacters(new Date());
+			writer.writeCharacters(sdf.get().format(new Date()));
 			writer.writeEndElement(); // responseDate element
 
 			writer.writeStartElement("request");
@@ -72,7 +75,7 @@ public class OAIOutputStreamImpl implements OAIOutputStream {
 				writer.writeAttribute("verb", ctx.getVerb());
 				Map<Argument.Name, String> args = ctx.getUnparsedArguments();
 				for (Argument.Name key : args.keySet()) {
-					writer.writeAttribute(key.getAsString(), args.get(key));
+					writer.writeAttribute(key.toString(), args.get(key));
 				}
 			}
 			writer.writeCharacters(ctx.getRequestURI());
@@ -151,7 +154,6 @@ public class OAIOutputStreamImpl implements OAIOutputStream {
 				}
 			}
 		} catch (XMLStreamException e) {
-			e.printStackTrace();
 			throw new OAIException("error while serializing response", e);
 		}
 	}
@@ -195,9 +197,9 @@ public class OAIOutputStreamImpl implements OAIOutputStream {
 	}
 
 	@Override
-	public void writeDateAsCharacters(Date date) throws OAIException {
+	public void writeDate(Date date) throws OAIException {
 		try {
-			writer.writeCharacters(sdf.get().format(date));
+			writer.writeCharacters(repository.formatDate(date));
 		} catch (XMLStreamException e) {
 			throw new OAIException("error while serializing response", e);
 		}

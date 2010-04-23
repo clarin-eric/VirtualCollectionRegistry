@@ -96,11 +96,13 @@ public class VerbContextImpl implements VerbContext {
 	public boolean setArgument(Argument arg, String value) {
 		if (arg.checkArgument(value)) {
 			Object v = repository.parseArgument(arg.getName(), value);
-			if (arguments == null) {
-				arguments = new HashMap<Argument.Name, Object>();
+			if (v != null) {
+				if (arguments == null) {
+					arguments = new HashMap<Argument.Name, Object>();
+				}
+				arguments.put(arg.getName(), v);
+				return true;
 			}
-			arguments.put(arg.getName(), v);
-			return true;
 		}
 		return false;
 	}
@@ -142,7 +144,7 @@ public class VerbContextImpl implements VerbContext {
 		Map<Argument.Name, String> result =
 			new HashMap<Argument.Name, String>(arguments.size());
 		for (Argument.Name name : arguments.keySet()) {
-			result.put(name, getParameter(name.getAsString()));
+			result.put(name, getParameter(name.toString()));
 		}
 		return result;
 	}
