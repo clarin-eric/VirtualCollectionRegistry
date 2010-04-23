@@ -85,6 +85,7 @@ public class PersistentIdentifier {
 		return lastModifed;
 	}
 
+	// XXX: rename to getActionableURI()?
 	public String createURI() {
 		switch (type) {
 		case DUMMY:
