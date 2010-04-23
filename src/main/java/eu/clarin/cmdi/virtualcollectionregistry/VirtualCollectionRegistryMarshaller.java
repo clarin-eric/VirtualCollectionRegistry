@@ -129,7 +129,7 @@ public class VirtualCollectionRegistryMarshaller {
 					Integer.toString(vcs.getOffset()));
 			writer.writeAttribute("result",
 					(vcs.isPartialList() ? "partial" : "full"));
-			for (VirtualCollection vc : vcs) {
+			for (VirtualCollection vc : vcs.getItems()) {
 				m.marshal(vc, writer);
 				writer.flush();
 			}
