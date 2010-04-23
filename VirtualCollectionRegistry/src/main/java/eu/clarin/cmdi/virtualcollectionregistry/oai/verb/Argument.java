@@ -11,7 +11,7 @@ public class Argument {
 		SET,             // set
 		UNTIL;           // until
 		
-		public String getAsString() {
+		public String toString() {
 			switch (this) {
 			case FROM:
 				return "from";
@@ -49,10 +49,6 @@ public class Argument {
 
 	public Name getName() {
 		return name;
-	}
-
-	public String getNameAsString() {
-		return name.getAsString();
 	}
 
 	public boolean isRequired() {

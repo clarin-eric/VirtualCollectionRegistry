@@ -9,6 +9,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.DeletedNotion;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.Granularity;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.MetadataFormat;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.Record;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.RecordList;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument;
 
 
@@ -29,7 +30,7 @@ public class OAIRepositoryAdapter {
 		this.repository = repository;
 
 		// check of repository supports oai_dc format
-		if (!supportsMetadataFormat("oai_dc")) {
+		if (getMetadataFormat("oai_dc") == null) {
 			throw new OAIException("repository does not supported " +
 					"mandatory \"oai_dc\" format");
 		}
@@ -64,7 +65,7 @@ public class OAIRepositoryAdapter {
 	}
 
 	public String getEarliestTimestamp() {
-		return sdf.get().format(earliestTimestamp);
+		return formatDate(earliestTimestamp);
 	}
 
 	public DeletedNotion getDeletedNotion() {
@@ -102,33 +103,72 @@ public class OAIRepositoryAdapter {
 		default:
 			return value;
 		}
-		return false;
+		return null;
 	}
 
-	public String createRecordId(String recordId) {
+	public String createRecordId(Object localId) {
 		StringBuilder sb = new StringBuilder("oai:");
 		sb.append(repository.getId());
 		sb.append(":");
-		sb.append(recordId);
+		sb.append(repository.unparseLocalId(localId));
 		return sb.toString();
 	}
 
-	public boolean supportsMetadataFormat(String prefix) {
-		// XXX: maybe store prefixes in hash map for faster access?
+	public MetadataFormat getMetadataFormat(String prefix) {
 		for (MetadataFormat format : repository.getSupportedMetadataFormats()) {
 			if (prefix.equals(format.getPrefix())) {
-				return true;
+				return format;
 			}
 		}
-		return false;
+		return null;
 	}
 
 	public boolean isUsingSets() {
 		return repository.getSetDescs() != null;
 	}
 
-	public Record getRecord(String localId) throws OAIException {
+	public String formatDate(Date date) {
+		return sdf.get().format(date);
+	}
+
+	public Record getRecord(Object localId) throws OAIException {
 		return repository.getRecord(localId);
+	}
+
+	public RecordList getRecords(Date from, Date until, String set, int offset)
+		throws OAIException {
+		return repository.getRecords(from, until, set, offset);
+	}
+
+	public void writeRecord(OAIOutputStream out, Record record,
+			MetadataFormat format) throws OAIException {
+		boolean deleted = record.isDeleted();
+		
+		out.writeStartElement("record");
+		out.writeStartElement("header");
+		if (deleted) {
+			out.writeAttribute("status", "deleted");
+		}
+		out.writeStartElement("identifier");
+		out.writeCharacters(createRecordId(record.getLocalId()));
+		out.writeEndElement();
+		out.writeStartElement("datestamp");
+		out.writeDate(record.getDatestamp());
+		out.writeEndElement(); // datestamp element
+		if (!deleted) {
+			for (String setSpec : record.getSetSpec()) {
+				out.writeStartElement("setSpec");
+				out.writeCharacters(setSpec);
+				out.writeEndElement();
+			}
+		}
+		out.writeEndElement(); // header element
+		if (!deleted) {
+			out.writeStartElement("metadata");
+			format.writeObject(out, record.getItem());
+			out.writeEndElement(); // metadata element
+		}
+		out.writeEndElement(); // record element
 	}
 
 	private String extractLocalId(String identifier) {

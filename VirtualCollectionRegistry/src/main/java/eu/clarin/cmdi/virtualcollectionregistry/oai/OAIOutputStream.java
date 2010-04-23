@@ -62,6 +62,6 @@ public interface OAIOutputStream {
 
 	public void writeCharacters(String text) throws OAIException;
 
-	public void writeDateAsCharacters(Date date) throws OAIException;
+	public void writeDate(Date date) throws OAIException;
 
 } // interface OAIOutputStream

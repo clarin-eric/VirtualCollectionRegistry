@@ -13,6 +13,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.GetRecordVerb;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.IdentifyVerb;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.ListMetadataFormatsVerb;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.ListRecordsVerb;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.ListSetsVerb;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Verb;
 
@@ -29,6 +30,7 @@ public class OAIProvider {
 		verbs.add(new IdentifyVerb());
 		verbs.add(new ListMetadataFormatsVerb());
 		verbs.add(new ListSetsVerb());
+		verbs.add(new ListRecordsVerb());
 		verbs.add(new GetRecordVerb());
 	}
 
@@ -78,22 +80,24 @@ public class OAIProvider {
 
 			// process arguments
 			Set<String> remaining = ctx.getParameterNames();
+			// FIXME: special handling for resumptionToken
 			for (Argument arg : verb.getArguments()) {
-				String value = ctx.getParameter(arg.getNameAsString());
+				String value = ctx.getParameter(arg.getName().toString());
 				if (value != null) {
-					remaining.remove(arg.getNameAsString());
-					if (ctx.isRepeatedParameter(arg.getNameAsString())) {
+					remaining.remove(arg.getName().toString());
+					if (ctx.isRepeatedParameter(arg.getName().toString())) {
 						ctx.addError(OAIErrorCode.BAD_ARGUMENT,
 									 "OAI verb '" + verbName +
 									 "' has repeated values for argument '" +
-									 arg.getNameAsString() + "'");
+									 arg.getName().toString() + "'");
 					} else {
 						if (!ctx.setArgument(arg, value)) {
 							ctx.addError(OAIErrorCode.BAD_ARGUMENT,
 										 "Value of argument '" +
-										 arg.getNameAsString() +
+										 arg.getName().toString() +
 										 "' of OAI verb '" + verbName +
-										 "' is invalid");
+										 "' is invalid (value='" +
+										 value + "')");
 						}
 					}
 				} else {
@@ -101,7 +105,7 @@ public class OAIProvider {
 						ctx.addError(OAIErrorCode.BAD_ARGUMENT,
 									 "OAI verb '" + verbName +
 		                             "' is missing required argument '" +
-		                             arg.getNameAsString() + "'");
+		                             arg.getName().toString() + "'");
 					}
 				}
 			}  // for
@@ -131,7 +135,7 @@ public class OAIProvider {
 					int i = 0;
 					for (Argument.Name name : args.keySet()) {
 						logger.debug("argument[" + i++ + "]: {}='{}'",
-								name.getAsString(), args.get(name));
+								name.toString(), args.get(name));
 					}
 				}
 			}

@@ -34,7 +34,8 @@ public class ListMetadataFormatsVerb extends Verb {
 
 		List<MetadataFormat> formats = null;
 		if (ctx.hasArgument(Name.IDENTIFIER)) {
-			String localId = (String) ctx.getArgument(Name.IDENTIFIER);
+			Object localId = ctx.getArgument(Name.IDENTIFIER);
+			System.err.println("XXX: " +  localId);
 			Record record = repository.getRecord(localId);
 			if (record != null) {
 				formats = record.getSupportedMetadataFormats();
