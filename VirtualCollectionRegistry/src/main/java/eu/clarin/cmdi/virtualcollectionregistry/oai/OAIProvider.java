@@ -67,6 +67,10 @@ public class OAIProvider {
 						break;
 					}
 				} // for
+				if (verb == null) {
+					ctx.addError(OAIErrorCode.BAD_VERB, "illegal OAI verb '" +
+							verbName + "'");
+				}
 			} else {
 				ctx.addError(OAIErrorCode.BAD_VERB, "OAI verb is repeated");
 			}
@@ -119,27 +123,24 @@ public class OAIProvider {
 								 "(value='" + ctx.getParameter(key) + "')");
 				}
 			}
-		} else {
-			ctx.addError(OAIErrorCode.BAD_VERB, "illegal OAI verb '" +
-					verbName + "'");
-		}
 
-		/*
-		 * Execute verb, if no error occurred have been recorded.
-		 */
-		if (!ctx.hasErrors()) {
-			if (logger.isDebugEnabled()) {
-				logger.debug("processing verb '{}'", verb.getName());
-				Map<Argument.Name, String> args = ctx.getUnparsedArguments();
-				if (!args.isEmpty()) {
-					int i = 0;
-					for (Argument.Name name : args.keySet()) {
-						logger.debug("argument[" + i++ + "]: {}='{}'",
-								name.toString(), args.get(name));
+			/*
+			 * Execute verb, if no error occurred have been recorded.
+			 */
+			if (!ctx.hasErrors()) {
+				if (logger.isDebugEnabled()) {
+					logger.debug("processing verb '{}'", verb.getName());
+					Map<Argument.Name, String> args = ctx.getUnparsedArguments();
+					if (!args.isEmpty()) {
+						int i = 0;
+						for (Argument.Name name : args.keySet()) {
+							logger.debug("argument[" + i++ + "]: {}='{}'",
+									name.toString(), args.get(name));
+						}
 					}
 				}
+				verb.process(ctx);
 			}
-			verb.process(ctx);
 		}
 		
 		/*
