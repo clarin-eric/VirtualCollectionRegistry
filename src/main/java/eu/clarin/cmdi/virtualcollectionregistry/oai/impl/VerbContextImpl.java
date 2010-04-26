@@ -45,7 +45,7 @@ public class VerbContextImpl implements VerbContext {
 	private final HttpServletResponse response;
 	private OAIRepositoryAdapter repository;
 	private String verb;
-	private Map<Argument.Name, Object> arguments;
+	private Map<String, Object> arguments;
 	private List<Error> errors;
 
 	VerbContextImpl(HttpServletRequest request, HttpServletResponse response) {
@@ -98,7 +98,7 @@ public class VerbContextImpl implements VerbContext {
 			Object v = repository.parseArgument(arg.getName(), value);
 			if (v != null) {
 				if (arguments == null) {
-					arguments = new HashMap<Argument.Name, Object>();
+					arguments = new HashMap<String, Object>();
 				}
 				arguments.put(arg.getName(), v);
 				return true;
@@ -118,7 +118,7 @@ public class VerbContextImpl implements VerbContext {
 	}
 
 	@Override
-	public boolean hasArgument(Argument.Name name) {
+	public boolean hasArgument(String name) {
 		boolean result = false;
 		if (arguments != null) {
 			result = arguments.containsKey(name);
@@ -128,7 +128,7 @@ public class VerbContextImpl implements VerbContext {
 
 
 	@Override
-	public Object getArgument(Argument.Name name) {
+	public Object getArgument(String name) {
 		Object value = null;
 		if (arguments != null) {
 			value = arguments.get(name);
@@ -137,14 +137,14 @@ public class VerbContextImpl implements VerbContext {
 	}
 
 	@Override
-	public Map<Argument.Name, String> getUnparsedArguments() {
+	public Map<String, String> getUnparsedArguments() {
 		if (arguments == null) {
 			return Collections.emptyMap();
 		}
-		Map<Argument.Name, String> result =
-			new HashMap<Argument.Name, String>(arguments.size());
-		for (Argument.Name name : arguments.keySet()) {
-			result.put(name, getParameter(name.toString()));
+		Map<String, String> result =
+			new HashMap<String, String>(arguments.size());
+		for (String name : arguments.keySet()) {
+			result.put(name, getParameter(name));
 		}
 		return result;
 	}

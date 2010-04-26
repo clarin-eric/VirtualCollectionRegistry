@@ -10,11 +10,10 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepositoryAdapter;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.MetadataFormat;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.Record;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument.Name;
 
 public class ListMetadataFormatsVerb extends Verb {
 	private static final List<Argument> s_arguments =
-		Arrays.asList(new Argument(Name.IDENTIFIER, false));
+		Arrays.asList(new Argument(Argument.ARG_IDENTIFIER, false));
 
 	@Override
 	public String getName() {
@@ -33,9 +32,8 @@ public class ListMetadataFormatsVerb extends Verb {
 		OAIRepositoryAdapter repository = ctx.getRepository();
 
 		List<MetadataFormat> formats = null;
-		if (ctx.hasArgument(Name.IDENTIFIER)) {
-			Object localId = ctx.getArgument(Name.IDENTIFIER);
-			System.err.println("XXX: " +  localId);
+		if (ctx.hasArgument(Argument.ARG_IDENTIFIER)) {
+			Object localId = ctx.getArgument(Argument.ARG_IDENTIFIER);
 			Record record = repository.getRecord(localId);
 			if (record != null) {
 				formats = record.getSupportedMetadataFormats();

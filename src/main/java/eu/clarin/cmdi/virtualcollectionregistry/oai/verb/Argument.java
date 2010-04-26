@@ -3,33 +3,13 @@ package eu.clarin.cmdi.virtualcollectionregistry.oai.verb;
 import java.util.regex.Pattern;
 
 public class Argument {
-	public static enum Name {
-		FROM,            // from
-		IDENTIFIER,      // identifier
-		METADATAPREFIX,  // metadataPrefix
-		RESUMPTIONTOKEN, // resumptionToken
-		SET,             // set
-		UNTIL;           // until
-		
-		public String toString() {
-			switch (this) {
-			case FROM:
-				return "from";
-			case IDENTIFIER:
-				return "identifier";
-			case METADATAPREFIX:
-				return "metadataPrefix";
-			case RESUMPTIONTOKEN:
-				return "resumptionToken";
-			case SET:
-				return "set";
-			case UNTIL:
-				return "until";
-			default:
-				throw new InternalError("invalid name: " + this);
-			}
-		}
-	} // enum Name
+	public static final String ARG_FROM            = "from";
+	public static final String ARG_IDENTIFIER      = "identifier";
+	public static final String ARG_METADATAPREFIX  = "metadataPrefix";
+	public static final String ARG_RESUMPTIONTOKEN = "resumptionToken";
+	public static final String ARG_SET             = "set";
+	public static final String ARG_UNTIL           = "until";
+
 	private static final Pattern identifierRegEx =
 		Pattern.compile("oai:[a-z][a-z\\d\\-]*(\\.[a-z][a-z\\d\\-]*)+:" +
 	                    "[\\w\\.!~\\*'\\(\\);/\\?:&=\\+\\$,%]+",
@@ -39,15 +19,15 @@ public class Argument {
 	private static final Pattern dateRegEx =
 		Pattern.compile("\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}Z)?");
 	
-	private final Name name;
+	private final String name;
 	private final boolean required;
 
-	public Argument(Name name, boolean required) {
+	public Argument(String name, boolean required) {
 		this.name     = name;
 		this.required = required;
 	}
 
-	public Name getName() {
+	public String getName() {
 		return name;
 	}
 
@@ -56,22 +36,18 @@ public class Argument {
 	}
 
 	public boolean checkArgument(String value) {
-		switch (name) {
-		case FROM:
-			/* FALL_THROUGH */
-		case UNTIL:
+		if (name.equals(ARG_FROM) || name.equals(ARG_UNTIL)) {
 			return dateRegEx.matcher(value).matches();
-		case IDENTIFIER:
+		} else if (name.equals(ARG_IDENTIFIER)) {
 			return identifierRegEx.matcher(value).matches();
-		case METADATAPREFIX:
+		} else if (name.equals(ARG_METADATAPREFIX)) {
 			return metadataPrefixRegEx.matcher(value).matches();
-		case SET:
+		} else if (name.equals(ARG_SET)) {
 			return true;
-		case RESUMPTIONTOKEN:
+		} else if (name.equals(ARG_RESUMPTIONTOKEN)) {
 			return true;
-		default:
-			throw new InternalError("invalid argument name");
-		} // switch
+		} else {
+			throw new InternalError("invalid name: " + name);
+		}
 	}
-
 } // class Argument

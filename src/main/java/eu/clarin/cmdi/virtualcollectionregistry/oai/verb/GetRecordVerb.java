@@ -10,12 +10,11 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepositoryAdapter;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.MetadataFormat;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.Record;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument.Name;
 
 public class GetRecordVerb extends Verb {
 	private static final List<Argument> s_arguments =
-		Arrays.asList(new Argument(Name.IDENTIFIER, true),
-					  new Argument(Name.METADATAPREFIX, true));
+		Arrays.asList(new Argument(Argument.ARG_IDENTIFIER, true),
+					  new Argument(Argument.ARG_METADATAPREFIX, true));
 
 	@Override
 	public String getName() {
@@ -33,10 +32,10 @@ public class GetRecordVerb extends Verb {
 
 		OAIRepositoryAdapter repository = ctx.getRepository();
 		
-		String prefix = (String) ctx.getArgument(Name.METADATAPREFIX);
+		String prefix = (String) ctx.getArgument(Argument.ARG_METADATAPREFIX);
 		MetadataFormat format = repository.getMetadataFormat(prefix);
 		if (format != null) {
-			Object localId = ctx.getArgument(Name.IDENTIFIER);
+			Object localId = ctx.getArgument(Argument.ARG_IDENTIFIER);
 			Record record = repository.getRecord(localId);
 			if (record != null) {
 				// FIXME: what about deleted records?

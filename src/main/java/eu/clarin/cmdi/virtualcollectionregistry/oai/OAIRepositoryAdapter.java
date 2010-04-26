@@ -92,18 +92,17 @@ public class OAIRepositoryAdapter {
 		return createRecordId(repository.getSampleRecordLocalId());
 	}
 
-	public Object parseArgument(Argument.Name name, String value) {
-		switch (name) {
-		case IDENTIFIER:
+	public Object parseArgument(String name, String value) {
+		Object result = null;
+		if (name.equals(Argument.ARG_IDENTIFIER)) {
 			String localId = extractLocalId(value);
 			if (localId != null) {
-				return repository.parseLocalId(localId);
+				result = repository.parseLocalId(localId);
 			}
-			break;
-		default:
-			return value;
+		} else {
+			result = value;
 		}
-		return null;
+		return result;
 	}
 
 	public String createRecordId(Object localId) {
