@@ -127,7 +127,6 @@ public class OAIRepositoryAdapter {
 			if ((date != null) && (pos.getIndex() == value.length())) {
 				result = date;
 			}
-			System.err.println("XXX: " + date + ", " + value + ", " + pos);
 		} else {
 			result = value;
 		}
