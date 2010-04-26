@@ -88,17 +88,17 @@ public class OAIProvider {
 			for (Argument arg : verb.getArguments()) {
 				String value = ctx.getParameter(arg.getName().toString());
 				if (value != null) {
-					remaining.remove(arg.getName().toString());
-					if (ctx.isRepeatedParameter(arg.getName().toString())) {
+					remaining.remove(arg.getName());
+					if (ctx.isRepeatedParameter(arg.getName())) {
 						ctx.addError(OAIErrorCode.BAD_ARGUMENT,
 									 "OAI verb '" + verbName +
 									 "' has repeated values for argument '" +
-									 arg.getName().toString() + "'");
+									 arg.getName() + "'");
 					} else {
 						if (!ctx.setArgument(arg, value)) {
 							ctx.addError(OAIErrorCode.BAD_ARGUMENT,
 										 "Value of argument '" +
-										 arg.getName().toString() +
+										 arg.getName() +
 										 "' of OAI verb '" + verbName +
 										 "' is invalid (value='" +
 										 value + "')");
@@ -109,7 +109,7 @@ public class OAIProvider {
 						ctx.addError(OAIErrorCode.BAD_ARGUMENT,
 									 "OAI verb '" + verbName +
 		                             "' is missing required argument '" +
-		                             arg.getName().toString() + "'");
+		                             arg.getName() + "'");
 					}
 				}
 			}  // for
@@ -130,12 +130,12 @@ public class OAIProvider {
 			if (!ctx.hasErrors()) {
 				if (logger.isDebugEnabled()) {
 					logger.debug("processing verb '{}'", verb.getName());
-					Map<Argument.Name, String> args = ctx.getUnparsedArguments();
+					Map<String, String> args = ctx.getUnparsedArguments();
 					if (!args.isEmpty()) {
 						int i = 0;
-						for (Argument.Name name : args.keySet()) {
+						for (String name : args.keySet()) {
 							logger.debug("argument[" + i++ + "]: {}='{}'",
-									name.toString(), args.get(name));
+									name, args.get(name));
 						}
 					}
 				}

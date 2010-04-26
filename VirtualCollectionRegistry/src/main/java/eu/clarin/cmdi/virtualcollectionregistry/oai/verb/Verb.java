@@ -17,7 +17,7 @@ public abstract class Verb {
 
 	public abstract void process(VerbContext ctx) throws OAIException;
 
-	public boolean hasArgument(Argument.Name name) {
+	public boolean hasArgument(String name) {
 		for (Argument argument : getArguments()) {
 			if (argument.getName().equals(name)) {
 				return true;

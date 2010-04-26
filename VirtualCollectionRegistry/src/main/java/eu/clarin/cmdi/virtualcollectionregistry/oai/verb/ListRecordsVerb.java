@@ -12,16 +12,14 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.MetadataFormat;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.Record;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.RecordList;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument.Name;
 
 public class ListRecordsVerb extends Verb {
 	private static final List<Argument> s_arguments =
-		Arrays.asList(new Argument(Name.FROM, false),
-				      new Argument(Name.UNTIL, false),
-				      new Argument(Name.SET, false),
-					  new Argument(Name.RESUMPTIONTOKEN, false),
-					  new Argument(Name.METADATAPREFIX, true));
-
+		Arrays.asList(new Argument(Argument.ARG_FROM, false),
+				      new Argument(Argument.ARG_UNTIL, false),
+				      new Argument(Argument.ARG_SET, false),
+					  new Argument(Argument.ARG_RESUMPTIONTOKEN, false),
+					  new Argument(Argument.ARG_METADATAPREFIX, true));
 
 	@Override
 	public String getName() {
@@ -38,21 +36,21 @@ public class ListRecordsVerb extends Verb {
 		logger.debug("process LIST-RECORDS");
 		
 		OAIRepositoryAdapter repository = ctx.getRepository();
-		if (ctx.hasArgument(Name.RESUMPTIONTOKEN)) {
+		if (ctx.hasArgument(Argument.ARG_RESUMPTIONTOKEN)) {
 			// handle resumption
 			throw new OAIException("resumption not supported, yet!");
 		} 
 
-		String prefix = (String) ctx.getArgument(Name.METADATAPREFIX);
+		String prefix = (String) ctx.getArgument(Argument.ARG_METADATAPREFIX);
 		MetadataFormat format = repository.getMetadataFormat(prefix);
 		if (format != null) {
-			String set = (String) ctx.getArgument(Name.SET);
+			String set = (String) ctx.getArgument(Argument.ARG_SET);
 			if ((set != null) && !repository.isUsingSets()) {
 				ctx.addError(OAIErrorCode.NO_SET_HIERARCHY,
                              "Repository does not support sets");
 			} else {
-				Date from  = (Date) ctx.getArgument(Name.FROM);
-				Date until = (Date) ctx.getArgument(Name.UNTIL);
+				Date from  = (Date) ctx.getArgument(Argument.ARG_FROM);
+				Date until = (Date) ctx.getArgument(Argument.ARG_UNTIL);
 				int offset = 0;
 		
 				RecordList result =

@@ -7,11 +7,10 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIErrorCode;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepositoryAdapter;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument.Name;
 
 public class ListSetsVerb extends Verb {
 	private static final List<Argument> s_arguments =
-		Arrays.asList(new Argument(Name.RESUMPTIONTOKEN, false));
+		Arrays.asList(new Argument(Argument.ARG_RESUMPTIONTOKEN, false));
 
 	@Override
 	public String getName() {
