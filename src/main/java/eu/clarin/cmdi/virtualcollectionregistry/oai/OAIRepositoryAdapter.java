@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.oai;
 
+import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
@@ -19,7 +20,11 @@ public class OAIRepositoryAdapter {
 	private final ThreadLocal<SimpleDateFormat> sdf =
 		new ThreadLocal<SimpleDateFormat>() {
 		protected SimpleDateFormat initialValue() {
-			return createDateFormat(repository);
+			SimpleDateFormat sdf = new SimpleDateFormat();
+			sdf.applyPattern(getDatePattern(repository.getGranularity()));
+			sdf.setLenient(false);
+			sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
+			return sdf;
 		}
 	};
 	private final Date earliestTimestamp;
@@ -99,6 +104,30 @@ public class OAIRepositoryAdapter {
 			if (localId != null) {
 				result = repository.parseLocalId(localId);
 			}
+		} else if (name.equals(Argument.ARG_FROM) ||
+				   name.equals(Argument.ARG_UNTIL)) {
+			/* First try to parse date format in repository default format.
+			 * If this fails and repository supports SECONDS granularity try
+		     * also DAYS granularity 
+			 */
+			SimpleDateFormat parser = sdf.get();
+			ParsePosition pos       = new ParsePosition(0);
+			Date date               = parser.parse(value, pos);
+			if ((date == null) &&
+			    (repository.getGranularity() == Granularity.SECONDS)) {
+				// re-try with DAYS granularity
+				pos.setIndex(0);
+				parser.applyPattern(getDatePattern(Granularity.DAYS));
+				date = parser.parse(value, pos);
+				// reset pattern, success check if done below
+				parser.applyPattern(getDatePattern(Granularity.SECONDS));
+			}
+
+			// make sure input has not been parsed partly
+			if ((date != null) && (pos.getIndex() == value.length())) {
+				result = date;
+			}
+			System.err.println("XXX: " + date + ", " + value + ", " + pos);
 		} else {
 			result = value;
 		}
@@ -185,18 +214,13 @@ public class OAIRepositoryAdapter {
 		return null;
 	}
 
-	private static SimpleDateFormat createDateFormat(OAIRepository repository) {
-		SimpleDateFormat sdf = null;
-		switch (repository.getGranularity()) {
+	private static String getDatePattern(Granularity granularity) {
+		switch (granularity) {
 		case DAYS:
-			sdf = new SimpleDateFormat("yyyy-MM-dd");
-			break;
-		case SECONDS:
-			sdf = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
-			break;
+			return "yyyy-MM-dd";
+		default:
+			return "yyyy-MM-dd'T'HH:mm:ss'Z'";
 		}
-		sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-		return sdf;
 	}
 
 } // class OAIRepositoryAdapter
