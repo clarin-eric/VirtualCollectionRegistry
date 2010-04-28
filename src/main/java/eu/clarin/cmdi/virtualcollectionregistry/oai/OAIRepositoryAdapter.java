@@ -167,35 +167,60 @@ public class OAIRepositoryAdapter {
 		return repository.getRecords(from, until, set, offset);
 	}
 
-	public void writeRecord(OAIOutputStream out, Record record,
-			MetadataFormat format) throws OAIException {
-		boolean deleted = record.isDeleted();
-		
-		out.writeStartElement("record");
+	public ResumptionToken createResumptionToken() {
+		return provider.createResumptionToken(-1);
+	}
+
+	public ResumptionToken getResumptionToken(String id) {
+		return provider.getResumptionToken(id, -1);
+	}
+
+	public void writeRecordHeader(OAIOutputStream out, Record record)
+		throws OAIException {
 		out.writeStartElement("header");
-		if (deleted) {
+		if (record.isDeleted()) {
 			out.writeAttribute("status", "deleted");
 		}
 		out.writeStartElement("identifier");
 		out.writeCharacters(createRecordId(record.getLocalId()));
-		out.writeEndElement();
+		out.writeEndElement(); // identifier element
 		out.writeStartElement("datestamp");
 		out.writeDate(record.getDatestamp());
 		out.writeEndElement(); // datestamp element
-		if (!deleted) {
-			for (String setSpec : record.getSetSpec()) {
-				out.writeStartElement("setSpec");
-				out.writeCharacters(setSpec);
-				out.writeEndElement();
-			}
+		for (String setSpec : record.getSetSpec()) {
+			out.writeStartElement("setSpec");
+			out.writeCharacters(setSpec);
+			out.writeEndElement(); // setSpec element
 		}
 		out.writeEndElement(); // header element
-		if (!deleted) {
+	}
+
+	public void writeRecord(OAIOutputStream out, Record record,
+			MetadataFormat format) throws OAIException {
+		out.writeStartElement("record");
+		writeRecordHeader(out, record);
+		if (!record.isDeleted()) {
 			out.writeStartElement("metadata");
 			format.writeObject(out, record.getItem());
 			out.writeEndElement(); // metadata element
 		}
 		out.writeEndElement(); // record element
+	}
+
+	public void writeResumptionToken(OAIOutputStream out, ResumptionToken token)
+		throws OAIException {
+		out.writeStartElement("resumptionToken");
+		out.writeAttribute("expirationDate",
+				formatDate(token.getExpirationDate()));
+		if (token.getCursor() >= 0) {
+			out.writeAttribute("cursor", Integer.toString(token.getCursor()));
+		}
+		if (token.getCompleteListSize() > 0) {
+			out.writeAttribute("completeListSize",
+					Integer.toString(token.getCompleteListSize()));
+		}
+		out.writeCharacters(token.getId());
+		out.writeEndElement(); // resumptionToken element
 	}
 
 	private String extractLocalId(String identifier) {

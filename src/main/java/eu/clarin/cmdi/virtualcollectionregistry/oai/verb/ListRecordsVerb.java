@@ -8,12 +8,14 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIErrorCode;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepositoryAdapter;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.ResumptionToken;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.MetadataFormat;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.Record;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.RecordList;
 
 public class ListRecordsVerb extends Verb {
+	private static final String PROP_OFFSET = "_offset";
 	private static final List<Argument> s_arguments =
 		Arrays.asList(new Argument(Argument.ARG_FROM, false),
 				      new Argument(Argument.ARG_UNTIL, false),
@@ -36,33 +38,74 @@ public class ListRecordsVerb extends Verb {
 		logger.debug("process LIST-RECORDS");
 		
 		OAIRepositoryAdapter repository = ctx.getRepository();
-		if (ctx.hasArgument(Argument.ARG_RESUMPTIONTOKEN)) {
-			// handle resumption
-			throw new OAIException("resumption not supported, yet!");
-		} 
+		String prefix = null;
+		String set    = null;
+		Date from     = null;
+		Date until    = null;
+		int offset    = 0;
 
-		String prefix = (String) ctx.getArgument(Argument.ARG_METADATAPREFIX);
+		if (ctx.hasArgument(Argument.ARG_RESUMPTIONTOKEN)) {
+			String id = (String) ctx.getArgument(Argument.ARG_RESUMPTIONTOKEN);
+			ResumptionToken token = repository.getResumptionToken(id);
+			if (token == null) {
+				ctx.addError(OAIErrorCode.BAD_RESUMPTION_TOKEN,
+							 "Invalid resumption token (id='" + id + "')");
+				return; // bail early
+			}
+			synchronized (token) {
+				prefix = (String)  token.getProperty(Argument.ARG_METADATAPREFIX);
+				set    = (String)  token.getProperty(Argument.ARG_SET);
+				from   = (Date)    token.getProperty(Argument.ARG_FROM);
+				until  = (Date)    token.getProperty(Argument.ARG_UNTIL);
+				offset = (Integer) token.getProperty(PROP_OFFSET);
+			} // synchronized (token)
+		} else {
+			prefix = (String) ctx.getArgument(Argument.ARG_METADATAPREFIX);
+			set    = (String) ctx.getArgument(Argument.ARG_SET);
+			from   = (Date) ctx.getArgument(Argument.ARG_FROM);
+			until  = (Date) ctx.getArgument(Argument.ARG_UNTIL);
+		}
+
 		MetadataFormat format = repository.getMetadataFormat(prefix);
 		if (format != null) {
-			String set = (String) ctx.getArgument(Argument.ARG_SET);
 			if ((set != null) && !repository.isUsingSets()) {
 				ctx.addError(OAIErrorCode.NO_SET_HIERARCHY,
                              "Repository does not support sets");
 			} else {
-				Date from  = (Date) ctx.getArgument(Argument.ARG_FROM);
-				Date until = (Date) ctx.getArgument(Argument.ARG_UNTIL);
-				int offset = 0;
-		
+				// fetch records
 				RecordList result =
 					repository.getRecords(from, until, set, offset);
+				
+				// process results
 				if (result != null) {
 					OAIOutputStream out = ctx.getOutputStream();
 					out.writeStartElement("ListRecords");
 					for (Record record : result.getRecords()) {
 						repository.writeRecord(out, record, format);
 					}
+
+					// add resumption token, if more results are pending
+					if (result.hasMore()) {
+						ResumptionToken token =
+							repository.createResumptionToken();
+						synchronized (token) {
+							token.setProperty(Argument.ARG_METADATAPREFIX,
+									          prefix);
+							token.setProperty(Argument.ARG_SET,   set);
+							token.setProperty(Argument.ARG_FROM,  from);
+							token.setProperty(Argument.ARG_UNTIL, until);
+							token.setProperty(PROP_OFFSET,
+									          result.getNextOffset());
+							token.setCursor(offset);
+							token.setCompleteListSize(result.getTotalCount());
+							repository.writeResumptionToken(out, token);
+						} // synchronized (token)
+					}
 					out.writeEndElement(); // ListRecords element
 					out.close();
+				} else {
+					ctx.addError(OAIErrorCode.NO_RECORDS_MATCH,
+								 "No records match");
 				}
 			}
 		} else {

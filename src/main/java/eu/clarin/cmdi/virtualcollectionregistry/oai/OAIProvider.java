@@ -1,9 +1,13 @@
 package eu.clarin.cmdi.virtualcollectionregistry.oai;
 
 import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -12,6 +16,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.impl.VerbContextImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.GetRecordVerb;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.IdentifyVerb;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.ListIdentifiersVerb;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.ListMetadataFormatsVerb;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.ListRecordsVerb;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.ListSetsVerb;
@@ -22,6 +27,9 @@ public class OAIProvider {
 		LoggerFactory.getLogger(OAIProvider.class);
 	private static final OAIProvider s_instance = new OAIProvider();
 	private final List<Verb> verbs;
+	private final Map<String, ResumptionToken> resumptionTokens =
+		new HashMap<String, ResumptionToken>(64);
+	private Timer timer = new Timer("OAI-Provider-Maintenance", true);
 	private OAIRepositoryAdapter repository;
 	
 	private OAIProvider() {
@@ -29,9 +37,32 @@ public class OAIProvider {
 		verbs = new ArrayList<Verb>();
 		verbs.add(new IdentifyVerb());
 		verbs.add(new ListMetadataFormatsVerb());
+		verbs.add(new ListIdentifiersVerb());
 		verbs.add(new ListSetsVerb());
 		verbs.add(new ListRecordsVerb());
 		verbs.add(new GetRecordVerb());
+
+		timer.schedule(new TimerTask() {
+			@Override
+			public void run() {
+				synchronized (resumptionTokens) {
+					if (resumptionTokens.isEmpty()) {
+						return;
+					}
+					Iterator<ResumptionToken> i =
+						resumptionTokens.values().iterator();
+					while (i.hasNext()) {
+						ResumptionToken token = i.next();
+						synchronized (token) {
+							if (token.checkExpired(scheduledExecutionTime())) {
+								i.remove();
+								System.err.println("expire: " + token.getId());
+							}
+						} // synchronized (token)
+					} // while
+				} // synchronized (resumptionTokens)
+			}
+		}, 60000, 60000);
 	}
 
 	public void setRepository(OAIRepository repository) throws OAIException {
@@ -47,6 +78,10 @@ public class OAIProvider {
 
 	public boolean hasRepository() {
 		return repository != null;
+	}
+
+	public void shutdown() {
+		timer.cancel();
 	}
 
 	public void process(VerbContextImpl ctx) throws OAIException {
@@ -84,43 +119,72 @@ public class OAIProvider {
 
 			// process arguments
 			Set<String> remaining = ctx.getParameterNames();
-			// FIXME: special handling for resumptionToken
-			for (Argument arg : verb.getArguments()) {
-				String value = ctx.getParameter(arg.getName().toString());
+
+			if (verb.supportsArgument(Argument.ARG_RESUMPTIONTOKEN) &&
+				remaining.contains(Argument.ARG_RESUMPTIONTOKEN)) {
+				// special handling of resumptionToken
+				String value = ctx.getParameter(Argument.ARG_RESUMPTIONTOKEN);
 				if (value != null) {
+					Argument arg =
+						verb.getArgument(Argument.ARG_RESUMPTIONTOKEN);
 					remaining.remove(arg.getName());
 					if (ctx.isRepeatedParameter(arg.getName())) {
-						ctx.addError(OAIErrorCode.BAD_ARGUMENT,
-									 "OAI verb '" + verbName +
-									 "' has repeated values for argument '" +
-									 arg.getName() + "'");
+						ctx.addError(OAIErrorCode.BAD_ARGUMENT, "OAI verb '" +
+								verb.getName() +
+								"' has repeated values for argument '" +
+								arg.getName() + "'");
 					} else {
 						if (!ctx.setArgument(arg, value)) {
 							ctx.addError(OAIErrorCode.BAD_ARGUMENT,
-										 "Value of argument '" +
-										 arg.getName() +
-										 "' of OAI verb '" + verbName +
-										 "' is invalid (value='" +
-										 value + "')");
+									"Value of argument '" +
+									arg.getName() +
+									"' of OAI verb '" +
+									verb.getName() +
+									"' is invalid (value='" + value + "')");
 						}
 					}
-				} else {
-					if (arg.isRequired()) {
-						ctx.addError(OAIErrorCode.BAD_ARGUMENT,
-									 "OAI verb '" + verbName +
-		                             "' is missing required argument '" +
-		                             arg.getName() + "'");
-					}
 				}
-			}  // for
+			} else {
+				// process regular arguments
+				for (Argument arg : verb.getArguments()) {
+					String value = ctx.getParameter(arg.getName().toString());
+					if (value != null) {
+						remaining.remove(arg.getName());
+						if (ctx.isRepeatedParameter(arg.getName())) {
+							ctx.addError(OAIErrorCode.BAD_ARGUMENT,
+										 "OAI verb '" + verb.getName() +
+										 "' has repeated values for " +
+										 "argument '" + arg.getName() + "'");
+						} else {
+							if (!ctx.setArgument(arg, value)) {
+								ctx.addError(OAIErrorCode.BAD_ARGUMENT,
+											 "Value of argument '" +
+											 arg.getName() +
+											 "' of OAI verb '" +
+											 verb.getName() +
+											 "' is invalid (value='" +
+											 value + "')");
+							}
+						}
+					} else {
+						if (arg.isRequired()) {
+							ctx.addError(OAIErrorCode.BAD_ARGUMENT,
+										 "OAI verb '" + verb.getName() +
+			                             "' is missing required argument '" +
+			                             arg.getName() + "'");
+						}
+					}
+				}  // for
+			}
 
 			if (!remaining.isEmpty()) {
 				logger.debug("received request with illegal arguments");
 				for (String key : remaining) {
 					ctx.addError(OAIErrorCode.BAD_ARGUMENT,
-								 "OAI verb '" + verbName + "' was submitted " +
-								 "with illegal argument '" + key + "' "+
-								 "(value='" + ctx.getParameter(key) + "')");
+								 "OAI verb '" + verb.getName()+
+								 "' was submitted with illegal argument '" +
+								 key + "' (value='" + ctx.getParameter(key) +
+								 "')");
 				}
 			}
 
@@ -164,5 +228,31 @@ public class OAIProvider {
 	public static OAIProvider instance() {
 		return s_instance;
 	}
+
+	ResumptionToken createResumptionToken(long lifetime) {
+		long expirationDate = System.currentTimeMillis() +
+			((lifetime > 0) ? lifetime : 600000);
+		ResumptionToken token = new ResumptionToken();
+		token.setExpirationDate(expirationDate);
+		synchronized (resumptionTokens) {
+			resumptionTokens.put(token.getId(), token);
+		} // synchronized (resumptionTokens)
+		return token;
+	}
+
+	ResumptionToken getResumptionToken(String id, long lifetime) {
+		synchronized (resumptionTokens) {
+			ResumptionToken token = resumptionTokens.get(id);
+			if (token == null) {
+				return null;
+			}
+			synchronized (token) {
+				long expirationDate = System.currentTimeMillis() +
+					((lifetime > 0) ? lifetime : 600000);
+				token.setExpirationDate(expirationDate);
+				return token;
+			} // synchronized (token)
+		} // synchronized (resumptionTokens)
+	} 
 
 } // class OAIProvider
