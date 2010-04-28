@@ -169,7 +169,7 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 	
 	@Override
 	public Granularity getGranularity() {
-		return Granularity.DAYS;
+		return Granularity.SECONDS;
 	}
 
 	@Override
@@ -229,7 +229,7 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 			throws OAIException {
 		try {
 			VirtualCollectionList results =
-				registry.getVirtualCollections(null, offset, 0);
+				registry.getVirtualCollections(null, offset, 2);
 			List<VirtualCollection> vcs = results.getItems();
 			if (!vcs.isEmpty()) {
 				List<Record> records = new ArrayList<Record>(vcs.size());
@@ -237,7 +237,13 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 					// FIXME: build record factory
 					records.add(new RecordImpl(vc));
 				}
-				return new RecordList(records, results.getTotalCount());
+				int nextOffset =
+					results.getOffset() + results.getItems().size();
+				if (nextOffset >= results.getTotalCount()) {
+					nextOffset = -1;
+				}
+				return new RecordList(records, nextOffset,
+									  results.getTotalCount());
 			}
 			return null;
 		} catch (VirtualCollectionRegistryException e) {
