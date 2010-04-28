@@ -43,17 +43,16 @@ public interface OAIRepository {
 	} // interface Record
 
 	public class RecordList {
-		private List<Record> records;
-		private int totalCount;
-		
-		public RecordList(List<Record> records, int totalCount) {
+		private final List<Record> records;
+		private final int nextOffset;
+		private final int totalCount;
+
+		public RecordList(List<Record> records, int nextOffset, int totalCount) {
 			if (records == null) {
 				throw new NullPointerException("records == null");
 			}
 			this.records = records;
-			if (totalCount < -1) {
-				throw new IllegalArgumentException("totalCount <= -1");
-			}
+			this.nextOffset = nextOffset;
 			this.totalCount = totalCount;
 		}
 
@@ -61,8 +60,16 @@ public interface OAIRepository {
 			return records;
 		}
 
+		public boolean hasMore() {
+			return nextOffset > 0;
+		}
+
+		public int getNextOffset() {
+			return nextOffset;
+		}
+
 		public int getTotalCount() {
-			return totalCount;
+			return totalCount > -1 ? totalCount : -1;
 		}
 	} // class RecordList
 

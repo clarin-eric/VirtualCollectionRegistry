@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.oai.verb;
 
+import java.util.UUID;
 import java.util.regex.Pattern;
 
 public class Argument {
@@ -9,15 +10,17 @@ public class Argument {
 	public static final String ARG_RESUMPTIONTOKEN = "resumptionToken";
 	public static final String ARG_SET             = "set";
 	public static final String ARG_UNTIL           = "until";
-
+	private static final Pattern dateRegEx =
+		Pattern.compile("\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}Z)?");
 	private static final Pattern identifierRegEx =
 		Pattern.compile("oai:[a-z][a-z\\d\\-]*(\\.[a-z][a-z\\d\\-]*)+:" +
 	                    "[\\w\\.!~\\*'\\(\\);/\\?:&=\\+\\$,%]+",
 	                    Pattern.CASE_INSENSITIVE);
 	private static final Pattern metadataPrefixRegEx =
 		Pattern.compile("[\\w\\.!~\\*'\\(\\)]+", Pattern.CASE_INSENSITIVE);
-	private static final Pattern dateRegEx =
-		Pattern.compile("\\d{4}-\\d{2}-\\d{2}(T\\d{2}:\\d{2}:\\d{2}Z)?");
+	private static final Pattern setSpecRegEx =
+		Pattern.compile("[\\w\\.!~\\*'\\(\\)]+(:[\\w\\.!~\\*'\\(\\)]+)*",
+					    Pattern.CASE_INSENSITIVE);
 	
 	private final String name;
 	private final boolean required;
@@ -43,11 +46,17 @@ public class Argument {
 		} else if (name.equals(ARG_METADATAPREFIX)) {
 			return metadataPrefixRegEx.matcher(value).matches();
 		} else if (name.equals(ARG_SET)) {
-			return true;
+			return setSpecRegEx.matcher(value).matches();
 		} else if (name.equals(ARG_RESUMPTIONTOKEN)) {
-			return true;
+			try {
+				UUID.fromString(value);
+				return true;
+			} catch (IllegalArgumentException e) {
+				return false;
+			}
 		} else {
 			throw new InternalError("invalid name: " + name);
 		}
 	}
+
 } // class Argument
