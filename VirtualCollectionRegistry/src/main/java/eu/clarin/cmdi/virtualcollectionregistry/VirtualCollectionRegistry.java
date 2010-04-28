@@ -81,6 +81,7 @@ public class VirtualCollectionRegistry {
 		if (datastore != null) {
 			datastore.destroy();
 		}
+		OAIProvider.instance().shutdown();
 	}
 
 	public static VirtualCollectionRegistry instance() {
