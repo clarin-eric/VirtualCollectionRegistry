@@ -162,9 +162,9 @@ public class OAIRepositoryAdapter {
 		return repository.getRecord(localId);
 	}
 
-	public RecordList getRecords(Date from, Date until, String set, int offset)
-		throws OAIException {
-		return repository.getRecords(from, until, set, offset);
+	public RecordList getRecords(String prefix, Date from, Date until,
+			String set, int offset) throws OAIException {
+		return repository.getRecords(prefix, from, until, set, offset);
 	}
 
 	public ResumptionToken createResumptionToken() {

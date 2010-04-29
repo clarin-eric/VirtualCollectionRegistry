@@ -105,6 +105,7 @@ public interface OAIRepository {
 	 * fetch records matching the criteria. used for ListRecords and
 	 * ListIdentifiers verb.
 	 * 
+	 * @param prefix requested metadata format (e.g "oai_dc")
 	 * @param from   optional lower date, may be <code>null</code>
 	 * @param until  optional upper date, may be <code>null</code>
 	 * @param set    optional set specification, may be <code>null</code>
@@ -113,7 +114,7 @@ public interface OAIRepository {
 	 * @returns list of matched records
 	 */
 	// XXX: identifiers only flag or different method?
-	public RecordList getRecords(Date from, Date until, String set, int offset)
-		throws OAIException;
+	public RecordList getRecords(String prefix, Date from, Date until,
+			String set, int offset) throws OAIException;
 
 } // interface OAIRepository

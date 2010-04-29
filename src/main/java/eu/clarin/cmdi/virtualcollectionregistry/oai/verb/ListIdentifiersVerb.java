@@ -75,7 +75,7 @@ public class ListIdentifiersVerb extends Verb {
 				// fetch records
 				// FIXME: should also pass metadataPrefix
 				RecordList result =
-					repository.getRecords(from, until, set, offset);
+					repository.getRecords(prefix, from, until, set, offset);
 				
 				// process results
 				if (result != null) {
