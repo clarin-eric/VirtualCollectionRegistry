@@ -31,27 +31,32 @@ public class GetRecordVerb extends Verb {
 		logger.debug("process GET-RECORD");
 
 		OAIRepositoryAdapter repository = ctx.getRepository();
-		
-		String prefix = (String) ctx.getArgument(Argument.ARG_METADATAPREFIX);
-		MetadataFormat format = repository.getMetadataFormat(prefix);
-		if (format != null) {
-			Object localId = ctx.getArgument(Argument.ARG_IDENTIFIER);
-			Record record = repository.getRecord(localId);
-			if (record != null) {
-				// FIXME: what about deleted records?
+		Object localId = ctx.getArgument(Argument.ARG_IDENTIFIER);
+		Record record = repository.getRecord(localId);
+		if (record != null) {
+			String prefix = (String) ctx.getArgument(Argument.ARG_METADATAPREFIX);
+			MetadataFormat format = null;
+			for (MetadataFormat f : record.getSupportedMetadataFormats()) {
+				if (prefix.equals(f.getPrefix())) {
+					format = f;
+					break;
+				}
+			}
+			if (format != null) {
 				OAIOutputStream out = ctx.getOutputStream();
 				out.writeStartElement("GetRecord");
 				repository.writeRecord(out, record, format);
 				out.writeEndElement(); // GetRecord element
 				out.close();
 			} else {
-				ctx.addError(OAIErrorCode.ID_DOES_NOT_EXIST,
-					         "Record does not exist");
+				ctx.addError(OAIErrorCode.CANNOT_DISSERMINATE_FORMAT,
+						"Repository does not support metadataPrefix '" +
+						prefix + "'");
 			}
 		} else {
-			ctx.addError(OAIErrorCode.CANNOT_DISSERMINATE_FORMAT,
-					"Repository does not support metadataPrefix '" +
-					prefix + "'");
+			ctx.addError(OAIErrorCode.ID_DOES_NOT_EXIST,
+			         "Record does not exist");
 		}
 	}
+
 } // class GetRecordVerb
