@@ -74,7 +74,7 @@ public class ListRecordsVerb extends Verb {
 			} else {
 				// fetch records
 				RecordList result =
-					repository.getRecords(from, until, set, offset);
+					repository.getRecords(prefix, from, until, set, offset);
 				
 				// process results
 				if (result != null) {
