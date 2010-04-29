@@ -225,8 +225,8 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 	}
 
 	@Override
-	public RecordList getRecords(Date from, Date until, String set, int offset)
-			throws OAIException {
+	public RecordList getRecords(String prefix, Date from, Date until,
+			String set, int offset) throws OAIException {
 		try {
 			VirtualCollectionList results =
 				registry.getVirtualCollections(null, offset, 2);
