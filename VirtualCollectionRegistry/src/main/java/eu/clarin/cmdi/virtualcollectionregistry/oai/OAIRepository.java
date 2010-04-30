@@ -4,18 +4,18 @@ import java.util.Date;
 import java.util.List;
 
 public interface OAIRepository {
-	public static enum DeletedNotion {
+	public enum DeletedNotion {
 		NO,
 		PERSISTENT,
 		TRANSIENT;
 	} // enum DeletedNotion
 	
-	public static enum Granularity {
+	public enum Granularity {
 		DAYS,
 		SECONDS;
 	} // enum Granularity
 
-	public static interface MetadataFormat {
+	public interface MetadataFormat {
 
 		public String getPrefix();
 
@@ -29,35 +29,36 @@ public interface OAIRepository {
 
 	public interface Record {
 
-		public Object getLocalId();
+		public abstract Object getLocalId();
 
-		public Date getDatestamp();
+		public abstract Date getDatestamp();
 
-		public List<String> getSetSpec();
+		public abstract List<String> getSetSpec();
 
-		public boolean isDeleted();
+		public abstract boolean isDeleted();
 
-		public List<MetadataFormat> getSupportedMetadataFormats();
+		public abstract List<MetadataFormat> getSupportedMetadataFormats();
 
-		public Object getItem();
+		public abstract Object getItem();
+
 	} // interface Record
 
-	public class RecordList {
-		private final List<Record> records;
+	public final class RecordList {
+		private final List<?> items;
 		private final int nextOffset;
 		private final int totalCount;
 
-		public RecordList(List<Record> records, int nextOffset, int totalCount) {
+		public RecordList(List<?> records, int nextOffset, int totalCount) {
 			if (records == null) {
 				throw new NullPointerException("records == null");
 			}
-			this.records = records;
+			this.items = records;
 			this.nextOffset = nextOffset;
 			this.totalCount = totalCount;
 		}
 
-		public List<Record> getRecords() {
-			return records;
+		public List<?> getItems() {
+			return items;
 		}
 
 		public boolean hasMore() {
@@ -98,8 +99,10 @@ public interface OAIRepository {
 
 	public String unparseLocalId(Object localId);
 
-	// XXX: OAIRepositoryException?
-	public Record getRecord(Object localId) throws OAIException;
+	public Record createRecord(Object item, boolean headerOnly)
+		throws OAIException;
+
+	public Object getRecord(Object localId) throws OAIException;
 
 	/*
 	 * fetch records matching the criteria. used for ListRecords and
@@ -115,6 +118,6 @@ public interface OAIRepository {
 	 */
 	// XXX: identifiers only flag or different method?
 	public RecordList getRecords(String prefix, Date from, Date until,
-			String set, int offset) throws OAIException;
+			String set, int offset, boolean headerOnly) throws OAIException;
 
 } // interface OAIRepository

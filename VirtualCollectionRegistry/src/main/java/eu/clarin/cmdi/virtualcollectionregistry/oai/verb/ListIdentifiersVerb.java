@@ -73,15 +73,15 @@ public class ListIdentifiersVerb extends Verb {
                              "Repository does not support sets");
 			} else {
 				// fetch records
-				// FIXME: should also pass metadataPrefix
-				RecordList result =
-					repository.getRecords(prefix, from, until, set, offset);
-				
+				RecordList result = repository.getRecords(prefix, from, until,
+														  set, offset, true);
+
 				// process results
 				if (result != null) {
 					OAIOutputStream out = ctx.getOutputStream();
 					out.writeStartElement("ListIdentifiers");
-					for (Record record : result.getRecords()) {
+					for (Object item : result.getItems()) {
+						Record record = repository.createRecord(item);
 						repository.writeRecordHeader(out, record);
 					}
 

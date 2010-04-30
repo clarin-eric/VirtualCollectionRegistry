@@ -158,13 +158,21 @@ public class OAIRepositoryAdapter {
 		return sdf.get().format(date);
 	}
 
+	public Record createRecord(Object item) throws OAIException {
+		if (item != null) {
+			return repository.createRecord(item, false);
+		}
+		return null;
+	}
+
 	public Record getRecord(Object localId) throws OAIException {
-		return repository.getRecord(localId);
+		return createRecord(repository.getRecord(localId));
 	}
 
 	public RecordList getRecords(String prefix, Date from, Date until,
-			String set, int offset) throws OAIException {
-		return repository.getRecords(prefix, from, until, set, offset);
+			String set, int offset, boolean headersOnly) throws OAIException {
+		return repository.getRecords(prefix, from, until,
+						             set, offset, headersOnly);
 	}
 
 	public ResumptionToken createResumptionToken() {
@@ -187,10 +195,13 @@ public class OAIRepositoryAdapter {
 		out.writeStartElement("datestamp");
 		out.writeDate(record.getDatestamp());
 		out.writeEndElement(); // datestamp element
-		for (String setSpec : record.getSetSpec()) {
-			out.writeStartElement("setSpec");
-			out.writeCharacters(setSpec);
-			out.writeEndElement(); // setSpec element
+		List<String> setSpecs = record.getSetSpec();
+		if (setSpecs != null) {
+			for (String setSpec : setSpecs) {
+				out.writeStartElement("setSpec");
+				out.writeCharacters(setSpec);
+				out.writeEndElement(); // setSpec element
+			}
 		}
 		out.writeEndElement(); // header element
 	}

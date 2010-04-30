@@ -73,14 +73,15 @@ public class ListRecordsVerb extends Verb {
                              "Repository does not support sets");
 			} else {
 				// fetch records
-				RecordList result =
-					repository.getRecords(prefix, from, until, set, offset);
-				
+				RecordList result = repository.getRecords(prefix, from, until,
+														  set, offset, false);
+
 				// process results
 				if (result != null) {
 					OAIOutputStream out = ctx.getOutputStream();
 					out.writeStartElement("ListRecords");
-					for (Record record : result.getRecords()) {
+					for (Object item : result.getItems()) {
+						Record record = repository.createRecord(item);
 						repository.writeRecord(out, record, format);
 					}
 
