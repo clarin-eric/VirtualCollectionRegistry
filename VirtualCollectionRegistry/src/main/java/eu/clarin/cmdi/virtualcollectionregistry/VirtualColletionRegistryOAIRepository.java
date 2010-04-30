@@ -1,8 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
-import java.util.ArrayList;
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
 
@@ -35,7 +33,7 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 
 		@Override
 		public List<String> getSetSpec() {
-			return Collections.emptyList();
+			return null;
 		}
 
 		@Override
@@ -211,12 +209,16 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 	}
 
 	@Override
-	public Record getRecord(Object localId) throws OAIException {
+	public Record createRecord(Object item, boolean identifyOnly)
+		throws OAIException {
+		return new RecordImpl((VirtualCollection) item);
+	}
+
+	@Override
+	public Object getRecord(Object localId) throws OAIException {
 		try {
 			long id = (Long) localId;
-			VirtualCollection vc = registry.retrieveVirtualCollection(id);
-			// FIXME: build record factory
-			return new RecordImpl(vc);
+			return registry.retrieveVirtualCollection(id);
 		} catch (VirtualCollectionNotFoundException e) {
 			return null;
 		} catch (VirtualCollectionRegistryException e) {
@@ -226,23 +228,18 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 
 	@Override
 	public RecordList getRecords(String prefix, Date from, Date until,
-			String set, int offset) throws OAIException {
+			String set, int offset, boolean headersOnly) throws OAIException {
 		try {
 			VirtualCollectionList results =
 				registry.getVirtualCollections(null, offset, 2);
 			List<VirtualCollection> vcs = results.getItems();
 			if (!vcs.isEmpty()) {
-				List<Record> records = new ArrayList<Record>(vcs.size());
-				for (VirtualCollection vc : vcs) {
-					// FIXME: build record factory
-					records.add(new RecordImpl(vc));
-				}
 				int nextOffset =
 					results.getOffset() + results.getItems().size();
 				if (nextOffset >= results.getTotalCount()) {
 					nextOffset = -1;
 				}
-				return new RecordList(records, nextOffset,
+				return new RecordList(results.getItems(), nextOffset,
 									  results.getTotalCount());
 			}
 			return null;
