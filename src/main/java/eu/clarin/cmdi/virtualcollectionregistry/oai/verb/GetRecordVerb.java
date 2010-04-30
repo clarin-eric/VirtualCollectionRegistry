@@ -34,7 +34,8 @@ public class GetRecordVerb extends Verb {
 		Object localId = ctx.getArgument(Argument.ARG_IDENTIFIER);
 		Record record = repository.getRecord(localId);
 		if (record != null) {
-			String prefix = (String) ctx.getArgument(Argument.ARG_METADATAPREFIX);
+			String prefix =
+				(String) ctx.getArgument(Argument.ARG_METADATAPREFIX);
 			MetadataFormat format = null;
 			for (MetadataFormat f : record.getSupportedMetadataFormats()) {
 				if (prefix.equals(f.getPrefix())) {
