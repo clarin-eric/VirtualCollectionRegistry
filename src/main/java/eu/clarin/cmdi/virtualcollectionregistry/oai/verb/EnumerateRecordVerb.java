@@ -70,7 +70,8 @@ abstract class EnumerateRecordVerb extends Verb {
 	                         "Repository does not support sets");
 			} else {
 				// fetch records
-				RecordList result = doGetRecords(repository, prefix, from, until, set, offset);
+				RecordList result =
+					doGetRecords(repository, prefix, from, until, set, offset);
 	
 				// process results
 				if (result != null) {
