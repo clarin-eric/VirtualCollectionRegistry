@@ -158,15 +158,16 @@ public class OAIRepositoryAdapter {
 		return sdf.get().format(date);
 	}
 
-	public Record createRecord(Object item) throws OAIException {
+	public Record createRecord(Object item, boolean headerOnly)
+		throws OAIException {
 		if (item != null) {
-			return repository.createRecord(item, false);
+			return repository.createRecord(item, headerOnly);
 		}
 		return null;
 	}
 
 	public Record getRecord(Object localId) throws OAIException {
-		return createRecord(repository.getRecord(localId));
+		return createRecord(repository.getRecord(localId), false);
 	}
 
 	public RecordList getRecords(String prefix, Date from, Date until,
