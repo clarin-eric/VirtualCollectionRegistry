@@ -171,9 +171,9 @@ public class OAIRepositoryAdapter {
 	}
 
 	public RecordList getRecords(String prefix, Date from, Date until,
-			String set, int offset, boolean headersOnly) throws OAIException {
+			String set, int offset, boolean headerOnly) throws OAIException {
 		return repository.getRecords(prefix, from, until,
-						             set, offset, headersOnly);
+						             set, offset, headerOnly);
 	}
 
 	public ResumptionToken createResumptionToken() {
