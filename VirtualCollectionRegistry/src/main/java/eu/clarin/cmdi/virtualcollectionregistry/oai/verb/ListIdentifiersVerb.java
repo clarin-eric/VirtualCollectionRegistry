@@ -27,7 +27,7 @@ public class ListIdentifiersVerb extends EnumerateRecordVerb {
 	protected void doWriteRecord(OAIRepositoryAdapter repository,
 			OAIOutputStream out, MetadataFormat format, Object item)
 			throws OAIException {
-		Record record = repository.createRecord(item);
+		Record record = repository.createRecord(item, true);
 		repository.writeRecordHeader(out, record);
 	}
 

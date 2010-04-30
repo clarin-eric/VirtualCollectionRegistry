@@ -29,7 +29,7 @@ public class ListRecordsVerb extends EnumerateRecordVerb {
 	protected void doWriteRecord(OAIRepositoryAdapter repository,
 			OAIOutputStream out, MetadataFormat format, Object item)
 			throws OAIException {
-		Record record = repository.createRecord(item);
+		Record record = repository.createRecord(item, false);
 		repository.writeRecord(out, record, format);
 	}
 
