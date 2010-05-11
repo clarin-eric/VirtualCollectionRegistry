@@ -11,6 +11,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.Granularity;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.MetadataFormat;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.Record;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.RecordList;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.SetSpecDesc;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument;
 
 
@@ -44,12 +45,6 @@ public class OAIRepositoryAdapter {
 		this.earliestTimestamp = repository.getEarliestTimestamp();
 		if (this.earliestTimestamp == null) {
 			throw new OAIException("invalid earliest timestamp");
-		}
-		
-		// XXX: for now raise error, if repository supports sets
-		if (repository.getSetDescs() != null) {
-			throw new OAIException("Repository supportes set, but set "+
-					"support is not available, yet!");
 		}
 	}
 
@@ -154,6 +149,10 @@ public class OAIRepositoryAdapter {
 		return repository.getSetDescs() != null;
 	}
 
+	public List<SetSpecDesc> getSetSpecs() {
+	    return repository.getSetDescs();
+	}
+
 	public String formatDate(Date date) {
 		return sdf.get().format(date);
 	}
@@ -197,7 +196,7 @@ public class OAIRepositoryAdapter {
 		out.writeDate(record.getDatestamp());
 		out.writeEndElement(); // datestamp element
 		List<String> setSpecs = record.getSetSpec();
-		if (setSpecs != null) {
+		if ((setSpecs != null) && !setSpecs.isEmpty()) {
 			for (String setSpec : setSpecs) {
 				out.writeStartElement("setSpec");
 				out.writeCharacters(setSpec);
