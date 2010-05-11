@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
@@ -186,8 +187,12 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 	}
 
 	@Override
-	public List<Object> getSetDescs() {
-		return null;
+	public List<SetSpecDesc> getSetDescs() {
+	    List<SetSpecDesc> sets = new ArrayList<SetSpecDesc>();
+	    sets.add(new SetSpecDesc("odd", "Odd virtual collections"));
+	    sets.add(new SetSpecDesc("even", "even virtual collections",
+	                             "With a description"));
+		return sets;
 	}
 
 	@Override
