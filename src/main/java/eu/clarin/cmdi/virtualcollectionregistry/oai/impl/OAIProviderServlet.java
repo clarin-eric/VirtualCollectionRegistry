@@ -41,7 +41,7 @@ public class OAIProviderServlet extends HttpServlet {
 			                   HttpServletResponse response)
 		throws ServletException, IOException {
 		try {
-			if (provider.hasRepository()) {
+			if (provider.isAvailable()) {
 				VerbContextImpl ctx = new VerbContextImpl(request, response);
 				provider.process(ctx);
 			} else {
@@ -49,8 +49,7 @@ public class OAIProviderServlet extends HttpServlet {
 				response.setHeader("Retry-After", "3600");
 				response.setContentType("text/plain");
 				PrintWriter out = response.getWriter();
-				out.print("OAI Provider is not ready. ");
-				out.println("Please retry after 10 minutes.");
+				out.println("The OAI provider is not available.");
 				out.close();
 			}
 		} catch (Exception e) {
