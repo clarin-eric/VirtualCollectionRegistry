@@ -86,6 +86,13 @@ public class IdentifyVerb extends Verb {
 		}
 		out.writeEndElement(); // granularity element
 
+		out.writeStartElement("compression");
+		out.writeCharacters("gzip");
+		out.writeEndElement(); // compression element
+		out.writeStartElement("compression");
+		out.writeCharacters("deflate");
+		out.writeEndElement(); // compression element
+
 		// description/oai-identifier
 		out.writeStartElement("description");
 		out.writeStartElement(MetadataConstants.NS_OAI_IDENTIFIER,
