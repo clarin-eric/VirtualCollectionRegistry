@@ -8,6 +8,7 @@ import java.util.Map;
 import java.util.Set;
 import java.util.Timer;
 import java.util.TimerTask;
+import java.util.concurrent.atomic.AtomicBoolean;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -30,6 +31,7 @@ public class OAIProvider {
 	private final Map<String, ResumptionToken> resumptionTokens =
 		new HashMap<String, ResumptionToken>(64);
 	private Timer timer = new Timer("OAI-Provider-Maintenance", true);
+	private AtomicBoolean isAvailable = new AtomicBoolean();
 	private OAIRepositoryAdapter repository;
 	
 	private OAIProvider() {
@@ -74,10 +76,19 @@ public class OAIProvider {
 		}
 		logger.debug("setting repository '{}'", repository.getId());
 		this.repository = new OAIRepositoryAdapter(this, repository);
+		if (!isAvailable.compareAndSet(false, true)) {
+			throw new IllegalStateException("unexpected state of isAvailable");
+		}
 	}
 
-	public boolean hasRepository() {
-		return repository != null;
+	public boolean isAvailable() {
+		return isAvailable.get();
+	}
+
+	public void setIsAvailable(boolean value) {
+		if (repository != null) {
+			isAvailable.set(value);
+		}
 	}
 
 	public void shutdown() {
