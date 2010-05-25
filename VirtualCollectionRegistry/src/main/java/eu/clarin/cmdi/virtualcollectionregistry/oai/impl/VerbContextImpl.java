@@ -198,6 +198,10 @@ public class VerbContextImpl implements VerbContext {
 			OutputStream out = null;
 			String accept = request.getHeader("Accept-Encoding");
 			if (accept != null) {
+				/*
+				 *  XXX: this is not totally correct as the qvalues are
+				 *       currently ignored.
+				 */
 				if (accept.indexOf("gzip") != -1) {
 					response.addHeader("Content-Encoding", "gzip");
 					out = new GZIPOutputStream(response.getOutputStream(),
