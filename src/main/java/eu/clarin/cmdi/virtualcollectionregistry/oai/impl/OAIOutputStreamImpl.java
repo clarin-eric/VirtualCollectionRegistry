@@ -39,12 +39,14 @@ public class OAIOutputStreamImpl implements OAIOutputStream {
 		}
 	};
 	private final OAIRepositoryAdapter repository;
+	private final OutputStream stream;
 	private final XMLStreamWriter writer;
 
 	OAIOutputStreamImpl(VerbContext ctx, OutputStream stream)
 		throws OAIException {
 		try {
 			this.repository = ctx.getRepository();
+			this.stream = stream;
 			writer = writerFactory.get().createXMLStreamWriter(stream, "utf-8");
 			writer.writeStartDocument("utf-8", "1.0");
 
@@ -91,7 +93,10 @@ public class OAIOutputStreamImpl implements OAIOutputStream {
 			writer.writeEndDocument();
 			writer.flush();
 			writer.close();
-		} catch (XMLStreamException e) {
+			// explicitly close output stream, as XMLStreamWriter does not!
+			stream.flush();
+			stream.close();
+		} catch (Exception e) {
 			throw new OAIException("error while serializing response", e);
 		}
 	}
