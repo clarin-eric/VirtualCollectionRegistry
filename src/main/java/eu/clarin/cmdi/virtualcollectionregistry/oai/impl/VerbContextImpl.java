@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.oai.impl;
 
+import java.io.OutputStream;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -8,6 +9,8 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.zip.DeflaterOutputStream;
+import java.util.zip.GZIPOutputStream;
 
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
@@ -188,11 +191,26 @@ public class VerbContextImpl implements VerbContext {
 	@Override
 	public OAIOutputStream getOutputStream(int status) throws OAIException {
 		try {
-			response.setStatus(status);
-			response.setCharacterEncoding("utf-8");
-			response.setContentType("text/xml");
 			response.setBufferSize(8192);
-			return new OAIOutputStreamImpl(this, response.getOutputStream());
+			response.setStatus(status);
+			response.setContentType("text/xml");
+			response.setCharacterEncoding("utf-8");
+			OutputStream out = null;
+			String accept = request.getHeader("Accept-Encoding");
+			if (accept != null) {
+				if (accept.indexOf("gzip") != -1) {
+					response.addHeader("Content-Encoding", "gzip");
+					out = new GZIPOutputStream(response.getOutputStream(),
+											   response.getBufferSize());
+				} else if (accept.indexOf("deflate") != -1) {
+					response.addHeader("Content-Encoding", "deflate");
+					out = new DeflaterOutputStream(response.getOutputStream());
+				}
+			}
+			if (out == null) {
+				out = response.getOutputStream();
+			}
+			return new OAIOutputStreamImpl(this, out);
 		} catch (Exception e) {
 			throw new OAIException("error creating output stream", e);
 		}
