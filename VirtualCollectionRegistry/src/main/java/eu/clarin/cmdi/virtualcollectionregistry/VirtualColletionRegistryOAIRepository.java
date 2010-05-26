@@ -172,6 +172,11 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 	}
 
 	@Override
+	public int getSupportedCompressionMethods() {
+		return 0 /* COMPRESSION_METHOD_GZIP|COMPRESSION_METHOD_DEFLATE */;
+	}
+
+	@Override
 	public List<String> getAdminAddreses() {
 		return adminEmailAddresses;
 	}
