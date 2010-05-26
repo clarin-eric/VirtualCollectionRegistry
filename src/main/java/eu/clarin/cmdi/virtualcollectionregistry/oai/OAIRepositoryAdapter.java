@@ -76,6 +76,11 @@ public class OAIRepositoryAdapter {
 		return repository.getGranularity();
 	}
 
+	public boolean isSupportingCompressionMethod(int method) {
+		int methods = repository.getSupportedCompressionMethods();
+		return (methods & method) > 0;
+	}
+
 	public List<MetadataFormat> getSupportedMetadataFormats() {
 		return repository.getSupportedMetadataFormats();
 	}

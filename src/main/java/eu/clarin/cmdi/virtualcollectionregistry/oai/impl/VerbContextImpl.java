@@ -18,6 +18,7 @@ import javax.servlet.http.HttpServletResponse;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIErrorCode;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepositoryAdapter;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument;
@@ -201,11 +202,15 @@ public class VerbContextImpl implements VerbContext {
 				 *  XXX: this is not totally correct as the qvalues are
 				 *       currently ignored.
 				 */
-				if (accept.indexOf("gzip") != -1) {
+				if (repository.isSupportingCompressionMethod(
+						OAIRepository.COMPRESSION_METHOD_GZIP) &&
+						(accept.indexOf("gzip") != -1)) {
 					response.addHeader("Content-Encoding", "gzip");
 					out = new GZIPOutputStream(response.getOutputStream(),
 											   response.getBufferSize());
-				} else if (accept.indexOf("deflate") != -1) {
+				} else if (repository.isSupportingCompressionMethod(
+							  OAIRepository.COMPRESSION_METHOD_DEFLATE) &&
+							  (accept.indexOf("deflate") != -1)) {
 					response.addHeader("Content-Encoding", "deflate");
 					out = new DeflaterOutputStream(response.getOutputStream());
 				}

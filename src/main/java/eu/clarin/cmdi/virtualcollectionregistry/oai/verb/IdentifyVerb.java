@@ -6,6 +6,7 @@ import java.util.List;
 
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepositoryAdapter;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream.NamespaceDecl;
@@ -86,12 +87,18 @@ public class IdentifyVerb extends Verb {
 		}
 		out.writeEndElement(); // granularity element
 
-		out.writeStartElement("compression");
-		out.writeCharacters("gzip");
-		out.writeEndElement(); // compression element
-		out.writeStartElement("compression");
-		out.writeCharacters("deflate");
-		out.writeEndElement(); // compression element
+		if (repository.isSupportingCompressionMethod(
+				OAIRepository.COMPRESSION_METHOD_GZIP)) {
+			out.writeStartElement("compression");
+			out.writeCharacters("gzip");
+			out.writeEndElement(); // compression element
+		}
+		if (repository.isSupportingCompressionMethod(
+				OAIRepository.COMPRESSION_METHOD_DEFLATE)) {
+			out.writeStartElement("compression");
+			out.writeCharacters("deflate");
+			out.writeEndElement(); // compression element
+		}
 
 		// description/oai-identifier
 		out.writeStartElement("description");
