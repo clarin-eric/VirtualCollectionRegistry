@@ -191,7 +191,6 @@ public class VerbContextImpl implements VerbContext {
 	@Override
 	public OAIOutputStream getOutputStream(int status) throws OAIException {
 		try {
-			response.setBufferSize(8192);
 			response.setStatus(status);
 			response.setContentType("text/xml");
 			response.setCharacterEncoding("utf-8");
