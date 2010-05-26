@@ -1,5 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.oai.impl;
 
+import java.io.FilterOutputStream;
+import java.io.IOException;
 import java.io.OutputStream;
 import java.text.SimpleDateFormat;
 import java.util.Date;
@@ -19,6 +21,71 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
 
 
 public class OAIOutputStreamImpl implements OAIOutputStream {
+	private class FlushSkipOutputStream extends FilterOutputStream {
+		private byte[] buf;
+		private int bufCount = 0;
+
+		public FlushSkipOutputStream(OutputStream out, int bufsize) {
+			super(out);
+			this.buf = new byte[(bufsize > 1024 ? bufsize : 1024)];
+		}
+
+		@Override
+		public synchronized void write(byte[] buffer, int offset, int length)
+			throws IOException {
+			if (buf == null) {
+				throw new IOException("stream already closed");
+			}
+			if (buffer == null) {
+				throw new NullPointerException("buffer == null");
+			}
+			if (offset < 0 || offset > buffer.length - length) {
+				throw new ArrayIndexOutOfBoundsException(
+						"offset out of bounds: " + offset);
+			}
+			if (length < 0) {
+				throw new ArrayIndexOutOfBoundsException(
+						"length out of bounds: " + length);
+			}
+			ensureCapacity(length);
+			System.arraycopy(buffer, offset, buf, bufCount, length);
+			bufCount += length;
+		}
+
+		@Override
+		public synchronized void write(int b) throws IOException {
+			if (buf == null) {
+				throw new IOException("stream already closed");
+			}
+			ensureCapacity(1);
+			buf[bufCount++] = (byte) (b & 0xFF);
+		}
+
+		@Override
+		public synchronized void close() throws IOException {
+			if (buf == null) {
+				return;
+			}
+			try {
+				ensureCapacity(buf.length); // explicitly force flush
+				super.close();
+			} finally {
+				buf = null;
+			}
+		}
+
+		@Override
+		public synchronized void flush() throws IOException {
+			// do nothing, defer flush() as long as possible
+		}
+
+		private void ensureCapacity(int needed) throws IOException {
+			if (needed >= (buf.length - bufCount)) {
+				out.write(buf, 0, bufCount);
+				bufCount = 0;
+			}
+		}
+	} // inner class FlushSkipOutputStream
 	private static final String NS_OAI =
 		"http://www.openarchives.org/OAI/2.0/";
 	private static final String NS_OAI_SCHEMA_LOCATION =
@@ -42,11 +109,11 @@ public class OAIOutputStreamImpl implements OAIOutputStream {
 	private final OutputStream stream;
 	private final XMLStreamWriter writer;
 
-	OAIOutputStreamImpl(VerbContext ctx, OutputStream stream)
+	OAIOutputStreamImpl(VerbContext ctx, OutputStream out)
 		throws OAIException {
 		try {
 			this.repository = ctx.getRepository();
-			this.stream = stream;
+			this.stream = new FlushSkipOutputStream(out, 8192);
 			writer = writerFactory.get().createXMLStreamWriter(stream, "utf-8");
 			writer.writeStartDocument("utf-8", "1.0");
 
@@ -94,7 +161,6 @@ public class OAIOutputStreamImpl implements OAIOutputStream {
 			writer.flush();
 			writer.close();
 			// explicitly close output stream, as XMLStreamWriter does not!
-			stream.flush();
 			stream.close();
 		} catch (Exception e) {
 			throw new OAIException("error while serializing response", e);
