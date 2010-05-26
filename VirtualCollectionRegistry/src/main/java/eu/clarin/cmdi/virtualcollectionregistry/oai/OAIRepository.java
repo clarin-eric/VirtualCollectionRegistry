@@ -4,6 +4,11 @@ import java.util.Date;
 import java.util.List;
 
 public interface OAIRepository {
+	/** flag for gzip compression method */
+	public static final int COMPRESSION_METHOD_GZIP    = 0x01;
+	/** flag for deflate compression method */
+	public static final int COMPRESSION_METHOD_DEFLATE = 0x02;
+
 	/**
 	 * The manner in which the repository supports the notion of
 	 * deleted records.
@@ -295,6 +300,15 @@ public interface OAIRepository {
 	 */
 	public Granularity getGranularity();
 
+	/**
+	 * Get the compression encoding methods this repository supports.
+	 * 
+	 * @return the compression encodings methods flag set.
+	 * @see #COMPRESSION_METHOD_GZIP
+	 * @see #COMPRESSION_METHOD_DEFLATE
+	 */
+	public int getSupportedCompressionMethods();
+	
 	/**
 	 * Get the list of metadata formats, which are supported by the repository.
 	 * A repository always must support the Dublin Core metadata with the
