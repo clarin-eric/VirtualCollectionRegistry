@@ -51,8 +51,9 @@ public class GetRecordVerb extends Verb {
 				out.close();
 			} else {
 				ctx.addError(OAIErrorCode.CANNOT_DISSERMINATE_FORMAT,
-						"Repository does not support metadataPrefix '" +
-						prefix + "'");
+						"The metadataPrefix '" + prefix +
+						"' is not supported for the item identified by '" +
+						repository.createRecordId(localId) + "'");
 			}
 		} else {
 			ctx.addError(OAIErrorCode.ID_DOES_NOT_EXIST,
