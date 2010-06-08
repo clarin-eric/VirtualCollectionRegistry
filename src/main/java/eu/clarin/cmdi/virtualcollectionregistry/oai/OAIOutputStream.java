@@ -4,6 +4,7 @@ import java.util.Date;
 import java.util.List;
 
 import javax.xml.XMLConstants;
+import javax.xml.stream.XMLStreamWriter;
 
 public interface OAIOutputStream {
 	public static class NamespaceDecl {
@@ -42,6 +43,8 @@ public interface OAIOutputStream {
 	public void close() throws OAIException;
 
 	public void flush() throws OAIException;
+	
+	public XMLStreamWriter getXMLStreamWriter() throws OAIException;
 	
 	public void writeStartElement(String localName)
 			throws OAIException;
