@@ -78,7 +78,7 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 		@Override
 		public void writeObject(OAIOutputStream stream, Object item)
 				throws OAIException {
-			VirtualCollection vc = (VirtualCollection) item;
+			final VirtualCollection vc = (VirtualCollection) item;
 			stream.writeStartElement(MetadataConstants.NS_OAI_DC, "dc", dc);
 			stream.writeStartElement(MetadataConstants.NS_DC, "title");
 			stream.writeCharacters(vc.getName());
@@ -127,6 +127,15 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 		@Override
 		public void writeObject(OAIOutputStream stream, Object item)
 				throws OAIException {
+			try {
+				final VirtualCollectionRegistry registry =
+					VirtualCollectionRegistry.instance();
+				final VirtualCollection vc = (VirtualCollection) item;
+				registry.getMarshaller()
+					.marshalAsCMDI(stream.getXMLStreamWriter(), vc);
+			} catch (Exception e) {
+				throw new OAIException("error writing object", e);
+			}
 		}
 	} // class CMDIMetadataFormat
 	
