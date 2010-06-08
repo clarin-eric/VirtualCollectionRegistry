@@ -9,6 +9,7 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 import java.util.Set;
+import java.util.StringTokenizer;
 import java.util.zip.DeflaterOutputStream;
 import java.util.zip.GZIPOutputStream;
 
@@ -25,6 +26,11 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument;
 
 
 public class VerbContextImpl implements VerbContext {
+	private static final int ENCODING_NONE    = 0x00;
+	private static final int ENCODING_IDENITY = 0x01;
+	private static final int ENCODING_DEFLATE = 0x02;
+	private static final int ENCODING_GZIP    = 0x03;
+
 	private static class ErrorImpl implements Error {
 		private OAIErrorCode code;
 		private String message;
@@ -191,37 +197,130 @@ public class VerbContextImpl implements VerbContext {
 
 	@Override
 	public OAIOutputStream getOutputStream(int status) throws OAIException {
+		int bestEnc = ENCODING_NONE;
+		String accept = request.getHeader("Accept-Encoding");
+		if (accept != null) {
+			float bestQvalue = 0.0f;
+			boolean identityPresent = false;
+
+			StringTokenizer tok = new StringTokenizer(accept, ",");
+			while (tok.hasMoreTokens()) {
+				String item = tok.nextToken();
+
+				String enc = null;
+				float qvalue = -1.0f;
+
+				int pos = item.indexOf(';');
+				if (pos != -1) {
+					enc = item.substring(0, pos).trim();
+					int pos2 = item.indexOf('=', pos + 1);
+					if (pos2 != -1) {
+						String tmp = item.substring(pos2 + 1).trim();
+						try {
+							float value = Float.parseFloat(tmp);
+							if (value >= 0.0f && value <= 1.0f) {
+								qvalue = value;
+							}
+						} catch (NumberFormatException e) {
+							/* IGNORE */
+						}
+					}
+				} else {
+					enc = item.trim();
+					qvalue = 1.0f;
+				}
+
+				// check, if encoding/qvalue pair is well-formed
+				if (checkEncoding(enc) && (qvalue >= 0.0f)) {
+					// special handling for identity encoding flag
+					if ("identity".equalsIgnoreCase(enc) && (qvalue > 0.0f)) {
+						identityPresent = true;
+					}
+
+					// rate current best encoding versus parsed encoding
+					if (qvalue > bestQvalue) {
+						if ("identity".equalsIgnoreCase(enc) ||
+                            "*".equals(enc)) {
+							bestEnc = ENCODING_IDENITY;
+						} else if ("deflate".equalsIgnoreCase(enc) &&
+								   repository.isSupportingCompressionMethod(
+								    OAIRepository.COMPRESSION_METHOD_DEFLATE)) {
+							bestEnc = ENCODING_DEFLATE;
+						} else if ("gzip".equalsIgnoreCase(enc) &&
+								   repository.isSupportingCompressionMethod(
+								     OAIRepository.COMPRESSION_METHOD_GZIP)) {
+							bestEnc = ENCODING_GZIP;
+						} else {
+							/* skip unsupported encoding */
+							continue;
+						}
+						bestQvalue = qvalue;
+					}
+				} else {
+					throw new OAIException("malformed Accept-Encoding header");
+				}
+			} // while
+
+			/*
+			 * OAI Specification mandates that identity encoding is included in
+			 * Accept-Encoding header with a non-zero qvalue.
+			 * (see Section 3.1.3)
+			 */
+			if (!identityPresent) {
+				/*
+				 * XXX: if we where being pedantic, we would signal an error
+				 *      here. However, for now, we just assume, that identity
+				 *      encoding can be understood by the harvester. 
+				 */
+//				throw new OAIException("Accept-Encoding header must " +
+//						"include \"identity\" encoding with non-zero " +
+//						"qvalue (see OAI Specification section 3.1.3)");
+				if (bestEnc == ENCODING_NONE) {
+					bestEnc = ENCODING_IDENITY;
+				}
+			}
+		} else {
+			bestEnc = ENCODING_IDENITY;
+		}
+
 		try {
 			response.setStatus(status);
 			response.setContentType("text/xml");
 			response.setCharacterEncoding("utf-8");
+
 			OutputStream out = null;
-			String accept = request.getHeader("Accept-Encoding");
-			if (accept != null) {
-				/*
-				 *  XXX: this is not totally correct as the qvalues are
-				 *       currently ignored.
-				 */
-				if (repository.isSupportingCompressionMethod(
-						OAIRepository.COMPRESSION_METHOD_GZIP) &&
-						(accept.indexOf("gzip") != -1)) {
-					response.addHeader("Content-Encoding", "gzip");
-					out = new GZIPOutputStream(response.getOutputStream(),
-											   response.getBufferSize());
-				} else if (repository.isSupportingCompressionMethod(
-							  OAIRepository.COMPRESSION_METHOD_DEFLATE) &&
-							  (accept.indexOf("deflate") != -1)) {
-					response.addHeader("Content-Encoding", "deflate");
-					out = new DeflaterOutputStream(response.getOutputStream());
-				}
-			}
-			if (out == null) {
+			switch (bestEnc) {
+			case ENCODING_IDENITY:
 				out = response.getOutputStream();
+				break;
+			case ENCODING_DEFLATE:
+				response.addHeader("Content-Encoding", "deflate");
+				out = new DeflaterOutputStream(response.getOutputStream());
+				break;
+			case ENCODING_GZIP:
+				response.addHeader("Content-Encoding", "gzip");
+				out = new GZIPOutputStream(response.getOutputStream(), response
+						.getBufferSize());
+				break;
+			default:
+				throw new OAIException("no valid response encoding");
 			}
 			return new OAIOutputStreamImpl(this, out);
 		} catch (Exception e) {
 			throw new OAIException("error creating output stream", e);
 		}
+	}
+
+	private boolean checkEncoding(String encoding) {
+		if ("*".equals(encoding)) {
+			return true;
+		}
+		for (int i = 0; i < encoding.length(); i++) {
+			if (!Character.isLetter(encoding.charAt(i))) {
+				return false;
+			}
+		}
+		return true;
 	}
 
 } // class VerbContextImpl
