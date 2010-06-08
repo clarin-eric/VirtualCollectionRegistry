@@ -4,6 +4,8 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URL;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
 import java.util.HashMap;
 
 import javax.xml.XMLConstants;
@@ -14,6 +16,7 @@ import javax.xml.bind.Unmarshaller;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamConstants;
+import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.stream.util.StreamReaderDelegate;
@@ -25,11 +28,19 @@ import org.codehaus.jettison.mapped.MappedXMLOutputFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.clarin.cmdi.virtualcollectionregistry.model.ClarinVirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
+import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 
 public class VirtualCollectionRegistryMarshaller {
+	private static final String NS_CMDI =
+		"http://www.clarin.eu/cmd";
+	private static final String NS_CMDI_PREFIX =
+		"cmdi";
+	// FIXME: use correct schema for CMDI virtual collections
+	private static final String NS_CMDI_SCHEMA_LOCATION =
+		"http://www.clarin.eu/cmd/xsd/minimal-cmdi.xsd";
 	public static enum Format {
 		XML, JSON, UNSUPPORTED
 	} // public enum Format
@@ -142,25 +153,149 @@ public class VirtualCollectionRegistryMarshaller {
 		}
 	}
 
-	public void marshal(OutputStream output, Format format,
-			ClarinVirtualCollection vc) throws IOException {
+	public void marshalAsCMDI(OutputStream output, Format format,
+			VirtualCollection vc) throws IOException {
 		if (output == null) {
 			throw new NullPointerException("output == null");
 		}
 		try {
-			JAXBContext ctx =
-				JAXBContext.newInstance(ClarinVirtualCollection.class);
-			Marshaller m = ctx.createMarshaller();
-			m.setProperty(Marshaller.JAXB_FRAGMENT, Boolean.TRUE);
 			XMLStreamWriter writer = createWriter(output, format);
 			writer.writeStartDocument(ENCODING, VERSION);
-			m.marshal(vc, writer);
+			marshalAsCMDI(writer, vc);
 			writer.writeEndDocument();
 			writer.close();
 		} catch (Exception e) {
 			logger.error("error marshalling clarin virtual collections", e);
 			throw new IOException("error marshalling clarin virtual collections", e);
 		}
+	}
+
+	public void marshalAsCMDI(XMLStreamWriter output, VirtualCollection vc)
+		throws XMLStreamException {
+		if (output == null) {
+			throw new NullPointerException("output == null");
+		}
+		if (vc == null) {
+			throw new NullPointerException("vc == null");
+		}
+		final DateFormat df = new SimpleDateFormat("yyyy-MM-dd");
+		
+		output.setPrefix(NS_CMDI_PREFIX, NS_CMDI);
+		output.writeStartElement(NS_CMDI, "CMD");
+		output.writeNamespace(NS_CMDI_PREFIX, NS_CMDI);
+// FIXME: minimal-cmdi.xsd does not declare correct targetNamespace,
+//        thus validation will fail		
+//		output.writeNamespace("xsi",
+//				XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
+//		output.writeAttribute(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI,
+//				"schemaLocation", NS_CMDI + " " + NS_CMDI_SCHEMA_LOCATION);
+
+		/*
+		 * header
+		 */
+		output.writeStartElement(NS_CMDI, "Header");
+		output.writeStartElement(NS_CMDI, "MdCreator");
+		output.writeCharacters(vc.getOwner().getName());
+		output.writeEndElement(); // "MdCreator" element
+		output.writeStartElement(NS_CMDI, "MdCreationDate");
+		output.writeCharacters(df.format(vc.getCreatedDate()));
+		output.writeEndElement(); // "MdCreationDate" element
+		output.writeStartElement(NS_CMDI, "MdSelfLink");
+		output.writeCharacters(vc.getPersistentIdentifier().createURI());
+		output.writeEndElement(); // "MdSelfLink" element
+		output.writeStartElement(NS_CMDI, "MdProfile");
+		output.writeCharacters(NS_CMDI_SCHEMA_LOCATION);
+		output.writeEndElement(); // "MdProfile" element
+		output.writeEndElement(); // "Header" element
+
+		/*
+		 * resources
+		 */
+		output.writeStartElement(NS_CMDI, "Resources");
+		output.writeStartElement(NS_CMDI, "ResourceProxyList");
+		for (Resource resource : vc.getResources()) {
+			output.writeStartElement(NS_CMDI, "ResourceProxy");
+			output.writeAttribute("id", resource.getIdForXml());
+			output.writeStartElement(NS_CMDI, "ResourceType");
+			switch (resource.getType()) {
+			case METADATA:
+				output.writeCharacters("Metadata");
+				break;
+			case RESOURCE:
+				output.writeCharacters("Resource");
+				break;
+			} // switch
+			output.writeEndElement(); // "ResourceType" element
+			output.writeStartElement(NS_CMDI, "ResourceRef");
+			output.writeCharacters(resource.getRef());
+			output.writeEndElement(); // "ResourceRef" element
+			output.writeEndElement(); // "ResourceProxy" element
+		} // for (resource)
+		output.writeEndElement(); // "ResourceProxyList" element
+		output.writeEmptyElement(NS_CMDI, "JournalFileProxyList");
+		output.writeEmptyElement(NS_CMDI, "ResourceRelationList");
+		output.writeEndElement(); // "Resources"
+		
+		/*
+		 * components
+		 */
+		output.writeStartElement(NS_CMDI, "Components");
+		output.writeStartElement(NS_CMDI, "VirtualCollection");
+		output.writeStartElement(NS_CMDI, "Name");
+		output.writeCharacters(vc.getName());
+		output.writeEndElement(); // "Name" element
+		if (vc.getDescription() != null) {
+			output.writeStartElement(NS_CMDI, "Description");
+			output.writeCharacters(vc.getDescription());
+			output.writeEndElement(); // "Description" element
+		}
+		output.writeStartElement(NS_CMDI, "CreationDate");
+		output.writeCharacters(df.format(vc.getCreationDate()));
+		output.writeEndElement(); // "CreationDate" element
+		output.writeStartElement(NS_CMDI, "Visibility");
+		switch (vc.getVisibility()) {
+		case ADVERTISED:
+			output.writeCharacters("advertised");
+			break;
+		case NON_ADVERTISED:
+			output.writeCharacters("non-advertised");
+			break;
+		} // switch
+		output.writeEndElement(); // "Visibility" element
+		if (vc.getOrigin() != null) {
+			output.writeStartElement(NS_CMDI, "Origin");
+			output.writeCharacters(vc.getOrigin());
+			output.writeEndElement(); // "Visibility" element
+		}
+		if (vc.getCreator() != null) {
+			Creator creator = vc.getCreator();
+			// make sure there is anything set in creator
+			if ((creator.getName() != null) ||
+				(creator.getEMail() != null) ||
+                (creator.getOrganisation() != null)) {
+				output.writeStartElement(NS_CMDI, "Creator");
+				if (creator.getName() != null) {
+					output.writeStartElement(NS_CMDI, "Name");
+					output.writeCharacters(creator.getName());
+					output.writeEndElement(); // "Name" element
+				}
+				if (creator.getEMail() != null) {
+					output.writeStartElement(NS_CMDI, "Email");
+					output.writeCharacters(creator.getEMail());
+					output.writeEndElement(); // "Email" element
+				}
+				if (creator.getOrganisation() != null) {
+					output.writeStartElement(NS_CMDI, "Organisation");
+					output.writeCharacters(creator.getOrganisation());
+					output.writeEndElement(); // "Organisation" element
+				}
+				output.writeEndElement(); // "Creator" element
+			}
+		}
+		output.writeEndElement(); // "VirtualCollection" element
+		output.writeEndElement(); // "Components" element
+
+		output.writeEndElement(); // "CMD" element (root)
 	}
 
 	private XMLStreamWriter createWriter(OutputStream output, Format format)

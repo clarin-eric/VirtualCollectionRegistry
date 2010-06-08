@@ -29,7 +29,6 @@ import javax.ws.rs.core.UriInfo;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryMarshaller.Format;
-import eu.clarin.cmdi.virtualcollectionregistry.model.ClarinVirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 
@@ -249,11 +248,11 @@ public class VirtualCollectionRegistryRestService {
 			throw new AssertionError("vc == null");
 		}
 
-		final ClarinVirtualCollection cvc = new ClarinVirtualCollection(vc);
+		final VirtualCollection fvc = vc; // hush java warnings
 		StreamingOutput writer = new StreamingOutput() {
 			public void write(OutputStream output) throws IOException,
 					WebApplicationException {
-				registry.getMarshaller().marshal(output, Format.XML, cvc);
+				registry.getMarshaller().marshalAsCMDI(output, Format.XML, fvc);
 			}
 		};
 		return Response.ok(writer).build();
