@@ -177,6 +177,11 @@ public class OAIOutputStreamImpl implements OAIOutputStream {
 	}
 
 	@Override
+	public XMLStreamWriter getXMLStreamWriter() throws OAIException {
+		return writer;
+	}
+
+	@Override
 	public void writeStartElement(String localName) throws OAIException {
 		try {
 			writer.writeStartElement(localName);
