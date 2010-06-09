@@ -6,7 +6,8 @@ import java.io.OutputStream;
 import java.net.URL;
 import java.text.DateFormat;
 import java.text.SimpleDateFormat;
-import java.util.HashMap;
+import java.util.Collections;
+import java.util.Map;
 
 import javax.xml.XMLConstants;
 import javax.xml.bind.JAXBContext;
@@ -69,7 +70,7 @@ public class VirtualCollectionRegistryMarshaller {
 			schema = sf.newSchema(url);
 			xmlReaderFactory = XMLInputFactory.newInstance();
 			xmlWriterFactory = XMLOutputFactory.newInstance();
-			HashMap<String, String> mapping = new HashMap<String,String>();
+			final Map<String, String> mapping = Collections.emptyMap();
 			jsonReaderFactory = new MappedXMLInputFactory(mapping);
 			jsonWriterFactory = new MappedXMLOutputFactory(mapping);
 		} catch (Exception e) {
