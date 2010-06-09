@@ -3,15 +3,20 @@ package eu.clarin.cmdi.virtualcollectionregistry.oai;
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+import java.util.HashMap;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Map;
+import java.util.Set;
 import java.util.TimeZone;
 
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.DeletedNotion;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.Granularity;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.MetadataFormat;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.Record;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.RecordList;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.SetSpecDesc;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.MetadataFormat;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.OAIRepository;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.Record;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.RecordList;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.SetSpecDesc;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.OAIRepository.DeletedNotion;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.OAIRepository.Granularity;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument;
 
 
@@ -28,23 +33,63 @@ public class OAIRepositoryAdapter {
 			return sdf;
 		}
 	};
+	private final Set<String> adminEmailAddresses;
+	private final Set<MetadataFormat> metadataFormats;
+	private final Set<SetSpecDesc> setSpecs;
 	private final Date earliestTimestamp;
+	private final Map<Class<?>, Set<MetadataFormat>> metadataFormatsByClass =
+		new HashMap<Class<?>, Set<MetadataFormat>>();
 
 	OAIRepositoryAdapter(OAIProvider provider, OAIRepository repository)
 			throws OAIException {
 		this.provider   = provider;
 		this.repository = repository;
 
-		// check of repository supports oai_dc format
-		if (getMetadataFormat("oai_dc") == null) {
-			throw new OAIException("repository does not supported " +
-					"mandatory \"oai_dc\" format");
+		this.adminEmailAddresses = repository.getAdminAddreses();
+		if (this.adminEmailAddresses == null) {
+			throw new NullPointerException("getAdminAddreses() == null");
 		}
+		if (this.adminEmailAddresses.isEmpty()) {
+			throw new OAIException("admin email addresses are empty");
+		}
+		
+		// cache metadata formats and do some sanity checks
+		this.metadataFormats = repository.getMetadataFormats();
+		if (this.metadataFormats == null) {
+			throw new NullPointerException("getMetadataFormats() == null");
+		}
+		boolean oai_dc_present = false;
+		Set<String> prefixes = new HashSet<String>();
+		for (MetadataFormat format : this.metadataFormats) {
+			String prefix = format.getPrefix();
+			if (prefix == null) {
+				throw new NullPointerException("metadata format needs " +
+                                               "prefix non-null prefix");
+			}
+			if (prefixes.contains(prefix)) {
+				throw new OAIException("metadata prefix must be unique " +
+									   "for a repository: " + prefix);
+			}
+			if ("oai_dc".equals(prefix)) {
+				oai_dc_present = true;
+			}
+		}
+		if (!oai_dc_present) {
+			throw new OAIException("repository does not supported " +
+					"mandatory \"oai_dc\" prefix");
+		}
+
+		// cache set specs
+		Set<SetSpecDesc> tmp = repository.getSetDescs();
+		if ((tmp != null) && tmp.isEmpty()) {
+			tmp = null;
+		}
+		this.setSpecs = tmp;
 
 		// cache earliest timestamp
 		this.earliestTimestamp = repository.getEarliestTimestamp();
 		if (this.earliestTimestamp == null) {
-			throw new OAIException("invalid earliest timestamp");
+			throw new NullPointerException("getEarliestTimestamp() == null");
 		}
 	}
 
@@ -60,8 +105,8 @@ public class OAIRepositoryAdapter {
 		return repository.getName();
 	}
 	
-	public List<String> getAdminEmailAddresses() {
-		return repository.getAdminAddreses();
+	public Set<String> getAdminEmailAddresses() {
+		return adminEmailAddresses;
 	}
 
 	public String getEarliestTimestamp() {
@@ -77,12 +122,8 @@ public class OAIRepositoryAdapter {
 	}
 
 	public boolean isSupportingCompressionMethod(int method) {
-		int methods = repository.getSupportedCompressionMethods();
+		int methods = repository.getCompressionMethods();
 		return (methods & method) > 0;
-	}
-
-	public List<MetadataFormat> getSupportedMetadataFormats() {
-		return repository.getSupportedMetadataFormats();
 	}
 
 	public String getDescription() {
@@ -97,6 +138,44 @@ public class OAIRepositoryAdapter {
 		return createRecordId(repository.getSampleRecordLocalId());
 	}
 
+	public Set<MetadataFormat> getMetadataFormats() {
+		return metadataFormats;
+	}
+
+	public Set<MetadataFormat> getMetadataFormats(Record record) {
+		Class<?> clazz = record.getItemClass();
+		synchronized (metadataFormatsByClass) {
+			Set<MetadataFormat> result = metadataFormatsByClass.get(clazz);
+			if (result == null) {
+				result = new HashSet<MetadataFormat>();
+				for (MetadataFormat format : metadataFormats) {
+					if (format.canWriteClass(clazz)) {
+						result.add(format);
+					}
+				}
+				metadataFormatsByClass.put(clazz, result);
+			}
+			return result;
+		} // synchronized
+	}
+
+	public MetadataFormat getMetadataFormatByPrefix(String prefix) {
+		for (MetadataFormat format : metadataFormats) {
+			if (prefix.equals(format.getPrefix())) {
+				return format;
+			}
+		}
+		return null;
+	}
+
+	public Set<SetSpecDesc> getSetSpecs() {
+	    return setSpecs;
+	}
+
+	public boolean isUsingSets() {
+		return setSpecs != null;
+	}
+	
 	public Object parseArgument(String name, String value) {
 		Object result = null;
 		if (name.equals(Argument.ARG_IDENTIFIER)) {
@@ -132,7 +211,7 @@ public class OAIRepositoryAdapter {
 		}
 		return result;
 	}
-
+	
 	public String createRecordId(Object localId) {
 		StringBuilder sb = new StringBuilder("oai:");
 		sb.append(repository.getId());
@@ -141,37 +220,13 @@ public class OAIRepositoryAdapter {
 		return sb.toString();
 	}
 
-	public MetadataFormat getMetadataFormat(String prefix) {
-		for (MetadataFormat format : repository.getSupportedMetadataFormats()) {
-			if (prefix.equals(format.getPrefix())) {
-				return format;
-			}
-		}
-		return null;
-	}
-
-	public boolean isUsingSets() {
-		return repository.getSetDescs() != null;
-	}
-
-	public List<SetSpecDesc> getSetSpecs() {
-	    return repository.getSetDescs();
-	}
-
 	public String formatDate(Date date) {
 		return sdf.get().format(date);
 	}
 
-	public Record createRecord(Object item, boolean headerOnly)
-		throws OAIException {
-		if (item != null) {
-			return repository.createRecord(item, headerOnly);
-		}
-		return null;
-	}
-
-	public Record getRecord(Object localId) throws OAIException {
-		return createRecord(repository.getRecord(localId), false);
+	public Record getRecord(Object localId, boolean headerOnly)
+			throws OAIException {
+		return repository.getRecord(localId, headerOnly);
 	}
 
 	public RecordList getRecords(String prefix, Date from, Date until,
@@ -200,7 +255,7 @@ public class OAIRepositoryAdapter {
 		out.writeStartElement("datestamp");
 		out.writeDate(record.getDatestamp());
 		out.writeEndElement(); // datestamp element
-		List<String> setSpecs = record.getSetSpec();
+		List<String> setSpecs = record.getSetSpecs();
 		if ((setSpecs != null) && !setSpecs.isEmpty()) {
 			for (String setSpec : setSpecs) {
 				out.writeStartElement("setSpec");

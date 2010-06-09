@@ -2,14 +2,15 @@ package eu.clarin.cmdi.virtualcollectionregistry.oai.verb;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIErrorCode;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepositoryAdapter;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.MetadataFormat;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.Record;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.MetadataFormat;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.Record;
 
 public class ListMetadataFormatsVerb extends Verb {
 	private static final List<Argument> s_arguments =
@@ -31,18 +32,18 @@ public class ListMetadataFormatsVerb extends Verb {
 		
 		OAIRepositoryAdapter repository = ctx.getRepository();
 
-		List<MetadataFormat> formats = null;
+		Set<MetadataFormat> formats = null;
 		if (ctx.hasArgument(Argument.ARG_IDENTIFIER)) {
 			Object localId = ctx.getArgument(Argument.ARG_IDENTIFIER);
-			Record record = repository.getRecord(localId);
+			Record record = repository.getRecord(localId, true);
 			if (record != null) {
-				formats = record.getSupportedMetadataFormats();
+				formats = repository.getMetadataFormats(record);
 			} else {
 				ctx.addError(OAIErrorCode.ID_DOES_NOT_EXIST,
 						"Record does not exist");
 			}
 		} else {
-			formats = repository.getSupportedMetadataFormats();
+			formats = repository.getMetadataFormats();
 		}
 
 		if (!ctx.hasErrors()) {

@@ -6,10 +6,10 @@ import java.util.List;
 
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepositoryAdapter;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream.NamespaceDecl;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.OAIRepository;
 
 public class IdentifyVerb extends Verb {
 	private static List<NamespaceDecl> descsNsDecls = Arrays.asList(

@@ -8,8 +8,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepositoryAdapter;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.MetadataFormat;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.Record;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.MetadataFormat;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.Record;
 
 public class GetRecordVerb extends Verb {
 	private static final List<Argument> s_arguments =
@@ -32,12 +32,13 @@ public class GetRecordVerb extends Verb {
 
 		OAIRepositoryAdapter repository = ctx.getRepository();
 		Object localId = ctx.getArgument(Argument.ARG_IDENTIFIER);
-		Record record = repository.getRecord(localId);
+		Record record = repository.getRecord(localId, false);
 		if (record != null) {
 			String prefix =
 				(String) ctx.getArgument(Argument.ARG_METADATAPREFIX);
 			MetadataFormat format = null;
-			for (MetadataFormat f : record.getSupportedMetadataFormats()) {
+			// FIXME: broken
+			for (MetadataFormat f : repository.getMetadataFormats()) {
 				if (prefix.equals(f.getPrefix())) {
 					format = f;
 					break;

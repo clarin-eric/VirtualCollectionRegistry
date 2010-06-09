@@ -5,9 +5,9 @@ import java.util.Date;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepositoryAdapter;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.MetadataFormat;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.Record;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.RecordList;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.MetadataFormat;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.Record;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.RecordList;
 
 public class ListIdentifiersVerb extends EnumerateRecordVerb {
 
@@ -25,9 +25,8 @@ public class ListIdentifiersVerb extends EnumerateRecordVerb {
 
 	@Override
 	protected void doWriteRecord(OAIRepositoryAdapter repository,
-			OAIOutputStream out, MetadataFormat format, Object item)
+			OAIOutputStream out, MetadataFormat format, Record record)
 			throws OAIException {
-		Record record = repository.createRecord(item, true);
 		repository.writeRecordHeader(out, record);
 	}
 

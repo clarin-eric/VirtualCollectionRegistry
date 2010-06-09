@@ -14,6 +14,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.clarin.cmdi.virtualcollectionregistry.oai.impl.VerbContextImpl;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.OAIRepository;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.GetRecordVerb;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.IdentifyVerb;
