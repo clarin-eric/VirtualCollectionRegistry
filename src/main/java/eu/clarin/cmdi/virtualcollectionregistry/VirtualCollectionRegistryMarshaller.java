@@ -187,8 +187,8 @@ public class VirtualCollectionRegistryMarshaller {
 		/*
 		 * FIXME: Use the correct schema for virtual collections here. For now,
 		 *        just use minimal-cmdi.xsd. However, XML validation will
-		 *        probably fail, because minimal-cmdi.xsd does not neither
-		 *        declare targetNamespace nor the elementFormDefault attributes. 
+		 *        probably fail because minimal-cmdi.xsd does neither declare
+		 *        the "targetNamespace" nor the "elementFormDefault" attributes. 
 		 */
 		output.writeNamespace("xsi",
 				XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
