@@ -2,6 +2,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.oai.verb;
 
 import java.util.Arrays;
 import java.util.List;
+import java.util.Set;
 
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIErrorCode;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
@@ -9,7 +10,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepositoryAdapter;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream.NamespaceDecl;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.SetSpecDesc;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.SetSpecDesc;
 
 public class ListSetsVerb extends Verb {
     private static List<NamespaceDecl> descsNsDecls = Arrays.asList(
@@ -35,7 +36,7 @@ public class ListSetsVerb extends Verb {
 		logger.debug("process LIST-SETS");
 
 		OAIRepositoryAdapter repository = ctx.getRepository();
-		List<SetSpecDesc> setDescs = repository.getSetSpecs();
+		Set<SetSpecDesc> setDescs = repository.getSetSpecs();
 		if ((setDescs != null) && !setDescs.isEmpty()) {
             OAIOutputStream out = ctx.getOutputStream();
             out.writeStartElement("ListSets");

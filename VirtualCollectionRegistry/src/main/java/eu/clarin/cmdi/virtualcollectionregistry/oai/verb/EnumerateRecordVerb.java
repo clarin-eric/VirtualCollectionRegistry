@@ -10,8 +10,9 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepositoryAdapter;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.ResumptionToken;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.MetadataFormat;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository.RecordList;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.MetadataFormat;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.Record;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.RecordList;
 
 abstract class EnumerateRecordVerb extends Verb {
 	private static final String PROP_OFFSET = "_offset";
@@ -59,11 +60,11 @@ abstract class EnumerateRecordVerb extends Verb {
 		} else {
 			prefix = (String) ctx.getArgument(Argument.ARG_METADATAPREFIX);
 			set    = (String) ctx.getArgument(Argument.ARG_SET);
-			from   = (Date) ctx.getArgument(Argument.ARG_FROM);
-			until  = (Date) ctx.getArgument(Argument.ARG_UNTIL);
+			from   = (Date)   ctx.getArgument(Argument.ARG_FROM);
+			until  = (Date)   ctx.getArgument(Argument.ARG_UNTIL);
 		}
 	
-		MetadataFormat format = repository.getMetadataFormat(prefix);
+		MetadataFormat format = repository.getMetadataFormatByPrefix(prefix);
 		if (format != null) {
 			if ((set != null) && !repository.isUsingSets()) {
 				ctx.addError(OAIErrorCode.NO_SET_HIERARCHY,
@@ -77,8 +78,9 @@ abstract class EnumerateRecordVerb extends Verb {
 				if (result != null) {
 					OAIOutputStream out = ctx.getOutputStream();
 					out.writeStartElement(getName());
-					for (Object item : result.getItems()) {
-						doWriteRecord(repository, out, format, item);
+					List<Record> records = result.getRecords();
+					for (Record record : records) {
+						doWriteRecord(repository, out, format, record);
 					}
 	
 					// add resumption token, if more results are pending
@@ -91,8 +93,8 @@ abstract class EnumerateRecordVerb extends Verb {
 							token.setProperty(Argument.ARG_SET,   set);
 							token.setProperty(Argument.ARG_FROM,  from);
 							token.setProperty(Argument.ARG_UNTIL, until);
-							token.setProperty(PROP_OFFSET,
-									          result.getNextOffset());
+							int nextOffset = records.size() + result.getOffset();
+							token.setProperty(PROP_OFFSET, nextOffset);
 							token.setCursor(offset);
 							token.setCompleteListSize(result.getTotalCount());
 							repository.writeResumptionToken(out, token);
@@ -118,6 +120,6 @@ abstract class EnumerateRecordVerb extends Verb {
 	
 	protected abstract void doWriteRecord(OAIRepositoryAdapter repository,
 			OAIOutputStream out, MetadataFormat format,
-			Object item) throws OAIException;
+			Record item) throws OAIException;
 
 } // abstract class EnumerateRecordVerb

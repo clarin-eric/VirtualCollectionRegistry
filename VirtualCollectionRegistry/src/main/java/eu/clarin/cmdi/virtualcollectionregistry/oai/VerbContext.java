@@ -15,8 +15,6 @@ public interface VerbContext {
 
 	public String getVerb();
 
-	// XXX: add method for fetching request timestamp
-
 	public boolean hasArgument(String name);
 
 	public Object getArgument(String name);
