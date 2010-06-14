@@ -69,10 +69,12 @@ public class GWDGPersistentIdentifierProvider extends
 
     public static final String USERNAME = "pid_provider.username";
     public static final String PASSWORD = "pid_provider.password";
-    private static final String SERVICE_URI_BASE = "http://handle.gwdg.de:8080/pidservice/";
-    private static final String USER_AGENT = "CLARIN-VirtualCollectionRegisty/1.0";
-    private static final Logger logger = LoggerFactory
-            .getLogger(GWDGPersistentIdentifierProvider.class);
+    private static final String SERVICE_URI_BASE =
+        "http://handle.gwdg.de:8080/pidservice/";
+    private static final String USER_AGENT =
+        "CLARIN-VirtualCollectionRegisty/1.0";
+    private static final Logger logger =
+        LoggerFactory.getLogger(GWDGPersistentIdentifierProvider.class);
     private String base_uri = null;
     private String username = null;
     private String password = null;
@@ -106,8 +108,8 @@ public class GWDGPersistentIdentifierProvider extends
         if (vc == null) {
             throw new NullPointerException("vc == null");
         }
-        logger.debug("creating handle for virtual collection \"{}\"", vc
-                .getUUID());
+        logger.debug("creating handle for virtual collection \"{}\"",
+                vc.getId());
         try {
             String target = makeCollectionURI(vc);
             URI serviceURI = URI.create(SERVICE_URI_BASE + "write/create");
@@ -121,7 +123,7 @@ public class GWDGPersistentIdentifierProvider extends
                         "no handle returned");
             }
             logger.info("created handle \"{}\" for virtual collection \"{}\"",
-                    pid, vc.getUUID());
+                    pid, vc.getId());
             return doCreate(vc, PersistentIdentifier.Type.GWDG, pid);
         } catch (VirtualCollectionRegistryException e) {
             throw new RuntimeException("failed to create handle", e);
@@ -168,7 +170,7 @@ public class GWDGPersistentIdentifierProvider extends
     }
 
     private String makeCollectionURI(VirtualCollection vc) {
-        return base_uri + "service/clarin-virtualcollection/" + vc.getUUID();
+        return base_uri + "service/clarin-virtualcollection/" + vc.getId();
     }
 
     private Map<Attribute, String> invokeWebService(URI serviceTargetURI,

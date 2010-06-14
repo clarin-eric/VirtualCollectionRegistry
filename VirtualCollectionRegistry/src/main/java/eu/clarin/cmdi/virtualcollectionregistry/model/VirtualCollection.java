@@ -4,7 +4,6 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
-import java.util.UUID;
 
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
@@ -46,25 +45,50 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.mapper.DateAdapter;
 @Table(name = "virtual_collection")
 @NamedQueries({
         @NamedQuery(name = "VirtualCollection.byUUID",
-                    query = "SELECT c FROM VirtualCollection c "
-                            + "WHERE c.uuid = :uuid"),
-        @NamedQuery(name = "VirtualCollection.findAll",
-                    query = "SELECT c FROM VirtualCollection c"),
-        @NamedQuery(name = "VirtualCollection.countAll",
-                    query = "SELECT COUNT(c) FROM VirtualCollection c"),
+                    query = "SELECT c FROM VirtualCollection c " +
+                            "WHERE c.name = :uuid"),
+        @NamedQuery(name = "VirtualCollection.findAllPublic",
+                    query = "SELECT c FROM VirtualCollection c " +
+                            "WHERE c.state = eu.clarin.cmdi." +
+                            "virtualcollectionregistry.model." +
+                            "VirtualCollection$State.PUBLIC"),
+        @NamedQuery(name = "VirtualCollection.countAllPublic",
+                    query = "SELECT COUNT(c) FROM VirtualCollection c " +
+                            "WHERE c.state = eu.clarin.cmdi." +
+                            "virtualcollectionregistry.model." +
+                            "VirtualCollection$State.PUBLIC"),
         @NamedQuery(name = "VirtualCollection.findByOwner",
-                    query = "SELECT c FROM VirtualCollection c "
-                + "WHERE c.owner = :owner"),
+                    query = "SELECT c FROM VirtualCollection c " +
+                            "WHERE c.owner = :owner"),
         @NamedQuery(name = "VirtualCollection.countByOwner",
-                    query = "SELECT COUNT(c) FROM VirtualCollection c "
-                            + "WHERE c.owner = :owner")
+                    query = "SELECT COUNT(c) FROM VirtualCollection c " +
+                            "WHERE c.owner = :owner"),
+        @NamedQuery(name = "VirtualCollection.findAllInit",
+                    query = "SELECT c FROM VirtualCollection c " +
+                            "WHERE c.state = eu.clarin.cmdi." +
+                            "virtualcollectionregistry.model." +
+                            "VirtualCollection$State.INIT")
 })
 @XmlRootElement(name = "VirtualCollection")
 @XmlAccessorType(XmlAccessType.NONE)
 @XmlType(propOrder = { "name", "description", "creationDate", "visibility",
                        "type", "origin", "creator", "resources" })
-@XmlSeeAlso({ Creator.class, Resource.class })
+@XmlSeeAlso({ Creator.class,
+              Resource.class,
+              PersistentIdentifier.class })
 public class VirtualCollection {
+    @XmlType(namespace = "urn:x-vcr:virtualcollection:state")
+    @XmlEnum(String.class)
+    public static enum State {
+        @XmlEnumValue("deleted")
+        DELETED,
+        @XmlEnumValue("initialized")
+        INIT,
+        @XmlEnumValue("public")
+        PUBLIC,
+        @XmlEnumValue("private")
+        PRIVATE
+    } // enum State
     @XmlType(namespace = "urn:x-vcr:virtualcollection:visibility")
     @XmlEnum(String.class)
     public static enum Visibility {
@@ -77,7 +101,8 @@ public class VirtualCollection {
     @XmlEnum(String.class)
     public static enum Type {
         @XmlEnumValue("extensional")
-        EXTENSIONAL, @XmlEnumValue("intensional")
+        EXTENSIONAL,
+        @XmlEnumValue("intensional")
         INTENSIONAL
     }
     @Id
@@ -91,13 +116,14 @@ public class VirtualCollection {
     @JoinColumn(name = "owner_id",
                 nullable = false)
     private User owner;
-    @Column(name = "uuid",
-            unique = true,
-            nullable = false,
-            updatable = false,
-            length = 36)
-    private String uuid;
-    @OneToOne(fetch = FetchType.EAGER,
+    @Column(name = "state",
+            nullable = false)
+    @Enumerated(EnumType.ORDINAL)
+    private State state = State.INIT;
+    @OneToOne(cascade = { CascadeType.PERSIST,
+                          CascadeType.REFRESH,
+                          CascadeType.MERGE },
+              fetch = FetchType.EAGER,
               orphanRemoval = true,
               optional = true,
               mappedBy = "collection")
@@ -132,7 +158,8 @@ public class VirtualCollection {
             updatable = false)
     @Temporal(TemporalType.TIMESTAMP)
     private Date createdDate = new Date();
-    @Column(name = "modified", nullable = false)
+    @Column(name = "modified",
+            nullable = false)
     @Temporal(TemporalType.TIMESTAMP)
     @Version
     private Date modifedDate;
@@ -140,6 +167,34 @@ public class VirtualCollection {
     @XmlAttribute(name = "id")
     public long getId() {
         return id;
+    }
+
+    public void setState(State state) {
+        if (state == null) {
+            throw new NullPointerException("state == null");
+        }
+        boolean valid;
+        switch (this.state) {
+        case INIT:
+            valid = (state == State.PRIVATE);
+            break;
+        case PRIVATE:
+            valid = (state == State.PUBLIC) || (state == State.DELETED);
+            break;
+        default:
+            valid = false;
+        } // switch
+        if (valid) {
+            this.state = state;
+        } else {
+            throw new IllegalStateException("invalid transition from " +
+                    this.state + " to " + state);
+        }
+    }
+
+    @XmlAttribute(name = "state")
+    public State getState() {
+        return state;
     }
 
     public void setOwner(User owner) {
@@ -153,18 +208,6 @@ public class VirtualCollection {
         return owner;
     }
 
-    public String createUUID() {
-        if (this.uuid == null) {
-            this.uuid = UUID.randomUUID().toString();
-        }
-        return this.uuid;
-    }
-
-    @XmlAttribute(name = "uuid")
-    public String getUUID() {
-        return uuid;
-    }
-
     public void setPersistentIdentifier(PersistentIdentifier pid) {
         if (pid == null) {
             throw new NullPointerException("pid == null");
@@ -174,6 +217,15 @@ public class VirtualCollection {
 
     public PersistentIdentifier getPersistentIdentifier() {
         return pid;
+    }
+
+    @SuppressWarnings("unused")
+    @XmlAttribute(name = "persistentId")
+    private String getXmlPersitentId() {
+        if (pid != null) {
+            return pid.getIdentifier();
+        }
+        return null;
     }
 
     public void setName(String name) {

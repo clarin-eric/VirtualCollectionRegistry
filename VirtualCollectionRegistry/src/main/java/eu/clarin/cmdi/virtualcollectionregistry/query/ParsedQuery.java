@@ -39,7 +39,8 @@ public class ParsedQuery {
         parseTree.accept(new PrettyPrinter(System.err));
     }
 
-    public TypedQuery<Long> getCountQuery(User owner) throws QueryException {
+    public TypedQuery<Long> getCountQuery(User owner,
+            VirtualCollection.State state) throws QueryException {
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Long> cq = cb.createQuery(Long.class);
@@ -51,6 +52,10 @@ public class ParsedQuery {
                 where = cb.and(where, cb.equal(visitor.getRoot()
                         .get(VirtualCollection_.owner), owner));
             }
+            if (state != null) {
+                where = cb.and(where, cb.equal(visitor.getRoot()
+                        .get(VirtualCollection_.state), state));
+            }
             cq.where(where);
             return em.createQuery(cq.select(cb.count(visitor.getRoot())));
         } catch (Exception e) {
@@ -58,8 +63,8 @@ public class ParsedQuery {
         }
     }
 
-    public TypedQuery<VirtualCollection> getQuery(User owner)
-            throws QueryException {
+    public TypedQuery<VirtualCollection> getQuery(User owner,
+            VirtualCollection.State state) throws QueryException {
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<VirtualCollection> cq = cb
@@ -71,6 +76,10 @@ public class ParsedQuery {
             if (owner != null) {
                 where = cb.and(where, cb.equal(visitor.getRoot()
                         .get(VirtualCollection_.owner), owner));
+            }
+            if (state != null) {
+                where = cb.and(where, cb.equal(visitor.getRoot()
+                        .get(VirtualCollection_.state), state));
             }
             cq.where(where);
             return em.createQuery(cq.select(visitor.getRoot()));

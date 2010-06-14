@@ -7,7 +7,7 @@ import java.util.Map;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 
 public abstract class PersistentIdentifierProvider {
-    public static final String BASE_URI = "pid_provider.base_uri";
+    public static final String BASE_URI       = "pid_provider.base_uri";
     public static final String PROVIDER_CLASS = "pid_provider.class";
 
     protected PersistentIdentifierProvider(Map<String, String> config)

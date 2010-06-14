@@ -4,9 +4,12 @@ import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 
@@ -19,6 +22,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionValidator;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.State;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
@@ -32,6 +36,8 @@ public class VirtualCollectionRegistry {
     private DataStore datastore = null;
     private PersistentIdentifierProvider pid_provider = null;
     private VirtualCollectionRegistryMarshaller marshaller = null;
+    private Timer timer =
+        new Timer("VirtualCollectionRegistry-Maintenance", true);
 
     private VirtualCollectionRegistry() {
         super();
@@ -62,6 +68,13 @@ public class VirtualCollectionRegistry {
             // setup OAIProvider
             OAIProvider.instance().setRepository(
                     new VirtualColletionRegistryOAIRepository(this));
+            // setup VCR maintenance task
+            timer.schedule(new TimerTask() {
+                @Override
+                public void run() {
+                    assignPersistentId();
+                }
+            }, 60000, 60000);
             this.intialized.set(true);
             logger.info("virtual collection registry successfully intialized");
         } catch (RuntimeException e) {
@@ -78,6 +91,7 @@ public class VirtualCollectionRegistry {
     }
 
     public void destroy() throws VirtualCollectionRegistryException {
+        timer.cancel();
         if (datastore != null) {
             datastore.destroy();
         }
@@ -128,21 +142,9 @@ public class VirtualCollectionRegistry {
 
             // store virtual collection
             vc.setOwner(user);
-            vc.createUUID();
             em.persist(vc);
             em.getTransaction().commit();
-
-            PersistentIdentifier pid = pid_provider.createIdentifier(vc);
-            em.getTransaction().begin();
-            em.persist(pid);
-            em.getTransaction().commit();
-            logger.debug("created virtual collection (id={}, pid={})",
-                    vc.getId(), pid.getIdentifier());
             return vc.getId();
-        } catch (VirtualCollectionRegistryException e) {
-            logger.debug("failed creating virtual collecion: {}",
-                    e.getMessage());
-            throw e;
         } catch (Exception e) {
             logger.error("error while creating virtual collection", e);
             throw new VirtualCollectionRegistryException(
@@ -173,7 +175,12 @@ public class VirtualCollectionRegistry {
             em.getTransaction().begin();
             VirtualCollection c =
                 em.find(VirtualCollection.class, new Long(id));
+            /*
+             * Do not check for state.DELETED here, as we might want to
+             * resurrect deleted virtual collections.
+             */
             if (c == null) {
+                logger.debug("virtual collection (id={}) not found", id);
                 throw new VirtualCollectionNotFoundException(id);
             }
             if (!c.getOwner().equalsPrincipal(principal)) {
@@ -213,7 +220,8 @@ public class VirtualCollectionRegistry {
             em.getTransaction().begin();
             VirtualCollection vc =
                 em.find(VirtualCollection.class, new Long(id));
-            if (vc == null) {
+            if ((vc == null) ||
+                (vc.getState() == VirtualCollection.State.DELETED)) {
                 logger.debug("virtual collection (id={}) not found", id);
                 throw new VirtualCollectionNotFoundException(id);
             }
@@ -250,7 +258,8 @@ public class VirtualCollectionRegistry {
             VirtualCollection vc =
                 em.find(VirtualCollection.class, new Long(id));
             em.getTransaction().commit();
-            if (vc == null) {
+            if ((vc == null) ||
+                (vc.getState() == VirtualCollection.State.DELETED)) {
                 logger.debug("virtual collection (id={}) not found", id);
                 throw new VirtualCollectionNotFoundException(id);
             }
@@ -264,6 +273,9 @@ public class VirtualCollectionRegistry {
         }
     }
 
+    /*
+     * FIXME: following method is broken, due to pid/uuid changes 
+     */
     public VirtualCollection retrieveVirtualCollection(String uuid)
             throws VirtualCollectionRegistryException {
         if (uuid == null) {
@@ -307,12 +319,12 @@ public class VirtualCollectionRegistry {
             TypedQuery<VirtualCollection> q = null;
             if (query != null) {
                 ParsedQuery parsedQuery = ParsedQuery.parseQuery(em, query);
-                cq = parsedQuery.getCountQuery(null);
-                q  = parsedQuery.getQuery(null);
+                cq = parsedQuery.getCountQuery(null, State.PUBLIC);
+                q  = parsedQuery.getQuery(null, State.PUBLIC);
             } else {
-                cq = em.createNamedQuery("VirtualCollection.countAll",
+                cq = em.createNamedQuery("VirtualCollection.countAllPublic",
                         Long.class);
-                q = em.createNamedQuery("VirtualCollection.findAll",
+                q = em.createNamedQuery("VirtualCollection.findAllPublic",
                         VirtualCollection.class);
             }
 
@@ -367,8 +379,9 @@ public class VirtualCollectionRegistry {
                 TypedQuery<VirtualCollection> q = null;
                 if (query != null) {
                     ParsedQuery parsedQuery = ParsedQuery.parseQuery(em, query);
-                    cq = parsedQuery.getCountQuery(user);
-                    q  = parsedQuery.getQuery(user);
+                    parsedQuery.prettyPrint();
+                    cq = parsedQuery.getCountQuery(user, null);
+                    q  = parsedQuery.getQuery(user, null);
                 } else {
                     cq = em.createNamedQuery("VirtualCollection.countByOwner",
                             Long.class);
@@ -402,6 +415,34 @@ public class VirtualCollectionRegistry {
                     "error while enumerating virtual collections", e);
         } finally {
             em.getTransaction().commit();
+        }
+    }
+
+    private void assignPersistentId() {
+        EntityManager em = datastore.getEntityManager();
+        em.getTransaction().begin();
+        try {
+            TypedQuery<VirtualCollection> q =
+                em.createNamedQuery("VirtualCollection.findAllInit",
+                                    VirtualCollection.class);
+            for (VirtualCollection vc : q.getResultList()) {
+                if (vc.getState() != VirtualCollection.State.INIT) {
+                    continue;
+                }
+                PersistentIdentifier pid = pid_provider.createIdentifier(vc);
+                vc.setPersistentIdentifier(pid);
+                vc.setState(VirtualCollection.State.PRIVATE);
+                em.persist(vc);
+                logger.debug("assigned pid (identifer='{}') to virtual" +
+                        "collection (id={})", pid.getIdentifier(), vc.getId());
+            }
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            logger.error("error while assigning persistent identifier", e);
+            EntityTransaction tx = em.getTransaction();
+            if (tx.isActive()) {
+                em.getTransaction().rollback();
+            }
         }
     }
 
