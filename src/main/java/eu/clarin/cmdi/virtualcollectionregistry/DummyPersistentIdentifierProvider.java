@@ -17,7 +17,8 @@ public class DummyPersistentIdentifierProvider extends
 
     public PersistentIdentifier createIdentifier(VirtualCollection vc)
             throws VirtualCollectionRegistryException {
-        return doCreate(vc, PersistentIdentifier.Type.DUMMY, vc.getUUID());
+        return doCreate(vc, PersistentIdentifier.Type.DUMMY,
+                        "dummy-" + Long.toString(vc.getId()));
     }
 
     public void updateIdentifier(String pid, URI target)
