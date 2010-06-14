@@ -59,7 +59,8 @@ public class OAIProvider {
                         synchronized (token) {
                             if (token.checkExpired(scheduledExecutionTime())) {
                                 i.remove();
-                                System.err.println("expire: " + token.getId());
+                                logger.debug("resumption token with id '{}' " +
+                                             " expired", token.getId());  
                             }
                         } // synchronized (token)
                     } // while
