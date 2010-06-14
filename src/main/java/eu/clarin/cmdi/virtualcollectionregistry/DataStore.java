@@ -11,28 +11,29 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 public class DataStore {
-    private class ThreadLocalEntityManager extends ThreadLocal<EntityManager> {
-        protected EntityManager initialValue() {
-            if (emf == null) {
-                throw new InternalError("JPA not initalizied correctly");
-            }
-            return emf.createEntityManager();
-        }
-    } // inner class ThreadLocalEntityManager
     private static final Logger logger =
         LoggerFactory.getLogger(DataStore.class);
     private final EntityManagerFactory emf;
-    private final ThreadLocalEntityManager em = new ThreadLocalEntityManager();
+    private final ThreadLocal<EntityManager> em;
 
     DataStore(Map<String, String> config)
         throws VirtualCollectionRegistryException {
         try {
             emf = Persistence.createEntityManagerFactory(
                     "VirtualCollectionStore", config);
+            em = new ThreadLocal<EntityManager>() {
+                protected EntityManager initialValue() {
+                    if (emf == null) {
+                        throw new InternalError(
+                                "JPA not initalizied correctly");
+                    }
+                    return emf.createEntityManager();
+                }
+            };
         } catch (Exception e) {
             logger.error("error initializing data store", e);
-            throw new VirtualCollectionRegistryException("error initializing",
-                    e);
+            throw new VirtualCollectionRegistryException(
+                    "error initializing", e);
         }
         logger.debug("data store was successfully initialized");
     }
