@@ -6,31 +6,32 @@ import org.antlr.runtime.tree.CommonTree;
 import eu.clarin.cmdi.virtualcollectionregistry.query.VCRQLLexer;
 
 class BooleanNode extends CommonTree implements ParseTreeNode {
-	public static enum Operator { AND, OR };
-	private Operator operator;
-	
-	public BooleanNode(Token token) {
-		super(token);
-		this.operator = fromType(token.getType());
-	}
+    public static enum Operator { AND, OR };
 
-	public Operator getOperator() {
-		return operator;
-	}
+    private Operator operator;
 
-	public void accept(ParseTreeNodeVisitor visitor) {
-		visitor.visit(this);
-	}
+    public BooleanNode(Token token) {
+        super(token);
+        this.operator = fromType(token.getType());
+    }
 
-	private static Operator fromType(int type) {
-		switch (type) {
-		case VCRQLLexer.AND:
-			return Operator.AND;
-		case VCRQLLexer.OR:
-			return Operator.OR;
-		default:
-			throw new IllegalArgumentException("bad type: " + type);
-		}
-	}
+    public Operator getOperator() {
+        return operator;
+    }
+
+    public void accept(ParseTreeNodeVisitor visitor) {
+        visitor.visit(this);
+    }
+
+    private static Operator fromType(int type) {
+        switch (type) {
+        case VCRQLLexer.AND:
+            return Operator.AND;
+        case VCRQLLexer.OR:
+            return Operator.OR;
+        default:
+            throw new IllegalArgumentException("bad type: " + type);
+        }
+    }
 
 } // class BooleanNode

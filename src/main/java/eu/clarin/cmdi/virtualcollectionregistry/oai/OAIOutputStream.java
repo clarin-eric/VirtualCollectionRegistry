@@ -7,64 +7,63 @@ import javax.xml.XMLConstants;
 import javax.xml.stream.XMLStreamWriter;
 
 public interface OAIOutputStream {
-	public static class NamespaceDecl {
-		private final String namespaceURI;
-		private final String prefix;
-		private final String schemaLocation;
+    public static class NamespaceDecl {
+        private final String namespaceURI;
+        private final String prefix;
+        private final String schemaLocation;
 
-		public NamespaceDecl(String namespaceURI, String prefix,
-				String schemaLocation) {
-			this.namespaceURI   = namespaceURI;
-			this.prefix         = prefix;
-			this.schemaLocation = schemaLocation;
-		}
-		
-		public NamespaceDecl(String namespaceURI, String prefix) {
-			this(namespaceURI, prefix, null);
-		}
-		
-		public String getNamespaceURI() {
-			return namespaceURI;
-		}
+        public NamespaceDecl(String namespaceURI, String prefix,
+                String schemaLocation) {
+            this.namespaceURI = namespaceURI;
+            this.prefix = prefix;
+            this.schemaLocation = schemaLocation;
+        }
 
-		public String getPrefix() {
-			return prefix != null ? prefix : XMLConstants.DEFAULT_NS_PREFIX;
-		}
+        public NamespaceDecl(String namespaceURI, String prefix) {
+            this(namespaceURI, prefix, null);
+        }
 
-		public boolean hasSchemaLocation() {
-			return schemaLocation != null;
-		}
+        public String getNamespaceURI() {
+            return namespaceURI;
+        }
 
-		public String getSchemaLocation() {
-			return schemaLocation;
-		}
-	} // class NamespaceDecl
+        public String getPrefix() {
+            return prefix != null ? prefix : XMLConstants.DEFAULT_NS_PREFIX;
+        }
 
-	public void close() throws OAIException;
+        public boolean hasSchemaLocation() {
+            return schemaLocation != null;
+        }
 
-	public void flush() throws OAIException;
-	
-	public XMLStreamWriter getXMLStreamWriter() throws OAIException;
-	
-	public void writeStartElement(String localName)
-			throws OAIException;
+        public String getSchemaLocation() {
+            return schemaLocation;
+        }
+    } // class NamespaceDecl
 
-	public void writeStartElement(String namespaceURI,
-			String localName) throws OAIException;
+    public void close() throws OAIException;
 
-	public void writeStartElement(String namespaceURI,
-			String localName, List<NamespaceDecl> decls) throws OAIException;
+    public void flush() throws OAIException;
 
-	public void writeEndElement() throws OAIException;
+    public XMLStreamWriter getXMLStreamWriter() throws OAIException;
 
-	public void writeAttribute(String localName, String value)
-		throws OAIException;
+    public void writeStartElement(String localName) throws OAIException;
 
-	public void writeAttribute(String namespaceURI, String localName,
-			String value) throws OAIException;
+    public void writeStartElement(String namespaceURI, String localName)
+            throws OAIException;
 
-	public void writeCharacters(String text) throws OAIException;
+    public void writeStartElement(String namespaceURI, String localName,
+            List<NamespaceDecl> decls) throws OAIException;
 
-	public void writeDate(Date date) throws OAIException;
+    public void writeEndElement() throws OAIException;
+
+    public void writeAttribute(String localName, String value)
+            throws OAIException;
+
+    public void writeAttribute(String namespaceURI, String localName,
+            String value) throws OAIException;
+
+    public void writeCharacters(String text) throws OAIException;
+
+    public void writeDate(Date date) throws OAIException;
 
 } // interface OAIOutputStream
