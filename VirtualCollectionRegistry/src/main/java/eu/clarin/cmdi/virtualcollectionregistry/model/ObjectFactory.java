@@ -4,18 +4,18 @@ import javax.xml.bind.annotation.XmlRegistry;
 
 @XmlRegistry
 public class ObjectFactory {
-	private static ObjectFactory s_instance = new ObjectFactory();
-	
-	private ObjectFactory() {
-		super();
-	}
+    private static ObjectFactory s_instance = new ObjectFactory();
 
-	public static ObjectFactory instance() {
-		return s_instance;
-	}
+    private ObjectFactory() {
+        super();
+    }
 
-	public VirtualCollection createVirtualCollection() {
-		return new VirtualCollection();
-	}
+    public static ObjectFactory instance() {
+        return s_instance;
+    }
+
+    public VirtualCollection createVirtualCollection() {
+        return new VirtualCollection();
+    }
 
 } // class ObjectFactory

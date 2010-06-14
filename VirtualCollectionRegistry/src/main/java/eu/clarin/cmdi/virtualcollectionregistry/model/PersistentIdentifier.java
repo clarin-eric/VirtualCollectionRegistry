@@ -16,85 +16,88 @@ import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
 
-
 @Entity
 @Table(name = "pid")
 public class PersistentIdentifier {
-	public static enum Type {
-		DUMMY, GWDG;
-	} // public enum Type
-	@Id
-	@GeneratedValue(strategy = GenerationType.AUTO)
-	@Column(name = "id")
-	private long id = -1;
-	@OneToOne(fetch = FetchType.EAGER, optional = false)
-	private VirtualCollection collection;
-	@Column(name = "type")
-	@Enumerated(EnumType.ORDINAL)
-	private Type type;
-	@Column(name = "identifier", nullable = false,
-                                 updatable = false,
-                                 unique = true)
-	private String identifier;
-	@Column(name = "last_modified", nullable = false)
-	@Temporal(TemporalType.TIMESTAMP)
-	@Version
-	private Date lastModifed;
+    public static enum Type {
+        DUMMY, GWDG;
+    } // public enum Type
 
-	private PersistentIdentifier() {
-	}
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id")
+    private long id = -1;
+    @OneToOne(fetch = FetchType.EAGER,
+              optional = false)
+    private VirtualCollection collection;
+    @Column(name = "type")
+    @Enumerated(EnumType.ORDINAL)
+    private Type type;
+    @Column(name = "identifier",
+            nullable = false,
+            updatable = false,
+            unique = true)
+    private String identifier;
+    @Column(name = "last_modified",
+            nullable = false)
+    @Temporal(TemporalType.TIMESTAMP)
+    @Version
+    private Date lastModifed;
 
-	PersistentIdentifier(VirtualCollection collection, Type type,
-			String identifier) {
-		this();
-		if (collection == null) {
-			throw new NullPointerException("collection == null");
-		}
-		if (type == null) {
-			throw new NullPointerException("type == null");
-		}
-		if (identifier == null) {
-			throw new NullPointerException("identifier == null");
-		}
-		identifier = identifier.trim();
-		if (identifier.isEmpty()) {
-			throw new IllegalArgumentException("identifier is empty");
-		}
-		this.collection = collection;
-		this.type       = type;
-		this.identifier = identifier;
-	}
+    private PersistentIdentifier() {
+    }
 
-	public long getId() {
-		return id;
-	}
+    PersistentIdentifier(VirtualCollection collection, Type type,
+            String identifier) {
+        this();
+        if (collection == null) {
+            throw new NullPointerException("collection == null");
+        }
+        if (type == null) {
+            throw new NullPointerException("type == null");
+        }
+        if (identifier == null) {
+            throw new NullPointerException("identifier == null");
+        }
+        identifier = identifier.trim();
+        if (identifier.isEmpty()) {
+            throw new IllegalArgumentException("identifier is empty");
+        }
+        this.collection = collection;
+        this.type = type;
+        this.identifier = identifier;
+    }
 
-	public VirtualCollection getVirtualCollection() {
-		return collection;
-	}
+    public long getId() {
+        return id;
+    }
 
-	public Type getType() {
-		return type;
-	}
+    public VirtualCollection getVirtualCollection() {
+        return collection;
+    }
 
-	public String getIdentifier() {
-		return identifier;
-	}
+    public Type getType() {
+        return type;
+    }
 
-	public Date getLastModified() {
-		return lastModifed;
-	}
+    public String getIdentifier() {
+        return identifier;
+    }
 
-	// XXX: rename to getActionableURI()?
-	public String createURI() {
-		switch (type) {
-		case DUMMY:
-			return identifier;
-		case GWDG:
-			return "http://hdl.handle.net/" + identifier;
-		default:
-			throw new InternalError();
-		}
-	}
+    public Date getLastModified() {
+        return lastModifed;
+    }
+
+    // XXX: rename to getActionableURI()?
+    public String createURI() {
+        switch (type) {
+        case DUMMY:
+            return identifier;
+        case GWDG:
+            return "http://hdl.handle.net/" + identifier;
+        default:
+            throw new InternalError();
+        }
+    }
 
 } // class PersistentIdentifier

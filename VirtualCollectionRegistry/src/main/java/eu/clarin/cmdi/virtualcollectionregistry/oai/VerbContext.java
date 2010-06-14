@@ -3,38 +3,35 @@ package eu.clarin.cmdi.virtualcollectionregistry.oai;
 import java.util.List;
 import java.util.Map;
 
-
 public interface VerbContext {
-	public static interface Error {
-		public OAIErrorCode getCode();
-		
-		public String getMessage();
-	} // interface Error
+    public static interface Error {
+        public OAIErrorCode getCode();
 
-	public OAIRepositoryAdapter getRepository();
+        public String getMessage();
+    } // interface Error
 
-	public String getVerb();
+    public OAIRepositoryAdapter getRepository();
 
-	public boolean hasArgument(String name);
+    public String getVerb();
 
-	public Object getArgument(String name);
+    public boolean hasArgument(String name);
 
-	public Map<String, String> getUnparsedArguments();
+    public Object getArgument(String name);
 
-	public String getContextPath();
+    public Map<String, String> getUnparsedArguments();
 
-	public String getRequestURI();
+    public String getContextPath();
 
-	public void addError(OAIErrorCode code, String message);
+    public String getRequestURI();
 
-	public boolean hasErrors();
+    public void addError(OAIErrorCode code, String message);
 
-	public List<Error> getErrors();
+    public boolean hasErrors();
 
-	public OAIOutputStream getOutputStream()
-		throws OAIException;
+    public List<Error> getErrors();
 
-	public OAIOutputStream getOutputStream(int status)
-		throws OAIException;
+    public OAIOutputStream getOutputStream() throws OAIException;
+
+    public OAIOutputStream getOutputStream(int status) throws OAIException;
 
 } // interface VerbContext

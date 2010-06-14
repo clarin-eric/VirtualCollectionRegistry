@@ -13,26 +13,26 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 
 public class PersistenceFilter implements Filter {
 
-	public void init(FilterConfig config) throws ServletException {
-		// DO NOTHING
-	}
+    public void init(FilterConfig config) throws ServletException {
+        // DO NOTHING
+    }
 
-	public void doFilter(ServletRequest req, ServletResponse res,
-			FilterChain chain) throws IOException, ServletException {
-		try {
-			chain.doFilter(req, res);
-		} catch (IOException e) {
-			throw e;
-		} catch (Throwable e) {
-			throw new ServletException("error while processing request", e);
-		} finally {
-			VirtualCollectionRegistry.instance().getDataStore()
-					.closeEntityManager();
-		}
-	}
+    public void doFilter(ServletRequest req, ServletResponse res,
+            FilterChain chain) throws IOException, ServletException {
+        try {
+            chain.doFilter(req, res);
+        } catch (IOException e) {
+            throw e;
+        } catch (Throwable e) {
+            throw new ServletException("error while processing request", e);
+        } finally {
+            VirtualCollectionRegistry.instance().getDataStore()
+                    .closeEntityManager();
+        }
+    }
 
-	public void destroy() {
-		// DO NOTHING
-	}
+    public void destroy() {
+        // DO NOTHING
+    }
 
 } // class PersistenceFilter

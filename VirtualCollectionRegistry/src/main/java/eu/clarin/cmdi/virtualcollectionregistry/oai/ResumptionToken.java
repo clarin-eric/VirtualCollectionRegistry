@@ -6,57 +6,57 @@ import java.util.Map;
 import java.util.UUID;
 
 public class ResumptionToken {
-	private final String id;
-	private long expirationDate;
-	private int cursor = -1;
-	private int completeListSize = -1;
-	
-	private final Map<String, Object> properties = new HashMap<String, Object>();
-	
-	ResumptionToken() {
-		this.id = UUID.randomUUID().toString();
-	}
+    private final String id;
+    private long expirationDate;
+    private int cursor = -1;
+    private int completeListSize = -1;
+    private final Map<String, Object> properties =
+        new HashMap<String, Object>();
 
-	public String getId() {
-		return id;
-	}
-	
-	public void setExpirationDate(long expirationDate) {
-		this.expirationDate = expirationDate;
-	}
+    ResumptionToken() {
+        this.id = UUID.randomUUID().toString();
+    }
 
-	public Date getExpirationDate() {
-		return new Date(expirationDate);
-	}
+    public String getId() {
+        return id;
+    }
 
-	public boolean checkExpired(long timestamp) {
-		return (timestamp > expirationDate);
-	}
+    public void setExpirationDate(long expirationDate) {
+        this.expirationDate = expirationDate;
+    }
 
-	public void setCursor(int cursor) {
-		this.cursor = cursor;
-	}
-	
-	public int getCursor() {
-		return cursor;
-	}
+    public Date getExpirationDate() {
+        return new Date(expirationDate);
+    }
 
-	public void setCompleteListSize(int completeListSize) {
-		this.completeListSize = completeListSize;
-	}
-	
-	public int getCompleteListSize() {
-		return completeListSize;
-	}
+    public boolean checkExpired(long timestamp) {
+        return (timestamp > expirationDate);
+    }
 
-	public void setProperty(String key, Object value) {
-		if (value != null) {
-			properties.put(key, value);
-		}
-	}
+    public void setCursor(int cursor) {
+        this.cursor = cursor;
+    }
 
-	public Object getProperty(String key) {
-		return properties.get(key);
-	}
+    public int getCursor() {
+        return cursor;
+    }
+
+    public void setCompleteListSize(int completeListSize) {
+        this.completeListSize = completeListSize;
+    }
+
+    public int getCompleteListSize() {
+        return completeListSize;
+    }
+
+    public void setProperty(String key, Object value) {
+        if (value != null) {
+            properties.put(key, value);
+        }
+    }
+
+    public Object getProperty(String key) {
+        return properties.get(key);
+    }
 
 } // class ResumptionToken
