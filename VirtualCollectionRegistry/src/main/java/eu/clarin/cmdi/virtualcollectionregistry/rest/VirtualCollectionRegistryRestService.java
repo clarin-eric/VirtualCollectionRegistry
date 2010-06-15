@@ -5,7 +5,6 @@ import java.io.InputStream;
 import java.io.OutputStream;
 import java.net.URI;
 import java.security.Principal;
-import java.util.UUID;
 
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -219,39 +218,13 @@ public class VirtualCollectionRegistryRestService {
     @Path("/clarin-virtualcollection/{id}")
     @Produces({ MediaType.TEXT_XML,
                 MediaType.APPLICATION_XML })
-    public Response getClarinVirtualCollection(@PathParam("id") String id)
+    public Response getClarinVirtualCollection(@PathParam("id") long id)
             throws VirtualCollectionRegistryException {
-        if (id == null) {
-            /*
-             * null indicated client error, so use IllegalArgumentException
-             * here, so we will signal bad request error to client
-             */
-            throw new IllegalArgumentException("id path argument is missing");
-        }
-        VirtualCollection vc = null;
-        try {
-            UUID vc_id = UUID.fromString(id.trim());
-            vc = registry.retrieveVirtualCollection(vc_id.toString());
-        } catch (IllegalArgumentException e) {
-            try {
-                long vc_id = Long.parseLong(id);
-                vc = registry.retrieveVirtualCollection(vc_id);
-            } catch (NumberFormatException e1) {
-                throw new IllegalArgumentException("invalid id: "
-                        + "not nor a number or a uuid");
-            }
-        }
-
-        // sanity check
-        if (vc == null) {
-            throw new AssertionError("vc == null");
-        }
-
-        final VirtualCollection fvc = vc; // hush java warnings
+        final VirtualCollection vc = registry.retrieveVirtualCollection(id);
         StreamingOutput writer = new StreamingOutput() {
             public void write(OutputStream output) throws IOException,
                     WebApplicationException {
-                registry.getMarshaller().marshalAsCMDI(output, Format.XML, fvc);
+                registry.getMarshaller().marshalAsCMDI(output, Format.XML, vc);
             }
         };
         return Response.ok(writer).build();
