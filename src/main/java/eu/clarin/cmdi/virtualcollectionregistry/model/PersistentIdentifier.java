@@ -1,20 +1,17 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model;
 
-import java.util.Date;
-
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.OneToOne;
+import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Version;
+
+import org.apache.commons.lang.NullArgumentException;
 
 @Entity
 @Table(name = "pid")
@@ -25,33 +22,26 @@ public class PersistentIdentifier {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
+    @Column(name = "id", nullable = false)
     private long id = -1;
-    @OneToOne(fetch = FetchType.EAGER,
-              optional = false)
-    private VirtualCollection collection;
+    @OneToOne(optional = false)
+    @PrimaryKeyJoinColumn
+    private VirtualCollection vc;
     @Column(name = "type")
     @Enumerated(EnumType.ORDINAL)
     private Type type;
     @Column(name = "identifier",
             nullable = false,
-            updatable = false,
             unique = true)
     private String identifier;
-    @Column(name = "last_modified",
-            nullable = false)
-    @Temporal(TemporalType.TIMESTAMP)
-    @Version
-    private Date lastModifed;
 
     private PersistentIdentifier() {
     }
 
-    PersistentIdentifier(VirtualCollection collection, Type type,
-            String identifier) {
+    PersistentIdentifier(VirtualCollection vc, Type type, String identifier) {
         this();
-        if (collection == null) {
-            throw new NullPointerException("collection == null");
+        if (vc == null) {
+            throw new NullArgumentException("vc == null");
         }
         if (type == null) {
             throw new NullPointerException("type == null");
@@ -63,7 +53,7 @@ public class PersistentIdentifier {
         if (identifier.isEmpty()) {
             throw new IllegalArgumentException("identifier is empty");
         }
-        this.collection = collection;
+        this.vc = vc;
         this.type = type;
         this.identifier = identifier;
     }
@@ -73,7 +63,7 @@ public class PersistentIdentifier {
     }
 
     public VirtualCollection getVirtualCollection() {
-        return collection;
+        return vc;
     }
 
     public Type getType() {
@@ -82,10 +72,6 @@ public class PersistentIdentifier {
 
     public String getIdentifier() {
         return identifier;
-    }
-
-    public Date getLastModified() {
-        return lastModifed;
     }
 
     // XXX: rename to getActionableURI()?

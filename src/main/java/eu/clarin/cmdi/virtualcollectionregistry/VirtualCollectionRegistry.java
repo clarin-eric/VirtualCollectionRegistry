@@ -2,6 +2,7 @@ package eu.clarin.cmdi.virtualcollectionregistry;
 
 import java.security.Principal;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 import java.util.Map;
 import java.util.Timer;
@@ -9,8 +10,9 @@ import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.persistence.EntityManager;
-import javax.persistence.EntityTransaction;
+import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
+import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 
 import org.slf4j.Logger;
@@ -72,9 +74,9 @@ public class VirtualCollectionRegistry {
             timer.schedule(new TimerTask() {
                 @Override
                 public void run() {
-                    assignPersistentId();
+                    maintenance(this.scheduledExecutionTime());
                 }
-            }, 60000, 60000);
+            }, 1000, 1000);
             this.intialized.set(true);
             logger.info("virtual collection registry successfully intialized");
         } catch (RuntimeException e) {
@@ -188,6 +190,7 @@ public class VirtualCollectionRegistry {
                         "permission denied for user \"" +
                         principal.getName() + "\"");
             }
+            em.lock(c, LockModeType.WRITE);
             c.updateFrom(vc);
             validator.validate(c);
             em.getTransaction().commit();
@@ -226,11 +229,20 @@ public class VirtualCollectionRegistry {
                 throw new VirtualCollectionNotFoundException(id);
             }
             if (!vc.getOwner().equalsPrincipal(principal)) {
+                logger.debug("virtual collection (id={}) not owned by " +
+                        "user '{}'", id, principal.getName());
                 throw new VirtualCollectionRegistryPermissionException(
-                        "permission denied for user \"" + principal.getName() +
-                                "\"");
+                        "permission denied for user \"" +
+                        principal.getName() + "\"");
             }
-            em.remove(vc);
+            if (vc.getState() != VirtualCollection.State.PRIVATE) {
+                logger.debug("virtual collection (id={}) cannot be " +
+                        "deleted (invalid state)", id);
+                throw new VirtualCollectionRegistryPermissionException(
+                        "virtual collection cannot be deleted");
+            }
+            em.lock(vc, LockModeType.WRITE);
+            vc.setState(VirtualCollection.State.DELETED);
             em.getTransaction().commit();
             return vc.getId();
         } catch (VirtualCollectionRegistryException e) {
@@ -266,41 +278,6 @@ public class VirtualCollectionRegistry {
             return vc;
         } catch (VirtualCollectionRegistryException e) {
             throw e;
-        } catch (Exception e) {
-            logger.error("error while retrieving virtual collection", e);
-            throw new VirtualCollectionRegistryException(
-                    "error while retrieving virtual collection", e);
-        }
-    }
-
-    /*
-     * FIXME: following method is broken, due to pid/uuid changes 
-     */
-    public VirtualCollection retrieveVirtualCollection(String uuid)
-            throws VirtualCollectionRegistryException {
-        if (uuid == null) {
-            throw new NullPointerException("uuid == null");
-        }
-        uuid = uuid.trim();
-        if (uuid.isEmpty()) {
-            throw new IllegalArgumentException("uuid is empty");
-        }
-
-        logger.debug("retrieve virtual collection (uuid={})", uuid);
-
-        try {
-            EntityManager em = datastore.getEntityManager();
-            em.getTransaction().begin();
-            TypedQuery<VirtualCollection> q =
-                em.createNamedQuery("VirtualCollection.byUUID",
-                                    VirtualCollection.class);
-            q.setParameter("uuid", uuid);
-            VirtualCollection vc = q.getSingleResult();
-            em.getTransaction().commit();
-            return vc;
-        } catch (NoResultException e) {
-            logger.debug("virtual collection (uuid={}) not found", uuid);
-            throw new VirtualCollectionNotFoundException(uuid);
         } catch (Exception e) {
             logger.error("error while retrieving virtual collection", e);
             throw new VirtualCollectionRegistryException(
@@ -418,31 +395,61 @@ public class VirtualCollectionRegistry {
         }
     }
 
-    private void assignPersistentId() {
+    private void maintenance(long now) {
+        final Date nowDateAlloc = new Date(now - 30*1000);
+        final Date nowDatePurge = new Date(now - 30*1000);
+        
         EntityManager em = datastore.getEntityManager();
-        em.getTransaction().begin();
         try {
+            /*
+             * delayed allocation of persistent identifier
+             */
+            em.getTransaction().begin();
             TypedQuery<VirtualCollection> q =
-                em.createNamedQuery("VirtualCollection.findAllInit",
+                em.createNamedQuery("VirtualCollection.findAllByState",
                                     VirtualCollection.class);
+            q.setParameter("state", VirtualCollection.State.PUBLIC_PENDING);
+            q.setParameter("date", nowDateAlloc);
             for (VirtualCollection vc : q.getResultList()) {
-                if (vc.getState() != VirtualCollection.State.INIT) {
+                try {
+                    em.lock(vc, LockModeType.WRITE);
+                } catch (PersistenceException e) {
+                    logger.debug("error locking virtual collection (vc={})", vc.getId());
                     continue;
                 }
                 PersistentIdentifier pid = pid_provider.createIdentifier(vc);
                 vc.setPersistentIdentifier(pid);
-                vc.setState(VirtualCollection.State.PRIVATE);
+                vc.setState(VirtualCollection.State.PUBLIC);
                 em.persist(vc);
                 logger.debug("assigned pid (identifer='{}') to virtual" +
-                        "collection (id={})", pid.getIdentifier(), vc.getId());
+                        "collection (id={})",
+                        vc.getPersistentIdentifier().getIdentifier(),
+                        vc.getId());
+            }
+            em.getTransaction().commit();
+            
+            /*
+             * delayed purging of deleted virtual collections 
+             */
+            em.getTransaction().begin();
+            q.setParameter("state", VirtualCollection.State.DELETED);
+            q.setParameter("date", nowDatePurge);
+            for (VirtualCollection vc : q.getResultList()) {
+                try {
+                    em.lock(vc, LockModeType.WRITE);
+                } catch (PersistenceException e) {
+                    logger.debug("error locking virtual collection (vc={})", vc.getId());
+                    continue;
+                }
+                vc.setState(VirtualCollection.State.DEAD);
+                em.remove(vc);
+                logger.debug("purged virtual collection (id={})", vc.getId());
             }
             em.getTransaction().commit();
         } catch (Exception e) {
-            logger.error("error while assigning persistent identifier", e);
-            EntityTransaction tx = em.getTransaction();
-            if (tx.isActive()) {
-                em.getTransaction().rollback();
-            }
+            logger.error("error while doing maintenance", e);
+        } finally {
+            datastore.closeEntityManager();
         }
     }
 
