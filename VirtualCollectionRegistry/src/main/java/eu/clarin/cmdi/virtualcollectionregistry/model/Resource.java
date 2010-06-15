@@ -25,9 +25,7 @@ public class Resource {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id",
-            nullable = false,
-            updatable = false,
-            insertable = true)
+            nullable = false)
     private long id = -1;
     @Column(name = "type",
             nullable = false)

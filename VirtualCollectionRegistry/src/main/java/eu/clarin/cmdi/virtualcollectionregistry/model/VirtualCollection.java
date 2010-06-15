@@ -51,7 +51,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.mapper.DateAdapter;
                     query = "SELECT c FROM VirtualCollection c " +
                             "WHERE c.state = eu.clarin.cmdi." +
                             "virtualcollectionregistry.model." +
-                            "VirtualCollection$State.PUBLIC"),
+                            "VirtualCollection$State.PUBLIC " +
+                            "ORDER BY c.id"),
         @NamedQuery(name = "VirtualCollection.countAllPublic",
                     query = "SELECT COUNT(c) FROM VirtualCollection c " +
                             "WHERE c.state = eu.clarin.cmdi." +
@@ -59,15 +60,13 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.mapper.DateAdapter;
                             "VirtualCollection$State.PUBLIC"),
         @NamedQuery(name = "VirtualCollection.findByOwner",
                     query = "SELECT c FROM VirtualCollection c " +
-                            "WHERE c.owner = :owner"),
+                            "WHERE c.owner = :owner ORDER BY c.id"),
         @NamedQuery(name = "VirtualCollection.countByOwner",
                     query = "SELECT COUNT(c) FROM VirtualCollection c " +
                             "WHERE c.owner = :owner"),
-        @NamedQuery(name = "VirtualCollection.findAllInit",
+        @NamedQuery(name = "VirtualCollection.findAllByState",
                     query = "SELECT c FROM VirtualCollection c " +
-                            "WHERE c.state = eu.clarin.cmdi." +
-                            "virtualcollectionregistry.model." +
-                            "VirtualCollection$State.INIT")
+                            "WHERE c.state = :state AND c.modifedDate < :date")
 })
 @XmlRootElement(name = "VirtualCollection")
 @XmlAccessorType(XmlAccessType.NONE)
@@ -80,14 +79,16 @@ public class VirtualCollection {
     @XmlType(namespace = "urn:x-vcr:virtualcollection:state")
     @XmlEnum(String.class)
     public static enum State {
-        @XmlEnumValue("deleted")
-        DELETED,
-        @XmlEnumValue("initialized")
-        INIT,
+        @XmlEnumValue("private")
+        PRIVATE,
+        @XmlEnumValue("public-pending")
+        PUBLIC_PENDING,
         @XmlEnumValue("public")
         PUBLIC,
-        @XmlEnumValue("private")
-        PRIVATE
+        @XmlEnumValue("deleted")
+        DELETED,
+        @XmlEnumValue("dead")
+        DEAD
     } // enum State
     @XmlType(namespace = "urn:x-vcr:virtualcollection:visibility")
     @XmlEnum(String.class)
@@ -119,14 +120,12 @@ public class VirtualCollection {
     @Column(name = "state",
             nullable = false)
     @Enumerated(EnumType.ORDINAL)
-    private State state = State.INIT;
-    @OneToOne(cascade = { CascadeType.PERSIST,
-                          CascadeType.REFRESH,
-                          CascadeType.MERGE },
-              fetch = FetchType.EAGER,
+    private State state = State.PRIVATE;
+    @OneToOne(optional = true,
               orphanRemoval = true,
-              optional = true,
-              mappedBy = "collection")
+              cascade = CascadeType.ALL,
+              fetch = FetchType.EAGER,
+              mappedBy = "vc")
     private PersistentIdentifier pid;
     @Column(name = "name",
             nullable = false)
@@ -147,8 +146,7 @@ public class VirtualCollection {
     @Embedded
     private Creator creator;
     @OneToMany(cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY,
-               orphanRemoval = true)
+               fetch = FetchType.LAZY)
     @JoinColumn(name = "vc_id",
                 nullable = false)
     @OrderBy("id")
@@ -173,22 +171,24 @@ public class VirtualCollection {
         if (state == null) {
             throw new NullPointerException("state == null");
         }
-        boolean valid;
-        switch (this.state) {
-        case INIT:
-            valid = (state == State.PRIVATE);
-            break;
-        case PRIVATE:
-            valid = (state == State.PUBLIC) || (state == State.DELETED);
-            break;
-        default:
-            valid = false;
-        } // switch
-        if (valid) {
-            this.state = state;
-        } else {
-            throw new IllegalStateException("invalid transition from " +
-                    this.state + " to " + state);
+        if (this.state != state) {
+            boolean valid = false;
+            switch (this.state) {
+            case PRIVATE:
+                valid = (state == State.PUBLIC) || (state == State.DELETED);
+                break;
+            case DELETED:
+                valid = (state == State.PRIVATE) || (state == State.DEAD);
+                break;
+            default:
+                /* NOTHING */
+            } // switch
+            if (valid) {
+                this.state = state;
+            } else {
+                throw new IllegalStateException("invalid transition from " +
+                        this.state + " to " + state);
+            }
         }
     }
 
@@ -212,16 +212,19 @@ public class VirtualCollection {
         if (pid == null) {
             throw new NullPointerException("pid == null");
         }
+        if ((this.pid != null) || (state != State.PUBLIC_PENDING)) {
+            throw new IllegalStateException("illegal state");
+        }
         this.pid = pid;
+        this.state = State.PUBLIC;
     }
 
     public PersistentIdentifier getPersistentIdentifier() {
         return pid;
     }
 
-    @SuppressWarnings("unused")
     @XmlAttribute(name = "persistentId")
-    private String getXmlPersitentId() {
+    public String getPersistentIdentifierForXml() {
         if (pid != null) {
             return pid.getIdentifier();
         }
@@ -329,7 +332,11 @@ public class VirtualCollection {
         if (this == vc) {
             return;
         }
+        this.setState(state);
         this.setName(vc.getName());
+        if (vc.getPersistentIdentifier() != null) {
+            this.setPersistentIdentifier(vc.getPersistentIdentifier());
+        }
         this.setDescription(vc.getDescription());
         this.setCreationDate(vc.getCreationDate());
         this.setVisibility(vc.getVisibility());
