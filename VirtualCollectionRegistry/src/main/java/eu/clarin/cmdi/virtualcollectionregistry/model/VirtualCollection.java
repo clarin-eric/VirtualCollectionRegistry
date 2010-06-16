@@ -178,6 +178,18 @@ public class VirtualCollection {
         return state;
     }
 
+    public boolean isPrivate() {
+        return state == State.PRIVATE;
+    }
+
+    public boolean isPublic() {
+        return (state == State.PUBLIC_PENDING) || (state == State.PUBLIC); 
+    }
+
+    public boolean isDeleted() {
+        return (state == State.DELETED) || (state == State.DEAD); 
+    }
+
     public void setOwner(User owner) {
         if (owner == null) {
             throw new NullPointerException("owner == null");

@@ -12,7 +12,6 @@ import java.util.concurrent.atomic.AtomicBoolean;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
-import javax.persistence.PersistenceException;
 import javax.persistence.TypedQuery;
 
 import org.slf4j.Logger;
@@ -31,9 +30,10 @@ import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.query.QueryException;
 
 public class VirtualCollectionRegistry {
-    private static final Logger logger = LoggerFactory
-            .getLogger(VirtualCollectionRegistry.class);
-    private static final VirtualCollectionRegistry s_instance = new VirtualCollectionRegistry();
+    private static final Logger logger =
+        LoggerFactory.getLogger(VirtualCollectionRegistry.class);
+    private static final VirtualCollectionRegistry s_instance =
+        new VirtualCollectionRegistry();
     private AtomicBoolean intialized = new AtomicBoolean(false);
     private DataStore datastore = null;
     private PersistentIdentifierProvider pid_provider = null;
@@ -76,7 +76,7 @@ public class VirtualCollectionRegistry {
                 public void run() {
                     maintenance(this.scheduledExecutionTime());
                 }
-            }, 1000, 1000);
+            }, 60000, 60000);
             this.intialized.set(true);
             logger.info("virtual collection registry successfully intialized");
         } catch (RuntimeException e) {
@@ -175,10 +175,10 @@ public class VirtualCollectionRegistry {
         try {
             EntityManager em = datastore.getEntityManager();
             em.getTransaction().begin();
-            VirtualCollection c =
-                em.find(VirtualCollection.class, new Long(id));
+            VirtualCollection c = em.find(VirtualCollection.class, new Long(id),
+                    LockModeType.PESSIMISTIC_WRITE);
             /*
-             * Do not check for state.DELETED here, as we might want to
+             * Do not check for deleted state here, as we might want to
              * resurrect deleted virtual collections.
              */
             if (c == null) {
@@ -190,7 +190,6 @@ public class VirtualCollectionRegistry {
                         "permission denied for user \"" +
                         principal.getName() + "\"");
             }
-            em.lock(c, LockModeType.WRITE);
             c.updateFrom(vc);
             validator.validate(c);
             em.getTransaction().commit();
@@ -221,10 +220,9 @@ public class VirtualCollectionRegistry {
         try {
             EntityManager em = datastore.getEntityManager();
             em.getTransaction().begin();
-            VirtualCollection vc =
-                em.find(VirtualCollection.class, new Long(id));
-            if ((vc == null) ||
-                (vc.getState() == VirtualCollection.State.DELETED)) {
+            VirtualCollection vc = em.find(VirtualCollection.class,
+                    new Long(id), LockModeType.PESSIMISTIC_WRITE);
+            if ((vc == null) || vc.isDeleted()) {
                 logger.debug("virtual collection (id={}) not found", id);
                 throw new VirtualCollectionNotFoundException(id);
             }
@@ -235,13 +233,12 @@ public class VirtualCollectionRegistry {
                         "permission denied for user \"" +
                         principal.getName() + "\"");
             }
-            if (vc.getState() != VirtualCollection.State.PRIVATE) {
+            if (!vc.isPrivate()) {
                 logger.debug("virtual collection (id={}) cannot be " +
                         "deleted (invalid state)", id);
                 throw new VirtualCollectionRegistryPermissionException(
                         "virtual collection cannot be deleted");
             }
-            em.lock(vc, LockModeType.WRITE);
             vc.setState(VirtualCollection.State.DELETED);
             em.getTransaction().commit();
             return vc.getId();
@@ -256,6 +253,100 @@ public class VirtualCollectionRegistry {
         }
     }
 
+    public VirtualCollection.State getVirtualCollectionState(long id)
+            throws VirtualCollectionRegistryException {
+        if (id <= 0) {
+            throw new IllegalArgumentException("id <= 0");
+        }
+
+        logger.debug("retrieve virtual collection state (id={})", id);
+
+        try {
+            EntityManager em = datastore.getEntityManager();
+            em.getTransaction().begin();
+            VirtualCollection vc =
+                em.find(VirtualCollection.class, new Long(id));
+            em.getTransaction().commit();
+            if ((vc == null) || vc.isDeleted()) {
+                logger.debug("virtual collection (id={}) not found", id);
+                throw new VirtualCollectionNotFoundException(id);
+            }
+            return vc.getState();
+        } catch (VirtualCollectionRegistryException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error(
+                    "error while retrieving state of virtual collection", e);
+            throw new VirtualCollectionRegistryException(
+                    "error while retrieving state of virtual collection", e);
+        }
+    }
+
+    public void setVirtualCollectionState(Principal principal, long id,
+            VirtualCollection.State state)
+            throws VirtualCollectionRegistryException {
+        if (principal == null) {
+            throw new NullPointerException("principal == null");
+        }
+        if (id <= 0) {
+            throw new IllegalArgumentException("id <= 0");
+        }
+        if (state == null) {
+            throw new NullPointerException("state == null");
+        }
+        if ((state != VirtualCollection.State.PUBLIC_PENDING) &&
+            (state != VirtualCollection.State.PRIVATE)) {
+            throw new IllegalArgumentException(
+                    "only PUBLIC_PENDING or PRIVATE are allowed");
+        }
+
+        logger.debug("setting state virtual collection state (id={}) to '{}'",
+                id, state);
+
+        try {
+            EntityManager em = datastore.getEntityManager();
+            em.getTransaction().begin();
+            VirtualCollection vc = em.find(VirtualCollection.class,
+                    new Long(id), LockModeType.PESSIMISTIC_WRITE);
+            if ((vc == null) || vc.isDeleted()) {
+                logger.debug("virtual collection (id={}) not found", id);
+                throw new VirtualCollectionNotFoundException(id);
+            }
+            if (!vc.getOwner().equalsPrincipal(principal)) {
+                logger.debug("virtual collection (id={}) not owned by " +
+                        "user '{}'", id, principal.getName());
+                throw new VirtualCollectionRegistryPermissionException(
+                        "permission denied for user \"" +
+                        principal.getName() + "\"");
+            }
+
+            /*
+             * XXX: deny update from public to private? 
+             */
+            boolean update = false;
+            switch (state) {
+            case PRIVATE:
+                update =  vc.getState() != state;
+                break;
+            case PUBLIC_PENDING:
+                update =  vc.getState() != VirtualCollection.State.PUBLIC;
+                break;
+            }
+            if (update) {
+                vc.setState(state);
+                em.persist(vc);
+            }
+            em.getTransaction().commit();
+        } catch (VirtualCollectionRegistryException e) {
+            throw e;
+        } catch (Exception e) {
+            logger.error(
+                    "error while setting state of virtual collection", e);
+            throw new VirtualCollectionRegistryException(
+                    "error while setting state of virtual collection", e);
+        }
+    }
+    
     public VirtualCollection retrieveVirtualCollection(long id)
             throws VirtualCollectionRegistryException {
         if (id <= 0) {
@@ -270,8 +361,7 @@ public class VirtualCollectionRegistry {
             VirtualCollection vc =
                 em.find(VirtualCollection.class, new Long(id));
             em.getTransaction().commit();
-            if ((vc == null) ||
-                (vc.getState() == VirtualCollection.State.DELETED)) {
+            if ((vc == null) || vc.isDeleted()) {
                 logger.debug("virtual collection (id={}) not found", id);
                 throw new VirtualCollectionNotFoundException(id);
             }
@@ -410,15 +500,12 @@ public class VirtualCollectionRegistry {
                                     VirtualCollection.class);
             q.setParameter("state", VirtualCollection.State.PUBLIC_PENDING);
             q.setParameter("date", nowDateAlloc);
+            q.setLockMode(LockModeType.PESSIMISTIC_WRITE);
             for (VirtualCollection vc : q.getResultList()) {
-                try {
-                    em.lock(vc, LockModeType.WRITE);
-                } catch (PersistenceException e) {
-                    logger.debug("error locking virtual collection (vc={})", vc.getId());
-                    continue;
+                if (vc.getPersistentIdentifier() == null) {
+                    PersistentIdentifier pid = pid_provider.createIdentifier(vc);
+                    vc.setPersistentIdentifier(pid);
                 }
-                PersistentIdentifier pid = pid_provider.createIdentifier(vc);
-                vc.setPersistentIdentifier(pid);
                 vc.setState(VirtualCollection.State.PUBLIC);
                 em.persist(vc);
                 logger.debug("assigned pid (identifer='{}') to virtual" +
@@ -434,13 +521,8 @@ public class VirtualCollectionRegistry {
             em.getTransaction().begin();
             q.setParameter("state", VirtualCollection.State.DELETED);
             q.setParameter("date", nowDatePurge);
+            q.setLockMode(LockModeType.PESSIMISTIC_WRITE);
             for (VirtualCollection vc : q.getResultList()) {
-                try {
-                    em.lock(vc, LockModeType.WRITE);
-                } catch (PersistenceException e) {
-                    logger.debug("error locking virtual collection (vc={})", vc.getId());
-                    continue;
-                }
                 vc.setState(VirtualCollection.State.DEAD);
                 em.remove(vc);
                 logger.debug("purged virtual collection (id={})", vc.getId());
