@@ -27,6 +27,7 @@ import javax.ws.rs.core.UriInfo;
 
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryMarshaller.Format;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
@@ -156,6 +157,64 @@ public class VirtualCollectionRegistryRestService {
     }
 
     @GET
+    @Path("/virtualcollection/{id}/state")
+    @Produces({ MediaType.TEXT_XML,
+                MediaType.APPLICATION_XML,
+                MediaType.APPLICATION_JSON })
+    public Response getVirtualCollectionState(@PathParam("id") long id)
+        throws VirtualCollectionRegistryException {
+        VirtualCollection.State state = registry.getVirtualCollectionState(id);
+        State result = null;
+        switch (state) {
+        case PUBLIC_PENDING:
+            /* FALL-THROUGH */
+        case PUBLIC:
+            result = State.PUBLIC;
+            break;
+        default:
+            result = State.PRIVATE;
+        } // switch
+        return Response.ok(result).build();
+    }
+
+    @PUT
+    @Path("/virtualcollection/{id}/state")
+    @Consumes({ MediaType.TEXT_XML,
+                MediaType.TEXT_XML,
+                MediaType.APPLICATION_JSON })
+    @Produces({ MediaType.TEXT_XML,
+                MediaType.APPLICATION_XML,
+                MediaType.APPLICATION_JSON })
+    public Response setVirtualCollectionState(@PathParam("id") long id,
+            State state)
+            throws VirtualCollectionRegistryException {
+        Principal principal = security.getUserPrincipal();
+        if (principal == null) {
+            throw new NullPointerException("princial == null");
+        }
+        if (state == null) {
+            throw new VirtualCollectionRegistryUsageException("invalid state");
+        }
+        VirtualCollection.State vc_state = null;
+        switch (state) {
+        case PUBLIC:
+            vc_state = VirtualCollection.State.PUBLIC_PENDING;
+            break;
+        case PRIVATE:
+            vc_state = VirtualCollection.State.PRIVATE;
+            break;
+        default:
+            throw new VirtualCollectionRegistryUsageException("invalid state");
+        }
+        registry.setVirtualCollectionState(principal, id, vc_state);
+        RestResponse response = new RestResponse();
+        response.setIsSuccess(true);
+        response.setInfo("updated state to '" + state + "'");
+        response.setId(id);
+        return Response.ok(response).build();
+    }
+
+    @GET
     @Path("/virtualcollections")
     @Produces({ MediaType.TEXT_XML,
                 MediaType.APPLICATION_XML,
@@ -236,8 +295,8 @@ public class VirtualCollectionRegistryRestService {
     }
 
     private String getInputEncoding() {
-        String encoding = headers.getMediaType().getParameters()
-                .get("encoding");
+        String encoding =
+            headers.getMediaType().getParameters().get("encoding");
         return (encoding != null) ? encoding : "utf-8";
     }
 
