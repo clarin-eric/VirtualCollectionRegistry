@@ -1,14 +1,16 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model;
 
+import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.JoinColumn;
 import javax.persistence.OneToOne;
-import javax.persistence.PrimaryKeyJoinColumn;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.NullArgumentException;
@@ -22,10 +24,14 @@ public class PersistentIdentifier {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id", nullable = false)
-    private long id = -1;
-    @OneToOne(optional = false)
-    @PrimaryKeyJoinColumn
+    @Column(name = "id")
+    private long id;
+    @OneToOne(cascade = CascadeType.ALL,
+              fetch = FetchType.LAZY,
+              optional = true)
+    @JoinColumn(name="vc_id",
+                nullable = false,
+                unique = true)
     private VirtualCollection vc;
     @Column(name = "type")
     @Enumerated(EnumType.ORDINAL)

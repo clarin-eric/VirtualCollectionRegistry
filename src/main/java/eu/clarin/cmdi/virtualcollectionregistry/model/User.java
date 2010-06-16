@@ -31,10 +31,10 @@ public class User {
             nullable = false,
             unique = true)
     private String name;
-    @OneToMany(mappedBy = "owner",
-            cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,
-            orphanRemoval = true)
+    @OneToMany(cascade = CascadeType.ALL,
+               fetch = FetchType.LAZY,
+               mappedBy = "owner",
+               orphanRemoval = true)
     private Set<VirtualCollection> collections =
         new LinkedHashSet<VirtualCollection>();
 
