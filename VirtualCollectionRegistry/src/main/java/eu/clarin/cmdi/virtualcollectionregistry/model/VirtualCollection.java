@@ -121,11 +121,10 @@ public class VirtualCollection {
             nullable = false)
     @Enumerated(EnumType.ORDINAL)
     private State state = State.PRIVATE;
-    @OneToOne(optional = true,
-              orphanRemoval = true,
-              cascade = CascadeType.ALL,
+    @OneToOne(cascade = CascadeType.ALL,
               fetch = FetchType.EAGER,
-              mappedBy = "vc")
+              mappedBy = "vc",
+              optional = true)
     private PersistentIdentifier pid;
     @Column(name = "name",
             nullable = false)
@@ -171,25 +170,7 @@ public class VirtualCollection {
         if (state == null) {
             throw new NullPointerException("state == null");
         }
-        if (this.state != state) {
-            boolean valid = false;
-            switch (this.state) {
-            case PRIVATE:
-                valid = (state == State.PUBLIC) || (state == State.DELETED);
-                break;
-            case DELETED:
-                valid = (state == State.PRIVATE) || (state == State.DEAD);
-                break;
-            default:
-                /* NOTHING */
-            } // switch
-            if (valid) {
-                this.state = state;
-            } else {
-                throw new IllegalStateException("invalid transition from " +
-                        this.state + " to " + state);
-            }
-        }
+        this.state = state;
     }
 
     @XmlAttribute(name = "state")
