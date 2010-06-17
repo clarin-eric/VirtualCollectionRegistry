@@ -35,7 +35,6 @@ public class OAIRepositoryAdapter {
     private final Set<String> adminEmailAddresses;
     private final Set<MetadataFormat> metadataFormats;
     private final Set<SetSpecDesc> setSpecs;
-    private final Date earliestTimestamp;
     private final Map<Class<?>, Set<MetadataFormat>> metadataFormatsByClass =
         new HashMap<Class<?>, Set<MetadataFormat>>();
 
@@ -84,12 +83,6 @@ public class OAIRepositoryAdapter {
             tmp = null;
         }
         this.setSpecs = tmp;
-
-        // cache earliest timestamp
-        this.earliestTimestamp = repository.getEarliestTimestamp();
-        if (this.earliestTimestamp == null) {
-            throw new NullPointerException("getEarliestTimestamp() == null");
-        }
     }
 
     public OAIProvider getProvider() {
@@ -109,7 +102,11 @@ public class OAIRepositoryAdapter {
     }
 
     public String getEarliestTimestamp() {
-        return formatDate(earliestTimestamp);
+        Date date = repository.getEarliestTimestamp();
+        if (date == null) {
+            date = new Date();
+        }
+        return formatDate(date);
     }
 
     public DeletedNotion getDeletedNotion() {
