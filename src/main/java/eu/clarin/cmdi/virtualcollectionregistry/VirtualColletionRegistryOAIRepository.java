@@ -220,11 +220,7 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 
     @Override
     public Set<SetSpecDesc> getSetDescs() {
-        Set<SetSpecDesc> setspecs = new HashSet<SetSpecDesc>();
-        setspecs.add(new SetSpecDesc("odd", "Odd virtual collections"));
-        setspecs.add(new SetSpecDesc("even", "even virtual collections",
-                                     "With a description"));
-        return setspecs;
+        return null;
     }
 
     @Override
@@ -359,13 +355,7 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 
         @Override
         public List<String> getSetSpecs() {
-            List<String> specs = null;
-            if (vc.getId() % 2 == 0) {
-                specs = Arrays.asList("even");
-            } else {
-                specs = Arrays.asList("odd");
-            }
-            return specs;
+            return null;
         }
 
         @Override
@@ -407,13 +397,7 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 
         @Override
         public List<String> getSetSpecs() {
-            List<String> specs = null;
-            if (id % 2 == 0) {
-                specs = Arrays.asList("even");
-            } else {
-                specs = Arrays.asList("odd");
-            }
-            return specs;
+            return null;
         }
 
         @Override
