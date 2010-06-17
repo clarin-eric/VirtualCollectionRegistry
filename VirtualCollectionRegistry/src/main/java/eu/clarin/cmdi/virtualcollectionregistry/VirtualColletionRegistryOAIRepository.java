@@ -8,6 +8,8 @@ import java.util.List;
 import java.util.Set;
 
 import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
+import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
 import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
@@ -155,7 +157,30 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 
     @Override
     public Date getEarliestTimestamp() {
-        return new Date();
+        Date result = null;
+        try {
+            EntityManager em = registry.getDataStore().getEntityManager();
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+
+            CriteriaQuery<Date> cq = cb.createQuery(Date.class);
+            Root<VirtualCollection> root = cq.from(VirtualCollection.class);
+            cq.select(root.get(VirtualCollection_.modifedDate));
+            cq.orderBy(cb.asc(root.get(VirtualCollection_.modifedDate)));
+
+            TypedQuery<Date> q = em.createQuery(cq);
+            em.getTransaction().begin();
+            q.setMaxResults(1);
+            q.setLockMode(LockModeType.READ);
+            result = q.getSingleResult();
+            em.getTransaction().commit();
+        } catch (NoResultException e) {
+            /* IGNORE */
+        } catch (Exception e) {
+            logger.debug("error fetching earliest timestamp", e);
+        } finally {
+            registry.getDataStore().closeEntityManager();
+        }
+        return result;
     }
 
     @Override
@@ -272,6 +297,13 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
                 List<Record> records = new ArrayList<Record>(vcs.size());
                 for (VirtualCollection vc : vcs) {
                     records.add(createRecord(vc, headerOnly));
+                    /*
+                     *  XXX: force fetching of resources in case of "cmdi"
+                     *  prefix.
+                     */
+                    if ("cmdi".equals(prefix) && !headerOnly) {
+                        vc.getResources().size();
+                    }
                 }
                 boolean hasMore = (offset + vcs.size()) < count;
                 return new RecordList(records, offset, hasMore, (int) count);
@@ -279,7 +311,7 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
                 return null;
             }
         } catch (Exception e) {
-            throw new OAIException("error fetcing records", e);
+            throw new OAIException("error fetching records", e);
         } finally {
             registry.getDataStore().closeEntityManager();
         }
