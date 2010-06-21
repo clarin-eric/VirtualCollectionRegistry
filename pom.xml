@@ -48,14 +48,23 @@
       </plugin>
 
       <plugin>
-        <groupId>org.antlr</groupId>
-        <artifactId>antlr3-maven-plugin</artifactId>
-        <version>3.2</version>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>javacc-maven-plugin</artifactId>
+        <version>2.6</version>
         <executions>
           <execution>
+            <id>javacc</id>
             <goals>
-              <goal>antlr</goal>
+              <goal>javacc</goal>
             </goals>
+            <configuration>
+              <debugParser>true</debugParser>
+              <isStatic>false</isStatic>
+              <supportClassVisibilityPublic>false</supportClassVisibilityPublic>
+              <!-- 
+              <unicodeInput>true</unicodeInput>
+              -->
+            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -88,6 +97,11 @@
           </webResources>
         </configuration>
        </plugin>
+      <plugin>
+      	<groupId>org.codehaus.mojo</groupId>
+      	<artifactId>javacc-maven-plugin</artifactId>
+      	<version>2.6</version>
+      </plugin>
     </plugins>
   </build>
 
@@ -242,17 +256,19 @@
     </dependency>
 
     <dependency>
-      <groupId>org.antlr</groupId>
-      <artifactId>antlr-runtime</artifactId>
-      <version>3.2</version>
-      <type>jar</type>
-    </dependency>
-    <dependency>
     	<groupId>org.apache.httpcomponents</groupId>
     	<artifactId>httpclient</artifactId>
     	<version>4.0.1</version>
     	<type>jar</type>
     	<scope>compile</scope>
+    </dependency>
+
+    <dependency>
+    	<groupId>net.java.dev.javacc</groupId>
+    	<artifactId>javacc</artifactId>
+    	<version>5.0</version>
+    	<type>jar</type>
+    	<scope>provided</scope>
     </dependency>
   </dependencies>
 
