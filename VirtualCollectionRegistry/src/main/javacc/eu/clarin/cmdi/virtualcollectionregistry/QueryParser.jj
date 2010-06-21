@@ -1,0 +1,138 @@
+PARSER_BEGIN(QueryParser)
+package eu.clarin.cmdi.virtualcollectionregistry;
+
+import java.io.StringReader;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+
+public class QueryParser {
+    private CriteriaBuilder cb = null;
+    private Root<VirtualCollection> root;
+
+    public QueryParser(String s, CriteriaBuilder cb) {
+        this(new StringReader(s));
+        this.cb = cb;
+        this.root = null;
+    }
+
+    private String toSQLString(String s) {
+        // escape SQL specific stuff
+        s = s.replace("\\", "\\\\");
+        s = s.replace("%", "\\%");
+        s = s.replace("_", "\\_");
+        // add SQL wildcards to VCRQL wildcards
+        s = s.replace("*", "%");
+        return s;
+    }
+
+} // class QueryParser
+PARSER_END(QueryParser)
+/*
+  (vc.)name:         STRING, EQ, NE
+  (vc.)desciption:   STRING, EQ, NE
+  (vc.)created:      DATE,   EQ, NE, GT, GE, LT, LE
+  {vc.}modified:     DATE,   EQ, NE, GT, GE, LT, LE
+  (vc.)state:        { "public", "private", "deleted"}, EQ, NE
+  (cr.)creator:      STRING, EQ, NE
+  {cr.}email:        STRING, EQ, NE
+  {cr.}organization: STRING, EQ, NE
+*/
+
+SKIP:
+{
+    " "
+    | "\t"
+    | "\n"
+    | "\r"
+}
+
+TOKEN:
+{
+      <VC_NAME: "name">
+    | <VC_DESC: "description">
+    | <VC_CREATED: "created">
+    | <VC_MODIFIED: "modified">
+    | <VC_STATE: "state">
+    | <CR_CREATOR: "creator">
+    | <CR_ORGANIZATION: "organization">
+    | <CR_EMAIL: "email">
+    | <AND: "and">
+    | <OR: "or">
+    | <EQ: "=">
+    | <NE: "<>">
+    | <GT: ">">
+    | <GE: ">=">
+    | <LT: "<">
+    | <LE: "<="> 
+    | <LPAREN: "(">
+    | <RPAREN: ")">
+    | <STATE_PUBLIC: "public">
+    | <STATE_PRIVATE: "private">
+    | <STATE_DELETED: "deleted">
+    | <DATE: (["0"-"9"])+ "-" (["0"-"9"])+ "-" (["0"-"9"])+>    
+    | <QUOTED_STRING: "\"" (~["\""])+ "\"" >
+}
+
+void expression() :
+{
+}
+{
+    term() ( ( <AND> | <OR> ) term() )*
+}
+
+private void term() :
+{
+    Token attribute = null;
+    Token operator = null;
+    Token value = null;
+}
+{
+    ( ( attribute = <VC_NAME>      | attribute = <VC_DESC>
+      | attribute = <CR_CREATOR>
+      | attribute = <CR_ORGANIZATION>
+      | attribute = <CR_EMAIL> )
+      ( operator = <EQ>
+      | operator = <NE> )
+      value = <QUOTED_STRING>
+      {
+          if ((attribute == null) || (operator == null) || (value == null)) {
+              throw new ParseException("oh noos");
+          }
+          System.err.println("attr  = " + attribute.kind);
+          System.err.println("op    = " + operator.kind);          System.err.println("value = " + value.image);
+      }    )
+    | ( <VC_STATE>
+        ( operator = <EQ>
+        | operator = <NE> )
+        ( value = <STATE_PUBLIC>
+        | value = <STATE_PRIVATE>
+        | value = <STATE_DELETED> )
+        {
+            if ((operator == null) || (value == null)) {
+                throw new ParseException("oh noos");            }
+        }
+      )
+    | ( ( attribute = <VC_CREATED>
+        | attribute = <VC_MODIFIED> )
+        ( operator = <EQ>
+        | operator = <NE>
+        | operator = <GT>
+        | operator = <GE>
+        | operator = <LT>
+        | operator = <LE> )
+        value = <QUOTED_STRING>
+        {
+          if ((attribute == null) || (operator == null) || (value == null)) {
+              throw new ParseException("oh noos");
+          }
+          System.err.println("attr  = " + attribute.kind);
+          System.err.println("op    = " + operator.kind);
+          System.err.println("value = " + value.image);
+        }
+      )
+    | <LPAREN> expression() <RPAREN>
+}

@@ -13,6 +13,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,11 +24,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionValidator;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.State;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIProvider;
-import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
-import eu.clarin.cmdi.virtualcollectionregistry.query.QueryException;
 
 public class VirtualCollectionRegistry {
     private static final Logger logger =
@@ -385,15 +383,19 @@ public class VirtualCollectionRegistry {
             TypedQuery<Long> cq = null;
             TypedQuery<VirtualCollection> q = null;
             if (query != null) {
-                ParsedQuery parsedQuery = ParsedQuery.parseQuery(em, query);
-                cq = parsedQuery.getCountQuery(null, State.PUBLIC);
-                q  = parsedQuery.getQuery(null, State.PUBLIC);
-            } else {
+                CriteriaBuilder cb = em.getCriteriaBuilder();
+                QueryParser parser = new QueryParser(query, cb);
+                parser.expression();
+//                ParsedQuery parsedQuery = ParsedQuery.parseQuery(em, query);
+//                cq = parsedQuery.getCountQuery(null, State.PUBLIC);
+//                q  = parsedQuery.getQuery(null, State.PUBLIC);
+//            } else {
+            }
                 cq = em.createNamedQuery("VirtualCollection.countAllPublic",
                         Long.class);
                 q = em.createNamedQuery("VirtualCollection.findAllPublic",
                         VirtualCollection.class);
-            }
+//            }
 
             // commence query ...
             List<VirtualCollection> results = null;
@@ -410,9 +412,9 @@ public class VirtualCollectionRegistry {
                 results = q.getResultList();
             }
             return new VirtualCollectionList(results, offset, (int) totalCount);
-        } catch (QueryException e) {
-            throw new VirtualCollectionRegistryUsageException("query invalid",
-                    e);
+//        } catch (QueryException e) {
+//            throw new VirtualCollectionRegistryUsageException("query invalid",
+//                    e);
         } catch (Exception e) {
             logger.error("error while enumerating virtual collections", e);
             throw new VirtualCollectionRegistryException(
@@ -445,10 +447,10 @@ public class VirtualCollectionRegistry {
                 TypedQuery<Long> cq = null;
                 TypedQuery<VirtualCollection> q = null;
                 if (query != null) {
-                    ParsedQuery parsedQuery = ParsedQuery.parseQuery(em, query);
-                    parsedQuery.prettyPrint();
-                    cq = parsedQuery.getCountQuery(user, null);
-                    q  = parsedQuery.getQuery(user, null);
+//                    ParsedQuery parsedQuery = ParsedQuery.parseQuery(em, query);
+//                    parsedQuery.prettyPrint();
+//                    cq = parsedQuery.getCountQuery(user, null);
+//                    q  = parsedQuery.getQuery(user, null);
                 } else {
                     cq = em.createNamedQuery("VirtualCollection.countByOwner",
                             Long.class);
@@ -473,9 +475,9 @@ public class VirtualCollectionRegistry {
                 }
             }
             return new VirtualCollectionList(results, offset, (int) totalCount);
-        } catch (QueryException e) {
-            throw new VirtualCollectionRegistryUsageException("query invalid",
-                    e);
+//        } catch (QueryException e) {
+//            throw new VirtualCollectionRegistryUsageException("query invalid",
+//                    e);
         } catch (Exception e) {
             logger.error("error while enumerating virtual collections", e);
             throw new VirtualCollectionRegistryException(

@@ -167,8 +167,8 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
             cq.select(root.get(VirtualCollection_.modifedDate));
             cq.orderBy(cb.asc(root.get(VirtualCollection_.modifedDate)));
 
-            TypedQuery<Date> q = em.createQuery(cq);
             em.getTransaction().begin();
+            TypedQuery<Date> q = em.createQuery(cq);
             q.setMaxResults(1);
             q.setLockMode(LockModeType.READ);
             result = q.getSingleResult();
@@ -274,10 +274,9 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
             cq2.where(buildWhere(cb, cq2, root2, from, until));
             cq2.orderBy(cb.asc(root2.get(VirtualCollection_.modifedDate)));
             
+            em.getTransaction().begin();
             TypedQuery<Long> q1 = em.createQuery(cq1);
             TypedQuery<VirtualCollection> q2 = em.createQuery(cq2);
-            
-            em.getTransaction().begin();
             List<VirtualCollection> vcs = null;
             long count = q1.getSingleResult();
             if (count > 0) {
