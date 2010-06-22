@@ -1,6 +1,5 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.clarin.cmdi</groupId>
   <artifactId>VirtualCollectionRegistry</artifactId>
@@ -21,20 +20,20 @@
             <configuration>
               <tasks>
                 <echo>processing JPA annotations</echo>
-                <property name="target.dir" value="${project.build.directory}/generated-sources/jpamodelgen"/>
-                <mkdir dir="${target.dir}"/>
-                <javac srcdir="${basedir}/src/main/java/eu/clarin/cmdi/virtualcollectionregistry/model"
-                       destdir="${target.dir}"
-                       failonerror="false"
-                       fork="true"
-                       target="${maven.compiler.target}">
+                <property name="target.dir"
+                  value="${project.build.directory}/generated-sources/jpamodelgen" />
+                <mkdir dir="${target.dir}" />
+                <javac
+                  srcdir="${basedir}/src/main/java/eu/clarin/cmdi/virtualcollectionregistry/model"
+                  destdir="${target.dir}" failonerror="false" fork="true"
+                  target="${maven.compiler.target}">
                   <!-- hack to silence javac warnings -->
-                  <include name="**/*.java"/>
-                  <exclude name="**/VirtualCollectionValidator.java"/>
-                  <exclude name="**/*Provider.java"/>
-                  <compilerarg value="-proc:only"/>
+                  <include name="**/*.java" />
+                  <exclude name="**/VirtualCollectionValidator.java" />
+                  <exclude name="**/*Provider.java" />
+                  <compilerarg value="-proc:only" />
                   <classpath>
-                    <path refid="maven.compile.classpath"/>
+                    <path refid="maven.compile.classpath" />
                   </classpath>
                 </javac>
               </tasks>
@@ -70,7 +69,7 @@
           <target>${maven.compiler.target}</target>
         </configuration>
       </plugin>
-      
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
@@ -87,13 +86,13 @@
             </resource>
           </webResources>
         </configuration>
-       </plugin>
+      </plugin>
 
-       <plugin>
-         <groupId>org.codehaus.mojo</groupId>
-      	 <artifactId>javacc-maven-plugin</artifactId>
-      	 <version>2.6</version>
-       </plugin>
+      <plugin>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>javacc-maven-plugin</artifactId>
+        <version>2.6</version>
+      </plugin>
     </plugins>
   </build>
 
@@ -110,6 +109,7 @@
       <url>http://repository.jboss.com/maven2/</url>
     </repository>
   </repositories>
+
   <pluginRepositories>
     <pluginRepository>
       <id>repository.java-net</id>
@@ -168,12 +168,17 @@
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-jpamodelgen</artifactId>
       <version>${hibernate.jpaVersion}</version>
-      <!-- "provided" is actually a lie, but this dependency is only
-           needed at compile time, and "provided" does the trick -->
+      <!--
+        "provided" is actually a lie, but this dependency is only needed
+        at compile time, and "provided" does the trick
+      -->
       <scope>provided</scope>
       <exclusions>
         <exclusion>
-          <!-- Use the jpa-api defined here, crossing fingers they match up signature-wise -->
+          <!--
+            Use the jpa-api defined here, crossing fingers they match up
+            signature-wise
+          -->
           <groupId>org.hibernate.javax.persistence</groupId>
           <artifactId>hibernate-jpa-2.0-api</artifactId>
         </exclusion>
@@ -248,30 +253,30 @@
     </dependency>
 
     <dependency>
-    	<groupId>org.apache.httpcomponents</groupId>
-    	<artifactId>httpclient</artifactId>
-    	<version>4.0.1</version>
-    	<type>jar</type>
-    	<scope>compile</scope>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.0.1</version>
+      <type>jar</type>
+      <scope>compile</scope>
     </dependency>
 
     <dependency>
-    	<groupId>net.java.dev.javacc</groupId>
-    	<artifactId>javacc</artifactId>
-    	<version>5.0</version>
-    	<type>jar</type>
-    	<scope>provided</scope>
+      <groupId>net.java.dev.javacc</groupId>
+      <artifactId>javacc</artifactId>
+      <version>5.0</version>
+      <type>jar</type>
+      <scope>provided</scope>
     </dependency>
   </dependencies>
 
   <properties>
     <!-- plug-in settings -->
-  	<maven.compiler.source>1.6</maven.compiler.source>
-  	<maven.compiler.target>1.6</maven.compiler.target>
+    <maven.compiler.source>1.6</maven.compiler.source>
+    <maven.compiler.target>1.6</maven.compiler.target>
     <!-- dependency versions -->
-  	<hibernate.version>3.5.1-Final</hibernate.version>
-  	<hibernate.jpaVersion>1.0.0.Final</hibernate.jpaVersion>
-  	<jersey.version>1.1.5.1</jersey.version>
-  	<slf4j.version>1.6.0</slf4j.version>
+    <hibernate.version>3.5.1-Final</hibernate.version>
+    <hibernate.jpaVersion>1.0.0.Final</hibernate.jpaVersion>
+    <jersey.version>1.1.5.1</jersey.version>
+    <slf4j.version>1.6.0</slf4j.version>
   </properties>
 </project>
