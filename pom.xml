@@ -55,16 +55,8 @@
           <execution>
             <id>javacc</id>
             <goals>
-              <goal>javacc</goal>
+              <goal>jjtree-javacc</goal>
             </goals>
-            <configuration>
-              <debugParser>true</debugParser>
-              <isStatic>false</isStatic>
-              <supportClassVisibilityPublic>false</supportClassVisibilityPublic>
-              <!-- 
-              <unicodeInput>true</unicodeInput>
-              -->
-            </configuration>
           </execution>
         </executions>
       </plugin>
@@ -84,7 +76,6 @@
         <artifactId>maven-war-plugin</artifactId>
         <version>2.1-beta-1</version>
         <configuration>
-          <warSourceExcludes>**/*.tokens</warSourceExcludes>
           <webResources>
             <!-- additional web resources: also copy schemas to web-app -->
             <resource>
@@ -97,11 +88,12 @@
           </webResources>
         </configuration>
        </plugin>
-      <plugin>
-      	<groupId>org.codehaus.mojo</groupId>
-      	<artifactId>javacc-maven-plugin</artifactId>
-      	<version>2.6</version>
-      </plugin>
+
+       <plugin>
+         <groupId>org.codehaus.mojo</groupId>
+      	 <artifactId>javacc-maven-plugin</artifactId>
+      	 <version>2.6</version>
+       </plugin>
     </plugins>
   </build>
 

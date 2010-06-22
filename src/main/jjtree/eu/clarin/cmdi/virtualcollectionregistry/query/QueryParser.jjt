@@ -1,0 +1,137 @@
+options {
+    DEBUG_PARSER      = false;
+    MULTI             = true;
+    NODE_DEFAULT_VOID = true;
+    STATIC            = false;
+    VISITOR           = true;
+}
+
+PARSER_BEGIN(QueryParser)
+package eu.clarin.cmdi.virtualcollectionregistry.query;
+
+import java.io.StringReader;
+
+public class QueryParser {
+    public QueryParser(String s) {
+        this(new StringReader(s));
+    }
+} // class QueryParser
+PARSER_END(QueryParser)
+
+/*
+  (vc.)name:         STRING, EQ, NE
+  (vc.)desciption:   STRING, EQ, NE
+  (vc.)created:      DATE,   EQ, NE, GT, GE, LT, LE
+  {vc.}modified:     DATE,   EQ, NE, GT, GE, LT, LE
+  (vc.)state:        { "public", "private", "deleted"}, EQ, NE
+  (cr.)creator:      STRING, EQ, NE
+  {cr.}email:        STRING, EQ, NE
+  {cr.}organization: STRING, EQ, NE
+*/
+
+SKIP: {
+    " "
+    | "\t"
+    | "\n"
+    | "\r"
+}
+
+TOKEN: {
+      <VC_NAME: "name">
+    | <VC_DESC: "description">
+    | <VC_CREATED: "created">
+    | <VC_MODIFIED: "modified">
+    | <VC_STATE: "state">
+    | <CR_CREATOR: "creator">
+    | <CR_ORGANIZATION: "organization">
+    | <CR_EMAIL: "email">
+    | <AND: "and">
+    | <OR: "or">
+    | <EQ: "=">
+    | <NE: "<>">
+    | <GT: ">">
+    | <GE: ">=">
+    | <LT: "<">
+    | <LE: "<="> 
+    | <LPAREN: "(">
+    | <RPAREN: ")">
+    | <STATE_PUBLIC: "public">
+    | <STATE_PRIVATE: "private">
+    | <STATE_DELETED: "deleted">
+    | <DATE: (["0"-"9"])+ "-" (["0"-"9"])+ "-" (["0"-"9"])+>    
+    | <QUOTED_STRING: "\"" (~["\""])+ "\"" >
+}
+
+ASTStart start() #Start : {
+}
+{
+    expressionOr() <EOF>
+    { return jjtThis; }
+}
+
+private void expressionOr() : {
+}
+{
+    (expressionAnd() (<OR> expressionAnd())*) #Or(>1)
+}
+
+private void expressionAnd() : {
+}
+{
+    (term() (<AND> term())*) #And(>1)
+}
+
+private void term() : {
+}
+{
+    predicate()
+    | (<LPAREN> expressionOr() <RPAREN>)
+}
+
+private void predicate() #Predicate : {
+    Token attribute = null;
+    Token operator = null;
+    Token value = null;
+}
+{
+    (
+     ( ( attribute = <VC_NAME>
+       | attribute = <VC_DESC>
+       | attribute = <CR_CREATOR>
+       | attribute = <CR_ORGANIZATION>
+       | attribute = <CR_EMAIL> )
+       ( operator = <EQ>
+       | operator = <NE> )
+       value = <QUOTED_STRING> )
+     | ( attribute = <VC_STATE>
+        ( operator = <EQ>
+        | operator = <NE> )
+        ( value = <STATE_PUBLIC>
+        | value = <STATE_PRIVATE>
+        | value = <STATE_DELETED> ) )
+     | ( ( attribute = <VC_CREATED>
+         | attribute = <VC_MODIFIED> )
+         ( operator = <EQ>
+         | operator = <NE>
+         | operator = <GT>
+         | operator = <GE>
+         | operator = <LT>
+         | operator = <LE> )
+         value = <QUOTED_STRING> )
+    )
+    {
+        if ((attribute == null) || (operator == null) || (value == null)) {
+            throw new ParseException("internal error while parsing query");
+        }
+
+        // strip quotes from QUOTED_STRING
+        String v = value.image;
+        if (value.kind == QUOTED_STRING) {
+            v = v.substring(1, v.length() - 1);
+        }
+
+        jjtThis.setAttribute(attribute.kind);
+        jjtThis.setOperator(operator.kind);
+        jjtThis.setValue(v);
+    }
+}

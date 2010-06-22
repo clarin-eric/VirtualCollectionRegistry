@@ -13,7 +13,6 @@ import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -26,6 +25,9 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionValidator;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIProvider;
+import eu.clarin.cmdi.virtualcollectionregistry.query.ASTStart;
+import eu.clarin.cmdi.virtualcollectionregistry.query.PrettyPrinter;
+import eu.clarin.cmdi.virtualcollectionregistry.query.QueryParser;
 
 public class VirtualCollectionRegistry {
     private static final Logger logger =
@@ -383,9 +385,11 @@ public class VirtualCollectionRegistry {
             TypedQuery<Long> cq = null;
             TypedQuery<VirtualCollection> q = null;
             if (query != null) {
-                CriteriaBuilder cb = em.getCriteriaBuilder();
-                QueryParser parser = new QueryParser(query, cb);
-                parser.expression();
+                QueryParser parser = new QueryParser(query);
+                ASTStart start = parser.start();
+                System.out.println("QUERY: >" + query + "<");
+                PrettyPrinter v = new PrettyPrinter(System.out);
+                v.visit(start, null);
 //                ParsedQuery parsedQuery = ParsedQuery.parseQuery(em, query);
 //                cq = parsedQuery.getCountQuery(null, State.PUBLIC);
 //                q  = parsedQuery.getQuery(null, State.PUBLIC);
