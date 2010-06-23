@@ -9,11 +9,9 @@ options {
 PARSER_BEGIN(QueryParser)
 package eu.clarin.cmdi.virtualcollectionregistry.query;
 
-import java.io.StringReader;
-
 public class QueryParser {
     public QueryParser(String s) {
-        this(new StringReader(s));
+        this(new java.io.StringReader(s));
     }
 } // class QueryParser
 PARSER_END(QueryParser)
@@ -42,7 +40,7 @@ TOKEN: {
     | <VC_CREATED: "created">
     | <VC_MODIFIED: "modified">
     | <VC_STATE: "state">
-    | <CR_CREATOR: "creator">
+    | <CR_NAME: "creator">
     | <CR_ORGANIZATION: "organization">
     | <CR_EMAIL: "email">
     | <AND: "and">
@@ -58,7 +56,13 @@ TOKEN: {
     | <STATE_PUBLIC: "public">
     | <STATE_PRIVATE: "private">
     | <STATE_DELETED: "deleted">
-    | <DATE: (["0"-"9"])+ "-" (["0"-"9"])+ "-" (["0"-"9"])+>    
+    | <#DIGIT: ["0"-"9"]>
+    | <ISO_DATE: <DIGIT> <DIGIT> <DIGIT> <DIGIT> "-"
+                 <DIGIT> <DIGIT> "-"
+                 <DIGIT> <DIGIT> "T"
+                 <DIGIT> <DIGIT> ":"
+                 <DIGIT> <DIGIT> ":"
+                 <DIGIT> <DIGIT> "Z">    
     | <QUOTED_STRING: "\"" (~["\""])+ "\"" >
 }
 
@@ -97,7 +101,7 @@ private void predicate() #Predicate : {
     (
      ( ( attribute = <VC_NAME>
        | attribute = <VC_DESC>
-       | attribute = <CR_CREATOR>
+       | attribute = <CR_NAME>
        | attribute = <CR_ORGANIZATION>
        | attribute = <CR_EMAIL> )
        ( operator = <EQ>
@@ -117,7 +121,7 @@ private void predicate() #Predicate : {
          | operator = <GE>
          | operator = <LT>
          | operator = <LE> )
-         value = <QUOTED_STRING> )
+         value = <ISO_DATE> )
     )
     {
         if ((attribute == null) || (operator == null) || (value == null)) {

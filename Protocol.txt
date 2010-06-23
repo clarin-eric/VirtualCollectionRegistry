@@ -166,20 +166,32 @@ working with the registry.
      query            = expression
                       | expression 'and' expression
                       | expression 'or' expression
+                      | '(' expression ')'
 
-     expression       = component '=' value
-                      | component '!=' value
+     expression       = 'name'         ( '=' | '<>' ) value
+                      | 'description'  ( '=' | '<>' ) value
+                      | 'creator'      ( '=' | '<>' ) value
+                      | 'email'        ( '=' | '<>' ) value
+                      | 'organization' ( '=' | '<>' ) value
+                      | 'state'        ( '=' | '<>' )
+                                       ( 'public' | 'private' | 'deleted' )
+                      | 'created'      ( '<' | '<=' | '=' | '<>' | '>=' | '>' )
+                                       iso-date
+                      | 'modified'     ( '<' | '<=' | '=' | '<>' | '>=' | '>' )
+                                       iso-date
 
-     component        = 'vc'      '.' vc-property
-                      | 'creator' '.' creator-property
-
-     vc-property      = 'name' | 'description'
-
-     creator-property = 'name' | 'email' | 'organization'
-      
      value            = double quoted string value, use backslash
                         for escaping double quotes, use "*" and "?" for
                         wildcards.
+     iso-date         = full ISO 8601 date: YYYY-MM-DD-T-HH:MM:SSZ
+                        where YYYY := year
+                                MM := month
+                                DD := day
+                                HH := hour
+                                 T := time designator (literal)
+                                MM := minute
+                                SS := second
+                                Z  := UTC indicator (literal) 
 
-   (see "src/main/antlr3/eu/clarin/cmdi/virtualcollectionregistry/query/VCRQL.g"
+   (see "src/main/jjtree/eu/clarin/cmdi/virtualcollectionregistry/query/QueryParser.jjt"
     and "src/main/main/eu/clarin/cmdi/virtualcollectionregistry/query/*.java")

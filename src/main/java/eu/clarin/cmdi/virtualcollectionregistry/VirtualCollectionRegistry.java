@@ -25,9 +25,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionValidator;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIProvider;
-import eu.clarin.cmdi.virtualcollectionregistry.query.ASTStart;
-import eu.clarin.cmdi.virtualcollectionregistry.query.PrettyPrinter;
-import eu.clarin.cmdi.virtualcollectionregistry.query.QueryParser;
+import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
 
 public class VirtualCollectionRegistry {
     private static final Logger logger =
@@ -385,21 +383,18 @@ public class VirtualCollectionRegistry {
             TypedQuery<Long> cq = null;
             TypedQuery<VirtualCollection> q = null;
             if (query != null) {
-                QueryParser parser = new QueryParser(query);
-                ASTStart start = parser.start();
-                System.out.println("QUERY: >" + query + "<");
-                PrettyPrinter v = new PrettyPrinter(System.out);
-                v.visit(start, null);
-//                ParsedQuery parsedQuery = ParsedQuery.parseQuery(em, query);
-//                cq = parsedQuery.getCountQuery(null, State.PUBLIC);
-//                q  = parsedQuery.getQuery(null, State.PUBLIC);
-//            } else {
-            }
+                ParsedQuery parsedQuery = ParsedQuery.parseQuery(query);
+                if (logger.isDebugEnabled()) {
+                    logger.debug(parsedQuery.getPrettyPrinted());
+                }
+                cq = parsedQuery.getCountQuery(em, null, VirtualCollection.State.PUBLIC);
+                q = parsedQuery.getQuery(em, null, VirtualCollection.State.PUBLIC);
+            } else {
                 cq = em.createNamedQuery("VirtualCollection.countAllPublic",
                         Long.class);
                 q = em.createNamedQuery("VirtualCollection.findAllPublic",
                         VirtualCollection.class);
-//            }
+            }
 
             // commence query ...
             List<VirtualCollection> results = null;
@@ -416,9 +411,6 @@ public class VirtualCollectionRegistry {
                 results = q.getResultList();
             }
             return new VirtualCollectionList(results, offset, (int) totalCount);
-//        } catch (QueryException e) {
-//            throw new VirtualCollectionRegistryUsageException("query invalid",
-//                    e);
         } catch (Exception e) {
             logger.error("error while enumerating virtual collections", e);
             throw new VirtualCollectionRegistryException(
@@ -451,10 +443,12 @@ public class VirtualCollectionRegistry {
                 TypedQuery<Long> cq = null;
                 TypedQuery<VirtualCollection> q = null;
                 if (query != null) {
-//                    ParsedQuery parsedQuery = ParsedQuery.parseQuery(em, query);
-//                    parsedQuery.prettyPrint();
-//                    cq = parsedQuery.getCountQuery(user, null);
-//                    q  = parsedQuery.getQuery(user, null);
+                    ParsedQuery parsedQuery = ParsedQuery.parseQuery(query);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(parsedQuery.getPrettyPrinted());
+                    }
+                    cq = parsedQuery.getCountQuery(em, user, null);
+                    q  = parsedQuery.getQuery(em, user, null);
                 } else {
                     cq = em.createNamedQuery("VirtualCollection.countByOwner",
                             Long.class);
