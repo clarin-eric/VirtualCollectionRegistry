@@ -1,13 +1,12 @@
 package eu.clarin.cmdi.virtualcollectionregistry.query;
 
-import java.io.PrintStream;
 import java.util.Stack;
 
 public class PrettyPrinter implements QueryParserVisitor {
-    private PrintStream out;
+    private StringBuilder out;
     private Stack<Node> parents = new Stack<Node>();
 
-    public PrettyPrinter(PrintStream out) {
+    public PrettyPrinter(StringBuilder out) {
         if (out == null) {
             throw new NullPointerException("out == null");
         }
@@ -16,7 +15,8 @@ public class PrettyPrinter implements QueryParserVisitor {
 
     @Override
     public Object visit(ASTStart node, Object data) {
-        out.println(node);
+        out.append(node);
+        out.append("\n");
         data = node.childrenAccept(this, data);
         return data;
     }
@@ -57,9 +57,9 @@ public class PrettyPrinter implements QueryParserVisitor {
     private void printNode(Node node) {
         for (Node parent : parents) {
             if (isLastSibling(parent)) {
-                out.print("   ");
+                out.append("   ");
             } else {
-                out.print(" | ");
+                out.append(" | ");
             }
         }
         if (isLastSibling(node)) {
@@ -68,12 +68,14 @@ public class PrettyPrinter implements QueryParserVisitor {
             out.append(" +-");
         }
         if (node instanceof ASTPredicate) {
-            out.print(" ");
-            out.println(node.toString());
+            out.append(" ");
+            out.append(node.toString());
+            out.append("\n");
         } else {
-            out.print("[");
-            out.print(node.toString());
-            out.println("]");
+            out.append("[");
+            out.append(node.toString());
+            out.append("]");
+            out.append("\n");
         }
     }
     
