@@ -68,7 +68,7 @@ public class VirtualCollectionRegistryRestService {
              * should never happen, because servlet container should supply a
              * valid principal
              */
-            throw new AssertionError("prinicial == null");
+            throw new AssertionError("principal == null");
         }
         try {
             Format format = getInputFormat();
@@ -146,7 +146,7 @@ public class VirtualCollectionRegistryRestService {
             throws VirtualCollectionRegistryException {
         Principal principal = security.getUserPrincipal();
         if (principal == null) {
-            throw new NullPointerException("princial == null");
+            throw new NullPointerException("principal == null");
         }
         registry.deleteVirtualCollection(principal, id);
         RestResponse response = new RestResponse();
@@ -190,7 +190,7 @@ public class VirtualCollectionRegistryRestService {
             throws VirtualCollectionRegistryException {
         Principal principal = security.getUserPrincipal();
         if (principal == null) {
-            throw new NullPointerException("princial == null");
+            throw new NullPointerException("principal == null");
         }
         if (state == null) {
             throw new VirtualCollectionRegistryUsageException("invalid state");
@@ -259,7 +259,7 @@ public class VirtualCollectionRegistryRestService {
              * should never happen, because servlet container should supply a
              * valid principal
              */
-            throw new AssertionError("prinicial == null");
+            throw new AssertionError("principal == null");
         }
         final VirtualCollectionList vcs = registry.getVirtualCollections(
                 principal, query, (offset > 0) ? offset : 0, count);
