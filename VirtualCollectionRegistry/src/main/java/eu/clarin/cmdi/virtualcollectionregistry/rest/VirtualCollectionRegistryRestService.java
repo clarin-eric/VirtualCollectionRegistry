@@ -177,7 +177,7 @@ public class VirtualCollectionRegistryRestService {
         return Response.ok(result).build();
     }
 
-    @PUT
+    @POST
     @Path("/virtualcollection/{id}/state")
     @Consumes({ MediaType.TEXT_XML,
                 MediaType.TEXT_XML,
