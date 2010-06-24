@@ -47,7 +47,7 @@ public class VirtualCollectionRegistryRestService {
     @POST
     @Path("/virtualcollection")
     @Consumes({ MediaType.TEXT_XML,
-                MediaType.TEXT_XML,
+                MediaType.APPLICATION_XML,
                 MediaType.APPLICATION_JSON })
     @Produces({ MediaType.TEXT_XML,
                 MediaType.APPLICATION_XML,
@@ -110,7 +110,7 @@ public class VirtualCollectionRegistryRestService {
     @PUT
     @Path("/virtualcollection/{id}")
     @Consumes({ MediaType.TEXT_XML,
-                MediaType.TEXT_XML,
+                MediaType.APPLICATION_XML,
                 MediaType.APPLICATION_JSON })
     @Produces({ MediaType.TEXT_XML,
                 MediaType.APPLICATION_XML,
@@ -181,7 +181,7 @@ public class VirtualCollectionRegistryRestService {
     @POST
     @Path("/virtualcollection/{id}/state")
     @Consumes({ MediaType.TEXT_XML,
-                MediaType.TEXT_XML,
+                MediaType.APPLICATION_XML,
                 MediaType.APPLICATION_JSON })
     @Produces({ MediaType.TEXT_XML,
                 MediaType.APPLICATION_XML,
