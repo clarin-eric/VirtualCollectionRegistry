@@ -483,7 +483,9 @@ public class VirtualCollectionRegistry {
     }
 
     private void maintenance(long now) {
+        // allocate persistent identifier roughly after 30 seconds 
         final Date nowDateAlloc = new Date(now - 30*1000);
+        // (for now) purge deleted collection roughly after 30 seconds
         final Date nowDatePurge = new Date(now - 30*1000);
         
         EntityManager em = datastore.getEntityManager();
