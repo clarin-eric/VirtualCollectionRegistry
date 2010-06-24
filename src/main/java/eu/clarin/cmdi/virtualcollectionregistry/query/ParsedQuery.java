@@ -24,7 +24,8 @@ public class ParsedQuery {
     }
 
     public TypedQuery<Long> getCountQuery(EntityManager em, User owner,
-            VirtualCollection.State state) throws VirtualCollectionRegistryException {
+            VirtualCollection.State state)
+            throws VirtualCollectionRegistryException {
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<Long> cq = cb.createQuery(Long.class);
@@ -36,23 +37,28 @@ public class ParsedQuery {
             } // synchronized (visitor)
             Predicate where = data.getWhere();
             if (owner != null) {
-                where = cb.and(where, cb.equal(root.get(VirtualCollection_.owner), owner));
-                }
+                where = cb.and(where, cb.equal(
+                            root.get(VirtualCollection_.owner), owner));
+            }
             if (state != null) {
-                where = cb.and(where, cb.equal(root.get(VirtualCollection_.state), state));
+                where = cb.and(where, cb.equal(
+                            root.get(VirtualCollection_.state), state));
             }
             cq.where(where);
             return em.createQuery(cq.select(cb.count(root)));
-        } catch (Exception e) {
-            throw new VirtualCollectionRegistryException("x", e);
+        } catch (Throwable e) {
+            throw new VirtualCollectionRegistryException(
+                    "error building query", e);
         }
     }
 
     public TypedQuery<VirtualCollection> getQuery(EntityManager em, User owner,
-            VirtualCollection.State state) throws VirtualCollectionRegistryException {
+            VirtualCollection.State state)
+            throws VirtualCollectionRegistryException {
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<VirtualCollection> cq = cb.createQuery(VirtualCollection.class);
+            CriteriaQuery<VirtualCollection> cq =
+                cb.createQuery(VirtualCollection.class);
             Root<VirtualCollection> root = cq.from(VirtualCollection.class);
             WhereClauseBuilder.Data data =
                 new WhereClauseBuilder.Data(cb, cq, root);
@@ -61,15 +67,18 @@ public class ParsedQuery {
             } // synchronized (visitor)
             Predicate where = data.getWhere();
             if (owner != null) {
-                where = cb.and(where, cb.equal(root.get(VirtualCollection_.owner), owner));
-                }
+                where = cb.and(where, cb.equal(
+                            root.get(VirtualCollection_.owner), owner));
+            }
             if (state != null) {
-                where = cb.and(where, cb.equal(root.get(VirtualCollection_.state), state));
+                where = cb.and(where, cb.equal(
+                            root.get(VirtualCollection_.state), state));
             }
             cq.where(where);
             return em.createQuery(cq.select(root));
-        } catch (Exception e) {
-            throw new VirtualCollectionRegistryException("x", e);
+        } catch (Throwable e) {
+            throw new VirtualCollectionRegistryException(
+                    "error building query", e);
         }
     }
 
