@@ -473,9 +473,6 @@ public class VirtualCollectionRegistry {
                 }
             }
             return new VirtualCollectionList(results, offset, (int) totalCount);
-//        } catch (QueryException e) {
-//            throw new VirtualCollectionRegistryUsageException("query invalid",
-//                    e);
         } catch (Exception e) {
             logger.error("error while enumerating virtual collections", e);
             throw new VirtualCollectionRegistryException(
