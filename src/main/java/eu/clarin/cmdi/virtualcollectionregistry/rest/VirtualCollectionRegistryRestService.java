@@ -25,6 +25,7 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionNotFoundException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
@@ -280,6 +281,9 @@ public class VirtualCollectionRegistryRestService {
     public Response getClarinVirtualCollection(@PathParam("id") long id)
             throws VirtualCollectionRegistryException {
         final VirtualCollection vc = registry.retrieveVirtualCollection(id);
+        if (!vc.isPublic() || (vc.getPersistentIdentifier() == null)) {
+            throw new VirtualCollectionNotFoundException(id);
+        }
         StreamingOutput writer = new StreamingOutput() {
             public void write(OutputStream output) throws IOException,
                     WebApplicationException {
