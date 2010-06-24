@@ -8,8 +8,4 @@ public class VirtualCollectionNotFoundException extends
         super("virtual collection with id " + id + " was not found");
     }
 
-    public VirtualCollectionNotFoundException(String uuid) {
-        super("virtual collection with UUID " + uuid + " was not found");
-    }
-
 } // class VirtualCollectionNotFoundException
