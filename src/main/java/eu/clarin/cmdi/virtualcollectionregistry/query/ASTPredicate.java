@@ -54,6 +54,12 @@ public class ASTPredicate extends SimpleNode {
         case QueryParserConstants.VC_STATE:
             sb.append("vc_state");
             break;
+        case QueryParserConstants.VC_PURPOSE:
+            sb.append("vc_purpose");
+            break;
+        case QueryParserConstants.VC_REPRODUCIBILITY:
+            sb.append("vc_reproducibility");
+            break;
         case QueryParserConstants.VC_MODIFIED:
             sb.append("vc_modified");
             break;

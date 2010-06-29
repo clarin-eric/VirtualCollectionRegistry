@@ -221,7 +221,7 @@ public class VirtualCollectionRegistryMarshaller {
         output.writeStartElement(NS_CMDI, "ResourceProxyList");
         for (Resource resource : vc.getResources()) {
             output.writeStartElement(NS_CMDI, "ResourceProxy");
-            output.writeAttribute("id", resource.getIdForXml());
+            output.writeAttribute("id", "r" + resource.getId());
             output.writeStartElement(NS_CMDI, "ResourceType");
             switch (resource.getType()) {
             case METADATA:
@@ -258,21 +258,6 @@ public class VirtualCollectionRegistryMarshaller {
         output.writeStartElement(NS_CMDI, "CreationDate");
         output.writeCharacters(df.format(vc.getCreationDate()));
         output.writeEndElement(); // "CreationDate" element
-        output.writeStartElement(NS_CMDI, "Visibility");
-        switch (vc.getVisibility()) {
-        case ADVERTISED:
-            output.writeCharacters("advertised");
-            break;
-        case NON_ADVERTISED:
-            output.writeCharacters("non-advertised");
-            break;
-        } // switch
-        output.writeEndElement(); // "Visibility" element
-        if (vc.getOrigin() != null) {
-            output.writeStartElement(NS_CMDI, "Origin");
-            output.writeCharacters(vc.getOrigin());
-            output.writeEndElement(); // "Visibility" element
-        }
         if (vc.getCreator() != null) {
             Creator creator = vc.getCreator();
             // make sure there is anything set in creator
@@ -297,6 +282,44 @@ public class VirtualCollectionRegistryMarshaller {
                 }
                 output.writeEndElement(); // "Creator" element
             }
+        }
+        if (vc.getPurpose() != null) {
+            output.writeStartElement(NS_CMDI, "Purpose");
+            switch (vc.getPurpose()) {
+            case RESEARCH:
+                output.writeCharacters("research");
+                break;
+            case REFERENCE:
+                output.writeCharacters("reference");
+                break;
+            case SAMPLE:
+                output.writeCharacters("sample");
+                break;
+            case FUTURE_USE:
+                output.writeCharacters("future-use");
+                break;
+            } // switch (purpose)
+            output.writeEndElement(); // "Purpose" element
+        }
+        if (vc.getReproducibility() != null) {
+            output.writeStartElement(NS_CMDI, "Reproducibility");
+            switch (vc.getReproducibility()) {
+            case INTENDED:
+                output.writeCharacters("intended");
+                break;
+            case FLUCTUATING:
+                output.writeCharacters("fluctuating");
+                break;
+            case UNTENDED:
+                output.writeCharacters("untended");
+                break;
+            } // switch (purpose)
+            output.writeEndElement(); // "Reproducibility" element
+        }
+        if (vc.getReproducibilityNotice() != null) {
+            output.writeStartElement(NS_CMDI, "ReproducibilityNotice");
+            output.writeCharacters(vc.getReproducibilityNotice());
+            output.writeEndElement(); // "ReproducibilityNotice" element
         }
         output.writeEndElement(); // "VirtualCollection" element
         output.writeEndElement(); // "Components" element

@@ -10,9 +10,7 @@ import javax.persistence.Id;
 import javax.persistence.Table;
 import javax.xml.bind.annotation.XmlAccessType;
 import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
 import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlID;
 import javax.xml.bind.annotation.XmlType;
 
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -49,12 +47,6 @@ public class Resource {
         return id;
     }
 
-    @XmlID
-    @XmlAttribute(name = "id")
-    public String getIdForXml() {
-        return "r" + id;
-    }
-
     public void setType(ResourceType type) {
         if (type == null) {
             throw new NullPointerException("type == null");
@@ -79,9 +71,21 @@ public class Resource {
         return ref;
     }
 
-    protected int getSignature() {
-        return new HashCodeBuilder(799, 51).append(type).append(ref)
-                .toHashCode();
+    @Override
+    public boolean equals(Object other) {
+        if ((other != null) && (other instanceof Resource)) {
+            final Resource r = (Resource) other;
+            return r.type.equals(this.type) && r.ref.equals(this.ref);
+        }
+        return false;
+    }
+    
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(799, 51)
+            .append(type)
+            .append(ref)
+            .toHashCode();
     }
 
 } // class Resource

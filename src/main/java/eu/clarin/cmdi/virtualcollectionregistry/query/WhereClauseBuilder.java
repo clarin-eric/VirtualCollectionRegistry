@@ -133,6 +133,14 @@ class WhereClauseBuilder implements QueryParserVisitor {
             predicate = makeStatePredicate(data,
                     node.getOperator(), node.getValue());
             break;
+        case QueryParserConstants.VC_PURPOSE:
+            predicate = makePurposePredicate(data,
+                    node.getOperator(), node.getValue());
+            break;
+        case QueryParserConstants.VC_REPRODUCIBILITY:
+            predicate = makeReproducibilityPredicate(data,
+                    node.getOperator(), node.getValue());
+            break;
         default:
             /* FALL-TROUGH */
         } // switch (node.getAttribute())
@@ -207,6 +215,56 @@ class WhereClauseBuilder implements QueryParserVisitor {
             } else {
                 return data.getBuilder().notEqual(attribute, state);
             }
+        default:
+            throw new InternalError("bad operator");
+        } // switch (operator)
+    }
+
+    private static Predicate makePurposePredicate(Data data, int operator,
+            String value) {
+        VirtualCollection.Purpose purpose = null;
+        if ("research".equalsIgnoreCase(value)) {
+            purpose = VirtualCollection.Purpose.RESEARCH;
+        } else if ("reference".equalsIgnoreCase(value)) {
+            purpose = VirtualCollection.Purpose.REFERENCE;
+        } else if ("sample".equalsIgnoreCase(value)) {
+            purpose = VirtualCollection.Purpose.SAMPLE;
+        } else if ("future-use".equalsIgnoreCase(value)) {
+            purpose = VirtualCollection.Purpose.FUTURE_USE;
+        } else {
+            throw new InternalError("bad value");
+        }
+        Expression<VirtualCollection.Purpose> attribute =
+            data.getRoot().get(VirtualCollection_.purpose);
+        switch (operator) {
+        case QueryParserConstants.EQ:
+            return data.getBuilder().equal(attribute, purpose);
+        case QueryParserConstants.NE:
+            return data.getBuilder().notEqual(attribute, purpose);
+        default:
+            throw new InternalError("bad operator");
+        } // switch (operator)
+    }
+
+    private static Predicate makeReproducibilityPredicate(Data data, 
+            int operator, String value) {
+        VirtualCollection.Reproducibility reproducability = null;
+        if ("intended".equalsIgnoreCase(value)) {
+            reproducability = VirtualCollection.Reproducibility.INTENDED;
+        } else if ("fluctuating".equalsIgnoreCase(value)) {
+            reproducability = VirtualCollection.Reproducibility.FLUCTUATING;
+        } else if ("untended".equalsIgnoreCase(value)) {
+            reproducability = VirtualCollection.Reproducibility.UNTENDED;
+        } else {
+            throw new InternalError("bad value");
+        }
+        Expression<VirtualCollection.Reproducibility> attribute =
+            data.getRoot().get(VirtualCollection_.reproducibility);
+        switch (operator) {
+        case QueryParserConstants.EQ:
+            return data.getBuilder().equal(attribute, reproducability);
+        case QueryParserConstants.NE:
+            return data.getBuilder().notEqual(attribute, reproducability);
         default:
             throw new InternalError("bad operator");
         } // switch (operator)

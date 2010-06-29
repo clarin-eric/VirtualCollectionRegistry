@@ -128,7 +128,6 @@ public class VirtualCollectionRegistry {
         VirtualCollectionValidator validator =
             new VirtualCollectionValidator();
         validator.validate(vc);
-
         try {
             EntityManager em = datastore.getEntityManager();
             em.getTransaction().begin();
