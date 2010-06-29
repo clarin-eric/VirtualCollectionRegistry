@@ -1,7 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model;
 
 import java.util.Date;
-import java.util.HashMap;
 import java.util.LinkedHashSet;
 import java.util.Set;
 
@@ -70,9 +69,11 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.mapper.DateAdapter;
 })
 @XmlRootElement(name = "VirtualCollection")
 @XmlAccessorType(XmlAccessType.NONE)
-@XmlType(propOrder = { "name", "description", "creationDate", "visibility",
-                       "type", "origin", "creator", "resources" })
+@XmlType(propOrder = { "name", "description", "creationDate", "type",
+                       "creator", "purpose", "reproducibility",
+                       "reproducibilityNotice", "resources", "generatedBy" })
 @XmlSeeAlso({ Creator.class,
+              GeneratedBy.class,
               Resource.class,
               PersistentIdentifier.class })
 public class VirtualCollection {
@@ -90,14 +91,6 @@ public class VirtualCollection {
         @XmlEnumValue("dead")
         DEAD
     } // enum State
-    @XmlType(namespace = "urn:x-vcr:virtualcollection:visibility")
-    @XmlEnum(String.class)
-    public static enum Visibility {
-        @XmlEnumValue("advertised")
-        ADVERTISED,
-        @XmlEnumValue("non-advertised")
-        NON_ADVERTISED;
-    } // enum Visibility
     @XmlType(namespace = "urn:x-vcr:virtualcollection:type")
     @XmlEnum(String.class)
     public static enum Type {
@@ -105,6 +98,28 @@ public class VirtualCollection {
         EXTENSIONAL,
         @XmlEnumValue("intensional")
         INTENSIONAL
+    }
+    @XmlType(namespace = "urn:x-vcr:virtualcollection:purpose")
+    @XmlEnum(String.class)
+    public static enum Purpose {
+        @XmlEnumValue("research")
+        RESEARCH,
+        @XmlEnumValue("reference")
+        REFERENCE,
+        @XmlEnumValue("sample")
+        SAMPLE,
+        @XmlEnumValue("future-use")
+        FUTURE_USE
+    }
+    @XmlType(namespace = "urn:x-vcr:virtualcollection:reproducability")
+    @XmlEnum(String.class)
+    public static enum Reproducibility {
+        @XmlEnumValue("intended")
+        INTENDED,
+        @XmlEnumValue("fluctuating")
+        FLUCTUATING,
+        @XmlEnumValue("untended")
+        UNTENDED
     }
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
@@ -134,22 +149,28 @@ public class VirtualCollection {
     @Column(name = "creation_date")
     @Temporal(TemporalType.DATE)
     private Date creationDate;
-    @Column(name = "visibility")
-    @Enumerated(EnumType.ORDINAL)
-    private Visibility visibility = Visibility.ADVERTISED;
     @Column(name = "type")
     @Enumerated(EnumType.ORDINAL)
     private Type type = Type.EXTENSIONAL;
-    @Column(name = "origin")
-    private String origin;
     @Embedded
     private Creator creator;
+    @Column(name = "purpose")
+    @Enumerated(EnumType.ORDINAL)
+    private Purpose purpose;
+    @Column(name = "reproducibility")
+    @Enumerated(EnumType.ORDINAL)
+    private Reproducibility reproducibility;
+    @Column(name = "reproducibility_notice")
+    private String reproducibilityNotice;
     @OneToMany(cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY)
+               fetch = FetchType.LAZY,
+               orphanRemoval = true)
     @JoinColumn(name = "vc_id",
                 nullable = false)
     @OrderBy("id")
     private Set<Resource> resources = new LinkedHashSet<Resource>();
+    @Embedded
+    private GeneratedBy generatedby;
     @Column(name = "created",
             nullable = false,
             updatable = false)
@@ -258,18 +279,6 @@ public class VirtualCollection {
         return creationDate;
     }
 
-    public void setVisibility(Visibility visibility) {
-        if (visibility == null) {
-            throw new NullPointerException("visibility == null");
-        }
-        this.visibility = visibility;
-    }
-
-    @XmlElement(name = "Visibility")
-    public Visibility getVisibility() {
-        return visibility;
-    }
-
     public void setType(Type style) {
         if (style == null) {
             throw new NullPointerException("style == null");
@@ -282,15 +291,6 @@ public class VirtualCollection {
         return type;
     }
 
-    public void setOrigin(String origin) {
-        this.origin = origin;
-    }
-
-    @XmlElement(name = "Origin")
-    public String getOrigin() {
-        return origin;
-    }
-
     public void setCreator(Creator creator) {
         this.creator = creator;
     }
@@ -300,10 +300,46 @@ public class VirtualCollection {
         return creator;
     }
 
+    public void setPurpose(Purpose purpose) {
+        this.purpose = purpose;
+    }
+    
+    @XmlElement(name = "Purpose")
+    public Purpose getPurpose() {
+        return purpose;
+    }
+    
+    public void setReproducibility(Reproducibility reproducibility) {
+        this.reproducibility = reproducibility;
+    }
+
+    @XmlElement(name = "Reproducability")
+    public Reproducibility getReproducibility() {
+        return reproducibility;
+    }
+
+    public void setReproducibilityNotice(String reproducibilityNotice) {
+        this.reproducibilityNotice = reproducibilityNotice;
+    }
+
+    @XmlElement(name = "ReproducibilityNotice")
+    public String getReproducibilityNotice() {
+        return reproducibilityNotice;
+    }
+
     @XmlElementWrapper(name = "Resources")
-    @XmlElements({ @XmlElement(name = "ResourceProxy", type = Resource.class) })
+    @XmlElements({ @XmlElement(name = "Resource", type = Resource.class) })
     public Set<Resource> getResources() {
         return resources;
+    }
+
+    public void setGeneratedBy(GeneratedBy generatedby) {
+        this.generatedby = generatedby;
+    }
+
+    @XmlElement(name = "GeneratedBy")
+    public GeneratedBy getGeneratedBy() {
+        return generatedby;
     }
 
     public Date getCreatedDate() {
@@ -332,9 +368,7 @@ public class VirtualCollection {
         }
         this.setDescription(vc.getDescription());
         this.setCreationDate(vc.getCreationDate());
-        this.setVisibility(vc.getVisibility());
         this.setType(vc.getType());
-        this.setOrigin(vc.getOrigin());
         Creator c = vc.getCreator();
         if (c != null) {
             this.creator.setName(c.getName());
@@ -343,28 +377,14 @@ public class VirtualCollection {
         } else {
             this.creator = null;
         }
+        this.setPurpose(vc.getPurpose());
+        this.setReproducibility(vc.getReproducibility());
+        this.setReproducibilityNotice(vc.getReproducibilityNotice());
 
-        HashMap<Integer, Resource> old_res =
-            new HashMap<Integer, Resource>(this.resources.size());
-        for (Resource r : this.resources) {
-            old_res.put(r.getSignature(), r);
-
-        }
-        HashMap<Integer, Resource> new_res =
-            new HashMap<Integer, Resource>(vc.getResources().size());
-        for (Resource r : vc.getResources()) {
-            new_res.put(r.getSignature(), r);
-        }
-        for (Resource r : new_res.values()) {
-            if (!old_res.containsKey(r.getSignature())) {
-                resources.add(r);
-            }
-        }
-        for (Resource r : old_res.values()) {
-            if (!new_res.containsKey(r.getSignature())) {
-                resources.remove(r);
-            }
-        }
+        // add all new resources to set
+        this.resources.addAll(vc.resources);
+        // purge all deleted members
+        this.resources.retainAll(vc.resources);
     }
 
 } // class VirtualCollection

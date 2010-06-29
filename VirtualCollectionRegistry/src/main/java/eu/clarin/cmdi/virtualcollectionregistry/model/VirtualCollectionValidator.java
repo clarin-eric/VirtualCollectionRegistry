@@ -1,15 +1,13 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model;
 
-import java.util.HashMap;
+import java.util.HashSet;
+import java.util.Set;
 
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
 
 public class VirtualCollectionValidator {
-    private HashMap<Integer, Resource> uniqueResources =
-        new HashMap<Integer, Resource>();
-    private HashMap<String, Resource> uniqueResourceRefs =
-        new HashMap<String, Resource>();
+    private Set<String> uniqueResourceRefs = new HashSet<String>(512);
 
     public void validate(VirtualCollection vc)
             throws VirtualCollectionRegistryException {
@@ -26,27 +24,20 @@ public class VirtualCollectionValidator {
                     "collection has an empty name");
         }
         for (Resource resource : vc.getResources()) {
-            int signature = resource.getSignature();
-            if (uniqueResources.containsKey(signature)) {
-                throw new VirtualCollectionRegistryUsageException(
-                        "collection contains non-unique resources");
-            }
-            uniqueResources.put(signature, resource);
             String ref = resource.getRef();
             if ((ref == null) || ref.trim().isEmpty()) {
                 throw new VirtualCollectionRegistryUsageException(
                         "collection contains resource with empty ResourceRef");
             }
-            if (uniqueResourceRefs.containsKey(ref)) {
+            if (uniqueResourceRefs.contains(ref)) {
                 throw new VirtualCollectionRegistryUsageException(
                         "collection contains non-unique ResourceRefs");
             }
-            uniqueResourceRefs.put(ref, resource);
+            uniqueResourceRefs.add(ref);
         }
     }
 
     private void reset() {
-        uniqueResources.clear();
         uniqueResourceRefs.clear();
     }
 
