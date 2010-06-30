@@ -12,7 +12,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryExcepti
 
 public class ContextListener implements ServletContextListener {
 
-    @SuppressWarnings("unchecked")
+    @SuppressWarnings("rawtypes")
     public void contextInitialized(ServletContextEvent event) {
         ServletContext ctx = event.getServletContext();
         HashMap<String, String> config = new HashMap<String, String>();
