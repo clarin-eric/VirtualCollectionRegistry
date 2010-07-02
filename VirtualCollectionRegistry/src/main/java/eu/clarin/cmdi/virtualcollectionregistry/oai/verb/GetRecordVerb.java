@@ -37,8 +37,7 @@ public class GetRecordVerb extends Verb {
             String prefix =
                 (String) ctx.getArgument(Argument.ARG_METADATAPREFIX);
             MetadataFormat format = null;
-            // FIXME: broken
-            for (MetadataFormat f : repository.getMetadataFormats()) {
+            for (MetadataFormat f : repository.getMetadataFormats(record)) {
                 if (prefix.equals(f.getPrefix())) {
                     format = f;
                     break;
