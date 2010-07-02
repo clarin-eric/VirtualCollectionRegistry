@@ -2,6 +2,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.oai;
 
 import java.text.ParsePosition;
 import java.text.SimpleDateFormat;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
@@ -148,6 +149,9 @@ public class OAIRepositoryAdapter {
                     if (format.canWriteClass(clazz)) {
                         result.add(format);
                     }
+                }
+                if (result.isEmpty()) {
+                    result = Collections.emptySet();
                 }
                 metadataFormatsByClass.put(clazz, result);
             }
