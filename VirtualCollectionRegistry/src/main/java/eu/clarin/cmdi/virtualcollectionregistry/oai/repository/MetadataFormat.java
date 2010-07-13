@@ -1,7 +1,9 @@
 package eu.clarin.cmdi.virtualcollectionregistry.oai.repository;
 
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream;
 
 /**
  * Interface for metadata format implementations. The OAI provider uses this
@@ -62,7 +64,7 @@ public interface MetadataFormat {
      * @throws OAIException
      *             if an error occurs
      */
-    public void writeObject(OAIOutputStream stream, Object item)
-            throws OAIException;
+    public void writeObject(XMLStreamWriter stream, Object item)
+            throws XMLStreamException, OAIException;
 
 } // interface MetadataFormat
