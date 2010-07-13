@@ -1,7 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
@@ -15,6 +14,8 @@ import javax.persistence.criteria.CriteriaBuilder;
 import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -22,80 +23,19 @@ import org.slf4j.LoggerFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection_;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream.NamespaceDecl;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.DublinCoreAdapter;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.DublinCoreConverter;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.MetadataFormat;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.OAIRepository;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.Record;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.RecordList;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.SetSpecDesc;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.MetadataConstants;
 
 class VirtualColletionRegistryOAIRepository implements OAIRepository {
     private static final Logger logger =
         LoggerFactory.getLogger(VirtualColletionRegistryOAIRepository.class);
 
-    private final static class DCMetadataFormat implements MetadataFormat {
-        private final static List<NamespaceDecl> dc = Arrays.asList(
-                new NamespaceDecl(MetadataConstants.NS_OAI_DC, "oai_dc",
-                                  MetadataConstants.NS_OAI_DC_SCHEMA_LOCATION),
-                new NamespaceDecl(MetadataConstants.NS_DC, "dc"));
-
-        @Override
-        public String getPrefix() {
-            return "oai_dc";
-        }
-
-        @Override
-        public String getNamespaceURI() {
-            return "http://www.openarchives.org/OAI/2.0/oai_dc/";
-        }
-
-        @Override
-        public String getSchemaLocation() {
-            return "http://www.openarchives.org/OAI/2.0/oai_dc.xsd";
-        }
-
-        @Override
-        public boolean canWriteClass(Class<?> clazz) {
-            return true;
-        }
-
-        @Override
-        public void writeObject(OAIOutputStream stream, Object item)
-                throws OAIException {
-            final VirtualCollection vc = (VirtualCollection) item;
-            stream.writeStartElement(MetadataConstants.NS_OAI_DC, "dc", dc);
-            stream.writeStartElement(MetadataConstants.NS_DC, "title");
-            stream.writeCharacters(vc.getName());
-            stream.writeEndElement(); // dc:title element
-
-            stream.writeStartElement(MetadataConstants.NS_DC, "identifier");
-            stream.writeCharacters(vc.getPersistentIdentifier().createURI());
-            stream.writeEndElement(); // dc:identifier
-
-            stream.writeStartElement(MetadataConstants.NS_DC, "date");
-            // XXX: be sure to use correct date format
-            stream.writeDate(vc.getCreationDate());
-            stream.writeEndElement(); // dc:date
-
-            if (vc.getCreator() != null) {
-                stream.writeStartElement(MetadataConstants.NS_DC, "creator");
-                stream.writeCharacters(vc.getCreator().getName());
-                stream.writeEndElement(); // dc:creator element
-            }
-
-            if (vc.getDescription() != null) {
-                stream.writeStartElement(MetadataConstants.NS_DC,
-                    "description");
-                stream.writeCharacters(vc.getDescription());
-                stream.writeEndElement(); // dc:description element
-            }
-            stream.writeEndElement(); // oai_dc:dc element
-        }
-    } // class OAIMetadataFormat
-
-    private final  static class CMDIMetadataFormat implements MetadataFormat {
+    private final static class CMDIMetadataFormat implements MetadataFormat {
         @Override
         public String getPrefix() {
             return "cmdi";
@@ -118,17 +58,12 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
         }
 
         @Override
-        public void writeObject(OAIOutputStream stream, Object item)
-                throws OAIException {
-            try {
-                final VirtualCollectionRegistry registry =
-                    VirtualCollectionRegistry.instance();
-                final VirtualCollection vc = (VirtualCollection) item;
-                registry.getMarshaller().marshalAsCMDI(
-                        stream.getXMLStreamWriter(), vc);
-            } catch (Exception e) {
-                throw new OAIException("error writing object", e);
-            }
+        public void writeObject(XMLStreamWriter stream, Object item)
+                throws XMLStreamException {
+            final VirtualCollectionRegistry registry =
+                VirtualCollectionRegistry.instance();
+            final VirtualCollection vc = (VirtualCollection) item;
+            registry.getMarshaller().marshalAsCMDI(stream, vc);
         }
     } // class CMDIMetadataFormat
 
@@ -210,9 +145,51 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
     }
 
     @Override
-    public Set<MetadataFormat> getMetadataFormats() {
+    public Set<DublinCoreConverter> getDublinCoreConverters() {
+        Set<DublinCoreConverter> converters =
+            new HashSet<DublinCoreConverter>();
+        converters.add(new DublinCoreAdapter() {
+            @Override
+            public boolean canProcessResource(Class<?> clazz) {
+                return clazz.isAssignableFrom(VirtualCollection.class);
+            }
+
+            @Override
+            public String getTitle(Object resource) {
+                return ((VirtualCollection) resource).getName();
+            }
+
+            @Override
+            public String getIdentifier(Object resource) {
+                return ((VirtualCollection) resource)
+                    .getPersistentIdentifier().createURI();
+            }
+
+            @Override
+            public Date getDate(Object resource) {
+                return ((VirtualCollection) resource).getCreationDate();
+            }
+
+            @Override
+            public String getCreator(Object resource) {
+                final VirtualCollection vc = (VirtualCollection) resource;
+                if (vc.getCreator() != null) {
+                    return vc.getCreator().getName();
+                }
+                return null;
+            }
+
+            @Override
+            public String getDescription(Object resource) {
+                return ((VirtualCollection) resource).getDescription();
+            }
+        });
+        return converters;
+    }
+
+    @Override
+    public Set<MetadataFormat> getCustomMetadataFormats() {
         Set<MetadataFormat> formats = new HashSet<MetadataFormat>();
-        formats.add(new DCMetadataFormat());
         formats.add(new CMDIMetadataFormat());
         return formats;
     }

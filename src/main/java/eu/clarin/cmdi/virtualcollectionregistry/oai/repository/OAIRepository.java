@@ -122,16 +122,27 @@ public interface OAIRepository {
     public Object getSampleRecordLocalId();
 
     /**
-     * Get the metadata formats, which are generally supported by the
-     * repository. A repository always must support the Dublin Core metadata
-     * with the prefix <em>oai_dc</em>. Used for the
-     * <em>ListMetadataFormats</em> verb. This value will be cached by the OAI
-     * provider upon initialization.
+     * Get a list of converters to for handling the "oai_dc" metadata prefix. 
+     * Used for the <em>GetRecord</em> verb. This value will be cached by
+     * the OAI provider upon initialization.
+     * 
+     * @return the list of Dublin Core converters
+     * @see DublinCoreConverter
+     */
+    public Set<DublinCoreConverter> getDublinCoreConverters();
+
+    /**
+     * Get the custom metadata formats, which are supported by the
+     * repository. This set <b>must not</b> include a metadata format for the
+     * <em>oai_dc</em> prefix.
+     * Used for the <em>ListMetadataFormats</em> and <em>GetRecord</em> verbs.
+     * This value will be cached by the OAI provider upon initialization.
      * 
      * @return the list of supported metadata formats
      * @see MetadataFormat
+     * @see #getDublinCoreConverters()
      */
-    public Set<MetadataFormat> getMetadataFormats();
+    public Set<MetadataFormat> getCustomMetadataFormats();
 
     /**
      * Get the sets, which are generally supported by the repository. Used for

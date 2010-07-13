@@ -11,6 +11,9 @@ import java.util.Map;
 import java.util.Set;
 import java.util.TimeZone;
 
+import javax.xml.stream.XMLStreamException;
+
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.DublinCoreConverter;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.MetadataFormat;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.OAIRepository;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.Record;
@@ -34,7 +37,8 @@ public class OAIRepositoryAdapter {
         }
     };
     private final Set<String> adminEmailAddresses;
-    private final Set<MetadataFormat> metadataFormats;
+    private final Set<MetadataFormat> metadataFormats =
+        new HashSet<MetadataFormat>();
     private final Set<SetSpecDesc> setSpecs;
     private final Map<Class<?>, Set<MetadataFormat>> metadataFormatsByClass =
         new HashMap<Class<?>, Set<MetadataFormat>>();
@@ -52,30 +56,39 @@ public class OAIRepositoryAdapter {
             throw new OAIException("admin email addresses are empty");
         }
 
-        // cache metadata formats and do some sanity checks
-        this.metadataFormats = repository.getMetadataFormats();
-        if (this.metadataFormats == null) {
-            throw new NullPointerException("getMetadataFormats() == null");
+        // handle dublin core and do some sanity checks
+        Set<DublinCoreConverter> converters =
+            repository.getDublinCoreConverters();
+        if (converters == null) {
+            throw new NullPointerException("getDublinCoreConverters() == null");
         }
-        boolean oai_dc_present = false;
-        Set<String> prefixes = new HashSet<String>();
-        for (MetadataFormat format : this.metadataFormats) {
-            String prefix = format.getPrefix();
-            if (prefix == null) {
-                throw new NullPointerException("metadata format needs " +
-                        "prefix non-null prefix");
-            }
-            if (prefixes.contains(prefix)) {
-                throw new OAIException("metadata prefix must be unique " +
-                        "for a repository: " + prefix);
-            }
-            if ("oai_dc".equals(prefix)) {
-                oai_dc_present = true;
-            }
+        if (converters.isEmpty()) {
+            throw new OAIException("set of Dublin Core converters is empty");
         }
-        if (!oai_dc_present) {
-            throw new OAIException("repository does not supported " +
-                    "mandatory \"oai_dc\" prefix");
+        this.metadataFormats.add(new DublinCoreMetadataFormat(converters));
+
+        // handle metadata custom formats and do some sanity checks
+        Set<MetadataFormat> formats = repository.getCustomMetadataFormats();
+        if (formats != null) {
+            Set<String> prefixes = new HashSet<String>();
+            for (MetadataFormat format : formats) {
+                String prefix = format.getPrefix();
+                if (prefix == null) {
+                    throw new NullPointerException("metadata format needs " +
+                            "prefix non-null prefix");
+                }
+                if (prefixes.contains(prefix)) {
+                    throw new OAIException("metadata prefix must be unique " +
+                            "for a repository: " + prefix);
+                }
+                if ("oai_dc".equals(prefix)) {
+                    throw new OAIException("dublin core metadata format must " +
+                            "not be in the set of supported custom metadata " +
+                            "formats");
+                }
+                // add format
+                this.metadataFormats.add(format);
+            }
         }
 
         // cache set specs
@@ -269,14 +282,18 @@ public class OAIRepositoryAdapter {
 
     public void writeRecord(OAIOutputStream out, Record record,
             MetadataFormat format) throws OAIException {
-        out.writeStartElement("record");
-        writeRecordHeader(out, record);
-        if (!record.isDeleted()) {
-            out.writeStartElement("metadata");
-            format.writeObject(out, record.getItem());
-            out.writeEndElement(); // metadata element
+        try {
+            out.writeStartElement("record");
+            writeRecordHeader(out, record);
+            if (!record.isDeleted()) {
+                out.writeStartElement("metadata");
+                format.writeObject(out.getXMLStreamWriter(), record.getItem());
+                out.writeEndElement(); // metadata element
+            }
+            out.writeEndElement(); // record element
+        } catch (XMLStreamException e) {
+            throw new OAIException("error writing record", e);
         }
-        out.writeEndElement(); // record element
     }
 
     public void writeResumptionToken(OAIOutputStream out, ResumptionToken token)
