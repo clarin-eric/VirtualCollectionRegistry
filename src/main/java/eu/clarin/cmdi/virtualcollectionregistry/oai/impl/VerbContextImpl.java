@@ -30,7 +30,7 @@ public class VerbContextImpl implements VerbContext {
     private static final int ENCODING_DEFLATE = 0x02;
     private static final int ENCODING_GZIP    = 0x03;
 
-    private static class ErrorImpl implements Error {
+    private final class ErrorImpl implements Error {
         private OAIErrorCode code;
         private String message;
 

@@ -282,14 +282,14 @@ public class OAIRepositoryAdapter {
     public void writeResumptionToken(OAIOutputStream out, ResumptionToken token)
             throws OAIException {
         out.writeStartElement("resumptionToken");
-        out.writeAttribute("expirationDate", formatDate(token
-                .getExpirationDate()));
+        out.writeAttribute("expirationDate",
+                formatDate(token.getExpirationDate()));
         if (token.getCursor() >= 0) {
             out.writeAttribute("cursor", Integer.toString(token.getCursor()));
         }
         if (token.getCompleteListSize() > 0) {
-            out.writeAttribute("completeListSize", Integer.toString(token
-                    .getCompleteListSize()));
+            out.writeAttribute("completeListSize",
+                    Integer.toString(token.getCompleteListSize()));
         }
         out.writeCharacters(token.getId());
         out.writeEndElement(); // resumptionToken element

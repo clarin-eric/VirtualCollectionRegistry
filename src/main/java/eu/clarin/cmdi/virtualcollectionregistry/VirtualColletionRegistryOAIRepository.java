@@ -35,7 +35,7 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
     private static final Logger logger =
         LoggerFactory.getLogger(VirtualColletionRegistryOAIRepository.class);
 
-    private static class DCMetadataFormat implements MetadataFormat {
+    private final static class DCMetadataFormat implements MetadataFormat {
         private final static List<NamespaceDecl> dc = Arrays.asList(
                 new NamespaceDecl(MetadataConstants.NS_OAI_DC, "oai_dc",
                                   MetadataConstants.NS_OAI_DC_SCHEMA_LOCATION),
@@ -86,9 +86,8 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
             }
 
             if (vc.getDescription() != null) {
-                stream
-                        .writeStartElement(MetadataConstants.NS_DC,
-                                "description");
+                stream.writeStartElement(MetadataConstants.NS_DC,
+                    "description");
                 stream.writeCharacters(vc.getDescription());
                 stream.writeEndElement(); // dc:description element
             }
@@ -96,7 +95,7 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
         }
     } // class OAIMetadataFormat
 
-    private static class CMDIMetadataFormat implements MetadataFormat {
+    private final  static class CMDIMetadataFormat implements MetadataFormat {
         @Override
         public String getPrefix() {
             return "cmdi";
@@ -330,8 +329,8 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
         return where;
     }
 
-    private static class RecordFullImpl implements Record {
-        final VirtualCollection vc;
+    private final class RecordFullImpl implements Record {
+        private final VirtualCollection vc;
 
         RecordFullImpl(VirtualCollection vc) {
             this.vc = vc;
@@ -368,10 +367,10 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
         }
     }
 
-    private static class RecordHeaderImpl implements Record {
-        final Long id;
-        final Date datestamp;
-        final boolean deleted;
+    private final class RecordHeaderImpl implements Record {
+        private final Long id;
+        private final Date datestamp;
+        private final boolean deleted;
 
         RecordHeaderImpl(VirtualCollection vc) {
             this.id = vc.getId();

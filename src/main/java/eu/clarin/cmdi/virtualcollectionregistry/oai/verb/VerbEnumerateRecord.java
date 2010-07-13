@@ -14,7 +14,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.MetadataFormat;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.Record;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.RecordList;
 
-abstract class EnumerateRecordVerb extends Verb {
+abstract class VerbEnumerateRecord extends Verb {
     private static final String PROP_OFFSET = "_offset";
     private static final List<Argument> s_arguments = Arrays.asList(
             new Argument(Argument.ARG_FROM, false),
@@ -23,7 +23,7 @@ abstract class EnumerateRecordVerb extends Verb {
             new Argument(Argument.ARG_RESUMPTIONTOKEN, false),
             new Argument(Argument.ARG_METADATAPREFIX, true));
 
-    protected EnumerateRecordVerb() {
+    protected VerbEnumerateRecord() {
     }
 
     @Override
@@ -124,4 +124,4 @@ abstract class EnumerateRecordVerb extends Verb {
             OAIOutputStream out, MetadataFormat format, Record item)
             throws OAIException;
 
-} // abstract class EnumerateRecordVerb
+} // abstract class VerbEnumerateRecord

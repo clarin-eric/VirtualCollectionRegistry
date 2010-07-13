@@ -9,7 +9,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.MetadataFormat;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.Record;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.RecordList;
 
-public class ListIdentifiersVerb extends EnumerateRecordVerb {
+public class VerbListIdentifiers extends VerbEnumerateRecord {
 
     @Override
     public String getName() {

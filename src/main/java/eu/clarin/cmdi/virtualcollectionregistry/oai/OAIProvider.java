@@ -16,12 +16,12 @@ import org.slf4j.LoggerFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.impl.VerbContextImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.OAIRepository;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.GetRecordVerb;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.IdentifyVerb;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.ListIdentifiersVerb;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.ListMetadataFormatsVerb;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.ListRecordsVerb;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.ListSetsVerb;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.VerbGetRecord;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.VerbIdentify;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.VerbListIdentifiers;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.VerbListMetadataFormats;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.VerbListRecords;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.VerbListSets;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Verb;
 
 public class OAIProvider {
@@ -38,12 +38,12 @@ public class OAIProvider {
     private OAIProvider() {
         super();
         verbs = new ArrayList<Verb>();
-        verbs.add(new IdentifyVerb());
-        verbs.add(new ListMetadataFormatsVerb());
-        verbs.add(new ListIdentifiersVerb());
-        verbs.add(new ListSetsVerb());
-        verbs.add(new ListRecordsVerb());
-        verbs.add(new GetRecordVerb());
+        verbs.add(new VerbIdentify());
+        verbs.add(new VerbListMetadataFormats());
+        verbs.add(new VerbListIdentifiers());
+        verbs.add(new VerbListSets());
+        verbs.add(new VerbListRecords());
+        verbs.add(new VerbGetRecord());
 
         timer.schedule(new TimerTask() {
             @Override
