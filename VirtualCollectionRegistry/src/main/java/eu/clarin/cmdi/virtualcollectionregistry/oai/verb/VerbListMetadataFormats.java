@@ -12,7 +12,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.MetadataFormat;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.Record;
 
-public class ListMetadataFormatsVerb extends Verb {
+public class VerbListMetadataFormats extends Verb {
     private static final List<Argument> s_arguments = Arrays.asList(
             new Argument(Argument.ARG_IDENTIFIER, false));
 
@@ -72,4 +72,4 @@ public class ListMetadataFormatsVerb extends Verb {
         }
     }
 
-} // class ListMetadataFormatsVerb
+} // class VerbListMetadataFormats

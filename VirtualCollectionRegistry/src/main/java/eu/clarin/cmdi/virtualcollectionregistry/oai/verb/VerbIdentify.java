@@ -11,7 +11,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream.NamespaceDecl;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.OAIRepository;
 
-public class IdentifyVerb extends Verb {
+public class VerbIdentify extends Verb {
     private static List<NamespaceDecl> descsNsDecls = Arrays.asList(
             new NamespaceDecl(MetadataConstants.NS_OAI_DC, "oai_dc",
                               MetadataConstants.NS_OAI_DC_SCHEMA_LOCATION),
@@ -138,4 +138,4 @@ public class IdentifyVerb extends Verb {
         out.close();
     }
 
-} // class IdentifyVerb
+} // class VerbIdentify

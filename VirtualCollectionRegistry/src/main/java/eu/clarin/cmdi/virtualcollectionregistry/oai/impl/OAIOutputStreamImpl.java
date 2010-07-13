@@ -20,7 +20,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepositoryAdapter;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
 
 public class OAIOutputStreamImpl implements OAIOutputStream {
-    private class FlushSkipOutputStream extends FilterOutputStream {
+    private final class FlushSkipOutputStream extends FilterOutputStream {
         private byte[] buf;
         private int bufCount = 0;
 

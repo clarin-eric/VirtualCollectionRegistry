@@ -4,7 +4,7 @@ import java.util.List;
 import java.util.Map;
 
 public interface VerbContext {
-    public static interface Error {
+    public interface Error {
         public OAIErrorCode getCode();
 
         public String getMessage();

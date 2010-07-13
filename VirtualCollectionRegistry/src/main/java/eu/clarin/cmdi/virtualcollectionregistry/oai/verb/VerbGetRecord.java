@@ -11,7 +11,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.MetadataFormat;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.Record;
 
-public class GetRecordVerb extends Verb {
+public class VerbGetRecord extends Verb {
     private static final List<Argument> s_arguments = Arrays.asList(
             new Argument(Argument.ARG_IDENTIFIER, true),
             new Argument(Argument.ARG_METADATAPREFIX, true));
@@ -61,4 +61,4 @@ public class GetRecordVerb extends Verb {
         }
     }
 
-} // class GetRecordVerb
+} // class VerbGetRecord

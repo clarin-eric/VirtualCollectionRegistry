@@ -17,11 +17,11 @@ public abstract class Verb {
 
     public abstract void process(VerbContext ctx) throws OAIException;
 
-    public boolean supportsArgument(String name) {
+    public final boolean supportsArgument(String name) {
         return getArgument(name) != null;
     }
 
-    public Argument getArgument(String name) {
+    public final Argument getArgument(String name) {
         List<Argument> arguments = getArguments();
         if (!arguments.isEmpty()) {
             for (Argument argument : arguments) {
