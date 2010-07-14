@@ -1,13 +1,15 @@
 package eu.clarin.cmdi.virtualcollectionregistry.oai;
 
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.TimeZone;
 
 import javax.xml.XMLConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+
+import org.apache.commons.lang.time.FastDateFormat;
 
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.DublinCoreConverter;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.MetadataFormat;
@@ -17,9 +19,9 @@ final class DublinCoreMetadataFormat implements MetadataFormat {
     private static final String SCHEMA_LOCATION =
         MetadataConstants.NS_OAI_DC + " " +
         MetadataConstants.NS_OAI_DC_SCHEMA_LOCATION;
-    // XXX: maybe use lightweight and thread safe class
-    private final static SimpleDateFormat fmt =
-        new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss'Z'");
+    private final static FastDateFormat fmt =
+        FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss'Z'",
+                                   TimeZone.getTimeZone("UTC"));
     private final Set<DublinCoreConverter> converters;
 
     DublinCoreMetadataFormat(Set<DublinCoreConverter> converters) {
@@ -85,9 +87,7 @@ final class DublinCoreMetadataFormat implements MetadataFormat {
         if ((dates != null) && !dates.isEmpty()) {
             for (Date date : dates) {
                 stream.writeStartElement(MetadataConstants.NS_DC, "date");
-                synchronized (fmt) {
-                    stream.writeCharacters(fmt.format(date));
-                } // synchronized
+                stream.writeCharacters(fmt.format(date));
                 stream.writeEndElement(); // close element
             }
         }
