@@ -13,12 +13,13 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream.NamespaceDec
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.SetSpecDesc;
 
 public class VerbListSets extends Verb {
-    private static List<NamespaceDecl> descsNsDecls = Arrays.asList(
+    private static final Argument[] ARGUMENTS = {
+            new Argument(Argument.ARG_RESUMPTIONTOKEN, false)
+    };
+    private static final List<NamespaceDecl> NS_DECLS_DC = Arrays.asList(
             new NamespaceDecl(MetadataConstants.NS_OAI_DC, "oai_dc",
                               MetadataConstants.NS_OAI_DC_SCHEMA_LOCATION),
             new NamespaceDecl(MetadataConstants.NS_DC, null));
-    private static final List<Argument> s_arguments = Arrays.asList(
-            new Argument(Argument.ARG_RESUMPTIONTOKEN, false));
 
     @Override
     public String getName() {
@@ -26,8 +27,8 @@ public class VerbListSets extends Verb {
     }
 
     @Override
-    public List<Argument> getArguments() {
-        return s_arguments;
+    public Argument[] getArguments() {
+        return ARGUMENTS;
     }
 
     @Override
@@ -50,7 +51,7 @@ public class VerbListSets extends Verb {
                 if (setSpec.getDescription() != null) {
                     out.writeStartElement("setDescription");
                     out.writeStartElement(MetadataConstants.NS_OAI_DC, "dc",
-                            descsNsDecls);
+                            NS_DECLS_DC);
                     out.writeStartElement(MetadataConstants.NS_OAI_DC,
                             "description");
                     out.writeCharacters(setSpec.getDescription());

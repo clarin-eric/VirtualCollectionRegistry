@@ -1,7 +1,5 @@
 package eu.clarin.cmdi.virtualcollectionregistry.oai.verb;
 
-import java.util.Arrays;
-import java.util.List;
 import java.util.Set;
 
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIErrorCode;
@@ -13,8 +11,9 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.MetadataFormat;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.Record;
 
 public class VerbListMetadataFormats extends Verb {
-    private static final List<Argument> s_arguments = Arrays.asList(
-            new Argument(Argument.ARG_IDENTIFIER, false));
+    private static final Argument[] ARGUMENTS = {
+            new Argument(Argument.ARG_IDENTIFIER, false)
+    };
 
     @Override
     public String getName() {
@@ -22,8 +21,8 @@ public class VerbListMetadataFormats extends Verb {
     }
 
     @Override
-    public List<Argument> getArguments() {
-        return s_arguments;
+    public Argument[] getArguments() {
+        return ARGUMENTS;
     }
 
     @Override

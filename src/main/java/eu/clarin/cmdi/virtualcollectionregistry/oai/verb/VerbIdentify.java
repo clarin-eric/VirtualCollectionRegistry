@@ -1,7 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.oai.verb;
 
 import java.util.Arrays;
-import java.util.Collections;
 import java.util.List;
 
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
@@ -12,11 +11,11 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream.NamespaceDec
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.OAIRepository;
 
 public class VerbIdentify extends Verb {
-    private static List<NamespaceDecl> descsNsDecls = Arrays.asList(
+    private static final List<NamespaceDecl> NS_DECLS_DC = Arrays.asList(
             new NamespaceDecl(MetadataConstants.NS_OAI_DC, "oai_dc",
                               MetadataConstants.NS_OAI_DC_SCHEMA_LOCATION),
             new NamespaceDecl(MetadataConstants.NS_DC, null));
-    private static List<NamespaceDecl> identifierNsDecls = Arrays.asList(
+    private static final List<NamespaceDecl> NS_DECLS_IDENTIFER = Arrays.asList(
             new NamespaceDecl(MetadataConstants.NS_OAI_IDENTIFIER, null,
                          MetadataConstants.NS_OAI_IDENTIFIER_SCHEMA_LOCATION));
 
@@ -26,8 +25,8 @@ public class VerbIdentify extends Verb {
     }
 
     @Override
-    public List<Argument> getArguments() {
-        return Collections.emptyList();
+    public Argument[] getArguments() {
+        return null;
     }
 
     @Override
@@ -101,7 +100,7 @@ public class VerbIdentify extends Verb {
         // description/oai-identifier
         out.writeStartElement("description");
         out.writeStartElement(MetadataConstants.NS_OAI_IDENTIFIER,
-                "oai-identifier", identifierNsDecls);
+                "oai-identifier", NS_DECLS_IDENTIFER);
         out.writeStartElement(MetadataConstants.NS_OAI_IDENTIFIER, "scheme");
         out.writeCharacters("oai");
         out.writeEndElement(); // scheme element
@@ -122,8 +121,8 @@ public class VerbIdentify extends Verb {
         // description/dc
         if (repository.getDescription() != null) {
             out.writeStartElement("description");
-            out.writeStartElement(MetadataConstants.NS_OAI_DC, "dc",
-                    descsNsDecls);
+            out.writeStartElement(MetadataConstants.NS_OAI_DC,
+                    "dc", NS_DECLS_DC);
             out.writeStartElement(MetadataConstants.NS_DC, "title");
             out.writeCharacters(repository.getName());
             out.writeEndElement(); // title

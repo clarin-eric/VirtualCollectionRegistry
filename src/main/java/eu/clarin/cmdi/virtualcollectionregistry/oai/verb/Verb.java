@@ -1,7 +1,5 @@
 package eu.clarin.cmdi.virtualcollectionregistry.oai.verb;
 
-import java.util.List;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -13,7 +11,7 @@ public abstract class Verb {
 
     public abstract String getName();
 
-    public abstract List<Argument> getArguments();
+    public abstract Argument[] getArguments();
 
     public abstract void process(VerbContext ctx) throws OAIException;
 
@@ -22,8 +20,8 @@ public abstract class Verb {
     }
 
     public final Argument getArgument(String name) {
-        List<Argument> arguments = getArguments();
-        if (!arguments.isEmpty()) {
+        final Argument[] arguments = getArguments();
+        if (arguments != null) {
             for (Argument argument : arguments) {
                 if (argument.getName().equals(name)) {
                     return argument;

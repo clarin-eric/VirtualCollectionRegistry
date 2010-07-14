@@ -1,6 +1,5 @@
 package eu.clarin.cmdi.virtualcollectionregistry.oai.verb;
 
-import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
@@ -16,19 +15,20 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.RecordList;
 
 abstract class VerbEnumerateRecord extends Verb {
     private static final String PROP_OFFSET = "_offset";
-    private static final List<Argument> s_arguments = Arrays.asList(
-            new Argument(Argument.ARG_FROM, false),
-            new Argument(Argument.ARG_UNTIL, false),
-            new Argument(Argument.ARG_SET, false),
-            new Argument(Argument.ARG_RESUMPTIONTOKEN, false),
-            new Argument(Argument.ARG_METADATAPREFIX, true));
+    private static final Argument[] ARGUMENTS = {
+        new Argument(Argument.ARG_FROM, false),
+        new Argument(Argument.ARG_UNTIL, false),
+        new Argument(Argument.ARG_SET, false),
+        new Argument(Argument.ARG_METADATAPREFIX, true),
+        new Argument(Argument.ARG_RESUMPTIONTOKEN, false)
+    };
 
     protected VerbEnumerateRecord() {
     }
 
     @Override
-    public final List<Argument> getArguments() {
-        return s_arguments;
+    public final Argument[] getArguments() {
+        return ARGUMENTS;
     }
 
     @Override
