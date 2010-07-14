@@ -151,10 +151,13 @@ public class OAIProvider {
                 remaining.remove(arg.getName());
             } else {
                 // process regular arguments
-                for (Argument arg : verb.getArguments()) {
-                    processArgument(ctx, arg);
-                    remaining.remove(arg.getName());
-                } // for
+                Argument[] arguments = verb.getArguments();
+                if (arguments != null) {
+                    for (Argument arg : verb.getArguments()) {
+                        processArgument(ctx, arg);
+                        remaining.remove(arg.getName());
+                    } // for
+                }
             }
 
             if (!remaining.isEmpty()) {
