@@ -99,7 +99,7 @@ abstract class VerbEnumerateRecord extends Verb {
                             token.setProperty(PROP_OFFSET, nextOffset);
                             token.setCursor(offset);
                             token.setCompleteListSize(result.getTotalCount());
-                            repository.writeResumptionToken(out, token);
+                            out.writeResumptionToken(token);
                         } // synchronized (token)
                     }
                     out.writeEndElement(); // ListRecords element

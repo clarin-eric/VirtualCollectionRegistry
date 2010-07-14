@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.oai;
 
+import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -10,23 +11,28 @@ import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
+import org.apache.commons.lang.time.DateUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.clarin.cmdi.virtualcollectionregistry.oai.impl.VerbContextImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.OAIRepository;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Verb;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.VerbGetRecord;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.VerbIdentify;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.VerbListIdentifiers;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.VerbListMetadataFormats;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.VerbListRecords;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.VerbListSets;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Verb;
 
 public class OAIProvider {
     private static final Logger logger =
         LoggerFactory.getLogger(OAIProvider.class);
+    private static final String[] DATEFORMATS_DAYS =
+        { "yyyy-MM-dd" };
+    private static final String[] DATEFORMATS_FULL =
+        { "yyyy-MM-dd'T'HH:mm:ss'Z'" , "yyyy-MM-dd"};
     private static final OAIProvider s_instance = new OAIProvider();
     private final List<Verb> verbs;
     private final Map<String, ResumptionToken> resumptionTokens =
@@ -133,55 +139,21 @@ public class OAIProvider {
             // process arguments
             Set<String> remaining = ctx.getParameterNames();
 
+            /*
+             *  special handling of resumptionToken, because if it is
+             *  available is must be the only argument. 
+             */
             if (verb.supportsArgument(Argument.ARG_RESUMPTIONTOKEN) &&
                 remaining.contains(Argument.ARG_RESUMPTIONTOKEN)) {
-                // special handling of resumptionToken
-                String value = ctx.getParameter(Argument.ARG_RESUMPTIONTOKEN);
-                if (value != null) {
-                    Argument arg =
-                        verb.getArgument(Argument.ARG_RESUMPTIONTOKEN);
-                    remaining.remove(arg.getName());
-                    if (ctx.isRepeatedParameter(arg.getName())) {
-                        ctx.addError(OAIErrorCode.BAD_ARGUMENT, "OAI verb '" +
-                                verb.getName() +
-                                "' has repeated values for argument '" +
-                                arg.getName() + "'");
-                    } else {
-                        if (!ctx.setArgument(arg, value)) {
-                            ctx.addError(OAIErrorCode.BAD_ARGUMENT,
-                                    "Value of argument '" + arg.getName() +
-                                    "' of OAI verb '" + verb.getName() +
-                                    "' is invalid (value='" + value + "')");
-                        }
-                    }
-                }
+                final Argument arg =
+                    verb.getArgument(Argument.ARG_RESUMPTIONTOKEN);
+                processArgument(ctx, arg);
+                remaining.remove(arg.getName());
             } else {
                 // process regular arguments
                 for (Argument arg : verb.getArguments()) {
-                    String value = ctx.getParameter(arg.getName().toString());
-                    if (value != null) {
-                        remaining.remove(arg.getName());
-                        if (ctx.isRepeatedParameter(arg.getName())) {
-                            ctx.addError(OAIErrorCode.BAD_ARGUMENT,
-                                    "OAI verb '" + verb.getName() +
-                                    "' has repeated values for " +
-                                    "argument '" + arg.getName() + "'");
-                        } else {
-                            if (!ctx.setArgument(arg, value)) {
-                                ctx.addError(OAIErrorCode.BAD_ARGUMENT,
-                                        "Value of argument '" + arg.getName() +
-                                        "' of OAI verb '" + verb.getName() +
-                                        "' is invalid (value='" + value + "')");
-                            }
-                        }
-                    } else {
-                        if (arg.isRequired()) {
-                            ctx.addError(OAIErrorCode.BAD_ARGUMENT,
-                                    "OAI verb '" + verb.getName() +
-                                    "' is missing required argument '" +
-                                    arg.getName() + "'");
-                        }
-                    }
+                    processArgument(ctx, arg);
+                    remaining.remove(arg.getName());
                 } // for
             }
 
@@ -259,6 +231,89 @@ public class OAIProvider {
                 return token;
             } // synchronized (token)
         } // synchronized (resumptionTokens)
+    }
+
+    private void processArgument(VerbContextImpl ctx, Argument arg) {
+        String value = ctx.getParameter(arg.getName());
+        if (value != null) {
+            logger.debug("process argument '{}', value = '{}'",
+                    arg.getName(), value);
+            if (ctx.isRepeatedParameter(arg.getName())) {
+                ctx.addError(OAIErrorCode.BAD_ARGUMENT, "OAI verb '" +
+                        ctx.getVerb() + "' has repeated values for " +
+                        "argument '" + arg.getName() + "'");
+            } else {
+                if (!setArgument(ctx, arg, value)) {
+                    ctx.addError(OAIErrorCode.BAD_ARGUMENT,
+                            "Value of argument '" + arg.getName() +
+                                    "' of OAI verb '" + ctx.getVerb() +
+                                    "' is invalid (value='" + value + "')");
+                }
+            }
+        } else {
+            if (arg.isRequired()) {
+                ctx.addError(OAIErrorCode.BAD_ARGUMENT,
+                        "OAI verb '" + ctx.getVerb() +
+                        "' is missing required argument '" +
+                        arg.getName() + "'");
+            }
+        }
+    }
+
+    private boolean setArgument(VerbContextImpl ctx, Argument arg,
+            String value) {
+        if (arg.checkArgument(value)) {
+            Object v = parseArgument(arg.getName(), value);
+            if (v != null) {
+                logger.debug("set: '{}' = {}", arg.getName(), v.toString());
+                ctx.setArgument(arg, v);
+                return true;
+            }
+        }
+        return false;
+    }
+
+    private Object parseArgument(String name, String value) {
+        Object result = null;
+        if (name.equals(Argument.ARG_IDENTIFIER)) {
+            String localId = extractLocalId(value);
+            if (localId != null) {
+                result = repository.parseLocalId(localId);
+            }
+        } else if (name.equals(Argument.ARG_FROM)
+                || name.equals(Argument.ARG_UNTIL)) {
+            try {
+                switch (repository.getGranularity()) {
+                case DAYS:
+                    result =
+                        DateUtils.parseDateStrictly(value, DATEFORMATS_DAYS);
+                    break;
+                default:
+                    result =
+                        DateUtils.parseDateStrictly(value, DATEFORMATS_FULL);
+                }
+            } catch (ParseException e) {
+                /* ignore */
+            }
+        } else {
+            result = value;
+        }
+        return result;
+    }
+
+    private String extractLocalId(String identifier) {
+        int pos1 = identifier.indexOf(':');
+        if (pos1 != -1) {
+            int pos2 = identifier.indexOf(':', pos1 + 1);
+            if (pos2 != -1) {
+                // check of repository id matches
+                String id = repository.getId();
+                if (identifier.regionMatches(pos1 + 1, id, 0, id.length())) {
+                    return identifier.substring(pos2 + 1);
+                }
+            }
+        }
+        return null;
     }
 
 } // class OAIProvider

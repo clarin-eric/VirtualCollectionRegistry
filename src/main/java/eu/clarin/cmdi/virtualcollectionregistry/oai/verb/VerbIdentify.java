@@ -57,7 +57,7 @@ public class VerbIdentify extends Verb {
         }
 
         out.writeStartElement("earliestDatestamp");
-        out.writeCharacters(repository.getEarliestTimestamp());
+        out.writeDate(repository.getEarliestTimestamp());
         out.writeEndElement(); // earliestDatestamp element
 
         out.writeStartElement("deletedRecord");

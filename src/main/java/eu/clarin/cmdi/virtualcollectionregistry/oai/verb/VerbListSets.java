@@ -36,7 +36,7 @@ public class VerbListSets extends Verb {
 
         OAIRepositoryAdapter repository = ctx.getRepository();
         Set<SetSpecDesc> setDescs = repository.getSetSpecs();
-        if ((setDescs != null) && !setDescs.isEmpty()) {
+        if (repository.isUsingSets()) {
             OAIOutputStream out = ctx.getOutputStream();
             out.writeStartElement("ListSets");
             for (SetSpecDesc setSpec : setDescs) {

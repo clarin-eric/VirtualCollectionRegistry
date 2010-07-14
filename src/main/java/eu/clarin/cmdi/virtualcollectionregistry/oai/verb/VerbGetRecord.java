@@ -46,7 +46,7 @@ public class VerbGetRecord extends Verb {
             if (format != null) {
                 OAIOutputStream out = ctx.getOutputStream();
                 out.writeStartElement("GetRecord");
-                repository.writeRecord(out, record, format);
+                out.writeRecord(record, format);
                 out.writeEndElement(); // GetRecord element
                 out.close();
             } else {

@@ -103,18 +103,11 @@ public class VerbContextImpl implements VerbContext {
         this.verb = verb;
     }
 
-    public boolean setArgument(Argument arg, String value) {
-        if (arg.checkArgument(value)) {
-            Object v = repository.parseArgument(arg.getName(), value);
-            if (v != null) {
-                if (arguments == null) {
-                    arguments = new HashMap<String, Object>();
-                }
-                arguments.put(arg.getName(), v);
-                return true;
-            }
+    public void setArgument(Argument arg, Object value) {
+        if (arguments == null) {
+            arguments = new HashMap<String, Object>();
         }
-        return false;
+        arguments.put(arg.getName(), value);
     }
 
     @Override

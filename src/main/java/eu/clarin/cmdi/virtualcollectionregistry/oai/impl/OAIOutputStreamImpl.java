@@ -3,7 +3,6 @@ package eu.clarin.cmdi.virtualcollectionregistry.oai.impl;
 import java.io.FilterOutputStream;
 import java.io.IOException;
 import java.io.OutputStream;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -14,12 +13,18 @@ import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 
+import org.apache.commons.lang.time.FastDateFormat;
+
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepositoryAdapter;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.ResumptionToken;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.MetadataFormat;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.OAIRepository;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.Record;
 
-public class OAIOutputStreamImpl implements OAIOutputStream {
+public final class OAIOutputStreamImpl implements OAIOutputStream {
     private final class FlushSkipOutputStream extends FilterOutputStream {
         private byte[] buf;
         private int bufCount = 0;
@@ -85,26 +90,14 @@ public class OAIOutputStreamImpl implements OAIOutputStream {
             }
         }
     } // inner class FlushSkipOutputStream
-
     private static final String NS_OAI =
         "http://www.openarchives.org/OAI/2.0/";
     private static final String NS_OAI_SCHEMA_LOCATION =
         "http://www.openarchives.org/OAI/2.0/OAI-PMH.xsd";
-    private static final ThreadLocal<SimpleDateFormat> sdf =
-        new ThreadLocal<SimpleDateFormat>() {
-        protected SimpleDateFormat initialValue() {
-            SimpleDateFormat sdf = new SimpleDateFormat(
-                    "yyyy-MM-dd'T'HH:mm:ss'Z'");
-            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-            return sdf;
-        }
-    };
-    private static final ThreadLocal<XMLOutputFactory> writerFactory =
-        new ThreadLocal<XMLOutputFactory>() {
-        protected XMLOutputFactory initialValue() {
-            return XMLOutputFactory.newInstance();
-        }
-    };
+    private static final String SCHEMA_LOCATION =
+        NS_OAI + " " + NS_OAI_SCHEMA_LOCATION;
+    private static final XMLOutputFactory writerFactory =
+        XMLOutputFactory.newInstance();
     private final OAIRepositoryAdapter repository;
     private final OutputStream stream;
     private final XMLStreamWriter writer;
@@ -113,16 +106,17 @@ public class OAIOutputStreamImpl implements OAIOutputStream {
         try {
             this.repository = ctx.getRepository();
             this.stream = new FlushSkipOutputStream(out, 8192);
-            writer = writerFactory.get().createXMLStreamWriter(stream, "utf-8");
+            synchronized (writerFactory) {
+                writer = writerFactory.createXMLStreamWriter(stream, "utf-8");
+            } // synchronized (writerFactory)
             writer.writeStartDocument("utf-8", "1.0");
 
             StringBuilder data = new StringBuilder();
             data.append("type=\"text/xsl\" href=\"");
             data.append(ctx.getContextPath());
             data.append("/oai2.xsl\"");
-            writer
-                    .writeProcessingInstruction("xml-stylesheet", data
-                            .toString());
+            writer.writeProcessingInstruction("xml-stylesheet",
+                    data.toString());
 
             writer.setDefaultNamespace(NS_OAI);
             writer.writeStartElement("OAI-PMH");
@@ -130,10 +124,12 @@ public class OAIOutputStreamImpl implements OAIOutputStream {
             writer.writeNamespace("xsi",
                     XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
             writer.writeAttribute(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI,
-                    "schemaLocation", NS_OAI + " " + NS_OAI_SCHEMA_LOCATION);
+                    "schemaLocation", SCHEMA_LOCATION);
 
+            FastDateFormat fmt =
+                getDateFormat(OAIRepository.Granularity.SECONDS); 
             writer.writeStartElement("responseDate");
-            writer.writeCharacters(sdf.get().format(new Date()));
+            writer.writeCharacters(fmt.format(System.currentTimeMillis()));
             writer.writeEndElement(); // responseDate element
 
             writer.writeStartElement("request");
@@ -212,8 +208,8 @@ public class OAIOutputStreamImpl implements OAIOutputStream {
                 if (decl.hasSchemaLocation()) {
                     /*
                      * From an XML point of view, the XSI-namespace is still in
-                     * scope and this is not needed, but all other provides show
-                     * this behavior.
+                     * scope and this is not needed, but all other providers
+                     * show this behavior.
                      */
                     if (!schemaDeclWritten) {
                         writer.writeNamespace("xsi",
@@ -272,10 +268,95 @@ public class OAIOutputStreamImpl implements OAIOutputStream {
     @Override
     public void writeDate(Date date) throws OAIException {
         try {
-            writer.writeCharacters(repository.formatDate(date));
+            FastDateFormat fmt = getDateFormat(repository.getGranularity());
+            writer.writeCharacters(fmt.format(date));
         } catch (XMLStreamException e) {
             throw new OAIException("error while serializing response", e);
         }
+    }
+
+    @Override
+    public void writeRecordHeader(Record record) throws OAIException {
+        try {
+            writer.writeStartElement("header");
+            if (record.isDeleted()) {
+                writer.writeAttribute("status", "deleted");
+            }
+            writer.writeStartElement("identifier");
+            writer.writeCharacters(
+                    repository.createRecordId(record.getLocalId()));
+            writer.writeEndElement(); // identifier element
+            writer.writeStartElement("datestamp");
+            writeDate(record.getDatestamp());
+            writer.writeEndElement(); // datestamp element
+            List<String> setSpecs = record.getSetSpecs();
+            if ((setSpecs != null) && !setSpecs.isEmpty()) {
+                for (String setSpec : setSpecs) {
+                    writer.writeStartElement("setSpec");
+                    writer.writeCharacters(setSpec);
+                    writer.writeEndElement(); // setSpec element
+                }
+            }
+            writer.writeEndElement(); // header element
+        } catch (OAIException e) {
+            throw e;
+        } catch (XMLStreamException e) {
+            throw new OAIException("error while serializing response", e);
+        }
+    }
+
+    @Override
+    public void writeRecord(Record record, MetadataFormat format)
+            throws OAIException {
+        try {
+            writer.writeStartElement("record");
+            writeRecordHeader(record);
+            if (!record.isDeleted()) {
+                writer.writeStartElement("metadata");
+                format.writeObject(writer, record.getItem());
+                writer.writeEndElement(); // metadata element
+            }
+            writer.writeEndElement(); // record element
+        } catch (OAIException e) {
+            throw e;
+        } catch (XMLStreamException e) {
+            throw new OAIException("error writing record", e);
+        }
+    }
+
+    @Override
+    public void writeResumptionToken(ResumptionToken token)
+        throws OAIException {
+        try {
+            FastDateFormat fmt =
+                getDateFormat(OAIRepository.Granularity.SECONDS); 
+            writer.writeStartElement("resumptionToken");
+            writer.writeAttribute("expirationDate",
+                    fmt.format(token.getExpirationDate()));
+            if (token.getCursor() >= 0) {
+                writer.writeAttribute("cursor",
+                        Integer.toString(token.getCursor()));
+            }
+            if (token.getCompleteListSize() > 0) {
+                writer.writeAttribute("completeListSize",
+                        Integer.toString(token.getCompleteListSize()));
+            }
+            writer.writeCharacters(token.getId());
+            writer.writeEndElement(); // resumptionToken element
+        } catch (XMLStreamException e) {
+            throw new OAIException("error while serializing response", e);
+        }
+    }
+
+    private FastDateFormat getDateFormat(OAIRepository.Granularity g) {
+        switch (g) {
+        case DAYS:
+            return FastDateFormat.getInstance("yyyy-MM-dd",
+                                              TimeZone.getTimeZone("UTC"));
+        default:
+            return FastDateFormat.getInstance("yyyy-MM-dd'T'HH:mm:ss'Z'",
+                                              TimeZone.getTimeZone("UTC"));
+        } // switch
     }
 
 } // class OAIOutputStreamImpl

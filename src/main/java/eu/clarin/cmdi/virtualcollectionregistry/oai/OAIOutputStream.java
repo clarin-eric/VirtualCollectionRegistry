@@ -6,6 +6,9 @@ import java.util.List;
 import javax.xml.XMLConstants;
 import javax.xml.stream.XMLStreamWriter;
 
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.MetadataFormat;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.Record;
+
 public interface OAIOutputStream {
     public static class NamespaceDecl {
         private final String namespaceURI;
@@ -65,5 +68,12 @@ public interface OAIOutputStream {
     public void writeCharacters(String text) throws OAIException;
 
     public void writeDate(Date date) throws OAIException;
+
+    public void writeResumptionToken(ResumptionToken token) throws OAIException;
+
+    public void writeRecordHeader(Record record) throws OAIException;
+    
+    public void writeRecord(Record record, MetadataFormat format)
+            throws OAIException;
 
 } // interface OAIOutputStream

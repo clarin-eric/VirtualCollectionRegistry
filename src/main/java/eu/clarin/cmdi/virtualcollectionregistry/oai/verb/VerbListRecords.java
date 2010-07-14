@@ -27,7 +27,7 @@ public class VerbListRecords extends VerbEnumerateRecord {
     protected void doWriteRecord(OAIRepositoryAdapter repository,
             OAIOutputStream out, MetadataFormat format, Record record)
             throws OAIException {
-        repository.writeRecord(out, record, format);
+        out.writeRecord(record, format);
     }
 
 } // class VerbListRecords

@@ -1,17 +1,11 @@
 package eu.clarin.cmdi.virtualcollectionregistry.oai;
 
-import java.text.ParsePosition;
-import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
-import java.util.List;
 import java.util.Map;
 import java.util.Set;
-import java.util.TimeZone;
-
-import javax.xml.stream.XMLStreamException;
 
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.DublinCoreConverter;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.MetadataFormat;
@@ -19,23 +13,10 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.OAIRepository;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.Record;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.RecordList;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.SetSpecDesc;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.OAIRepository.DeletedNotion;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.OAIRepository.Granularity;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument;
 
-public class OAIRepositoryAdapter {
+public final class OAIRepositoryAdapter {
     private final OAIProvider provider;
     private final OAIRepository repository;
-    private final ThreadLocal<SimpleDateFormat> sdf =
-        new ThreadLocal<SimpleDateFormat>() {
-        protected SimpleDateFormat initialValue() {
-            SimpleDateFormat sdf = new SimpleDateFormat();
-            sdf.applyPattern(getDatePattern(repository.getGranularity()));
-            sdf.setLenient(false);
-            sdf.setTimeZone(TimeZone.getTimeZone("UTC"));
-            return sdf;
-        }
-    };
     private final Set<String> adminEmailAddresses;
     private final Set<MetadataFormat> metadataFormats =
         new HashSet<MetadataFormat>();
@@ -56,7 +37,7 @@ public class OAIRepositoryAdapter {
             throw new OAIException("admin email addresses are empty");
         }
 
-        // handle dublin core and do some sanity checks
+        // handle Dublin Core and do some sanity checks
         Set<DublinCoreConverter> converters =
             repository.getDublinCoreConverters();
         if (converters == null) {
@@ -115,19 +96,19 @@ public class OAIRepositoryAdapter {
         return adminEmailAddresses;
     }
 
-    public String getEarliestTimestamp() {
+    public Date getEarliestTimestamp() {
         Date date = repository.getEarliestTimestamp();
         if (date == null) {
             date = new Date();
         }
-        return formatDate(date);
+        return date;
     }
 
-    public DeletedNotion getDeletedNotion() {
+    public OAIRepository.DeletedNotion getDeletedNotion() {
         return repository.getDeletedNotion();
     }
 
-    public Granularity getGranularity() {
+    public OAIRepository.Granularity getGranularity() {
         return repository.getGranularity();
     }
 
@@ -189,43 +170,6 @@ public class OAIRepositoryAdapter {
         return setSpecs != null;
     }
 
-    public Object parseArgument(String name, String value) {
-        Object result = null;
-        if (name.equals(Argument.ARG_IDENTIFIER)) {
-            String localId = extractLocalId(value);
-            if (localId != null) {
-                result = repository.parseLocalId(localId);
-            }
-        } else if (name.equals(Argument.ARG_FROM)
-                || name.equals(Argument.ARG_UNTIL)) {
-            /*
-             * First try to parse date format in repository default format. If
-             * this fails and repository supports SECONDS granularity try also
-             * DAYS granularity
-             */
-            SimpleDateFormat parser = sdf.get();
-            ParsePosition pos = new ParsePosition(0);
-            Date date = parser.parse(value, pos);
-            if ((date == null) &&
-                (repository.getGranularity() == Granularity.SECONDS)) {
-                // re-try with DAYS granularity
-                pos.setIndex(0);
-                parser.applyPattern(getDatePattern(Granularity.DAYS));
-                date = parser.parse(value, pos);
-                // reset pattern, success check if done below
-                parser.applyPattern(getDatePattern(Granularity.SECONDS));
-            }
-
-            // make sure input has not been parsed partly
-            if ((date != null) && (pos.getIndex() == value.length())) {
-                result = date;
-            }
-        } else {
-            result = value;
-        }
-        return result;
-    }
-
     public String createRecordId(Object localId) {
         StringBuilder sb = new StringBuilder("oai:");
         sb.append(repository.getId());
@@ -234,13 +178,13 @@ public class OAIRepositoryAdapter {
         return sb.toString();
     }
 
-    public String formatDate(Date date) {
-        return sdf.get().format(date);
-    }
-
     public Record getRecord(Object localId, boolean headerOnly)
             throws OAIException {
         return repository.getRecord(localId, headerOnly);
+    }
+
+    public Object parseLocalId(String unparsedLocalId) {
+        return repository.parseLocalId(unparsedLocalId);
     }
 
     public RecordList getRecords(String prefix, Date from, Date until,
@@ -255,85 +199,6 @@ public class OAIRepositoryAdapter {
 
     public ResumptionToken getResumptionToken(String id) {
         return provider.getResumptionToken(id, -1);
-    }
-
-    public void writeRecordHeader(OAIOutputStream out, Record record)
-            throws OAIException {
-        out.writeStartElement("header");
-        if (record.isDeleted()) {
-            out.writeAttribute("status", "deleted");
-        }
-        out.writeStartElement("identifier");
-        out.writeCharacters(createRecordId(record.getLocalId()));
-        out.writeEndElement(); // identifier element
-        out.writeStartElement("datestamp");
-        out.writeDate(record.getDatestamp());
-        out.writeEndElement(); // datestamp element
-        List<String> setSpecs = record.getSetSpecs();
-        if ((setSpecs != null) && !setSpecs.isEmpty()) {
-            for (String setSpec : setSpecs) {
-                out.writeStartElement("setSpec");
-                out.writeCharacters(setSpec);
-                out.writeEndElement(); // setSpec element
-            }
-        }
-        out.writeEndElement(); // header element
-    }
-
-    public void writeRecord(OAIOutputStream out, Record record,
-            MetadataFormat format) throws OAIException {
-        try {
-            out.writeStartElement("record");
-            writeRecordHeader(out, record);
-            if (!record.isDeleted()) {
-                out.writeStartElement("metadata");
-                format.writeObject(out.getXMLStreamWriter(), record.getItem());
-                out.writeEndElement(); // metadata element
-            }
-            out.writeEndElement(); // record element
-        } catch (XMLStreamException e) {
-            throw new OAIException("error writing record", e);
-        }
-    }
-
-    public void writeResumptionToken(OAIOutputStream out, ResumptionToken token)
-            throws OAIException {
-        out.writeStartElement("resumptionToken");
-        out.writeAttribute("expirationDate",
-                formatDate(token.getExpirationDate()));
-        if (token.getCursor() >= 0) {
-            out.writeAttribute("cursor", Integer.toString(token.getCursor()));
-        }
-        if (token.getCompleteListSize() > 0) {
-            out.writeAttribute("completeListSize",
-                    Integer.toString(token.getCompleteListSize()));
-        }
-        out.writeCharacters(token.getId());
-        out.writeEndElement(); // resumptionToken element
-    }
-
-    private String extractLocalId(String identifier) {
-        int pos1 = identifier.indexOf(':');
-        if (pos1 != -1) {
-            int pos2 = identifier.indexOf(':', pos1 + 1);
-            if (pos2 != -1) {
-                // check of repository id matches
-                String id = repository.getId();
-                if (identifier.regionMatches(pos1 + 1, id, 0, id.length())) {
-                    return identifier.substring(pos2 + 1);
-                }
-            }
-        }
-        return null;
-    }
-
-    private static String getDatePattern(Granularity granularity) {
-        switch (granularity) {
-        case DAYS:
-            return "yyyy-MM-dd";
-        default:
-            return "yyyy-MM-dd'T'HH:mm:ss'Z'";
-        }
     }
 
 } // class OAIRepositoryAdapter
