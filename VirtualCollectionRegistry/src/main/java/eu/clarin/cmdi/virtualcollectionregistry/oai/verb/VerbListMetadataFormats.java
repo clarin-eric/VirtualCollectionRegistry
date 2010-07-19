@@ -12,7 +12,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.Record;
 
 public class VerbListMetadataFormats extends Verb {
     private static final Argument[] ARGUMENTS = {
-            new Argument(Argument.ARG_IDENTIFIER, false)
+        new ArgumentIdentifier(false)
     };
 
     @Override
@@ -32,8 +32,8 @@ public class VerbListMetadataFormats extends Verb {
         OAIRepositoryAdapter repository = ctx.getRepository();
 
         Set<MetadataFormat> formats = null;
-        if (ctx.hasArgument(Argument.ARG_IDENTIFIER)) {
-            Object localId = ctx.getArgument(Argument.ARG_IDENTIFIER);
+        if (ctx.hasArgument(DefaultArguments.ARG_IDENTIFIER)) {
+            Object localId = ctx.getArgument(DefaultArguments.ARG_IDENTIFIER);
             Record record = repository.getRecord(localId, true);
             if (record != null) {
                 formats = repository.getMetadataFormats(record);
