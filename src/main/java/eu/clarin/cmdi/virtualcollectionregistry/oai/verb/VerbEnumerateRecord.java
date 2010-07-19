@@ -16,11 +16,11 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.RecordList;
 abstract class VerbEnumerateRecord extends Verb {
     private static final String PROP_OFFSET = "_offset";
     private static final Argument[] ARGUMENTS = {
-        new Argument(Argument.ARG_FROM, false),
-        new Argument(Argument.ARG_UNTIL, false),
-        new Argument(Argument.ARG_SET, false),
-        new Argument(Argument.ARG_METADATAPREFIX, true),
-        new Argument(Argument.ARG_RESUMPTIONTOKEN, false)
+        DefaultArguments.FROM,
+        DefaultArguments.UNTIL,
+        DefaultArguments.SET,
+        DefaultArguments.METADATAPREFIX,
+        DefaultArguments.RESUMPTIONTOKEN
     };
 
     protected VerbEnumerateRecord() {
@@ -42,8 +42,8 @@ abstract class VerbEnumerateRecord extends Verb {
         Date until = null;
         int offset = 0;
 
-        if (ctx.hasArgument(Argument.ARG_RESUMPTIONTOKEN)) {
-            String id = (String) ctx.getArgument(Argument.ARG_RESUMPTIONTOKEN);
+        if (ctx.hasArgument(DefaultArguments.ARG_RESUMPTIONTOKEN)) {
+            String id = (String) ctx.getArgument(DefaultArguments.ARG_RESUMPTIONTOKEN);
             ResumptionToken token = repository.getResumptionToken(id);
             if (token == null) {
                 ctx.addError(OAIErrorCode.BAD_RESUMPTION_TOKEN,
@@ -52,17 +52,17 @@ abstract class VerbEnumerateRecord extends Verb {
             }
             synchronized (token) {
                 prefix =
-                    (String) token.getProperty(Argument.ARG_METADATAPREFIX);
-                set    = (String)  token.getProperty(Argument.ARG_SET);
-                from   = (Date)    token.getProperty(Argument.ARG_FROM);
-                until  = (Date)    token.getProperty(Argument.ARG_UNTIL);
+                    (String) token.getProperty(DefaultArguments.ARG_METADATAPREFIX);
+                set    = (String)  token.getProperty(DefaultArguments.ARG_SET);
+                from   = (Date)    token.getProperty(DefaultArguments.ARG_FROM);
+                until  = (Date)    token.getProperty(DefaultArguments.ARG_UNTIL);
                 offset = (Integer) token.getProperty(PROP_OFFSET);
             } // synchronized (token)
         } else {
-            prefix = (String) ctx.getArgument(Argument.ARG_METADATAPREFIX);
-            set    = (String) ctx.getArgument(Argument.ARG_SET);
-            from   = (Date)   ctx.getArgument(Argument.ARG_FROM);
-            until  = (Date)   ctx.getArgument(Argument.ARG_UNTIL);
+            prefix = (String) ctx.getArgument(DefaultArguments.ARG_METADATAPREFIX);
+            set    = (String) ctx.getArgument(DefaultArguments.ARG_SET);
+            from   = (Date)   ctx.getArgument(DefaultArguments.ARG_FROM);
+            until  = (Date)   ctx.getArgument(DefaultArguments.ARG_UNTIL);
         }
 
         MetadataFormat format = repository.getMetadataFormatByPrefix(prefix);
@@ -89,11 +89,11 @@ abstract class VerbEnumerateRecord extends Verb {
                         ResumptionToken token =
                             repository.createResumptionToken();
                         synchronized (token) {
-                            token.setProperty(Argument.ARG_METADATAPREFIX,
+                            token.setProperty(DefaultArguments.ARG_METADATAPREFIX,
                                               prefix);
-                            token.setProperty(Argument.ARG_SET, set);
-                            token.setProperty(Argument.ARG_FROM, from);
-                            token.setProperty(Argument.ARG_UNTIL, until);
+                            token.setProperty(DefaultArguments.ARG_SET, set);
+                            token.setProperty(DefaultArguments.ARG_FROM, from);
+                            token.setProperty(DefaultArguments.ARG_UNTIL, until);
                             int nextOffset =
                                 records.size() + result.getOffset();
                             token.setProperty(PROP_OFFSET, nextOffset);

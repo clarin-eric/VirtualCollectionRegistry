@@ -14,7 +14,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.SetSpecDesc;
 
 public class VerbListSets extends Verb {
     private static final Argument[] ARGUMENTS = {
-            new Argument(Argument.ARG_RESUMPTIONTOKEN, false)
+        DefaultArguments.RESUMPTIONTOKEN
     };
     private static final List<NamespaceDecl> NS_DECLS_DC = Arrays.asList(
             new NamespaceDecl(MetadataConstants.NS_OAI_DC, "oai_dc",

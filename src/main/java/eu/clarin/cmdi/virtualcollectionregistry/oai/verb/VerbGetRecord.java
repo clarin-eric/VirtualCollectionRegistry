@@ -10,8 +10,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.Record;
 
 public class VerbGetRecord extends Verb {
     private static final Argument[] ARGUMENTS = {
-            new Argument(Argument.ARG_IDENTIFIER, true),
-            new Argument(Argument.ARG_METADATAPREFIX, true)
+        new ArgumentIdentifier(true),
+        DefaultArguments.METADATAPREFIX
     };
 
     @Override
@@ -29,11 +29,11 @@ public class VerbGetRecord extends Verb {
         logger.debug("process GET-RECORD");
 
         OAIRepositoryAdapter repository = ctx.getRepository();
-        Object localId = ctx.getArgument(Argument.ARG_IDENTIFIER);
+        Object localId = ctx.getArgument(DefaultArguments.ARG_IDENTIFIER);
         Record record = repository.getRecord(localId, false);
         if (record != null) {
             String prefix =
-                (String) ctx.getArgument(Argument.ARG_METADATAPREFIX);
+                (String) ctx.getArgument(DefaultArguments.ARG_METADATAPREFIX);
             MetadataFormat format = null;
             for (MetadataFormat f : repository.getMetadataFormats(record)) {
                 if (prefix.equals(f.getPrefix())) {

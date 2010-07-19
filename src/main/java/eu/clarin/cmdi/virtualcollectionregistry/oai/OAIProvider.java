@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.impl.VerbContextImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.OAIRepository;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.DefaultArguments;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Verb;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.VerbGetRecord;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.VerbIdentify;
@@ -143,10 +144,10 @@ public class OAIProvider {
              *  special handling of resumptionToken, because if it is
              *  available is must be the only argument. 
              */
-            if (verb.supportsArgument(Argument.ARG_RESUMPTIONTOKEN) &&
-                remaining.contains(Argument.ARG_RESUMPTIONTOKEN)) {
+            if (verb.supportsArgument(DefaultArguments.ARG_RESUMPTIONTOKEN) &&
+                remaining.contains(DefaultArguments.ARG_RESUMPTIONTOKEN)) {
                 final Argument arg =
-                    verb.getArgument(Argument.ARG_RESUMPTIONTOKEN);
+                    verb.getArgument(DefaultArguments.ARG_RESUMPTIONTOKEN);
                 processArgument(ctx, arg);
                 remaining.remove(arg.getName());
             } else {
@@ -278,13 +279,13 @@ public class OAIProvider {
 
     private Object parseArgument(String name, String value) {
         Object result = null;
-        if (name.equals(Argument.ARG_IDENTIFIER)) {
+        if (name.equals(DefaultArguments.ARG_IDENTIFIER)) {
             String localId = extractLocalId(value);
             if (localId != null) {
                 result = repository.parseLocalId(localId);
             }
-        } else if (name.equals(Argument.ARG_FROM)
-                || name.equals(Argument.ARG_UNTIL)) {
+        } else if (name.equals(DefaultArguments.ARG_FROM)
+                || name.equals(DefaultArguments.ARG_UNTIL)) {
             try {
                 switch (repository.getGranularity()) {
                 case DAYS:
