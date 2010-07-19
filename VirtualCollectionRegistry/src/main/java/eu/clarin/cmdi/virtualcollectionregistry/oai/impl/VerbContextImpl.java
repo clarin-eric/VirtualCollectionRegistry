@@ -16,15 +16,15 @@ import java.util.zip.GZIPOutputStream;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIErrorCode;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepositoryAdapter;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.OAIRepository;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.verb.Argument;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.ext.Argument;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.ext.OAIErrorCode;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.ext.OAIOutputStream;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.ext.RepositoryAdapter;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.ext.VerbContext;
 
-public class VerbContextImpl implements VerbContext {
+final class VerbContextImpl implements VerbContext {
     private static final int ENCODING_NONE    = 0x00;
     private static final int ENCODING_IDENITY = 0x01;
     private static final int ENCODING_DEFLATE = 0x02;
@@ -53,17 +53,15 @@ public class VerbContextImpl implements VerbContext {
 
     private final HttpServletRequest request;
     private final HttpServletResponse response;
-    private OAIRepositoryAdapter repository;
+    private final RepositoryAdapter repository;
     private String verb;
     private Map<String, Object> arguments;
     private List<Error> errors;
 
-    VerbContextImpl(HttpServletRequest request, HttpServletResponse response) {
+    VerbContextImpl(HttpServletRequest request, HttpServletResponse response,
+            RepositoryAdapter repository) {
         this.request = request;
         this.response = response;
-    }
-
-    public void setRepository(OAIRepositoryAdapter repository) {
         this.repository = repository;
     }
 
@@ -116,7 +114,7 @@ public class VerbContextImpl implements VerbContext {
     }
 
     @Override
-    public OAIRepositoryAdapter getRepository() {
+    public RepositoryAdapter getRepository() {
         return repository;
     }
 
@@ -184,11 +182,6 @@ public class VerbContextImpl implements VerbContext {
 
     @Override
     public OAIOutputStream getOutputStream() throws OAIException {
-        return this.getOutputStream(HttpServletResponse.SC_OK);
-    }
-
-    @Override
-    public OAIOutputStream getOutputStream(int status) throws OAIException {
         int bestEnc = ENCODING_NONE;
         String accept = request.getHeader("Accept-Encoding");
         if (accept != null) {
@@ -275,7 +268,7 @@ public class VerbContextImpl implements VerbContext {
         }
 
         try {
-            response.setStatus(status);
+            response.setStatus(HttpServletResponse.SC_OK);
             response.setContentType("text/xml");
             response.setCharacterEncoding("utf-8");
 

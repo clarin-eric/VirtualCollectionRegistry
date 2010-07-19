@@ -15,16 +15,16 @@ import javax.xml.stream.XMLStreamWriter;
 
 import org.apache.commons.lang.time.FastDateFormat;
 
+import eu.clarin.cmdi.virtualcollectionregistry.oai.MetadataFormat;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIOutputStream;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepositoryAdapter;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.ResumptionToken;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.VerbContext;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.MetadataFormat;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.OAIRepository;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.Record;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.Record;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.ext.OAIOutputStream;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.ext.RepositoryAdapter;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.ext.ResumptionToken;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.ext.VerbContext;
 
-public final class OAIOutputStreamImpl implements OAIOutputStream {
+final class OAIOutputStreamImpl implements OAIOutputStream {
     private final class FlushSkipOutputStream extends FilterOutputStream {
         private byte[] buf;
         private int bufCount = 0;
@@ -98,7 +98,7 @@ public final class OAIOutputStreamImpl implements OAIOutputStream {
         NS_OAI + " " + NS_OAI_SCHEMA_LOCATION;
     private static final XMLOutputFactory writerFactory =
         XMLOutputFactory.newInstance();
-    private final OAIRepositoryAdapter repository;
+    private final RepositoryAdapter repository;
     private final OutputStream stream;
     private final XMLStreamWriter writer;
 
