@@ -24,7 +24,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionValidator;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIProvider;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.impl.OAIProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
 
 public class VirtualCollectionRegistry {

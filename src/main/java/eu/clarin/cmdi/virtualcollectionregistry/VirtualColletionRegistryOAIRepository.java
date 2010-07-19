@@ -22,14 +22,14 @@ import org.slf4j.LoggerFactory;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection_;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.DublinCoreAdapter;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.DublinCoreConverter;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.MetadataFormat;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.DublinCoreAdapter;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.DublinCoreConverter;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.MetadataFormat;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.OAIRepository;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.Record;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.RecordList;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.repository.SetSpecDesc;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.Record;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.RecordList;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.SetSpecDesc;
 
 class VirtualColletionRegistryOAIRepository implements OAIRepository {
     private static final Logger logger =
