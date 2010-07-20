@@ -1,7 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.oai;
 
 import java.io.IOException;
-import java.io.PrintWriter;
 
 import javax.servlet.ServletException;
 import javax.servlet.http.HttpServlet;
@@ -41,16 +40,7 @@ public class OAIProviderServlet extends HttpServlet {
     private void handleRequest(HttpServletRequest request,
             HttpServletResponse response) throws ServletException, IOException {
         try {
-            if (provider.isAvailable()) {
-                provider.process(request, response);
-            } else {
-                response.setStatus(HttpServletResponse.SC_SERVICE_UNAVAILABLE);
-                response.setHeader("Retry-After", "3600");
-                response.setContentType("text/plain");
-                PrintWriter out = response.getWriter();
-                out.println("The OAI provider is not available.");
-                out.close();
-            }
+            provider.process(request, response);
         } catch (Exception e) {
             logger.error("OAI provider error", e);
             response.sendError(HttpServletResponse.SC_INTERNAL_SERVER_ERROR,
