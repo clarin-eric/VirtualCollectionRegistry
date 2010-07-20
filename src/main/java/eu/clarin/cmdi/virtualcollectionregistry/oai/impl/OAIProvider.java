@@ -1,5 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.oai.impl;
 
+import java.io.IOException;
+import java.io.PrintWriter;
 import java.text.ParseException;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -41,6 +43,7 @@ public class OAIProvider {
         new HashMap<String, ResumptionToken>(64);
     private Timer timer = new Timer("OAI-Provider-Maintenance", true);
     private AtomicBoolean isAvailable = new AtomicBoolean();
+    private IPFilter ipfilter = new IPFilter();
     private RepositoryAdapter repository;
 
     private OAIProvider() {
@@ -102,16 +105,41 @@ public class OAIProvider {
         }
     }
 
+    public IPFilter getIPFilter() {
+        return ipfilter;
+    }
+
     public void shutdown() {
         timer.cancel();
     }
 
     public void process(HttpServletRequest request,
             HttpServletResponse response) throws OAIException {
-        if (repository == null) {
-            throw new OAIException("no repository configured");
+        String remoteAddr = request.getRemoteAddr();
+        if (remoteAddr == null) {
+            throw new OAIException("provider expects valid ip address");
         }
-        VerbContextImpl ctx = new VerbContextImpl(request, response, repository);
+        if (ipfilter.accept(remoteAddr)) {
+            if (isAvailable.get()) {
+                doProcess(request, response);
+            } else {
+                response.setHeader("Retry-After", "3600");
+                sendHttpResponse(response,
+                                 HttpServletResponse.SC_SERVICE_UNAVAILABLE, 
+                                 "The OAI provider is currently not available.");
+            }
+        } else {
+            logger.warn("request denied for remote host {}", remoteAddr);
+            sendHttpResponse(response,
+                             HttpServletResponse.SC_FORBIDDEN,
+                             "The OAI provider will not serve you.");
+        }
+    }
+
+    private void doProcess(HttpServletRequest request,
+            HttpServletResponse response) throws OAIException {
+        VerbContextImpl ctx =
+            new VerbContextImpl(request, response, repository);
 
         // process verb argument
         Verb verb = null;
@@ -341,4 +369,17 @@ public class OAIProvider {
         return null;
     }
 
+    private void sendHttpResponse(HttpServletResponse response, int status,
+            String message) throws OAIException {
+        try {
+            response.setStatus(status);
+            response.setContentType("text/plain");
+            PrintWriter out = response.getWriter();
+            out.println(message);
+            out.close();
+        } catch (IOException e) {
+            logger.error("OAI provider error while sending error to client", e);
+            throw new OAIException("error", e);
+        }
+    }
 } // class OAIProvider
