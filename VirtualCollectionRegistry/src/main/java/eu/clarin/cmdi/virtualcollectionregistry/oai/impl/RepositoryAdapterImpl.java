@@ -10,7 +10,7 @@ import java.util.Set;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.DublinCoreConverter;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.MetadataFormat;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.Repository;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.Record;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.RecordList;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.SetSpecDesc;
@@ -19,7 +19,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.ext.ResumptionToken;
 
 final class RepositoryAdapterImpl implements RepositoryAdapter {
     private final OAIProvider provider;
-    private final OAIRepository repository;
+    private final Repository repository;
     private final Set<String> adminEmailAddresses;
     private final Set<MetadataFormat> metadataFormats =
         new HashSet<MetadataFormat>();
@@ -27,7 +27,7 @@ final class RepositoryAdapterImpl implements RepositoryAdapter {
     private final Map<Class<?>, Set<MetadataFormat>> metadataFormatsByClass =
         new HashMap<Class<?>, Set<MetadataFormat>>();
 
-    RepositoryAdapterImpl(OAIProvider provider, OAIRepository repository)
+    RepositoryAdapterImpl(OAIProvider provider, Repository repository)
             throws OAIException {
         this.provider = provider;
         this.repository = repository;
@@ -107,15 +107,15 @@ final class RepositoryAdapterImpl implements RepositoryAdapter {
         return date;
     }
 
-    public OAIRepository.DeletedNotion getDeletedNotion() {
+    public Repository.DeletedNotion getDeletedNotion() {
         return repository.getDeletedNotion();
     }
 
-    public OAIRepository.Granularity getGranularity() {
+    public Repository.Granularity getGranularity() {
         return repository.getGranularity();
     }
 
-    public boolean isSupportingCompressionMethod(int method) {
+    public boolean supportsCompressionMethod(int method) {
         int methods = repository.getCompressionMethods();
         return (methods & method) > 0;
     }

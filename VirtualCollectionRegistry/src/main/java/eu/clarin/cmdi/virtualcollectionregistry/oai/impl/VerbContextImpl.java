@@ -17,7 +17,7 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.Repository;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.ext.Argument;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.ext.OAIErrorCode;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.ext.OAIOutputStream;
@@ -227,12 +227,12 @@ final class VerbContextImpl implements VerbContext {
                         if ("identity".equalsIgnoreCase(enc) || "*".equals(enc)) {
                             bestEnc = ENCODING_IDENITY;
                         } else if ("deflate".equalsIgnoreCase(enc)
-                                && repository
-                                        .isSupportingCompressionMethod(OAIRepository.COMPRESSION_METHOD_DEFLATE)) {
+                                && repository.supportsCompressionMethod(
+                                        Repository.COMPRESSION_DEFLATE)) {
                             bestEnc = ENCODING_DEFLATE;
                         } else if ("gzip".equalsIgnoreCase(enc)
-                                && repository
-                                        .isSupportingCompressionMethod(OAIRepository.COMPRESSION_METHOD_GZIP)) {
+                                && repository.supportsCompressionMethod(
+                                        Repository.COMPRESSION_GZIP)) {
                             bestEnc = ENCODING_GZIP;
                         } else {
                             /* skip unsupported encoding */
@@ -254,7 +254,7 @@ final class VerbContextImpl implements VerbContext {
                 /*
                  * XXX: if we where being pedantic, we would signal an error
                  * here. However, for now, we just assume, that identity
-                 * encoding can be understood by the harvester.
+                 * encoding can be understood by any harvester.
                  */
                 // throw new OAIException("Accept-Encoding header must " +
                 // "include \"identity\" encoding with non-zero " +

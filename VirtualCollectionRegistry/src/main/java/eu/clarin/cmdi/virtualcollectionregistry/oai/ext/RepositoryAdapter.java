@@ -5,7 +5,7 @@ import java.util.Set;
 
 import eu.clarin.cmdi.virtualcollectionregistry.oai.MetadataFormat;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.Repository;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.Record;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.RecordList;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.SetSpecDesc;
@@ -23,11 +23,11 @@ public interface RepositoryAdapter {
 
     public Date getEarliestTimestamp();
 
-    public OAIRepository.DeletedNotion getDeletedNotion();
+    public Repository.DeletedNotion getDeletedNotion();
 
-    public OAIRepository.Granularity getGranularity();
+    public Repository.Granularity getGranularity();
 
-    public boolean isSupportingCompressionMethod(int method);
+    public boolean supportsCompressionMethod(int method);
 
     public String getDescription();
 
