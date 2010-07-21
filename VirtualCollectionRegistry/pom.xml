@@ -112,6 +112,12 @@
       <name>JBoss Repository</name>
       <url>http://repository.jboss.com/maven2/</url>
     </repository>
+
+    <repository>
+      <id>repository.clarin</id>
+      <name>CLARIN Repository</name>
+      <url>http://catalog.clarin.eu/ds/nexus/content/groups/public/</url>
+    </repository>
   </repositories>
 
   <pluginRepositories>
@@ -129,6 +135,13 @@
   </pluginRepositories>
 
   <dependencies>
+    <dependency>
+      <groupId>eu.clarin.cmdi</groupId>
+      <artifactId>OAIProvider</artifactId>
+      <version>0.0.1-SNAPSHOT</version>
+    </dependency>
+
+
     <dependency>
       <groupId>javax.servlet</groupId>
       <artifactId>servlet-api</artifactId>
