@@ -17,14 +17,14 @@ import javax.persistence.TypedQuery;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.clarin.cmdi.oai.provider.OAIException;
+import eu.clarin.cmdi.oai.provider.impl.OAIProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.model.PersistentIdentifier;
 import eu.clarin.cmdi.virtualcollectionregistry.model.PersistentIdentifierProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionValidator;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.impl.OAIProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
 
 public class VirtualCollectionRegistry {
