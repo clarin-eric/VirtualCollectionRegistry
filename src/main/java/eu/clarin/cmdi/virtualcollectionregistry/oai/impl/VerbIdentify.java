@@ -4,7 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.Repository;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.ext.Argument;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.ext.OAIOutputStream;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.ext.RepositoryAdapter;
@@ -86,14 +86,14 @@ final class VerbIdentify extends Verb {
         }
         out.writeEndElement(); // granularity element
 
-        if (repository.isSupportingCompressionMethod(
-                OAIRepository.COMPRESSION_METHOD_GZIP)) {
+        if (repository
+                .supportsCompressionMethod(Repository.COMPRESSION_GZIP)) {
             out.writeStartElement("compression");
             out.writeCharacters("gzip");
             out.writeEndElement(); // compression element
         }
-        if (repository.isSupportingCompressionMethod(
-                OAIRepository.COMPRESSION_METHOD_DEFLATE)) {
+        if (repository
+                .supportsCompressionMethod(Repository.COMPRESSION_DEFLATE)) {
             out.writeStartElement("compression");
             out.writeCharacters("deflate");
             out.writeEndElement(); // compression element

@@ -17,7 +17,7 @@ import org.apache.commons.lang.time.FastDateFormat;
 
 import eu.clarin.cmdi.virtualcollectionregistry.oai.MetadataFormat;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.Repository;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.Record;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.ext.OAIOutputStream;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.ext.RepositoryAdapter;
@@ -127,7 +127,7 @@ final class OAIOutputStreamImpl implements OAIOutputStream {
                     "schemaLocation", SCHEMA_LOCATION);
 
             FastDateFormat fmt =
-                getDateFormat(OAIRepository.Granularity.SECONDS); 
+                getDateFormat(Repository.Granularity.SECONDS); 
             writer.writeStartElement("responseDate");
             writer.writeCharacters(fmt.format(System.currentTimeMillis()));
             writer.writeEndElement(); // responseDate element
@@ -329,7 +329,7 @@ final class OAIOutputStreamImpl implements OAIOutputStream {
         throws OAIException {
         try {
             FastDateFormat fmt =
-                getDateFormat(OAIRepository.Granularity.SECONDS); 
+                getDateFormat(Repository.Granularity.SECONDS); 
             writer.writeStartElement("resumptionToken");
             writer.writeAttribute("expirationDate",
                     fmt.format(token.getExpirationDate()));
@@ -348,7 +348,7 @@ final class OAIOutputStreamImpl implements OAIOutputStream {
         }
     }
 
-    private FastDateFormat getDateFormat(OAIRepository.Granularity g) {
+    private FastDateFormat getDateFormat(Repository.Granularity g) {
         switch (g) {
         case DAYS:
             return FastDateFormat.getInstance("yyyy-MM-dd",

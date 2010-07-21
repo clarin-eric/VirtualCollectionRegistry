@@ -21,7 +21,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.Repository;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.ext.Argument;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.ext.OAIErrorCode;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.ext.OAIOutputStream;
@@ -81,7 +81,7 @@ public class OAIProvider {
         }, 60000, 60000);
     }
 
-    public void setRepository(OAIRepository repository) throws OAIException {
+    public void setRepository(Repository repository) throws OAIException {
         if (repository == null) {
             throw new NullPointerException("repository == null");
         }

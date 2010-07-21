@@ -8,11 +8,11 @@ import java.util.Set;
  * Interface for the OAI provider for talking to the repository. A repository
  * needs to implements this interface in order to be used with the OAI provider.
  */
-public interface OAIRepository {
+public interface Repository {
     /** flag for gzip compression method */
-    public static final int COMPRESSION_METHOD_GZIP = 0x01;
+    public static final int COMPRESSION_GZIP = 0x01;
     /** flag for deflate compression method */
-    public static final int COMPRESSION_METHOD_DEFLATE = 0x02;
+    public static final int COMPRESSION_DEFLATE = 0x02;
 
     /**
      * The manner in which the repository supports the notion of deleted
@@ -107,8 +107,8 @@ public interface OAIRepository {
      * Get the compression encoding methods this repository supports.
      * 
      * @return the compression encodings methods flag set.
-     * @see #COMPRESSION_METHOD_GZIP
-     * @see #COMPRESSION_METHOD_DEFLATE
+     * @see #COMPRESSION_GZIP
+     * @see #COMPRESSION_DEFLATE
      */
     public int getCompressionMethods();
 
@@ -188,9 +188,10 @@ public interface OAIRepository {
      *            provider
      * @param headerOnly
      *            <code>true</code> if the provider only needs enough
-     *            information form the repository to generate item header
+     *            information from the repository to generate item header
      *            information and not the complete item
      * @returns the requested item or <code>null</code> if none was found
+     * @throws OAIException if an error occurred
      * @see parseLocalId
      */
     public Record getRecord(Object localId, boolean headerOnly)
@@ -213,13 +214,14 @@ public interface OAIRepository {
      *            <code>-1<code> for the first request
      * @param headerOnly
      *            <code>true</code> if the provider only needs enough
-     *            information form the repository to generate item header
+     *            information from the repository to generate item header
      *            information and not the complete item
      * @returns the list of matched items or <code>null</code> if none matched
      *          the criteria
+     * @throws OAIException if an error occurred
      * @see RecordList
      */
     public RecordList getRecords(String prefix, Date from, Date until,
             String set, int offset, boolean headerOnly) throws OAIException;
 
-} // interface OAIRepository
+} // interface Repository

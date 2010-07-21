@@ -15,8 +15,8 @@ public interface Record {
      * <code>unparseLocalId</code>.
      * 
      * @returns the local Id object of the record
-     * @see OAIRepository#parseLocalId(String)
-     * @see OAIRepository#unparseLocalId(Object)
+     * @see Repository#parseLocalId(String)
+     * @see Repository#unparseLocalId(Object)
      */
     public Object getLocalId();
 
@@ -32,7 +32,7 @@ public interface Record {
      * 
      * @return <code>true</code> of the item is deleted, <code>false</code>
      *         otherwise
-     * @see OAIRepository#getGranularity()
+     * @see Repository#getGranularity()
      */
     public boolean isDeleted();
 

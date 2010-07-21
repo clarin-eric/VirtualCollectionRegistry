@@ -34,7 +34,7 @@
   <servlet>
     <display-name>Virtual Collection Registry OAI-PMH Provider</display-name>
     <servlet-name>OAI-PMH-Provider</servlet-name>
-    <servlet-class>eu.clarin.cmdi.virtualcollectionregistry.oai.OAIProviderServlet</servlet-class>
+    <servlet-class>eu.clarin.cmdi.virtualcollectionregistry.oai.ProviderServlet</servlet-class>
     <load-on-startup>2</load-on-startup>
   </servlet>
 

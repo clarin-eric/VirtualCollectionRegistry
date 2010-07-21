@@ -26,12 +26,12 @@ import eu.clarin.cmdi.virtualcollectionregistry.oai.DublinCoreAdapter;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.DublinCoreConverter;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.MetadataFormat;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIRepository;
+import eu.clarin.cmdi.virtualcollectionregistry.oai.Repository;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.Record;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.RecordList;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.SetSpecDesc;
 
-class VirtualColletionRegistryOAIRepository implements OAIRepository {
+class VirtualColletionRegistryOAIRepository implements Repository {
     private static final Logger logger =
         LoggerFactory.getLogger(VirtualColletionRegistryOAIRepository.class);
 
@@ -129,7 +129,7 @@ class VirtualColletionRegistryOAIRepository implements OAIRepository {
 
     @Override
     public int getCompressionMethods() {
-        return 0 /* COMPRESSION_METHOD_GZIP|COMPRESSION_METHOD_DEFLATE */;
+        return 0 /* COMPRESSION_GZIP|COMPRESSION_DEFLATE */;
     }
 
     @Override

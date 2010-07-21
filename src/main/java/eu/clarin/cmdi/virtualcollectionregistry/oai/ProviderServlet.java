@@ -13,10 +13,10 @@ import org.slf4j.LoggerFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.oai.impl.OAIProvider;
 
 
-public class OAIProviderServlet extends HttpServlet {
+public class ProviderServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger logger =
-        LoggerFactory.getLogger(OAIProviderServlet.class);
+        LoggerFactory.getLogger(ProviderServlet.class);
     private OAIProvider provider;
 
     @Override
