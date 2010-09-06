@@ -1,19 +1,19 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <xs:schema xmlns:xs="http://www.w3.org/2001/XMLSchema"
-  elementFormDefault="qualified">
+  elementFormDefault="unqualified">
 
   <xs:element name="VirtualCollections">
     <xs:complexType>
       <xs:sequence maxOccurs="unbounded">
-        <xs:element ref="VirtualCollection" />
+        <xs:element ref="VirtualCollection"/>
       </xs:sequence>
-      <xs:attribute name="totalCount" type="xs:integer" />
-      <xs:attribute name="offset" type="xs:integer" />
+      <xs:attribute name="totalCount" type="xs:integer"/>
+      <xs:attribute name="offset" type="xs:integer"/>
       <xs:attribute name="result">
         <xs:simpleType>
           <xs:restriction base="xs:string">
-            <xs:enumeration value="full" />
-            <xs:enumeration value="partial" />
+            <xs:enumeration value="full"/>
+            <xs:enumeration value="partial"/>
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>
@@ -23,35 +23,34 @@
   <xs:element name="VirtualCollection">
     <xs:complexType>
       <xs:sequence>
-        <xs:element name="Name" type="xs:string" />
-        <xs:element minOccurs="0" name="Description" type="xs:string" />
-        <xs:element minOccurs="0" name="CreationDate" type="xs:date" />
+        <xs:element name="Name" type="xs:string"/>
+        <xs:element minOccurs="0" name="Description" type="xs:string"/>
+        <xs:element minOccurs="0" name="CreationDate" type="xs:date"/>
         <xs:element name="Type">
           <xs:simpleType>
             <xs:restriction base="xs:string">
-              <xs:enumeration value="extensional" />
-              <xs:enumeration value="intensional" />
+              <xs:enumeration value="extensional"/>
+              <xs:enumeration value="intensional"/>
             </xs:restriction>
           </xs:simpleType>
         </xs:element>
         <xs:element minOccurs="0" name="Creator">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="Name" type="xs:string" />
-              <xs:element minOccurs="0" name="Email" type="xs:string" />
-              <xs:element minOccurs="0" name="Organisation"
-                type="xs:string" />
+              <xs:element name="Name" type="xs:string"/>
+              <xs:element minOccurs="0" name="Email" type="xs:string"/>
+              <xs:element minOccurs="0" name="Organisation" type="xs:string"/>
             </xs:sequence>
-            <xs:attribute name="ref" type="xs:IDREF" />
+            <xs:attribute name="ref" type="xs:IDREF"/>
           </xs:complexType>
         </xs:element>
         <xs:element minOccurs="0" name="Purpose">
           <xs:simpleType>
             <xs:restriction base="xs:string">
-              <xs:enumeration value="research" />
-              <xs:enumeration value="reference" />
-              <xs:enumeration value="sample" />
-              <xs:enumeration value="future-use" />
+              <xs:enumeration value="research"/>
+              <xs:enumeration value="reference"/>
+              <xs:enumeration value="sample"/>
+              <xs:enumeration value="future-use"/>
               <!-- to be extended -->
             </xs:restriction>
           </xs:simpleType>
@@ -59,14 +58,13 @@
         <xs:element minOccurs="0" name="Reproducibility">
           <xs:simpleType>
             <xs:restriction base="xs:string">
-              <xs:enumeration value="intended" />
-              <xs:enumeration value="fluctuating" />
-              <xs:enumeration value="untended" />
+              <xs:enumeration value="intended"/>
+              <xs:enumeration value="fluctuating"/>
+              <xs:enumeration value="untended"/>
             </xs:restriction>
           </xs:simpleType>
         </xs:element>
-        <xs:element minOccurs="0" name="ReproducibilityNotice"
-          type="xs:string" />
+        <xs:element minOccurs="0" name="ReproducibilityNotice" type="xs:string"/>
         <xs:element name="Resources">
           <xs:complexType>
             <xs:sequence maxOccurs="unbounded">
@@ -76,14 +74,14 @@
                     <xs:element name="ResourceType">
                       <xs:simpleType>
                         <xs:restriction base="xs:string">
-                          <xs:enumeration value="Metadata" />
-                          <xs:enumeration value="Resource" />
+                          <xs:enumeration value="Metadata"/>
+                          <xs:enumeration value="Resource"/>
                         </xs:restriction>
                       </xs:simpleType>
                     </xs:element>
                     <xs:element name="ResourceRef">
                       <xs:simpleType>
-                        <xs:restriction base="xs:anyURI" />
+                        <xs:restriction base="xs:anyURI"/>
                       </xs:simpleType>
                     </xs:element>
                   </xs:sequence>
@@ -95,15 +93,14 @@
         <xs:element name="GeneratedBy" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
-              <xs:element name="Description" type="xs:string" />
-              <xs:element name="Query" maxOccurs="1"
-                minOccurs="0">
+              <xs:element name="Description" type="xs:string"/>
+              <xs:element name="Query" minOccurs="0">
                 <xs:complexType>
-                  <xs:sequence>
-                    <xs:any namespace="##any" processContents="lax" />
-                  </xs:sequence>
-                  <xs:attribute name="profile" type="xs:string"
-                    use="optional" />
+                  <xs:simpleContent>
+                    <xs:extension base="xs:string">
+                      <xs:attribute name="profile" type="xs:string" use="required"/>
+                    </xs:extension>
+                  </xs:simpleContent>
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
