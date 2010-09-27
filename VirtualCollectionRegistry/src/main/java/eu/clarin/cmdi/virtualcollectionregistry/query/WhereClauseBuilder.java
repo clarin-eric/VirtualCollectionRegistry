@@ -13,6 +13,7 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator_;
+import eu.clarin.cmdi.virtualcollectionregistry.model.User_;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection_;
 
@@ -103,6 +104,33 @@ class WhereClauseBuilder implements QueryParserVisitor {
                     root.get(VirtualCollection_.description),
                     node.getOperator(), node.getValue());
             break;
+        case QueryParserConstants.VC_STATE:
+            predicate = makeStatePredicate(data,
+                    node.getOperator(), node.getValue());
+            break;
+        case QueryParserConstants.VC_PURPOSE:
+            predicate = makePurposePredicate(data,
+                    node.getOperator(), node.getValue());
+            break;
+        case QueryParserConstants.VC_REPRODUCIBILITY:
+            predicate = makeReproducibilityPredicate(data,
+                    node.getOperator(), node.getValue());
+            break;
+        case QueryParserConstants.VC_CREATED:
+            predicate = makeDatePredicate(data,
+                    root.get(VirtualCollection_.createdDate),
+                    node.getOperator(), node.getValue());
+            break;
+        case QueryParserConstants.VC_MODIFIED:
+            predicate = makeDatePredicate(data,
+                    root.get(VirtualCollection_.modifedDate),
+                    node.getOperator(), node.getValue());
+            break;
+        case QueryParserConstants.VC_OWNER:
+            predicate = makeStringPredicate(data,
+                    root.get(VirtualCollection_.owner).get(User_.name),
+                    node.getOperator(), node.getValue());
+            break;
         case QueryParserConstants.CR_NAME:
             predicate = makeStringPredicate(data,
                     root.get(VirtualCollection_.creator).get(Creator_.name),
@@ -117,28 +145,6 @@ class WhereClauseBuilder implements QueryParserVisitor {
             predicate = makeStringPredicate(data,
                     root.get(VirtualCollection_.creator)
                         .get(Creator_.organisation),
-                    node.getOperator(), node.getValue());
-            break;
-        case QueryParserConstants.VC_CREATED:
-            predicate = makeDatePredicate(data,
-                    root.get(VirtualCollection_.createdDate),
-                    node.getOperator(), node.getValue());
-            break;
-        case QueryParserConstants.VC_MODIFIED:
-            predicate = makeDatePredicate(data,
-                    root.get(VirtualCollection_.modifedDate),
-                    node.getOperator(), node.getValue());
-            break;
-        case QueryParserConstants.VC_STATE:
-            predicate = makeStatePredicate(data,
-                    node.getOperator(), node.getValue());
-            break;
-        case QueryParserConstants.VC_PURPOSE:
-            predicate = makePurposePredicate(data,
-                    node.getOperator(), node.getValue());
-            break;
-        case QueryParserConstants.VC_REPRODUCIBILITY:
-            predicate = makeReproducibilityPredicate(data,
                     node.getOperator(), node.getValue());
             break;
         default:
@@ -166,6 +172,7 @@ class WhereClauseBuilder implements QueryParserVisitor {
         // replace query language wildcards with add SQL wildcards
         value = value.replace("*", "%");
 
+        System.err.println("VALUE = " + value);
         switch (operator) {
         case QueryParserConstants.EQ:
             return data.getBuilder().like(attribute, value, '\\');
