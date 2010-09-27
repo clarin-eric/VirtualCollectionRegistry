@@ -7,6 +7,7 @@ options {
 }
 PARSER_BEGIN(QueryParser)
 package eu.clarin.cmdi.virtualcollectionregistry.query;
+
 public class QueryParser {
     public QueryParser(String s) {
         this(new java.io.StringReader(s));
@@ -14,17 +15,18 @@ public class QueryParser {
 } // class QueryParser
 PARSER_END(QueryParser)
 /*
-  (vc.)name:           STRING, EQ, NE
-  (vc.)desciption:     STRING, EQ, NE
-  (vc.)created:        ISO-DATE, EQ, NE, GT, GE, LT, LE
-  {vc.}modified:       ISO-DATE, EQ, NE, GT, GE, LT, LE
-  (vc.)state:          { "public", "private", "deleted" }, EQ, NE
+  (vc.)name:           STRING (EQ, NE)
+  (vc.)description:    STRING (EQ, NE)
+  (vc.)state:          { "public", "private", "deleted" } (EQ, NE)
   {vc.}purpose:        { "research", "reference",
-                         "sample", "future-use" } EQ, NE
-  {vc.}reproducability { "intended", "fluctuating", "untended"} EQ, NE
-  (cr.)creator:      STRING, EQ, NE
-  {cr.}email:        STRING, EQ, NE
-  {cr.}organization: STRING, EQ, NE
+                         "sample", "future-use" } (EQ, NE)
+  {vc.}reproducibility { "intended", "fluctuating", "untended" } (EQ, NE)
+  (vc.)created:        ISO-DATE (EQ, NE, GT, GE, LT, LE)
+  {vc.}modified:       ISO-DATE (EQ, NE, GT, GE, LT, LE)
+  {vc.}owner           STRING (EQ, NE)
+  (cr.)creator:        STRING (EQ, NE)
+  {cr.}email:          STRING (EQ, NE)
+  {cr.}organization:   STRING (EQ, NE)
 */
 SKIP: {
     " "
@@ -40,6 +42,7 @@ TOKEN: {
     | <VC_STATE: "state">
     | <VC_PURPOSE: "purpose">
     | <VC_REPRODUCIBILITY: "reproducibility">
+    | <VC_OWNER: "owner">
     | <CR_NAME: "creator">
     | <CR_ORGANIZATION: "organization">
     | <CR_EMAIL: "email">
@@ -103,6 +106,7 @@ private void predicate() #Predicate : {
     (
      ( ( attribute = <VC_NAME>
        | attribute = <VC_DESC>
+       | attribute = <VC_OWNER>
        | attribute = <CR_NAME>
        | attribute = <CR_ORGANIZATION>
        | attribute = <CR_EMAIL> )
