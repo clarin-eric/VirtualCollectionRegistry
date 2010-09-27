@@ -96,15 +96,15 @@
 
   <repositories>
     <repository>
-      <id>repository.java-net</id>
-      <name>Java.net Repository</name>
-      <url>http://download.java.net/maven/2/</url>
+      <id>repository.jboss-public</id>
+      <name>JBoss Repository</name>
+      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
     </repository>
 
     <repository>
-      <id>repository.jboss</id>
-      <name>JBoss Repository</name>
-      <url>http://repository.jboss.com/maven2/</url>
+      <id>repository.java-net</id>
+      <name>Java.net Repository</name>
+      <url>http://download.java.net/maven/2/</url>
     </repository>
 
     <repository>
@@ -116,15 +116,15 @@
 
   <pluginRepositories>
     <pluginRepository>
-      <id>repository.java-net</id>
-      <name>Java.net Repository</name>
-      <url>http://download.java.net/maven/2/</url>
+      <id>repository.jboss-public</id>
+      <name>JBoss Repository</name>
+      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
     </pluginRepository>
 
     <pluginRepository>
-      <id>repository.jboss</id>
-      <name>JBoss Repository</name>
-      <url>http://repository.jboss.com/maven2/</url>
+      <id>repository.java-net</id>
+      <name>Java.net Repository</name>
+      <url>http://download.java.net/maven/2/</url>
     </pluginRepository>
   </pluginRepositories>
 
@@ -134,7 +134,6 @@
       <artifactId>OAIProvider</artifactId>
       <version>0.0.1</version>
     </dependency>
-
 
     <dependency>
       <groupId>javax.servlet</groupId>
@@ -285,7 +284,7 @@
     <maven.compiler.source>1.6</maven.compiler.source>
     <maven.compiler.target>1.6</maven.compiler.target>
     <!-- dependency versions -->
-    <hibernate.version>3.5.1-Final</hibernate.version>
+    <hibernate.version>3.5.6-Final</hibernate.version>
     <hibernate.jpaVersion>1.0.0.Final</hibernate.jpaVersion>
     <jersey.version>1.3</jersey.version>
     <slf4j.version>1.6.0</slf4j.version>
