@@ -172,7 +172,7 @@ class WhereClauseBuilder implements QueryParserVisitor {
         // replace query language wildcards with add SQL wildcards
         value = value.replace("*", "%");
 
-        System.err.println("VALUE = " + value);
+        // XXX: HSQLDB/Hibernate seems have trouble with escape char  
         switch (operator) {
         case QueryParserConstants.EQ:
             return data.getBuilder().like(attribute, value, '\\');
