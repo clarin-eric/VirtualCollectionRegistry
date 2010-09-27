@@ -10,6 +10,7 @@ import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
@@ -415,7 +416,10 @@ public class VirtualCollectionRegistry {
             throw new VirtualCollectionRegistryException(
                     "error while enumerating virtual collections", e);
         } finally {
-            em.getTransaction().commit();
+            EntityTransaction tx = em.getTransaction();
+            if ((tx != null) && !tx.getRollbackOnly()) {
+                tx.commit();
+            }
         }
     }
 
@@ -477,7 +481,10 @@ public class VirtualCollectionRegistry {
             throw new VirtualCollectionRegistryException(
                     "error while enumerating virtual collections", e);
         } finally {
-            em.getTransaction().commit();
+            EntityTransaction tx = em.getTransaction();
+            if ((tx != null) && !tx.getRollbackOnly()) {
+                tx.commit();
+            }
         }
     }
 
