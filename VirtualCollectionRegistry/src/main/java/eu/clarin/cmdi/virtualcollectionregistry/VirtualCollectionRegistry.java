@@ -34,6 +34,8 @@ public class VirtualCollectionRegistry {
     private static final VirtualCollectionRegistry s_instance =
         new VirtualCollectionRegistry();
     private AtomicBoolean intialized = new AtomicBoolean(false);
+    // FIXME: read this from pom.properties ...
+    private String version = "0.0.1-SNAPSHOT";
     private DataStore datastore = null;
     private PersistentIdentifierProvider pid_provider = null;
     private VirtualCollectionRegistryMarshaller marshaller = null;
@@ -105,6 +107,10 @@ public class VirtualCollectionRegistry {
                                     "to initialize correctly");
         }
         return s_instance;
+    }
+
+    public String getVersion() {
+        return version;
     }
 
     public DataStore getDataStore() {
