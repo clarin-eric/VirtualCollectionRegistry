@@ -20,7 +20,7 @@ public class Creator implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false, updatable = false)
-    private long id;
+    private Long id;
     
     @Column(name = "name", nullable = false)
     private String name;
@@ -47,7 +47,7 @@ public class Creator implements Serializable {
         this(name, null, null);
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -86,9 +86,9 @@ public class Creator implements Serializable {
         if (obj instanceof Creator) {
             final Creator rhs = (Creator) obj;
             return new EqualsBuilder()
-                .append(name, rhs.name)
-                .append(email, rhs.email)
-                .append(organisation, rhs.organisation)
+                .append(this.getName(), rhs.getName())
+                .append(this.getEMail(), rhs.getEMail())
+                .append(this.getOrganisation(), rhs.getOrganisation())
                 .isEquals();
         }
         return false;
@@ -97,9 +97,9 @@ public class Creator implements Serializable {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(32361, 7611)
-            .append(name)
-            .append(email)
-            .append(organisation)
+            .append(this.getName())
+            .append(this.getEMail())
+            .append(this.getOrganisation())
             .toHashCode();
     }
 

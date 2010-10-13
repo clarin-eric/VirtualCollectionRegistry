@@ -3,7 +3,9 @@ package eu.clarin.cmdi.virtualcollectionregistry.model;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashSet;
 import java.util.List;
+import java.util.Set;
 
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
@@ -24,6 +26,7 @@ import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
+import javax.persistence.OrderBy;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -88,7 +91,7 @@ public class VirtualCollection implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false, updatable = false)
-    private long id;
+    private Long id;
 
     @ManyToOne(cascade = { CascadeType.PERSIST,
                            CascadeType.REFRESH,
@@ -126,7 +129,8 @@ public class VirtualCollection implements Serializable {
                fetch = FetchType.LAZY,
                orphanRemoval = true)
     @JoinColumn(name = "vc_id", nullable = false)
-    private List<Creator> creators = new ArrayList<Creator>();
+    @OrderBy("id")
+    private List<Creator> creators; // FIXME: = new ArrayList<Creator>();
 
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "purpose")
@@ -142,13 +146,14 @@ public class VirtualCollection implements Serializable {
     @ElementCollection
     @CollectionTable(name = "keyword",
                      joinColumns = @JoinColumn(name="vc_id"))
-    private List<String> keywords = new ArrayList<String>();
+    private List<String> keywords; // FIXME: = new ArrayList<String>();
 
     @OneToMany(cascade = CascadeType.ALL,
                fetch = FetchType.LAZY,
                orphanRemoval = true)
     @JoinColumn(name = "vc_id", nullable = false)
-    private List<Resource> resources = new ArrayList<Resource>();
+    @OrderBy("id")
+    private List<Resource> resources; // FIXME: = new ArrayList<Resource>();
 
     @Embedded
     private GeneratedBy generatedBy;
@@ -173,12 +178,8 @@ public class VirtualCollection implements Serializable {
         this.setName(name);
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
-    }
-
-    protected void setId(long value) {
-        this.id = value;
     }
 
     public User getOwner() {
@@ -189,6 +190,7 @@ public class VirtualCollection implements Serializable {
         if (owner == null) {
             throw new NullPointerException("owner == null");
         }
+        // FIXME: set reference in owner!
         this.owner = owner;
     }
 
@@ -263,11 +265,10 @@ public class VirtualCollection implements Serializable {
     }
 
     public List<Creator> getCreators() {
+        if (creators == null) {
+            this.creators = new ArrayList<Creator>();
+        }
         return creators;
-    }
-
-    public void setCreators(List<Creator> creators) {
-        this.creators = creators;
     }
 
     public VirtualCollection.Purpose getPurpose() {
@@ -296,19 +297,17 @@ public class VirtualCollection implements Serializable {
     }
 
     public List<String> getKeywords() {
+        if (keywords == null) {
+            keywords = new ArrayList<String>();
+        }
         return keywords;
     }
 
-    public void setKeyworks(List<String> keywords) {
-        this.keywords = keywords;
-    }
-
     public List<Resource> getResources() {
+        if (resources == null) {
+            resources = new ArrayList<Resource>();
+        }
         return resources;
-    }
-
-    public void setResources(List<Resource> value) {
-        this.resources = value;
     }
 
     public GeneratedBy getGeneratedBy() {
@@ -346,37 +345,59 @@ public class VirtualCollection implements Serializable {
         this.setName(vc.getName());
         this.setDescription(vc.getDescription());
         this.setCreationDate(vc.getCreationDate());
-        if ((vc.creators != null) && !vc.creators.isEmpty()) {
-            this.creators.clear();
-            this.creators.addAll(vc.creators);
-//            // add all new creators
-//            this.creators.addAll(vc.creators);
-//            // purge all deleted creators
-//            this.creators.retainAll(vc.creators);
-        } else {
-            this.creators.clear();
+        
+        // Creators
+        Set<Creator> obsolete_creators =
+            new HashSet<Creator>(this.getCreators());
+        for (Creator creator : vc.getCreators()) {
+            if (!obsolete_creators.contains(creator)) {
+                this.getCreators().add(creator);
+            }
+            obsolete_creators.remove(creator);
         }
+        if (!obsolete_creators.isEmpty()) {
+            for (Creator creator : obsolete_creators) {
+                this.getCreators().remove(creator);
+            }
+            obsolete_creators = null;
+        }
+
         this.setPurpose(vc.getPurpose());
         this.setReproducibility(vc.getReproducibility());
         this.setReproducibilityNotice(vc.getReproducibilityNotice());
-        if ((vc.keywords != null) && !vc.keywords.isEmpty()) {
-            this.keywords.clear();
-            this.keywords.addAll(vc.keywords);
-//            // add all new resources
-//            this.keywords.addAll(vc.keywords);
-//            // purge all deleted keywords
-//            this.keywords.retainAll(vc.keywords);
+
+        // Keywords
+        Set<String> obsolete_keywords =
+            new HashSet<String>(this.getKeywords());
+        for (String keyword : vc.getKeywords()) {
+            if (!obsolete_keywords.contains(keyword)) {
+                this.getKeywords().add(keyword);
+            }
+            obsolete_keywords.remove(keyword);
         }
-        if ((vc.resources != null) && !vc.resources.isEmpty()) {
-            this.resources.clear();
-            this.resources.addAll(vc.resources);
-//            // add all new resources
-//            this.resources.addAll(vc.resources);
-//            // purge all deleted resources
-//            this.resources.retainAll(vc.resources);
-        } else {
-            this.resources.clear();
+        if (!obsolete_keywords.isEmpty()) {
+            for (String keyword : obsolete_keywords) {
+                this.getKeywords().remove(keyword);
+            }
+            obsolete_keywords = null;
         }
+
+        // Resources
+        Set<Resource> obsolete_resources =
+            new HashSet<Resource>(this.getResources());
+        for (Resource resource : vc.getResources()) {
+            if (!obsolete_resources.contains(resource)) {
+                this.getResources().add(resource);
+            }
+            obsolete_resources.remove(resource);
+        }
+        if (!obsolete_resources.isEmpty()) {
+            for (Resource resource : obsolete_resources) {
+                this.getResources().remove(resource);
+            }
+            obsolete_resources = null;
+        }
+
         if (vc.generatedBy != null) {
             final GeneratedBy genBy = vc.generatedBy;
             if (this.generatedBy == null) {
@@ -405,21 +426,22 @@ public class VirtualCollection implements Serializable {
         if (obj instanceof VirtualCollection) {
             final VirtualCollection rhs = (VirtualCollection) obj;
             return new EqualsBuilder()
-                .append(owner, rhs.owner)
-                .append(persistentId, rhs.persistentId)
-                .append(state, rhs.state)
-                .append(type, rhs.type)
-                .append(name, rhs.name)
-                .append(description, rhs.description)
-                .append(creationDate, rhs.creationDate)
-                .append(creators, rhs.creators)
-                .append(purpose, rhs.purpose)
-                .append(reproducibility, rhs.reproducibility)
-                .append(reproducibilityNotice, rhs.reproducibilityNotice)
-                .append(keywords, rhs.keywords)
-                .append(generatedBy, rhs.generatedBy)
-//                .append(createdDate, rhs.createdDate)
-//                .append(modifiedDate, rhs.modifiedDate)
+                .append(this.getOwner(), rhs.getOwner())
+                .append(this.getPersistentIdentifier(),
+                            rhs.getPersistentIdentifier())
+                .append(this.getState(), rhs.getState())
+                .append(this.getType(), rhs.getType())
+                .append(this.getName(), rhs.getName())
+                .append(this.getDescription(), rhs.getDescription())
+                .append(this.getCreationDate(), rhs.getCreationDate())
+                .append(this.getCreators(), rhs.getCreators())
+                .append(this.getPurpose(), rhs.getPurpose())
+                .append(this.getReproducibility(), rhs.getReproducibility())
+                .append(this.getReproducibilityNotice(),
+                            rhs.getReproducibilityNotice())
+                .append(this.getKeywords(), rhs.getKeywords())
+                .append(this.getResources(), rhs.getResources())
+                .append(this.getGeneratedBy(), rhs.getGeneratedBy())
                 .isEquals();
         }
         return false;
@@ -428,22 +450,20 @@ public class VirtualCollection implements Serializable {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(1391, 295)
-            .append(owner)
-            .append(persistentId)
-            .append(state)
-            .append(type)
-            .append(name)
-            .append(description)
-            .append(creationDate)
-            .append(creators)
-            .append(purpose)
-            .append(reproducibility)
-            .append(reproducibilityNotice)
-            .append(keywords)
-            .append(resources)
-            .append(generatedBy)
-//            .append(createdDate)
-//            .append(modifiedDate)
+            .append(this.getOwner())
+            .append(this.getPersistentIdentifier())
+            .append(this.getState())
+            .append(this.getType())
+            .append(this.getName())
+            .append(this.getDescription())
+            .append(this.getCreationDate())
+            .append(this.getCreators())
+            .append(this.getPurpose())
+            .append(this.getReproducibility())
+            .append(this.getReproducibilityNotice())
+            .append(this.getKeywords())
+            .append(this.getResources())
+            .append(this.getGeneratedBy())
             .toHashCode();
     }
 

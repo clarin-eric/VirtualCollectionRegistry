@@ -32,7 +32,7 @@ public class User implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id")
-    private long id;
+    private Long id;
 
     @Column(name = "name", nullable = false, unique = true)
     private String name;
@@ -62,7 +62,7 @@ public class User implements Serializable {
         this(name, null);
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -80,6 +80,7 @@ public class User implements Serializable {
     public String getDisplayName() {
         return name;
     }
+
     public void setDisplayName(String displayName) {
         if (displayName != null) {
             displayName = displayName.trim();
@@ -116,8 +117,7 @@ public class User implements Serializable {
         if (obj instanceof User) {
             final User rhs = (User) obj;
             return new EqualsBuilder()
-                .append(id, rhs.id)
-                .append(name, rhs.name)
+                .append(this.getName(), rhs.getName())
                 .isEquals();
         }
         return false;
@@ -126,8 +126,7 @@ public class User implements Serializable {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(22391, 295)
-            .append(id)
-            .append(name)
+            .append(this.getName())
             .toHashCode();
     }
 

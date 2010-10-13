@@ -27,7 +27,7 @@ public class Resource implements Serializable {
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false, updatable = false)
-    private long id;
+    private Long id;
 
     @Column(name = "type", nullable = false)
     @Enumerated(EnumType.ORDINAL)
@@ -47,7 +47,7 @@ public class Resource implements Serializable {
         this.setRef(ref);
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -84,8 +84,8 @@ public class Resource implements Serializable {
         if (obj instanceof Resource) {
             final Resource rhs = (Resource) obj;
             return new EqualsBuilder()
-                .append(type, rhs.type)
-                .append(ref, rhs.ref)
+                .append(this.getType(), rhs.getType())
+                .append(this.getRef(), rhs.getRef())
                 .isEquals();
         }
         return false;
@@ -94,8 +94,8 @@ public class Resource implements Serializable {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(25973, 1815)
-            .append(type)
-            .append(ref)
+            .append(this.getType())
+            .append(this.getRef())
             .toHashCode();
     }
 

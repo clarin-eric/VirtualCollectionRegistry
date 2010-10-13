@@ -30,8 +30,8 @@ public class PersistentIdentifier implements Serializable {
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private long id;
+    @Column(name = "id", nullable = false, updatable = false)
+    private Long id;
 
     @OneToOne(cascade = CascadeType.ALL,
               fetch = FetchType.LAZY,
@@ -74,7 +74,7 @@ public class PersistentIdentifier implements Serializable {
         this.identifier = identifier;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -112,10 +112,9 @@ public class PersistentIdentifier implements Serializable {
         if (obj instanceof PersistentIdentifier) {
             final PersistentIdentifier rhs = (PersistentIdentifier) obj;
             return new EqualsBuilder()
-                .appendSuper(super.equals(obj))
-                .append(vc, rhs.vc)
-                .append(type, rhs.type)
-                .append(identifier, rhs.identifier)
+                .append(this.getVirtualCollection(), rhs.getVirtualCollection())
+                .append(this.getType(), rhs.getType())
+                .append(this.getIdentifier(), rhs.getIdentifier())
                 .isEquals();
         }
         return false;
@@ -124,10 +123,9 @@ public class PersistentIdentifier implements Serializable {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(26249, 4651)
-            .appendSuper(super.hashCode())
-            .append(vc)
-            .append(type)
-            .append(identifier)
+            .append(this.getVirtualCollection())
+            .append(this.getType())
+            .append(this.getIdentifier())
             .toHashCode();
     }
 
