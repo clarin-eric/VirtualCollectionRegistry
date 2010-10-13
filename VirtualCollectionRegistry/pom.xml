@@ -277,16 +277,57 @@
       <type>jar</type>
       <scope>provided</scope>
     </dependency>
+    <dependency>
+    	<groupId>junit</groupId>
+    	<artifactId>junit</artifactId>
+    	<version>4.8.1</version>
+    	<type>jar</type>
+    	<scope>test</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.hsqldb</groupId>
+    	<artifactId>hsqldb</artifactId>
+    	<version>2.0.0</version>
+    	<type>jar</type>
+    	<scope>test</scope>
+    </dependency>
+    <dependency>
+    	<groupId>mysql</groupId>
+    	<artifactId>mysql-connector-java</artifactId>
+    	<version>5.1.13</version>
+    	<type>jar</type>
+    	<scope>test</scope>
+    </dependency>
+    <dependency>
+    	<groupId>org.codehaus.woodstox</groupId>
+    	<artifactId>woodstox-core-asl</artifactId>
+    	<version>4.0.8</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
+    </dependency>
+    <dependency>
+    	<groupId>net.java.dev.msv</groupId>
+    	<artifactId>msv-core</artifactId>
+    	<version>2009.1</version>
+    	<type>jar</type>
+    	<scope>compile</scope>
+    </dependency>
   </dependencies>
 
+  <dependencyManagement>
+  	<dependencies>
+  	</dependencies>
+  </dependencyManagement>
   <properties>
+    <!-- project settings -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- plug-in settings -->
     <maven.compiler.source>1.6</maven.compiler.source>
     <maven.compiler.target>1.6</maven.compiler.target>
     <!-- dependency versions -->
     <hibernate.version>3.5.6-Final</hibernate.version>
     <hibernate.jpaVersion>1.0.0.Final</hibernate.jpaVersion>
-    <jersey.version>1.3</jersey.version>
+    <jersey.version>1.4</jersey.version>
     <slf4j.version>1.6.0</slf4j.version>
   </properties>
 </project>

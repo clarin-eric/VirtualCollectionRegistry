@@ -1,5 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -8,37 +10,39 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
 
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Entity
 @Table(name = "resource")
-@XmlAccessorType(XmlAccessType.NONE)
-@XmlType(propOrder = { "type", "ref" })
-public class Resource {
+public class Resource implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    public static enum Type {
+        METADATA,
+        RESOURCE;
+    } // enum Resource.Type
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id",
-            nullable = false)
-    private long id = -1;
-    @Column(name = "type",
-            nullable = false)
+    @Column(name = "id", nullable = false, updatable = false)
+    private long id;
+
+    @Column(name = "type", nullable = false)
     @Enumerated(EnumType.ORDINAL)
-    private ResourceType type;
-    @Column(name = "ref",
-            nullable = false)
+    private Type type;
+
+    @Column(name = "ref", nullable = false)
     private String ref;
 
+
+    @SuppressWarnings("unused")
     private Resource() {
-        super();
     }
 
-    public Resource(ResourceType type, String ref) {
-        this();
+    public Resource(Resource.Type type, String ref) {
+        super();
         this.setType(type);
         this.setRef(ref);
     }
@@ -47,16 +51,19 @@ public class Resource {
         return id;
     }
 
-    public void setType(ResourceType type) {
+    public Resource.Type getType() {
+        return type;
+    }
+
+    public void setType(Resource.Type type) {
         if (type == null) {
             throw new NullPointerException("type == null");
         }
         this.type = type;
     }
 
-    @XmlElement(name = "ResourceType")
-    public ResourceType getType() {
-        return type;
+    public String getRef() {
+        return ref;
     }
 
     public void setRef(String ref) {
@@ -66,23 +73,27 @@ public class Resource {
         this.ref = ref;
     }
 
-    @XmlElement(name = "ResourceRef")
-    public String getRef() {
-        return ref;
-    }
-
     @Override
-    public boolean equals(Object other) {
-        if ((other != null) && (other instanceof Resource)) {
-            final Resource r = (Resource) other;
-            return r.type.equals(this.type) && r.ref.equals(this.ref);
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj instanceof Resource) {
+            final Resource rhs = (Resource) obj;
+            return new EqualsBuilder()
+                .append(type, rhs.type)
+                .append(ref, rhs.ref)
+                .isEquals();
         }
         return false;
     }
-    
+
     @Override
     public int hashCode() {
-        return new HashCodeBuilder(799, 51)
+        return new HashCodeBuilder(25973, 1815)
             .append(type)
             .append(ref)
             .toHashCode();

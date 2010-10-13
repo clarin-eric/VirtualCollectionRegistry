@@ -1,12 +1,14 @@
-package eu.clarin.cmdi.virtualcollectionregistry.model;
+package eu.clarin.cmdi.virtualcollectionregistry;
 
 import java.util.HashSet;
 import java.util.Set;
 
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
+import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
+import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
 public class VirtualCollectionValidator {
+    private Set<Creator> uniqueCreators = new HashSet<Creator>(16);
     private Set<String> uniqueResourceRefs = new HashSet<String>(512);
 
     public void validate(VirtualCollection vc)
@@ -23,6 +25,15 @@ public class VirtualCollectionValidator {
             throw new VirtualCollectionRegistryUsageException(
                     "collection has an empty name");
         }
+        
+        for (Creator creator : vc.getCreators()) {
+            if (uniqueCreators.contains(creator)) {
+                throw new VirtualCollectionRegistryUsageException(
+                        "collection contains non unique creators");
+            }
+            uniqueCreators.add(creator);
+        }
+
         for (Resource resource : vc.getResources()) {
             String ref = resource.getRef();
             if ((ref == null) || ref.trim().isEmpty()) {
@@ -38,6 +49,7 @@ public class VirtualCollectionValidator {
     }
 
     private void reset() {
+        uniqueCreators.clear();
         uniqueResourceRefs.clear();
     }
 

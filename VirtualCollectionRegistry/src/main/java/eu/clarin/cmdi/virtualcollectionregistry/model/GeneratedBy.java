@@ -1,76 +1,159 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model;
 
+import java.io.Serializable;
+
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
 import javax.persistence.Lob;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.XmlValue;
+
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Embeddable
-@XmlAccessorType(XmlAccessType.NONE)
-@XmlType(propOrder = { "description", "query" },
-         namespace = "urn:x-vcr:generatedby")
-@XmlSeeAlso(GeneratedBy.Query.class)
-public class GeneratedBy {
+public class GeneratedBy implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     @Embeddable
-    @XmlAccessorType(XmlAccessType.NONE)
-    public static class Query {
+    public static class Query implements Serializable {
+        private static final long serialVersionUID = 1L;
+
         @Column(name = "generatedby_query_profile")
-        @XmlAttribute(name = "profile", required = true)
         private String profile;
+
         @Column(name = "generatedby_query_value")
         @Lob
-        @XmlValue
         private String value;
 
-        public void setProfile(String profile) {
-            this.profile = profile;
+
+        @SuppressWarnings("unused")
+        private Query() {
+        }
+
+        public Query(String profile, String value) {
+            super();
+            this.setProfile(profile);
+            this.setValue(value);
         }
 
         public String getProfile() {
             return profile;
         }
 
-        public void setQuery(String value) {
-            this.value = value;
+        public void setProfile(String profile) {
+            if (profile == null) {
+                throw new NullPointerException("profile == null");
+            }
+            this.profile = profile;
         }
 
         public String getValue() {
             return value;
         }
-    } // class Query
+
+        public void setValue(String value) {
+            this.value = value;
+        }
+
+        @Override
+        public boolean equals(Object obj) {
+            if (obj == null) {
+                return false;
+            }
+            if (obj == this) {
+                return true;
+            }
+            if (obj instanceof GeneratedBy.Query) {
+                final GeneratedBy.Query rhs = (GeneratedBy.Query) obj;
+                return new EqualsBuilder()
+                    .append(profile, rhs.profile)
+                    .append(value, rhs.value)
+                    .isEquals();
+            }
+            return false;
+        }
+
+        @Override
+        public int hashCode() {
+            return new HashCodeBuilder(10021, 32555)
+                .append(profile)
+                .append(value)
+                .toHashCode();
+        }
+
+    } // class GeneratedBy.Query
 
     @Column(name = "generatedby_description")
     private String description;
+
+    @Column(name = "generatedby_uri", nullable = true)
+    private String uri;
+
     @Embedded
-    private Query query;
+    private GeneratedBy.Query query;
 
-    public GeneratedBy() {
+    @SuppressWarnings("unused")
+    private GeneratedBy() {
+    }
+
+    public GeneratedBy(String description) {
         super();
+        this.setDescription(description);
     }
 
-    public void setDescription(String description) {
-        this.description = description;
-    }
-    
-    @XmlElement(name = "Description")
     public String getDescription() {
         return description;
     }
 
-    public void setQuery(Query query) {
+    public void setDescription(String description) {
+        if (description == null) {
+            throw new NullPointerException("description == null");
+        }
+        this.description = description;
+    }
+
+    public String getURI() {
+        return uri;
+    }
+
+    public void setURI(String uri) {
+        this.uri = uri;
+    }
+
+    public GeneratedBy.Query getQuery() {
+        return query;
+    }
+
+    public void setQuery(GeneratedBy.Query query) {
         this.query = query;
     }
 
-    @XmlElement(name = "Query")
-    public Query getQuery() {
-        return query;
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj instanceof GeneratedBy) {
+            final GeneratedBy rhs = (GeneratedBy) obj;
+            return new EqualsBuilder()
+                .append(description, rhs.description)
+                .append(uri, rhs.uri)
+                .append(query, rhs.query)
+                .isEquals();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(7587, 16231)
+            .append(description)
+            .append(uri)
+            .append(query)
+            .toHashCode();
     }
 
 } // class GeneratedBy
