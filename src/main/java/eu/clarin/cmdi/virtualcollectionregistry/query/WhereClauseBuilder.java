@@ -1,8 +1,8 @@
 package eu.clarin.cmdi.virtualcollectionregistry.query;
 
 import java.text.DateFormat;
-import java.text.ParseException;
 import java.text.SimpleDateFormat;
+import java.text.ParseException;
 import java.util.Date;
 import java.util.Stack;
 
@@ -123,7 +123,7 @@ class WhereClauseBuilder implements QueryParserVisitor {
             break;
         case QueryParserConstants.VC_MODIFIED:
             predicate = makeDatePredicate(data,
-                    root.get(VirtualCollection_.modifedDate),
+                    root.get(VirtualCollection_.modifiedDate),
                     node.getOperator(), node.getValue());
             break;
         case QueryParserConstants.VC_OWNER:
@@ -133,17 +133,17 @@ class WhereClauseBuilder implements QueryParserVisitor {
             break;
         case QueryParserConstants.CR_NAME:
             predicate = makeStringPredicate(data,
-                    root.get(VirtualCollection_.creator).get(Creator_.name),
+                    root.join(VirtualCollection_.creators).get(Creator_.name),
                     node.getOperator(), node.getValue());
             break;
         case QueryParserConstants.CR_EMAIL:
             predicate = makeStringPredicate(data,
-                    root.get(VirtualCollection_.creator).get(Creator_.email),
+                    root.join(VirtualCollection_.creators).get(Creator_.email),
                     node.getOperator(), node.getValue());
             break;
         case QueryParserConstants.CR_ORGANIZATION:
             predicate = makeStringPredicate(data,
-                    root.get(VirtualCollection_.creator)
+                    root.join(VirtualCollection_.creators)
                         .get(Creator_.organisation),
                     node.getOperator(), node.getValue());
             break;
@@ -281,7 +281,7 @@ class WhereClauseBuilder implements QueryParserVisitor {
             Expression<Date> attribute, int operator, String value) {
         Date date = null;
         try {
-            DateFormat df = new SimpleDateFormat( "yyyy-MM-dd'T'HH:mm:ssz" );
+            DateFormat df = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ssz");
             if (value.endsWith("Z")) {
                 value = value.substring(0, value.length() - 1) + "GMT-00:00";
             } else {

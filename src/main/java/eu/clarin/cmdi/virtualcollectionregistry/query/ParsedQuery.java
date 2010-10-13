@@ -66,7 +66,7 @@ public class ParsedQuery {
                 visitor.visit(start, data);
             } // synchronized (visitor)
             Predicate where = data.getWhere();
-            if (owner != null) {
+           if (owner != null) {
                 where = cb.and(where, cb.equal(
                             root.get(VirtualCollection_.owner), owner));
             }

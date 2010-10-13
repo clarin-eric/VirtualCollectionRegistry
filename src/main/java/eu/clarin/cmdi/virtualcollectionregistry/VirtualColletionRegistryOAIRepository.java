@@ -28,6 +28,7 @@ import eu.clarin.cmdi.oai.provider.Record;
 import eu.clarin.cmdi.oai.provider.RecordList;
 import eu.clarin.cmdi.oai.provider.Repository;
 import eu.clarin.cmdi.oai.provider.SetSpecDesc;
+import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection_;
 
@@ -63,7 +64,7 @@ class VirtualColletionRegistryOAIRepository implements Repository {
             final VirtualCollectionRegistry registry =
                 VirtualCollectionRegistry.instance();
             final VirtualCollection vc = (VirtualCollection) item;
-            registry.getMarshaller().marshalAsCMDI(stream, vc);
+            registry.getMarshaller().writeCMDI(stream, vc);
         }
     } // class CMDIMetadataFormat
 
@@ -98,8 +99,8 @@ class VirtualColletionRegistryOAIRepository implements Repository {
 
             CriteriaQuery<Date> cq = cb.createQuery(Date.class);
             Root<VirtualCollection> root = cq.from(VirtualCollection.class);
-            cq.select(root.get(VirtualCollection_.modifedDate));
-            cq.orderBy(cb.asc(root.get(VirtualCollection_.modifedDate)));
+            cq.select(root.get(VirtualCollection_.modifiedDate));
+            cq.orderBy(cb.asc(root.get(VirtualCollection_.modifiedDate)));
 
             em.getTransaction().begin();
             TypedQuery<Date> q = em.createQuery(cq);
@@ -162,7 +163,7 @@ class VirtualColletionRegistryOAIRepository implements Repository {
             @Override
             public String getIdentifier(Object resource) {
                 return ((VirtualCollection) resource)
-                    .getPersistentIdentifier().createURI();
+                    .getPersistentIdentifier().getActionableURI();
             }
 
             @Override
@@ -171,10 +172,13 @@ class VirtualColletionRegistryOAIRepository implements Repository {
             }
 
             @Override
-            public String getCreator(Object resource) {
+            public List<String> getCreators(Object resource) {
                 final VirtualCollection vc = (VirtualCollection) resource;
-                if (vc.getCreator() != null) {
-                    return vc.getCreator().getName();
+                if (!vc.getCreators().isEmpty()) {
+                    List<String> creators = new ArrayList<String>();
+                    for (Creator creator : vc.getCreators()) {
+                        creators.add(creator.getName());
+                    }
                 }
                 return null;
             }
@@ -248,7 +252,7 @@ class VirtualColletionRegistryOAIRepository implements Repository {
             Root<VirtualCollection> root2 = cq2.from(VirtualCollection.class);
             cq2.select(root2);
             cq2.where(buildWhere(cb, cq2, root2, from, until));
-            cq2.orderBy(cb.asc(root2.get(VirtualCollection_.modifedDate)));
+            cq2.orderBy(cb.asc(root2.get(VirtualCollection_.modifiedDate)));
             
             em.getTransaction().begin();
             TypedQuery<Long> q1 = em.createQuery(cq1);
@@ -295,13 +299,13 @@ class VirtualColletionRegistryOAIRepository implements Repository {
                                   VirtualCollection.State.PUBLIC);
         if ((from != null) && (until != null)) {
             where = cb.and(where, cb.between(root
-                    .get(VirtualCollection_.modifedDate), from, until));
+                    .get(VirtualCollection_.modifiedDate), from, until));
         } else if (from != null) {
             where = cb.and(where, cb.greaterThanOrEqualTo(root
-                    .get(VirtualCollection_.modifedDate), from));
+                    .get(VirtualCollection_.modifiedDate), from));
         } else if (until != null) {
             where = cb.and(where, cb.lessThanOrEqualTo(root
-                    .get(VirtualCollection_.modifedDate), until));
+                    .get(VirtualCollection_.modifiedDate), until));
         }
         return where;
     }

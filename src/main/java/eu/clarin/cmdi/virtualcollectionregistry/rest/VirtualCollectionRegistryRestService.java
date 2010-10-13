@@ -25,11 +25,11 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionMarshaller.Format;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionNotFoundException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryMarshaller.Format;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 
@@ -97,11 +97,13 @@ public class VirtualCollectionRegistryRestService {
     public Response getVirtualCollection(@PathParam("id") long id)
             throws VirtualCollectionRegistryException {
         final VirtualCollection vc = registry.retrieveVirtualCollection(id);
+        // XXX: what about non-public VCs?
         StreamingOutput writer = new StreamingOutput() {
-            public void write(OutputStream stream) throws IOException,
+            public void write(OutputStream output) throws IOException,
                     WebApplicationException {
-                Format format = getOutputFormat();
-                registry.getMarshaller().marshal(stream, format, vc);
+                final Format format = getOutputFormat();
+                registry.getMarshaller().marshal(output, format, vc);
+                output.close();
             }
         };
         return Response.ok(writer).build();
@@ -227,10 +229,11 @@ public class VirtualCollectionRegistryRestService {
         final VirtualCollectionList vcs = registry.getVirtualCollections(query,
                 (offset > 0) ? offset : 0, count);
         StreamingOutput writer = new StreamingOutput() {
-            public void write(OutputStream stream) throws IOException,
+            public void write(OutputStream output) throws IOException,
                     WebApplicationException {
-                Format format = getOutputFormat();
-                registry.getMarshaller().marshal(stream, format, vcs);
+                final Format format = getOutputFormat();
+                registry.getMarshaller().marshal(output, format, vcs);
+                output.close();
             }
         };
         return Response.ok(writer).build();
@@ -265,10 +268,11 @@ public class VirtualCollectionRegistryRestService {
         final VirtualCollectionList vcs = registry.getVirtualCollections(
                 principal, query, (offset > 0) ? offset : 0, count);
         StreamingOutput writer = new StreamingOutput() {
-            public void write(OutputStream stream) throws IOException,
+            public void write(OutputStream output) throws IOException,
                     WebApplicationException {
-                Format format = getOutputFormat();
-                registry.getMarshaller().marshal(stream, format, vcs);
+                final Format format = getOutputFormat();
+                registry.getMarshaller().marshal(output, format, vcs);
+                output.close();
             }
         };
         return Response.ok(writer).build();
@@ -288,6 +292,7 @@ public class VirtualCollectionRegistryRestService {
             public void write(OutputStream output) throws IOException,
                     WebApplicationException {
                 registry.getMarshaller().marshalAsCMDI(output, Format.XML, vc);
+                output.close();
             }
         };
         return Response.ok(writer).build();

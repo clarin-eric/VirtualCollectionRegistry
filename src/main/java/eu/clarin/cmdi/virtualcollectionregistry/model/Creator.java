@@ -1,77 +1,106 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model;
 
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlType;
+import java.io.Serializable;
 
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.GeneratedValue;
+import javax.persistence.GenerationType;
+import javax.persistence.Id;
+import javax.persistence.Table;
+
+import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
-@Embeddable
-@XmlAccessorType(XmlAccessType.NONE)
-@XmlType(propOrder = { "name", "EMail", "organisation" },
-         namespace = "urn:x-vcr:creator")
-public class Creator {
-    @Column(name = "creator_name")
+@Entity
+@Table(name = "creator")
+public class Creator implements Serializable {
+    private static final long serialVersionUID = 1L;
+
+    @Id
+    @GeneratedValue(strategy = GenerationType.AUTO)
+    @Column(name = "id", nullable = false, updatable = false)
+    private long id;
+    
+    @Column(name = "name", nullable = false)
     private String name;
-    @Column(name = "creator_email")
+
+    @Column(name = "email")
     private String email;
-    @Column(name = "creator_organisation")
+
+    @Column(name = "organisation")
     private String organisation;
 
+    
     @SuppressWarnings("unused")
     private Creator() {
-        this(null, null, null);
     }
 
+    public Creator(String name, String email, String organisation) {
+        super();
+        this.setName(name);
+        this.setEMail(email);
+        this.setOrganisation(organisation);
+    }
+    
     public Creator(String name) {
         this(name, null, null);
     }
 
-    public Creator(String name, String email) {
-        this(name, email, null);
+    public long getId() {
+        return id;
     }
 
-    public Creator(String name, String email, String organization) {
-        super();
-        this.setName(name);
-        this.setEMail(email);
-        this.setOrganisation(organization);
-    }
-
-    public void setName(String name) {
-        this.name = name;
-    }
-
-    @XmlElement(name = "Name")
     public String getName() {
         return name;
     }
 
-    public void setEMail(String email) {
-        this.email = email;
+    public void setName(String value) {
+        this.name = value;
     }
 
-    @XmlElement(name = "Email")
     public String getEMail() {
         return email;
     }
 
-    public void setOrganisation(String organisation) {
-        this.organisation = organisation;
+    public void setEMail(String value) {
+        this.email = value;
     }
 
-    @XmlElement(name = "Organisation")
     public String getOrganisation() {
         return organisation;
     }
 
-    int getSignature() {
-        return new HashCodeBuilder(469, 41).append(name).append(email).append(
-                organisation).toHashCode();
+    public void setOrganisation(String value) {
+        this.organisation = value;
+    }
 
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj instanceof Creator) {
+            final Creator rhs = (Creator) obj;
+            return new EqualsBuilder()
+                .append(name, rhs.name)
+                .append(email, rhs.email)
+                .append(organisation, rhs.organisation)
+                .isEquals();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(32361, 7611)
+            .append(name)
+            .append(email)
+            .append(organisation)
+            .toHashCode();
     }
 
 } // class Creator

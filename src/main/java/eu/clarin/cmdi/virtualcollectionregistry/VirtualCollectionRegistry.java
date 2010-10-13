@@ -25,7 +25,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.PersistentIdentifierProvid
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionValidator;
 import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
 
 public class VirtualCollectionRegistry {
@@ -38,7 +37,7 @@ public class VirtualCollectionRegistry {
     private String version = "0.0.1-SNAPSHOT";
     private DataStore datastore = null;
     private PersistentIdentifierProvider pid_provider = null;
-    private VirtualCollectionRegistryMarshaller marshaller = null;
+    private VirtualCollectionMarshaller marshaller = null;
     private Timer timer =
         new Timer("VirtualCollectionRegistry-Maintenance", true);
 
@@ -67,7 +66,7 @@ public class VirtualCollectionRegistry {
             this.datastore = new DataStore(config);
             this.pid_provider = PersistentIdentifierProvider
                     .createProvider(config);
-            this.marshaller = new VirtualCollectionRegistryMarshaller();
+            this.marshaller = new VirtualCollectionMarshaller();
             // setup OAIProvider
             OAIProvider.instance().setRepository(
                     new VirtualColletionRegistryOAIRepository(this));
@@ -117,7 +116,7 @@ public class VirtualCollectionRegistry {
         return datastore;
     }
 
-    public VirtualCollectionRegistryMarshaller getMarshaller() {
+    public VirtualCollectionMarshaller getMarshaller() {
         return marshaller;
     }
 
@@ -194,7 +193,10 @@ public class VirtualCollectionRegistry {
                         "permission denied for user \"" +
                         principal.getName() + "\"");
             }
+            
+            // update virtual collection
             c.updateFrom(vc);
+
             validator.validate(c);
             em.getTransaction().commit();
             logger.debug("updated virtual collection (id={})", vc.getId());
