@@ -198,9 +198,10 @@ public class VirtualCollectionRegistry {
             c.updateFrom(vc);
 
             validator.validate(c);
+            em.merge(c);
             em.getTransaction().commit();
             logger.debug("updated virtual collection (id={})", vc.getId());
-            return vc.getId();
+            return c.getId();
         } catch (VirtualCollectionRegistryException e) {
             logger.debug("failed updating virtual collecion (id={}): {}", id,
                     e.getMessage());

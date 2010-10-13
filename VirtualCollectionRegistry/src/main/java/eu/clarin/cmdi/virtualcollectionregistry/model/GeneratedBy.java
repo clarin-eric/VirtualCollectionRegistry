@@ -139,9 +139,9 @@ public class GeneratedBy implements Serializable {
         if (obj instanceof GeneratedBy) {
             final GeneratedBy rhs = (GeneratedBy) obj;
             return new EqualsBuilder()
-                .append(description, rhs.description)
-                .append(uri, rhs.uri)
-                .append(query, rhs.query)
+                .append(this.getDescription(), rhs.getDescription())
+                .append(this.getURI(), rhs.getURI())
+                .append(this.getQuery(), rhs.getQuery())
                 .isEquals();
         }
         return false;
@@ -150,7 +150,7 @@ public class GeneratedBy implements Serializable {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(7587, 16231)
-            .append(description)
+            .append(this.getDescription())
             .append(uri)
             .append(query)
             .toHashCode();
