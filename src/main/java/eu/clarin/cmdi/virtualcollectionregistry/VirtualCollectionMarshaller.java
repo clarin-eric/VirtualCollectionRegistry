@@ -204,7 +204,7 @@ public class VirtualCollectionMarshaller {
     private void writeVirtualCollection(XMLStreamWriter writer,
             VirtualCollection vc) throws XMLStreamException {
         writer.writeStartElement("VirtualCollection");
-        if (vc.getId() >= 0) {
+        if (vc.getId() != null) {
             writer.writeAttribute("id", Long.toString(vc.getId()));
         }
         if (vc.getPersistentIdentifier() != null) {
