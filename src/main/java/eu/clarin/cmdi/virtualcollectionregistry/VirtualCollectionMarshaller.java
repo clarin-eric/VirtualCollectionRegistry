@@ -62,8 +62,8 @@ public class VirtualCollectionMarshaller {
             XMLValidationSchemaFactory sf = XMLValidationSchemaFactory
                     .newInstance(XMLValidationSchema.SCHEMA_ID_W3C_SCHEMA);
             URL url = VirtualCollectionMarshaller.class
-                    .getClassLoader().getResource(
-                            "META-INF/VirtualCollection.xsd");
+                    .getClassLoader()
+                    .getResource("META-INF/VirtualCollection.xsd");
             if (url == null) {
                 throw new NullPointerException("schema not found!");
             }
@@ -342,7 +342,6 @@ public class VirtualCollectionMarshaller {
 
             for (final Resource resource : vc.getResources()) {
                 writer.writeStartElement("Resource");
-                writer.writeAttribute("id", Long.toString(resource.getId()));
 
                 writer.writeStartElement("ResourceType");
                 switch (resource.getType()) {
@@ -396,13 +395,6 @@ public class VirtualCollectionMarshaller {
     private VirtualCollection readVirtualCollection(
             XMLStreamReader reader) throws XMLStreamException {
         readStart(reader, "VirtualCollection", true, false);
-//        String s = reader.getAttributeValue(null, "id");
-//        if ((s != null) && !s.isEmpty()) {
-//        }
-//        s = reader.getAttributeValue(null, "persistentId");
-//        if ((s != null) && !s.isEmpty()) {
-//            
-//        }
         VirtualCollection.State vc_state = null;
         String s = reader.getAttributeValue(null, "state");
         if ((s != null) && !s.isEmpty()) {
@@ -734,18 +726,17 @@ public class VirtualCollectionMarshaller {
 
         switch (format) {
         case XML:
-            XMLStreamWriter2 writer = (XMLStreamWriter2) xmlWriterFactory
-                    .createXMLStreamWriter(out, ENCODING);
+            XMLStreamWriter writer =
+                xmlWriterFactory.createXMLStreamWriter(out, ENCODING);
             if (validate) {
-                writer.validateAgainst(schema);
+                ((XMLStreamWriter2) writer).validateAgainst(schema);
             }
-            return (XMLStreamWriter) writer;
+            return writer;
         case JSON:
             return jsonWriterFactory.createXMLStreamWriter(out, ENCODING);
         default:
             // should never happen
-            throw new IllegalArgumentException("output format " + format +
-                    " is not supported");
+            throw new IllegalArgumentException("unsupported input format");
         } // switch
     }
 
@@ -763,20 +754,19 @@ public class VirtualCollectionMarshaller {
 
         switch (format) {
         case XML:
-            XMLStreamReader2 reader = (XMLStreamReader2) xmlReaderFactory
-                    .createXMLStreamReader(in, encoding);
-            reader.validateAgainst(schema);
+            XMLStreamReader reader =
+                xmlReaderFactory.createXMLStreamReader(in, encoding);
+            ((XMLStreamReader2) reader).validateAgainst(schema);
             return reader;
         case JSON:
             // FIXME: json + schema validation?
             return jsonReaderFactory.createXMLStreamReader(in, encoding);
         default:
             // should never happen
-            throw new IllegalArgumentException("input format " + format +
-                    " is not supported");
+            throw new IllegalArgumentException("unsupported input format");
         } // switch
     }
-    
+
     private static boolean readStart(XMLStreamReader reader, String element,
             boolean required, boolean advance) throws XMLStreamException {
         for (int type = reader.getEventType();

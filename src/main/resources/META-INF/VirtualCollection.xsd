@@ -97,7 +97,6 @@
                       </xs:simpleType>
                     </xs:element>
                   </xs:sequence>
-                  <xs:attribute name="id" type="xs:integer" use="optional"/>
                 </xs:complexType>
               </xs:element>
             </xs:sequence>
