@@ -55,8 +55,7 @@ public class VirtualCollectionMarshaller {
     private final MappedXMLInputFactory jsonReaderFactory;
     private final MappedXMLOutputFactory jsonWriterFactory;
 
-    public VirtualCollectionMarshaller()
-            throws VirtualCollectionRegistryException {
+    VirtualCollectionMarshaller() throws VirtualCollectionRegistryException {
         logger.debug("initializing schemas for marshaller ...");
         try {
             XMLValidationSchemaFactory sf = XMLValidationSchemaFactory
