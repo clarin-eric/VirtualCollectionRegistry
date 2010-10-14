@@ -25,8 +25,9 @@ public class VirtualCollectionMarshallerTest {
     public void testMinmalExtensional() throws Exception {
         VirtualCollectionMarshaller m =
            new VirtualCollectionMarshaller();
-        VirtualCollection vc =
-            new VirtualCollection(VirtualCollection.Type.EXTENSIONAL, "Test 12");
+        VirtualCollection vc = new VirtualCollection();
+        vc.setType(VirtualCollection.Type.EXTENSIONAL);
+        vc.setName("Test 12");
         vc.getResources().add(new Resource(Resource.Type.RESOURCE, "a/ref/"));
 
         ByteArrayOutputStream out = new ByteArrayOutputStream(65536);
