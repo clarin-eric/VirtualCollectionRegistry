@@ -44,6 +44,10 @@ public class GeneratedBy implements Serializable {
             if (profile == null) {
                 throw new NullPointerException("profile == null");
             }
+            profile = profile.trim();
+            if (profile.isEmpty()) {
+                throw new IllegalArgumentException("profile is empty");
+            }
             this.profile = profile;
         }
 
@@ -52,6 +56,10 @@ public class GeneratedBy implements Serializable {
         }
 
         public void setValue(String value) {
+            if (value == null) {
+                throw new NullPointerException("value == null");
+            }
+            // do not trim and allow space only values
             this.value = value;
         }
 
@@ -109,6 +117,10 @@ public class GeneratedBy implements Serializable {
         if (description == null) {
             throw new NullPointerException("description == null");
         }
+        description = description.trim();
+        if (description.isEmpty()) {
+            throw new IllegalArgumentException("description is empty");
+        }
         this.description = description;
     }
 
@@ -117,6 +129,12 @@ public class GeneratedBy implements Serializable {
     }
 
     public void setURI(String uri) {
+        if (uri != null) {
+            uri = uri.trim();
+            if (uri.isEmpty()) {
+                uri = null;
+            }
+        }
         this.uri = uri;
     }
 
