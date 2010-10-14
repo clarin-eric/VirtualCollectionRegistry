@@ -1,9 +1,11 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model;
 
+import java.io.Serializable;
 import java.util.Collections;
 import java.util.List;
 
-public class VirtualCollectionList {
+public class VirtualCollectionList implements Serializable {
+    private static final long serialVersionUID = 1L;
     private List<VirtualCollection> collections;
     private int offset;
     private int totalCount;
