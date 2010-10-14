@@ -70,6 +70,10 @@ public class Resource implements Serializable {
         if (ref == null) {
             throw new NullPointerException("ref == null");
         }
+        ref = ref.trim();
+        if (ref.isEmpty()) {
+            throw new IllegalArgumentException("ref is empty");
+        }
         this.ref = ref;
     }
 

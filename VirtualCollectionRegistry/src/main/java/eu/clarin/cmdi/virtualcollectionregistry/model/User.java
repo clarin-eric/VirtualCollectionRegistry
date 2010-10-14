@@ -72,7 +72,7 @@ public class User implements Serializable {
         }
         name = name.trim();
         if (name.isEmpty()) {
-            throw new IllegalArgumentException("empty name is not allowed");
+            throw new IllegalArgumentException("name is empty");
         }
         this.name = name;
     }

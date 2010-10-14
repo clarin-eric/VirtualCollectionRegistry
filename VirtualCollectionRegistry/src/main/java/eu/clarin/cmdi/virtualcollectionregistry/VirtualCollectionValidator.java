@@ -4,6 +4,7 @@ import java.util.HashSet;
 import java.util.Set;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
+import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
@@ -34,9 +35,57 @@ public class VirtualCollectionValidator {
             uniqueCreators.add(creator);
         }
 
+        switch (vc.getType()) {
+        case EXTENSIONAL:
+            if (vc.getResources().isEmpty()) {
+                throw new VirtualCollectionRegistryUsageException(
+                        "extensional collection must contain on or " +
+                        "more resources");
+            }
+            if (vc.getGeneratedBy() != null) {
+                throw new VirtualCollectionRegistryUsageException(
+                        "extensional collection must not contain GeneratedBy");
+            }
+            break;
+        case INTENSIONAL:
+            final GeneratedBy generatedBy = vc.getGeneratedBy();
+            if (generatedBy == null) {
+                throw new VirtualCollectionRegistryUsageException(
+                        "intensional collections needs GeneratedBy");
+            }
+            if (generatedBy.getDescription() == null) {
+                throw new VirtualCollectionRegistryUsageException(
+                        "GeneratedBy has empty description");
+            }
+            final GeneratedBy.Query query = generatedBy.getQuery();
+            if (query != null) {
+                if (query.getProfile() == null) {
+                    throw new VirtualCollectionRegistryUsageException(
+                            "profile of GeneratedBy.Query is empty");
+                }
+                if (query.getValue() == null) {
+                    throw new VirtualCollectionRegistryUsageException(
+                            "query of GeneratedBy.Query is empty");
+                }
+            }
+        }
+
+        if ((vc.getReproducibilityNotice() != null) && 
+                (vc.getReproducibility() == null)) {
+            throw new VirtualCollectionRegistryUsageException(
+                    "reproducibility notice without reproducubility");
+        }
+
+        for (String keyword : vc.getKeywords()) {
+            if ((keyword == null) || (keyword.trim().isEmpty())) {
+                throw new VirtualCollectionRegistryUsageException(
+                        "keyword is empty");
+            }
+        }
+
         for (Resource resource : vc.getResources()) {
             String ref = resource.getRef();
-            if ((ref == null) || ref.trim().isEmpty()) {
+            if (ref == null) {
                 throw new VirtualCollectionRegistryUsageException(
                         "collection contains resource with empty ResourceRef");
             }

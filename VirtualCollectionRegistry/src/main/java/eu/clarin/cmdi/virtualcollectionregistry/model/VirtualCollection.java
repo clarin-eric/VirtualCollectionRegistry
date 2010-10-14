@@ -190,8 +190,11 @@ public class VirtualCollection implements Serializable {
         if (owner == null) {
             throw new NullPointerException("owner == null");
         }
-        // FIXME: set reference in owner!
+        if (this.owner != null) {
+            this.owner.getVirtualCollections().remove(this);
+        }
         this.owner = owner;
+        this.owner.getVirtualCollections().add(this);
     }
 
     public PersistentIdentifier getPersistentIdentifier() {
@@ -245,6 +248,13 @@ public class VirtualCollection implements Serializable {
     }
 
     public void setName(String name) {
+        if (name == null) {
+            throw new NullPointerException("name == null");
+        }
+        name = name.trim();
+        if (name.isEmpty()) {
+            throw new IllegalArgumentException("name is empty");
+        }
         this.name = name;
     }
 
@@ -253,6 +263,12 @@ public class VirtualCollection implements Serializable {
     }
 
     public void setDescription(String description) {
+        if (description != null) {
+            description = description.trim();
+            if (description.isEmpty()) {
+                description = null;
+            }
+        }
         this.description = description;
     }
 
@@ -293,6 +309,12 @@ public class VirtualCollection implements Serializable {
     }
 
     public void setReproducibilityNotice(String reproducibilityNotice) {
+        if (reproducibilityNotice != null) {
+            reproducibilityNotice = reproducibilityNotice.trim();
+            if (reproducibilityNotice.isEmpty()) {
+                reproducibilityNotice = null;
+            }
+        }
         this.reproducibilityNotice = reproducibilityNotice;
     }
 
