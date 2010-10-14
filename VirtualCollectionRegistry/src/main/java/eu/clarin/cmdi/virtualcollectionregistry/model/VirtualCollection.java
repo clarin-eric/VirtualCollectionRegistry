@@ -130,7 +130,7 @@ public class VirtualCollection implements Serializable {
                orphanRemoval = true)
     @JoinColumn(name = "vc_id", nullable = false)
     @OrderBy("id")
-    private List<Creator> creators; // FIXME: = new ArrayList<Creator>();
+    private List<Creator> creators;
 
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "purpose")
@@ -146,14 +146,14 @@ public class VirtualCollection implements Serializable {
     @ElementCollection
     @CollectionTable(name = "keyword",
                      joinColumns = @JoinColumn(name="vc_id"))
-    private List<String> keywords; // FIXME: = new ArrayList<String>();
+    private List<String> keywords;
 
     @OneToMany(cascade = CascadeType.ALL,
                fetch = FetchType.LAZY,
                orphanRemoval = true)
     @JoinColumn(name = "vc_id", nullable = false)
     @OrderBy("id")
-    private List<Resource> resources; // FIXME: = new ArrayList<Resource>();
+    private List<Resource> resources;
 
     @Embedded
     private GeneratedBy generatedBy;
