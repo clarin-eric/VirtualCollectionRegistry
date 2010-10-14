@@ -394,19 +394,20 @@ public class VirtualCollectionMarshaller {
     private VirtualCollection readVirtualCollection(
             XMLStreamReader reader) throws XMLStreamException {
         readStart(reader, "VirtualCollection", true, false);
-        VirtualCollection.State vc_state = null;
+
+        VirtualCollection vc = new VirtualCollection();
         String s = reader.getAttributeValue(null, "state");
         if ((s != null) && !s.isEmpty()) {
             if ("private".equals(s)) {
-                vc_state = VirtualCollection.State.PRIVATE;
+                vc.setState(VirtualCollection.State.PRIVATE);
             } else if ("public-pending".equals(s)) {
-                vc_state = VirtualCollection.State.PUBLIC_PENDING;
+                vc.setState(VirtualCollection.State.PUBLIC_PENDING);
             } else if ("public".equals(s)) {
-                vc_state = VirtualCollection.State.PUBLIC;
+                vc.setState(VirtualCollection.State.PUBLIC);
             } else if ("deleted".equals(s)) {
-                vc_state = VirtualCollection.State.DELETED;
+                vc.setState(VirtualCollection.State.DELETED);
             } else if ("dead".equals(s)) {
-                vc_state = VirtualCollection.State.DEAD;
+                vc.setState(VirtualCollection.State.DEAD);
             } else {
                 throw new XMLStreamException("invalid value for attribute " +
                         "'state' on element 'VirtualCollecion', expected one " +
@@ -416,22 +417,16 @@ public class VirtualCollectionMarshaller {
         }
         reader.next();
         readStart(reader, "Type", true, true);
-        VirtualCollection.Type vc_type;
         s = readString(reader, true);
         if ("extensional".equals(s)) {
-            vc_type = VirtualCollection.Type.EXTENSIONAL;
+            vc.setType(VirtualCollection.Type.EXTENSIONAL);
         } else if ("intensional".equals(s)) {
-            vc_type = VirtualCollection.Type.INTENSIONAL;
+            vc.setType(VirtualCollection.Type.INTENSIONAL);
         } else {
             throw new XMLStreamException("invalid value for element 'Type', " +
                     "expected either 'extensional' or 'intensional'");
         }
         readStart(reader, "Name", true, true);
-        VirtualCollection vc =
-            new VirtualCollection(vc_type, readString(reader, false));
-        if (vc_state != null) {
-            vc.setState(vc_state);
-        }
         if (readStart(reader, "Description", false, true)) {
             vc.setDescription(readString(reader, false));
         }

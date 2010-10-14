@@ -167,17 +167,11 @@ public class VirtualCollection implements Serializable {
     @Column(name = "modified", nullable = false)
     private Date modifiedDate;
 
-    @SuppressWarnings("unused")
-    private VirtualCollection() {
-    }
-    
-    public VirtualCollection(VirtualCollection.Type type, String name) {
+    public VirtualCollection() {
         super();
         this.setState(VirtualCollection.State.PRIVATE);
-        this.setType(type);
-        this.setName(name);
     }
-
+    
     public Long getId() {
         return id;
     }
