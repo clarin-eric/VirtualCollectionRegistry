@@ -57,7 +57,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
                             "WHERE c.owner = :owner"),
         @NamedQuery(name = "VirtualCollection.findAllByState",
                     query = "SELECT c FROM VirtualCollection c " +
-                            "WHERE c.state = :state AND c.modifiedDate < :date")
+                            "WHERE c.state = :state AND c.dateModified < :date")
 })
 public class VirtualCollection implements Serializable {
     private static final long serialVersionUID = 1L;
@@ -160,12 +160,12 @@ public class VirtualCollection implements Serializable {
 
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created", nullable = false, updatable = false)
-    private Date createdDate = new Date();
+    private Date dateCreated = new Date();
 
     @Temporal(TemporalType.TIMESTAMP)
     @Version
     @Column(name = "modified", nullable = false)
-    private Date modifiedDate;
+    private Date dateModified;
 
     public VirtualCollection() {
         super();
@@ -334,19 +334,19 @@ public class VirtualCollection implements Serializable {
         this.generatedBy = generatedBy;
     }
 
-    public Date getCreatedDate() {
-        return createdDate;
+    public Date getDateCreated() {
+        return dateCreated;
     }
 
-    public Date getModifiedDate() {
-        return modifiedDate;
+    public Date getDateModified() {
+        return dateModified;
     }
 
-    public void setModifiedDate(Date modifiedDate) {
-        if (modifiedDate == null) {
-            throw new NullPointerException("modifiedDate == null");
+    public void setDateModified(Date dateModified) {
+        if (dateModified == null) {
+            throw new NullPointerException("dateModified == null");
         }
-        this.modifiedDate = modifiedDate;
+        this.dateModified = dateModified;
     }
 
     public void updateFrom(VirtualCollection vc) {

@@ -102,8 +102,26 @@ public class VirtualCollectionMarshallerTest {
         // round-tripping
         ByteArrayOutputStream out = new ByteArrayOutputStream(65536);
         m.marshal(out, Format.XML, vc);
-        m.unmarshal(new ByteArrayInputStream(out.toByteArray()),
-                Format.XML, "utf-8");
+        VirtualCollection vc2 =
+            m.unmarshal(new ByteArrayInputStream(out.toByteArray()),
+                    Format.XML, "utf-8");
+        assertEquals(vc.getOwner(), vc2.getOwner());
+        assertEquals(vc.getPersistentIdentifier(),
+                vc2.getPersistentIdentifier());
+        assertEquals(vc.getState(), vc2.getState());
+        assertEquals(vc.getType(), vc2.getType());
+        assertEquals(vc.getName(), vc2.getName());
+        assertEquals(vc.getDescription(), vc2.getDescription());
+        assertEquals(vc.getCreationDate(), vc2.getCreationDate());
+        assertEquals(vc.getCreators(), vc2.getCreators());
+        assertEquals(vc.getPurpose(), vc2.getPurpose());
+        assertEquals(vc.getReproducibility(), vc2.getReproducibility());
+        assertEquals(vc.getReproducibilityNotice(),
+                vc2.getReproducibilityNotice());
+        assertEquals(vc.getKeywords(), vc2.getKeywords());
+        assertEquals(vc.getResources(), vc2.getResources());
+        assertEquals(vc.getGeneratedBy(), vc2.getGeneratedBy());
+        assertEquals(vc, vc2);
     }
 
     @Test
@@ -155,8 +173,26 @@ public class VirtualCollectionMarshallerTest {
         // round-tripping
         ByteArrayOutputStream out = new ByteArrayOutputStream(65536);
         m.marshal(out, Format.XML, vc);
-        m.unmarshal(new ByteArrayInputStream(out.toByteArray()),
-                Format.XML, "utf-8");
+        VirtualCollection vc2 =
+            m.unmarshal(new ByteArrayInputStream(out.toByteArray()),
+                    Format.XML, "utf-8");
+        assertEquals(vc.getOwner(), vc2.getOwner());
+        assertEquals(vc.getPersistentIdentifier(),
+                vc2.getPersistentIdentifier());
+        assertEquals(vc.getState(), vc2.getState());
+        assertEquals(vc.getType(), vc2.getType());
+        assertEquals(vc.getName(), vc2.getName());
+        assertEquals(vc.getDescription(), vc2.getDescription());
+        assertEquals(vc.getCreationDate(), vc2.getCreationDate());
+        assertEquals(vc.getCreators(), vc2.getCreators());
+        assertEquals(vc.getPurpose(), vc2.getPurpose());
+        assertEquals(vc.getReproducibility(), vc2.getReproducibility());
+        assertEquals(vc.getReproducibilityNotice(),
+                vc2.getReproducibilityNotice());
+        assertEquals(vc.getKeywords(), vc2.getKeywords());
+        assertEquals(vc.getResources(), vc2.getResources());
+        assertEquals(vc.getGeneratedBy(), vc2.getGeneratedBy());
+        assertEquals(vc, vc2);
     }
 
 } // class VirtualCollectionMarshallerTest

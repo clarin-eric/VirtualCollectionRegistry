@@ -252,7 +252,7 @@ public class VirtualCollectionMarshaller {
             writer.writeStartElement("CreationDate");
             // XXX: threading vs. performance
             synchronized (df) {
-                writer.writeCharacters(df.format(vc.getCreatedDate()));
+                writer.writeCharacters(df.format(vc.getCreationDate()));
             } // synchronized (df)
             writer.writeEndElement(); // "CreationDate" element
         }
@@ -427,6 +427,7 @@ public class VirtualCollectionMarshaller {
                     "expected either 'extensional' or 'intensional'");
         }
         readStart(reader, "Name", true, true);
+        vc.setName(readString(reader, false));
         if (readStart(reader, "Description", false, true)) {
             vc.setDescription(readString(reader, false));
         }
@@ -582,7 +583,7 @@ public class VirtualCollectionMarshaller {
         out.writeCharacters(vc.getOwner().getName());
         out.writeEndElement(); // "MdCreator" element
         out.writeStartElement(NS_CMDI, "MdCreationDate");
-        out.writeCharacters(df.format(vc.getCreatedDate()));
+        out.writeCharacters(df.format(vc.getDateCreated()));
         out.writeEndElement(); // "MdCreationDate" element
         out.writeStartElement(NS_CMDI, "MdSelfLink");
 
