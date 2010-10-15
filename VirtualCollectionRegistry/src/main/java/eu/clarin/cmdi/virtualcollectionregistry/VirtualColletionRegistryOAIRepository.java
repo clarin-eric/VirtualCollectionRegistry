@@ -99,8 +99,8 @@ class VirtualColletionRegistryOAIRepository implements Repository {
 
             CriteriaQuery<Date> cq = cb.createQuery(Date.class);
             Root<VirtualCollection> root = cq.from(VirtualCollection.class);
-            cq.select(root.get(VirtualCollection_.modifiedDate));
-            cq.orderBy(cb.asc(root.get(VirtualCollection_.modifiedDate)));
+            cq.select(root.get(VirtualCollection_.dateModified));
+            cq.orderBy(cb.asc(root.get(VirtualCollection_.dateModified)));
 
             em.getTransaction().begin();
             TypedQuery<Date> q = em.createQuery(cq);
@@ -252,7 +252,7 @@ class VirtualColletionRegistryOAIRepository implements Repository {
             Root<VirtualCollection> root2 = cq2.from(VirtualCollection.class);
             cq2.select(root2);
             cq2.where(buildWhere(cb, cq2, root2, from, until));
-            cq2.orderBy(cb.asc(root2.get(VirtualCollection_.modifiedDate)));
+            cq2.orderBy(cb.asc(root2.get(VirtualCollection_.dateModified)));
             
             em.getTransaction().begin();
             TypedQuery<Long> q1 = em.createQuery(cq1);
@@ -299,13 +299,13 @@ class VirtualColletionRegistryOAIRepository implements Repository {
                                   VirtualCollection.State.PUBLIC);
         if ((from != null) && (until != null)) {
             where = cb.and(where, cb.between(root
-                    .get(VirtualCollection_.modifiedDate), from, until));
+                    .get(VirtualCollection_.dateModified), from, until));
         } else if (from != null) {
             where = cb.and(where, cb.greaterThanOrEqualTo(root
-                    .get(VirtualCollection_.modifiedDate), from));
+                    .get(VirtualCollection_.dateModified), from));
         } else if (until != null) {
             where = cb.and(where, cb.lessThanOrEqualTo(root
-                    .get(VirtualCollection_.modifiedDate), until));
+                    .get(VirtualCollection_.dateModified), until));
         }
         return where;
     }
@@ -324,7 +324,7 @@ class VirtualColletionRegistryOAIRepository implements Repository {
 
         @Override
         public Date getDatestamp() {
-            return vc.getModifiedDate();
+            return vc.getDateModified();
         }
 
         @Override
@@ -355,7 +355,7 @@ class VirtualColletionRegistryOAIRepository implements Repository {
 
         RecordHeaderImpl(VirtualCollection vc) {
             this.id = vc.getId();
-            this.datestamp = vc.getModifiedDate();
+            this.datestamp = vc.getDateModified();
             this.deleted = (vc.getState() == VirtualCollection.State.DELETED);
         }
 
