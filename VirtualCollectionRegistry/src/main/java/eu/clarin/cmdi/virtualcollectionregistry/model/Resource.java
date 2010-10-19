@@ -37,8 +37,8 @@ public class Resource implements Serializable {
     private String ref;
 
 
-    @SuppressWarnings("unused")
-    private Resource() {
+    public Resource() {
+        super();
     }
 
     public Resource(Resource.Type type, String ref) {

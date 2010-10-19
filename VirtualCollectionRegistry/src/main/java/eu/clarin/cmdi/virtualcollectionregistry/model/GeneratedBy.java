@@ -25,9 +25,9 @@ public class GeneratedBy implements Serializable {
         @Lob
         private String value;
 
-
-        @SuppressWarnings("unused")
-        private Query() {
+        
+        public Query() {
+            super();
         }
 
         public Query(String profile, String value) {
@@ -100,8 +100,8 @@ public class GeneratedBy implements Serializable {
     @Embedded
     private GeneratedBy.Query query;
 
-    @SuppressWarnings("unused")
-    private GeneratedBy() {
+    public GeneratedBy() {
+        super();
     }
 
     public GeneratedBy(String description) {

@@ -32,8 +32,8 @@ public class Creator implements Serializable {
     private String organisation;
 
     
-    @SuppressWarnings("unused")
-    private Creator() {
+    public Creator() {
+        super();
     }
 
     public Creator(String name, String email, String organisation) {
