@@ -1,0 +1,148 @@
+* {
+    margin: 0;
+    padding: 0;	
+}
+
+html, body {
+	font-family: Verdana;
+	font-size: 12px;
+	margin: 0;
+	padding: 0;
+	line-height: 1;
+    height: 100%;
+}
+
+#noscript-space {
+	height: 24px;
+    margin: 0;
+    padding: 0;
+}
+
+#noscript-warning {
+    background-color: #AE0000;
+    color: #FFFFFF;
+    font-size: 13px;
+    font-weight: bold;
+    text-align: center;
+    line-height: 24px;
+    margin: 0;
+    padding: 0;
+    text-align: center;
+    vertical-align: middle;
+    position: fixed;
+    top: 0;
+    left: 0;
+    width: 100%;
+    z-index: 101;
+}
+
+#header-logo {
+	margin: 0;
+	padding: 5px; 
+    height: 70px;
+    color: #004071;
+    background-color: #E9EEF7;
+}
+	
+#header-logo #clarin-logo {
+	background: transparent url('../images/clarin-logo.png') no-repeat;
+	float: left;
+	width: 298px;
+    height: 70px;
+}
+
+#header-logo #ids-logo {
+    background: transparent url('../images/ids-logo.png') no-repeat;
+    float: right;
+    width: 55px;
+    height: 70px;
+}
+
+#header-logo h1 {
+    margin: 0 55px 0 298px;
+    padding: 0 32px 0 32px;
+    height: 70px;
+    line-height: 70px;
+    font-size: 36px;
+    font-weight: bold;
+    font-variant: small-caps;
+}
+
+#navigation {
+	margin: 0;
+	padding: 0;
+	height: 24px;
+	clear: both;
+    color: #000000;
+    background-color: #D4DEEF;
+    font-size: 16px;
+}
+	
+#menu {
+    margin: 0 100px 0 0;
+}
+	
+#menu ul {
+	list-style-type: none;
+    margin: 0;
+    padding: 0;
+}
+
+#menu li {
+    float: left;
+    margin-left: 4px;
+}
+
+#menu a, #menu span.active {
+    display: block;
+    margin: 0;
+    padding: 4px 16px 4px 16px;
+    width: auto;
+    height: 16px;
+    line-height: 16px;
+    text-align: center;
+    text-decoration: none;
+    font-weight: bold;
+}
+
+#menu a, #menu a:active, #menu a:visited {
+	color: #000000;
+	background-color: inherit;
+}
+
+#menu a:hover {
+	color: #AE0000;
+	background-color: #E9EEF7;
+}
+
+#menu span.active {
+    font-style: italic;
+}
+	
+#login {
+	float: right;
+    padding: 4px 4px 4px 4px;
+    width: auto;
+    height: 16px;
+    line-height: 16px;
+}
+
+#container {
+    min-height: 100%;
+    height: auto !important;
+    height: 100%;
+    margin: 0 auto -18px; /* the bottom margin is the negative value of the footer's height */
+}
+
+#footer, .push {
+	height: 18px;
+}
+
+#footer {
+	padding: 0 4px;
+    line-height: 18px;
+    text-align: right;
+    color: #000000;
+    background-color: #D4DEEF;
+}
+
