@@ -5,22 +5,28 @@
 <head />
 <body>
 <wicket:panel>
+<form wicket:id="editResourceForm">
 <!--  FIXME: use proper CSS, not table! -->
-<div style="display: none" wicket:id="editResourceDialog"></div>
-<div style="display: none" wicket:id="deleteResourceDialog"></div>
-<div style="display: none" wicket:id="addResourcesDialog"></div>
 <table>
-  <tr style="vertical-align: top">
-    <td>Resources</td>
-    <td><table wicket:id="resourcesTable"></table></td>
+  <tr>
+    <td>Type</td>
+    <td><select wicket:id="type"></select></td>
+  </tr>
+  <tr>
+    <td>Reference</td>
+    <td><input type="text" wicket:id="ref" /></td>
+  </tr>
+  <tr>
+    <td colspan="2"><div wicket:id="feedback"></div></td>
   </tr>
   <tr>
     <td colspan="2">
-      <a href="#" wicket:id="add">add resource</a>
-      <a href="#" wicket:id="addMore">add more resource</a>
+        <button type="button" wicket:id="add">Add</button>
+        <button type="button" wicket:id="cancel">Cancel</button>
     </td>
   </tr>
 </table>
+</form>
 </wicket:panel>
 </body>
 </html>

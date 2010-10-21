@@ -29,7 +29,9 @@ import org.apache.wicket.model.StringResourceModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ConfirmationDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.HomePage;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
+import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.Resource.Type;
 
 @SuppressWarnings("serial")
 public class CreateVirtualCollectionWizard extends Wizard {
@@ -120,7 +122,13 @@ public class CreateVirtualCollectionWizard extends Wizard {
                             @Override
                             public Iterator<? extends Creator> iterator(
                                     int first, int count) {
-                                return vc.getCreators().iterator();
+                                // XXX: hack
+                                Iterator<Creator> i =
+                                    vc.getCreators().iterator();
+                                while (first-- > 0) {
+                                    i.next();
+                                }
+                                return i;
                             }
 
                             @Override
@@ -149,6 +157,11 @@ public class CreateVirtualCollectionWizard extends Wizard {
             };
             add(editCreatorDialog);
 
+            deleteCreatorDialog =
+                new DeleteCreatorDialog("deleteCreatorDialog",
+                        creatorsTable);
+            add(deleteCreatorDialog);
+
             add(new AjaxLink<Object>("add") {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
@@ -156,10 +169,6 @@ public class CreateVirtualCollectionWizard extends Wizard {
                     editCreatorDialog.show(target);
                 }
             });
-            deleteCreatorDialog =
-                new DeleteCreatorDialog("deleteCreatorDialog",
-                        creatorsTable);
-            add(deleteCreatorDialog);
         }
 
         @SuppressWarnings("unchecked")
@@ -185,21 +194,184 @@ public class CreateVirtualCollectionWizard extends Wizard {
         }
     } // class CreateVirtualCollectionWizard.CreatorsStep
 
-//    private final class ResourcesStep extends WizardStep {
-//        public ResourcesStep() {
-//            super("Resources", "Yada yada yada ...");
-//        }
-//    }// class CreateVirtualCollectionWizard.CreatorsStep
+    private final class ResourcesStep extends WizardStep {
+        private final class ActionsPanel extends Panel {
+            public ActionsPanel(String id, final IModel<Resource> model) {
+                super(id, model);
+                final AjaxLink<Resource> editLink =
+                    new AjaxLink<Resource>("edit") {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        final Resource resource = model.getObject();
+                        if (resource != null) {
+                            editResourceDialog.setResource(resource);
+                            editResourceDialog.show(target);
+                        }
+                    }
+                };
+                add(editLink);
+                final AjaxLink<Resource> removeLink =
+                    new AjaxLink<Resource>("remove") {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        final Resource resource = model.getObject();
+                        if (resource != null) {
+                            deleteResourceDialog.setResource(resource);
+                            deleteResourceDialog.show(target);
+                        }
+                    }
+                };
+                add(removeLink);
+            }
+        } // class CreateVirtualCollectionWizard.ResourcesStep.ActionsPanel
+
+        private final class DeleteResourceDialog extends ConfirmationDialog {
+            private final transient DataTable<Resource> resourcesTable;
+            private Resource resource;
+
+            public DeleteResourceDialog(String id,
+                    DataTable<Resource> resourcesTable) {
+                super(id, new Model<String>(""));
+                this.resourcesTable = resourcesTable;
+            }
+
+            public void setResource(Resource resource) {
+                this.resource = resource;
+                setMessage(new StringResourceModel("resources.deleteconfirm",
+                        new Model<Resource>(resource)));
+            }
+
+            @Override
+            public void onConfirm(AjaxRequestTarget target) {
+                if (resource != null) {
+                    vc.getResources().remove(resource);
+                    target.addComponent(resourcesTable);
+                }
+            }
+
+            @Override
+            public void onCancel(AjaxRequestTarget target) {
+            }
+        } // class CreateVirtualCollectionWizard.CreatorsStep.DeleteConfirmDialog
+
+        private final EditResourceDialog editResourceDialog;
+        private final DeleteResourceDialog deleteResourceDialog;
+        
+        public ResourcesStep() {
+            super("Resources", "Yada yada yada ...");
+            final DataTable<Resource> resourcesTable =
+                new AjaxFallbackDefaultDataTable<Resource>("resourcesTable",
+                        createColumns(),
+                        new SortableDataProvider<Resource>() {
+                            @Override
+                            public Iterator<? extends Resource> iterator(
+                                    int first, int count) {
+                                // XXX: hack
+                                Iterator<Resource> i =
+                                    vc.getResources().iterator();
+                                while (first-- > 0) {
+                                    i.next();
+                                }
+                                return i;
+                            }
+
+                            @Override
+                            public IModel<Resource> model(Resource resource) {
+                                return new Model<Resource>(resource);
+                            }
+
+                            @Override
+                            public int size() {
+                                return vc.getResources().size();
+                            }
+                        },                   
+                        8);
+            add(resourcesTable);
+            
+            editResourceDialog = new EditResourceDialog("editResourceDialog") {
+                @Override
+                public void onSubmit(AjaxRequestTarget target, Resource resource) {
+                    if (resource != null) {
+                        if (!vc.getResources().contains(resource)) {
+                            vc.getResources().add(resource);
+                        }
+                        target.addComponent(resourcesTable);
+                    }
+                }
+            };
+            add(editResourceDialog);
+
+            deleteResourceDialog =
+                new DeleteResourceDialog("deleteResourceDialog",
+                        resourcesTable);
+            add(deleteResourceDialog);
+
+            final AddResourcesDialog addResourcesDialog =
+                new AddResourcesDialog("addResourcesDialog") {
+                    @Override
+                    public void onSubmit(AjaxRequestTarget target,
+                            Resource[] resources) {
+                        for (Resource resource : resources) {
+                            if (!vc.getResources().contains(resource)) {
+                                vc.getResources().add(resource);
+                            }
+                        }
+                        target.addComponent(resourcesTable);
+                    }
+                
+            };
+            add(addResourcesDialog);
+
+            add(new AjaxLink<Object>("add") {
+                @Override
+                public void onClick(AjaxRequestTarget target) {
+                    editResourceDialog.setResource(new Resource());
+                    editResourceDialog.show(target);
+                }
+            });
+
+            add(new AjaxLink<Object>("addMore") {
+                @Override
+                public void onClick(AjaxRequestTarget target) {
+                    addResourcesDialog.show(target);
+                }
+            });
+        }
+
+        @SuppressWarnings("unchecked")
+        private IColumn<Resource>[] createColumns() {
+            final IColumn<?>[] columns = new IColumn<?>[] {
+                    new PropertyColumn<Resource>(
+                            new Model<String>("Type"), "type"),
+                    new PropertyColumn<Resource>(
+                            new Model<String>("Reference"), "ref"),
+                    new HeaderlessColumn<Resource>() {
+                        @Override
+                        public void populateItem(
+                                Item<ICellPopulator<Resource>> cellItem,
+                                String compontentId,
+                                IModel<Resource> model) {
+                            cellItem.add(new ActionsPanel(compontentId, model));
+                        }
+                    }
+            };
+            return (IColumn<Resource>[]) columns;
+        }
+    } // class CreateVirtualCollectionWizard.CreatorsStep
 
     private final VirtualCollection vc = new VirtualCollection();
 
     public CreateVirtualCollectionWizard(String id) {
         super(id);
+        vc.getResources().add(new Resource(Type.METADATA, "http://some/where1"));
+        vc.getResources().add(new Resource(Type.METADATA, "http://some/where2"));
+        vc.getResources().add(new Resource(Type.METADATA, "http://some/where3"));
+        vc.getResources().add(new Resource(Type.METADATA, "http://some/where4"));
         setDefaultModel(new CompoundPropertyModel<VirtualCollection>(this));
         WizardModel model = new WizardModel();
         model.add(new GeneralStep());
         model.add(new CreatorsStep());
-        // model.add(new ResourcesStep());
+        model.add(new ResourcesStep());
         init(model);
     }
 
@@ -214,7 +386,10 @@ public class CreateVirtualCollectionWizard extends Wizard {
         System.err.println("Type: " + vc.getType());
         System.err.println("Desc: " + vc.getDescription());
         for (Creator c : vc.getCreators()) {
-            System.err.println(c.getName() + ", " + c.getEMail());
+            System.err.println("C: " + c.getName() + ", " + c.getEMail());
+        }
+        for (Resource r : vc.getResources()) {
+            System.err.println("R: " + r.getType() + ", " + r.getRef());
         }
     }
 
