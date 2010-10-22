@@ -7,18 +7,25 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.HeaderlessColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.extensions.wizard.Wizard;
-import org.apache.wicket.extensions.wizard.WizardModel;
-import org.apache.wicket.extensions.wizard.WizardStep;
+import org.apache.wicket.extensions.wizard.dynamic.DynamicWizardModel;
+import org.apache.wicket.extensions.wizard.dynamic.DynamicWizardStep;
+import org.apache.wicket.extensions.wizard.dynamic.IDynamicWizardStep;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
+import org.apache.wicket.markup.html.form.Form;
+import org.apache.wicket.markup.html.form.FormComponent;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.TextArea;
+import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -29,15 +36,15 @@ import org.apache.wicket.model.StringResourceModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ConfirmationDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.HomePage;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
+import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import eu.clarin.cmdi.virtualcollectionregistry.model.Resource.Type;
 
 @SuppressWarnings("serial")
 public class CreateVirtualCollectionWizard extends Wizard {
-    private final class GeneralStep extends WizardStep {
+    private final class GeneralStep extends DynamicWizardStep {
         public GeneralStep() {
-            super("General", "Yada yada yada ...");
+            super(null, "General", "Yada yada yada ...");
             add(new RequiredTextField<String>("vc.name"));
             final DropDownChoice<VirtualCollection.Type> typeChoice =
                 new DropDownChoice<VirtualCollection.Type>("vc.type",
@@ -47,9 +54,19 @@ public class CreateVirtualCollectionWizard extends Wizard {
             add(typeChoice);
             add(new TextArea<String>("vc.description"));
         }
+
+        @Override
+        public boolean isLastStep() {
+            return false;
+        }
+
+        @Override
+        public IDynamicWizardStep next() {
+            return new CreatorsStep(this);
+        }
     } // class CreateVirtualCollectionWizard.GeneralStep
 
-    private final class CreatorsStep extends WizardStep {
+    private final class CreatorsStep extends DynamicWizardStep {
         private final class ActionsPanel extends Panel {
             public ActionsPanel(String id, final IModel<Creator> model) {
                 super(id, model);
@@ -108,13 +125,13 @@ public class CreateVirtualCollectionWizard extends Wizard {
             @Override
             public void onCancel(AjaxRequestTarget target) {
             }
-        } // class CreateVirtualCollectionWizard.CreatorsStep.DeleteConfirmDialog
+        } // class CreateVirtualCollectionWizard.CreatorsStep.DeleteCreatorDialog
         
         private final EditCreatorDialog editCreatorDialog;
         private final DeleteCreatorDialog deleteCreatorDialog;
 
-        public CreatorsStep() {
-            super("Creators", "Yada yada yada ...");
+        public CreatorsStep(IDynamicWizardStep previousStep) {
+            super(previousStep, "Creators", "Yada yada yada ...");
             final DataTable<Creator> creatorsTable =
                 new AjaxFallbackDefaultDataTable<Creator>("creatorsTable",
                         createColumns(),
@@ -146,7 +163,8 @@ public class CreateVirtualCollectionWizard extends Wizard {
             
             editCreatorDialog = new EditCreatorDialog("editCreatorDialog") {
                     @Override
-                    public void onSubmit(AjaxRequestTarget target, Creator creator) {
+                    public void onSubmit(AjaxRequestTarget target,
+                            Creator creator) {
                         if (creator != null) {
                             if (!vc.getCreators().contains(creator)) {
                                 vc.getCreators().add(creator);
@@ -171,6 +189,23 @@ public class CreateVirtualCollectionWizard extends Wizard {
             });
         }
 
+        @Override
+        public boolean isLastStep() {
+            return false;
+        }
+
+        @Override
+        public IDynamicWizardStep next() {
+            switch (vc.getType()) {
+            case EXTENSIONAL:
+                return new ResourcesStep(this);
+            case INTENSIONAL:
+                return new GeneratedByStep(this);
+                default:
+                    throw new InternalError("bad vc type");
+            } // switch
+        }
+
         @SuppressWarnings("unchecked")
         private IColumn<Creator>[] createColumns() {
             final IColumn<?>[] columns = new IColumn<?>[] {
@@ -183,10 +218,10 @@ public class CreateVirtualCollectionWizard extends Wizard {
                     new HeaderlessColumn<Creator>() {
                         @Override
                         public void populateItem(
-                                Item<ICellPopulator<Creator>> cellItem,
+                                Item<ICellPopulator<Creator>> item,
                                 String compontentId,
                                 IModel<Creator> model) {
-                            cellItem.add(new ActionsPanel(compontentId, model));
+                            item.add(new ActionsPanel(compontentId, model));
                         }
                     }
             };
@@ -194,7 +229,7 @@ public class CreateVirtualCollectionWizard extends Wizard {
         }
     } // class CreateVirtualCollectionWizard.CreatorsStep
 
-    private final class ResourcesStep extends WizardStep {
+    private final class ResourcesStep extends DynamicWizardStep {
         private final class ActionsPanel extends Panel {
             public ActionsPanel(String id, final IModel<Resource> model) {
                 super(id, model);
@@ -252,13 +287,13 @@ public class CreateVirtualCollectionWizard extends Wizard {
             @Override
             public void onCancel(AjaxRequestTarget target) {
             }
-        } // class CreateVirtualCollectionWizard.CreatorsStep.DeleteConfirmDialog
+        } // class CreateVirtualCollectionWizard.CreatorsStep.DeleteResourceDialog
 
         private final EditResourceDialog editResourceDialog;
         private final DeleteResourceDialog deleteResourceDialog;
         
-        public ResourcesStep() {
-            super("Resources", "Yada yada yada ...");
+        public ResourcesStep(IDynamicWizardStep previousStep) {
+            super(previousStep, "Resources", "Yada yada yada ...");
             final DataTable<Resource> resourcesTable =
                 new AjaxFallbackDefaultDataTable<Resource>("resourcesTable",
                         createColumns(),
@@ -333,50 +368,120 @@ public class CreateVirtualCollectionWizard extends Wizard {
             add(new AjaxLink<Object>("addMore") {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
+                    addResourcesDialog.clearForm();
                     addResourcesDialog.show(target);
                 }
             });
+
+            add(new AbstractFormValidator() {
+                @Override
+                public FormComponent<?>[] getDependentFormComponents() {
+                    return null;
+                }
+
+                @Override
+                public void validate(Form<?> form) {
+                    if (vc.getResources().isEmpty()) {
+                        form.error("An extensional collection requires at " +
+                                "least one resource.");
+                    }
+                }
+                
+            });
+        }
+
+        @Override
+        public boolean isLastStep() {
+            return true;
+        }
+
+        @Override
+        public IDynamicWizardStep next() {
+            return null;
         }
 
         @SuppressWarnings("unchecked")
         private IColumn<Resource>[] createColumns() {
             final IColumn<?>[] columns = new IColumn<?>[] {
-                    new PropertyColumn<Resource>(
-                            new Model<String>("Type"), "type"),
+                    new AbstractColumn<Resource>(new Model<String>("Type")) {
+                        @Override
+                        public void populateItem(
+                                Item<ICellPopulator<Resource>> item,
+                                String componentId,
+                                IModel<Resource> model) {
+                            final Resource resource = model.getObject();
+                            switch (resource.getType()) {
+                            case METADATA:
+                                item.add(new Label(componentId, "Metadata"));
+                                break;
+                            case RESOURCE:
+                                item.add(new Label(componentId, "Resource"));
+                                break;
+                            }
+                        }
+                    },
                     new PropertyColumn<Resource>(
                             new Model<String>("Reference"), "ref"),
                     new HeaderlessColumn<Resource>() {
                         @Override
                         public void populateItem(
-                                Item<ICellPopulator<Resource>> cellItem,
+                                Item<ICellPopulator<Resource>> item,
                                 String compontentId,
                                 IModel<Resource> model) {
-                            cellItem.add(new ActionsPanel(compontentId, model));
+                            item.add(new ActionsPanel(compontentId, model));
                         }
                     }
             };
             return (IColumn<Resource>[]) columns;
         }
-    } // class CreateVirtualCollectionWizard.CreatorsStep
+    } // class CreateVirtualCollectionWizard.ResourcesStep
 
+    private final class GeneratedByStep extends DynamicWizardStep {
+        private final GeneratedBy generatedBy = new GeneratedBy();
+
+        public GeneratedByStep(IDynamicWizardStep previousStep) {
+            super(previousStep, "GeneratedBy", "Yada yada yada ...");
+            final Form<GeneratedBy> form =
+                new Form<GeneratedBy>("generatedByForm",
+                        new CompoundPropertyModel<GeneratedBy>(generatedBy));
+            final TextArea<String> descriptionArea =
+                new TextArea<String>("description");
+            descriptionArea.setRequired(true);
+            form.add(descriptionArea);
+            form.add(new TextField<String>("uri"));
+            add(form);
+        }
+
+        @Override
+        public boolean isLastStep() {
+            return true;
+        }
+
+        @Override
+        public IDynamicWizardStep next() {
+            return null;
+        }
+
+        @Override
+        public void applyState() {
+            vc.setGeneratedBy(generatedBy);
+        }
+    } // class CreateVirtualCollectionWizard.GeneratedByStep
+
+    private static final VirtualCollection EMPTY_VC = new VirtualCollection();
     private final VirtualCollection vc = new VirtualCollection();
 
     public CreateVirtualCollectionWizard(String id) {
         super(id);
-        vc.getResources().add(new Resource(Type.METADATA, "http://some/where1"));
-        vc.getResources().add(new Resource(Type.METADATA, "http://some/where2"));
-        vc.getResources().add(new Resource(Type.METADATA, "http://some/where3"));
-        vc.getResources().add(new Resource(Type.METADATA, "http://some/where4"));
         setDefaultModel(new CompoundPropertyModel<VirtualCollection>(this));
-        WizardModel model = new WizardModel();
-        model.add(new GeneralStep());
-        model.add(new CreatorsStep());
-        model.add(new ResourcesStep());
-        init(model);
+        init(new DynamicWizardModel(new GeneralStep()));
     }
 
     @Override
     public void onCancel() {
+        if (!EMPTY_VC.equals(vc)) {
+            System.err.println("XXX: VC was modified!");
+        }
         setResponsePage(HomePage.class);
     }
 
@@ -390,6 +495,11 @@ public class CreateVirtualCollectionWizard extends Wizard {
         }
         for (Resource r : vc.getResources()) {
             System.err.println("R: " + r.getType() + ", " + r.getRef());
+        }
+        if (vc.getGeneratedBy() != null) {
+            final GeneratedBy gb = vc.getGeneratedBy();
+            System.err.println("GB.DESC: " + gb.getDescription());
+            System.err.println("GB.UR: " + gb.getURI());
         }
     }
 

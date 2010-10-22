@@ -34,7 +34,8 @@ public abstract class AddResourcesDialog extends ModalWindow {
             typeChoice.setRequired(true);
             form.add(typeChoice);
             final TextArea<String> referencesArea =
-                new TextArea<String>("references", new PropertyModel<String>(this, "refernces"));
+                new TextArea<String>("references",
+                        new PropertyModel<String>(this, "refernces"));
             referencesArea.setRequired(true);
             form.add(referencesArea);
             final FeedbackPanel feedback = new FeedbackPanel("feedback");
@@ -51,9 +52,9 @@ public abstract class AddResourcesDialog extends ModalWindow {
                 protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                     window.close(target);
                     if ((refernces != null) && !refernces.isEmpty()) {
-                        // FIXME: split pattern?
-                        String[] refs = refernces.split("\n");
-                        if ((type != null) && (refs != null) && (refs.length > 0)) {
+                        String[] refs = refernces.split("[;\\s]+");
+                        if ((type != null) && (refs != null) &&
+                                (refs.length > 0)) {
                             Resource[] resources = new Resource[refs.length];
                             int i = 0;
                             for (String ref : refs) {
@@ -75,6 +76,11 @@ public abstract class AddResourcesDialog extends ModalWindow {
             form.add(cancel);
             add(form);
         }
+        
+        private void clearForm() {
+            type = null;
+            refernces = null;
+        }
     } // class AddResourcesDialog.Content
 
     private final Content content;
@@ -91,6 +97,11 @@ public abstract class AddResourcesDialog extends ModalWindow {
         setInitialHeight(200);
     }
 
-    public abstract void onSubmit(AjaxRequestTarget target, Resource[] resources);
+    public void clearForm() {
+        content.clearForm();
+    }
+
+    public abstract void onSubmit(AjaxRequestTarget target,
+            Resource[] resources);
 
 } // AddResourcesDialog
