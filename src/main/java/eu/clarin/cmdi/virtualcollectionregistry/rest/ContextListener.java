@@ -28,6 +28,7 @@ public class ContextListener implements ServletContextListener {
             VirtualCollectionRegistry.initalize(config);
         } catch (VirtualCollectionRegistryException e) {
             ctx.log("error initializing registry", e);
+            throw new RuntimeException("error initializing registry", e);
         }
     }
 
