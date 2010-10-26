@@ -66,6 +66,10 @@ public class User implements Serializable {
         return id;
     }
 
+    public String getName() {
+        return name;
+    }
+
     public void setName(String name) {
         if (name == null) {
             throw new NullPointerException("name == null");
@@ -78,7 +82,7 @@ public class User implements Serializable {
     }
 
     public String getDisplayName() {
-        return name;
+        return displayName;
     }
 
     public void setDisplayName(String displayName) {
@@ -89,10 +93,6 @@ public class User implements Serializable {
             }
         }
         this.displayName = displayName;
-    }
-
-    public String getName() {
-        return displayName;
     }
 
     public Set<VirtualCollection> getVirtualCollections() {
