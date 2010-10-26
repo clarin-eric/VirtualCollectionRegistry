@@ -130,12 +130,6 @@
 
   <dependencies>
     <dependency>
-      <groupId>eu.clarin.cmdi</groupId>
-      <artifactId>OAIProvider</artifactId>
-      <version>0.0.1</version>
-    </dependency>
-
-    <dependency>
       <groupId>org.slf4j</groupId>
       <artifactId>slf4j-jdk14</artifactId>
       <version>${slf4j.version}</version>
@@ -143,17 +137,10 @@
     </dependency>
 
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
       <version>2.5</version>
       <type>jar</type>
-      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -169,6 +156,22 @@
     </dependency>
 
     <dependency>
+        <groupId>org.codehaus.woodstox</groupId>
+        <artifactId>woodstox-core-asl</artifactId>
+        <version>4.0.8</version>
+        <type>jar</type>
+        <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>net.java.dev.msv</groupId>
+        <artifactId>msv-core</artifactId>
+        <version>2009.1</version>
+        <type>jar</type>
+        <scope>compile</scope>
+    </dependency>
+
+    <dependency>
       <groupId>org.hibernate.javax.persistence</groupId>
       <artifactId>hibernate-jpa-2.0-api</artifactId>
       <version>${hibernate.jpaVersion}</version>
@@ -179,12 +182,6 @@
       <artifactId>hibernate-entitymanager</artifactId>
       <version>${hibernate.version}</version>
       <scope>runtime</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
@@ -205,11 +202,15 @@
           <groupId>org.hibernate.javax.persistence</groupId>
           <artifactId>hibernate-jpa-2.0-api</artifactId>
         </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
       </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <type>jar</type>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -245,22 +246,6 @@
 
 
     <dependency>
-        <groupId>org.codehaus.woodstox</groupId>
-        <artifactId>woodstox-core-asl</artifactId>
-        <version>4.0.8</version>
-        <type>jar</type>
-        <scope>compile</scope>
-    </dependency>
-
-    <dependency>
-        <groupId>net.java.dev.msv</groupId>
-        <artifactId>msv-core</artifactId>
-        <version>2009.1</version>
-        <type>jar</type>
-        <scope>compile</scope>
-    </dependency>
-
-    <dependency>
       <groupId>org.codehaus.jettison</groupId>
       <artifactId>jettison</artifactId>
       <version>1.2</version>
@@ -270,13 +255,6 @@
           <artifactId>stax-api</artifactId>
         </exclusion>
       </exclusions>
-    </dependency>
-
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>2.5</version>
-      <type>jar</type>
     </dependency>
 
     <dependency>
@@ -314,6 +292,12 @@
     </dependency>
 
     <dependency>
+      <groupId>eu.clarin.cmdi</groupId>
+      <artifactId>OAIProvider</artifactId>
+      <version>0.0.1</version>
+    </dependency>
+
+    <dependency>
     	<groupId>junit</groupId>
     	<artifactId>junit</artifactId>
     	<version>4.8.1</version>
@@ -340,8 +324,14 @@
 
   <dependencyManagement>
   	<dependencies>
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
   	</dependencies>
   </dependencyManagement>
+
   <properties>
     <!-- project settings -->
     <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
@@ -349,10 +339,10 @@
     <maven.compiler.source>1.6</maven.compiler.source>
     <maven.compiler.target>1.6</maven.compiler.target>
     <!-- dependency versions -->
+    <slf4j.version>1.6.1</slf4j.version>
     <hibernate.version>3.5.6-Final</hibernate.version>
     <hibernate.jpaVersion>1.0.0.Final</hibernate.jpaVersion>
     <jersey.version>1.4</jersey.version>
-    <slf4j.version>1.6.0</slf4j.version>
     <wicket.version>1.4.12</wicket.version>
   </properties>
 </project>
