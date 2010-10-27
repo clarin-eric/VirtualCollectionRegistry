@@ -94,7 +94,7 @@ public abstract class AddResourcesDialog extends ModalWindow {
         content.setOutputMarkupId(true);
         setContent(content);
         setInitialWidth(350);
-        setInitialHeight(200);
+        setUseInitialHeight(false);
     }
 
     public void clearForm() {

@@ -87,7 +87,7 @@ public abstract class ConfirmationDialog extends ModalWindow {
         content.setOutputMarkupId(true);
         setContent(content);
         setInitialWidth(350);
-        setInitialHeight(200);
+        setUseInitialHeight(false);
         setWindowClosedCallback(new ModalWindow.WindowClosedCallback() {
             @Override
             public void onClose(AjaxRequestTarget target) {

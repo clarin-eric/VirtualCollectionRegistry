@@ -73,7 +73,7 @@ public abstract class EditCreatorDialog extends ModalWindow {
         content.setOutputMarkupId(true);
         setContent(content);
         setInitialWidth(350);
-        setInitialHeight(200);
+        setUseInitialHeight(false);
     }
 
     public void setCreator(Creator creator) {
