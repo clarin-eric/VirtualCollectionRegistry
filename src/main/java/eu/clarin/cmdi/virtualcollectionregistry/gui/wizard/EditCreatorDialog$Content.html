@@ -1,35 +1,31 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
 <head />
 <body>
 <wicket:panel>
 <form wicket:id="newCreatorForm">
-<!--  FIXME: use proper CSS, not table! -->
-<table>
-  <tr>
-    <td>Name</td>
-    <td><input type="text" wicket:id="name" /></td>
-  </tr>
-  <tr>
-    <td>E-mail-Address</td>
-    <td><input type="text" wicket:id="email" /></td>
-  </tr>
-  <tr>
-    <td>Organisation</td>
-    <td><input type="text" wicket:id="organisation" /></td>
-  </tr>
-  <tr>
-  <td colspan="2"><div wicket:id="feedback"></div></td>
-  </tr>
-  <tr>
-    <td colspan="2">
-        <button type="button" wicket:id="add">Add</button>
-        <button type="button" wicket:id="cancel">Cancel</button>
-    </td>
-  </tr>
-</table>
+<fieldset>
+  <div class="requierd">
+    <label for="edit_creator_name">Name</label>
+    <input wicket:id="name" id="edit_creator_name" type="text" />
+  </div>
+  <div class="optional">
+    <label for="edit_creator_email">E-Mail</label>
+    <input wicket:id="email" id="edit_creator_email" type="text" />
+  </div>
+  <div class="optional">
+    <label for="edit_creator_org">Organisation</label>
+    <input wicket:id="organisation" id="edit_creator_org" type="text" />
+  </div>
+</fieldset>
+<div wicket:id="feedback"></div>
+<div class="buttons">
+  <button type="button" wicket:id="add">Add</button>
+  <button type="button" wicket:id="cancel">Cancel</button>
+</div>
 </form>
 </wicket:panel>
 </body>
