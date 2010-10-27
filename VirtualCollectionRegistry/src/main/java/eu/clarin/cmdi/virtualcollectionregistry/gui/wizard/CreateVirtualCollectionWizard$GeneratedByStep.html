@@ -1,22 +1,23 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
 <head />
 <body>
 <wicket:panel>
 <form wicket:id="generatedByForm">
-<!--  FIXME: use proper CSS, not table! -->
-<table>
-  <tr>
-    <td>Description</td>
-    <td><textarea wicket:id="description"></textarea></td>
-  </tr>
-  <tr>
-    <td>URI</td>
-    <td><input type="text" wicket:id="uri" /></td>
-  </tr>
-</table>
+<fieldset>
+  <div class="required">
+     <label for="gen_desc">Description</label>
+     <textarea wicket:id="description"
+               id="gen_desc" rows="5" cols="80"></textarea>
+  </div>
+  <div class="optional">
+     <label for="gen_uri">URI</label>
+     <input wicket:id="uri" id="gen_uri" type="text" />
+  </div>
+</fieldset>
 </form>
 </wicket:panel>
 </body>

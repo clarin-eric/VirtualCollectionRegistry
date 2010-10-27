@@ -1,26 +1,18 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
 <head />
 <body>
 <wicket:panel>
-<!--  FIXME: use proper CSS, not table! -->
 <div style="display: none" wicket:id="editResourceDialog"></div>
 <div style="display: none" wicket:id="deleteResourceDialog"></div>
 <div style="display: none" wicket:id="addResourcesDialog"></div>
-<table>
-  <tr style="vertical-align: top">
-    <td>Resources</td>
-    <td><table wicket:id="resourcesTable"></table></td>
-  </tr>
-  <tr>
-    <td colspan="2">
-      <a href="#" wicket:id="add">add resource</a>
-      <a href="#" wicket:id="addMore">add more resource</a>
-    </td>
-  </tr>
-</table>
+<div class="fieldset">
+  <label class="required">Resources<br /><a wicket:id="add" href="#" class="add"><span>[add]</span></a><br /><a wicket:id="addMore" href="#" class="addMore"><span>[add more]</span></a></label>
+  <table wicket:id="resourcesTable" class="resourcesTable"></table>
+</div>
 </wicket:panel>
 </body>
 </html>

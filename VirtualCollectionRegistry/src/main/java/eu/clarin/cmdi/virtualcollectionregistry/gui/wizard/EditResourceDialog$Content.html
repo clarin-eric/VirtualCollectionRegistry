@@ -1,31 +1,27 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
                       "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
-<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
 <head />
 <body>
 <wicket:panel>
 <form wicket:id="editResourceForm">
-<!--  FIXME: use proper CSS, not table! -->
-<table>
-  <tr>
-    <td>Type</td>
-    <td><select wicket:id="type"></select></td>
-  </tr>
-  <tr>
-    <td>Reference</td>
-    <td><input type="text" wicket:id="ref" /></td>
-  </tr>
-  <tr>
-    <td colspan="2"><div wicket:id="feedback"></div></td>
-  </tr>
-  <tr>
-    <td colspan="2">
-        <button type="button" wicket:id="add">Add</button>
-        <button type="button" wicket:id="cancel">Cancel</button>
-    </td>
-  </tr>
-</table>
+<fieldset>
+  <div class="requierd">
+    <label for="edit_resource_type">Type</label>
+    <select wicket:id="type" id="edit_resource_type"></select>
+  </div>
+  <div class="required">
+    <label for="edit_resource_ref">Reference</label>
+    <input wicket:id="ref" id="edit_resource_ref" type="text" />
+  </div>
+</fieldset>
+<div wicket:id="feedback"></div>
+<div class="buttons">
+  <button type="button" wicket:id="add">Add</button>
+  <button type="button" wicket:id="cancel">Cancel</button>
+</div>
 </form>
 </wicket:panel>
 </body>

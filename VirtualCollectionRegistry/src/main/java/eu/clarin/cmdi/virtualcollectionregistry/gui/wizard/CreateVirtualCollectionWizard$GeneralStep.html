@@ -5,45 +5,46 @@
 <head />
 <body>
 <wicket:panel>
-<!--  FIXME: use proper CSS, not table! -->
-<table>
-  <tr>
-    <td>Name</td>
-    <td><input type="text" wicket:id="vc.name" /></td>
-  </tr>
-  <tr>
-    <td>Type</td>
-    <td><select wicket:id="vc.type"></select></td>
-  </tr>
-  <tr>
-    <td>Description</td>
-    <td><textarea wicket:id="vc.description"></textarea></td>
-  </tr>
-  <!--
-  <tr>
-    <td>Creation Date</td>
-    <td><input type="text"  /></td>
-  </tr>
-  -->
-  <tr>
-    <td>Purpose</td>
-    <td><select wicket:id="vc.purpose"></select></td>
-  </tr>
-  <tr>
-    <td>Reproducibility</td>
-    <td><select wicket:id="vc.reproducibility"></select></td>
-  </tr>
-  <tr>
-    <td>Reproducibility Notice</td>
-    <td><textarea wicket:id="vc.reproducibilityNotice"></textarea></td>
-  </tr>
-  <!-- 
-  <tr>
-    <td>Keywords</td>
-    <td><textarea></textarea></td>
-  </tr>
-  -->
-</table>
+<fieldset>
+  <div class="notes">
+    <h4>Some Notes</h4>
+    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.</p>
+    <p class="last">Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo.</p>
+  </div>
+  <div class="required">
+    <label for="gen_vc_name">Name</label>
+    <input wicket:id="vc.name"
+           id="gen_vc_name" type="text" size="64" maxlength="255"/>
+  </div>
+  <div class="required">
+    <label for="gen_vc_type">Type</label>
+    <select wicket:id="vc.type" id="gen_vc_type"></select>
+  </div>
+  <div class="optional">
+    <label for="gen_vc_desc">Description</label>
+    <textarea wicket:id="vc.description"
+              id="gen_vc_desc" cols="80" rows="8"></textarea>
+  </div>
+  <div class="optional">
+    <label for="gen_vc_purpose">Purpose</label>
+    <select wicket:id="vc.purpose" id="gen_vc_purpose"></select>
+  </div>
+  <div class="optional">
+    <label for="gen_vc_reproducibility">Reproducibility</label>
+    <select wicket:id="vc.reproducibility"
+            id="gen_vc_reproducibility"></select>
+  </div>
+  <div class="optional">
+    <label for="gen_vc_reproducibility_notice">Reproducibility Notice</label>
+    <textarea wicket:id="vc.reproducibilityNotice"
+              id="gen_vc_reproducibility_notice" cols="80" rows="5"></textarea>
+  </div>
+  <div class="optional">
+    <label for="gen_vc_reproducibility_keywords">Keywords</label>
+    <textarea id="gen_vc_reproducibility_keywords"
+              cols="40" rows="5"></textarea>
+  </div>
+</fieldset>
 </wicket:panel>
 </body>
 </html>

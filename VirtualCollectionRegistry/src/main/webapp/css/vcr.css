@@ -1,31 +1,36 @@
 * {
     margin: 0;
-    padding: 0;	
+/*    padding: 0; */	
 }
 
 html, body {
-	font-family: Verdana;
+	font-family: Verdana, sans-serif;
 	font-size: 12px;
-	margin: 0;
+	margin: 0 auto;
 	padding: 0;
 	line-height: 1;
     height: 100%;
+    color: #000000;
+/*    background-color: #E9EEFA; */
+    width: 1024px;
+    min-width: 1024px;
+    height: 100%;
 }
 
-#noscript-space {
-	height: 24px;
-    margin: 0;
-    padding: 0;
+noscript {
+	margin: 0 auto;
+	padding: 0;
+	width: 1024px;
 }
 
 #noscript-warning {
-    background-color: #AE0000;
     color: #FFFFFF;
+    background-color: #AE0000;
     font-size: 13px;
     font-weight: bold;
     text-align: center;
     line-height: 24px;
-    margin: 0;
+    margin: 0 auto;
     padding: 0;
     text-align: center;
     vertical-align: middle;
@@ -36,6 +41,10 @@ html, body {
     z-index: 101;
 }
 
+#header {
+    border-top: 2px solid #D4DEEF;
+}
+	
 #header-logo {
 	margin: 0;
 	padding: 5px; 
@@ -131,18 +140,394 @@ html, body {
     min-height: 100%;
     height: auto !important;
     height: 100%;
-    margin: 0 auto -18px; /* the bottom margin is the negative value of the footer's height */
+    margin: 0 auto -20px; /* the bottom margin is the negative value of the footer's height */
+    color: #000000;
+    background-color: #FFFFFF;
+    border-left: 2px solid #D4DEEF;
+    border-right: 2px solid #D4DEEF;
 }
 
-#footer, .push {
-	height: 18px;
+#content {
+	padding: 0;
+    margin: 2px 4px 2px 4px;
+}
+
+#container .push {
+	height: 20px;
+    width: auto;
 }
 
 #footer {
 	padding: 0 4px;
+	margin: 0 auto;
+	height: 18px;
     line-height: 18px;
     text-align: right;
-    color: #000000;
+    color: #004071;
     background-color: #D4DEEF;
+    border-left: 2px solid #D4DEEF;
+    border-right: 2px solid #D4DEEF;
+    border-bottom: 2px solid #D4DEEF;
 }
 
+/*
+ * wizard
+ */
+div.wizard .wicketExtensionsWizardHeaderTitle {
+	padding: 0px 10px;
+	font-size: 16px;
+	font-weight: bold;
+}
+
+div.wizard .wicketExtensionsWizardHeaderSummary {
+	padding: 5px 10px 0 10px;
+	font-style: italics;
+}
+
+div.wizard .wizardHeader {
+	border-bottom: 1px solid #000000;
+    padding: 0 0 10px 0;
+	margin: 10px 0 10px 0;
+}
+
+form.wizard {
+  margin: 0;
+  padding: 0;
+  font-size: 100%;
+  min-width: 1012px;
+  max-width: 1012px;
+  width: 1012px;
+}
+
+form.wizard fieldset, div.wizard div.fieldset {
+  clear: both;
+  font-size: 100%;
+  border: none;
+  padding: 0 10px 0 10px;
+  margin: 0 0 0 0;
+}
+
+/*
+form.wizard fieldset legend {
+  font-size: 150%;
+  font-weight: normal;
+  color: #000000;
+  margin: 0 0 0 0;
+  padding: 0 5px;
+}
+
+div.wizard label {
+  font-size: 100%;
+}
+
+div.wizard label u {
+  font-style: normal;
+  text-decoration: underline;
+}
+
+div.wizard input, div.wizard select, div.wizard textarea {
+  font-family: Tahoma, Arial, sans-serif; 
+  font-size: 100%;
+  color: #000000;
+}
+
+div.wizard textarea {
+  overflow: auto;
+}
+*/
+
+form.wizard div {
+  clear: left;
+  display: block;
+/*  width: 354px;
+  zoom: 1;
+  margin: 5px 0 0 0;
+  padding: 1px 3px;
+  */
+}
+
+form.wizard div.notes {
+  float: right;
+  width: 198px;
+  height: auto;
+  margin: 0 0 10px 10px;
+  padding: 5px;
+  border: 1px solid #666666;
+  background-color: #ffffe1;
+  color: #666666;
+  font-size: 10px;
+}
+
+form.wizard div.notes h4 {
+  /*
+  background-image: url(/images/icon_info.gif);
+  background-repeat: no-repeat;
+  background-position: top left;
+  */
+  text-align: center;
+  padding: 3px 0 3px 0; /*27px; */
+  margin: 0 0 3px 0;
+  border-width: 0 0 1px 0;
+  border-style: solid;
+  border-color: #666666;
+  color: #666666;
+  font-size: 12px;
+}
+
+form.wizard div.notes p {
+  margin: 0em 0em 0.5em 0em;
+  color: #666666;
+}
+
+form.wizard div.notes p.last {
+  margin: 0em;
+}
+
+form.wizard div label {
+  display: block;
+  float: left;
+  width: 150px;
+  padding: 3px 5px;
+  margin: 0 0 5px 0;
+  text-align: right;
+}
+
+form.wizard div.optional label, label.optional {
+  font-weight: normal;
+}
+
+form.wizard div.required label, label.required {
+  font-weight: bold;
+}
+
+div.optional label:after {
+  content: ':';
+}
+
+div.required label:after {
+  content: ':';
+}
+
+form.wizard textarea {
+	font-family: Verdana, sans-serif;
+	font-size: 12px;
+	width: 602px;
+	overflow: auto;
+}
+
+/*
+form.wizard div label.labelCheckbox, form div label.labelRadio {
+  float: none;
+  display: block;
+  width: 200px;
+  zoom: 1;
+  padding: 0;
+  margin: 0 0 5px 142px;
+  text-align: left;
+}
+
+form.wizard div fieldset label.labelCheckbox, form div fieldset label.labelRadio {
+  margin: 0 0 5px 0;
+  width: 170px;
+}
+
+form.wizard div img {
+  float: left;
+  border: 1px solid #000000;
+  margin: 0 0 5px 0;
+}
+
+p.error {
+  background-color: #ff0000;
+  background-image: url(/images/icon_error.gif);
+  background-repeat: no-repeat;
+  background-position: 3px 3px;
+  color: #ffffff;
+  padding: 3px 3px 5px 27px;
+  border: 1px solid #000000;
+  margin: auto 100px;
+}
+
+form.wizard div.error {
+  background-color: #ffffe1;
+  background-image: url(/images/required_bg.gif);
+  background-repeat: no-repeat;
+  background-position: top left;
+  color: #666666;
+  border: 1px solid #ff0000;
+}
+
+form.wizard div.error p.error {
+  background-image: url(/images/icon_error.gif);
+  background-position: top left;
+  background-color: transparent;
+  border-style: none;
+  font-size: 88%;
+  font-weight: bold;
+  margin: 0 0 0 118px;
+  width: 200px;
+  color: #ff0000;
+}
+
+form.wizard div select, form div textarea {
+  width: 200px;
+  padding: 1px 3px;
+  margin: 0 0 0 0;
+}
+
+form.wizard div input.inputText, form div input.inputPassword {
+  width: 200px;
+  padding: 1px 3px;
+  margin: 0 0 0 0;
+}
+
+form.wizard div input.inputFile {
+  width: 211px;
+}
+
+form.wizard div select.selectOne, form div select.selectMultiple {
+  width: 211px;
+  padding: 1px 3px;
+}
+
+form.wizard div input.inputCheckbox, form div input.inputRadio, input.inputCheckbox, input.inputRadio {
+  display: inline;
+  height: auto;
+  width: auto;
+  background-color: transparent;
+  border-width: 0;
+  padding: 0;
+  margin: 0 0 0 140px;
+}
+
+form.wizard div.submit {
+  width: 214px;
+  padding: 0 0 0 146px;
+}
+
+form.wizard div.submit div {
+  display: inline;
+  float: left;
+  text-align: left;
+  width: auto;
+  padding: 0;
+  margin: 0;
+}
+
+form.wizard div input.inputSubmit,
+form div input.inputButton, input.inputSubmit, input.inputButton {
+  background-color: #cccccc;
+  color: #000000;
+  width: auto;
+  padding: 0 6px;
+  margin: 0;
+}
+
+form.wizard div.submit div input.inputSubmit,
+form div.submit div input.inputButton {
+  float: right;
+  margin: 0 0 0 5px;
+}
+
+form.wizard div small {
+  display: block;
+  margin: 0 0 5px 142px;
+  padding: 1px 3px;
+  font-size: 88%;
+  zoom: 1;
+}
+*/
+
+form.wizard .wizardButtons {
+    border-top: 1px solid #000000;
+    margin: 10px 0 0 0;
+    clear: both;
+}
+	
+form.wizard .buttonbar {
+	margin: 10px 220px 0 0;
+	padding: 0 10px 0 0;
+	text-align: right; 
+}
+
+form.wizard .buttonbar input.button {
+	padding: 1px 4px;
+	margin: 0 2px;
+	color: #000000;
+	background-color: #E9EEF7;
+	border: 2px solid #D4DEEF;
+	border-radius: 4px;
+    -moz-border-radius: 4px;
+}
+
+form.wizard .buttonbar input.button:hover {
+    color: #AE0000;
+    background-color: #E9EEF7;
+}
+
+form.wizard .buttonbar  input.button[disabled],
+form.wizard .buttonbar  input.button[disabled]:hover {
+	color: #AFAFAF;
+	border-color: #EFEFEF;
+}
+                     	
+/*
+ * create virtual collection wizard
+ */
+div.wizard table {
+	width: 832px;
+    font-size: 100%;
+	border-collapse: collapse;
+}
+
+div.wizard table th,
+div.wizard table td {
+	padding: 2px;
+	text-align: left;
+}
+
+div.wizard table thead {
+	color: inherit;
+	background-color: #D4DEEF;
+    border-top: 1px solid #000000;
+	border-bottom: 1px solid #000000;
+}
+
+div.wizard table td.action {
+	width: 98px;
+}
+
+div.wizard a.add,
+div.wizard a.addMore,	
+div.wizard table td.action a {
+	color: #AE0000;
+	background-color: inherit;
+	text-decoration: none;
+}
+
+div.wizard table tbody {
+	border-bottom: 1px solid #000000;
+}
+
+div.wizard table tr.even {
+    color: inherit;
+    background-color: #FFFFFF;
+}
+
+div.wizard table tr.odd {
+    color: inherit;
+    background-color: #E9EEF7;
+}
+
+div.wizard table td.norecords-td {
+	text-align: center;
+}
+
+table.creatorsTable td {
+    width: 252px;
+    overflow: hidden;
+}
+
+table.resourcesTable td.type {
+	width: 60px;
+}
