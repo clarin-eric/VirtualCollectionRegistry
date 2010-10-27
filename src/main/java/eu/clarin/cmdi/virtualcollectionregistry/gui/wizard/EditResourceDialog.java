@@ -77,7 +77,7 @@ public abstract class EditResourceDialog extends ModalWindow {
         content.setOutputMarkupId(true);
         setContent(content);
         setInitialWidth(350);
-        setInitialHeight(200);
+        setUseInitialHeight(false);
     }
 
     public void setResource(Resource resource) {
