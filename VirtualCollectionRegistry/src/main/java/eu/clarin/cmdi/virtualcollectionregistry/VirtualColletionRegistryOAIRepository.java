@@ -273,6 +273,11 @@ class VirtualColletionRegistryOAIRepository implements Repository {
                 for (VirtualCollection vc : vcs) {
                     records.add(createRecord(vc, headerOnly));
                     /*
+                     * XXX: force fetching of creators.
+                     */
+                    vc.getCreators().size();
+
+                    /*
                      *  XXX: force fetching of resources in case of "cmdi"
                      *  prefix.
                      */
