@@ -98,10 +98,7 @@ public class CreateVirtualCollectionWizard extends WizardBase {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         final Creator creator = model.getObject();
-                        if (creator != null) {
-                            editCreatorDialog.setCreator(creator);
-                            editCreatorDialog.show(target);
-                        }
+                        editCreatorDialog.show(target, creator);
                     }
                 };
                 add(editLink);
@@ -110,10 +107,7 @@ public class CreateVirtualCollectionWizard extends WizardBase {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         final Creator creator = model.getObject();
-                        if (creator != null) {
-                            deleteCreatorDialog.setCreator(creator);
-                            deleteCreatorDialog.show(target);
-                        }
+                        deleteCreatorDialog.show(target, creator);
                     }
                 };
                 add(removeLink);
@@ -126,14 +120,9 @@ public class CreateVirtualCollectionWizard extends WizardBase {
 
             public DeleteCreatorDialog(String id,
                     DataTable<Creator> creatorsTable) {
-                super(id, new Model<String>(""));
+                super(id);
+                setInitialWidth(400);
                 this.creatorsTable = creatorsTable;
-            }
-
-            public void setCreator(Creator creator) {
-                this.creator = creator;
-                setMessage(new StringResourceModel("creators.deleteconfirm",
-                        new Model<Creator>(creator)));
             }
 
             @Override
@@ -144,8 +133,11 @@ public class CreateVirtualCollectionWizard extends WizardBase {
                 }
             }
 
-            @Override
-            public void onCancel(AjaxRequestTarget target) {
+            public void show(AjaxRequestTarget target, Creator creator) {
+                this.creator = creator;
+                super.show(target,
+                        new StringResourceModel("creators.deleteconfirm",
+                                new Model<Creator>(creator)));
             }
         } // class CreateVirtualCollectionWizard.CreatorsStep.DeleteCreatorDialog
 
@@ -185,14 +177,11 @@ public class CreateVirtualCollectionWizard extends WizardBase {
 
             editCreatorDialog = new EditCreatorDialog("editCreatorDialog") {
                 @Override
-                public void onSubmit(AjaxRequestTarget target,
-                        Creator creator) {
-                    if (creator != null) {
-                        if (!vc.getCreators().contains(creator)) {
-                            vc.getCreators().add(creator);
-                        }
-                        target.addComponent(creatorsTable);
+                public void onSubmit(AjaxRequestTarget target, Creator creator) {
+                    if (!vc.getCreators().contains(creator)) {
+                        vc.getCreators().add(creator);
                     }
+                    target.addComponent(creatorsTable);
                 }
             };
             add(editCreatorDialog);
@@ -204,7 +193,6 @@ public class CreateVirtualCollectionWizard extends WizardBase {
             add(new AjaxLink<Object>("add") {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
-                    editCreatorDialog.setCreator(new Creator());
                     editCreatorDialog.show(target);
                 }
             });
@@ -263,10 +251,7 @@ public class CreateVirtualCollectionWizard extends WizardBase {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         final Resource resource = model.getObject();
-                        if (resource != null) {
-                            editResourceDialog.setResource(resource);
-                            editResourceDialog.show(target);
-                        }
+                        editResourceDialog.show(target, resource);
                     }
                 };
                 add(editLink);
@@ -275,10 +260,7 @@ public class CreateVirtualCollectionWizard extends WizardBase {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         final Resource resource = model.getObject();
-                        if (resource != null) {
-                            deleteResourceDialog.setResource(resource);
-                            deleteResourceDialog.show(target);
-                        }
+                        deleteResourceDialog.show(target, resource);
                     }
                 };
                 add(removeLink);
@@ -291,14 +273,9 @@ public class CreateVirtualCollectionWizard extends WizardBase {
 
             public DeleteResourceDialog(String id,
                     DataTable<Resource> resourcesTable) {
-                super(id, new Model<String>(""));
+                super(id);
+                setInitialWidth(400);
                 this.resourcesTable = resourcesTable;
-            }
-
-            public void setResource(Resource resource) {
-                this.resource = resource;
-                setMessage(new StringResourceModel("resources.deleteconfirm",
-                        new Model<Resource>(resource)));
             }
 
             @Override
@@ -309,8 +286,11 @@ public class CreateVirtualCollectionWizard extends WizardBase {
                 }
             }
 
-            @Override
-            public void onCancel(AjaxRequestTarget target) {
+            public void show(AjaxRequestTarget target, Resource resource) {
+                this.resource = resource;
+                super.show(target,
+                        new StringResourceModel("resources.deleteconfirm",
+                        new Model<Resource>(resource)));
             }
         } // class CreateVirtualCollectionWizard.CreatorsStep.DeleteResourceDialog
 
@@ -353,12 +333,10 @@ public class CreateVirtualCollectionWizard extends WizardBase {
                 @Override
                 public void onSubmit(AjaxRequestTarget target,
                         Resource resource) {
-                    if (resource != null) {
-                        if (!vc.getResources().contains(resource)) {
-                            vc.getResources().add(resource);
-                        }
-                        target.addComponent(resourcesTable);
+                    if (!vc.getResources().contains(resource)) {
+                        vc.getResources().add(resource);
                     }
+                    target.addComponent(resourcesTable);
                 }
             };
             add(editResourceDialog);
@@ -386,7 +364,6 @@ public class CreateVirtualCollectionWizard extends WizardBase {
             add(new AjaxLink<Object>("add") {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
-                    editResourceDialog.setResource(new Resource());
                     editResourceDialog.show(target);
                 }
             });
@@ -394,7 +371,6 @@ public class CreateVirtualCollectionWizard extends WizardBase {
             add(new AjaxLink<Object>("addMore") {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
-                    addResourcesDialog.clearForm();
                     addResourcesDialog.show(target);
                 }
             });

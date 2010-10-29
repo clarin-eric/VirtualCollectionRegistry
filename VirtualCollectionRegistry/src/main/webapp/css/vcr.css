@@ -80,11 +80,11 @@ noscript {
 #navigation {
 	margin: 0;
 	padding: 0;
-	height: 24px;
+	height: 22px;
 	clear: both;
     color: #000000;
     background-color: #D4DEEF;
-    font-size: 16px;
+    font-size: 14px;
 }
 	
 #menu {
@@ -105,10 +105,10 @@ noscript {
 #menu a, #menu span.active {
     display: block;
     margin: 0;
-    padding: 4px 16px 4px 16px;
+    padding: 4px 8px;
     width: auto;
-    height: 16px;
-    line-height: 16px;
+    height: 14px;
+    line-height: 14px;
     text-align: center;
     text-decoration: none;
     font-weight: bold;
@@ -148,8 +148,8 @@ noscript {
 }
 
 #content {
-	padding: 0;
-    margin: 2px 4px 2px 4px;
+    margin: 5px 4px;
+    padding: 0;
 }
 
 #container .push {
@@ -170,6 +170,12 @@ noscript {
     border-bottom: 2px solid #D4DEEF;
 }
 
+/* general */
+input, select, textarea {
+    font-family: Verdana, sans-serif;
+    font-size: 100%;
+}
+
 /*
  * wizard
  */
@@ -186,8 +192,8 @@ div.wizard .wicketExtensionsWizardHeaderSummary {
 
 div.wizard .wizardHeader {
 	border-bottom: 1px solid #000000;
-    padding: 0 0 10px 0;
-	margin: 10px 0 10px 0;
+    margin: 0 0 10px 0;
+	padding: 0 0 10px 0;
 }
 
 form.wizard {
@@ -236,7 +242,7 @@ div.wizard textarea {
 }
 */
 
-form.wizard div {
+form.wizard div, div.editDialog div {
   clear: left;
   display: block;
 /*  width: 354px;
@@ -292,11 +298,11 @@ form.wizard div label {
   text-align: right;
 }
 
-form.wizard div.optional label, label.optional {
+div.optional label{
   font-weight: normal;
 }
 
-form.wizard div.required label, label.required {
+div.required label, label.required {
   font-weight: bold;
 }
 
@@ -315,11 +321,7 @@ form.wizard textarea {
 	overflow: auto;
 }
 
-form.wizard input, form.wizard select {
-    font-family: Verdana, sans-serif;
-    font-size: 100%;
-}
-	
+
 /*
 form.wizard div label.labelCheckbox, form div label.labelRadio {
   float: none;
@@ -455,7 +457,8 @@ form.wizard .buttonbar {
 	text-align: right; 
 }
 
-form.wizard .buttonbar input.button {
+form.wizard .buttonbar input.button,
+div.modalDialog div.modalDialogButtons input.button {
 	padding: 1px 4px;
 	margin: 0 2px;
 	color: #000000;
@@ -465,20 +468,94 @@ form.wizard .buttonbar input.button {
     -moz-border-radius: 4px;
 }
 
-form.wizard .buttonbar input.button:hover {
+form.wizard .buttonbar input.button:hover,
+div.modalDialog div.modalDialogButtons input.button:hover {
     color: #AE0000;
     background-color: #E9EEF7;
 }
 
 form.wizard .buttonbar  input.button[disabled],
-form.wizard .buttonbar  input.button[disabled]:hover {
+form.wizard .buttonbar  input.button[disabled]:hover,
+div.modalDialog div.modalDialogButtons input.button[disabled],
+div.modalDialog div.modalDialogButtons input.button[disabled]:hover {
 	color: #AFAFAF;
 	border-color: #EFEFEF;
 }
-                     	
+
+/* modal dialog */
+div.modalDialog {
+	margin: 0;
+	padding: 0;
+}
+
+div.modalDialog div.modalDialogContent {
+	margin: 10px;
+}
+	
+div.modalDialog div.modalDialogButtons {
+	border-top: 1px solid #BBBBBB;
+	margin: 0 5px 5px 5px;
+	padding: 5px 0 0 0;
+	text-align: center;
+}
+
+div.confirmationDialog {
+    text-align: center;
+}
+
+div.editDialog fieldset {
+	border: none;
+	margin: 0;
+	padding: 0;
+}
+
+div.editDialog fieldset label {
+  display: block;
+  float: left;
+  /* width: 100px; */
+  padding: 3px 5px 3px 0;
+  margin: 0 0 5px 0;
+  text-align: right;
+}
+
+/*
+ * dialog customizations
+ */
+div.editCreatorDialog  fieldset label {
+	width: 90px;
+}
+
+div.editCreatorDialog fieldset input,
+div.editCreatorDialog fieldset textarea {
+    width: 255px;
+}
+
+div.editResourceDialog fieldset label {
+    width: 70px;
+}
+
+div.editResourceDialog fieldset input,
+div.editResourceDialog fieldset textarea {
+    width: 475px;
+}
+
+div.addResourcesDialog fieldset label {
+	width: 85px;
+}
+
+div.addResourcesDialog fieldset input,
+div.addResourcesDialog fieldset textarea {
+    width: 460px;
+}
+
 /*
  * create virtual collection wizard
  */
+div.wizard a {
+    font-weight: normal;
+}
+
+
 div.wizard table {
 	width: 832px;
     font-size: 100%;

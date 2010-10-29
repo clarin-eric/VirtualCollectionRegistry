@@ -1,87 +1,75 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.wizard;
 
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
-import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ModalEditDialogBase;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 
 @SuppressWarnings("serial")
-public abstract class EditCreatorDialog extends ModalWindow {
-    private final class Content extends Panel {
+public abstract class EditCreatorDialog extends ModalEditDialogBase<Creator> {
+    private final class Content extends
+            ModalEditDialogBase<Creator>.ContentPanel {
         private final Form<Creator> form;
-
-        public Content(String id, final ModalWindow window) {
+        private final FeedbackPanel feedbackPanel;
+        
+        public Content(String id) {
             super(id);
-            form = new Form<Creator>("newCreatorForm",
-                    new CompoundPropertyModel<Creator>(new Creator()));
-            form.add(new RequiredTextField<String>("name"));
-            final TextField<String> emailField = new TextField<String>("email");
+            add(new AttributeAppender("class",
+                new Model<String>("editCreatorDialog"), " "));
+            form = new Form<Creator>("editCreatorForm");
+            final TextField<String> nameField =
+                new RequiredTextField<String>("name");
+            form.add(nameField);
+            final TextField<String> emailField =
+                new TextField<String>("email");
             emailField.add(EmailAddressValidator.getInstance());
             form.add(emailField);
-            form.add(new TextField<String>("organisation"));
-            final FeedbackPanel feedback = new FeedbackPanel("feedback");
-            feedback.setOutputMarkupId(true);
-            form.add(feedback);
-            final AjaxButton add = new AjaxButton("add", form) {
-                @Override
-                protected void onError(AjaxRequestTarget target, Form<?> form) {
-                    target.addComponent(feedback);
-                    super.onError(target, form);
-                }
-
-                @Override
-                protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                    window.close(target);
-                    EditCreatorDialog.this.onSubmit(target,
-                            (Creator) form.getModelObject());
-                }
-            };
-            form.add(add);
-            final AjaxButton cancel = new AjaxButton("cancel", form) {
-                @Override
-                protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                    window.close(target);
-                }
-            };
-            cancel.setDefaultFormProcessing(false);
-            form.add(cancel);
+            final TextField<String> organisationField =
+                new TextField<String>("organisation");
+            form.add(organisationField);
+            feedbackPanel = new FeedbackPanel("feedback");
+            form.add(feedbackPanel);
             add(form);
         }
-        
-        private void updateModel(Creator creator) {
-            form.setModel(new CompoundPropertyModel<Creator>(creator));
+
+        @Override
+        public Form<Creator> getForm() {
+            return form;
         }
-    } // class CreateVirtualCollectionWizard.CreatorsStep.NewCreatorPanel
 
-    private final Content content;
-
+        @Override
+        public FeedbackPanel getFeedbackPanel() {
+            return feedbackPanel;
+        }
+    } // class EditCreatorDialog.Content
 
     public EditCreatorDialog(final String id) {
-        super(id);
-        setOutputMarkupId(true);
-        setTitle(new Model<String>("New Creator"));
-        content = new Content(getContentId(), EditCreatorDialog.this);
-        content.setOutputMarkupId(true);
-        setContent(content);
-        setInitialWidth(350);
-        setUseInitialHeight(false);
+        super(id, new Model<String>("Add/Edit Creator"));
+        setInitialWidth(400);
     }
 
-    public void setCreator(Creator creator) {
-        if (creator != null) {
-            content.updateModel(creator);
-        }
+    @Override
+    protected ModalEditDialogBase<Creator>.ContentPanel
+        createContentPanel(String id) {
+        return new Content(id);
     }
 
-    public abstract void onSubmit(AjaxRequestTarget target, Creator creator);
+    @Override
+    protected final Creator newObjectInstance() {
+        return new Creator();
+    }
+    
+    @Override
+    protected final IModel<Creator> createModel(Creator object) {
+        return new CompoundPropertyModel<Creator>(object);
+    }
 
 } // EditCreatorDialog

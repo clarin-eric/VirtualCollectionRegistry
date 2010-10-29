@@ -6,26 +6,22 @@
 <head />
 <body>
 <wicket:panel>
-<form wicket:id="newCreatorForm">
-<fieldset>
-  <div class="requierd">
-    <label for="edit_creator_name">Name</label>
-    <input wicket:id="name" id="edit_creator_name" type="text" />
-  </div>
-  <div class="optional">
-    <label for="edit_creator_email">E-Mail</label>
-    <input wicket:id="email" id="edit_creator_email" type="text" />
-  </div>
-  <div class="optional">
-    <label for="edit_creator_org">Organisation</label>
-    <input wicket:id="organisation" id="edit_creator_org" type="text" />
-  </div>
-</fieldset>
-<div wicket:id="feedback"></div>
-<div class="buttons">
-  <button type="button" wicket:id="add">Add</button>
-  <button type="button" wicket:id="cancel">Cancel</button>
-</div>
+<form wicket:id="editCreatorForm">
+  <fieldset>
+    <div class="required">
+      <label for="edit_creator_name">Name</label>
+      <input wicket:id="name" id="edit_creator_name" type="text" />
+    </div>
+    <div class="optional">
+      <label for="edit_creator_email">E-Mail</label>
+      <input wicket:id="email" id="edit_creator_email" type="text" />
+    </div>
+    <div class="optional">
+      <label for="edit_creator_org">Organisation</label>
+      <input wicket:id="organisation" id="edit_creator_org" type="text" />
+    </div>
+  </fieldset>
+  <div wicket:id="feedback" class="feedback"></div>
 </form>
 </wicket:panel>
 </body>
