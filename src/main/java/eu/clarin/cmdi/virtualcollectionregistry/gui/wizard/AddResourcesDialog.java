@@ -1,104 +1,137 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.wizard;
 
+import java.io.Serializable;
 import java.util.Arrays;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ModalDialogBase;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 
 @SuppressWarnings("serial")
-public abstract class AddResourcesDialog extends ModalWindow {
-    private final class Content extends Panel {
+public abstract class AddResourcesDialog extends ModalDialogBase {
+    private final class Data implements Serializable {
         private Resource.Type type;
-        private String refernces;
+        private String references;
+        
+        public Resource[] getResources() {
+            Resource[] resources = null;
+            if ((type != null) && (references != null)) {
+                String[] refs = references.split("[;\\s]+");
+                if (refs.length > 0) {
+                    resources = new Resource[refs.length];
+                    int i = 0;
+                    for (String ref : refs) {
+                        resources[i++] = new Resource(type, ref);
+                    }
+                }
+            }
+            return resources;
+        }
+    } // class AddResourcesDialog.Data
 
-        public Content(String id, final ModalWindow window) {
+    private final class Content extends Panel {
+        private final Form<Data> form;
+        private final FeedbackPanel feedbackPanel;
+
+        public Content(String id) {
             super(id);
-            final Form<Object> form =
-                new Form<Object>("addResourcesForm");
+            add(new AttributeAppender("class",
+                    new Model<String>("editDialog addResourcesDialog"), " "));
+            form = new Form<Data>("addResourcesForm");
             final DropDownChoice<Resource.Type> typeChoice =
                 new DropDownChoice<Resource.Type>("type",
-                        new PropertyModel<Resource.Type>(this, "type"),
                         Arrays.asList(Resource.Type.values()),
                         new EnumChoiceRenderer<Resource.Type>(this));
             typeChoice.setRequired(true);
             form.add(typeChoice);
             final TextArea<String> referencesArea =
-                new TextArea<String>("references",
-                        new PropertyModel<String>(this, "refernces"));
+                new TextArea<String>("references");
             referencesArea.setRequired(true);
             form.add(referencesArea);
-            final FeedbackPanel feedback = new FeedbackPanel("feedback");
-            feedback.setOutputMarkupId(true);
-            form.add(feedback);
-            final AjaxButton add = new AjaxButton("add", form) {
+            feedbackPanel = new FeedbackPanel("feedback");
+            feedbackPanel.setOutputMarkupId(true);
+            form.add(feedbackPanel);
+            add(form);
+        }
+
+        public Form<Data> getForm() {
+            return form;
+        }
+        
+        public FeedbackPanel getFeedbackPanel() {
+            return feedbackPanel;
+        }
+    } // class AddResourcesDialog.Content
+
+    private final class ButtonBar extends Panel {
+        public ButtonBar(String id, Form<?> form) {
+            super(id);
+            final AjaxButton addButton = new AjaxButton("addButton",
+                    new Model<String>("Add"), form) {
                 @Override
                 protected void onError(AjaxRequestTarget target, Form<?> form) {
-                    target.addComponent(feedback);
+                    target.addComponent(contentPanel.getFeedbackPanel());
                     super.onError(target, form);
                 }
 
                 @Override
                 protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                    window.close(target);
-                    if ((refernces != null) && !refernces.isEmpty()) {
-                        String[] refs = refernces.split("[;\\s]+");
-                        if ((type != null) && (refs != null) &&
-                                (refs.length > 0)) {
-                            Resource[] resources = new Resource[refs.length];
-                            int i = 0;
-                            for (String ref : refs) {
-                                resources[i++] = new Resource(type, ref);
-                            }
-                            AddResourcesDialog.this.onSubmit(target, resources);
-                        }
+                    AddResourcesDialog.this.close(target);
+                    final Data data = (Data) form.getModelObject();
+                    final Resource[] resources = data.getResources();
+                    if (resources != null) {
+                        AddResourcesDialog.this.onSubmit(target, resources);
                     }
                 }
             };
-            form.add(add);
-            final AjaxButton cancel = new AjaxButton("cancel", form) {
+            add(addButton);
+            final AjaxButton cancelButton =
+                new AjaxButton("cancelButton",
+                        new Model<String>("Cancel"), form) {
                 @Override
                 protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                    window.close(target);
+                    AddResourcesDialog.this.close(target);
                 }
             };
-            cancel.setDefaultFormProcessing(false);
-            form.add(cancel);
-            add(form);
+            cancelButton.setDefaultFormProcessing(false);
+            add(cancelButton);
         }
-        
-        private void clearForm() {
-            type = null;
-            refernces = null;
-        }
-    } // class AddResourcesDialog.Content
+    } // class EditCreatorDialog.ButtonBar
 
-    private final Content content;
-
+    private Content contentPanel;
 
     public AddResourcesDialog(final String id) {
-        super(id);
+        super(id, new Model<String>("Add Multiple Resources"));
         setOutputMarkupId(true);
-        setTitle(new Model<String>("Add More Resources"));
-        content = new Content(getContentId(), AddResourcesDialog.this);
-        content.setOutputMarkupId(true);
-        setContent(content);
-        setInitialWidth(350);
-        setUseInitialHeight(false);
+        setInitialWidth(600);
     }
 
-    public void clearForm() {
-        content.clearForm();
+    @Override
+    protected Panel createContent(String id) {
+        contentPanel = new Content(id);
+        return contentPanel;
+    }
+
+    @Override
+    protected Panel createButtonBar(String id) {
+        return new ButtonBar(id, contentPanel.getForm());
+    }
+
+    @Override
+    public void show(AjaxRequestTarget target) {
+        contentPanel.getForm().setModel(new CompoundPropertyModel<Data>(new Data()));
+        super.show(target);
     }
 
     public abstract void onSubmit(AjaxRequestTarget target,
