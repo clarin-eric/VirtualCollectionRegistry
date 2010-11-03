@@ -5,6 +5,8 @@
 <head />
 <body>
 <wicket:panel>
+<div style="display: none" wicket:id="addKeywordDialog"></div>
+<div style="display: none" wicket:id="deleteKeywordDialog"></div>
 <fieldset>
   <div class="notes">
     <h4>Some Notes</h4>
@@ -40,9 +42,16 @@
               id="gen_vc_reproducibility_notice" cols="80" rows="5"></textarea>
   </div>
   <div class="optional">
-    <label for="gen_vc_reproducibility_keywords">Keywords</label>
-    <textarea id="gen_vc_reproducibility_keywords"
-              cols="40" rows="5"></textarea>
+    <label>Keywords<br /><a href="#"
+      wicket:id="keywordsAdd" class="add"><span>[add]</span></a></label>
+    <div wicket:id="keywordsList" class="keywordsList">
+      <ul>
+        <li wicket:id="keywords">
+          <span wicket:id="itemText">item text</span>
+          <a wicket:id="itemRemove" href="#"><span class="remove">[remove]</span></a>
+        </li>
+      </ul>
+    </div>
   </div>
 </fieldset>
 </wicket:panel>
