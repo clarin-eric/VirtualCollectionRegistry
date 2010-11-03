@@ -616,6 +616,14 @@ div.wizard table td.norecords-td {
 	text-align: center;
 }
 
+div.wizard table tr.navigation {
+	border-bottom: 1px dotted #BBBBBB;
+}
+
+div.wizard table tr.navigation div {
+	clear: none !important;
+}
+
 table.creatorsTable td {
     width: 252px;
     overflow: hidden;
