@@ -18,16 +18,19 @@ public abstract class ConfirmationDialog extends ModalDialogBase {
             final AjaxButton yesButton =
                 new AjaxButton("yesButton", new Model<String>("Yes")) {
                 @Override
-                protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                protected void onSubmit(AjaxRequestTarget target,
+                        Form<?> form) {
                     answer = true;
                     ConfirmationDialog.this.close(target);
                 }
             };
+            yesButton.setDefaultFormProcessing(false);
             add(yesButton);
             final AjaxButton noButton =
                 new AjaxButton("noButton", new Model<String>("No")) {
                 @Override
-                protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                protected void onSubmit(AjaxRequestTarget target,
+                        Form<?> form) {
                     answer = false;
                     ConfirmationDialog.this.close(target);
                 }
