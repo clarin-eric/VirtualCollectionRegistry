@@ -306,6 +306,7 @@ div.required label, label.required {
   font-weight: bold;
 }
 
+/*
 div.optional label:after {
   content: ':';
 }
@@ -313,6 +314,7 @@ div.optional label:after {
 div.required label:after {
   content: ':';
 }
+*/
 
 form.wizard textarea {
 	font-family: Verdana, sans-serif;
@@ -457,8 +459,11 @@ form.wizard .buttonbar {
 	text-align: right; 
 }
 
+/*
 form.wizard .buttonbar input.button,
-div.modalDialog div.modalDialogButtons input.button {
+div.modalDialog div.modalDialogButtons input.button
+*/
+input.button {
 	padding: 1px 4px;
 	margin: 0 2px;
 	color: #000000;
@@ -482,7 +487,10 @@ div.modalDialog div.modalDialogButtons input.button[disabled]:hover {
 	border-color: #EFEFEF;
 }
 
-/* modal dialog */
+
+/*
+ * modal dialog
+ */
 div.modalDialog {
 	margin: 0;
 	padding: 0;
@@ -518,6 +526,7 @@ div.editDialog fieldset label {
   text-align: right;
 }
 
+
 /*
  * dialog customizations
  */
@@ -546,6 +555,10 @@ div.addResourcesDialog fieldset label {
 div.addResourcesDialog fieldset input,
 div.addResourcesDialog fieldset textarea {
     width: 460px;
+}
+
+div.addKeywordDialog fieldset input {
+	width: 285px;
 }
 
 /*
@@ -579,9 +592,7 @@ div.wizard table td.action {
 	width: 98px;
 }
 
-div.wizard a.add,
-div.wizard a.addMore,	
-div.wizard table td.action a {
+a {
 	color: #AE0000;
 	background-color: inherit;
 	text-decoration: none;
@@ -612,4 +623,29 @@ table.creatorsTable td {
 
 table.resourcesTable td.type {
 	width: 60px;
+}
+
+div.keywordsList {
+	clear: none !important;
+	width: 602px;
+	margin-left: 160px;
+	padding: 3px 0;
+}
+
+div.keywordsList div {
+	clear: none;
+}
+
+div.keywordsList ul {
+    list-style-type: square;
+    margin: 0;
+    padding: 0 0 0 16px;
+}
+
+div.keywordsList ul li {
+	margin-top: 2px;
+}
+
+div.keywordsList ul li.first {
+    margin-top: 0;
 }

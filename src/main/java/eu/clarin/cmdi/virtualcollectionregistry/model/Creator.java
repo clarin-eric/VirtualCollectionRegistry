@@ -103,4 +103,23 @@ public class Creator implements Serializable {
             .toHashCode();
     }
 
+    @Override
+    public String toString() {
+        StringBuilder sb = new StringBuilder("Creator@");
+        sb.append(Integer.toHexString(hashCode()));
+        sb.append("[");
+        sb.append("name=");
+        sb.append(name);
+        if (email != null) {
+            sb.append(",email=");
+            sb.append(email);
+        }
+        if (organisation != null) {
+            sb.append(",organisation=");
+            sb.append(organisation);
+        }
+        sb.append("]");
+        return sb.toString();
+    }
+
 } // class Creator

@@ -2,9 +2,11 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.wizard;
 
 import java.util.Arrays;
 import java.util.Iterator;
+import java.util.List;
 
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
@@ -16,6 +18,7 @@ import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvid
 import org.apache.wicket.extensions.wizard.dynamic.DynamicWizardModel;
 import org.apache.wicket.extensions.wizard.dynamic.DynamicWizardStep;
 import org.apache.wicket.extensions.wizard.dynamic.IDynamicWizardStep;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
@@ -25,8 +28,11 @@ import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -42,6 +48,66 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 @SuppressWarnings("serial")
 public class CreateVirtualCollectionWizard extends WizardBase {
     private final class GeneralStep extends DynamicWizardStep {
+        private final class DeleteKeywordDialog extends ConfirmationDialog {
+            private transient KeywordsList keywordList;
+            private String keyword;
+            
+            public DeleteKeywordDialog(String id, KeywordsList keywordList) {
+                super(id);
+                this.keywordList = keywordList;
+            }
+
+            @Override
+            public void onConfirm(AjaxRequestTarget target) {
+                vc.getKeywords().remove(keyword);
+                target.addComponent(keywordList);
+            }
+            
+            public void show(AjaxRequestTarget target, String keyword) {
+                this.keyword = keyword;
+                super.show(target, new StringResourceModel("keywords.deleteconfirm", null, new Object[] { keyword }));
+            }
+        } // class CreateVirtualCollectionWizard.GeneralStep.DeleteKeywordDialog
+
+        private final class KeywordsList extends WebMarkupContainer {
+            private final ListView<String> itemsView;
+
+            public KeywordsList(String id, final List<String> items) {
+                super(id);
+                setOutputMarkupId(true);
+
+                itemsView = new ListView<String>("keywords", items) {
+                    @Override
+                    protected void populateItem(final ListItem<String> item) {
+                        final IModel<String> model = item.getModel();
+                        item.add(new Label("itemText", model.getObject()));
+                        item.add(new AjaxLink<String>("itemRemove",
+                                new Model<String>("[remove]")) {
+                            @Override
+                            public void onClick(AjaxRequestTarget target) {
+                                deleteKeywordDialog.show(target,
+                                        model.getObject());
+                            }
+                        });
+                        item.add(new AttributeAppender("class",
+                                new AbstractReadOnlyModel<String>() {
+                                    public String getObject() {
+                                        if (item.getIndex() == 0) {
+                                            return "first odd";
+                                        }
+                                        return (item.getIndex() % 2 == 1) ?
+                                                    "even" : "odd";
+                                    }
+                                }, " "));
+                    }
+                };
+                add(itemsView);
+            }
+        } // class CreateVirtualCollectionWizard.GeneralStep.KeywordsList
+
+        private final AddKeywordDialog addKeywordDialog;
+        private final DeleteKeywordDialog deleteKeywordDialog;
+
         public GeneralStep() {
             super(null, "General", "Yada yada yada ...");
             add(new RequiredTextField<String>("vc.name"));
@@ -63,6 +129,31 @@ public class CreateVirtualCollectionWizard extends WizardBase {
                         new EnumChoiceRenderer<VirtualCollection.Reproducibility>(this));
             add(reproducibilityChoice);
             add(new TextArea<String>("vc.reproducibilityNotice"));
+            
+            final KeywordsList keywordList =
+                new KeywordsList("keywordsList", vc.getKeywords());
+            add(keywordList);
+            add(new AjaxLink<String>("keywordsAdd") {
+                @Override
+                public void onClick(AjaxRequestTarget target) {
+                    addKeywordDialog.show(target);
+                }
+            });
+
+            addKeywordDialog = new AddKeywordDialog("addKeywordDialog") {
+                @Override
+                public void onSubmit(AjaxRequestTarget target, String keyword) {
+                    if (!vc.getKeywords().contains(keyword)) {
+                        vc.getKeywords().add(keyword);
+                    }
+                    target.addComponent(keywordList);
+                }
+            };
+            add(addKeywordDialog);
+
+            deleteKeywordDialog =
+                new DeleteKeywordDialog("deleteKeywordDialog", keywordList);
+            add(deleteKeywordDialog);
         }
 
         @Override
@@ -504,6 +595,9 @@ public class CreateVirtualCollectionWizard extends WizardBase {
         System.err.println("Purpose: " + vc.getPurpose());
         System.err.println("Rep: " + vc.getReproducibility());
         System.err.println("RepNot: " + vc.getReproducibilityNotice());
+        for (String kw : vc.getKeywords()) {
+            System.err.println("KW: " + kw);
+        }
         for (Creator c : vc.getCreators()) {
             System.err.println("C: " + c.getName() + ", " + c.getEMail());
         }
