@@ -2,7 +2,6 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.wizard;
 
 import java.util.Arrays;
 
-import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
@@ -23,11 +22,9 @@ public abstract class EditResourceDialog extends ModalEditDialogBase<Resource> {
         private final Form<Resource> form;
         private final FeedbackPanel feedbackPanel;
         
-        public Content(String id) {
+        public Content(String id, IModel<Resource> model) {
             super(id);
-            add(new AttributeAppender("class",
-                    new Model<String>("editResourceDialog"), " "));
-            form = new Form<Resource>("editResourceForm");
+            form = new Form<Resource>("editResourceForm", model);
             final DropDownChoice<Resource.Type> typeChoice =
                 new DropDownChoice<Resource.Type>("type",
                         Arrays.asList(Resource.Type.values()),
@@ -61,8 +58,8 @@ public abstract class EditResourceDialog extends ModalEditDialogBase<Resource> {
 
     @Override
     protected ModalEditDialogBase<Resource>.ContentPanel
-        createContentPanel(String id) {
-        return new Content(id);
+        createContentPanel(String id, IModel<Resource> model) {
+        return new Content(id, model);
     }
 
     @Override
@@ -71,8 +68,13 @@ public abstract class EditResourceDialog extends ModalEditDialogBase<Resource> {
     }
     
     @Override
-    protected final IModel<Resource> createModel(Resource object) {
-        return new CompoundPropertyModel<Resource>(object);
+    protected final IModel<Resource> createModel() {
+        return new CompoundPropertyModel<Resource>(null);
+    }
+
+    @Override
+    protected String getCssClass() {
+        return "editResourceDialog";
     }
 
 } // EditResourceDialog

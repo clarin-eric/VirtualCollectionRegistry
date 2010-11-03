@@ -48,7 +48,8 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
             super(id);
             add(new AttributeAppender("class",
                     new Model<String>("editDialog addResourcesDialog"), " "));
-            form = new Form<Data>("addResourcesForm");
+            form = new Form<Data>("addResourcesForm",
+                    new CompoundPropertyModel<Data>(null));
             final DropDownChoice<Resource.Type> typeChoice =
                 new DropDownChoice<Resource.Type>("type",
                         Arrays.asList(Resource.Type.values()),
@@ -93,6 +94,7 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
                     if (resources != null) {
                         AddResourcesDialog.this.onSubmit(target, resources);
                     }
+                    form.setModelObject(null);
                 }
             };
             add(addButton);
@@ -102,6 +104,7 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
                 @Override
                 protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                     AddResourcesDialog.this.close(target);
+                    form.setModelObject(null);
                 }
             };
             cancelButton.setDefaultFormProcessing(false);
@@ -120,6 +123,7 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
     @Override
     protected Panel createContent(String id) {
         contentPanel = new Content(id);
+        contentPanel.getForm().removePersistentFormComponentValues(true);
         return contentPanel;
     }
 
@@ -130,7 +134,7 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
 
     @Override
     public void show(AjaxRequestTarget target) {
-        contentPanel.getForm().setModel(new CompoundPropertyModel<Data>(new Data()));
+        contentPanel.getForm().setModelObject(new Data());
         super.show(target);
     }
 
