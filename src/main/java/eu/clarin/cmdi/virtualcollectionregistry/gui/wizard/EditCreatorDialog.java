@@ -1,6 +1,5 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.wizard;
 
-import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.TextField;
@@ -20,11 +19,9 @@ public abstract class EditCreatorDialog extends ModalEditDialogBase<Creator> {
         private final Form<Creator> form;
         private final FeedbackPanel feedbackPanel;
         
-        public Content(String id) {
+        public Content(String id, IModel<Creator> model) {
             super(id);
-            add(new AttributeAppender("class",
-                new Model<String>("editCreatorDialog"), " "));
-            form = new Form<Creator>("editCreatorForm");
+            form = new Form<Creator>("editCreatorForm", model);
             final TextField<String> nameField =
                 new RequiredTextField<String>("name");
             form.add(nameField);
@@ -58,8 +55,8 @@ public abstract class EditCreatorDialog extends ModalEditDialogBase<Creator> {
 
     @Override
     protected ModalEditDialogBase<Creator>.ContentPanel
-        createContentPanel(String id) {
-        return new Content(id);
+        createContentPanel(String id, IModel<Creator> model) {
+        return new Content(id, model);
     }
 
     @Override
@@ -68,8 +65,13 @@ public abstract class EditCreatorDialog extends ModalEditDialogBase<Creator> {
     }
     
     @Override
-    protected final IModel<Creator> createModel(Creator object) {
-        return new CompoundPropertyModel<Creator>(object);
+    protected final IModel<Creator> createModel() {
+        return new CompoundPropertyModel<Creator>(null);
+    }
+
+    @Override
+    protected String getCssClass() {
+        return "editCreatorDialog";
     }
 
 } // EditCreatorDialog

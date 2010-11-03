@@ -6,20 +6,20 @@ import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
 @SuppressWarnings("serial")
 public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
     public abstract class ContentPanel extends Panel {
-        public ContentPanel(String id) {
+        protected ContentPanel(String id) {
             super(id);
         }
         
         public abstract Form<T> getForm();
         
         public abstract FeedbackPanel getFeedbackPanel();
-        
     } // class ModalEditDialogBase.ContentPanel
     
     private final class ButtonBar extends Panel {
@@ -33,12 +33,10 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
                     super.onError(target, form);
                 }
 
+                @SuppressWarnings("unchecked")
                 @Override
                 protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                    ModalEditDialogBase.this.close(target);
-                    @SuppressWarnings("unchecked")
-                    final T object = (T) form.getModelObject();
-                    ModalEditDialogBase.this.onSubmit(target, object);
+                    ModalEditDialogBase.this.doSubmit(target, (Form<T>) form);
                 }
             };
             add(addButton);
@@ -50,24 +48,20 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
                     super.onError(target, form);
                 }
 
+                @SuppressWarnings("unchecked")
                 @Override
                 protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                    ModalEditDialogBase.this.close(target);
-                    @SuppressWarnings("unchecked")
-                    final T object = (T) form.getModelObject();
-                    ModalEditDialogBase.this.onSubmit(target, object);
+                    ModalEditDialogBase.this.doSubmit(target, (Form<T>) form);
                 }
             };
             add(modifyButton);
             final AjaxButton cancelButton =
                 new AjaxButton("cancelButton",
                         new Model<String>("Cancel"), form) {
+                @SuppressWarnings("unchecked")
                 @Override
                 protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                    ModalEditDialogBase.this.close(target);
-                    @SuppressWarnings("unchecked")
-                    final T object = (T) form.getModelObject();
-                    ModalEditDialogBase.this.onCancel(target, object);
+                    ModalEditDialogBase.this.doCancel(target, (Form<T>) form);
                 }
             };
             cancelButton.setDefaultFormProcessing(false);
@@ -79,17 +73,31 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
     private AjaxButton addButton;
     private AjaxButton modifyButton;
 
-    public ModalEditDialogBase(String id, IModel<String> title) {
+    protected ModalEditDialogBase(String id, IModel<String> title) {
         super(id, title);
     }
 
     @Override
     protected final Panel createContent(String id) {
-        this.contentPanel = createContentPanel(id);
-        this.contentPanel.add(new AttributeAppender("class",
-                new Model<String>("editDialog"), " "));
-        this.contentPanel.getFeedbackPanel().setOutputMarkupId(true);
-        return this.contentPanel;
+        final IModel<T> model = createModel();
+        contentPanel = createContentPanel(id, model);
+        contentPanel.add(new AttributeAppender("class",
+                new AbstractReadOnlyModel<String>() {
+                    public String getObject() {
+                        final String clazz = getCssClass();
+                        if ((clazz != null) && !clazz.isEmpty()) {
+                            StringBuilder sb = new StringBuilder("editDialog");
+                            sb.append(' ');
+                            sb.append(clazz);
+                            return sb.toString();
+                        } else {
+                            return "editDialog";
+                        }
+                    }
+                }, " "));
+        contentPanel.getForm().removePersistentFormComponentValues(true);
+        contentPanel.getFeedbackPanel().setOutputMarkupId(true);
+        return contentPanel;
     }
 
     @Override
@@ -111,15 +119,34 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
             addButton.setVisible(false);
             modifyButton.setVisible(true);
         }
-        contentPanel.getForm().setModel(createModel(object));
+        contentPanel.getForm().setModelObject(object);
         super.show(target);
+    }
+
+    private final void doSubmit(AjaxRequestTarget target, Form<T> form) {
+        close(target);
+        final T object = form.getModelObject();
+        form.setModelObject(null);
+        onSubmit(target, object);
+    }
+    
+    private final void doCancel(AjaxRequestTarget target, Form<T> form) {
+        close(target);
+        final T object = form.getModelObject();
+        form.setModelObject(null);
+        onCancel(target, object);
+    }
+
+    protected String getCssClass() {
+        return null;
     }
 
     protected abstract T newObjectInstance();
 
-    protected abstract IModel<T> createModel(T object);
-    
-    protected abstract ContentPanel createContentPanel(String id);
+    protected abstract IModel<T> createModel();
+
+    protected abstract ContentPanel createContentPanel(String id,
+            IModel<T> model);
     
     public abstract void onSubmit(AjaxRequestTarget target, T object);
 
