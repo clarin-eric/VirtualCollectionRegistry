@@ -8,6 +8,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
+import org.apache.wicket.validation.validator.StringValidator;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ModalEditDialogBase;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
@@ -24,13 +25,17 @@ public abstract class EditCreatorDialog extends ModalEditDialogBase<Creator> {
             form = new Form<Creator>("editCreatorForm", model);
             final TextField<String> nameField =
                 new RequiredTextField<String>("name");
+            nameField.add(new StringValidator.MaximumLengthValidator(255));
             form.add(nameField);
             final TextField<String> emailField =
                 new TextField<String>("email");
+            emailField.add(new StringValidator.MaximumLengthValidator(255));
             emailField.add(EmailAddressValidator.getInstance());
             form.add(emailField);
             final TextField<String> organisationField =
                 new TextField<String>("organisation");
+            organisationField.add(
+                    new StringValidator.MaximumLengthValidator(255));
             form.add(organisationField);
             feedbackPanel = new FeedbackPanel("feedback");
             form.add(feedbackPanel);

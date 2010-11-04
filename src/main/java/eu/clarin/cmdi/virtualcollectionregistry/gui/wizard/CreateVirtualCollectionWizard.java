@@ -37,6 +37,8 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.validation.validator.StringValidator;
+import org.apache.wicket.validation.validator.UrlValidator;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ConfirmationDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.HomePage;
@@ -110,7 +112,10 @@ public class CreateVirtualCollectionWizard extends WizardBase {
 
         public GeneralStep() {
             super(null, "General", "Yada yada yada ...");
-            add(new RequiredTextField<String>("vc.name"));
+            final TextField<String> nameField =
+                new RequiredTextField<String>("vc.name");
+            nameField.add(new StringValidator.MaximumLengthValidator(255));
+            add(nameField);
             final DropDownChoice<VirtualCollection.Type> typeChoice =
                 new DropDownChoice<VirtualCollection.Type>("vc.type",
                         Arrays.asList(VirtualCollection.Type.values()),
@@ -128,7 +133,9 @@ public class CreateVirtualCollectionWizard extends WizardBase {
                         Arrays.asList(VirtualCollection.Reproducibility.values()),
                         new EnumChoiceRenderer<VirtualCollection.Reproducibility>(this));
             add(reproducibilityChoice);
-            add(new TextArea<String>("vc.reproducibilityNotice"));
+            final TextArea<String> reproducibilityNoticeArea =
+                new TextArea<String>("vc.reproducibilityNotice");
+            add(reproducibilityNoticeArea);
             
             final KeywordsList keywordList =
                 new KeywordsList("keywordsList", vc.getKeywords());
@@ -545,6 +552,8 @@ public class CreateVirtualCollectionWizard extends WizardBase {
             add(descriptionArea);
             final TextField<String> uriField =
                 new TextField<String>("vc.generatedBy.uri");
+            uriField.add(new StringValidator.MaximumLengthValidator(255));
+            uriField.add(new UrlValidator(UrlValidator.NO_FRAGMENTS));
             add(uriField);
             final TextField<String> queryProfileField =
                 new TextField<String>("vc.generatedBy.query.profile");

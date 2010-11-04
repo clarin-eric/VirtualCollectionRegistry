@@ -11,6 +11,8 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.validation.validator.StringValidator;
+import org.apache.wicket.validation.validator.UrlValidator;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ModalEditDialogBase;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
@@ -33,6 +35,8 @@ public abstract class EditResourceDialog extends ModalEditDialogBase<Resource> {
             form.add(typeChoice);
             final TextField<String> refField =
                 new RequiredTextField<String>("ref");
+            refField.add(new StringValidator.MaximumLengthValidator(255));
+            refField.add(new UrlValidator(UrlValidator.NO_FRAGMENTS));
             form.add(refField);
             feedbackPanel = new FeedbackPanel("feedback");
             form.add(feedbackPanel);
