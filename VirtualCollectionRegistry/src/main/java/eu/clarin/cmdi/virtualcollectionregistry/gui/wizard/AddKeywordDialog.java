@@ -6,6 +6,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.validation.validator.StringValidator;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ModalEditDialogBase;
 
@@ -21,6 +22,7 @@ public abstract class AddKeywordDialog extends ModalEditDialogBase<String> {
             form = new Form<String>("addKeywordForm", model);
             final TextField<String> keywordField =
                 new RequiredTextField<String>("keyword", form.getModel());
+            keywordField.add(new StringValidator.MaximumLengthValidator(255));
             form.add(keywordField);
             feedbackPanel = new FeedbackPanel("feedback");
             form.add(feedbackPanel);
