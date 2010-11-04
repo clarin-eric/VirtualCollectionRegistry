@@ -537,19 +537,52 @@ public class CreateVirtualCollectionWizard extends WizardBase {
     } // class CreateVirtualCollectionWizard.ResourcesStep
 
     private final class GeneratedByStep extends DynamicWizardStep {
-        private final GeneratedBy generatedBy = new GeneratedBy();
-
         public GeneratedByStep(IDynamicWizardStep previousStep) {
             super(previousStep, "GeneratedBy", "Yada yada yada ...");
-            final Form<GeneratedBy> form = new Form<GeneratedBy>(
-                    "generatedByForm", new CompoundPropertyModel<GeneratedBy>(
-                            generatedBy));
-            final TextArea<String> descriptionArea = new TextArea<String>(
-                    "description");
+            final TextArea<String> descriptionArea =
+                new TextArea<String>("vc.generatedBy.description");
             descriptionArea.setRequired(true);
-            form.add(descriptionArea);
-            form.add(new TextField<String>("uri"));
-            add(form);
+            add(descriptionArea);
+            final TextField<String> uriField =
+                new TextField<String>("vc.generatedBy.uri");
+            add(uriField);
+            final TextField<String> queryProfileField =
+                new TextField<String>("vc.generatedBy.query.profile");
+            add(queryProfileField);
+            final TextArea<String> queryValueArea =
+                new TextArea<String>("vc.generatedBy.query.value");
+            add(queryValueArea);
+            
+            add(new AbstractFormValidator() {
+                @Override
+                public FormComponent<?>[] getDependentFormComponents() {
+                    return new FormComponent[] { queryProfileField,
+                                                 queryValueArea };
+                }
+
+                @Override
+                public void validate(Form<?> form) {
+                    final String profile = queryProfileField.getInput();
+                    final String value   = queryValueArea.getInput();
+                    if (profile.isEmpty() && !value.isEmpty()) {
+                        form.error("profile is required with value");
+                        queryProfileField.invalid();
+                    }
+                    if (!profile.isEmpty() && value.isEmpty()) {
+                        form.error("value is required with profile");
+                        queryValueArea.invalid();
+                    }
+                    if (profile.isEmpty() && value.isEmpty()) {
+                        /*
+                         * XXX: clear Query object as side-effect. This is
+                         * more a hack than a clean solution.
+                         */
+                        if (vc.getGeneratedBy() != null) {
+                            vc.getGeneratedBy().setQuery(null);
+                        }
+                    }
+                }
+            });
         }
 
         @Override
@@ -560,11 +593,6 @@ public class CreateVirtualCollectionWizard extends WizardBase {
         @Override
         public IDynamicWizardStep next() {
             return null;
-        }
-
-        @Override
-        public void applyState() {
-            vc.setGeneratedBy(generatedBy);
         }
     } // class CreateVirtualCollectionWizard.GeneratedByStep
 
@@ -606,8 +634,13 @@ public class CreateVirtualCollectionWizard extends WizardBase {
         }
         if (vc.getGeneratedBy() != null) {
             final GeneratedBy gb = vc.getGeneratedBy();
-            System.err.println("GB.DESC: " + gb.getDescription());
-            System.err.println("GB.UR: " + gb.getURI());
+            System.err.println("GB.Desc: " + gb.getDescription());
+            System.err.println("GB.Uri: " + gb.getURI());
+            final GeneratedBy.Query query = gb.getQuery();
+            if (query != null) {
+                System.err.println("GB.Query.Profile: " + query.getProfile());
+                System.err.println("GB.Query.Value:" + query.getValue());
+            }
         }
     }
 
