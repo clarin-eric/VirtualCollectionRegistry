@@ -6,14 +6,19 @@ import java.util.Arrays;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.markup.html.form.AbstractTextComponent;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.validation.IValidatable;
+import org.apache.wicket.validation.Validatable;
+import org.apache.wicket.validation.ValidationError;
+import org.apache.wicket.validation.validator.AbstractValidator;
+import org.apache.wicket.validation.validator.UrlValidator;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ModalDialogBase;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
@@ -22,21 +27,19 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 public abstract class AddResourcesDialog extends ModalDialogBase {
     private final class Data implements Serializable {
         private Resource.Type type;
-        private String references;
+        private String[] references;
         
         public Resource[] getResources() {
-            Resource[] resources = null;
-            if ((type != null) && (references != null)) {
-                String[] refs = references.split("[;\\s]+");
-                if (refs.length > 0) {
-                    resources = new Resource[refs.length];
-                    int i = 0;
-                    for (String ref : refs) {
-                        resources[i++] = new Resource(type, ref);
-                    }
+            Resource[] value = null;
+            if ((type != null) && (references != null) &&
+                    (references.length > 0)) {
+                value = new Resource[references.length];
+                int i = 0;
+                for (String ref : references) {
+                    value[i++] = new Resource(type, ref);
                 }
             }
-            return resources;
+            return value;
         }
     } // class AddResourcesDialog.Data
 
@@ -56,9 +59,48 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
                         new EnumChoiceRenderer<Resource.Type>(this));
             typeChoice.setRequired(true);
             form.add(typeChoice);
-            final TextArea<String> referencesArea =
-                new TextArea<String>("references");
+            final AbstractTextComponent<String[]> referencesArea =
+                new AbstractTextComponent<String[]>("references") {
+                    @Override
+                    protected void convertInput() {
+                        System.err.println("CONVERT!");
+                        final String input = getRawInput();
+                        if (input != null) {
+                            final String[] refs = input.split("[,;\\s]+");
+                            setConvertedInput(refs);
+                        } else {
+                            setConvertedInput(null);
+                        }
+                    }
+                };
             referencesArea.setRequired(true);
+            referencesArea.add(new AbstractValidator<String[]>() {
+                @Override
+                protected void onValidate(IValidatable<String[]> input) {
+                    String[] refs = input.getValue();
+                    if (refs != null) {
+                        UrlValidator v = new UrlValidator();
+                        for (String ref : refs) {
+                            if (ref.length() > 255) {
+                                ValidationError ve = new ValidationError();
+                                ve.setMessage("'" + ref +
+                                        "' is larger than 255 characters");
+                                input.error(ve);
+                                continue;
+                            }
+                            Validatable<String> w =
+                                new Validatable<String>(ref);
+                            v.validate(w);
+                            if (!w.isValid()) {
+                                ValidationError ve = new ValidationError();
+                                ve.setMessage("'" + ref +
+                                        "' is not valid uri");
+                                input.error(ve);
+                            }
+                        }
+                    }
+                }
+            });
             form.add(referencesArea);
             feedbackPanel = new FeedbackPanel("feedback");
             feedbackPanel.setOutputMarkupId(true);
