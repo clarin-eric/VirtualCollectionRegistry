@@ -177,7 +177,7 @@ class VirtualColletionRegistryOAIRepository implements Repository {
                 if (!vc.getCreators().isEmpty()) {
                     List<String> creators = new ArrayList<String>();
                     for (Creator creator : vc.getCreators()) {
-                        creators.add(creator.getName());
+                        creators.add(creator.getPerson());
                     }
                 }
                 return null;

@@ -2,6 +2,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.wizard;
 
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.RequiredTextField;
+import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -9,6 +10,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
 import org.apache.wicket.validation.validator.StringValidator;
+import org.apache.wicket.validation.validator.UrlValidator;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ModalEditDialogBase;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
@@ -23,10 +25,14 @@ public abstract class EditCreatorDialog extends ModalEditDialogBase<Creator> {
         public Content(String id, IModel<Creator> model) {
             super(id);
             form = new Form<Creator>("editCreatorForm", model);
-            final TextField<String> nameField =
-                new RequiredTextField<String>("name");
-            nameField.add(new StringValidator.MaximumLengthValidator(255));
-            form.add(nameField);
+            final TextField<String> personField =
+                new RequiredTextField<String>("person");
+            personField.add(new StringValidator.MaximumLengthValidator(255));
+            form.add(personField);
+            final TextArea<String> addressArea =
+                new TextArea<String>("address");
+            addressArea.add(new StringValidator.MaximumLengthValidator(255));
+            form.add(addressArea);
             final TextField<String> emailField =
                 new TextField<String>("email");
             emailField.add(new StringValidator.MaximumLengthValidator(255));
@@ -37,6 +43,19 @@ public abstract class EditCreatorDialog extends ModalEditDialogBase<Creator> {
             organisationField.add(
                     new StringValidator.MaximumLengthValidator(255));
             form.add(organisationField);
+            final TextField<String> telephoneField =
+                new TextField<String>("telephone");
+            telephoneField.add(new StringValidator.MaximumLengthValidator(255));
+            form.add(telephoneField);
+            final TextField<String> websiteField =
+                new TextField<String>("website");
+            websiteField.add(new StringValidator.MaximumLengthValidator(255));
+            websiteField.add(new UrlValidator());
+            form.add(websiteField);
+            final TextField<String> roleField =
+                new TextField<String>("role");
+            roleField.add(new StringValidator.MaximumLengthValidator(255));
+            form.add(roleField);
             feedbackPanel = new FeedbackPanel("feedback");
             form.add(feedbackPanel);
             add(form);

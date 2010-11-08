@@ -7,14 +7,22 @@
     <CreationDate>2009-12-31</CreationDate>
     <Creators>
         <Creator>
-            <Name>Joe User</Name>
+            <Person>Joe User</Person>
+            <Address>Example Address Joe</Address>
             <Email>joe.user@example.com</Email>
             <Organisation>Example Organization</Organisation>
+            <Telephone>+1-800-555-0101</Telephone>
+            <Website>http://www.example.org/~joe/</Website>
+            <Role>Test Role Joe</Role>
         </Creator>
         <Creator>
-            <Name>Jane User</Name>
+            <Person>Jane User</Person>
+            <Address>Example Address Jane</Address>
             <Email>jane.user@example.com</Email>
             <Organisation>Example Organization</Organisation>
+            <Telephone>+1-800-555-0102</Telephone>
+            <Website>http://www.example.org/~jane/</Website>
+            <Role>Test Role Jane</Role>
         </Creator>
     </Creators>
     <Purpose>sample</Purpose>

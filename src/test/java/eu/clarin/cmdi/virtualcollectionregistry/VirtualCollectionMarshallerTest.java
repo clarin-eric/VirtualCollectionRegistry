@@ -69,14 +69,22 @@ public class VirtualCollectionMarshallerTest {
         assertEquals(2, vc.getCreators().size());
         Creator c = vc.getCreators().get(0);
         assertNotNull(c);
-        assertEquals("Joe User", c.getName());
+        assertEquals("Joe User", c.getPerson());
+        assertEquals("Example Address Joe", c.getAddress());
         assertEquals("joe.user@example.com", c.getEMail());
         assertEquals("Example Organization", c.getOrganisation());
+        assertEquals("+1-800-555-0101", c.getTelephone());
+        assertEquals("http://www.example.org/~joe/", c.getWebsite());
+        assertEquals("Test Role Joe", c.getRole());
         c = vc.getCreators().get(1);
         assertNotNull(c);
-        assertEquals("Jane User", c.getName());
+        assertEquals("Jane User", c.getPerson());
+        assertEquals("Example Address Jane", c.getAddress());
         assertEquals("jane.user@example.com", c.getEMail());
         assertEquals("Example Organization", c.getOrganisation());
+        assertEquals("+1-800-555-0102", c.getTelephone());
+        assertEquals("http://www.example.org/~jane/", c.getWebsite());
+        assertEquals("Test Role Jane", c.getRole());
 
         assertNotNull(vc.getResources());
         assertEquals(3, vc.getResources().size());
@@ -154,7 +162,7 @@ public class VirtualCollectionMarshallerTest {
         assertEquals(1, vc.getCreators().size());
         Creator c = vc.getCreators().get(0);
         assertNotNull(c);
-        assertEquals("Joe User", c.getName());
+        assertEquals("Joe User", c.getPerson());
         assertEquals("joe.user@example.com", c.getEMail());
         assertEquals("Example Organization", c.getOrganisation());
 
