@@ -7,7 +7,7 @@
     <CreationDate>2009-12-31</CreationDate>
     <Creators>
         <Creator>
-            <Name>Joe User</Name>
+            <Person>Joe User</Person>
             <Email>joe.user@example.com</Email>
             <Organisation>Example Organization</Organisation>
         </Creator>

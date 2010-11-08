@@ -40,9 +40,13 @@
               <xs:element name="Creator" minOccurs="1" maxOccurs="unbounded">
                 <xs:complexType>
                     <xs:sequence>
-                      <xs:element name="Name" type="xs:string"/>
+                      <xs:element name="Person" type="xs:string"/>
+                      <xs:element name="Address" type="xs:string" minOccurs="0"/>
                       <xs:element name="Email" type="xs:string" minOccurs="0"/>
                       <xs:element name="Organisation" type="xs:string" minOccurs="0"/>
+                      <xs:element name="Telephone" type="xs:string" minOccurs="0" />
+                      <xs:element name="Website" type="xs:anyURI" minOccurs="0" />
+                      <xs:element name="Role" type="xs:string" minOccurs="0" />
                     </xs:sequence>
                 </xs:complexType>
               </xs:element>

@@ -262,9 +262,15 @@ public class VirtualCollectionMarshaller {
             for (Creator creator : vc.getCreators()) {
                 writer.writeStartElement("Creator");
 
-                writer.writeStartElement("Name");
-                writer.writeCharacters(creator.getName());
-                writer.writeEndElement(); // "Name" element
+                writer.writeStartElement("Person");
+                writer.writeCharacters(creator.getPerson());
+                writer.writeEndElement(); // "Person" element
+
+                if (creator.getAddress() != null) {
+                    writer.writeStartElement("Address");
+                    writer.writeCharacters(creator.getAddress());
+                    writer.writeEndElement(); // "Address" element
+                }
 
                 if (creator.getEMail() != null) {
                     writer.writeStartElement("Email");
@@ -276,6 +282,24 @@ public class VirtualCollectionMarshaller {
                     writer.writeStartElement("Organisation");
                     writer.writeCharacters(creator.getOrganisation());
                     writer.writeEndElement(); // "Organisation" element
+                }
+
+                if (creator.getTelephone() != null) {
+                    writer.writeStartElement("Telephone");
+                    writer.writeCharacters(creator.getTelephone());
+                    writer.writeEndElement(); // "Telephone" element
+                }
+
+                if (creator.getWebsite() != null) {
+                    writer.writeStartElement("Website");
+                    writer.writeCharacters(creator.getWebsite());
+                    writer.writeEndElement(); // "Website" element
+                }
+
+                if (creator.getRole() != null) {
+                    writer.writeStartElement("Role");
+                    writer.writeCharacters(creator.getRole());
+                    writer.writeEndElement(); // "Role" element
                 }
 
                 writer.writeEndElement(); // "Creator" element
@@ -444,13 +468,25 @@ public class VirtualCollectionMarshaller {
         if (readStart(reader, "Creators", false, true)) {
             readStart(reader, "Creator", true, true);
             do {
-                readStart(reader, "Name", true, true);
+                readStart(reader, "Person", true, true);
                 Creator creator = new Creator(readString(reader, false));
+                if (readStart(reader, "Address", false, true)) {
+                    creator.setAddress(readString(reader, false));
+                }
                 if (readStart(reader, "Email", false, true)) {
                     creator.setEMail(readString(reader, false));
                 }
                 if (readStart(reader, "Organisation", false, true)) {
                     creator.setOrganisation(readString(reader, false));
+                }
+                if (readStart(reader, "Telephone", false, true)) {
+                    creator.setTelephone(readString(reader, false));
+                }
+                if (readStart(reader, "Website", false, true)) {
+                    creator.setWebsite(readString(reader, false));
+                }
+                if (readStart(reader, "Role", false, true)) {
+                    creator.setRole(readString(reader, false));
                 }
                 vc.getCreators().add(creator);
             } while (readStart(reader, "Creator", false, true));
@@ -642,14 +678,19 @@ public class VirtualCollectionMarshaller {
             out.writeStartElement(NS_CMDI, "Creators");
             for (Creator creator : vc.getCreators()) {
                 // make sure there is anything set in creator
-                if ((creator.getName() != null) ||
+                if ((creator.getPerson() != null) ||
                         (creator.getEMail() != null) ||
                         (creator.getOrganisation() != null)) {
                     out.writeStartElement(NS_CMDI, "Creator");
-                    if (creator.getName() != null) {
-                        out.writeStartElement(NS_CMDI, "Name");
-                        out.writeCharacters(creator.getName());
-                        out.writeEndElement(); // "Name" element
+                    if (creator.getPerson() != null) {
+                        out.writeStartElement(NS_CMDI, "Person");
+                        out.writeCharacters(creator.getPerson());
+                        out.writeEndElement(); // "Person" element
+                    }
+                    if (creator.getAddress() != null) {
+                        out.writeStartElement(NS_CMDI, "Address");
+                        out.writeCharacters(creator.getAddress());
+                        out.writeEndElement(); // "Address" element
                     }
                     if (creator.getEMail() != null) {
                         out.writeStartElement(NS_CMDI, "Email");
@@ -660,6 +701,21 @@ public class VirtualCollectionMarshaller {
                         out.writeStartElement(NS_CMDI, "Organisation");
                         out.writeCharacters(creator.getOrganisation());
                         out.writeEndElement(); // "Organisation" element
+                    }
+                    if (creator.getTelephone() != null) {
+                        out.writeStartElement(NS_CMDI, "Telephone");
+                        out.writeCharacters(creator.getTelephone());
+                        out.writeEndElement(); // "Telephone" element
+                    }
+                    if (creator.getWebsite() != null) {
+                        out.writeStartElement(NS_CMDI, "Website");
+                        out.writeCharacters(creator.getWebsite());
+                        out.writeEndElement(); // "Website" element
+                    }
+                    if (creator.getRole() != null) {
+                        out.writeStartElement(NS_CMDI, "Role");
+                        out.writeCharacters(creator.getRole());
+                        out.writeEndElement(); // "Role" element
                     }
                     out.writeEndElement(); // "Creator" element
                 }

@@ -43,7 +43,7 @@ TOKEN: {
     | <VC_PURPOSE: "purpose">
     | <VC_REPRODUCIBILITY: "reproducibility">
     | <VC_OWNER: "owner">
-    | <CR_NAME: "creator">
+    | <CR_PERSON: "person">
     | <CR_ORGANIZATION: "organization">
     | <CR_EMAIL: "email">
     | <AND: "and">
@@ -107,7 +107,7 @@ private void predicate() #Predicate : {
      ( ( attribute = <VC_NAME>
        | attribute = <VC_DESC>
        | attribute = <VC_OWNER>
-       | attribute = <CR_NAME>
+       | attribute = <CR_PERSON>
        | attribute = <CR_ORGANIZATION>
        | attribute = <CR_EMAIL> )
        ( operator = <EQ>

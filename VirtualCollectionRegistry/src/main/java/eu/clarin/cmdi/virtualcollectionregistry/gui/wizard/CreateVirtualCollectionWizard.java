@@ -310,8 +310,8 @@ public class CreateVirtualCollectionWizard extends WizardBase {
         @SuppressWarnings("unchecked")
         private IColumn<Creator>[] createColumns() {
             final IColumn<?>[] columns = new IColumn<?>[] {
-                    new PropertyColumn<Creator>(new Model<String>("Name"),
-                            "name"),
+                    new PropertyColumn<Creator>(new Model<String>("Person"),
+                            "person"),
                     new PropertyColumn<Creator>(new Model<String>("EMail"),
                             "email"),
                     new PropertyColumn<Creator>(new Model<String>(
@@ -624,7 +624,7 @@ public class CreateVirtualCollectionWizard extends WizardBase {
             System.err.println("KW: " + kw);
         }
         for (Creator c : vc.getCreators()) {
-            System.err.println("C: " + c.getName() + ", " + c.getEMail());
+            System.err.println("C: " + c.getPerson() + ", " + c.getEMail());
         }
         for (Resource r : vc.getResources()) {
             System.err.println("R: " + r.getType() + ", " + r.getRef());

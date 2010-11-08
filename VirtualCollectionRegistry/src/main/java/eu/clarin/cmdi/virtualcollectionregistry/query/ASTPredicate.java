@@ -69,7 +69,7 @@ public class ASTPredicate extends SimpleNode {
         case QueryParserConstants.VC_OWNER:
             sb.append("vc_owner");
             break;
-        case QueryParserConstants.CR_NAME:
+        case QueryParserConstants.CR_PERSON:
             sb.append("cr_name");
             break;
         case QueryParserConstants.CR_EMAIL:

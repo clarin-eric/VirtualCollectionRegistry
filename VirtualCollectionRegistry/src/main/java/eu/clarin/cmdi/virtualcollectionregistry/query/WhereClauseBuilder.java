@@ -131,9 +131,9 @@ class WhereClauseBuilder implements QueryParserVisitor {
                     root.get(VirtualCollection_.owner).get(User_.name),
                     node.getOperator(), node.getValue());
             break;
-        case QueryParserConstants.CR_NAME:
+        case QueryParserConstants.CR_PERSON:
             predicate = makeStringPredicate(data,
-                    root.join(VirtualCollection_.creators).get(Creator_.name),
+                    root.join(VirtualCollection_.creators).get(Creator_.person),
                     node.getOperator(), node.getValue());
             break;
         case QueryParserConstants.CR_EMAIL:

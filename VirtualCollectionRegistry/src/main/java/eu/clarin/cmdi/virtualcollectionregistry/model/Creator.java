@@ -22,57 +22,94 @@ public class Creator implements Serializable {
     @Column(name = "id", nullable = false, updatable = false)
     private Long id;
     
-    @Column(name = "name", nullable = false)
-    private String name;
+    @Column(name = "person", nullable = false)
+    private String person;
 
+    @Column(name = "address")
+    private String address;
+    
     @Column(name = "email")
     private String email;
 
     @Column(name = "organisation")
     private String organisation;
 
+    @Column(name = "telephone")
+    private String telephone;
+
+    @Column(name = "website")
+    private String website;
+
+    @Column(name = "role")
+    private String role;
     
     public Creator() {
         super();
     }
 
-    public Creator(String name, String email, String organisation) {
+    public Creator(String person) {
         super();
-        this.setName(name);
-        this.setEMail(email);
-        this.setOrganisation(organisation);
-    }
-    
-    public Creator(String name) {
-        this(name, null, null);
+        this.setPerson(person);
     }
 
     public Long getId() {
         return id;
     }
 
-    public String getName() {
-        return name;
+    public String getPerson() {
+        return person;
     }
 
-    public void setName(String value) {
-        this.name = value;
+    public void setPerson(String person) {
+        this.person = person;
+    }
+
+    public String getAddress() {
+        return address;
+    }
+    
+    public void setAddress(String address) {
+        this.address = address;
     }
 
     public String getEMail() {
         return email;
     }
 
-    public void setEMail(String value) {
-        this.email = value;
+    public void setEMail(String email) {
+        this.email = email;
     }
 
     public String getOrganisation() {
         return organisation;
     }
 
-    public void setOrganisation(String value) {
-        this.organisation = value;
+    public void setOrganisation(String organisation) {
+        this.organisation = organisation;
+    }
+
+    public String getTelephone() {
+        return telephone;
+    }
+    
+    public void setTelephone(String telephone) {
+        this.telephone = telephone;
+    }
+
+    public String getWebsite() {
+        return website;
+    }
+    
+    public void setWebsite(String website) {
+        this.website = website;
+    }
+
+    public String getRole() {
+        return role;
+    }
+
+    public void setRole(String role) {
+        this.role = role;
     }
 
     @Override
@@ -86,9 +123,13 @@ public class Creator implements Serializable {
         if (obj instanceof Creator) {
             final Creator rhs = (Creator) obj;
             return new EqualsBuilder()
-                .append(this.getName(), rhs.getName())
+                .append(this.getPerson(), rhs.getPerson())
+                .append(this.getAddress(), rhs.getAddress())
                 .append(this.getEMail(), rhs.getEMail())
                 .append(this.getOrganisation(), rhs.getOrganisation())
+                .append(this.getTelephone(), rhs.getTelephone())
+                .append(this.getWebsite(), rhs.getWebsite())
+                .append(this.getRole(), rhs.getRole())
                 .isEquals();
         }
         return false;
@@ -97,9 +138,13 @@ public class Creator implements Serializable {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(32361, 7611)
-            .append(this.getName())
+            .append(this.getPerson())
+            .append(this.getAddress())
             .append(this.getEMail())
             .append(this.getOrganisation())
+            .append(this.getTelephone())
+            .append(this.getWebsite())
+            .append(this.getRole())
             .toHashCode();
     }
 
