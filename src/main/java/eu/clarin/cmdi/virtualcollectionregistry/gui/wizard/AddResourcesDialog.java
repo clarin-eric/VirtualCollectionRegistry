@@ -63,7 +63,6 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
                 new AbstractTextComponent<String[]>("references") {
                     @Override
                     protected void convertInput() {
-                        System.err.println("CONVERT!");
                         final String input = getRawInput();
                         if (input != null) {
                             final String[] refs = input.split("[,;\\s]+");
