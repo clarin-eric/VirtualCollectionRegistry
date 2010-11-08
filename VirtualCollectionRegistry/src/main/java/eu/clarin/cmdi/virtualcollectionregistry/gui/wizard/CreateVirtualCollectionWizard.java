@@ -251,13 +251,7 @@ public class CreateVirtualCollectionWizard extends WizardBase {
                             @Override
                             public Iterator<? extends Creator>
                                 iterator(int first, int count) {
-                                // XXX: hack
-                                Iterator<Creator> i =
-                                    vc.getCreators().iterator();
-                                while (first-- > 0) {
-                                    i.next();
-                                }
-                                return i;
+                                return vc.getCreators().listIterator(first);
                             }
 
                             @Override
@@ -404,13 +398,7 @@ public class CreateVirtualCollectionWizard extends WizardBase {
                             @Override
                             public Iterator<? extends Resource>
                                 iterator(int first, int count) {
-                                // XXX: hack
-                                Iterator<Resource> i =
-                                    vc.getResources().iterator();
-                                while (first-- > 0) {
-                                    i.next();
-                                }
-                                return i;
+                                return vc.getResources().listIterator(first);
                             }
 
                             @Override
@@ -423,7 +411,7 @@ public class CreateVirtualCollectionWizard extends WizardBase {
                                 return vc.getResources().size();
                             }
                         },
-                        16);
+                        64);
             resourcesTable.setOutputMarkupId(true);
             add(resourcesTable);
 
