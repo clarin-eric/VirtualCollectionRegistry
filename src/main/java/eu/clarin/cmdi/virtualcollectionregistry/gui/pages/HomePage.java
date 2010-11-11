@@ -7,4 +7,4 @@ public class HomePage extends BasePage {
         super();
     }
     
-} // class Homepage
+} // class HomePage

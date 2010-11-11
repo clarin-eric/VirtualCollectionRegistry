@@ -20,6 +20,16 @@
   </filter-mapping>
 
   <filter>
+    <filter-name>AuthFilter</filter-name>
+    <filter-class>eu.clarin.cmdi.virtualcollectionregistry.gui.auth.AuthFilter</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>AuthFilter</filter-name>
+    <url-pattern>/app/*</url-pattern>
+  </filter-mapping>
+
+  <filter>
     <filter-name>VirtualCollectionRegistryApplication</filter-name>
     <filter-class>org.apache.wicket.protocol.http.WicketFilter</filter-class>
     <init-param>
