@@ -8,12 +8,13 @@
 <wicket:panel>
 <div wicket:id="login"></div>
 <wicket:fragment wicket:id="loginFragment">
-  <!-- Anonymous [Login] -->
+  Anonymous <a wicket:id="loginLink" href="#">[Login]</a>
 </wicket:fragment>
 
 <div wicket:id="logout"></div>
 <wicket:fragment wicket:id="logoutFragment">
-  &lt;$Username&gt; [Logout]
+  <span wicket:id="username">username</span>
+  <!-- <a wicket:id="logoutLink" href="#">[Logout]</a>  -->
 </wicket:fragment>
 </wicket:panel>
 </body>
