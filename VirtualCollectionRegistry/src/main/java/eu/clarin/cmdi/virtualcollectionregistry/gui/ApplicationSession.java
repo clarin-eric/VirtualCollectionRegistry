@@ -13,7 +13,7 @@ public class ApplicationSession extends AuthenticatedWebSession {
         new Roles(Roles.USER);
     private static final Roles ROLES_ADMIN =
         new Roles(new String[] { Roles.USER, Roles.ADMIN}); 
-    private String user = null;
+    private Principal principal;
     private boolean isAdmin;
     
     public ApplicationSession(Request request) {
@@ -24,7 +24,12 @@ public class ApplicationSession extends AuthenticatedWebSession {
         boolean result = false;
         if (principal != null) {
             result = signIn(principal.getName(), null);
-            // XXX: possibly do something with attributes
+            if (result) {
+                // XXX: possibly do something with attributes
+                this.principal = principal; 
+                this.isAdmin =
+                    ((Application) getApplication()).isAdmin(getUser());
+            }
         }
         return result; 
     }
@@ -32,8 +37,6 @@ public class ApplicationSession extends AuthenticatedWebSession {
     @Override
     public boolean authenticate(String username, String password) {
         if (username != null) {
-            user = username;
-            isAdmin = ((Application) getApplication()).isAdmin(username);
             replaceSession();
             return true;
         }
@@ -48,8 +51,12 @@ public class ApplicationSession extends AuthenticatedWebSession {
         return null;
     }
 
+    public Principal getPrincipal() {
+        return principal;
+    }
+
     public String getUser() {
-        return user;
+        return principal.getName();
     }
 
     public static ApplicationSession get() {
