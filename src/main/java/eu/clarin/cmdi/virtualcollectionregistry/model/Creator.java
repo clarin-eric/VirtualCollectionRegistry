@@ -22,25 +22,25 @@ public class Creator implements Serializable {
     @Column(name = "id", nullable = false, updatable = false)
     private Long id;
     
-    @Column(name = "person", nullable = false)
+    @Column(name = "person", nullable = false, length = 255)
     private String person;
 
-    @Column(name = "address")
+    @Column(name = "address", length = 255)
     private String address;
     
-    @Column(name = "email")
+    @Column(name = "email", length = 255)
     private String email;
 
-    @Column(name = "organisation")
+    @Column(name = "organisation", length = 255)
     private String organisation;
 
-    @Column(name = "telephone")
+    @Column(name = "telephone", length = 255)
     private String telephone;
 
-    @Column(name = "website")
+    @Column(name = "website", length = 255)
     private String website;
 
-    @Column(name = "role")
+    @Column(name = "role", length = 255)
     private String role;
     
     public Creator() {

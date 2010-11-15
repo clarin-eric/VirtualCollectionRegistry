@@ -7,6 +7,7 @@ import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
 import javax.persistence.CollectionTable;
 import javax.persistence.Column;
@@ -114,11 +115,12 @@ public class VirtualCollection implements Serializable {
     @Column(name = "type", nullable = false)
     private VirtualCollection.Type type;
 
-    @Column(name = "name", nullable = false)
+    @Column(name = "name", nullable = false, length = 255)
     private String name;
 
     @Lob
-    @Column(name = "description")
+    @Basic(fetch = FetchType.EAGER)
+    @Column(name = "description", length = 8192)
     private String description;
 
     @Temporal(TemporalType.DATE)
@@ -140,7 +142,9 @@ public class VirtualCollection implements Serializable {
     @Column(name = "reproducibility")
     private VirtualCollection.Reproducibility reproducibility;
     
-    @Column(name = "reproducibility_notice")
+    @Lob
+    @Basic(fetch = FetchType.EAGER)
+    @Column(name = "reproducibility_notice", length = 8192)
     private String reproducibilityNotice;
 
     @ElementCollection

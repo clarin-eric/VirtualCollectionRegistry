@@ -47,7 +47,8 @@ public class PersistentIdentifier implements Serializable {
 
     @Column(name = "identifier",
             nullable = false,
-            unique = true)
+            unique = true,
+            length = 255)
     private String identifier;
 
     
