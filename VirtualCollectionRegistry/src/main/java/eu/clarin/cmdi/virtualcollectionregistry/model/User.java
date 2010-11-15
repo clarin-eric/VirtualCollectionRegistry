@@ -34,10 +34,10 @@ public class User implements Serializable {
     @Column(name = "id")
     private Long id;
 
-    @Column(name = "name", nullable = false, unique = true)
+    @Column(name = "name", nullable = false, unique = true, length = 255)
     private String name;
 
-    @Column(name = "display_name")
+    @Column(name = "display_name", length = 255)
     private String displayName;
     
     @OneToMany(cascade = CascadeType.ALL,

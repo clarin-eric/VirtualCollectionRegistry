@@ -2,9 +2,11 @@ package eu.clarin.cmdi.virtualcollectionregistry.model;
 
 import java.io.Serializable;
 
+import javax.persistence.Basic;
 import javax.persistence.Column;
 import javax.persistence.Embeddable;
 import javax.persistence.Embedded;
+import javax.persistence.FetchType;
 import javax.persistence.Lob;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -18,11 +20,12 @@ public class GeneratedBy implements Serializable {
     public static class Query implements Serializable {
         private static final long serialVersionUID = 1L;
 
-        @Column(name = "generatedby_query_profile")
+        @Column(name = "generatedby_query_profile", length = 255)
         private String profile;
 
-        @Column(name = "generatedby_query_value")
         @Lob
+        @Basic(fetch = FetchType.EAGER)
+        @Column(name = "generatedby_query_value", length = 8192)
         private String value;
 
         
@@ -91,10 +94,12 @@ public class GeneratedBy implements Serializable {
 
     } // class GeneratedBy.Query
 
-    @Column(name = "generatedby_description")
+    @Lob
+    @Basic(fetch = FetchType.EAGER)
+    @Column(name = "generatedby_description", length = 8192)
     private String description;
 
-    @Column(name = "generatedby_uri", nullable = true)
+    @Column(name = "generatedby_uri", nullable = true, length = 255)
     private String uri;
 
     @Embedded

@@ -33,7 +33,7 @@ public class Resource implements Serializable {
     @Enumerated(EnumType.ORDINAL)
     private Type type;
 
-    @Column(name = "ref", nullable = false)
+    @Column(name = "ref", nullable = false, length = 255)
     private String ref;
 
 
