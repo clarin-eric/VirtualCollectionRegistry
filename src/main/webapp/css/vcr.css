@@ -148,7 +148,7 @@ noscript {
 }
 
 #content {
-    margin: 5px 4px;
+    margin: 0;
     padding: 0;
 }
 
@@ -197,7 +197,7 @@ div.wizard .wizardHeader {
 }
 
 form.wizard {
-  margin: 0;
+  margin: 5px 4px;
   padding: 0;
   font-size: 100%;
   min-width: 1012px;
@@ -569,26 +569,25 @@ div.wizard a {
 }
 
 
-div.wizard table {
-	width: 832px;
+table {
     font-size: 100%;
 	border-collapse: collapse;
 }
 
-div.wizard table th,
-div.wizard table td {
+table th,
+table td {
 	padding: 2px;
 	text-align: left;
 }
 
-div.wizard table thead {
+table thead {
 	color: inherit;
 	background-color: #D4DEEF;
     border-top: 1px solid #000000;
 	border-bottom: 1px solid #000000;
 }
 
-div.wizard table td.action {
+table td.action {
 	width: 98px;
 }
 
@@ -598,30 +597,35 @@ a {
 	text-decoration: none;
 }
 
-div.wizard table tbody {
+table tbody {
 	border-bottom: 1px solid #000000;
 }
 
-div.wizard table tr.even {
+table tr.even {
     color: inherit;
     background-color: #FFFFFF;
 }
 
-div.wizard table tr.odd {
+table tr.odd {
     color: inherit;
     background-color: #E9EEF7;
 }
 
-div.wizard table td.norecords-td {
+table td.norecords-td {
 	text-align: center;
 }
 
-div.wizard table tr.navigation {
+table tr.navigation {
 	border-bottom: 1px dotted #BBBBBB;
 }
 
-div.wizard table tr.navigation div {
+table tr.navigation div {
 	clear: none !important;
+}
+
+table.creatorsTable,
+table.resourcesTable {
+    width: 832px;
 }
 
 table.creatorsTable td {
@@ -656,4 +660,32 @@ div.keywordsList ul li {
 
 div.keywordsList ul li.first {
     margin-top: 0;
+}
+
+table.collectionsTable {
+	width: 100%;
+}
+
+table.collectionsTable th.title,
+table.collectionsTable td.title {
+	width: 250px;
+    vertical-align: top;
+}
+
+table.collectionsTable th.type,
+table.collectionsTable td.type {
+    width: 85px;
+    vertical-align: top;
+}
+
+table.collectionsTable th.description,
+table.collectionsTable td.description {
+    width: 570px;
+    vertical-align: top;
+}
+
+table.collectionsTable th.created,
+table.collectionsTable td.created {
+    width: 95px;
+    vertical-align: top;
 }
