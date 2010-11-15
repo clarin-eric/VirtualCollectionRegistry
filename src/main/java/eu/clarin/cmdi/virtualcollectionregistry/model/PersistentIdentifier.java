@@ -124,7 +124,6 @@ public class PersistentIdentifier implements Serializable {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(26249, 4651)
-            .append(this.getVirtualCollection())
             .append(this.getType())
             .append(this.getIdentifier())
             .toHashCode();
