@@ -410,7 +410,12 @@ public class VirtualCollectionRegistry {
             long totalCount = cq.getSingleResult();
 
             // optimization; don't query, if we won't get any results
-            if (totalCount > 0) {
+            /*
+             *  FIXME: offset == -1 is temporary hack for just fetching
+             *  total count; re-factor to have fetch-count and fetch-data
+             *  methods!
+             */
+            if ((totalCount > 0) && (offset > -1)) {
                 if (offset > 0) {
                     q.setFirstResult(offset);
                 }
@@ -474,7 +479,12 @@ public class VirtualCollectionRegistry {
                 totalCount = cq.getSingleResult();
 
                 // optimization; don't query, if we won't get any results
-                if (totalCount > 0) {
+                /*
+                 *  FIXME: offset == -1 is temporary hack for just fetching
+                 *  total count; re-factor to have fetch-count and fetch-data
+                 *  methods!
+                 */
+                if ((totalCount > 0) && (offset > -1)) {
                     if (offset > 0) {
                         q.setFirstResult(offset);
                     }
