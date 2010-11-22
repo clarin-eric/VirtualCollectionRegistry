@@ -17,11 +17,11 @@ public class MenuItem<T extends WebPage> extends Panel {
 
     public MenuItem(final IModel<String> title, final Class<T> pageClass) {
         super("menuitem");
-        Link<T> pageLink = new BookmarkablePageLink<T>("link", pageClass) {
+        final Link<T> link = new BookmarkablePageLink<T>("link", pageClass) {
             @Override
             protected void onComponentTag(ComponentTag tag) {
                 super.onComponentTag(tag);
-                if (pageClass.equals(getPage().getClass())) {
+                if (linksTo(getPage())) {
                     tag.setName("span");
                     tag.getAttributes().remove("href");
                     tag.getAttributes().put("class", "active");
@@ -31,25 +31,26 @@ public class MenuItem<T extends WebPage> extends Panel {
             @Override
             public boolean isVisible() {
                 boolean visible = true;
-                final IAuthorizationStrategy strategy = getApplication()
-                    .getSecuritySettings().getAuthorizationStrategy();
+                final IAuthorizationStrategy strategy =
+                    getApplication().getSecuritySettings()
+                        .getAuthorizationStrategy();
                 if (!strategy.isInstantiationAuthorized(pageClass)) {
-                    AuthorizeAction a =
+                    AuthorizeAction action =
                         pageClass.getAnnotation(AuthorizeAction.class);
-                    if ((a != null) && "ENABLE".equals(a.action())) {
+                    if ((action != null) && "ENABLE".equals(action.action())) {
                         final Application app = (Application) getApplication();
-                        if (app.hasAnyRole(a.deny())) {
+                        if (app.hasAnyRole(action.deny())) {
                             visible = false;
                         } else {
-                            visible = app.hasAnyRole(a.roles());
+                            visible = app.hasAnyRole(action.roles());
                         }
                     }
                 }
                 return visible;
-            }
+            } 
         };
-        pageLink.add(new Label("title", title));
-        add(pageLink);
+        link.add(new Label("title", title));
+        add(link);
     }
-    
+
 } // class MenuItem
