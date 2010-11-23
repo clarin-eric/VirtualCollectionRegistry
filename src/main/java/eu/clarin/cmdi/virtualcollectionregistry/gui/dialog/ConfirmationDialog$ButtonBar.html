@@ -5,10 +5,14 @@
 <head />
 <body>
 <wicket:panel>
-  <input wicket:id="yesButton"
-         type="submit" class="button yesButton" value="Yes" />
-  <input wicket:id="noButton"
-         type="submit"  class="button noButton" value="No" />
+  <form wicket:id="buttonsForm">
+    <div>
+      <input wicket:id="yesButton"
+             type="submit" class="button yesButton" value="Yes" />
+      <input wicket:id="noButton"
+             type="submit"  class="button noButton" value="No" />
+    </div>         
+  </form>
 </wicket:panel>
 </body>
 </html>

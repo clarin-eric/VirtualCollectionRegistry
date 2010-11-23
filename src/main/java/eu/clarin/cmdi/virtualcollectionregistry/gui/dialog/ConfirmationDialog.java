@@ -15,8 +15,9 @@ public abstract class ConfirmationDialog extends ModalDialogBase {
     private final class ButtonBar extends Panel {
         public ButtonBar(String id) {
             super(id);
+            final Form<Void> form = new Form<Void>("buttonsForm");
             final AjaxButton yesButton =
-                new AjaxButton("yesButton", new Model<String>("Yes")) {
+                new AjaxButton("yesButton", new Model<String>("Yes"), form) {
                 @Override
                 protected void onSubmit(AjaxRequestTarget target,
                         Form<?> form) {
@@ -25,9 +26,9 @@ public abstract class ConfirmationDialog extends ModalDialogBase {
                 }
             };
             yesButton.setDefaultFormProcessing(false);
-            add(yesButton);
+            form.add(yesButton);
             final AjaxButton noButton =
-                new AjaxButton("noButton", new Model<String>("No")) {
+                new AjaxButton("noButton", new Model<String>("No"), form) {
                 @Override
                 protected void onSubmit(AjaxRequestTarget target,
                         Form<?> form) {
@@ -36,7 +37,8 @@ public abstract class ConfirmationDialog extends ModalDialogBase {
                 }
             };
             noButton.setDefaultFormProcessing(false);
-            add(noButton);
+            form.add(noButton);
+            add(form);
         }
     } // class ConfirmationDialog.ButtonBar
 
