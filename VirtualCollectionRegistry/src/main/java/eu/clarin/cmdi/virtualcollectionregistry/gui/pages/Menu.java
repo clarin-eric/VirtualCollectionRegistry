@@ -17,8 +17,10 @@ public class Menu extends Panel {
         super(id);
         setRenderBodyOnly(true);
         add(new ListView<MenuItem<? extends WebPage>>("menuitems", menuitems) {
-            protected void populateItem(final ListItem<MenuItem<? extends WebPage>> listitem) {
-                final MenuItem<? extends WebPage> menuitem = listitem.getModelObject();
+            protected void populateItem(
+                    final ListItem<MenuItem<? extends WebPage>> listitem) {
+                final MenuItem<? extends WebPage> menuitem =
+                    listitem.getModelObject();
                 listitem.add(menuitem);
             }
         });
