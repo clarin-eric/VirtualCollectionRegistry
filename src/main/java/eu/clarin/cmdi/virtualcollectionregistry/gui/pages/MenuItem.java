@@ -39,7 +39,6 @@ public class MenuItem<T extends WebPage> extends Panel {
 
     @Override
     protected void onBeforeRender() {
-        System.err.println("RENDER: " + pageClassName);
         final IAuthorizationStrategy strategy =
             getApplication().getSecuritySettings()
                 .getAuthorizationStrategy();
