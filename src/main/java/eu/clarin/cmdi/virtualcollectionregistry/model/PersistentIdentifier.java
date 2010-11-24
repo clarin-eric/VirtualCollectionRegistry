@@ -94,7 +94,7 @@ public class PersistentIdentifier implements Serializable {
     public String getActionableURI() {
         switch (type) {
         case DUMMY:
-            return "dummy:identifier";
+            return "dummy:identifier-" + vc.getId();
         case GWDG:
             return "http://hdl.handle.net/" + identifier;
         default:
