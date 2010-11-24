@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -41,28 +42,24 @@ import org.apache.wicket.validation.validator.StringValidator;
 import org.apache.wicket.validation.validator.UrlValidator;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ConfirmationDialog;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.HomePage;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
-import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
 @SuppressWarnings("serial")
-public class CreateVirtualCollectionWizard extends WizardBase {
+public abstract class CreateVirtualCollectionWizard extends WizardBase {
     private final class GeneralStep extends DynamicWizardStep {
         private final class DeleteKeywordDialog extends ConfirmationDialog {
-            private transient KeywordsList keywordList;
             private String keyword;
             
-            public DeleteKeywordDialog(String id, KeywordsList keywordList) {
-                super(id);
-                this.keywordList = keywordList;
+            public DeleteKeywordDialog(String id,
+                    final Component updateComponent) {
+                super(id, updateComponent);
             }
 
             @Override
             public void onConfirm(AjaxRequestTarget target) {
                 vc.getKeywords().remove(keyword);
-                target.addComponent(keywordList);
             }
             
             public void show(AjaxRequestTarget target, String keyword) {
@@ -83,8 +80,7 @@ public class CreateVirtualCollectionWizard extends WizardBase {
                     protected void populateItem(final ListItem<String> item) {
                         final IModel<String> model = item.getModel();
                         item.add(new Label("itemText", model.getObject()));
-                        item.add(new AjaxLink<String>("itemRemove",
-                                new Model<String>("[remove]")) {
+                        item.add(new AjaxLink<String>("itemRemove") {
                             @Override
                             public void onClick(AjaxRequestTarget target) {
                                 deleteKeywordDialog.show(target,
@@ -111,7 +107,7 @@ public class CreateVirtualCollectionWizard extends WizardBase {
         private final DeleteKeywordDialog deleteKeywordDialog;
 
         public GeneralStep() {
-            super(null, "General", "Yada yada yada ...");
+            super(null, "General", null);
             final TextField<String> nameField =
                 new RequiredTextField<String>("vc.name");
             nameField.add(new StringValidator.MaximumLengthValidator(255));
@@ -191,6 +187,7 @@ public class CreateVirtualCollectionWizard extends WizardBase {
         private final class ActionsPanel extends Panel {
             public ActionsPanel(String id, final IModel<Creator> model) {
                 super(id, model);
+                setRenderBodyOnly(true);
                 final AjaxLink<Creator> editLink =
                     new AjaxLink<Creator>("edit") {
                     @Override
@@ -200,34 +197,31 @@ public class CreateVirtualCollectionWizard extends WizardBase {
                     }
                 };
                 add(editLink);
-                final AjaxLink<Creator> removeLink =
-                    new AjaxLink<Creator>("remove") {
+                final AjaxLink<Creator> deleteLink =
+                    new AjaxLink<Creator>("delete") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         final Creator creator = model.getObject();
                         deleteCreatorDialog.show(target, creator);
                     }
                 };
-                add(removeLink);
+                add(deleteLink);
             }
         } // class CreateVirtualCollectionWizard.CreatorsStep.ActionsPanel
 
         private final class DeleteCreatorDialog extends ConfirmationDialog {
-            private final transient DataTable<Creator> creatorsTable;
             private Creator creator;
 
             public DeleteCreatorDialog(String id,
-                    DataTable<Creator> creatorsTable) {
-                super(id);
+                    final Component updateComponent) {
+                super(id, updateComponent);
                 setInitialWidth(400);
-                this.creatorsTable = creatorsTable;
             }
 
             @Override
             public void onConfirm(AjaxRequestTarget target) {
                 if (creator != null) {
                     vc.getCreators().remove(creator);
-                    target.addComponent(creatorsTable);
                 }
             }
 
@@ -243,7 +237,7 @@ public class CreateVirtualCollectionWizard extends WizardBase {
         private final DeleteCreatorDialog deleteCreatorDialog;
 
         public CreatorsStep(IDynamicWizardStep previousStep) {
-            super(previousStep, "Creators", "Yada yada yada ...");
+            super(previousStep, "Creators", null);
             final DataTable<Creator> creatorsTable =
                 new AjaxFallbackDefaultDataTable<Creator>("creatorsTable",
                         createColumns(),
@@ -338,6 +332,7 @@ public class CreateVirtualCollectionWizard extends WizardBase {
         private final class ActionsPanel extends Panel {
             public ActionsPanel(String id, final IModel<Resource> model) {
                 super(id, model);
+                setRenderBodyOnly(true);
                 final AjaxLink<Resource> editLink =
                     new AjaxLink<Resource>("edit") {
                     @Override
@@ -347,34 +342,31 @@ public class CreateVirtualCollectionWizard extends WizardBase {
                     }
                 };
                 add(editLink);
-                final AjaxLink<Resource> removeLink =
-                    new AjaxLink<Resource>("remove") {
+                final AjaxLink<Resource> deleteLink =
+                    new AjaxLink<Resource>("delete") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
                         final Resource resource = model.getObject();
                         deleteResourceDialog.show(target, resource);
                     }
                 };
-                add(removeLink);
+                add(deleteLink);
             }
         } // class CreateVirtualCollectionWizard.ResourcesStep.ActionsPanel
 
         private final class DeleteResourceDialog extends ConfirmationDialog {
-            private final transient DataTable<Resource> resourcesTable;
             private Resource resource;
 
             public DeleteResourceDialog(String id,
-                    DataTable<Resource> resourcesTable) {
-                super(id);
+                    final Component updateComponenet) {
+                super(id, updateComponenet);
                 setInitialWidth(400);
-                this.resourcesTable = resourcesTable;
             }
 
             @Override
             public void onConfirm(AjaxRequestTarget target) {
                 if (resource != null) {
                     vc.getResources().remove(resource);
-                    target.addComponent(resourcesTable);
                 }
             }
 
@@ -390,7 +382,7 @@ public class CreateVirtualCollectionWizard extends WizardBase {
         private final DeleteResourceDialog deleteResourceDialog;
 
         public ResourcesStep(IDynamicWizardStep previousStep) {
-            super(previousStep, "Resources", "Yada yada yada ...");
+            super(previousStep, "Resources", null);
             final DataTable<Resource> resourcesTable =
                 new AjaxFallbackDefaultDataTable<Resource>("resourcesTable",
                         createColumns(),
@@ -533,7 +525,7 @@ public class CreateVirtualCollectionWizard extends WizardBase {
 
     private final class GeneratedByStep extends DynamicWizardStep {
         public GeneratedByStep(IDynamicWizardStep previousStep) {
-            super(previousStep, "GeneratedBy", "Yada yada yada ...");
+            super(previousStep, "Intensional Collection Query", null);
             final TextArea<String> descriptionArea =
                 new TextArea<String>("vc.generatedBy.description");
             descriptionArea.setRequired(true);
@@ -594,51 +586,33 @@ public class CreateVirtualCollectionWizard extends WizardBase {
     } // class CreateVirtualCollectionWizard.GeneratedByStep
 
     private static final VirtualCollection EMPTY_VC = new VirtualCollection();
-    private final VirtualCollection vc = new VirtualCollection();
+    private final VirtualCollection vc;
 
-    public CreateVirtualCollectionWizard(String id) {
+    public CreateVirtualCollectionWizard(String id, VirtualCollection vc) {
         super(id);
+        if (vc == null) {
+            throw new IllegalArgumentException("vc == null");
+        }
+        this.vc = vc;
         setDefaultModel(new CompoundPropertyModel<VirtualCollection>(this));
         init(new DynamicWizardModel(new GeneralStep()));
     }
 
     @Override
-    public void onCancel() {
+    public final void onCancel() {
         if (!EMPTY_VC.equals(vc)) {
             System.err.println("XXX: VC was modified!");
         }
-        setResponsePage(HomePage.class);
+        onCancelWizard();
     }
 
     @Override
-    public void onFinish() {
-        System.err.println("----------------------------------------------");
-        System.err.println("Name: " + vc.getName());
-        System.err.println("Type: " + vc.getType());
-        System.err.println("Desc: " + vc.getDescription());
-        System.err.println("creation: " + vc.getCreationDate());
-        System.err.println("Purpose: " + vc.getPurpose());
-        System.err.println("Rep: " + vc.getReproducibility());
-        System.err.println("RepNot: " + vc.getReproducibilityNotice());
-        for (String kw : vc.getKeywords()) {
-            System.err.println("KW: " + kw);
-        }
-        for (Creator c : vc.getCreators()) {
-            System.err.println("C: " + c.getPerson() + ", " + c.getEMail());
-        }
-        for (Resource r : vc.getResources()) {
-            System.err.println("R: " + r.getType() + ", " + r.getRef());
-        }
-        if (vc.getGeneratedBy() != null) {
-            final GeneratedBy gb = vc.getGeneratedBy();
-            System.err.println("GB.Desc: " + gb.getDescription());
-            System.err.println("GB.Uri: " + gb.getURI());
-            final GeneratedBy.Query query = gb.getQuery();
-            if (query != null) {
-                System.err.println("GB.Query.Profile: " + query.getProfile());
-                System.err.println("GB.Query.Value:" + query.getValue());
-            }
-        }
+    public final void onFinish() {
+        onFinishWizard(vc);
     }
+
+    protected abstract void onCancelWizard();
+    
+    protected abstract void onFinishWizard(VirtualCollection vc);
 
 } // class CreateVirtualCollectionWizard
