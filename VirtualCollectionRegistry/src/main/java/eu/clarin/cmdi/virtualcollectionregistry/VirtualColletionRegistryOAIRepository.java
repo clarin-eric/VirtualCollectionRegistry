@@ -136,7 +136,7 @@ class VirtualColletionRegistryOAIRepository implements Repository {
     @Override
     public Set<String> getAdminAddreses() {
         Set<String> addresses = new HashSet<String>();
-        addresses.add("vcr-admin@clarin.eu");
+        addresses.add("cmdi@clarin.eu");
         return addresses;
     }
 
