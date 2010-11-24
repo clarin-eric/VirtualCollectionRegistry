@@ -59,12 +59,13 @@ public class AuthenticationStatePanel extends Panel {
     } // private class LoginFragment
 
     private class LogoutFragment extends Fragment {
-        private Label usernameLabel;
+        private final Label usernameLabel;
         
         public LogoutFragment(String id) {
             super(id, "logoutFragment", AuthenticationStatePanel.this);
             setRenderBodyOnly(true);
             usernameLabel = new Label("username");
+            usernameLabel.setRenderBodyOnly(true);
             add(usernameLabel);
 //            final StatelessLink logoutLink = new StatelessLink("logoutLink") {
 //                @Override

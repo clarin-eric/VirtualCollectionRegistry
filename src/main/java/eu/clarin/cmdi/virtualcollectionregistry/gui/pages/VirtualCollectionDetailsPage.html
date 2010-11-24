@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+<head />
+<body>
+<wicket:extend>
+  <table style="width: 100%">
+    <thead style="color: inherit; background-color: inherit; border: none">
+      <tr><td colspan="2" style="padding: 10px 0; color: red; font-weight: bold; text-align: center">Note: this page is just a proof-of-concept and concept and subject to major overhaul!</td></tr>
+    </thead>
+    <tbody style="border: none">
+      <tr style="border-top: 1px solid #000000; border-bottom: 1px solid #000000">
+        <td style="vertical-align: top">Name</td>
+        <td><span wicket:id="name"></span></td>
+      </tr>
+      <tr style="border-bottom: 1px solid #000000">
+        <td style="vertical-align: top">Type</td>
+        <td><span wicket:id="type"></span></td>
+      </tr>
+      <tr style="border-bottom: 1px solid #000000">
+        <td style="vertical-align: top">Creation Date</td>
+        <td><span wicket:id="creationDate"></span></td>
+      </tr>
+      <tr style="border-bottom: 1px solid #000000">
+        <td style="vertical-align: top">Description</td>
+        <td><span wicket:id="description"></span></td>
+      </tr>
+      <tr style="border-bottom: 1px solid #000000">
+        <td style="vertical-align: top">Purpose</td>
+        <td><span wicket:id="purpose"></span></td>
+      </tr>
+      <tr style="border-bottom: 1px solid #000000">
+        <td style="vertical-align: top">Reproducibility</td>
+        <td><span wicket:id="reproducibility"></span></td>
+      </tr>
+      <tr style="border-bottom: 1px solid #000000">
+        <td style="vertical-align: top">Reproducibility Notice</td>
+        <td><span wicket:id="reproducibilityNotice"></span></td>
+      </tr>
+      <tr style="border-bottom: 1px solid #000000">
+        <td style="vertical-align: top">Keywords</td>
+        <td><ul><li wicket:id="keywords"><span wicket:id="keyword"></span></li></ul></td>
+      </tr>
+      <tr style="border-bottom: 1px solid #000000">
+        <td style="vertical-align: top">Creators</td>
+        <td>
+          <ul>
+            <li wicket:id="creators">
+              <span wicket:id="person"></span> <br/>
+              <span wicket:id="address"></span> <br/>
+              <span wicket:id="email"></span> <br/>
+              <span wicket:id="organisation"></span> <br/>
+              <span wicket:id="telephone"></span> <br/>
+              <span wicket:id="website"></span> <br/>
+              <span wicket:id="role"></span>
+            </li>
+          </ul>
+        </td>
+      </tr>
+      <tr style="border-bottom: 1px solid #000000">
+        <td style="vertical-align: top">Resources</td>
+        <td>
+          <ul>
+            <li wicket:id="resources">
+              <span wicket:id="type"></span> <span wicket:id="ref"></span>
+            </li>
+          </ul>
+        </td>
+      </tr>
+      <tr style="border-bottom: 1px solid #000000">
+        <td style="vertical-align: top">GeneratedBy.description</td>
+        <td><span wicket:id="generatedBy.description"></span></td>
+      </tr>
+      <tr style="border-bottom: 1px solid #000000">
+        <td style="vertical-align: top">GeneratedBy.uri</td>
+        <td><span wicket:id="generatedBy.uri"></span></td>
+      </tr>
+      <tr style="border-bottom: 1px solid #000000">
+        <td style="vertical-align: top">GeneratedBy.query.profile</td>
+        <td><span wicket:id="generatedBy.query.profile"></span></td>
+      </tr>
+      <tr style="border-bottom: 1px solid #000000">
+        <td style="vertical-align: top">GeneratedBy.query.value</td>
+        <td><span wicket:id="generatedBy.query.value"></span></td>
+      </tr>
+    </tbody>
+    <tfoot>
+      <tr><td colspan="2" style="padding: 10px 0; text-align: center"><a wicket:id="back" href="#">[return to previous page]</a></td></tr>
+    </tfoot>
+  </table>
+</wicket:extend>
+</body>
+</html>
