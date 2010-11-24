@@ -15,8 +15,9 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.session.pagemap.LeastRecentlyAccessedEvictionStrategy;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AdminPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePrivateCollectionsPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.CreateVirtualCollectionPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.HomePage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePublicCollectionsPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.LoginPage;
 
 public class Application extends AuthenticatedWebApplication {
@@ -47,15 +48,19 @@ public class Application extends AuthenticatedWebApplication {
                 new LeastRecentlyAccessedEvictionStrategy(3));
         if (getConfigurationType() != DEPLOYMENT) {
             getMarkupSettings().setStripWicketTags(true);
+            getMarkupSettings().setStripComments(true);
         }
-        mountBookmarkablePage("/home", HomePage.class);
+        mountBookmarkablePage("/public",
+                BrowsePublicCollectionsPage.class);
+        mountBookmarkablePage("/private",
+                BrowsePrivateCollectionsPage.class);
         mountBookmarkablePage("/create", CreateVirtualCollectionPage.class);
         mountBookmarkablePage("/admin", AdminPage.class);
     }
 
     @Override
     public Class<? extends Page> getHomePage() {
-        return HomePage.class;
+        return BrowsePublicCollectionsPage.class;
     }
 
     @Override

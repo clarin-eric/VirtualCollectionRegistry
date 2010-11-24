@@ -80,11 +80,13 @@ noscript {
 #navigation {
 	margin: 0;
 	padding: 0;
-	height: 22px;
+	height: 20px;
 	clear: both;
     color: #000000;
     background-color: #D4DEEF;
-    font-size: 14px;
+    font-size: 12px;
+    line-height: 12px;
+    vertical-align: middle;
 }
 	
 #menu {
@@ -107,13 +109,16 @@ noscript {
     margin: 0;
     padding: 4px 8px;
     width: auto;
-    height: 14px;
-    line-height: 14px;
+    height: 12px;
     text-align: center;
     text-decoration: none;
     font-weight: bold;
 }
 
+#menu ul li + #menu ul li {
+	border-left: 1px solid black;
+}
+	
 #menu a, #menu a:active, #menu a:visited {
 	color: #000000;
 	background-color: inherit;
@@ -132,8 +137,6 @@ noscript {
 	float: right;
     padding: 4px 4px 4px 4px;
     width: auto;
-    height: 16px;
-    line-height: 16px;
 }
 
 #container {
@@ -589,6 +592,7 @@ table thead {
 
 table td.action {
 	width: 98px;
+	text-align: right;
 }
 
 a {
@@ -664,28 +668,35 @@ div.keywordsList ul li.first {
 
 table.collectionsTable {
 	width: 100%;
+	margin-top: 5px;
+}
+
+table.collectionsTable th,
+table.collectionsTable td {
+    vertical-align: top;
 }
 
 table.collectionsTable th.title,
 table.collectionsTable td.title {
 	width: 250px;
-    vertical-align: top;
 }
+
 
 table.collectionsTable th.type,
 table.collectionsTable td.type {
     width: 85px;
-    vertical-align: top;
 }
 
 table.collectionsTable th.description,
 table.collectionsTable td.description {
-    width: 570px;
-    vertical-align: top;
+    width: 500px;
 }
 
 table.collectionsTable th.created,
 table.collectionsTable td.created {
     width: 95px;
-    vertical-align: top;
+}
+
+table.collectionsTable td.action {
+	white-space: nowrap;
 }
