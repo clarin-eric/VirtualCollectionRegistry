@@ -1,10 +1,12 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.auth;
 
+import java.io.Serializable;
 import java.security.Principal;
 import java.util.Iterator;
 import java.util.Map;
 
-public final class AuthPrincipal implements Principal {
+@SuppressWarnings("serial")
+public final class AuthPrincipal implements Principal, Serializable {
     private final String name;
     private final Map<String, String> attributes;
     
