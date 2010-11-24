@@ -6,10 +6,8 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.WebPage;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.Model;
 
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 
 public class BasePage extends WebPage {
@@ -34,10 +32,6 @@ public class BasePage extends WebPage {
                 new Model<String>("Admin Page"),
                 AdminPage.class));
         add(menu);
-        
-        // add version to footer
-        VirtualCollectionRegistry vcr = VirtualCollectionRegistry.instance();
-        add(new Label("version", vcr.getVersion()).setRenderBodyOnly(true));
     }
 
     @Override
