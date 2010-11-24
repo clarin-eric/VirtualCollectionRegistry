@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.dialog;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -52,14 +53,18 @@ public abstract class ConfirmationDialog extends ModalDialogBase {
 
     private boolean answer;
     private MultiLineLabel messageLabel;
-    
-    public ConfirmationDialog(final String id, IModel<String> message) {
+
+    public ConfirmationDialog(String id, IModel<String> message,
+            final Component updateComponent) {
         super(id, new Model<String>("Please confirm"));
         setWindowClosedCallback(new ModalWindow.WindowClosedCallback() {
             @Override
             public void onClose(AjaxRequestTarget target) {
                 if (answer) {
                     onConfirm(target);
+                    if (updateComponent != null) {
+                        target.addComponent(updateComponent);
+                    }
                 } else {
                     onCancel(target);
                 }
@@ -70,8 +75,12 @@ public abstract class ConfirmationDialog extends ModalDialogBase {
         }
     }
 
-    public ConfirmationDialog(final String id) {
-        this(id, null);
+    public ConfirmationDialog(String id, final Component updateComponent) {
+        this(id, null, updateComponent);
+    }
+
+    public ConfirmationDialog(String id) {
+        this(id, null, null);
     }
 
     @Override
