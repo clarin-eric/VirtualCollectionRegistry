@@ -20,6 +20,16 @@
   </filter-mapping>
 
   <filter>
+    <filter-name>CharacterEncodingFilter</filter-name>
+    <filter-class>eu.clarin.cmdi.virtualcollectionregistry.gui.CharacterEncodingFilter</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>CharacterEncodingFilter</filter-name>
+    <url-pattern>/app/*</url-pattern>
+  </filter-mapping>
+
+  <filter>
     <filter-name>AuthFilter</filter-name>
     <filter-class>eu.clarin.cmdi.virtualcollectionregistry.gui.auth.AuthFilter</filter-class>
   </filter>
