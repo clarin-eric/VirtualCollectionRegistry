@@ -83,7 +83,9 @@ public class AuthenticationStatePanel extends Panel {
         @Override
         protected void onBeforeRender() {
             ApplicationSession session = (ApplicationSession) getSession();
-            usernameLabel.setDefaultModel(new Model<String>(session.getUser()));
+            final Model<String> userModel =
+                new Model<String>(session.getUserDisplay());
+            usernameLabel.setDefaultModel(userModel);
             super.onBeforeRender();
         }
     } // private class LogoutFragment
