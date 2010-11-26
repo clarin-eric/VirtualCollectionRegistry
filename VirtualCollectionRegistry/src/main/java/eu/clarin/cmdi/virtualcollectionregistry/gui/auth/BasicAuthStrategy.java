@@ -11,6 +11,8 @@ import java.util.Map;
 import java.util.concurrent.locks.Lock;
 import java.util.concurrent.locks.ReadWriteLock;
 import java.util.concurrent.locks.ReentrantReadWriteLock;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import javax.servlet.FilterConfig;
 import javax.servlet.ServletException;
@@ -42,11 +44,13 @@ final class BasicAuthStrategy implements AuthStrategy {
         private final HashMethod type;
         private final String username;
         private final String password;
+        private final Map<String, String> attributes;
         
-        public Entry(HashMethod type, String username, String password) {
+        public Entry(HashMethod type, String username, String password, Map<String, String> attributes) {
             this.type = type;
             this.username = username;
             this.password = password;
+            this.attributes = attributes;
         }
         
         public boolean checkPassword(String pw) {
@@ -65,6 +69,10 @@ final class BasicAuthStrategy implements AuthStrategy {
             return false;
         }
         
+        public Map<String, String> getAttributes() {
+            return attributes;
+        }
+
         private String prepare(String pw) {
             // FIXME: salt should include something random
             return new StringBuilder(this.username)
@@ -133,9 +141,10 @@ final class BasicAuthStrategy implements AuthStrategy {
                         final String username = credentials.substring(0, pos);
                         final String password = credentials.substring(pos + 1);
                         if (checkCredential(username, password)) {
+                            Map<String, String> attr = getAttributes(username);
                             // login successful
                             result.setPrinicpal(
-                                    new AuthPrincipal(username, null));
+                                    new AuthPrincipal(username, attr));
                             result.setAction(Action.CONTINUE_AUTHENTICATED);
                         } else {
                             // login failed, retry
@@ -179,7 +188,22 @@ final class BasicAuthStrategy implements AuthStrategy {
         return false;
     }
 
-    
+    private Map<String, String> getAttributes(String username) {
+        Entry entry = null;
+        Lock lock = userDbLock.readLock();
+        lock.lock();
+        try {
+            entry = userDb.get(username);
+        } finally {
+            lock.unlock();
+        }
+        if (entry != null) {
+            return entry.getAttributes();
+        }
+        return null;
+        
+    }
+
     private void loadUserDatabase(InputStream in) throws IOException {
         BufferedReader reader =
             new BufferedReader(new InputStreamReader(in, "UTF-8"));
@@ -197,23 +221,38 @@ final class BasicAuthStrategy implements AuthStrategy {
                 int pos = line.indexOf(':');
                 if ((pos != -1) && (pos < (line.length() - 2))) {
                     String username = line.substring(0, pos).trim();
-                    String password = line.substring(pos + 1).trim();
-
-                    if (!username.isEmpty() && !password.isEmpty()) {
-                        HashMethod method = HashMethod.PLAIN;
-                        if (password.startsWith("{")) {
-                            pos = password.indexOf('}', 1);
-                            if ((pos != -1) && (pos < password.length() - 2)) {
-                                method = HashMethod
-                                    .fromString(password.substring(1, pos));
-                                password =
-                                    password.substring(pos + 1).toLowerCase();
+                    int pos2 = line.indexOf(':', pos + 1);
+                    String password = null;
+                    String attrs = null;
+                    if ((pos2 != -1) && (pos2 < (line.length() -2))) {
+                        password = line.substring(pos + 1, pos2).trim();
+                        attrs = line.substring(pos2 + 1).trim();
+                    } else {
+                        password = line.substring(pos + 1).trim();
+                    }
+                    
+                    if ((username != null) && (password != null)) {
+                        if (!username.isEmpty() && !password.isEmpty()) {
+                            HashMethod method = HashMethod.PLAIN;
+                            if (password.startsWith("{")) {
+                                pos = password.indexOf('}', 1);
+                                if ((pos != -1) &&
+                                        (pos < password.length() - 2)) {
+                                    method = HashMethod.fromString(password
+                                            .substring(1, pos));
+                                    password = password.substring(pos + 1)
+                                            .toLowerCase();
+                                }
                             }
-                        }
-                        if (method != null) {
-                            userDb.put(username,
-                                    new Entry(method, username, password));
-                            continue;
+                            if (method != null) {
+                                Map<String, String> attributes = null;
+                                if (attrs != null) {
+                                    attributes = parseAttributes(attrs);
+                                }
+                                userDb.put(username, new Entry(method,
+                                        username, password, attributes));
+                                continue;
+                            }
                         }
                     }
                 }
@@ -224,6 +263,26 @@ final class BasicAuthStrategy implements AuthStrategy {
             lock.unlock();
         }
         reader.close();
+    }
+
+    private Map<String, String> parseAttributes(String s) {
+        Map<String, String> attributes = null;
+        String[] attrs = s.split("\\s*,\\s*");
+        if ((attrs != null) && (attrs.length > 0)) {
+            Pattern pattern = Pattern.compile("(\\S+)\\s*=\\s*\"([^\"]+)\"");
+            for (String attr : attrs) {
+                Matcher m = pattern.matcher(attr);
+                if (m.matches()) {
+                    if (attributes == null) {
+                        attributes = new HashMap<String,String>(attrs.length);
+                    }
+                    attributes.put(m.group(1).toLowerCase(), m.group(2));
+                } else {
+                    System.err.println("MALFORMED ATTRIBUTE: " + attr);
+                }
+            }
+        }
+        return attributes;
     }
 
 } // class BasicAuthStrategy
