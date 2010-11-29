@@ -113,7 +113,6 @@ public class PersistentIdentifier implements Serializable {
         if (obj instanceof PersistentIdentifier) {
             final PersistentIdentifier rhs = (PersistentIdentifier) obj;
             return new EqualsBuilder()
-                .append(this.getVirtualCollection(), rhs.getVirtualCollection())
                 .append(this.getType(), rhs.getType())
                 .append(this.getIdentifier(), rhs.getIdentifier())
                 .isEquals();
