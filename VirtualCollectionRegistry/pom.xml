@@ -376,7 +376,7 @@
     <maven.compiler.target>1.6</maven.compiler.target>
     <!-- dependency versions -->
     <slf4j.version>1.6.1</slf4j.version>
-    <hibernate.version>3.5.6-Final</hibernate.version>
+    <hibernate.version>3.6.0.Final</hibernate.version>
     <hibernate.jpaVersion>1.0.0.Final</hibernate.jpaVersion>
     <jersey.version>1.4</jersey.version>
     <wicket.version>1.4.14</wicket.version>
