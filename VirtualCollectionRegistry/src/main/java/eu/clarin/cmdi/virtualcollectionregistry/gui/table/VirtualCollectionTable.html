@@ -5,10 +5,13 @@
 <head />
 <body>
 <wicket:panel>
-  <a wicket:id="publish" href="#" class="publish"><span>[publish]</span></a>
-  <a wicket:id="edit" href="#" class="edit"><span>[edit]</span></a>
-  <a wicket:id="delete" href="#" class="delete"><span>[delete]</span></a>
-  <a wicket:id="details" href="#" class="details"><span>[details]</span></a>
+  <form wicket:id="filterform">
+    <div>
+      <input wicket:id="focus-tracker" type="hidden" style="display: none" />
+      <input wicket:id="focus-restore" type="hidden" style="display: none" />
+    </div>
+    <table wicket:id="table" class="collectionsTable"></table>
+  </form>
 </wicket:panel>
 </body>
 </html>

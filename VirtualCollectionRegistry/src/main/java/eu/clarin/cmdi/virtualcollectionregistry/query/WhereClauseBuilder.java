@@ -175,9 +175,9 @@ class WhereClauseBuilder implements QueryParserVisitor {
         // XXX: HSQLDB/Hibernate seems have trouble with escape char  
         switch (operator) {
         case QueryParserConstants.EQ:
-            return data.getBuilder().like(attribute, value, '\\');
+            return data.getBuilder().like(attribute, value/*, '\\'*/);
         case QueryParserConstants.NE:
-            return data.getBuilder().notLike(attribute, value, '\\');
+            return data.getBuilder().notLike(attribute, value/*, '\\'*/);
         default:
             throw new InternalError("bad operator");
         } // switch (operator)

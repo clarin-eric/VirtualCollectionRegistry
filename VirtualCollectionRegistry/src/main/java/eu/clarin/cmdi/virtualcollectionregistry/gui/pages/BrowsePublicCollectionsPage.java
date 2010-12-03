@@ -1,50 +1,46 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
-import java.util.Iterator;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.IModel;
 
-import org.apache.wicket.WicketRuntimeException;
-
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 
+@SuppressWarnings("serial")
 public class BrowsePublicCollectionsPage extends BasePage {
+    private class ActionsPanel extends Panel {
+        public ActionsPanel(String id, IModel<VirtualCollection> model) {
+            super(id, model);
+            setRenderBodyOnly(true);
 
-    @SuppressWarnings("serial")
+            final AjaxLink<VirtualCollection> detailsLink =
+                new AjaxLink<VirtualCollection>("details", model) {
+                @Override
+                public void onClick(AjaxRequestTarget target) {
+                    doDetails(target, getModelObject());
+                }
+            };
+            add(detailsLink);
+        }
+    } // class BrowsePublicCollectionsPage.ActionsPanel
+
     public BrowsePublicCollectionsPage() {
         super();
         final VirtualCollectionTable table =
             new VirtualCollectionTable("collectionsTable", false) {
-
-            @Override
-            protected int getCollectionsCount() {
-                try {
-                    final VirtualCollectionRegistry vcr =
-                        VirtualCollectionRegistry.instance();
-                    VirtualCollectionList results =
-                        vcr.getVirtualCollections(null, -1, 0);
-                    return results.getTotalCount();
-                } catch (VirtualCollectionRegistryException e) {
-                    throw new WicketRuntimeException(e);
+                @Override
+                protected Panel createActionPanel(String componentId,
+                        IModel<VirtualCollection> model) {
+                    return new ActionsPanel(componentId, model);
                 }
-            }
-
-            @Override
-            protected Iterator<VirtualCollection> getCollections(int first,
-                    int count) {
-                try {
-                    final VirtualCollectionRegistry vcr =
-                        VirtualCollectionRegistry.instance();
-                    VirtualCollectionList results =
-                        vcr.getVirtualCollections(null, first, count);
-                    return results.getItems().iterator();
-                } catch (VirtualCollectionRegistryException e) {
-                    throw new WicketRuntimeException(e);
-                }
-            }
         };
         add(table);
+    }
+
+    private void doDetails(AjaxRequestTarget target, VirtualCollection vc) {
+        setResponsePage(new VirtualCollectionDetailsPage(vc, getPage()));
     }
 
 } // class BrowsePublicCollectionsPage
