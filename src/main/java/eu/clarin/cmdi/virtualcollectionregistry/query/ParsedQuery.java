@@ -32,9 +32,8 @@ public class ParsedQuery {
             Root<VirtualCollection> root = cq.from(VirtualCollection.class);
             WhereClauseBuilder.Data data =
                 new WhereClauseBuilder.Data(cb, cq, root);
-            synchronized (visitor) {
-                visitor.visit(start, data);
-            } // synchronized (visitor)
+            visitor.visit(start, data);
+
             Predicate where = data.getWhere();
             if (owner != null) {
                 where = cb.and(where, cb.equal(
@@ -62,11 +61,10 @@ public class ParsedQuery {
             Root<VirtualCollection> root = cq.from(VirtualCollection.class);
             WhereClauseBuilder.Data data =
                 new WhereClauseBuilder.Data(cb, cq, root);
-            synchronized (visitor) {
-                visitor.visit(start, data);
-            } // synchronized (visitor)
+            visitor.visit(start, data);
+
             Predicate where = data.getWhere();
-           if (owner != null) {
+            if (owner != null) {
                 where = cb.and(where, cb.equal(
                             root.get(VirtualCollection_.owner), owner));
             }

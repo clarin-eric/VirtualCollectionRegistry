@@ -14,6 +14,11 @@ import javax.persistence.EntityTransaction;
 import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -496,6 +501,81 @@ public class VirtualCollectionRegistry {
         } finally {
             EntityTransaction tx = em.getTransaction();
             if ((tx != null) && !tx.getRollbackOnly()) {
+                tx.commit();
+            }
+        }
+    }
+
+    public int getVirtualCollectionCount(QueryOptions options)
+            throws VirtualCollectionRegistryException {
+        EntityManager em = datastore.getEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+            Root<VirtualCollection> root = cq.from(VirtualCollection.class);
+            if (options != null) {
+                Predicate where = options.getWhere(cb, cq, root);
+                if (where != null) {
+                    cq.where(where);
+                }
+            }
+            em.getTransaction().begin();
+            TypedQuery<Long> query =
+                em.createQuery(cq.select(cb.count(root)));
+            final long count = query.getSingleResult();
+            if (count >= Integer.MAX_VALUE) {
+                throw new VirtualCollectionRegistryException(
+                        "resultset too large");
+            }
+            return (int) count;
+        } catch (Exception e) {
+            logger.error("error while counting virtual collections", e);
+            throw new VirtualCollectionRegistryException(
+                    "error while counting virtual collections", e);
+        } finally {
+            EntityTransaction tx = em.getTransaction();
+            if ((tx != null) && tx.isActive() && !tx.getRollbackOnly()) {
+                tx.commit();
+            }
+        }
+    }
+    
+    public List<VirtualCollection> getVirtualCollections(
+            int first, int count, QueryOptions options)
+            throws VirtualCollectionRegistryException {
+        EntityManager em = datastore.getEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<VirtualCollection> cq =
+                cb.createQuery(VirtualCollection.class);
+            Root<VirtualCollection> root = cq.from(VirtualCollection.class);
+            if (options != null) {
+                final Predicate where = options.getWhere(cb, cq, root);
+                if (where != null) {
+                    cq.where(where);
+                }
+                final Order[] order = options.getOrderBy(cb, root);
+                if (order != null) {
+                    cq.orderBy(order);
+                }
+            }
+            em.getTransaction().begin();
+            TypedQuery<VirtualCollection> query =
+                em.createQuery(cq.select(root));
+            if (first > -1) {
+                query.setFirstResult(first);
+            }
+            if (count > 0) {
+                query.setMaxResults(count);
+            }
+            return query.getResultList();
+        } catch (Exception e) {
+            logger.error("error while fetching virtual collections", e);
+            throw new VirtualCollectionRegistryException(
+                    "error while fetching virtual collections", e);
+        } finally {
+            EntityTransaction tx = em.getTransaction();
+            if ((tx != null) && tx.isActive() && !tx.getRollbackOnly()) {
                 tx.commit();
             }
         }
