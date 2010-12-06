@@ -8,12 +8,13 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.IFilt
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 
 import eu.clarin.cmdi.virtualcollectionregistry.QueryOptions;
 import eu.clarin.cmdi.virtualcollectionregistry.QueryOptions.Property;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.DetachableVirtualCollectionModel;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
 @SuppressWarnings("serial")
@@ -25,6 +26,7 @@ class Provider extends
 
     public Provider(boolean privateMode) {
         this.privateMode = privateMode;
+        setSort("created", false);
     }
 
     @Override
@@ -39,8 +41,7 @@ class Provider extends
 
     @Override
     public IModel<VirtualCollection> model(VirtualCollection vc) {
-        // FIXME: some kind of detachable model?
-        return new Model<VirtualCollection>(vc);
+        return new DetachableVirtualCollectionModel(vc);
     }
 
     @Override
@@ -69,8 +70,46 @@ class Provider extends
     }
 
     private QueryOptions getFilter() {
-        // XXX: caching
-        final QueryOptions options = filterstate.getQueryOptions(privateMode);
+        QueryOptions options = new QueryOptions();
+
+        QueryOptions.Filter filter = options.and();
+        if (privateMode) {
+            ApplicationSession session = ApplicationSession.get();
+            filter.add(QueryOptions.Property.VC_OWNER,
+                       QueryOptions.Relation.EQ,
+                       session.getUser());
+        } else {
+            filter.add(QueryOptions.Property.VC_STATE,
+                       QueryOptions.Relation.EQ,
+                       VirtualCollection.State.PUBLIC);
+        }
+        if (filterstate.hasName()) {
+            filter.add(QueryOptions.Property.VC_NAME,
+                       QueryOptions.Relation.EQ,
+                       filterstate.getName());
+        }
+        if (filterstate.hasType()) {
+            filter.add(QueryOptions.Property.VC_TYPE,
+                       QueryOptions.Relation.EQ,
+                       filterstate.getType());
+        }
+        if (filterstate.hasState()) {
+            filter.add(QueryOptions.Property.VC_STATE,
+                       QueryOptions.Relation.EQ,
+                       filterstate.getState());
+        }
+        if (filterstate.hasDescription()) {
+            filter.add(QueryOptions.Property.VC_DESCRIPTION,
+                       QueryOptions.Relation.EQ,
+                       filterstate.getDescription());
+        }
+        if (filterstate.hasCreated()) {
+            filter.add(QueryOptions.Property.VC_CREATION_DATE,
+                       filterstate.getCreatedRelation(),
+                       filterstate.getCreated());
+        }
+        options.setFilter(filter);
+
         final SortParam s = getSort();
         if (s != null) {
             final String p = s.getProperty();

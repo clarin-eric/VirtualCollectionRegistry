@@ -4,7 +4,6 @@ import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.HeaderlessColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.GoFilter;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.IFilteredColumn;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
@@ -23,7 +22,7 @@ final class ColumnActions extends HeaderlessColumn<VirtualCollection>
 
     @Override
     public Component getFilter(String componentId, FilterForm<?> form) {
-        return new GoFilter(componentId);
+        return new AjaxGoAndClearFilter(componentId);
     }
 
     @Override

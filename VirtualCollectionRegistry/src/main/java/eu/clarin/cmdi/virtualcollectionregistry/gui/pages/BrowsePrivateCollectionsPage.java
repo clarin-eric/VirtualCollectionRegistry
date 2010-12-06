@@ -150,10 +150,10 @@ public class BrowsePrivateCollectionsPage extends BasePage {
         add(table);
 
         publishDialog = new PublishCollectionDialog("publishCollectionDialog",
-                table.getTable());
+                table);
         add(publishDialog);
         deleteDialog = new DeleteCollectionDialog("deleteCollectionDialog",
-                table.getTable());
+                table);
         add(deleteDialog);
     }
 
