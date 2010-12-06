@@ -13,7 +13,7 @@ import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.model.ResourceModel;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
@@ -21,12 +21,11 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 final class ColumnType extends FilteredAbstractColumn<VirtualCollection> {
     private static final List<VirtualCollection.Type> TYPE_VALUES =
         Arrays.asList(VirtualCollection.Type.values());
-    
-    private transient final VirtualCollectionTable table;
-    
+    private final EnumChoiceRenderer<VirtualCollection.Type> renderer;
+
     ColumnType(VirtualCollectionTable table) {
-        super(new StringResourceModel("column.type", table, null), "type");
-        this.table = table;
+        super(new ResourceModel("column.type", "Type"), "type");
+        this.renderer = new EnumChoiceRenderer<VirtualCollection.Type>(table);
     }
 
     @Override
@@ -36,18 +35,15 @@ final class ColumnType extends FilteredAbstractColumn<VirtualCollection> {
         final IModel<VirtualCollection.Type> model =
             new PropertyModel<VirtualCollection.Type>(state, "type");
         return new ChoiceFilter<VirtualCollection.Type>(componentId, model,
-                form, TYPE_VALUES,
-                new EnumChoiceRenderer<VirtualCollection.Type>(table), false);
+                form, TYPE_VALUES, renderer, true);
     }
 
     @Override
     public void populateItem(Item<ICellPopulator<VirtualCollection>> item,
             String componentId, IModel<VirtualCollection> model) {
-        final VirtualCollection.Type value = model.getObject().getType();
-        final String key =
-            value.getDeclaringClass().getSimpleName() + "." + value.name();
-        item.add(new Label(componentId,
-                new StringResourceModel(key, table, null)));
+        final VirtualCollection.Type type = model.getObject().getType();
+        final String label = renderer.getDisplayValue(type).toString();
+        item.add(new Label(componentId, label));
     }
 
     @Override

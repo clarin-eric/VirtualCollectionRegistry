@@ -6,7 +6,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.Filte
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.TextFilter;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.model.ResourceModel;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
@@ -14,7 +14,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 final class ColumnName extends FilteredPropertyColumn<VirtualCollection> {
 
     ColumnName(VirtualCollectionTable table) {
-        super(new StringResourceModel("column.title", table, null), "name",
+        super(new ResourceModel("column.name", "Name"), "name",
                 "name");
     }
 

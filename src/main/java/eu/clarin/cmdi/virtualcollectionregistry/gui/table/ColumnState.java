@@ -13,22 +13,22 @@ import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.PropertyModel;
-import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.model.ResourceModel;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
 @SuppressWarnings("serial")
 final class ColumnState extends FilteredAbstractColumn<VirtualCollection> {
-    private final static List<VirtualCollection.State> STATE_VALUES =
+    private static final List<VirtualCollection.State> STATE_VALUES =
         Arrays.asList(VirtualCollection.State.PRIVATE,
                       VirtualCollection.State.PUBLIC,
                       VirtualCollection.State.PUBLIC_PENDING,
                       VirtualCollection.State.DELETED);
-    private transient final VirtualCollectionTable table;
+    private final EnumChoiceRenderer<VirtualCollection.State> renderer;
 
     ColumnState(VirtualCollectionTable table) {
-        super(new StringResourceModel("column.state", table, null), "state");
-        this.table = table;
+        super(new ResourceModel("column.state", "State"), "state");
+        this.renderer = new EnumChoiceRenderer<VirtualCollection.State>(table);
     }
 
     @Override
@@ -38,19 +38,16 @@ final class ColumnState extends FilteredAbstractColumn<VirtualCollection> {
         final IModel<VirtualCollection.State> model =
             new PropertyModel<VirtualCollection.State>(state, "state");
         return new ChoiceFilter<VirtualCollection.State>(componentId, model,
-                form, STATE_VALUES, 
-                new EnumChoiceRenderer<VirtualCollection.State>(table), false);
+                form, STATE_VALUES, renderer, true);
     }
 
     @Override
     public void populateItem(
             Item<ICellPopulator<VirtualCollection>> item,
             String componentId, IModel<VirtualCollection> model) {
-        final VirtualCollection.State value = model.getObject().getState();
-        final String key =
-            value.getDeclaringClass().getSimpleName() + "." + value.name();
-        item.add(new Label(componentId,
-                new StringResourceModel(key, table, null)));
+        final VirtualCollection.State state = model.getObject().getState();
+        final String label = renderer.getDisplayValue(state).toString();
+        item.add(new Label(componentId, label));
     }
 
     @Override

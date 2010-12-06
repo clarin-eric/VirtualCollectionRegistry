@@ -5,11 +5,11 @@ import org.apache.wicket.Component;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilteredAbstractColumn;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.NoFilter;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.model.ResourceModel;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
@@ -19,13 +19,16 @@ final class ColumnCreated extends FilteredAbstractColumn<VirtualCollection> {
         FastDateFormat.getInstance("yyyy-MM-dd");
 
     ColumnCreated(VirtualCollectionTable table) {
-        super(new StringResourceModel("column.created", table, null),
-            "created");
+        super(new ResourceModel("column.created", "Created"), "created");
     }
 
     @Override
     public Component getFilter(String componentId, FilterForm<?> form) {
-        return new NoFilter(componentId);
+        final FilterState state =
+            (FilterState) form.getStateLocator().getFilterState();
+        final IModel<FilterState> model =
+            new CompoundPropertyModel<FilterState>(state);
+        return new CreatedDateFilter(componentId, model, form);
     }
 
     @Override

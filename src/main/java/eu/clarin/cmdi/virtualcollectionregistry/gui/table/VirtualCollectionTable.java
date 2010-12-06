@@ -8,6 +8,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterForm;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.FilterToolbar;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
@@ -15,7 +16,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
 @SuppressWarnings("serial")
 public abstract class VirtualCollectionTable extends Panel {
-    private final DataTable<VirtualCollection> table;
 
     public VirtualCollectionTable(String id, boolean privateMode) {
         super(id);
@@ -33,25 +33,23 @@ public abstract class VirtualCollectionTable extends Panel {
         columns.add(new ColumnCreated(this));
         columns.add(new ColumnActions(this));
         Provider provider = new Provider(privateMode);
-        final FilterForm<FilterState> filterform =
+        final FilterForm<FilterState> form =
             new FilterForm<FilterState>("filterform", provider);
-        add(filterform);
+        form.setOutputMarkupId(true);
+        add(form);
 
         // table
-        table = new AjaxFallbackDefaultDataTable<VirtualCollection>("table",
+        final DataTable<VirtualCollection> table =
+            new AjaxFallbackDefaultDataTable<VirtualCollection>("table",
                 columns, provider, 32);
-        // XXX: implement own Ajax filter toolbar
-        table.addTopToolbar(new FilterToolbar(table, filterform, provider));
+        table.addTopToolbar(new FilterToolbar(table, form, provider));
         table.setOutputMarkupId(true);
-        filterform.add(table);
-        add(filterform);
+        form.add(table);
+        form.add(new FeedbackPanel("feedback"));
+        add(form);
     }
 
     protected abstract Panel createActionPanel(String componentId,
             IModel<VirtualCollection> model);
-
-    public DataTable<VirtualCollection> getTable() {
-        return table;
-    }
 
 } // class VirtualCollectionTable
