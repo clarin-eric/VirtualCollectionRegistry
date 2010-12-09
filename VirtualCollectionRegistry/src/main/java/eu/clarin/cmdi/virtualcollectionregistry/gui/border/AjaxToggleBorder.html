@@ -5,31 +5,6 @@
       xmlns:wicket="http://wicket.apache.org/">
 <head />
 <body>
-<wicket:head>
-<script type="text/javascript" src="js/jquery.js"></script>
-<script type="text/javascript">
-var $j = jQuery.noConflict();
-$j(document).ready(function() {
-	$j('div.toggleBorderHeader.hidden ~ div.toggleBorderContent').hide();
-	$j('div.toggleBorderHeader').click(function() {
-		var $h = $j(this);
-		var $c = $j(this).next('div.toggleBorderContent');
-		if ($h.hasClass('shown')) {
-			$c.slideUp('slow', function() {
-	            $h.removeClass('shown');
-	            $h.addClass('hidden');
-			});
-		} else {
-            $c.slideDown('slow', function() {
-                $h.removeClass('hidden');
-                $h.addClass('shown');
-            });
-		}
-		return true;
-	});
-});
-</script>
-</wicket:head>
 <wicket:border>
   <div class="toggleBorder">
     <div wicket:id="header" class="toggleBorderHeader">
