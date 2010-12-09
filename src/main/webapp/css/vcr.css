@@ -3,6 +3,10 @@
 /*    padding: 0; */	
 }
 
+html {
+	overflow-y: scroll
+}
+
 html, body {
 	font-family: Verdana, sans-serif;
 	font-size: 12px;
@@ -12,8 +16,8 @@ html, body {
     height: 100%;
     color: #000000;
 /*    background-color: #E9EEFA; */
-    width: 1024px;
-    min-width: 1024px;
+    width: 990px;
+    min-width: 990px;
     height: 100%;
 }
 
@@ -72,7 +76,7 @@ noscript {
     padding: 0 32px 0 32px;
     height: 70px;
     line-height: 70px;
-    font-size: 36px;
+    font-size: 34px;
     font-weight: bold;
     font-variant: small-caps;
 }
@@ -203,9 +207,8 @@ form.wizard {
   margin: 5px 4px;
   padding: 0;
   font-size: 100%;
-  min-width: 1012px;
-  max-width: 1012px;
-  width: 1012px;
+  width: 978px;
+  min-width: 978px;
 }
 
 form.wizard fieldset, div.wizard div.fieldset {
@@ -295,7 +298,7 @@ form.wizard div.notes p.last {
 form.wizard div label {
   display: block;
   float: left;
-  width: 150px;
+  width: 140px;
   padding: 3px 5px;
   margin: 0 0 5px 0;
   text-align: right;
@@ -322,7 +325,7 @@ div.required label:after {
 form.wizard textarea {
 	font-family: Verdana, sans-serif;
 	font-size: 100%;
-	width: 602px;
+	width: 570px;
 	overflow: auto;
 }
 
@@ -583,7 +586,8 @@ table td {
 	text-align: left;
 }
 
-table thead {
+table thead,
+table tfoot {
 	color: inherit;
 	background-color: #D4DEEF;
     border-top: 1px solid #000000;
@@ -617,9 +621,11 @@ table tr.odd {
 
 table td.norecords-td {
 	text-align: center;
+	color: inherit;
+	background-color: #FFFFFF;
 }
 
-table tr.navigation {
+table thead tr.navigation {
 	border-bottom: 1px dotted #BBBBBB;
 }
 
@@ -629,7 +635,7 @@ table tr.navigation div {
 
 table.creatorsTable,
 table.resourcesTable {
-    width: 832px;
+    width: 805px;
 }
 
 table.creatorsTable td {
@@ -667,8 +673,8 @@ div.keywordsList ul li.first {
 }
 
 table.collectionsTable {
-	width: 100%;
-	margin-top: 5px;
+	width: auto;
+	table-layout: fixed;
 }
 
 table.collectionsTable th,
@@ -676,27 +682,99 @@ table.collectionsTable td {
     vertical-align: top;
 }
 
-table.collectionsTable th.title,
-table.collectionsTable td.title {
-	width: 250px;
+table.collectionsTable th.name,
+table.collectionsTable td.name {
+	width: 670px;
 }
 
-
-table.collectionsTable th.type,
-table.collectionsTable td.type {
-    width: 85px;
+table.collectionsTable td.name div.details {
+	margin-right: -312px;
 }
 
-table.collectionsTable th.description,
-table.collectionsTable td.description {
-    width: 500px;
+table.collectionsTable td.name div.name {
+	padding-left: 16px;
+    background-image: url('../icons/bullet_arrow_down.png');
+    background-repeat: no-repeat;
+    background-position: center left;
+}
+
+table.collectionsTable td.name div.name:hover {
+	color: #AE0000;
+	background-color: inherit;
+}
+
+table.collectionsTable td.name div.name.detailsShown {
+    padding-left: 16px;
+    background-image: url('../icons/bullet_arrow_up.png');
+    background-repeat: no-repeat;
+    background-position: center left;
+}
+
+table.collectionsTable td.name div.details {
+    padding: 2px 2px 2px 16px;
+}
+
+table.collectionsTable td.name div.desc {
+    text-align: justify;
+    padding-bottom: 2px;
 }
 
 table.collectionsTable th.created,
 table.collectionsTable td.created {
-    width: 95px;
+    width: 100px;
 }
 
-table.collectionsTable td.action {
-	white-space: nowrap;
+table.collectionsTable th.type,
+table.collectionsTable td.type {
+    width: 100px;
+}
+
+table.collectionsTable td.action,
+table.collectionsTable th.action {
+	width: 100px;
+}
+
+tr.headers a.wicket_orderNone {
+	padding-right: 7px;
+	background: transparent url('../icons/order_none.png') no-repeat center right;
+}
+
+tr.headers a.wicket_orderUp {
+    padding-right: 7px;
+    background: transparent url('../icons/order_up.png') no-repeat center right;
+}
+
+tr.headers a.wicket_orderDown {
+    padding-right: 7px;
+    background: transparent url('../icons/order_down.png') no-repeat center right;
+}
+
+div.toggleBorder {
+	border-top: 1px solid #000000;
+}
+
+div.toggleBorder div.toggleBorderHeader {
+	margin: 0;
+	padding: 2px 2px 2px 16px;
+	border-bottom: 1px solid #000000;
+    color: inherit;
+    background-color: #D4DEEF;
+    background-image: url('../icons/bullet_arrow_up.png');
+    background-repeat: no-repeat;
+    background-position: center left;
+}
+
+div.toggleBorder div.toggleBorderHeader span {
+	font-weight: bold;
+}
+
+div.toggleBorder div.toggleBorderHeader.collapsed {
+	background-image: url('../icons/bullet_arrow_down.png');
+	background-repeat: no-repeat;
+	background-position: center left;
+}
+
+div.toggleBorder div.toggleBorderContent {
+    margin: 0;
+    padding: 5px;
 }
