@@ -6,16 +6,9 @@
 <body>
 <wicket:panel>
   <div wicket:id="border">
-    <label>Name</label>&nbsp;<select><option>contains</option><option>starts with</option><option>ends with</option></select>&nbsp;<input type="text" /><br />
-    <label>Description</label>&nbsp;<select><option>contains</option><option>starts with</option><option>ends with</option></select>&nbsp;<input type="text" /><br />
-    <label>Type</label>&nbsp;<select><option>extensional</option><option>intensional</option></select><br />
-    <label>Created</label>&nbsp;<select><option>is less-than</option><option>is less-than or equals</option><option>equals</option><option>is greater-than or equals</option><option>is greater-than</option></select>&nbsp;<input type="text" /><br />
-    <input type="submit" value="filter" /><input type="submit" value="reset" />
+    <div wicket:id="filterForm"></div>
   </div>
   <table wicket:id="table" class="collectionsTable"></table>
-  <!-- 
-  <div wicket:id="feedback" class="collectionsTableFeedback"></div>
-  -->
 </wicket:panel>
 </body>
 </html>
