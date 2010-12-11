@@ -21,11 +21,7 @@ public abstract class VirtualCollectionTable extends Panel {
         super(id);
         setOutputMarkupId(true);
 
-        final AjaxToggleBorder border = new AjaxToggleBorder("border",
-                new Model<String>("Filter"));
-        add(border);
-
-        // setup table 
+        // setup table provider
         List<IColumn<VirtualCollection>> columns =
             new ArrayList<IColumn<VirtualCollection>>();
         columns.add(new ColumnName(this));
@@ -36,10 +32,18 @@ public abstract class VirtualCollectionTable extends Panel {
         columns.add(new ColumnCreated(this));
         columns.add(new ColumnActions(this));
         Provider provider = new Provider(privateMode);
+
+        // setup table
         final DataTable<VirtualCollection> table =
             new AjaxFallbackDefaultDataTable<VirtualCollection>("table",
-                columns, provider, 4);
+                columns, provider, 30);
         table.addBottomToolbar(new AjaxNavigationToolbar(table));
+
+        // setup filter
+        final AjaxToggleBorder border =
+            new AjaxToggleBorder("border", new Model<String>("Filter"));
+        border.add(new FilterForm("filterForm", provider, table, privateMode));
+        add(border);
         add(table);
     }
 

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+<head />
+<body>
+<wicket:panel>
+  <form wicket:id="form" class="filterForm wizard">
+   <fieldset>
+    <div class="optional">
+      <label>Name</label>
+      <select wicket:id="nameMode"></select>
+      <input wicket:id="name" type="text" class="name"
+             size="64" maxlength="255"/>
+    </div>
+    <div class="optional">
+      <label>Description</label>
+      <select wicket:id="descriptionMode"></select>
+      <input wicket:id="description" type="text" class="desc"
+             size="64" maxlength="255"/>
+    </div>
+    <div wicket:id="state" class="optional">
+      <label>State</label>
+      <select wicket:id="state"></select>
+    </div>
+    <div class="optional">
+      <label>Type</label>
+      <select wicket:id="type"></select>
+    </div>
+    <div class="optional">
+      <label>Created</label>
+      <select wicket:id="createdRelation"></select>
+      <input wicket:id="created" type="text" class="created"
+             size="11" maxlength="11"/>
+    </div>
+    <input wicket:id="filter" type="submit" class="filter" value="filter" />
+    <input wicket:id="clear" type="submit" class="clear" value="clear" />
+    </fieldset>
+    <div wicket:id="feedback" class="collectionsTableFeedback"></div>
+  </form>
+</wicket:panel>
+</body>
+</html>

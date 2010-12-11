@@ -86,7 +86,7 @@ class Provider extends
         if (filterstate.hasName()) {
             filter.add(QueryOptions.Property.VC_NAME,
                        QueryOptions.Relation.EQ,
-                       filterstate.getName());
+                       filterstate.getNameWithWildcard());
         }
         if (filterstate.hasType()) {
             filter.add(QueryOptions.Property.VC_TYPE,
@@ -101,7 +101,7 @@ class Provider extends
         if (filterstate.hasDescription()) {
             filter.add(QueryOptions.Property.VC_DESCRIPTION,
                        QueryOptions.Relation.EQ,
-                       filterstate.getDescription());
+                       filterstate.getDescriptionWithWildcard());
         }
         if (filterstate.hasCreated()) {
             filter.add(QueryOptions.Property.VC_CREATION_DATE,
