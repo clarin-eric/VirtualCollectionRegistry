@@ -6,14 +6,15 @@ import javax.servlet.http.HttpServletRequest;
 
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 
 public class BasePage extends WebPage {
 
-    protected BasePage() {
-        super();
+    protected BasePage(IModel<?> model) {
+        super(model);
         // authentication state
         add(new AuthenticationStatePanel("authstate"));
 
@@ -32,6 +33,10 @@ public class BasePage extends WebPage {
                 new Model<String>("Admin Page"),
                 AdminPage.class));
         add(menu);
+    }
+
+    protected BasePage() {
+        this(null);
     }
 
     @Override
