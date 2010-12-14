@@ -44,7 +44,7 @@ public abstract class VirtualCollectionTable extends Panel {
             new AjaxToggleBorder("border", new Model<String>("Filter"));
         final FilterForm form =
             new FilterForm("filterForm", provider, table, privateMode);
-        border.getBodyContainer().add(form);
+        border.add(form);
         add(border);
         add(table);
     }
