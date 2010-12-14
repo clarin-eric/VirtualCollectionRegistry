@@ -19,7 +19,7 @@ public class BrowsePublicCollectionsPage extends BasePage {
                 new AjaxLink<VirtualCollection>("details", model) {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
-                    doDetails(target, getModelObject());
+                    doDetails(target, getModel());
                 }
             };
             add(detailsLink);
@@ -39,7 +39,8 @@ public class BrowsePublicCollectionsPage extends BasePage {
         add(table);
     }
 
-    private void doDetails(AjaxRequestTarget target, VirtualCollection vc) {
+    private void doDetails(AjaxRequestTarget target,
+            IModel<VirtualCollection> vc) {
         setResponsePage(new VirtualCollectionDetailsPage(vc, getPage()));
     }
 
