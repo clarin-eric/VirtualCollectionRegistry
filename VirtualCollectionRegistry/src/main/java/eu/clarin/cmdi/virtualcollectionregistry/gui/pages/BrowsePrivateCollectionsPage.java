@@ -60,7 +60,7 @@ public class BrowsePrivateCollectionsPage extends BasePage {
                 new AjaxLink<VirtualCollection>("details", model) {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
-                    doDetails(target, getModelObject());
+                    doDetails(target, getModel());
                 }
             };
             add(detailsLink);
@@ -171,7 +171,9 @@ public class BrowsePrivateCollectionsPage extends BasePage {
             VirtualCollection vc) {
         deleteDialog.show(target, vc);
     }
-    private void doDetails(AjaxRequestTarget target, VirtualCollection vc) {
+
+    private void doDetails(AjaxRequestTarget target,
+            IModel<VirtualCollection> vc) {
         setResponsePage(new VirtualCollectionDetailsPage(vc, getPage()));
     }
 

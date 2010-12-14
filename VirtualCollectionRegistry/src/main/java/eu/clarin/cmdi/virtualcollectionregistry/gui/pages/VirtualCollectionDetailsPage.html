@@ -6,90 +6,72 @@
 <head />
 <body>
 <wicket:extend>
-  <table style="width: 100%">
-    <thead style="color: inherit; background-color: inherit; border: none">
-      <tr><td colspan="2" style="padding: 10px 0; color: red; font-weight: bold; text-align: center">Note: this page is just a proof-of-concept and concept and subject to major overhaul!</td></tr>
-    </thead>
-    <tbody style="border: none">
-      <tr style="border-top: 1px solid #000000; border-bottom: 1px solid #000000">
-        <td style="vertical-align: top">Name</td>
-        <td><span wicket:id="name"></span></td>
-      </tr>
-      <tr style="border-bottom: 1px solid #000000">
-        <td style="vertical-align: top">Type</td>
-        <td><span wicket:id="type"></span></td>
-      </tr>
-      <tr style="border-bottom: 1px solid #000000">
-        <td style="vertical-align: top">Creation Date</td>
-        <td><span wicket:id="creationDate"></span></td>
-      </tr>
-      <tr style="border-bottom: 1px solid #000000">
-        <td style="vertical-align: top">Description</td>
-        <td><span wicket:id="description"></span></td>
-      </tr>
-      <tr style="border-bottom: 1px solid #000000">
-        <td style="vertical-align: top">Purpose</td>
-        <td><span wicket:id="purpose"></span></td>
-      </tr>
-      <tr style="border-bottom: 1px solid #000000">
-        <td style="vertical-align: top">Reproducibility</td>
-        <td><span wicket:id="reproducibility"></span></td>
-      </tr>
-      <tr style="border-bottom: 1px solid #000000">
-        <td style="vertical-align: top">Reproducibility Notice</td>
-        <td><span wicket:id="reproducibilityNotice"></span></td>
-      </tr>
-      <tr style="border-bottom: 1px solid #000000">
-        <td style="vertical-align: top">Keywords</td>
-        <td><ul><li wicket:id="keywords"><span wicket:id="keyword"></span></li></ul></td>
-      </tr>
-      <tr style="border-bottom: 1px solid #000000">
-        <td style="vertical-align: top">Creators</td>
-        <td>
-          <ul>
-            <li wicket:id="creators">
-              <span wicket:id="person"></span> <br/>
-              <span wicket:id="address"></span> <br/>
-              <span wicket:id="email"></span> <br/>
-              <span wicket:id="organisation"></span> <br/>
-              <span wicket:id="telephone"></span> <br/>
-              <span wicket:id="website"></span> <br/>
-              <span wicket:id="role"></span>
-            </li>
-          </ul>
-        </td>
-      </tr>
-      <tr style="border-bottom: 1px solid #000000">
-        <td style="vertical-align: top">Resources</td>
-        <td>
-          <ul>
-            <li wicket:id="resources">
-              <span wicket:id="type"></span> <span wicket:id="ref"></span>
-            </li>
-          </ul>
-        </td>
-      </tr>
-      <tr style="border-bottom: 1px solid #000000">
-        <td style="vertical-align: top">GeneratedBy.description</td>
-        <td><span wicket:id="generatedBy.description"></span></td>
-      </tr>
-      <tr style="border-bottom: 1px solid #000000">
-        <td style="vertical-align: top">GeneratedBy.uri</td>
-        <td><span wicket:id="generatedBy.uri"></span></td>
-      </tr>
-      <tr style="border-bottom: 1px solid #000000">
-        <td style="vertical-align: top">GeneratedBy.query.profile</td>
-        <td><span wicket:id="generatedBy.query.profile"></span></td>
-      </tr>
-      <tr style="border-bottom: 1px solid #000000">
-        <td style="vertical-align: top">GeneratedBy.query.value</td>
-        <td><span wicket:id="generatedBy.query.value"></span></td>
-      </tr>
-    </tbody>
-    <tfoot>
-      <tr><td colspan="2" style="padding: 10px 0; text-align: center"><a wicket:id="back" href="#">[return to previous page]</a></td></tr>
-    </tfoot>
-  </table>
+  <div wicket:id="generalBorder">
+    <label>Name</label> <span wicket:id="name"></span> <br />
+    <label>Type</label> <span wicket:id="type"></span> <br />
+    <label>Creation Date</label> <span wicket:id="creationDate"></span> <br />
+
+    <wicket:enclosure child="description">
+      <label>Description</label> <div wicket:id="description"></div> <br />
+    </wicket:enclosure>
+    <wicket:enclosure child="purpose">
+      <label>Purpose</label> <span wicket:id="purpose"></span> <br />
+    </wicket:enclosure>
+    <wicket:enclosure child="reproducibility">
+      <label>Reproducibility</label> <span wicket:id="reproducibility"></span> <br />
+    </wicket:enclosure>
+    <wicket:enclosure child="reproducibilityNotice">
+      <label>Reproducibility Notice</label> <span wicket:id="reproducibilityNotice"></span> <br />
+    </wicket:enclosure>
+    <wicket:enclosure child="keywords">
+      <label>Keywords</label>
+      <ul><li wicket:id="keywords"><span wicket:id="keyword"></span></li></ul>
+    </wicket:enclosure>
+  </div>
+  
+  <div wicket:id="creatorsBorder">
+    <ul><li wicket:id="creators">
+      <label>Person</label> <span wicket:id="person"></span> <br />
+      <wicket:enclosure child="address">
+        <label>Address</label> <span wicket:id="address"></span> <br />
+      </wicket:enclosure>
+      <wicket:enclosure child="email">
+        <label>Email</label> <span wicket:id="email"></span> <br />
+      </wicket:enclosure>
+      <wicket:enclosure child="organisation">
+        <label>Organisation</label> <span wicket:id="organisation"></span> <br />
+      </wicket:enclosure>
+      <wicket:enclosure child="telephone">
+        <label>Telephone</label> <span wicket:id="telephone"></span> <br />
+      </wicket:enclosure>
+      <wicket:enclosure child="website">
+        <label>Website</label> <a wicket:id="website"></a> <br />
+      </wicket:enclosure>
+      <wicket:enclosure child="role">
+        <label>Role</label> <span wicket:id="role"></span> <br />
+      </wicket:enclosure>
+    </li>
+    </ul>
+  </div>
+
+  <div wicket:id="resourcesBorder">
+    <table wicket:id="resourcesTable"></table>
+  </div>
+
+  <div wicket:id="generatedByBorder">
+    <label>Description</label> <div wicket:id="generatedBy.description"></div> <br />
+    <wicket:enclosure child="generatedBy.uri">
+      <label>URI</label> <span wicket:id="generatedBy.uri"></span> <br />
+    </wicket:enclosure>
+    <wicket:enclosure child="generatedBy.query.profile">
+      <label>Profile</label> <span wicket:id="generatedBy.query.profile"></span> <br />
+    </wicket:enclosure>
+    <wicket:enclosure child="generatedBy.query.value">
+      <label>Profile</label> <span wicket:id="generatedBy.query.value"></span> <br />
+    </wicket:enclosure>
+  </div>
+
+  <a wicket:id="back" href="#">[return to previous page]</a>
 </wicket:extend>
 </body>
 </html>
