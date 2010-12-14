@@ -17,20 +17,20 @@ import org.odlabs.wiquery.core.javascript.JsStatement;
 @SuppressWarnings("serial")
 public class AjaxToggleBorder extends Border {
     private final static String COLLAPSED_CLASS = "collapsed";
-    
+
     public AjaxToggleBorder(String id, IModel<String> title,
-            final boolean expanded) {
+            boolean expanded, String cssClass) {
         super(id);
         setRenderBodyOnly(true);
 
         final WebMarkupContainer header = new WebMarkupContainer("header");
+        add(header);
         header.add(new Label("title", title));
 
         final WebMarkupContainer content = new WebMarkupContainer("content");
+        add(content);
         content.setOutputMarkupId(true);
         content.add(getBodyContainer());
-        add(header);
-        add(content);
 
         header.add(new WiQueryEventBehavior(new Event(MouseEvent.CLICK) {
             @Override
@@ -49,10 +49,18 @@ public class AjaxToggleBorder extends Border {
             content.add(new AttributeAppender("style",
                     new Model<String>("display:none"), ";"));
         }
+        if (cssClass != null) {
+            content.add(new AttributeAppender("class",
+                    new Model<String>(cssClass), " "));
+        }
+    }
+
+    public AjaxToggleBorder(String id, IModel<String> title, String cssClass) {
+        this(id, title, true, cssClass);
     }
 
     public AjaxToggleBorder(String id, IModel<String> title) {
-        this(id, title, true);
+        this(id, title, true, null);
     }
-    
+
 } // class AjaxToggleBorder
