@@ -7,50 +7,96 @@
 <body>
 <wicket:extend>
   <div wicket:id="generalBorder">
-    <label>Name</label> <span wicket:id="name"></span> <br />
-    <label>Type</label> <span wicket:id="type"></span> <br />
-    <label>Creation Date</label> <span wicket:id="creationDate"></span> <br />
-
+    <div>
+      <label>Name</label>
+      <div wicket:id="name"></div>
+    </div>
+    <div>
+       <label>Type</label>
+       <div wicket:id="type"></div>
+    </div>
+    <div>
+      <label>Creation Date</label>
+      <div wicket:id="creationDate"></div>
+    </div>
     <wicket:enclosure child="description">
-      <label>Description</label> <div wicket:id="description"></div> <br />
+      <div>
+        <label>Description</label>
+        <div wicket:id="description"></div>
+      </div>
     </wicket:enclosure>
     <wicket:enclosure child="purpose">
-      <label>Purpose</label> <span wicket:id="purpose"></span> <br />
+      <div>
+        <label>Purpose</label>
+        <div wicket:id="purpose"></div>
+      </div>
     </wicket:enclosure>
     <wicket:enclosure child="reproducibility">
-      <label>Reproducibility</label> <span wicket:id="reproducibility"></span> <br />
+      <div>
+        <label>Reproducibility</label>
+        <div wicket:id="reproducibility"></div>
+      </div>
     </wicket:enclosure>
     <wicket:enclosure child="reproducibilityNotice">
-      <label>Reproducibility Notice</label> <span wicket:id="reproducibilityNotice"></span> <br />
+      <div>
+        <label>Reproducibility Notice</label>
+        <div wicket:id="reproducibilityNotice"></div>
+      </div>
     </wicket:enclosure>
     <wicket:enclosure child="keywords">
-      <label>Keywords</label>
-      <ul><li wicket:id="keywords"><span wicket:id="keyword"></span></li></ul>
+      <div>
+        <label>Keywords</label>
+        <div>
+          <ul><li wicket:id="keywords"><span wicket:id="keyword"></span></li></ul>
+        </div>
+      </div>
     </wicket:enclosure>
   </div>
-  
+
   <div wicket:id="creatorsBorder">
-    <ul><li wicket:id="creators">
-      <label>Person</label> <span wicket:id="person"></span> <br />
-      <wicket:enclosure child="address">
-        <label>Address</label> <span wicket:id="address"></span> <br />
-      </wicket:enclosure>
-      <wicket:enclosure child="email">
-        <label>Email</label> <span wicket:id="email"></span> <br />
-      </wicket:enclosure>
-      <wicket:enclosure child="organisation">
-        <label>Organisation</label> <span wicket:id="organisation"></span> <br />
-      </wicket:enclosure>
-      <wicket:enclosure child="telephone">
-        <label>Telephone</label> <span wicket:id="telephone"></span> <br />
-      </wicket:enclosure>
-      <wicket:enclosure child="website">
-        <label>Website</label> <a wicket:id="website"></a> <br />
-      </wicket:enclosure>
-      <wicket:enclosure child="role">
-        <label>Role</label> <span wicket:id="role"></span> <br />
-      </wicket:enclosure>
-    </li>
+    <ul>
+      <li wicket:id="creators">
+        <div>
+          <label>Person</label>
+          <div wicket:id="person"></div>
+        </div>
+        <wicket:enclosure child="address">
+          <div>
+            <label>Address</label>
+            <div wicket:id="address"></div>
+          </div>
+        </wicket:enclosure>
+        <wicket:enclosure child="email">
+          <div>
+            <label>Email</label>
+            <div wicket:id="email"></div>
+          </div>
+        </wicket:enclosure>
+        <wicket:enclosure child="organisation">
+          <div>
+            <label>Organisation</label>
+            <div wicket:id="organisation"></div>
+          </div>
+        </wicket:enclosure>
+        <wicket:enclosure child="telephone">
+          <div>
+            <label>Telephone</label>
+            <div wicket:id="telephone"></div>
+          </div>
+        </wicket:enclosure>
+        <wicket:enclosure child="website">
+          <div>
+            <label>Website</label>
+            <div><a wicket:id="website"></a></div>
+          </div>
+        </wicket:enclosure>
+        <wicket:enclosure child="role">
+          <div>
+            <label>Role</label>
+            <div wicket:id="role"></div>
+          </div>
+        </wicket:enclosure>
+      </li>
     </ul>
   </div>
 
@@ -59,15 +105,27 @@
   </div>
 
   <div wicket:id="generatedByBorder">
-    <label>Description</label> <div wicket:id="generatedBy.description"></div> <br />
+    <div>
+      <label>Description</label>
+      <div wicket:id="generatedBy.description"></div>
+    </div>
     <wicket:enclosure child="generatedBy.uri">
-      <label>URI</label> <span wicket:id="generatedBy.uri"></span> <br />
+      <div>
+        <label>URI</label>
+        <div wicket:id="generatedBy.uri"></div>
+      </div>
     </wicket:enclosure>
     <wicket:enclosure child="generatedBy.query.profile">
-      <label>Profile</label> <span wicket:id="generatedBy.query.profile"></span> <br />
+      <div>
+        <label>Profile</label>
+        <div wicket:id="generatedBy.query.profile"></div>
+      </div>
     </wicket:enclosure>
     <wicket:enclosure child="generatedBy.query.value">
-      <label>Value</label> <span wicket:id="generatedBy.query.value"></span> <br />
+      <div>
+        <label>Value</label>
+        <div wicket:id="generatedBy.query.value"></div>
+      </div>
     </wicket:enclosure>
   </div>
 
