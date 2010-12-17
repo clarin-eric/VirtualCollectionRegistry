@@ -1,10 +1,14 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
 import java.util.ArrayList;
+import java.util.Collection;
 import java.util.Iterator;
+import java.util.LinkedList;
 import java.util.List;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.Page;
+import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
@@ -34,10 +38,50 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Type;
 public class VirtualCollectionDetailsPage extends BasePage {
     private static final String CSS_CLASS = "collectionsDetails";
 
+    /*
+     * Actually, we really want the behavior to hide the component on
+     * the beforeRender() call, but we always get an exception from Wicket
+     * that we are not supposed to change the page hierarchy anymore. This
+     * class is a hack to avoid this exception.
+     */
+    private final class HideIfEmptyBehavior extends AbstractBehavior {
+        private final List<Component> components = new LinkedList<Component>();
+        
+        @Override
+        public void bind(Component component) {
+            super.bind(component);
+            components.add(component);
+        }
+
+        public void hideEmptyComponents() {
+            for (Component component : components) {
+              Object obj = component.getDefaultModelObject();
+              if (obj == null) {
+                  component.setVisible(false);
+              } else {
+                  if (obj instanceof Collection<?>) {
+                      if (((Collection<?>) obj).isEmpty()) {
+                          component.setVisible(false);
+                      }
+                  }
+              }
+            }
+        }
+
+        @Override
+        public void cleanup() {
+            super.cleanup();
+            components.clear();
+        }
+    }
+
+    
+    private final HideIfEmptyBehavior hideIfEmpty = new HideIfEmptyBehavior();
+
+
     public VirtualCollectionDetailsPage(final IModel<VirtualCollection> model,
             final Page previousPage) {
-        super(model);
-
+        super(new CompoundPropertyModel<VirtualCollection>(model.getObject()));
         if (previousPage == null) {
             throw new IllegalArgumentException("previousPage == null");
         }
@@ -55,16 +99,17 @@ public class VirtualCollectionDetailsPage extends BasePage {
         general.add(new Label("name"));
         general.add(new Label("type"));
         general.add(new Label("creationDate"));
-        general.add(new MultiLineLabel("description"));
-        general.add(new Label("purpose"));
-        general.add(new Label("reproducibility"));
-        general.add(new Label("reproducibilityNotice"));
+        general.add(new MultiLineLabel("description").add(hideIfEmpty));
+        general.add(new Label("purpose").add(hideIfEmpty));
+        general.add(new Label("reproducibility").add(hideIfEmpty));
+        general.add(new Label("reproducibilityNotice").add(hideIfEmpty));
         final ListView<String> keywords = new ListView<String>("keywords") {
             @Override
             protected void populateItem(ListItem<String> item) {
                 item.add(new Label("keyword", item.getModelObject()));
             }
         };
+        keywords.add(hideIfEmpty);
         general.add(keywords);
 
         final Border creators = new AjaxToggleBorder("creatorsBorder",
@@ -74,15 +119,16 @@ public class VirtualCollectionDetailsPage extends BasePage {
             @Override
             protected void populateItem(ListItem<Creator> item) {
                 item.add(new Label("person"));
-                item.add(new MultiLineLabel("address"));
-                item.add(new Label("organisation"));
-                item.add(new Label("email"));
-                item.add(new Label("telephone"));
+                item.add(new MultiLineLabel("address").add(hideIfEmpty));
+                item.add(new Label("organisation").add(hideIfEmpty));
+                item.add(new Label("email").add(hideIfEmpty));
+                item.add(new Label("telephone").add(hideIfEmpty));
                 final IModel<String> siteModel =
                     new ComponentPropertyModel<String>("website");
                 item.add(new ExternalLink("website", siteModel, siteModel)
-                        .setPopupSettings(new PopupSettings()));
-                item.add(new Label("role"));
+                        .setPopupSettings(new PopupSettings())
+                        .add(hideIfEmpty));
+                item.add(new Label("role").add(hideIfEmpty));
             }
 
             @Override
@@ -131,10 +177,16 @@ public class VirtualCollectionDetailsPage extends BasePage {
                 new Model<String>("Intensional Collection Query"), CSS_CLASS);
         add(generated);
         generated.add(new Label("generatedBy.description"));
-        generated.add(new Label("generatedBy.uri"));
-        generated.add(new Label("generatedBy.query.profile"));
-        generated.add(new Label("generatedBy.query.value"));
+        generated.add(new Label("generatedBy.uri").add(hideIfEmpty));
+        generated.add(new Label("generatedBy.query.profile").add(hideIfEmpty));
+        generated.add(new Label("generatedBy.query.value").add(hideIfEmpty));
         generated.setVisible(model.getObject().getType() == Type.INTENSIONAL);
+    }
+
+    @Override
+    protected void onBeforeRender() {
+        super.onBeforeRender();
+        hideIfEmpty.hideEmptyComponents();
     }
 
 } // class VirtualCollectionDetailsPage
