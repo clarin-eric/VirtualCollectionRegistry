@@ -6,12 +6,10 @@
 			};
 			var name = $(this).children('div.name');
 			var details = $(this).children('div.details');
-			name.click(function(e) {
-				e.stopPropagation();
+			name.bind('click.detailsToggle', function() {
 				details.slideToggle(o.speed, function() {
 					name.toggleClass('detailsShown');
 				});
-				return false;
 			});
 			return $(this);
 		}

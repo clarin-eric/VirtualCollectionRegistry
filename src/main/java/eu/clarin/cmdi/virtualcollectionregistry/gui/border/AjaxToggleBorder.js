@@ -6,12 +6,10 @@
 			};
 			var header = $(this).children('div.toggleBorderHeader');
 			var content = $(this).children('div.toggleBorderContent');
-			header.click(function(e) {
-				e.stopPropagation();
+			header.bind('click.ajaxToggleBorder', function() {
 				content.slideToggle(o.speed, function() {
 					header.toggleClass('collapsed');
 				});
-				return false;
 			});
 			return $(this);
 		}
