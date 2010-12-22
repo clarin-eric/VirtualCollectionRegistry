@@ -3,11 +3,13 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.table;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxNavigationToolbar;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
@@ -17,7 +19,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 @SuppressWarnings("serial")
 public abstract class VirtualCollectionTable extends Panel {
 
-    public VirtualCollectionTable(String id, boolean privateMode) {
+    public VirtualCollectionTable(String id, final boolean privateMode) {
         super(id);
         setOutputMarkupId(true);
 
@@ -37,6 +39,13 @@ public abstract class VirtualCollectionTable extends Panel {
         final DataTable<VirtualCollection> table =
             new AjaxFallbackDefaultDataTable<VirtualCollection>("table",
                 columns, provider, 30);
+        table.add(new AttributeAppender("class",
+                new AbstractReadOnlyModel<String>() {
+                    @Override
+                    public String getObject() {
+                        return privateMode ? "private" : "public";
+                    }
+                }, " "));
         table.addBottomToolbar(new AjaxNavigationToolbar(table));
 
         // setup filter
@@ -48,6 +57,9 @@ public abstract class VirtualCollectionTable extends Panel {
         add(border);
         add(table);
     }
+
+    protected abstract Panel createActionColumn(String componentId,
+            IModel<VirtualCollection> model);
 
     protected abstract Panel createActionPanel(String componentId,
             IModel<VirtualCollection> model);

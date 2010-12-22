@@ -31,6 +31,12 @@ public class BrowsePublicCollectionsPage extends BasePage {
         final VirtualCollectionTable table =
             new VirtualCollectionTable("collectionsTable", false) {
                 @Override
+                protected Panel createActionColumn(String componentId,
+                        IModel<VirtualCollection> model) {
+                    return new ActionsPanel(componentId, model);
+                }
+
+                @Override
                 protected Panel createActionPanel(String componentId,
                         IModel<VirtualCollection> model) {
                     return new ActionsPanel(componentId, model);
