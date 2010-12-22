@@ -51,8 +51,12 @@ public class CreateVirtualCollectionPage extends BasePage {
                         
                     }
                     // FIXME: get date from GUI?
-                    vc.setCreationDate(new Date());
-                    vcr.createVirtualCollection(principal, vc);
+                    if (vc.getId() == null) {
+                        vc.setCreationDate(new Date());
+                        vcr.createVirtualCollection(principal, vc);
+                    } else {
+                        vcr.updateVirtualCollection(principal, vc.getId(), vc);
+                    }
                 } catch (VirtualCollectionRegistryException e) {
                     // FIXME: handle error
                     e.printStackTrace();
