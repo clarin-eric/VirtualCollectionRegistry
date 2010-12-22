@@ -141,6 +141,10 @@ public class BrowsePrivateCollectionsPage extends BasePage {
                 publishLink.setVisible(false).setEnabled(false);
                 deleteLink.setVisible(false).setEnabled(false);
             }
+            boolean isVisible = detailsLink.isVisible() ||
+                    editLink.isVisible() || publishLink.isVisible() ||
+                    deleteLink.isVisible();
+            setVisible(isVisible);
         }
     } // class BrowsePrivateCollectionsPage.ActionsPanel
 

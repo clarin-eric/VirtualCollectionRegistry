@@ -66,4 +66,19 @@ public class AjaxPopupMenu extends Panel implements Serializable, IWiQueryPlugin
         return new JsStatement().$(menu).append(".ajaxPopupMenu()");
     }
 
+    @Override
+    protected void onBeforeRender() {
+        super.onBeforeRender();
+        boolean anyVisible = false;
+        for (MenuItem item : items) {
+            if (item.isVisible()) {
+                anyVisible = true;
+                break;
+            }
+        }
+        if (!anyVisible) {
+            setVisible(false);
+        }
+    }
+
 } // class PopupMenu

@@ -694,10 +694,6 @@ table.collectionsTable.private td.name {
     width: 736px;
 }
 
-table.collectionsTable td.name div.details {
-	margin-right: -188px;
-}
-
 table.collectionsTable td.name div.name {
 	padding-left: 16px;
     background-image: url('../icons/bullet_arrow_down.png');
@@ -718,17 +714,23 @@ table.collectionsTable td.name div.name.detailsShown {
     background-position: center left;
 }
 
+table.collectionsTable td.name div.name.noDetails{
+    background-image: none;
+}
+
 table.collectionsTable td.name div.details {
-    padding: 2px 2px 2px 16px;
+	margin-left: 16px;
+    margin-right: -248px;
+    width: 964px;
 }
 
 table.collectionsTable td.name div.desc {
     text-align: justify;
-    padding-bottom: 2px;
+    padding: 4px 0 0 0;
 }
 
 table.collectionsTable td.name div.actions {
-	margin-top: 4px;
+	margin: 4px 0;
 }
 
 table.collectionsTable th.state,
