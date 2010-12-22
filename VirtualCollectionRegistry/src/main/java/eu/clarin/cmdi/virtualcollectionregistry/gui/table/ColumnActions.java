@@ -19,7 +19,7 @@ final class ColumnActions extends HeaderlessColumn<VirtualCollection> {
     @Override
     public void populateItem(Item<ICellPopulator<VirtualCollection>> item,
             String componentId, IModel<VirtualCollection> model) {
-        item.add(table.createActionPanel(componentId, model));
+        item.add(table.createActionColumn(componentId, model));
     }
 
     @Override

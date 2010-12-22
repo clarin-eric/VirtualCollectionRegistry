@@ -22,7 +22,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 final class ColumnName extends AbstractColumn<VirtualCollection> {
     private static final ResourceReference JAVASCRIPT_RESOURCE = 
         new ResourceReference(ColumnName.class, "ColumnName.js");
-
+    private final VirtualCollectionTable table;
+    
     private final class ItemCell extends Panel implements IWiQueryPlugin {
         private final WebMarkupContainer nameColumn;
         
@@ -43,6 +44,8 @@ final class ColumnName extends AbstractColumn<VirtualCollection> {
                 descLabel.setVisible(false);
             }
             details.add(descLabel);
+            details.add(table.createActionPanel("actionsPanel", model));
+
             // move to css?
             details.add(new AttributeAppender("style",
                     new Model<String>("display:none"), ";"));
@@ -64,6 +67,7 @@ final class ColumnName extends AbstractColumn<VirtualCollection> {
 
     ColumnName(VirtualCollectionTable table) {
         super(new ResourceModel("column.name", "Name"), "name");
+        this.table = table;
     }
 
     @Override

@@ -684,9 +684,14 @@ table.collectionsTable td {
     vertical-align: top;
 }
 
-table.collectionsTable th.name,
-table.collectionsTable td.name {
-	width: 670px;
+table.collectionsTable.public th.name,
+table.collectionsTable.public td.name {
+	width: 796px;
+}
+
+table.collectionsTable.private th.name,
+table.collectionsTable.private td.name {
+    width: 736px;
 }
 
 table.collectionsTable td.name div.details {
@@ -698,6 +703,7 @@ table.collectionsTable td.name div.name {
     background-image: url('../icons/bullet_arrow_down.png');
     background-repeat: no-repeat;
     background-position: center left;
+    cursor: pointer;
 }
 
 table.collectionsTable td.name div.name:hover {
@@ -721,19 +727,49 @@ table.collectionsTable td.name div.desc {
     padding-bottom: 2px;
 }
 
-table.collectionsTable th.created,
-table.collectionsTable td.created {
-    width: 100px;
+table.collectionsTable td.name div.actions {
+	margin-top: 4px;
+}
+
+table.collectionsTable th.state,
+table.collectionsTable td.state {
+    width: 60px;
 }
 
 table.collectionsTable th.type,
 table.collectionsTable td.type {
-    width: 100px;
+    width: 80px;
+}
+
+table.collectionsTable th.created,
+table.collectionsTable td.created {
+    width: 80px;
 }
 
 table.collectionsTable td.action,
 table.collectionsTable th.action {
-	width: 100px;
+	width: 12px;
+}
+
+table.collectionsTable.public td.action span,
+table.collectionsTable.private td.action div.popupTrigger span {
+    display: none;
+}
+
+table.collectionsTable.public td.action a {
+    display: block;
+    width: 12px;
+    height: 12px;
+    margin-right: 2px;
+    background: transparent url('../icons/magnifier.png') no-repeat center center;
+}
+
+table.collectionsTable.private td.action div.popupTrigger {
+    display: block;
+    width: 12px;
+    height: 12px;
+    margin-right: 2px;
+    background: transparent url('../icons/wrench.png') no-repeat center center;
 }
 
 tr.headers a.wicket_orderNone {
@@ -764,6 +800,7 @@ div.toggleBorder div.toggleBorderHeader {
     background-image: url('../icons/bullet_arrow_up.png');
     background-repeat: no-repeat;
     background-position: center left;
+    cursor: pointer;
 }
 
 div.toggleBorder div.toggleBorderHeader span {
@@ -803,4 +840,24 @@ form.filterForm label {
 form.filterForm input.name,
 form.filterForm input.desc {
 	width: 790px;
+}
+
+div.popupMenu {
+    -moz-box-shadow: 3px 3px 3px #888;
+    -webkit-box-shadow: 3px 3px 3px #888;
+    box-shadow: 3px 3px 3px #888;
+    -moz-border-radius: 4px;
+    border-radius: 4px;
+}
+
+div.popupMenu li a {
+	color: #000000;
+}
+
+div.popupMenu li a:hover {
+    color: #AE0000;
+}
+
+div.popupTrigger span.title {
+    color: #AE0000;
 }
