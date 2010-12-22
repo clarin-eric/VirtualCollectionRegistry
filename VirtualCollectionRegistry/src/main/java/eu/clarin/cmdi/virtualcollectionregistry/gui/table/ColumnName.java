@@ -1,6 +1,8 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.table;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.ResourceReference;
+import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
@@ -44,7 +46,16 @@ final class ColumnName extends AbstractColumn<VirtualCollection> {
                 descLabel.setVisible(false);
             }
             details.add(descLabel);
-            details.add(table.createActionPanel("actionsPanel", model));
+            final Panel actionsPanel =
+                table.createActionPanel("actionsPanel", model);
+            details.add(actionsPanel);
+            details.add(new AbstractBehavior() {
+
+                @Override
+                public void bind(Component component) {
+                    component.setVisible(actionsPanel.isVisible());
+                }
+            });
 
             // move to css?
             details.add(new AttributeAppender("style",
