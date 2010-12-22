@@ -1,0 +1,32 @@
+div.popupTrigger {
+	cursor: pointer;
+}
+
+div.popupMenu {
+    position: absolute;
+    color: #000000;
+    background-color: #ffffff;
+    padding: 2px;
+    margin: 0;
+    border: 1px solid #000000;
+    display: none;
+}
+
+div.popupMenu ul {
+    padding: 0;
+    margin: 0;
+}
+
+div.popupMenu li {
+	list-style: none;
+    padding: 0px;
+    margin: 0px;
+}
+
+div.popupMenu li a {
+    padding: 2px 2px;
+    margin: 0;
+    display: block;
+    text-decoration: none;
+    text-align: left;
+}
