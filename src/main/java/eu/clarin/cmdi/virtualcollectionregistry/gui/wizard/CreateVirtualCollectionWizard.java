@@ -101,7 +101,6 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                                     tag.append("class", "first", " ");
                                 }
                             }
-                            
                         };
                     }
                 };
