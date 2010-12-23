@@ -212,7 +212,8 @@ form.wizard {
   min-width: 978px;
 }
 
-form.wizard fieldset, div.wizard div.fieldset {
+form.wizard fieldset,
+div.wizard div.fieldset {
   clear: both;
   font-size: 100%;
   border: none;
@@ -249,7 +250,8 @@ div.wizard textarea {
 }
 */
 
-form.wizard div, div.editDialog div {
+form.wizard div,
+div.editDialog div {
   clear: left;
   display: block;
 /*  width: 354px;
@@ -303,14 +305,12 @@ form.wizard div label {
   padding: 3px 5px;
   margin: 0 0 5px 0;
   text-align: right;
-}
-
-div.optional label{
   font-weight: normal;
 }
 
-div.required label, label.required {
-  font-weight: bold;
+div.required label,
+label.required {
+  font-weight: bold !important;
 }
 
 /*
@@ -691,7 +691,7 @@ table.collectionsTable.public td.name {
 
 table.collectionsTable.private th.name,
 table.collectionsTable.private td.name {
-    width: 736px;
+    width: 732px;
 }
 
 table.collectionsTable td.name div.name {
@@ -730,7 +730,7 @@ table.collectionsTable td.name div.desc {
 }
 
 table.collectionsTable td.name div.actions {
-	margin: 4px 0;
+	margin: 4px 0 2px 0;
 }
 
 table.collectionsTable th.state,
@@ -863,3 +863,71 @@ div.popupMenu li a:hover {
 div.popupTrigger span.title {
     color: #AE0000;
 }
+
+
+div.collectionDetails div.property {
+  clear: both;
+  font-size: 100%;
+  border: none;
+  padding: 0 10px 0 10px;
+  margin: 0 0 4px 0;
+}
+
+div.collectionDetails div label {
+  display: block;
+  float: left;
+  width: 140px;
+  padding: 0px 2px;
+  margin: 0;
+  text-align: right;
+  font-weight: normal;
+}
+
+div.collectionDetails div label:after {
+	content: ':';
+}
+
+div.collectionDetails div div {
+    display: block;
+    clear: none;
+    padding: 0px 2px;
+    margin-left: 144px;
+}
+
+div.collectionDetails ul.keywords {
+    margin: 0 0 0 16px;
+    padding: 0;
+    list-style: square;
+}
+
+div.collectionDetails ul.creators {
+	margin: 0;
+	padding: 0;
+    list-style: none;
+}
+
+div.collectionDetails ul.creators li {
+	border-top: 1px dotted #000000;
+    margin-top: 4px;
+    padding-top: 4px;
+}
+
+div.collectionDetails ul.creators li.first {
+	border-top: none;
+	margin-top: 0;
+	padding-top: 0;
+}
+
+div.collectionDetails.resources {
+	padding: 0 !important;
+}
+
+div.collectionDetails.resources table {
+	width: 100%;
+}
+
+div.collectionDetails.buttons {
+	margin: 10px 0 10px 0;
+	text-align: center;
+}
+
