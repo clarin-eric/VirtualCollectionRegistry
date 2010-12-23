@@ -7,7 +7,6 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
@@ -19,6 +18,7 @@ import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvid
 import org.apache.wicket.extensions.wizard.dynamic.DynamicWizardModel;
 import org.apache.wicket.extensions.wizard.dynamic.DynamicWizardStep;
 import org.apache.wicket.extensions.wizard.dynamic.IDynamicWizardStep;
+import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -31,9 +31,9 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.list.OddEvenListItem;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -87,16 +87,22 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                                         model.getObject());
                             }
                         });
-                        item.add(new AttributeAppender("class",
-                                new AbstractReadOnlyModel<String>() {
-                                    public String getObject() {
-                                        if (item.getIndex() == 0) {
-                                            return "first odd";
-                                        }
-                                        return (item.getIndex() % 2 == 1) ?
-                                                    "even" : "odd";
-                                    }
-                                }, " "));
+                    }
+
+                    @Override
+                    protected ListItem<String> newItem(int index) {
+                        final IModel<String> model =
+                            getListItemModel(getModel(), index);
+                        return new OddEvenListItem<String>(index, model) {
+                            @Override
+                            protected void onComponentTag(ComponentTag tag) {
+                                super.onComponentTag(tag);
+                                if (getIndex() == 0) {
+                                    tag.append("class", "first", " ");
+                                }
+                            }
+                            
+                        };
                     }
                 };
                 add(itemsView);
