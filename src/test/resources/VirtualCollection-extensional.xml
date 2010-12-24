@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VirtualCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="VirtualCollection.xsd">
+    <Type>extensional</Type>
+    <Name>Test Collection 1</Name>
+    <Description>Test Description</Description>
+    <CreationDate>2009-12-31</CreationDate>
+    <Creators>
+        <Creator>
+            <Person>Joe User</Person>
+            <Address>Example Address Joe</Address>
+            <Email>joe.user@example.com</Email>
+            <Organisation>Example Organization</Organisation>
+            <Telephone>+1-800-555-0101</Telephone>
+            <Website>http://www.example.org/~joe/</Website>
+            <Role>Test Role Joe</Role>
+        </Creator>
+        <Creator>
+            <Person>Jane User</Person>
+            <Address>Example Address Jane</Address>
+            <Email>jane.user@example.com</Email>
+            <Organisation>Example Organization</Organisation>
+            <Telephone>+1-800-555-0102</Telephone>
+            <Website>http://www.example.org/~jane/</Website>
+            <Role>Test Role Jane</Role>
+        </Creator>
+    </Creators>
+    <Purpose>sample</Purpose>
+    <Reproducibility>untended</Reproducibility>
+    <ReproducibilityNotice>Unmaintaned test collection.</ReproducibilityNotice>
+    <Keywords>
+        <Keyword>test</Keyword>
+        <Keyword>unmaintained</Keyword>
+    </Keywords>
+    <Resources>
+        <Resource>
+            <ResourceType>Metadata</ResourceType>
+            <ResourceRef>http://hdl.handle.net/1839/00-0000-0000-0005-671C-C</ResourceRef>
+        </Resource>
+        <Resource>
+            <ResourceType>Metadata</ResourceType>
+            <ResourceRef>http://hdl.handle.net/1839/00-0000-0000-0006-671C-C</ResourceRef>
+        </Resource>
+        <Resource>
+            <ResourceType>Metadata</ResourceType>
+            <ResourceRef>http://hdl.handle.net/1839/00-0000-0000-0007-671C-C</ResourceRef>
+        </Resource>
+    </Resources>
+</VirtualCollection>

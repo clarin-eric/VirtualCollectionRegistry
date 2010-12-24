@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+<head />
+<body>
+<wicket:panel>
+<div style="display: none" wicket:id="addKeywordDialog"></div>
+<div style="display: none" wicket:id="deleteKeywordDialog"></div>
+<fieldset>
+  <div class="notes">
+    <h4>Some Notes</h4>
+    <p>Lorem ipsum dolor sit amet, consectetuer adipiscing elit. Aenean commodo ligula eget dolor. Aenean massa. Cum sociis natoque penatibus et magnis dis parturient montes, nascetur ridiculus mus. Donec quam felis, ultricies nec, pellentesque eu, pretium quis, sem.</p>
+    <p class="last">Nulla consequat massa quis enim. Donec pede justo, fringilla vel, aliquet nec, vulputate eget, arcu. In enim justo, rhoncus ut, imperdiet a, venenatis vitae, justo.</p>
+  </div>
+  <div class="required">
+    <label for="gen_vc_name">Name</label>
+    <input wicket:id="vc.name"
+           id="gen_vc_name" type="text" size="64" maxlength="255"/>
+  </div>
+  <div class="required">
+    <label for="gen_vc_type">Type</label>
+    <select wicket:id="vc.type" id="gen_vc_type"></select>
+  </div>
+  <div class="optional">
+    <label for="gen_vc_desc">Description</label>
+    <textarea wicket:id="vc.description"
+              id="gen_vc_desc" cols="80" rows="8"></textarea>
+  </div>
+  <div class="optional">
+    <label for="gen_vc_purpose">Purpose</label>
+    <select wicket:id="vc.purpose" id="gen_vc_purpose"></select>
+  </div>
+  <div class="optional">
+    <label for="gen_vc_reproducibility">Reproducibility</label>
+    <select wicket:id="vc.reproducibility"
+            id="gen_vc_reproducibility"></select>
+  </div>
+  <div class="optional">
+    <label for="gen_vc_reproducibility_notice">Reproducibility Notice</label>
+    <textarea wicket:id="vc.reproducibilityNotice"
+              id="gen_vc_reproducibility_notice" cols="80" rows="5"></textarea>
+  </div>
+  <div class="optional">
+    <label>Keywords<br /><a href="#"
+      wicket:id="keywordsAdd" class="add"><span>[add]</span></a></label>
+    <div wicket:id="keywordsList" class="keywordsList">
+      <ul>
+        <li wicket:id="keywords">
+          <span wicket:id="itemText">item text</span>
+          <a wicket:id="itemRemove" href="#"><span class="delete">[delete]</span></a>
+        </li>
+      </ul>
+    </div>
+  </div>
+</fieldset>
+</wicket:panel>
+</body>
+</html>

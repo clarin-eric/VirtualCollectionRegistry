@@ -1,89 +1,92 @@
 package eu.clarin.cmdi.virtualcollectionregistry.query;
 
-import java.io.PrintStream;
 import java.util.Stack;
 
-import org.antlr.runtime.tree.CommonTree;
+public class PrettyPrinter implements QueryParserVisitor {
+    private StringBuilder out;
+    private Stack<Node> parents = new Stack<Node>();
 
-class PrettyPrinter implements ParseTreeNodeVisitor {
-    private PrintStream out;
-    private Stack<CommonTree> parents = new Stack<CommonTree>();
-
-    public PrettyPrinter(PrintStream out) {
+    public PrettyPrinter(StringBuilder out) {
         if (out == null) {
             throw new NullPointerException("out == null");
         }
         this.out = out;
     }
 
-    public void visit(QueryNode node) {
-        for (int i = 0; i < node.getChildCount(); i++) {
-            ParseTreeNode child = (ParseTreeNode) node.getChild(i);
-            child.accept(this);
-        }
+    @Override
+    public Object visit(ASTStart node, Object data) {
+        out.append(node);
+        out.append("\n");
+        data = node.childrenAccept(this, data);
+        return data;
     }
 
-    public void visit(BooleanNode node) {
-        doIndent(node);
-        out.print("[");
-        out.print(node.getOperator());
-        out.println("]");
+    @Override
+    public Object visit(ASTOr node, Object data) {
+        printNode(node);
         parents.push(node);
-        for (int i = 0; i < node.getChildCount(); i++) {
-            ParseTreeNode child = (ParseTreeNode) node.getChild(i);
-            child.accept(this);
-        }
+        data = node.childrenAccept(this, data);
         parents.pop();
+        return data;
     }
 
-    public void visit(RelationNode node) {
-        doIndent(node);
-        out.print("[");
-        out.print(node.getRelation());
-        out.println("]");
+    @Override
+    public Object visit(ASTAnd node, Object data) {
+        printNode(node);
         parents.push(node);
-        for (int i = 0; i < node.getChildCount(); i++) {
-            ParseTreeNode child = (ParseTreeNode) node.getChild(i);
-            child.accept(this);
-        }
+        data = node.childrenAccept(this, data);
         parents.pop();
+        return data;
     }
 
-    public void visit(EntityNode node) {
-        doIndent(node);
-        switch (node.getEntity()) {
-        case VC:
-            out.print("virtualcollection");
-            break;
-        case CREATOR:
-            out.print("creator");
-            break;
-        }
-        out.print(".");
-        out.println(node.getProperty());
+    @Override
+    public Object visit(ASTPredicate node, Object data) {
+        printNode(node);
+        return data;
     }
 
-    public void visit(ValueNode node) {
-        doIndent(node);
-        out.println(node.getValue());
+    @Override
+    public Object visit(SimpleNode node, Object data) {
+        System.err.println("simpleNode");
+        parents.push(node);
+        data = node.childrenAccept(this, data);
+        parents.pop();
+        return data;
     }
 
-    private void doIndent(CommonTree node) {
-        for (CommonTree parent : parents) {
-            if ((parent.getParent() != null) &&
-                    (parent.getParent().getChildCount() > parent
-                            .getChildIndex() + 1)) {
-                out.print(" | ");
+    private void printNode(Node node) {
+        for (Node parent : parents) {
+            if (isLastSibling(parent)) {
+                out.append("   ");
             } else {
-                out.print("   ");
+                out.append(" | ");
             }
         }
-        if ((node.getParent() != null) &&
-                (node.getParent().getChildCount() > node.getChildIndex() + 1)) {
-            out.append(" +-");
-        } else {
+        if (isLastSibling(node)) {
             out.append(" \\-");
+        } else {
+            out.append(" +-");
+        }
+        if (node instanceof ASTPredicate) {
+            out.append(" ");
+            out.append(node.toString());
+            out.append("\n");
+        } else {
+            out.append("[");
+            out.append(node.toString());
+            out.append("]");
+            out.append("\n");
         }
     }
-
+    
+    private boolean isLastSibling(Node node) {
+        Node parent = node.jjtGetParent();
+        if (parent == null) {
+            return true;
+        } else {
+            int idx = parent.jjtGetNumChildren() -1;
+            Node n = parent.jjtGetChild(idx);
+            return node.equals(n);
+        }
+    }
 } // class PrettyPrinter

@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<VirtualCollection xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+    xsi:noNamespaceSchemaLocation="VirtualCollection.xsd">
+    <Type>intensional</Type>
+    <Name>Test Collection 2</Name>
+    <Description>Test Description</Description>
+    <CreationDate>2009-12-31</CreationDate>
+    <Creators>
+        <Creator>
+            <Person>Joe User</Person>
+            <Email>joe.user@example.com</Email>
+            <Organisation>Example Organization</Organisation>
+        </Creator>
+    </Creators>
+    <Purpose>sample</Purpose>
+    <Reproducibility>untended</Reproducibility>
+    <ReproducibilityNotice>Unmaintaned test collection.</ReproducibilityNotice>
+    <Keywords>
+        <Keyword>test</Keyword>
+        <Keyword>unmaintained</Keyword>
+    </Keywords>
+    <GeneratedBy>
+        <Description>GeneratedBy description</Description>
+        <URI>urn:x-vcr:test-uri</URI>
+        <Query profile="sql"><![CDATA[<SQL>Test-Query</SQL>]]></Query>
+    </GeneratedBy>
+</VirtualCollection>

@@ -10,24 +10,27 @@ import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
 
 import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
 import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
 import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Order;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import eu.clarin.cmdi.oai.provider.OAIException;
+import eu.clarin.cmdi.oai.provider.impl.OAIProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.model.PersistentIdentifier;
 import eu.clarin.cmdi.virtualcollectionregistry.model.PersistentIdentifierProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionValidator;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.State;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIException;
-import eu.clarin.cmdi.virtualcollectionregistry.oai.OAIProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
-import eu.clarin.cmdi.virtualcollectionregistry.query.QueryException;
 
 public class VirtualCollectionRegistry {
     private static final Logger logger =
@@ -37,7 +40,7 @@ public class VirtualCollectionRegistry {
     private AtomicBoolean intialized = new AtomicBoolean(false);
     private DataStore datastore = null;
     private PersistentIdentifierProvider pid_provider = null;
-    private VirtualCollectionRegistryMarshaller marshaller = null;
+    private VirtualCollectionMarshaller marshaller = null;
     private Timer timer =
         new Timer("VirtualCollectionRegistry-Maintenance", true);
 
@@ -66,7 +69,7 @@ public class VirtualCollectionRegistry {
             this.datastore = new DataStore(config);
             this.pid_provider = PersistentIdentifierProvider
                     .createProvider(config);
-            this.marshaller = new VirtualCollectionRegistryMarshaller();
+            this.marshaller = new VirtualCollectionMarshaller();
             // setup OAIProvider
             OAIProvider.instance().setRepository(
                     new VirtualColletionRegistryOAIRepository(this));
@@ -112,7 +115,7 @@ public class VirtualCollectionRegistry {
         return datastore;
     }
 
-    public VirtualCollectionRegistryMarshaller getMarshaller() {
+    public VirtualCollectionMarshaller getMarshaller() {
         return marshaller;
     }
 
@@ -130,7 +133,6 @@ public class VirtualCollectionRegistry {
         VirtualCollectionValidator validator =
             new VirtualCollectionValidator();
         validator.validate(vc);
-
         try {
             EntityManager em = datastore.getEntityManager();
             em.getTransaction().begin();
@@ -190,11 +192,15 @@ public class VirtualCollectionRegistry {
                         "permission denied for user \"" +
                         principal.getName() + "\"");
             }
+            
+            // update virtual collection
             c.updateFrom(vc);
+
             validator.validate(c);
+            em.merge(c);
             em.getTransaction().commit();
             logger.debug("updated virtual collection (id={})", vc.getId());
-            return vc.getId();
+            return c.getId();
         } catch (VirtualCollectionRegistryException e) {
             logger.debug("failed updating virtual collecion (id={}): {}", id,
                     e.getMessage());
@@ -385,9 +391,12 @@ public class VirtualCollectionRegistry {
             TypedQuery<Long> cq = null;
             TypedQuery<VirtualCollection> q = null;
             if (query != null) {
-                ParsedQuery parsedQuery = ParsedQuery.parseQuery(em, query);
-                cq = parsedQuery.getCountQuery(null, State.PUBLIC);
-                q  = parsedQuery.getQuery(null, State.PUBLIC);
+                ParsedQuery parsedQuery = ParsedQuery.parseQuery(query);
+                if (logger.isDebugEnabled()) {
+                    logger.debug(parsedQuery.getPrettyPrinted());
+                }
+                cq = parsedQuery.getCountQuery(em, null, VirtualCollection.State.PUBLIC);
+                q = parsedQuery.getQuery(em, null, VirtualCollection.State.PUBLIC);
             } else {
                 cq = em.createNamedQuery("VirtualCollection.countAllPublic",
                         Long.class);
@@ -400,7 +409,12 @@ public class VirtualCollectionRegistry {
             long totalCount = cq.getSingleResult();
 
             // optimization; don't query, if we won't get any results
-            if (totalCount > 0) {
+            /*
+             *  FIXME: offset == -1 is temporary hack for just fetching
+             *  total count; re-factor to have fetch-count and fetch-data
+             *  methods!
+             */
+            if ((totalCount > 0) && (offset > -1)) {
                 if (offset > 0) {
                     q.setFirstResult(offset);
                 }
@@ -410,15 +424,15 @@ public class VirtualCollectionRegistry {
                 results = q.getResultList();
             }
             return new VirtualCollectionList(results, offset, (int) totalCount);
-        } catch (QueryException e) {
-            throw new VirtualCollectionRegistryUsageException("query invalid",
-                    e);
         } catch (Exception e) {
             logger.error("error while enumerating virtual collections", e);
             throw new VirtualCollectionRegistryException(
                     "error while enumerating virtual collections", e);
         } finally {
-            em.getTransaction().commit();
+            EntityTransaction tx = em.getTransaction();
+            if ((tx != null) && !tx.getRollbackOnly()) {
+                tx.commit();
+            }
         }
     }
 
@@ -445,10 +459,12 @@ public class VirtualCollectionRegistry {
                 TypedQuery<Long> cq = null;
                 TypedQuery<VirtualCollection> q = null;
                 if (query != null) {
-                    ParsedQuery parsedQuery = ParsedQuery.parseQuery(em, query);
-                    parsedQuery.prettyPrint();
-                    cq = parsedQuery.getCountQuery(user, null);
-                    q  = parsedQuery.getQuery(user, null);
+                    ParsedQuery parsedQuery = ParsedQuery.parseQuery(query);
+                    if (logger.isDebugEnabled()) {
+                        logger.debug(parsedQuery.getPrettyPrinted());
+                    }
+                    cq = parsedQuery.getCountQuery(em, user, null);
+                    q  = parsedQuery.getQuery(em, user, null);
                 } else {
                     cq = em.createNamedQuery("VirtualCollection.countByOwner",
                             Long.class);
@@ -462,7 +478,12 @@ public class VirtualCollectionRegistry {
                 totalCount = cq.getSingleResult();
 
                 // optimization; don't query, if we won't get any results
-                if (totalCount > 0) {
+                /*
+                 *  FIXME: offset == -1 is temporary hack for just fetching
+                 *  total count; re-factor to have fetch-count and fetch-data
+                 *  methods!
+                 */
+                if ((totalCount > 0) && (offset > -1)) {
                     if (offset > 0) {
                         q.setFirstResult(offset);
                     }
@@ -473,20 +494,97 @@ public class VirtualCollectionRegistry {
                 }
             }
             return new VirtualCollectionList(results, offset, (int) totalCount);
-        } catch (QueryException e) {
-            throw new VirtualCollectionRegistryUsageException("query invalid",
-                    e);
         } catch (Exception e) {
             logger.error("error while enumerating virtual collections", e);
             throw new VirtualCollectionRegistryException(
                     "error while enumerating virtual collections", e);
         } finally {
-            em.getTransaction().commit();
+            EntityTransaction tx = em.getTransaction();
+            if ((tx != null) && !tx.getRollbackOnly()) {
+                tx.commit();
+            }
+        }
+    }
+
+    public int getVirtualCollectionCount(QueryOptions options)
+            throws VirtualCollectionRegistryException {
+        EntityManager em = datastore.getEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<Long> cq = cb.createQuery(Long.class);
+            Root<VirtualCollection> root = cq.from(VirtualCollection.class);
+            if (options != null) {
+                Predicate where = options.getWhere(cb, cq, root);
+                if (where != null) {
+                    cq.where(where);
+                }
+            }
+            em.getTransaction().begin();
+            TypedQuery<Long> query =
+                em.createQuery(cq.select(cb.count(root)));
+            final long count = query.getSingleResult();
+            if (count >= Integer.MAX_VALUE) {
+                throw new VirtualCollectionRegistryException(
+                        "resultset too large");
+            }
+            return (int) count;
+        } catch (Exception e) {
+            logger.error("error while counting virtual collections", e);
+            throw new VirtualCollectionRegistryException(
+                    "error while counting virtual collections", e);
+        } finally {
+            EntityTransaction tx = em.getTransaction();
+            if ((tx != null) && tx.isActive() && !tx.getRollbackOnly()) {
+                tx.commit();
+            }
+        }
+    }
+    
+    public List<VirtualCollection> getVirtualCollections(
+            int first, int count, QueryOptions options)
+            throws VirtualCollectionRegistryException {
+        EntityManager em = datastore.getEntityManager();
+        try {
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<VirtualCollection> cq =
+                cb.createQuery(VirtualCollection.class);
+            Root<VirtualCollection> root = cq.from(VirtualCollection.class);
+            if (options != null) {
+                final Predicate where = options.getWhere(cb, cq, root);
+                if (where != null) {
+                    cq.where(where);
+                }
+                final Order[] order = options.getOrderBy(cb, root);
+                if (order != null) {
+                    cq.orderBy(order);
+                }
+            }
+            em.getTransaction().begin();
+            TypedQuery<VirtualCollection> query =
+                em.createQuery(cq.select(root));
+            if (first > -1) {
+                query.setFirstResult(first);
+            }
+            if (count > 0) {
+                query.setMaxResults(count);
+            }
+            return query.getResultList();
+        } catch (Exception e) {
+            logger.error("error while fetching virtual collections", e);
+            throw new VirtualCollectionRegistryException(
+                    "error while fetching virtual collections", e);
+        } finally {
+            EntityTransaction tx = em.getTransaction();
+            if ((tx != null) && tx.isActive() && !tx.getRollbackOnly()) {
+                tx.commit();
+            }
         }
     }
 
     private void maintenance(long now) {
+        // allocate persistent identifier roughly after 30 seconds 
         final Date nowDateAlloc = new Date(now - 30*1000);
+        // (for now) purge deleted collection roughly after 30 seconds
         final Date nowDatePurge = new Date(now - 30*1000);
         
         EntityManager em = datastore.getEntityManager();

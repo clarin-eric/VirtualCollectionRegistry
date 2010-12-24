@@ -1,5 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model;
 
+import java.io.Serializable;
+
 import javax.persistence.CascadeType;
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -14,18 +16,23 @@ import javax.persistence.OneToOne;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.NullArgumentException;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Entity
 @Table(name = "pid")
-public class PersistentIdentifier {
+public class PersistentIdentifier implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     public static enum Type {
         DUMMY, GWDG;
     } // public enum Type
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private long id;
+    @Column(name = "id", nullable = false, updatable = false)
+    private Long id;
+
     @OneToOne(cascade = CascadeType.ALL,
               fetch = FetchType.LAZY,
               optional = true)
@@ -33,14 +40,18 @@ public class PersistentIdentifier {
                 nullable = false,
                 unique = true)
     private VirtualCollection vc;
+
     @Column(name = "type")
     @Enumerated(EnumType.ORDINAL)
     private Type type;
+
     @Column(name = "identifier",
             nullable = false,
-            unique = true)
+            unique = true,
+            length = 255)
     private String identifier;
 
+    
     private PersistentIdentifier() {
     }
 
@@ -64,7 +75,7 @@ public class PersistentIdentifier {
         this.identifier = identifier;
     }
 
-    public long getId() {
+    public Long getId() {
         return id;
     }
 
@@ -80,16 +91,41 @@ public class PersistentIdentifier {
         return identifier;
     }
 
-    // XXX: rename to getActionableURI()?
-    public String createURI() {
+    public String getActionableURI() {
         switch (type) {
         case DUMMY:
-            return identifier;
+            return "dummy:identifier-" + vc.getId();
         case GWDG:
             return "http://hdl.handle.net/" + identifier;
         default:
             throw new InternalError();
         }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
+        }
+        if (obj == this) {
+            return true;
+        }
+        if (obj instanceof PersistentIdentifier) {
+            final PersistentIdentifier rhs = (PersistentIdentifier) obj;
+            return new EqualsBuilder()
+                .append(this.getType(), rhs.getType())
+                .append(this.getIdentifier(), rhs.getIdentifier())
+                .isEquals();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(26249, 4651)
+            .append(this.getType())
+            .append(this.getIdentifier())
+            .toHashCode();
     }
 
 } // class PersistentIdentifier

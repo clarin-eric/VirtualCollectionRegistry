@@ -1,12 +1,17 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model;
 
+import java.io.Serializable;
+import java.util.ArrayList;
 import java.util.Date;
-import java.util.HashMap;
-import java.util.LinkedHashSet;
+import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 
+import javax.persistence.Basic;
 import javax.persistence.CascadeType;
+import javax.persistence.CollectionTable;
 import javax.persistence.Column;
+import javax.persistence.ElementCollection;
 import javax.persistence.Embedded;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
@@ -16,6 +21,7 @@ import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.JoinColumn;
+import javax.persistence.Lob;
 import javax.persistence.ManyToOne;
 import javax.persistence.NamedQueries;
 import javax.persistence.NamedQuery;
@@ -26,27 +32,13 @@ import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
 import javax.persistence.Version;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlAttribute;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlElements;
-import javax.xml.bind.annotation.XmlEnum;
-import javax.xml.bind.annotation.XmlEnumValue;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlSeeAlso;
-import javax.xml.bind.annotation.XmlType;
-import javax.xml.bind.annotation.adapters.XmlJavaTypeAdapter;
 
-import eu.clarin.cmdi.virtualcollectionregistry.model.mapper.DateAdapter;
+import org.apache.commons.lang.builder.EqualsBuilder;
+import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Entity
-@Table(name = "virtual_collection")
+@Table(name = "virtualcollection")
 @NamedQueries({
-        @NamedQuery(name = "VirtualCollection.byUUID",
-                    query = "SELECT c FROM VirtualCollection c " +
-                            "WHERE c.name = :uuid"),
         @NamedQuery(name = "VirtualCollection.findAllPublic",
                     query = "SELECT c FROM VirtualCollection c " +
                             "WHERE c.state = eu.clarin.cmdi." +
@@ -66,50 +58,42 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.mapper.DateAdapter;
                             "WHERE c.owner = :owner"),
         @NamedQuery(name = "VirtualCollection.findAllByState",
                     query = "SELECT c FROM VirtualCollection c " +
-                            "WHERE c.state = :state AND c.modifedDate < :date")
+                            "WHERE c.state = :state AND c.dateModified < :date")
 })
-@XmlRootElement(name = "VirtualCollection")
-@XmlAccessorType(XmlAccessType.NONE)
-@XmlType(propOrder = { "name", "description", "creationDate", "visibility",
-                       "type", "origin", "creator", "resources" })
-@XmlSeeAlso({ Creator.class,
-              Resource.class,
-              PersistentIdentifier.class })
-public class VirtualCollection {
-    @XmlType(namespace = "urn:x-vcr:virtualcollection:state")
-    @XmlEnum(String.class)
+public class VirtualCollection implements Serializable {
+    private static final long serialVersionUID = 1L;
+
     public static enum State {
-        @XmlEnumValue("private")
         PRIVATE,
-        @XmlEnumValue("public-pending")
         PUBLIC_PENDING,
-        @XmlEnumValue("public")
         PUBLIC,
-        @XmlEnumValue("deleted")
         DELETED,
-        @XmlEnumValue("dead")
         DEAD
-    } // enum State
-    @XmlType(namespace = "urn:x-vcr:virtualcollection:visibility")
-    @XmlEnum(String.class)
-    public static enum Visibility {
-        @XmlEnumValue("advertised")
-        ADVERTISED,
-        @XmlEnumValue("non-advertised")
-        NON_ADVERTISED;
-    } // enum Visibility
-    @XmlType(namespace = "urn:x-vcr:virtualcollection:type")
-    @XmlEnum(String.class)
+    } // enum VirtualCollection.State
+
     public static enum Type {
-        @XmlEnumValue("extensional")
         EXTENSIONAL,
-        @XmlEnumValue("intensional")
         INTENSIONAL
-    }
+    } // enum VirtualCollecion.Type
+
+    public static enum Purpose {
+        RESEARCH,
+        REFERENCE,
+        SAMPLE,
+        FUTURE_USE
+    } // enum VirtualCollecion.Purpose
+
+    public static enum Reproducibility {
+        INTENDED,
+        FLUCTUATING,
+        UNTENDED
+    } // enum VirtualCollecion.Reproducibility
+
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
-    @Column(name = "id")
-    private long id = -1;
+    @Column(name = "id", nullable = false, updatable = false)
+    private Long id;
+
     @ManyToOne(cascade = { CascadeType.PERSIST,
                            CascadeType.REFRESH,
                            CascadeType.MERGE },
@@ -117,53 +101,117 @@ public class VirtualCollection {
     @JoinColumn(name = "owner_id",
                 nullable = false)
     private User owner;
-    @Column(name = "state",
-            nullable = false)
-    @Enumerated(EnumType.ORDINAL)
-    private State state = State.PRIVATE;
+
     @OneToOne(cascade = CascadeType.ALL,
               fetch = FetchType.EAGER,
               mappedBy = "vc",
               optional = true)
-    private PersistentIdentifier pid;
-    @Column(name = "name",
-            nullable = false)
+    private PersistentIdentifier persistentId = null;
+
+    @Column(name = "state", nullable = false)
+    private VirtualCollection.State state;
+
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "type", nullable = false)
+    private VirtualCollection.Type type;
+
+    @Column(name = "name", nullable = false, length = 255)
     private String name;
-    @Column(name = "description")
+
+    @Lob
+    @Basic(fetch = FetchType.EAGER)
+    @Column(name = "description", length = 8192)
     private String description;
-    @Column(name = "creation_date")
+
     @Temporal(TemporalType.DATE)
+    @Column(name = "creation_date")
     private Date creationDate;
-    @Column(name = "visibility")
-    @Enumerated(EnumType.ORDINAL)
-    private Visibility visibility = Visibility.ADVERTISED;
-    @Column(name = "type")
-    @Enumerated(EnumType.ORDINAL)
-    private Type type = Type.EXTENSIONAL;
-    @Column(name = "origin")
-    private String origin;
-    @Embedded
-    private Creator creator;
+
     @OneToMany(cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY)
-    @JoinColumn(name = "vc_id",
-                nullable = false)
+               fetch = FetchType.LAZY,
+               orphanRemoval = true)
+    @JoinColumn(name = "vc_id", nullable = false)
     @OrderBy("id")
-    private Set<Resource> resources = new LinkedHashSet<Resource>();
-    @Column(name = "created",
-            nullable = false,
-            updatable = false)
+    private List<Creator> creators;
+
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "purpose")
+    private VirtualCollection.Purpose purpose;
+
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "reproducibility")
+    private VirtualCollection.Reproducibility reproducibility;
+    
+    @Lob
+    @Basic(fetch = FetchType.EAGER)
+    @Column(name = "reproducibility_notice", length = 8192)
+    private String reproducibilityNotice;
+
+    @ElementCollection
+    @CollectionTable(name = "keyword",
+                     joinColumns = @JoinColumn(name="vc_id"))
+    private List<String> keywords;
+
+    @OneToMany(cascade = CascadeType.ALL,
+               fetch = FetchType.LAZY,
+               orphanRemoval = true)
+    @JoinColumn(name = "vc_id", nullable = false)
+    @OrderBy("id")
+    private List<Resource> resources;
+
+    @Embedded
+    private GeneratedBy generatedBy;
+
     @Temporal(TemporalType.TIMESTAMP)
-    private Date createdDate = new Date();
-    @Column(name = "modified",
-            nullable = false)
+    @Column(name = "created", nullable = false, updatable = false)
+    private Date dateCreated = new Date();
+
     @Temporal(TemporalType.TIMESTAMP)
     @Version
-    private Date modifedDate;
+    @Column(name = "modified", nullable = false)
+    private Date dateModified;
 
-    @XmlAttribute(name = "id")
-    public long getId() {
+    public VirtualCollection() {
+        super();
+        this.setState(VirtualCollection.State.PRIVATE);
+    }
+    
+    public Long getId() {
         return id;
+    }
+
+    public User getOwner() {
+        return owner;
+    }
+    
+    public void setOwner(User owner) {
+        if (owner == null) {
+            throw new NullPointerException("owner == null");
+        }
+        if (this.owner != null) {
+            this.owner.getVirtualCollections().remove(this);
+        }
+        this.owner = owner;
+        this.owner.getVirtualCollections().add(this);
+    }
+
+    public PersistentIdentifier getPersistentIdentifier() {
+        return persistentId;
+    }
+
+    public void setPersistentIdentifier(PersistentIdentifier persistentId) {
+        if (persistentId == null) {
+            throw new NullPointerException("pid == null");
+        }
+        if ((this.persistentId != null) || (state != State.PUBLIC_PENDING)) {
+            throw new IllegalStateException("illegal state");
+        }
+        this.persistentId = persistentId;
+        this.state = State.PUBLIC;
+    }
+
+    public State getState() {
+        return state;
     }
 
     public void setState(State state) {
@@ -171,11 +219,6 @@ public class VirtualCollection {
             throw new NullPointerException("state == null");
         }
         this.state = state;
-    }
-
-    @XmlAttribute(name = "state")
-    public State getState() {
-        return state;
     }
 
     public boolean isPrivate() {
@@ -190,181 +233,258 @@ public class VirtualCollection {
         return (state == State.DELETED) || (state == State.DEAD); 
     }
 
-    public void setOwner(User owner) {
-        if (owner == null) {
-            throw new NullPointerException("owner == null");
-        }
-        this.owner = owner;
+    public VirtualCollection.Type getType() {
+        return type;
     }
 
-    public User getOwner() {
-        return owner;
+    public void setType(VirtualCollection.Type type) {
+        this.type = type;
     }
 
-    public void setPersistentIdentifier(PersistentIdentifier pid) {
-        if (pid == null) {
-            throw new NullPointerException("pid == null");
-        }
-        if ((this.pid != null) || (state != State.PUBLIC_PENDING)) {
-            throw new IllegalStateException("illegal state");
-        }
-        this.pid = pid;
-        this.state = State.PUBLIC;
-    }
-
-    public PersistentIdentifier getPersistentIdentifier() {
-        return pid;
-    }
-
-    @XmlAttribute(name = "persistentId")
-    public String getPersistentIdentifierForXml() {
-        if (pid != null) {
-            return pid.getIdentifier();
-        }
-        return null;
+    public String getName() {
+        return name;
     }
 
     public void setName(String name) {
         if (name == null) {
             throw new NullPointerException("name == null");
         }
+        name = name.trim();
+        if (name.isEmpty()) {
+            throw new IllegalArgumentException("name is empty");
+        }
         this.name = name;
     }
 
-    @XmlElement(name = "Name")
-    public String getName() {
-        return name;
-    }
-
-    public void setDescription(String description) {
-        this.description = description;
-    }
-
-    @XmlElement(name = "Description")
     public String getDescription() {
         return description;
     }
 
-    public void setCreationDate(Date creationDate) {
-        if (creationDate == null) {
-            throw new NullPointerException("creationDate == null");
+    public void setDescription(String description) {
+        if (description != null) {
+            description = description.trim();
+            if (description.isEmpty()) {
+                description = null;
+            }
         }
-        this.creationDate = creationDate;
+        this.description = description;
     }
 
-    @XmlElement(name = "CreationDate")
-    @XmlJavaTypeAdapter(DateAdapter.class)
     public Date getCreationDate() {
         return creationDate;
     }
 
-    public void setVisibility(Visibility visibility) {
-        if (visibility == null) {
-            throw new NullPointerException("visibility == null");
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+
+    public List<Creator> getCreators() {
+        if (creators == null) {
+            this.creators = new ArrayList<Creator>();
         }
-        this.visibility = visibility;
+        return creators;
     }
 
-    @XmlElement(name = "Visibility")
-    public Visibility getVisibility() {
-        return visibility;
+    public VirtualCollection.Purpose getPurpose() {
+        return purpose;
     }
 
-    public void setType(Type style) {
-        if (style == null) {
-            throw new NullPointerException("style == null");
+    public void setPurpose(VirtualCollection.Purpose purpose) {
+        this.purpose = purpose;
+    }
+
+    public VirtualCollection.Reproducibility getReproducibility() {
+        return reproducibility;
+    }
+
+    public void setReproducibility(
+            VirtualCollection.Reproducibility reproducibility) {
+        this.reproducibility = reproducibility;
+    }
+
+    public String getReproducibilityNotice() {
+        return reproducibilityNotice;
+    }
+
+    public void setReproducibilityNotice(String reproducibilityNotice) {
+        if (reproducibilityNotice != null) {
+            reproducibilityNotice = reproducibilityNotice.trim();
+            if (reproducibilityNotice.isEmpty()) {
+                reproducibilityNotice = null;
+            }
         }
-        this.type = style;
+        this.reproducibilityNotice = reproducibilityNotice;
     }
 
-    @XmlElement(name = "Type")
-    public Type getType() {
-        return type;
+    public List<String> getKeywords() {
+        if (keywords == null) {
+            keywords = new ArrayList<String>();
+        }
+        return keywords;
     }
 
-    public void setOrigin(String origin) {
-        this.origin = origin;
-    }
-
-    @XmlElement(name = "Origin")
-    public String getOrigin() {
-        return origin;
-    }
-
-    public void setCreator(Creator creator) {
-        this.creator = creator;
-    }
-
-    @XmlElement(name = "Creator")
-    public Creator getCreator() {
-        return creator;
-    }
-
-    @XmlElementWrapper(name = "Resources")
-    @XmlElements({ @XmlElement(name = "ResourceProxy", type = Resource.class) })
-    public Set<Resource> getResources() {
+    public List<Resource> getResources() {
+        if (resources == null) {
+            resources = new ArrayList<Resource>();
+        }
         return resources;
     }
 
-    public Date getCreatedDate() {
-        return createdDate;
+    public GeneratedBy getGeneratedBy() {
+        return generatedBy;
     }
 
-    public void setModifiedDate(Date modifiedDate) {
-        if (modifiedDate == null) {
-            throw new NullPointerException("modifiedDate == null");
+    public void setGeneratedBy(GeneratedBy generatedBy) {
+        this.generatedBy = generatedBy;
+    }
+
+    public Date getDateCreated() {
+        return dateCreated;
+    }
+
+    public Date getDateModified() {
+        return dateModified;
+    }
+
+    public void setDateModified(Date dateModified) {
+        if (dateModified == null) {
+            throw new NullPointerException("dateModified == null");
         }
-        this.modifedDate = modifiedDate;
-    }
-
-    public Date getModifiedDate() {
-        return modifedDate;
+        this.dateModified = dateModified;
     }
 
     public void updateFrom(VirtualCollection vc) {
         if (this == vc) {
             return;
         }
-        this.setState(state);
-        this.setName(vc.getName());
         if (vc.getPersistentIdentifier() != null) {
             this.setPersistentIdentifier(vc.getPersistentIdentifier());
         }
+        this.setState(state);
+        this.setType(vc.getType());
+        this.setName(vc.getName());
         this.setDescription(vc.getDescription());
         this.setCreationDate(vc.getCreationDate());
-        this.setVisibility(vc.getVisibility());
-        this.setType(vc.getType());
-        this.setOrigin(vc.getOrigin());
-        Creator c = vc.getCreator();
-        if (c != null) {
-            this.creator.setName(c.getName());
-            this.creator.setEMail(c.getEMail());
-            this.creator.setOrganisation(c.getOrganisation());
-        } else {
-            this.creator = null;
+        
+        // Creators
+        Set<Creator> obsolete_creators =
+            new HashSet<Creator>(this.getCreators());
+        for (Creator creator : vc.getCreators()) {
+            if (!obsolete_creators.contains(creator)) {
+                this.getCreators().add(creator);
+            }
+            obsolete_creators.remove(creator);
+        }
+        if (!obsolete_creators.isEmpty()) {
+            for (Creator creator : obsolete_creators) {
+                this.getCreators().remove(creator);
+            }
+            obsolete_creators = null;
         }
 
-        HashMap<Integer, Resource> old_res =
-            new HashMap<Integer, Resource>(this.resources.size());
-        for (Resource r : this.resources) {
-            old_res.put(r.getSignature(), r);
+        this.setPurpose(vc.getPurpose());
+        this.setReproducibility(vc.getReproducibility());
+        this.setReproducibilityNotice(vc.getReproducibilityNotice());
 
+        // Keywords
+        Set<String> obsolete_keywords =
+            new HashSet<String>(this.getKeywords());
+        for (String keyword : vc.getKeywords()) {
+            if (!obsolete_keywords.contains(keyword)) {
+                this.getKeywords().add(keyword);
+            }
+            obsolete_keywords.remove(keyword);
         }
-        HashMap<Integer, Resource> new_res =
-            new HashMap<Integer, Resource>(vc.getResources().size());
-        for (Resource r : vc.getResources()) {
-            new_res.put(r.getSignature(), r);
+        if (!obsolete_keywords.isEmpty()) {
+            for (String keyword : obsolete_keywords) {
+                this.getKeywords().remove(keyword);
+            }
+            obsolete_keywords = null;
         }
-        for (Resource r : new_res.values()) {
-            if (!old_res.containsKey(r.getSignature())) {
-                resources.add(r);
+
+        // Resources
+        Set<Resource> obsolete_resources =
+            new HashSet<Resource>(this.getResources());
+        for (Resource resource : vc.getResources()) {
+            if (!obsolete_resources.contains(resource)) {
+                this.getResources().add(resource);
+            }
+            obsolete_resources.remove(resource);
+        }
+        if (!obsolete_resources.isEmpty()) {
+            for (Resource resource : obsolete_resources) {
+                this.getResources().remove(resource);
+            }
+            obsolete_resources = null;
+        }
+
+        if (vc.generatedBy != null) {
+            final GeneratedBy genBy = vc.generatedBy;
+            if (this.generatedBy == null) {
+                this.generatedBy = new GeneratedBy(genBy.getDescription());
+            } else {
+                this.generatedBy.setDescription(genBy.getDescription());
+            }
+            this.generatedBy.setURI(genBy.getURI());
+            if (genBy.getQuery() != null) {
+                final GeneratedBy.Query q = genBy.getQuery();
+                GeneratedBy.Query query =
+                    new GeneratedBy.Query(q.getProfile(), q.getValue());
+                this.generatedBy.setQuery(query);
             }
         }
-        for (Resource r : old_res.values()) {
-            if (!new_res.containsKey(r.getSignature())) {
-                resources.remove(r);
-            }
+    }
+
+    @Override
+    public boolean equals(Object obj) {
+        if (obj == null) {
+            return false;
         }
+        if (obj == this) {
+            return true;
+        }
+        if (obj instanceof VirtualCollection) {
+            final VirtualCollection rhs = (VirtualCollection) obj;
+            return new EqualsBuilder()
+                .append(this.getOwner(), rhs.getOwner())
+                .append(this.getPersistentIdentifier(),
+                            rhs.getPersistentIdentifier())
+                .append(this.getState(), rhs.getState())
+                .append(this.getType(), rhs.getType())
+                .append(this.getName(), rhs.getName())
+                .append(this.getDescription(), rhs.getDescription())
+                .append(this.getCreationDate(), rhs.getCreationDate())
+                .append(this.getCreators(), rhs.getCreators())
+                .append(this.getPurpose(), rhs.getPurpose())
+                .append(this.getReproducibility(), rhs.getReproducibility())
+                .append(this.getReproducibilityNotice(),
+                            rhs.getReproducibilityNotice())
+                .append(this.getKeywords(), rhs.getKeywords())
+                .append(this.getResources(), rhs.getResources())
+                .append(this.getGeneratedBy(), rhs.getGeneratedBy())
+                .isEquals();
+        }
+        return false;
+    }
+
+    @Override
+    public int hashCode() {
+        return new HashCodeBuilder(1391, 295)
+            .append(this.getOwner())
+            .append(this.getPersistentIdentifier())
+            .append(this.getState())
+            .append(this.getType())
+            .append(this.getName())
+            .append(this.getDescription())
+            .append(this.getCreationDate())
+            .append(this.getCreators())
+            .append(this.getPurpose())
+            .append(this.getReproducibility())
+            .append(this.getReproducibilityNotice())
+            .append(this.getKeywords())
+            .append(this.getResources())
+            .append(this.getGeneratedBy())
+            .toHashCode();
     }
 
 } // class VirtualCollection

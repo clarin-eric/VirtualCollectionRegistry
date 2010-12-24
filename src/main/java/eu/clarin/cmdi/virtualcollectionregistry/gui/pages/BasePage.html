@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+  <head>
+    <title>CLARIN Virtual Collection Registry</title>
+    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+    <link href="css/vcr.css" rel="stylesheet" type="text/css" />
+  </head>
+  <body>
+    <noscript>
+      <div id="noscript-warning">Virtual Collection Registry requires JavaScript to be enabled!</div>
+    </noscript>
+    <div id="container">
+      <div id="header">
+        <div id="header-logo">
+          <div id="clarin-logo" />
+          <div id="ids-logo"/>
+          <h1>Virtual Collection Registry</h1>
+        </div>
+        <div id="navigation">
+          <div id="menu" wicket:id="menu"></div>
+          <div id="login">
+            <div wicket:id="authstate"></div>
+          </div>
+        </div>
+      </div>
+      <div id="content"><wicket:child /></div>
+      <div class="push"></div>
+    </div>
+    <div id="footer">
+      Version ${pom.version}      
+    </div>
+  </body>
+</html>

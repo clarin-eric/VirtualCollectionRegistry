@@ -5,6 +5,10 @@
   id="WebApp_ID" version="2.5">
   <display-name>CLARIN Virtual Collection Registry</display-name>
 
+  <listener>
+    <listener-class>eu.clarin.cmdi.virtualcollectionregistry.rest.ContextListener</listener-class>
+  </listener>
+
   <filter>
     <filter-name>PersistenceFilter</filter-name>
     <filter-class>eu.clarin.cmdi.virtualcollectionregistry.rest.PersistenceFilter</filter-class>
@@ -15,10 +19,46 @@
     <servlet-name>REST-Web-Service</servlet-name>
   </filter-mapping>
 
-  <listener>
-    <listener-class>eu.clarin.cmdi.virtualcollectionregistry.rest.ContextListener</listener-class>
-  </listener>
+  <filter>
+    <filter-name>CharacterEncodingFilter</filter-name>
+    <filter-class>eu.clarin.cmdi.virtualcollectionregistry.gui.CharacterEncodingFilter</filter-class>
+  </filter>
 
+  <filter-mapping>
+    <filter-name>CharacterEncodingFilter</filter-name>
+    <url-pattern>/app/*</url-pattern>
+  </filter-mapping>
+
+  <filter>
+    <filter-name>AuthFilter</filter-name>
+    <filter-class>eu.clarin.cmdi.virtualcollectionregistry.gui.auth.AuthFilter</filter-class>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>AuthFilter</filter-name>
+    <url-pattern>/app/*</url-pattern>
+  </filter-mapping>
+
+  <filter>
+    <filter-name>VirtualCollectionRegistryApplication</filter-name>
+    <filter-class>org.apache.wicket.protocol.http.WicketFilter</filter-class>
+    <init-param>
+        <param-name>applicationClassName</param-name>
+        <param-value>eu.clarin.cmdi.virtualcollectionregistry.gui.Application</param-value>
+    </init-param>
+    <init-param>
+        <param-name>configuration</param-name>
+        <!-- 
+        <param-value>deployment</param-value>
+         -->
+        <param-value>development</param-value>
+    </init-param>
+  </filter>
+
+  <filter-mapping>
+    <filter-name>VirtualCollectionRegistryApplication</filter-name>
+    <url-pattern>/app/*</url-pattern>
+  </filter-mapping>
 
   <servlet>
     <display-name>Virtual Collection Registry REST web service</display-name>
@@ -31,17 +71,17 @@
     <load-on-startup>1</load-on-startup>
   </servlet>
 
-  <servlet>
-    <display-name>Virtual Collection Registry OAI-PMH Provider</display-name>
-    <servlet-name>OAI-PMH-Provider</servlet-name>
-    <servlet-class>eu.clarin.cmdi.virtualcollectionregistry.oai.impl.OAIProviderServlet</servlet-class>
-    <load-on-startup>2</load-on-startup>
-  </servlet>
-
   <servlet-mapping>
     <servlet-name>REST-Web-Service</servlet-name>
     <url-pattern>/service/*</url-pattern>
   </servlet-mapping>
+
+  <servlet>
+    <display-name>Virtual Collection Registry OAI-PMH Provider</display-name>
+    <servlet-name>OAI-PMH-Provider</servlet-name>
+    <servlet-class>eu.clarin.cmdi.oai.provider.ProviderServlet</servlet-class>
+    <load-on-startup>2</load-on-startup>
+  </servlet>
 
   <servlet-mapping>
     <servlet-name>OAI-PMH-Provider</servlet-name>
@@ -61,6 +101,7 @@
       <description></description>
       <url-pattern>/service/virtualcollection/*</url-pattern>
       <http-method>DELETE</http-method>
+      <http-method>POST</http-method>
       <http-method>PUT</http-method>
     </web-resource-collection>
     <web-resource-collection>
@@ -68,6 +109,13 @@
       <description></description>
       <url-pattern>/service/my-virtualcollections</url-pattern>
       <http-method>GET</http-method>
+    </web-resource-collection>
+    <web-resource-collection>
+        <web-resource-name>VirtualCollectionRegistryApplication</web-resource-name>
+        <description></description>
+        <url-pattern>/app/login</url-pattern>
+        <http-method>GET</http-method>
+        <http-method>POST</http-method>
     </web-resource-collection>
     <auth-constraint>
       <role-name>*</role-name>
@@ -95,6 +143,6 @@
   </mime-mapping>
 
   <welcome-file-list>
-    <welcome-file>index.html</welcome-file>
+    <welcome-file>index.jsp</welcome-file>
   </welcome-file-list>
 </web-app>

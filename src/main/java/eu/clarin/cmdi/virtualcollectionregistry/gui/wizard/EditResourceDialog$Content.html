@@ -1,0 +1,24 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+<head />
+<body>
+<wicket:panel>
+<form wicket:id="editResourceForm">
+  <fieldset>
+    <div class="required">
+      <label for="edit_resource_type">Type</label>
+      <select wicket:id="type" id="edit_resource_type"></select>
+    </div>
+    <div class="required">
+      <label for="edit_resource_ref">Reference</label>
+      <input wicket:id="ref" id="edit_resource_ref" type="text" />
+    </div>
+  </fieldset>
+  <div wicket:id="feedback" class="feedback"></div>
+</form>
+</wicket:panel>
+</body>
+</html>

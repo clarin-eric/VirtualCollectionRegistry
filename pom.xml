@@ -1,19 +1,51 @@
-<project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-    xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+  xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
   <modelVersion>4.0.0</modelVersion>
   <groupId>eu.clarin.cmdi</groupId>
   <artifactId>VirtualCollectionRegistry</artifactId>
   <packaging>war</packaging>
   <name>CLARIN Virtual Collection Registry</name>
-  <version>0.0.1-SNAPSHOT</version>
+  <version>0.2.0</version>
+
+  <organization>
+  	<name>Institut für Deutsche Sprache</name>
+  	<url>http://www.ids-mannheim.de/</url>
+  </organization>
 
   <build>
+    <resources>
+      <resource>
+        <filtering>true</filtering>
+        <directory>src/main/resources</directory>
+      </resource>
+      <resource>
+        <filtering>true</filtering>
+        <directory>src/main/java</directory>
+        <includes>
+          <include>**/BasePage.html</include>
+        </includes>
+      </resource>
+      <resource>
+        <filtering>false</filtering>
+        <directory>src/main/java</directory>
+        <includes>
+          <include>**/*.html</include>
+          <include>**/*.properties</include>
+        </includes>
+      </resource>
+    </resources>
+
+    <testResources>
+      <testResource>
+        <directory>src/test/resources</directory>
+      </testResource>
+    </testResources>
+
     <plugins>
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-antrun-plugin</artifactId>
-        <version>1.3</version>
+        <version>1.4</version>
         <executions>
           <execution>
             <id>process-jpa-annotations</id>
@@ -21,20 +53,20 @@
             <configuration>
               <tasks>
                 <echo>processing JPA annotations</echo>
-                <property name="target.dir" value="${project.build.directory}/generated-sources/jpamodelgen"/>
-                <mkdir dir="${target.dir}"/>
-                <javac srcdir="${basedir}/src/main/java/eu/clarin/cmdi/virtualcollectionregistry/model"
-                       destdir="${target.dir}"
-                       failonerror="false"
-                       fork="true"
-                       target="${maven.compiler.target}">
+                <property name="target.dir"
+                  value="${project.build.directory}/generated-sources/jpamodelgen" />
+                <mkdir dir="${target.dir}" />
+                <javac
+                  srcdir="${basedir}/src/main/java/eu/clarin/cmdi/virtualcollectionregistry/model"
+                  destdir="${target.dir}" failonerror="false" fork="true"
+                  target="${maven.compiler.target}">
                   <!-- hack to silence javac warnings -->
-                  <include name="**/*.java"/>
-                  <exclude name="**/VirtualCollectionValidator.java"/>
-                  <exclude name="**/*Provider.java"/>
-                  <compilerarg value="-proc:only"/>
+                  <include name="**/*.java" />
+                  <exclude name="**/VirtualCollectionValidator.java" />
+                  <exclude name="**/*Provider.java" />
+                  <compilerarg value="-proc:only" />
                   <classpath>
-                    <path refid="maven.compile.classpath"/>
+                    <path refid="maven.compile.classpath" />
                   </classpath>
                 </javac>
               </tasks>
@@ -48,13 +80,14 @@
       </plugin>
 
       <plugin>
-        <groupId>org.antlr</groupId>
-        <artifactId>antlr3-maven-plugin</artifactId>
-        <version>3.2</version>
+        <groupId>org.codehaus.mojo</groupId>
+        <artifactId>javacc-maven-plugin</artifactId>
+        <version>2.6</version>
         <executions>
           <execution>
+            <id>javacc</id>
             <goals>
-              <goal>antlr</goal>
+              <goal>jjtree-javacc</goal>
             </goals>
           </execution>
         </executions>
@@ -63,19 +96,18 @@
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-compiler-plugin</artifactId>
-        <version>2.1</version>
+        <version>2.3.2</version>
         <configuration>
           <source>${maven.compiler.source}</source>
           <target>${maven.compiler.target}</target>
         </configuration>
       </plugin>
-      
+
       <plugin>
         <groupId>org.apache.maven.plugins</groupId>
         <artifactId>maven-war-plugin</artifactId>
-        <version>2.1-beta-1</version>
+        <version>2.1.1</version>
         <configuration>
-          <warSourceExcludes>**/*.tokens</warSourceExcludes>
           <webResources>
             <!-- additional web resources: also copy schemas to web-app -->
             <resource>
@@ -87,56 +119,99 @@
             </resource>
           </webResources>
         </configuration>
-       </plugin>
+      </plugin>
     </plugins>
   </build>
 
   <repositories>
     <repository>
-      <id>repository.java-net</id>
-      <name>Java.net Repository</name>
-      <url>http://download.java.net/maven/2</url>
+      <id>repository.jboss-public</id>
+      <name>JBoss Repository</name>
+      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
     </repository>
 
     <repository>
-      <id>repository.jboss</id>
-      <name>JBoss Repository</name>
-      <url>http://repository.jboss.com/maven2/</url>
-    </repository>
-  </repositories>
-  <pluginRepositories>
-    <pluginRepository>
       <id>repository.java-net</id>
       <name>Java.net Repository</name>
-      <url>http://download.java.net/maven/2</url>
+      <url>http://download.java.net/maven/2/</url>
+    </repository>
+
+    <repository>
+      <id>wiquery repository</id>
+      <name>wiQuery repository</name>
+      <url>http://wiquery.googlecode.com/svn/repo/</url>
+      <layout>default</layout>
+    </repository>
+
+    <repository>
+      <id>repository.clarin</id>
+      <name>CLARIN Repository</name>
+      <url>http://catalog.clarin.eu/ds/nexus/content/groups/public/</url>
+    </repository>
+  </repositories>
+
+  <pluginRepositories>
+    <pluginRepository>
+      <id>repository.jboss-public</id>
+      <name>JBoss Repository</name>
+      <url>https://repository.jboss.org/nexus/content/groups/public/</url>
     </pluginRepository>
 
     <pluginRepository>
-      <id>repository.jboss</id>
-      <name>JBoss Repository</name>
-      <url>http://repository.jboss.com/maven2/</url>
+      <id>repository.java-net</id>
+      <name>Java.net Repository</name>
+      <url>http://download.java.net/maven/2/</url>
     </pluginRepository>
   </pluginRepositories>
 
   <dependencies>
     <dependency>
-      <groupId>javax.servlet</groupId>
-      <artifactId>servlet-api</artifactId>
+      <groupId>org.slf4j</groupId>
+      <artifactId>slf4j-jdk14</artifactId>
+      <version>${slf4j.version}</version>
+      <scope>runtime</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>commons-lang</groupId>
+      <artifactId>commons-lang</artifactId>
       <version>2.5</version>
       <type>jar</type>
-      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>commons-codec</groupId>
+        <artifactId>commons-codec</artifactId>
+        <version>1.4</version>
+        <type>jar</type>
     </dependency>
 
     <dependency>
       <groupId>javax.xml.bind</groupId>
       <artifactId>jaxb-api</artifactId>
-      <version>2.2</version>
+      <version>2.2.1</version>
       <exclusions>
         <exclusion>
           <groupId>javax.xml.stream</groupId>
           <artifactId>stax-api</artifactId>
         </exclusion>
       </exclusions>
+    </dependency>
+
+    <dependency>
+        <groupId>org.codehaus.woodstox</groupId>
+        <artifactId>woodstox-core-asl</artifactId>
+        <version>4.0.8</version>
+        <type>jar</type>
+        <scope>compile</scope>
+    </dependency>
+
+    <dependency>
+        <groupId>net.java.dev.msv</groupId>
+        <artifactId>msv-core</artifactId>
+        <version>2009.1</version>
+        <type>jar</type>
+        <scope>compile</scope>
     </dependency>
 
     <dependency>
@@ -150,32 +225,35 @@
       <artifactId>hibernate-entitymanager</artifactId>
       <version>${hibernate.version}</version>
       <scope>runtime</scope>
-      <exclusions>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
-      </exclusions>
     </dependency>
 
     <dependency>
       <groupId>org.hibernate</groupId>
       <artifactId>hibernate-jpamodelgen</artifactId>
       <version>${hibernate.jpaVersion}</version>
-      <!-- "provided" is actually a lie, but this dependency is only
-           needed at compile time, and "provided" does the trick -->
+      <!--
+        "provided" is actually a lie, but this dependency is only needed
+        at compile time, and "provided" does the trick
+      -->
       <scope>provided</scope>
       <exclusions>
         <exclusion>
-          <!-- Use the jpa-api defined here, crossing fingers they match up signature-wise -->
+          <!--
+            Use the jpa-api defined here, crossing fingers they match up
+            signature-wise
+          -->
           <groupId>org.hibernate.javax.persistence</groupId>
           <artifactId>hibernate-jpa-2.0-api</artifactId>
         </exclusion>
-        <exclusion>
-          <groupId>org.slf4j</groupId>
-          <artifactId>slf4j-api</artifactId>
-        </exclusion>
       </exclusions>
+    </dependency>
+
+    <dependency>
+      <groupId>javax.servlet</groupId>
+      <artifactId>servlet-api</artifactId>
+      <version>2.5</version>
+      <type>jar</type>
+      <scope>provided</scope>
     </dependency>
 
     <dependency>
@@ -206,15 +284,13 @@
           <groupId>com.sun.xml.bind</groupId>
           <artifactId>jaxb-impl</artifactId>
         </exclusion>
+        <exclusion>
+        	<artifactId>jackson-mapper-asl</artifactId>
+        	<groupId>org.codehaus.jackson</groupId>
+        </exclusion>
       </exclusions>
     </dependency>
 
-    <dependency>
-      <groupId>commons-lang</groupId>
-      <artifactId>commons-lang</artifactId>
-      <version>2.5</version>
-      <type>jar</type>
-    </dependency>
 
     <dependency>
       <groupId>org.codehaus.jettison</groupId>
@@ -229,41 +305,139 @@
     </dependency>
 
     <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-jdk14</artifactId>
-      <version>${slf4j.version}</version>
-      <scope>runtime</scope>
-    </dependency>
-
-    <dependency>
-      <groupId>org.slf4j</groupId>
-      <artifactId>slf4j-api</artifactId>
-      <version>${slf4j.version}</version>
-    </dependency>
-
-    <dependency>
-      <groupId>org.antlr</groupId>
-      <artifactId>antlr-runtime</artifactId>
-      <version>3.2</version>
+      <groupId>org.apache.httpcomponents</groupId>
+      <artifactId>httpclient</artifactId>
+      <version>4.0.1</version>
       <type>jar</type>
+      <scope>compile</scope>
     </dependency>
+
     <dependency>
-    	<groupId>org.apache.httpcomponents</groupId>
-    	<artifactId>httpclient</artifactId>
-    	<version>4.0.1</version>
+      <groupId>org.apache.wicket</groupId>
+      <artifactId>wicket</artifactId>
+      <version>${wicket.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.wicket</groupId>
+      <artifactId>wicket-auth-roles</artifactId>
+      <version>${wicket.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.wicket</groupId>
+      <artifactId>wicket-datetime</artifactId>
+      <version>${wicket.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.apache.wicket</groupId>
+      <artifactId>wicket-extensions</artifactId>
+      <version>${wicket.version}</version>
+    </dependency>
+
+    <dependency>
+      <groupId>org.odlabs.wiquery</groupId>
+      <artifactId>wiquery</artifactId>
+      <version>1.1.2</version>
+    </dependency>
+
+    <dependency>
+      <groupId>net.java.dev.javacc</groupId>
+      <artifactId>javacc</artifactId>
+      <version>5.0</version>
+      <type>jar</type>
+      <scope>provided</scope>
+    </dependency>
+
+    <dependency>
+      <groupId>eu.clarin.cmdi</groupId>
+      <artifactId>OAIProvider</artifactId>
+      <version>0.0.1</version>
+    </dependency>
+
+    <dependency>
+    	<groupId>junit</groupId>
+    	<artifactId>junit</artifactId>
+    	<version>4.8.1</version>
     	<type>jar</type>
-    	<scope>compile</scope>
+    	<scope>test</scope>
+    </dependency>
+
+    <dependency>
+    	<groupId>org.hsqldb</groupId>
+    	<artifactId>hsqldb</artifactId>
+    	<version>2.0.0</version>
+    	<type>jar</type>
+    	<scope>test</scope>
+    </dependency>
+
+    <dependency>
+    	<groupId>mysql</groupId>
+    	<artifactId>mysql-connector-java</artifactId>
+    	<version>5.1.13</version>
+    	<type>jar</type>
+    	<scope>test</scope>
     </dependency>
   </dependencies>
 
+  <dependencyManagement>
+  	<dependencies>
+     <dependency>
+       <groupId>commons-codec</groupId>
+       <artifactId>commons-codec</artifactId>
+       <version>1.4</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.codehaus.jettison</groupId>
+        <artifactId>jettison</artifactId>
+        <version>1.2</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.apache.wicket</groupId>
+        <artifactId>wicket</artifactId>
+        <version>${wicket.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-api</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.slf4j</groupId>
+        <artifactId>slf4j-jdk14</artifactId>
+        <version>${slf4j.version}</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-core-asl</artifactId>
+        <version>1.6.1</version>
+      </dependency>
+
+      <dependency>
+        <groupId>org.codehaus.jackson</groupId>
+        <artifactId>jackson-mapper-asl</artifactId>
+        <version>1.6.1</version>
+      </dependency>
+  	</dependencies>
+  </dependencyManagement>
+
   <properties>
+    <!-- project settings -->
+    <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
     <!-- plug-in settings -->
-  	<maven.compiler.source>1.6</maven.compiler.source>
-  	<maven.compiler.target>1.6</maven.compiler.target>
+    <maven.compiler.source>1.6</maven.compiler.source>
+    <maven.compiler.target>1.6</maven.compiler.target>
     <!-- dependency versions -->
-  	<hibernate.version>3.5.1-Final</hibernate.version>
-  	<hibernate.jpaVersion>1.0.0.Final</hibernate.jpaVersion>
-  	<jersey.version>1.1.5.1</jersey.version>
-  	<slf4j.version>1.6.0</slf4j.version>
+    <slf4j.version>1.6.1</slf4j.version>
+    <hibernate.version>3.6.0.Final</hibernate.version>
+    <hibernate.jpaVersion>1.0.0.Final</hibernate.jpaVersion>
+    <jersey.version>1.4</jersey.version>
+    <wicket.version>1.4.14</wicket.version>
   </properties>
 </project>
