@@ -440,6 +440,6 @@
     <hibernate.version>3.6.0.Final</hibernate.version>
     <hibernate.jpaVersion>1.0.0.Final</hibernate.jpaVersion>
     <jersey.version>1.4</jersey.version>
-    <wicket.version>1.4.14</wicket.version>
+    <wicket.version>1.4.15</wicket.version>
   </properties>
 </project>
