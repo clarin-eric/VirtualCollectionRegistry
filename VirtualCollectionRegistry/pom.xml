@@ -74,7 +74,8 @@
               <processors>
                  <processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
               </processors>
-              <outputDirectory>target/generated-sources/metamodel</outputDirectory>
+              <sourceDirectory>${basedir}/src/main/java/eu/clarin/cmdi/virtualcollectionregistry/model</sourceDirectory>
+              <outputDirectory>${project.build.directory}/generated-sources/metamodel</outputDirectory>
             </configuration>
           </execution>
         </executions>
@@ -93,7 +94,7 @@
             <phase>generate-sources</phase>
             <configuration>
               <sources>
-                <source>target/generated-sources/metamodel</source>
+                <source>${project.build.directory}/generated-sources/metamodel</source>
               </sources>
             </configuration>
           </execution>
@@ -107,11 +108,6 @@
         <configuration>
           <source>${maven.compiler.source}</source>
           <target>${maven.compiler.target}</target>
-          <!-- 
-          <compilerArguments>
-            <processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
-          </compilerArguments>
-          -->
           <compilerArgument>-proc:none</compilerArgument>
         </configuration>
       </plugin>
