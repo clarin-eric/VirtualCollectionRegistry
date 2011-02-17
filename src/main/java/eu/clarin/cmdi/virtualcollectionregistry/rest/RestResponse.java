@@ -30,7 +30,7 @@ public class RestResponse {
     }
 
     public void setId(long id) {
-        this.id = new Long(id);
+        this.id = Long.valueOf(id);
     }
 
     @XmlElement(name = "VirtualCollectionId")

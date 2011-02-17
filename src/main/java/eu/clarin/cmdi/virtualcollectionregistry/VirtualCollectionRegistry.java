@@ -177,8 +177,8 @@ public class VirtualCollectionRegistry {
         try {
             EntityManager em = datastore.getEntityManager();
             em.getTransaction().begin();
-            VirtualCollection c = em.find(VirtualCollection.class, new Long(id),
-                    LockModeType.PESSIMISTIC_WRITE);
+            VirtualCollection c = em.find(VirtualCollection.class,
+                    Long.valueOf(id), LockModeType.PESSIMISTIC_WRITE);
             /*
              * Do not check for deleted state here, as we might want to
              * resurrect deleted virtual collections.
@@ -227,7 +227,7 @@ public class VirtualCollectionRegistry {
             EntityManager em = datastore.getEntityManager();
             em.getTransaction().begin();
             VirtualCollection vc = em.find(VirtualCollection.class,
-                    new Long(id), LockModeType.PESSIMISTIC_WRITE);
+                    Long.valueOf(id), LockModeType.PESSIMISTIC_WRITE);
             if ((vc == null) || vc.isDeleted()) {
                 logger.debug("virtual collection (id={}) not found", id);
                 throw new VirtualCollectionNotFoundException(id);
@@ -271,7 +271,7 @@ public class VirtualCollectionRegistry {
             EntityManager em = datastore.getEntityManager();
             em.getTransaction().begin();
             VirtualCollection vc =
-                em.find(VirtualCollection.class, new Long(id));
+                em.find(VirtualCollection.class, Long.valueOf(id));
             em.getTransaction().commit();
             if ((vc == null) || vc.isDeleted()) {
                 logger.debug("virtual collection (id={}) not found", id);
@@ -313,7 +313,7 @@ public class VirtualCollectionRegistry {
             EntityManager em = datastore.getEntityManager();
             em.getTransaction().begin();
             VirtualCollection vc = em.find(VirtualCollection.class,
-                    new Long(id), LockModeType.PESSIMISTIC_WRITE);
+                    Long.valueOf(id), LockModeType.PESSIMISTIC_WRITE);
             if ((vc == null) || vc.isDeleted()) {
                 logger.debug("virtual collection (id={}) not found", id);
                 throw new VirtualCollectionNotFoundException(id);
@@ -365,7 +365,7 @@ public class VirtualCollectionRegistry {
             EntityManager em = datastore.getEntityManager();
             em.getTransaction().begin();
             VirtualCollection vc =
-                em.find(VirtualCollection.class, new Long(id));
+                em.find(VirtualCollection.class, Long.valueOf(id));
             em.getTransaction().commit();
             if ((vc == null) || vc.isDeleted()) {
                 logger.debug("virtual collection (id={}) not found", id);

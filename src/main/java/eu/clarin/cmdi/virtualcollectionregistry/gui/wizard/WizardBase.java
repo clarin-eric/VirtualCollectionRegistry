@@ -12,7 +12,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 
 @SuppressWarnings("serial")
 public class WizardBase extends Wizard {
-    private final class ButtonBarPanel extends Panel {
+    private static final class ButtonBarPanel extends Panel {
         private ButtonBarPanel(String id, IWizard wizard) {
             super(id);
             add(new PreviousButton("previous", wizard));

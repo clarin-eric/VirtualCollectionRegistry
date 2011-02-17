@@ -287,7 +287,7 @@ public class QueryOptions implements Serializable {
     } // QueryOptions.PropertyFilter
 
     
-    private final class OrderBy {
+    private static final class OrderBy {
         private final AbstractPropertyImpl property;
         private final boolean asc;
         

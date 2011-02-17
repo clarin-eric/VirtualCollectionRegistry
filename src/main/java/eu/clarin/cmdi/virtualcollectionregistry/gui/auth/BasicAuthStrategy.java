@@ -40,7 +40,7 @@ final class BasicAuthStrategy implements AuthStrategy {
         }
     } // enum Hash
 
-    private class Entry {
+    private static final class Entry {
         private final HashMethod type;
         private final String username;
         private final String password;

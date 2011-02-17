@@ -82,7 +82,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
      * that we are not supposed to change the page hierarchy anymore. This
      * class is a hack to avoid this exception.
      */
-    private final class HideIfEmptyBehavior extends AbstractBehavior {
+    private static final class HideIfEmptyBehavior extends AbstractBehavior {
         private final List<Component> components = new LinkedList<Component>();
         
         @Override
