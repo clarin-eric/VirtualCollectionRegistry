@@ -220,8 +220,10 @@ public class VirtualCollectionMarshaller {
             break;
         case PUBLIC:
             s = "public";
+            break;
         case DELETED:
             s = "deleted";
+            break;
         case DEAD:
             s = "dead";
             break;
