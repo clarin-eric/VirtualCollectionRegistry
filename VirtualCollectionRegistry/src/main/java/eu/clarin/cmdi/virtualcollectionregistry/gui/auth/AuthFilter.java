@@ -48,7 +48,8 @@ public final class AuthFilter implements Filter {
         }
     } // class RequestWrapper
 
-    private final class ResponseWrapper extends HttpServletResponseWrapper {
+    private static final class ResponseWrapper
+            extends HttpServletResponseWrapper {
         private boolean authRequested = false;
         
         public ResponseWrapper(HttpServletResponse response) {

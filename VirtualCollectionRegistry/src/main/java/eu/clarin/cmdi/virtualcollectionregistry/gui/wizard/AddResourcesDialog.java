@@ -25,7 +25,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 
 @SuppressWarnings("serial")
 public abstract class AddResourcesDialog extends ModalDialogBase {
-    private final class Data implements Serializable {
+    private static final class Data implements Serializable {
         private Resource.Type type;
         private String[] references;
         
@@ -43,7 +43,7 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
         }
     } // class AddResourcesDialog.Data
 
-    private final class Content extends Panel {
+    private static final class Content extends Panel {
         private final Form<Data> form;
         private final FeedbackPanel feedbackPanel;
 
