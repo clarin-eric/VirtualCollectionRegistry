@@ -12,11 +12,10 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryExcepti
 
 public class ContextListener implements ServletContextListener {
 
-    @SuppressWarnings("unchecked")
     public void contextInitialized(ServletContextEvent event) {
         ServletContext ctx = event.getServletContext();
         HashMap<String, String> config = new HashMap<String, String>();
-        for (Enumeration i = ctx.getInitParameterNames();
+        for (Enumeration<?> i = ctx.getInitParameterNames();
              i.hasMoreElements();) {
             String key = (String) i.nextElement();
             String value = ctx.getInitParameter(key);
