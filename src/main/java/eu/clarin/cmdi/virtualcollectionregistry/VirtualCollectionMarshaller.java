@@ -29,6 +29,7 @@ import org.slf4j.LoggerFactory;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
+import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedByQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
@@ -404,7 +405,7 @@ public class VirtualCollectionMarshaller {
             }
 
             if (generatedBy.getQuery() != null) {
-                GeneratedBy.Query query = generatedBy.getQuery();
+                GeneratedByQuery query = generatedBy.getQuery();
                 writer.writeStartElement("Query");
                 writer.writeAttribute("profile", query.getProfile());
                 writer.writeCData(query.getValue());
@@ -569,8 +570,8 @@ public class VirtualCollectionMarshaller {
                             "attribute 'profile' on element 'Query'");
                 }
                 reader.next();
-                final GeneratedBy.Query query =
-                    new GeneratedBy.Query(s, readString(reader, false));
+                final GeneratedByQuery query =
+                    new GeneratedByQuery(s, readString(reader, false));
                 generatedBy.setQuery(query);
             }
             vc.setGeneratedBy(generatedBy);

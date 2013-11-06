@@ -16,6 +16,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionMarshaller;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionMarshaller.Format;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
+import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedByQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
@@ -173,7 +174,7 @@ public class VirtualCollectionMarshallerTest {
         assertNotNull(generatedBy);
         assertEquals("GeneratedBy description", generatedBy.getDescription());
         assertEquals("urn:x-vcr:test-uri", generatedBy.getURI());
-        GeneratedBy.Query query = generatedBy.getQuery();
+        GeneratedByQuery query = generatedBy.getQuery();
         assertNotNull(query);
         assertEquals("sql", query.getProfile());
         assertEquals("<SQL>Test-Query</SQL>", query.getValue());

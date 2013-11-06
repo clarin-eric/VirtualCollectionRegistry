@@ -95,6 +95,8 @@
             <configuration>
               <sources>
                 <source>${project.build.directory}/generated-sources/metamodel</source>
+                <source>${project.build.directory}/generated-sources/javacc</source>
+                <source>${project.build.directory}/generated-sources/jjtree</source>
               </sources>
             </configuration>
           </execution>
@@ -433,7 +435,6 @@
     	<artifactId>mysql-connector-java</artifactId>
     	<version>5.1.13</version>
     	<type>jar</type>
-    	<scope>test</scope>
     </dependency>
   </dependencies>
 
@@ -494,6 +495,6 @@
     <hibernate.version>3.6.0.Final</hibernate.version>
     <hibernate.jpaVersion>1.0.0.Final</hibernate.jpaVersion>
     <jersey.version>1.4</jersey.version>
-    <wicket.version>1.4.15</wicket.version>
+    <wicket.version>1.4.22</wicket.version>
   </properties>
 </project>

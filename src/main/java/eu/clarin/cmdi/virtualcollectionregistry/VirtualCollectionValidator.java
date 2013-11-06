@@ -5,6 +5,7 @@ import java.util.Set;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
+import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedByQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
@@ -57,7 +58,7 @@ public class VirtualCollectionValidator {
                 throw new VirtualCollectionRegistryUsageException(
                         "GeneratedBy has empty description");
             }
-            final GeneratedBy.Query query = generatedBy.getQuery();
+            final GeneratedByQuery query = generatedBy.getQuery();
             if (query != null) {
                 if (query.getProfile() == null) {
                     throw new VirtualCollectionRegistryUsageException(

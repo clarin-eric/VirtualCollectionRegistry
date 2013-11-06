@@ -52,7 +52,7 @@ public class PersistentIdentifier implements Serializable {
     private String identifier;
 
     
-    private PersistentIdentifier() {
+    protected PersistentIdentifier() {
     }
 
     PersistentIdentifier(VirtualCollection vc, Type type, String identifier) {
