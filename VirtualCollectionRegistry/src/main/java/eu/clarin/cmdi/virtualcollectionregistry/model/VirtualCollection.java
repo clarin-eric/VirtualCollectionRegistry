@@ -141,7 +141,7 @@ public class VirtualCollection implements Serializable {
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "reproducibility")
     private VirtualCollection.Reproducibility reproducibility;
-    
+
     @Lob
     @Basic(fetch = FetchType.EAGER)
     @Column(name = "reproducibility_notice", length = 8192)
@@ -175,7 +175,7 @@ public class VirtualCollection implements Serializable {
         super();
         this.setState(VirtualCollection.State.PRIVATE);
     }
-    
+
     public Long getId() {
         return id;
     }
@@ -183,7 +183,7 @@ public class VirtualCollection implements Serializable {
     public User getOwner() {
         return owner;
     }
-    
+
     public void setOwner(User owner) {
         if (owner == null) {
             throw new NullPointerException("owner == null");
@@ -226,11 +226,11 @@ public class VirtualCollection implements Serializable {
     }
 
     public boolean isPublic() {
-        return (state == State.PUBLIC_PENDING) || (state == State.PUBLIC); 
+        return (state == State.PUBLIC_PENDING) || (state == State.PUBLIC);
     }
 
     public boolean isDeleted() {
-        return (state == State.DELETED) || (state == State.DEAD); 
+        return (state == State.DELETED) || (state == State.DEAD);
     }
 
     public VirtualCollection.Type getType() {
@@ -365,7 +365,7 @@ public class VirtualCollection implements Serializable {
         this.setName(vc.getName());
         this.setDescription(vc.getDescription());
         this.setCreationDate(vc.getCreationDate());
-        
+
         // Creators
         Set<Creator> obsolete_creators =
             new HashSet<Creator>(this.getCreators());
@@ -427,9 +427,9 @@ public class VirtualCollection implements Serializable {
             }
             this.generatedBy.setURI(genBy.getURI());
             if (genBy.getQuery() != null) {
-                final GeneratedBy.Query q = genBy.getQuery();
-                GeneratedBy.Query query =
-                    new GeneratedBy.Query(q.getProfile(), q.getValue());
+                final GeneratedByQuery q = genBy.getQuery();
+                GeneratedByQuery query =
+                    new GeneratedByQuery(q.getProfile(), q.getValue());
                 this.generatedBy.setQuery(query);
             }
         }

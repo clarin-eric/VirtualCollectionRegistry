@@ -39,7 +39,7 @@ public class User implements Serializable {
 
     @Column(name = "display_name", length = 255)
     private String displayName;
-    
+
     @OneToMany(cascade = CascadeType.ALL,
                fetch = FetchType.LAZY,
                mappedBy = "owner",
@@ -47,9 +47,8 @@ public class User implements Serializable {
     private Set<VirtualCollection> collections =
         new LinkedHashSet<VirtualCollection>();
 
-    
-    @SuppressWarnings("unused")
-    private User() {
+
+    protected User() {
     }
 
     public User(String name, String displayName) {
