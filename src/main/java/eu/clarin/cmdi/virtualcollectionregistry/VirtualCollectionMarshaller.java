@@ -35,7 +35,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 
 public class VirtualCollectionMarshaller {
-    private static final String NS_CMDI = "http://www.clarin.eu/cmd";
+    private static final String NS_CMDI = "http://www.clarin.eu/cmd/";
     private static final String NS_CMDI_PREFIX = "cmdi";
     // FIXME: use correct schema for CMDI virtual collections
     private static final String NS_CMDI_SCHEMA_LOCATION =
@@ -613,6 +613,7 @@ public class VirtualCollectionMarshaller {
                 XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI);
         out.writeAttribute(XMLConstants.W3C_XML_SCHEMA_INSTANCE_NS_URI,
                 "schemaLocation", NS_CMDI + " " + NS_CMDI_SCHEMA_LOCATION);
+        out.writeAttribute("CMDVersion", "1.1");
 
         /*
          * header

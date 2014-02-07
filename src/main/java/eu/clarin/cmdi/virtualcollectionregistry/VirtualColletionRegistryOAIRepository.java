@@ -44,7 +44,7 @@ class VirtualColletionRegistryOAIRepository implements Repository {
 
         @Override
         public String getNamespaceURI() {
-            return "http://www.clarin.eu/cmd";
+            return "http://www.clarin.eu/cmd/";
         }
 
         @Override
