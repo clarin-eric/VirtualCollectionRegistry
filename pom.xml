@@ -5,7 +5,7 @@
   <artifactId>VirtualCollectionRegistry</artifactId>
   <packaging>war</packaging>
   <name>CLARIN Virtual Collection Registry</name>
-  <version>0.3.0-SNAPSHOT</version>
+  <version>0.3.0</version>
 
   <organization>
   	<name>Institut für Deutsche Sprache</name>
