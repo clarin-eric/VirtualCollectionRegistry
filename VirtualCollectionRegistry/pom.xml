@@ -397,7 +397,7 @@
     <dependency>
       <groupId>org.odlabs.wiquery</groupId>
       <artifactId>wiquery</artifactId>
-      <version>1.1.2</version>
+      <version>1.2.3</version>
     </dependency>
 
     <dependency>
@@ -495,6 +495,6 @@
     <hibernate.version>3.6.0.Final</hibernate.version>
     <hibernate.jpaVersion>1.0.0.Final</hibernate.jpaVersion>
     <jersey.version>1.4</jersey.version>
-    <wicket.version>1.4.22</wicket.version>
+    <wicket.version>1.4.23</wicket.version>
   </properties>
 </project>
