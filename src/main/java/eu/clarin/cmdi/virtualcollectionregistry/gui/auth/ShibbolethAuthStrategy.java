@@ -13,31 +13,36 @@ import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import javax.servlet.http.HttpSession;
 
-
+/**
+ *
+ * @deprecated to be replaced with SHHAA filter
+ */
+@Deprecated
 final class ShibbolethAuthStrategy implements AuthStrategy {
+
     private static final String SHIB_PARAM_RETURN = "return";
     private static final String SHIB_PARAM_TARGET = "target";
     private static final String SHIB_PARAM_PROVIDER = "providerId";
-    private static final String CONFIG_PARAM_SSO =
-        "authfilter.shibboleth.sso";
-    private static final String CONFIG_PARAM_SLO =
-        "authfilter.shibboleth.slo";
-    private static final String CONFIG_PARAM_PROVIDER =
-        "authfilter.shibboleth.provider";
-    private static final String CONFIG_PARAM_HOST =
-        "authfilter.shibboleth.host";
-    private static final String CONFIG_PARAM_CONTEXT =
-        "authfilter.shibboleth.context";
-    private static final String CONFIG_PARAM_SESSION =
-        "authfilter.shibboleth.session";
-    private static final String CONFIG_PARAM_IDP =
-        "authfilter.shibboleth.idp";
-    private static final String CONFIG_PARAM_TIMESTAMP =
-        "authfilter.shibboleth.timestamp";
-    private static final String CONFIG_PARAM_USERNAME =
-        "authfilter.shibboleth.username";
-    private static final String CONFIG_PARAM_ATTRIBUTES =
-        "authfilter.shibboleth.attributes";
+    private static final String CONFIG_PARAM_SSO
+            = "authfilter.shibboleth.sso";
+    private static final String CONFIG_PARAM_SLO
+            = "authfilter.shibboleth.slo";
+    private static final String CONFIG_PARAM_PROVIDER
+            = "authfilter.shibboleth.provider";
+    private static final String CONFIG_PARAM_HOST
+            = "authfilter.shibboleth.host";
+    private static final String CONFIG_PARAM_CONTEXT
+            = "authfilter.shibboleth.context";
+    private static final String CONFIG_PARAM_SESSION
+            = "authfilter.shibboleth.session";
+    private static final String CONFIG_PARAM_IDP
+            = "authfilter.shibboleth.idp";
+    private static final String CONFIG_PARAM_TIMESTAMP
+            = "authfilter.shibboleth.timestamp";
+    private static final String CONFIG_PARAM_USERNAME
+            = "authfilter.shibboleth.username";
+    private static final String CONFIG_PARAM_ATTRIBUTES
+            = "authfilter.shibboleth.attributes";
     private static final String SESSION_PARAM_SID = "shib.sid";
     private static final String SESSION_PARAM_IDP = "shib.idp";
     private static final String SESSION_PARAM_TIMESTAMP = "shib.timestamp";
@@ -76,7 +81,7 @@ final class ShibbolethAuthStrategy implements AuthStrategy {
 
         HttpSession session = request.getSession();
         String oldSid = (String) session.getAttribute(SESSION_PARAM_SID);
-        String sid    = getHeader(request, sessionHeaderName);
+        String sid = getHeader(request, sessionHeaderName);
 
         if (sid != null) {
             if ((oldSid == null) || !sid.equals(oldSid)) {
@@ -84,15 +89,15 @@ final class ShibbolethAuthStrategy implements AuthStrategy {
                  * FIXME: if sid != oldSid, shib session had was
                  *        logout or expired; pass that information on
                  */
-                final AuthPrincipal principal =
-                    refreshPrinicpal(request, session, sid);
+                final AuthPrincipal principal
+                        = refreshPrinicpal(request, session, sid);
                 if (principal != null) {
                     result.setAction(Action.CONTINUE_AUTHENTICATED);
                     result.setPrinicpal(principal);
                 }
             } else if (sid.equals(oldSid)) {
-                final AuthPrincipal principal =
-                    (AuthPrincipal) session.getAttribute(SESSION_PARAM_PRINCIPAL);
+                final AuthPrincipal principal
+                        = (AuthPrincipal) session.getAttribute(SESSION_PARAM_PRINCIPAL);
                 result.setAction(Action.CONTINUE_AUTHENTICATED);
                 result.setPrinicpal(principal);
             }
@@ -119,7 +124,8 @@ final class ShibbolethAuthStrategy implements AuthStrategy {
                     }
                 }
             }
-            AuthPrincipal principal = new AuthPrincipal(username, attributes);            session.setAttribute(SESSION_PARAM_SID, sid);
+            AuthPrincipal principal = new AuthPrincipal(username, attributes);
+            session.setAttribute(SESSION_PARAM_SID, sid);
             session.setAttribute(SESSION_PARAM_IDP, idp);
             session.setAttribute(SESSION_PARAM_TIMESTAMP, timestamp);
             session.setAttribute(SESSION_PARAM_PRINCIPAL, principal);
@@ -171,8 +177,8 @@ final class ShibbolethAuthStrategy implements AuthStrategy {
                 port = 80;
             }
             target.append(request.getServerName());
-            if ((scheme.equalsIgnoreCase("http") && (port != 80)) ||
-                (scheme.equalsIgnoreCase("https") && (port != 443))) {
+            if ((scheme.equalsIgnoreCase("http") && (port != 80))
+                    || (scheme.equalsIgnoreCase("https") && (port != 443))) {
                 target.append(':');
                 target.append(port);
             }
@@ -191,8 +197,8 @@ final class ShibbolethAuthStrategy implements AuthStrategy {
         Iterator<?> params = request.getParameterMap().entrySet().iterator();
         while (params.hasNext()) {
             @SuppressWarnings("unchecked")
-            Map.Entry<String, String[]> entry =
-                (Map.Entry<String, String[]>) params.next();
+            Map.Entry<String, String[]> entry
+                    = (Map.Entry<String, String[]>) params.next();
             for (String value : entry.getValue()) {
                 if (firstParam) {
                     target.append('?');
@@ -206,37 +212,37 @@ final class ShibbolethAuthStrategy implements AuthStrategy {
 
         StringBuilder url = new StringBuilder(shibUrl);
         url.append('?')
-            .append(param)
-            .append('=')
-            .append(urlEncode(target.toString()));
+                .append(param)
+                .append('=')
+                .append(urlEncode(target.toString()));
         if (SHIB_PARAM_TARGET.equals(param) && (provider != null)) {
             url.append('&')
-                .append(SHIB_PARAM_PROVIDER)
-                .append('=')
-                .append(provider);
+                    .append(SHIB_PARAM_PROVIDER)
+                    .append('=')
+                    .append(provider);
         }
         return url.toString();
     }
 
     private void loadConfig(Map<String, String> cfg) {
-        ssoUrl               = readProperty(cfg, CONFIG_PARAM_SSO, "sso");
-        sloUrl               = readProperty(cfg, CONFIG_PARAM_SLO, "slo");
-        provider             = readProperty(cfg, CONFIG_PARAM_PROVIDER, null);
-        host                 = readProperty(cfg, CONFIG_PARAM_HOST, null);
-        context              = readProperty(cfg, CONFIG_PARAM_CONTEXT, null);
-        sessionHeaderName    =
-            readProperty(cfg, CONFIG_PARAM_SESSION, "Shib-Session-ID");
-        idpHeaderName        =
-            readProperty(cfg, CONFIG_PARAM_IDP, "Shib-Identity-Provider");
-        timestampHeaderName  = readProperty(cfg, CONFIG_PARAM_TIMESTAMP,
-                                            "Shib-Authentication-Instant");
-        usernameHeaderNames  = readProperties(cfg, CONFIG_PARAM_USERNAME,
-                                              new String[] {
-                                                 "eduPersonPrincipalName" ,
-                                                 "eppn"
-                                              });
-        attributeHeaderNames =
-            readProperties(cfg, CONFIG_PARAM_ATTRIBUTES, null);
+        ssoUrl = readProperty(cfg, CONFIG_PARAM_SSO, "sso");
+        sloUrl = readProperty(cfg, CONFIG_PARAM_SLO, "slo");
+        provider = readProperty(cfg, CONFIG_PARAM_PROVIDER, null);
+        host = readProperty(cfg, CONFIG_PARAM_HOST, null);
+        context = readProperty(cfg, CONFIG_PARAM_CONTEXT, null);
+        sessionHeaderName
+                = readProperty(cfg, CONFIG_PARAM_SESSION, "Shib-Session-ID");
+        idpHeaderName
+                = readProperty(cfg, CONFIG_PARAM_IDP, "Shib-Identity-Provider");
+        timestampHeaderName = readProperty(cfg, CONFIG_PARAM_TIMESTAMP,
+                "Shib-Authentication-Instant");
+        usernameHeaderNames = readProperties(cfg, CONFIG_PARAM_USERNAME,
+                new String[]{
+                    "eduPersonPrincipalName",
+                    "eppn"
+                });
+        attributeHeaderNames
+                = readProperties(cfg, CONFIG_PARAM_ATTRIBUTES, null);
     }
 
     private static String readProperty(Map<String, String> cfg, String name,
@@ -250,7 +256,7 @@ final class ShibbolethAuthStrategy implements AuthStrategy {
         }
         return (s != null) ? s : defaulValue;
     }
-    
+
     private static String[] readProperties(Map<String, String> cfg,
             String name, String[] defaultValue) {
         String s = readProperty(cfg, name, null);

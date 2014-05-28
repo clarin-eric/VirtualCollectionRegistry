@@ -22,7 +22,12 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 
-
+/**
+ * 
+ * @deprecated to be replaced with basic authentication mechanism at container
+ * level (e.g. tomcat-users)
+ */
+@Deprecated
 final class BasicAuthStrategy implements AuthStrategy {
     private enum HashMethod {
         PLAIN, MD5, SHA;
