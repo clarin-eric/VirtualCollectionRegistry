@@ -63,7 +63,7 @@ public class VirtualCollectionMarshaller {
                     .newInstance(XMLValidationSchema.SCHEMA_ID_W3C_SCHEMA);
             URL url = VirtualCollectionMarshaller.class
                     .getClassLoader()
-                    .getResource("VirtualCollection.xsd");
+                    .getResource("META-INF/VirtualCollection.xsd");
             if (url == null) {
                 throw new NullPointerException("schema not found!");
             }

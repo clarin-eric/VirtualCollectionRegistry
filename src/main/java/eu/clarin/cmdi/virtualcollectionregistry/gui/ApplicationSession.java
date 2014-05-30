@@ -43,11 +43,7 @@ public class ApplicationSession extends AuthenticatedWebSession {
 
     @Override
     public boolean authenticate(String username, String password) {
-        if (username != null) {
-            replaceSession();
-            return true;
-        }
-        return false;
+        return username != null;
     }
 
     @Override

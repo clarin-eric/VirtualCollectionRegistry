@@ -50,6 +50,8 @@ public class Application extends AuthenticatedWebApplication {
             getMarkupSettings().setStripWicketTags(true);
             getMarkupSettings().setStripComments(true);
         }
+        mountBookmarkablePage("/login",
+                LoginPage.class);
         mountBookmarkablePage("/public",
                 BrowsePublicCollectionsPage.class);
         mountBookmarkablePage("/private",

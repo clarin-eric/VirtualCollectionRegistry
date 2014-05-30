@@ -113,6 +113,24 @@
           <compilerArgument>-proc:none</compilerArgument>
         </configuration>
       </plugin>
+
+      <plugin>
+        <groupId>org.apache.maven.plugins</groupId>
+        <artifactId>maven-war-plugin</artifactId>
+        <version>2.1.1</version>
+        <configuration>
+          <webResources>
+            <!-- additional web resources: also copy schemas to web-app -->
+            <resource>
+              <directory>src/main/resources/META-INF</directory>
+              <targetPath>schema</targetPath>
+              <includes>
+                <include>*.xsd</include>
+              </includes>
+            </resource>
+          </webResources>
+        </configuration>
+      </plugin>
     </plugins>
     
     <pluginManagement>

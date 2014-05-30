@@ -115,7 +115,7 @@
         <web-resource-collection>
             <web-resource-name>VirtualCollectionRegistryApplication</web-resource-name>
             <description></description>
-            <url-pattern>/app/*</url-pattern>
+            <url-pattern>/app/login</url-pattern>
             <http-method>GET</http-method>
         </web-resource-collection>
         <auth-constraint>

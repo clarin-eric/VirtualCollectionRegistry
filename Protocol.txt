@@ -10,7 +10,7 @@ working with the registry.
     a) Internal XML format for virtual collections:
        A virtual collection is represented in an internal XML format, which is
        defined by the W3C XML schema "VirtualCollection.xsd" found in the
-       "src/main/resources" directory.
+       "src/resources/META-INF" directory.
        
     b) The VCR relies on various HTTP headers:
         - "Content-Type" must be set for POST and PUT requests. Accepted
