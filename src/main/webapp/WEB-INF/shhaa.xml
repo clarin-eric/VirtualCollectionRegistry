@@ -37,7 +37,9 @@
         </composition>
 	
         <authorization>
-            <location target="/app/*" />
+	    <location  target="/app/login" />
+            <location target="/service/virtualcollections" /> <!-- POST ONLY!? -->
+            <location target="/service/my-virtualcollections" />
         </authorization>
 	
         <handler>
