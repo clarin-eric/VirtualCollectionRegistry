@@ -149,7 +149,7 @@ working with the registry.
                  description: The virtual collection referenced by the URI will
                               be retrieved in CMDI format.
                  HTTP method: GET
-                         URI: $BASE/service/virtualcollections/$id/state
+                         URI: $BASE/service/virtualcollections/$id/cmdi
          URI path parameters: $id := is the ID of the virtual collection,
                                      which is to be retrieved
             query parameters: none
