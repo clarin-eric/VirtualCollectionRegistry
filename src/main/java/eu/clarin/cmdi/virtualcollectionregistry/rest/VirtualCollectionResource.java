@@ -19,6 +19,7 @@ import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
@@ -26,23 +27,46 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.StreamingOutput;
 
 /**
- * REST resource representing an individual virtual collection
+ * REST resource representing an individual virtual collection.
+ *
+ * This was designed to act as a managed subresource of
+ * {@link VirtualCollectionsResource}. The user of this class is responsible for
+ * calling {@link #setId(long) } before handing it over or doing anything else
+ * with it.
  *
  * @author twagoo
  */
-public class VirtualCollectionResource {
+public final class VirtualCollectionResource {
 
-    private final VirtualCollectionRegistry registry
-            = VirtualCollectionRegistry.instance();
+    @Context
+    private VirtualCollectionRegistry registry;
+    @Context
+    private SecurityContext security;
+    @Context
+    private HttpHeaders headers;
 
-    private final long id;
-    private final SecurityContext security;
-    private final HttpHeaders headers;
+    private Long id;
 
-    public VirtualCollectionResource(long id, SecurityContext security, HttpHeaders headers) {
+    /**
+     * Default constructor needed so that it can act as a managed subresource of
+     * {@link VirtualCollectionsResource}, remember to
+     * {@link #setId(long) set the id} after construction!
+     */
+    public VirtualCollectionResource() {
+    }
+
+    /**
+     * Sets the id for this resource; should be called exactly once per
+     * instance; <strong>mandatory call</strong>, not setting will lead to
+     * NullPointerExceptions
+     *
+     * @param id
+     */
+    public synchronized void setId(long id) {
+        if (this.id != null) {
+            throw new IllegalStateException("Id was already set for Virtual Collection resource! Resource is recycled (by Jersey)?");
+        }
         this.id = id;
-        this.security = security;
-        this.headers = headers;
     }
 
     /**

@@ -31,14 +31,14 @@ import javax.ws.rs.core.UriInfo;
 @Path("/my-virtualcollections")
 public class MyVirtualCollectionsResource {
 
-    private final VirtualCollectionRegistry registry
-            = VirtualCollectionRegistry.instance();
     @Context
-    SecurityContext security;
+    private VirtualCollectionRegistry registry;
     @Context
-    UriInfo uriInfo;
+    private SecurityContext security;
     @Context
-    HttpHeaders headers;
+    private UriInfo uriInfo;
+    @Context
+    private HttpHeaders headers;
 
     /**
      * All virtual collections owned by the authenticated user will be

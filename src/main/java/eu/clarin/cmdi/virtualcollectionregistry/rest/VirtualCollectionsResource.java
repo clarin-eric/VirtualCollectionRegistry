@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
+import com.sun.jersey.api.core.ResourceContext;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionMarshaller;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionMarshaller.Format;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
@@ -36,14 +37,16 @@ import javax.ws.rs.core.UriInfo;
 @Path("/virtualcollections")
 public class VirtualCollectionsResource {
 
-    private final VirtualCollectionRegistry registry
-            = VirtualCollectionRegistry.instance();
     @Context
-    SecurityContext security;
+    private ResourceContext resourceContext;
     @Context
-    UriInfo uriInfo;
+    private VirtualCollectionRegistry registry;
     @Context
-    HttpHeaders headers;
+    private SecurityContext security;
+    @Context
+    private UriInfo uriInfo;
+    @Context
+    private HttpHeaders headers;
 
     /**
      * All virtual collections will be retrieved; if a query expression is used,
@@ -139,7 +142,9 @@ public class VirtualCollectionsResource {
 
     @Path("/{id}")
     public VirtualCollectionResource getVirtualCollection(@PathParam("id") long id) {
-        return new VirtualCollectionResource(id, security, headers);
+        final VirtualCollectionResource resource = resourceContext.getResource(VirtualCollectionResource.class);
+        resource.setId(id);
+        return resource;
     }
 
 }
