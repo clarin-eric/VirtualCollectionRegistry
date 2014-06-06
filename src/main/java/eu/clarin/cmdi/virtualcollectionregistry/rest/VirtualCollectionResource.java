@@ -26,6 +26,7 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.StreamingOutput;
 
 /**
+ * REST resource representing an individual virtual collection
  *
  * @author twagoo
  */
@@ -44,6 +45,14 @@ public class VirtualCollectionResource {
         this.headers = headers;
     }
 
+    /**
+     * The virtual collection referenced by the URI will be retrieved
+     *
+     * @return A response containing a representation of the requested Virtual
+     * Collection. If the virtual collection is not found the appropriate HTTP
+     * status code is issued and an error message is returned.
+     * @throws VirtualCollectionRegistryException
+     */
     @GET
     @Produces({MediaType.TEXT_XML,
         MediaType.APPLICATION_XML,
@@ -63,6 +72,18 @@ public class VirtualCollectionResource {
         return Response.ok(writer).build();
     }
 
+    /**
+     * The virtual collection identified by the URI will be updated, actually
+     * replaced, with the representation of the virtual collection sent in the
+     * request body.
+     *
+     * @param input Depending on Content-Type header either a valid XML instance
+     * or the JSON representation of a virtual collection conforming to the
+     * above mentioned XML schema. The root element is expected to be
+     * "VirtualCollection"
+     * @return A response containing a {@link RestResponse}
+     * @throws VirtualCollectionRegistryException
+     */
     @PUT
     @Consumes({MediaType.TEXT_XML,
         MediaType.APPLICATION_XML,
@@ -92,6 +113,12 @@ public class VirtualCollectionResource {
         }
     }
 
+    /**
+     * The virtual collection referenced by the URI will be deleted.
+     *
+     * @return A response containing a {@link RestResponse}
+     * @throws VirtualCollectionRegistryException
+     */
     @DELETE
     @Produces({MediaType.TEXT_XML,
         MediaType.APPLICATION_XML,
@@ -110,11 +137,20 @@ public class VirtualCollectionResource {
         return Response.ok(response).build();
     }
 
+    /**
+     * The virtual collection referenced by the URI will be retrieved in CMDI
+     * format.
+     *
+     * @return A response containing the virtual collection in CMDI format. If
+     * the virtual collection is not found the appropriate HTTP status code is
+     * issued and an error message is returned.
+     * @throws VirtualCollectionRegistryException
+     */
     @GET
     @Path("/cmdi")
     @Produces({MediaType.TEXT_XML,
         MediaType.APPLICATION_XML})
-    public Response getClarinVirtualCollection()
+    public Response getVirtualCollectionCmdi()
             throws VirtualCollectionRegistryException {
         final VirtualCollection vc = registry.retrieveVirtualCollection(id);
         if (!vc.isPublic() || (vc.getPersistentIdentifier() == null)) {
@@ -130,6 +166,13 @@ public class VirtualCollectionResource {
         return Response.ok(writer).build();
     }
 
+    /**
+     * The publication state of the virtual collection referenced by the URI
+     *
+     * @return a response containing the {@link State} of the identified Virtual
+     * Collection
+     * @throws VirtualCollectionRegistryException
+     */
     @GET
     @Path("/state")
     @Produces({MediaType.TEXT_XML,
@@ -151,6 +194,15 @@ public class VirtualCollectionResource {
         return Response.ok(result).build();
     }
 
+    /**
+     * Updates the publication state of the virtual collection referenced by the
+     * URI
+     *
+     * @param id
+     * @param state
+     * @return a response containg a {@link RestResponse}
+     * @throws VirtualCollectionRegistryException
+     */
     @POST
     @Path("/state")
     @Consumes({MediaType.TEXT_XML,

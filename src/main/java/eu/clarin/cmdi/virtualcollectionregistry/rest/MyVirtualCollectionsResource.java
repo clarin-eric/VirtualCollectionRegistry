@@ -23,6 +23,8 @@ import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
 /**
+ * REST resource representing the collection of the user's virtual collections
+ * (public or private)
  *
  * @author twagoo
  */
@@ -38,6 +40,22 @@ public class MyVirtualCollectionsResource {
     @Context
     HttpHeaders headers;
 
+    /**
+     * All virtual collections owned by the authenticated user will be
+     * retrieved; if a query expression is used, only the virtual collections
+     * satisfying the query will be retrieved.
+     *
+     * @param query a Virtual Collection Query Language expression
+     * @param offset
+     * @param count
+     * @return a serialised list of all virtual collections created by the
+     * authenticated user
+     * @throws VirtualCollectionRegistryException if the collections could not
+     * be retrieved
+     * @see
+     * VirtualCollectionRegistry#getVirtualCollections(java.security.Principal,
+     * java.lang.String, int, int)
+     */
     @GET
     @Produces({MediaType.TEXT_XML,
         MediaType.APPLICATION_XML,

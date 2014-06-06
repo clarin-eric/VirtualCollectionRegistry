@@ -33,7 +33,7 @@ working with the registry.
                               representation of the virtual collection sent in
                               the request body.
                  HTTP method: POST
-                         URI: $BASE/service/virtualcollection
+                         URI: $BASE/service/virtualcollections
          URI path parameters: none
             query parameters: none 
                 HTTP headers: Content-Type (required), Accept (optional)
@@ -54,7 +54,7 @@ working with the registry.
                               representation of the virtual collection sent in
                               the request body.
                  HTTP method: PUT
-                         URI: $BASE/service/virtualcollection/$id
+                         URI: $BASE/service/virtualcollections/$id
          URI path parameters: $id := (required) is the ID of the virtual
                                      collection, which is to be changed 
             query parameters: none 
@@ -73,7 +73,7 @@ working with the registry.
                  description: The virtual collection referenced by the URI will
                               be deleted.
                  HTTP method: DELETE
-                         URI: $BASE/service/virtualcollection/$id
+                         URI: $BASE/service/virtualcollections/$id
          URI path parameters: $id := (required) is the ID of the virtual
                                      collection, which is to be deleted  
             query parameters: none
@@ -88,7 +88,7 @@ working with the registry.
                  description: The virtual collection referenced by the URI will
                               be retrieved.
                  HTTP method: GET
-                         URI: $BASE/service/virtualcollection/$id
+                         URI: $BASE/service/virtualcollections/$id
          URI path parameters: $id := (required) is the ID of the virtual
                                      collection, which is to be retrieved
             query parameters: none
@@ -149,7 +149,7 @@ working with the registry.
                  description: The virtual collection referenced by the URI will
                               be retrieved in CMDI format.
                  HTTP method: GET
-                         URI: $BASE/service/clarin-virtualcollection/$id
+                         URI: $BASE/service/virtualcollections/$id/state
          URI path parameters: $id := is the ID of the virtual collection,
                                      which is to be retrieved
             query parameters: none
@@ -160,6 +160,8 @@ working with the registry.
                               virtual collection is not found the appropriate
                               HTTP status code is issued and an error message
                               is returned.
+
+TODO: Add {id}/state
 
 
 3. Virtual Collection Query language (VCRQL)

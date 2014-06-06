@@ -29,11 +29,12 @@ import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
 /**
+ * REST resource representing the collection of virtual collections
  *
  * @author twagoo
  */
 @Path("/virtualcollections")
-public class VirtualCollectionsResource  {
+public class VirtualCollectionsResource {
 
     private final VirtualCollectionRegistry registry
             = VirtualCollectionRegistry.instance();
@@ -44,8 +45,21 @@ public class VirtualCollectionsResource  {
     @Context
     HttpHeaders headers;
 
+    /**
+     * All virtual collections will be retrieved; if a query expression is used,
+     * only the virtual collections satisfying the query will be retrieved.
+     *
+     * @param query a Virtual Collection Query Language expression
+     * @param offset
+     * @param count
+     * @return a serialised list of all public virtual collections. If no
+     * virtual collection are found an empty list will be returned.
+     * @throws VirtualCollectionRegistryException if the collections could not
+     * be retrieved
+     * @see VirtualCollectionRegistry#getVirtualCollections(java.lang.String,
+     * int, int)
+     */
     @GET
-    @Path("/")
     @Produces({MediaType.TEXT_XML,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_JSON})
@@ -66,6 +80,19 @@ public class VirtualCollectionsResource  {
         return Response.ok(writer).build();
     }
 
+    /**
+     * A virtual collection will be created based on the representation of the
+     * virtual collection sent in the request body.
+     *
+     * @param input Depending on Content-Type header either a valid XML instance
+     * or the JSON representation of a virtual collection conforming to the
+     * above mentioned XML schema. The root element is expected to be
+     * "VirtualCollection"
+     * @return A response containing a {@link RestResponse}. If successful, the
+     * result will contain the ID of the created virtual collection
+     *
+     * @throws VirtualCollectionRegistryException
+     */
     @POST
     @Consumes({MediaType.TEXT_XML,
         MediaType.APPLICATION_XML,
