@@ -7,10 +7,8 @@ package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionMarshaller;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionMarshaller.Format;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionNotFoundException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 import java.io.IOException;
@@ -19,11 +17,9 @@ import java.io.OutputStream;
 import java.net.URI;
 import java.security.Principal;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.DELETE;
 import javax.ws.rs.DefaultValue;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
-import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
@@ -119,151 +115,9 @@ public class VirtualCollectionsResource extends AbstractVirtualCollectionRegistr
         }
     }
 
-    @GET
     @Path("/{id}")
-    @Produces({MediaType.TEXT_XML,
-        MediaType.APPLICATION_XML,
-        MediaType.APPLICATION_JSON})
-    public Response getVirtualCollection(@PathParam("id") long id)
-            throws VirtualCollectionRegistryException {
-        final VirtualCollection vc = registry.retrieveVirtualCollection(id);
-        // XXX: what about non-public VCs?
-        StreamingOutput writer = new StreamingOutput() {
-            public void write(OutputStream output) throws IOException,
-                    WebApplicationException {
-                final Format format = getOutputFormat(headers);
-                registry.getMarshaller().marshal(output, format, vc);
-                output.close();
-            }
-        };
-        return Response.ok(writer).build();
+    public VirtualCollectionResource getVirtualCollection(@PathParam("id") long id) {
+        return new VirtualCollectionResource(id, security, headers);
     }
 
-    @PUT
-    @Path("/{id}")
-    @Consumes({MediaType.TEXT_XML,
-        MediaType.APPLICATION_XML,
-        MediaType.APPLICATION_JSON})
-    @Produces({MediaType.TEXT_XML,
-        MediaType.APPLICATION_XML,
-        MediaType.APPLICATION_JSON})
-    public Response updateVirtualCollection(@PathParam("id") long id,
-            InputStream input) throws VirtualCollectionRegistryException {
-        Principal principal = security.getUserPrincipal();
-        if (principal == null) {
-            throw new NullPointerException("princial == null");
-        }
-        try {
-            VirtualCollectionMarshaller.Format format = getInputFormat(headers);
-            String encoding = getInputEncoding(headers);
-            VirtualCollection vc
-                    = registry.getMarshaller().unmarshal(input, format, encoding);
-            registry.updateVirtualCollection(principal, id, vc);
-            RestResponse response = new RestResponse();
-            response.setIsSuccess(true);
-            response.setInfo("updated");
-            response.setId(id);
-            return Response.ok(response).build();
-        } catch (IOException e) {
-            throw new VirtualCollectionRegistryException("update", e);
-
-        }
-    }
-
-    @DELETE
-    @Path("/{id}")
-    @Produces({MediaType.TEXT_XML,
-        MediaType.APPLICATION_XML,
-        MediaType.APPLICATION_JSON})
-    public Response deleteVirtualCollection(@PathParam("id") long id)
-            throws VirtualCollectionRegistryException {
-        Principal principal = security.getUserPrincipal();
-        if (principal == null) {
-            throw new NullPointerException("principal == null");
-        }
-        registry.deleteVirtualCollection(principal, id);
-        RestResponse response = new RestResponse();
-        response.setIsSuccess(true);
-        response.setInfo("deleted");
-        response.setId(id);
-        return Response.ok(response).build();
-    }
-
-    @GET
-    @Path("/{id}/cmdi")
-    @Produces({MediaType.TEXT_XML,
-        MediaType.APPLICATION_XML})
-    public Response getClarinVirtualCollection(@PathParam("id") long id)
-            throws VirtualCollectionRegistryException {
-        final VirtualCollection vc = registry.retrieveVirtualCollection(id);
-        if (!vc.isPublic() || (vc.getPersistentIdentifier() == null)) {
-            throw new VirtualCollectionNotFoundException(id);
-        }
-        StreamingOutput writer = new StreamingOutput() {
-            public void write(OutputStream output) throws IOException,
-                    WebApplicationException {
-                registry.getMarshaller().marshalAsCMDI(output, Format.XML, vc);
-                output.close();
-            }
-        };
-        return Response.ok(writer).build();
-    }
-
-    @GET
-    @Path("/{id}/state")
-    @Produces({MediaType.TEXT_XML,
-        MediaType.APPLICATION_XML,
-        MediaType.APPLICATION_JSON})
-    public Response getVirtualCollectionState(@PathParam("id") long id)
-            throws VirtualCollectionRegistryException {
-        VirtualCollection.State state = registry.getVirtualCollectionState(id);
-        State result = null;
-        switch (state) {
-            case PUBLIC_PENDING:
-            /* FALL-THROUGH */
-            case PUBLIC:
-                result = State.PUBLIC;
-                break;
-            default:
-                result = State.PRIVATE;
-        } // switch
-        return Response.ok(result).build();
-    }
-
-    @POST
-    @Path("/{id}/state")
-    @Consumes({MediaType.TEXT_XML,
-        MediaType.APPLICATION_XML,
-        MediaType.APPLICATION_JSON})
-    @Produces({MediaType.TEXT_XML,
-        MediaType.APPLICATION_XML,
-        MediaType.APPLICATION_JSON})
-    public Response setVirtualCollectionState(@PathParam("id") long id,
-            State state)
-            throws VirtualCollectionRegistryException {
-        Principal principal = security.getUserPrincipal();
-        if (principal == null) {
-            throw new NullPointerException("principal == null");
-        }
-        if (state == null) {
-            throw new VirtualCollectionRegistryUsageException("invalid state");
-        }
-        VirtualCollection.State vc_state = null;
-        switch (state) {
-            case PUBLIC:
-                vc_state = VirtualCollection.State.PUBLIC_PENDING;
-                break;
-            case PRIVATE:
-                vc_state = VirtualCollection.State.PRIVATE;
-                break;
-            default:
-                throw new VirtualCollectionRegistryUsageException("invalid state");
-        }
-        registry.setVirtualCollectionState(principal, id, vc_state);
-        RestResponse response = new RestResponse();
-        response.setIsSuccess(true);
-        response.setInfo("updated state to '" + state + "'");
-        response.setId(id);
-        return Response.ok(response).build();
-    }
 }
