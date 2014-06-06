@@ -1,8 +1,3 @@
-/*
- * To change this license header, choose License Headers in Project Properties.
- * To change this template file, choose Tools | Templates
- * and open the template in the editor.
- */
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionMarshaller;
@@ -38,7 +33,7 @@ import javax.ws.rs.core.UriInfo;
  * @author twagoo
  */
 @Path("/virtualcollections")
-public class VirtualCollectionsResource extends AbstractVirtualCollectionRegistryResource {
+public class VirtualCollectionsResource  {
 
     private final VirtualCollectionRegistry registry
             = VirtualCollectionRegistry.instance();
@@ -63,7 +58,7 @@ public class VirtualCollectionsResource extends AbstractVirtualCollectionRegistr
         StreamingOutput writer = new StreamingOutput() {
             public void write(OutputStream output) throws IOException,
                     WebApplicationException {
-                final Format format = getOutputFormat(headers);
+                final Format format = RestUtils.getOutputFormat(headers);
                 registry.getMarshaller().marshal(output, format, vcs);
                 output.close();
             }
@@ -98,8 +93,8 @@ public class VirtualCollectionsResource extends AbstractVirtualCollectionRegistr
             throw new AssertionError("principal == null");
         }
         try {
-            VirtualCollectionMarshaller.Format format = getInputFormat(headers);
-            String encoding = getInputEncoding(headers);
+            VirtualCollectionMarshaller.Format format = RestUtils.getInputFormat(headers);
+            String encoding = RestUtils.getInputEncoding(headers);
             VirtualCollection vc
                     = registry.getMarshaller().unmarshal(input, format, encoding);
             long id = registry.createVirtualCollection(principal, vc);
