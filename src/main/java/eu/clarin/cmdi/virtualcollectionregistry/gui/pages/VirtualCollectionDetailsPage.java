@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.DateConverter;
 import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
@@ -62,18 +63,8 @@ public class VirtualCollectionDetailsPage extends BasePage {
             return null;
         }
     };
-    private static final IConverter convDate = new IConverter() {
-        @Override
-        public String convertToString(Object o, Locale locale) {
-            return FastDateFormat.getInstance("yyyy-MM-dd")
-                .format((Date) o);
-        }
-
-        @Override
-        public Object convertToObject(String s, Locale locale) {
-            return null;
-        }
-    };
+    private static final IConverter convDate = new DateConverter();
+    
     private static final String CSS_CLASS = "collectionDetails";
 
     /*
