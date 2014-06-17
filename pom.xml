@@ -441,7 +441,7 @@
     <dependency>
       <groupId>de.mpg.mpgaai</groupId>
       <artifactId>mpgaai-shhaa</artifactId>
-      <version>1.0.5-patched.1</version>
+      <version>1.0.5</version>
     </dependency>
   </dependencies>
 
