@@ -13,19 +13,29 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryExcepti
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.wizard.CreateVirtualCollectionWizard;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import org.apache.wicket.PageParameters;
 
 @AuthorizeInstantiation(Roles.USER)
 @SuppressWarnings("serial")
 public class CreateVirtualCollectionPage extends BasePage {
 
-    public CreateVirtualCollectionPage() {
+    // only for extensions
+    protected CreateVirtualCollectionPage() {
+    }
+
+    // used when page constructed by framework
+    public CreateVirtualCollectionPage(PageParameters params) {
+        //ignore any params
         this(new VirtualCollection(), null);
     }
 
-    public CreateVirtualCollectionPage(VirtualCollection vc,
-            final Page previousPage) {
-        final CreateVirtualCollectionWizard wizard =
-            new CreateVirtualCollectionWizard("wizard", vc) {
+    public CreateVirtualCollectionPage(VirtualCollection vc, final Page previousPage) {
+        final CreateVirtualCollectionWizard wizard = createWizard(vc, previousPage);
+        add(wizard);
+    }
+
+    protected final CreateVirtualCollectionWizard createWizard(VirtualCollection vc, final Page previousPage) {
+        return new CreateVirtualCollectionWizard("wizard", vc) {
 
             @Override
             protected void onCancelWizard() {
@@ -40,15 +50,15 @@ public class CreateVirtualCollectionPage extends BasePage {
             @Override
             protected void onFinishWizard(VirtualCollection vc) {
                 try {
-                    VirtualCollectionRegistry vcr =
-                        VirtualCollectionRegistry.instance();
-                    ApplicationSession session =
-                        (ApplicationSession) getSession();
+                    VirtualCollectionRegistry vcr
+                            = VirtualCollectionRegistry.instance();
+                    ApplicationSession session
+                            = (ApplicationSession) getSession();
                     Principal principal = session.getPrincipal();
                     if (principal == null) {
                         // XXX: security issue?
                         throw new WicketRuntimeException("principal == null");
-                        
+
                     }
                     // FIXME: get date from GUI?
                     if (vc.getId() == null) {
@@ -70,7 +80,6 @@ public class CreateVirtualCollectionPage extends BasePage {
                 }
             }
         };
-        add(wizard);
     }
 
 } // class CreateVirtualCollecionPage

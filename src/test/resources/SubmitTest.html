@@ -1,0 +1,53 @@
+<!DOCTYPE html>
+<html>
+    <head>
+        <title>VCR form submission test</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <style>
+            li {
+                list-style-type: none;
+                margin-bottom: 1em;
+            }
+            input[type='text'] {
+                min-width: 400px;
+                position: absolute;
+                left: 20em;
+                clear: right;
+            }
+        </style>
+    </head>
+    <body>
+        <h1>Extensional</h1>
+        <form 
+            action="http://localhost:8080/VirtualCollectionRegistry/service/submit"
+            method="POST">
+            <input type="hidden" name="type" value="EXTENSIONAL" />
+            <ul>
+                <li><label>Name: <input type="text" name="name" value="Test extensional" /></label></li>
+                <li><label>Metadata URI 1: <input type="text" name="metadataUri" value="http://md1" /></label></li>
+                <li><label>Metadata URI 2: <input type="text" name="metadataUri" value="http://md2" /></label></li>
+                <li><label>Resource URI 1: <input type="text" name="resourceUri" value="http://res1" /></label></li>
+                <li><label>Resource URI 2: <input type="text" name="resourceUri" value="http://res2" /></label></li>
+            </ul>
+            <input type="submit" />
+        </form>      
+        
+        <hr />
+        
+        <h1>Intensional</h1>
+        <form 
+            action="http://localhost:8080/VirtualCollectionRegistry/service/submit"
+            method="POST">
+            <input type="hidden" name="type" value="INTENSIONAL" />
+            <ul>
+                <li><label>Name: <input type="text" name="name" value="Test intensional" /></label></li>
+                <li><label>Description <input type="text" name="queryDescription" value="Description" /></label></li>
+                <li><label>URI: <input type="text" name="queryUri" value="http://catalog.clarin.eu/vlo" /></label></li>
+                <li><label>Query profile: <input type="text" name="queryProfile" value="fq" /></label></li>
+                <li><label>Query value: <input type="text" name="queryValue" value="language:Dutch" /></label></li>
+            </ul>
+            <input type="submit" />
+        </form>
+    </body>
+</html>

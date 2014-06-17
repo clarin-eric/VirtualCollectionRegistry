@@ -22,114 +22,119 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.menu.AjaxPopupMenu;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.State;
+import java.util.Collections;
+import org.apache.wicket.PageParameters;
 
 @AuthorizeInstantiation(Roles.USER)
 @SuppressWarnings("serial")
 public class BrowsePrivateCollectionsPage extends BasePage {
+
     private class ActionsColumn extends Panel {
+
         public ActionsColumn(String id, IModel<VirtualCollection> model) {
             super(id, model);
             setRenderBodyOnly(true);
 
-            final AjaxPopupMenu menu =
-                new AjaxPopupMenu("menu", new Model<String>("[actions]"));
+            final AjaxPopupMenu menu
+                    = new AjaxPopupMenu("menu", new Model<String>("[actions]"));
 
-            final AjaxLinkMenuItem<VirtualCollection> publishItem =
-                new AjaxLinkMenuItem<VirtualCollection>(
-                    new Model<String>("Publish"), model, "publish") {
-                @Override
-                protected void onClick(AjaxRequestTarget target,
-                        IModel<VirtualCollection> model) {
-                    doPublish(target, model.getObject());
-                }
-            };
-            menu.add(publishItem);
+            final AjaxLinkMenuItem<VirtualCollection> publishItem
+                    = new AjaxLinkMenuItem<VirtualCollection>(
+                            new Model<String>("Publish"), model, "publish") {
+                                @Override
+                                protected void onClick(AjaxRequestTarget target,
+                                        IModel<VirtualCollection> model) {
+                                    doPublish(target, model.getObject());
+                                }
+                            };
+                    menu.add(publishItem);
 
-            final AjaxLinkMenuItem<VirtualCollection> editItem =
-                new AjaxLinkMenuItem<VirtualCollection>(
-                    new Model<String>("Edit"), model, "edit") {
-                @Override
-                protected void onClick(AjaxRequestTarget target,
-                        IModel<VirtualCollection> model) {
-                    doEdit(target, model.getObject());
-                }
-            };
-            menu.add(editItem);
+                    final AjaxLinkMenuItem<VirtualCollection> editItem
+                            = new AjaxLinkMenuItem<VirtualCollection>(
+                                    new Model<String>("Edit"), model, "edit") {
+                                        @Override
+                                        protected void onClick(AjaxRequestTarget target,
+                                                IModel<VirtualCollection> model) {
+                                            doEdit(target, model.getObject());
+                                        }
+                                    };
+                            menu.add(editItem);
 
-            final AjaxLinkMenuItem<VirtualCollection> deleteItem =
-                new AjaxLinkMenuItem<VirtualCollection>(
-                    new Model<String>("Delete"), model, "delete") {
-                @Override
-                protected void onClick(AjaxRequestTarget target,
-                        IModel<VirtualCollection> model) {
-                    doDelete(target, model.getObject());
-                }
-            };
-            menu.add(deleteItem);
+                            final AjaxLinkMenuItem<VirtualCollection> deleteItem
+                                    = new AjaxLinkMenuItem<VirtualCollection>(
+                                            new Model<String>("Delete"), model, "delete") {
+                                                @Override
+                                                protected void onClick(AjaxRequestTarget target,
+                                                        IModel<VirtualCollection> model) {
+                                                    doDelete(target, model.getObject());
+                                                }
+                                            };
+                                    menu.add(deleteItem);
 
-            final AjaxLinkMenuItem<VirtualCollection> detailsItem =
-                new AjaxLinkMenuItem<VirtualCollection>(
-                    new Model<String>("Details"), model, "details") {
-                @Override
-                protected void onClick(AjaxRequestTarget target,
-                        IModel<VirtualCollection> model) {
-                    doDetails(target, model);
-                }
-            };
-            menu.add(detailsItem);
-            add(menu);
-            
-            final VirtualCollection vc = model.getObject();
-            if (vc.isDeleted()) {
-                detailsItem.setVisible(false).setEnabled(false);
-            }
-            if (!vc.isPrivate()) {
-                editItem.setVisible(false).setEnabled(false);
-                publishItem.setVisible(false).setEnabled(false);
-                deleteItem.setVisible(false).setEnabled(false);
-            }
+                                    final AjaxLinkMenuItem<VirtualCollection> detailsItem
+                                            = new AjaxLinkMenuItem<VirtualCollection>(
+                                                    new Model<String>("Details"), model, "details") {
+                                                        @Override
+                                                        protected void onClick(AjaxRequestTarget target,
+                                                                IModel<VirtualCollection> model) {
+                                                            doDetails(target, model);
+                                                        }
+                                                    };
+                                            menu.add(detailsItem);
+                                            add(menu);
+
+                                            final VirtualCollection vc = model.getObject();
+                                            if (vc.isDeleted()) {
+                                                detailsItem.setVisible(false).setEnabled(false);
+                                            }
+                                            if (!vc.isPrivate()) {
+                                                editItem.setVisible(false).setEnabled(false);
+                                                publishItem.setVisible(false).setEnabled(false);
+                                                deleteItem.setVisible(false).setEnabled(false);
+                                            }
         }
     }
 
     private class ActionsPanel extends Panel {
+
         public ActionsPanel(String id, IModel<VirtualCollection> model) {
             super(id, model);
             setRenderBodyOnly(true);
 
-            final AjaxLink<VirtualCollection> publishLink =
-                new AjaxLink<VirtualCollection>("publish", model) {
-                @Override
-                public void onClick(AjaxRequestTarget target) {
-                    doPublish(target, getModelObject());
-                }
-            };
+            final AjaxLink<VirtualCollection> publishLink
+                    = new AjaxLink<VirtualCollection>("publish", model) {
+                        @Override
+                        public void onClick(AjaxRequestTarget target) {
+                            doPublish(target, getModelObject());
+                        }
+                    };
             add(publishLink);
 
-            final AjaxLink<VirtualCollection> editLink =
-                new AjaxLink<VirtualCollection>("edit", model) {
-                @Override
-                public void onClick(AjaxRequestTarget target) {
-                    doEdit(target, getModelObject());
-                }
-            };
+            final AjaxLink<VirtualCollection> editLink
+                    = new AjaxLink<VirtualCollection>("edit", model) {
+                        @Override
+                        public void onClick(AjaxRequestTarget target) {
+                            doEdit(target, getModelObject());
+                        }
+                    };
             add(editLink);
 
-            final AjaxLink<VirtualCollection> deleteLink =
-                new AjaxLink<VirtualCollection>("delete", model) {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        doDelete(target, getModelObject());
-                    }
-            };
+            final AjaxLink<VirtualCollection> deleteLink
+                    = new AjaxLink<VirtualCollection>("delete", model) {
+                        @Override
+                        public void onClick(AjaxRequestTarget target) {
+                            doDelete(target, getModelObject());
+                        }
+                    };
             add(deleteLink);
 
-            final AjaxLink<VirtualCollection> detailsLink =
-                new AjaxLink<VirtualCollection>("details", model) {
-                @Override
-                public void onClick(AjaxRequestTarget target) {
-                    doDetails(target, getModel());
-                }
-            };
+            final AjaxLink<VirtualCollection> detailsLink
+                    = new AjaxLink<VirtualCollection>("details", model) {
+                        @Override
+                        public void onClick(AjaxRequestTarget target) {
+                            doDetails(target, getModel());
+                        }
+                    };
             add(detailsLink);
 
             final VirtualCollection vc = model.getObject();
@@ -141,16 +146,17 @@ public class BrowsePrivateCollectionsPage extends BasePage {
                 publishLink.setVisible(false).setEnabled(false);
                 deleteLink.setVisible(false).setEnabled(false);
             }
-            boolean isVisible = detailsLink.isVisible() ||
-                    editLink.isVisible() || publishLink.isVisible() ||
-                    deleteLink.isVisible();
+            boolean isVisible = detailsLink.isVisible()
+                    || editLink.isVisible() || publishLink.isVisible()
+                    || deleteLink.isVisible();
             setVisible(isVisible);
         }
     } // class BrowsePrivateCollectionsPage.ActionsPanel
 
     private final class PublishCollectionDialog extends ConfirmationDialog {
+
         private long vcId;
-        
+
         public PublishCollectionDialog(String id,
                 final Component updateComponenet) {
             super(id, updateComponenet);
@@ -160,8 +166,8 @@ public class BrowsePrivateCollectionsPage extends BasePage {
         @Override
         public void onConfirm(AjaxRequestTarget target) {
             try {
-                final VirtualCollectionRegistry vcr =
-                    VirtualCollectionRegistry.instance();
+                final VirtualCollectionRegistry vcr
+                        = VirtualCollectionRegistry.instance();
                 vcr.setVirtualCollectionState(getUser(), vcId,
                         State.PUBLIC_PENDING);
             } catch (VirtualCollectionRegistryException e) {
@@ -178,8 +184,9 @@ public class BrowsePrivateCollectionsPage extends BasePage {
     } // class BrowsePrivateCollectionsPage.PublishCollectionDialog
 
     private final class DeleteCollectionDialog extends ConfirmationDialog {
+
         private long vcId;
-        
+
         public DeleteCollectionDialog(String id,
                 final Component updateComponenet) {
             super(id, updateComponenet);
@@ -189,8 +196,8 @@ public class BrowsePrivateCollectionsPage extends BasePage {
         @Override
         public void onConfirm(AjaxRequestTarget target) {
             try {
-                final VirtualCollectionRegistry vcr =
-                    VirtualCollectionRegistry.instance();
+                final VirtualCollectionRegistry vcr
+                        = VirtualCollectionRegistry.instance();
                 vcr.deleteVirtualCollection(getUser(), vcId);
             } catch (VirtualCollectionRegistryException e) {
                 e.printStackTrace();
@@ -210,20 +217,20 @@ public class BrowsePrivateCollectionsPage extends BasePage {
 
     public BrowsePrivateCollectionsPage() {
         super();
-        final VirtualCollectionTable table =
-            new VirtualCollectionTable("collectionsTable", true) {
-            @Override
-            protected Panel createActionColumn(String componentId,
-                    IModel<VirtualCollection> model) {
-                return new ActionsColumn(componentId, model);
-            }
+        final VirtualCollectionTable table
+                = new VirtualCollectionTable("collectionsTable", true) {
+                    @Override
+                    protected Panel createActionColumn(String componentId,
+                            IModel<VirtualCollection> model) {
+                        return new ActionsColumn(componentId, model);
+                    }
 
-            @Override
-            protected Panel createActionPanel(String componentId,
-                    IModel<VirtualCollection> model) {
-                return new ActionsPanel(componentId, model);
-            }
-        };
+                    @Override
+                    protected Panel createActionPanel(String componentId,
+                            IModel<VirtualCollection> model) {
+                        return new ActionsPanel(componentId, model);
+                    }
+                };
         add(table);
 
         publishDialog = new PublishCollectionDialog("publishCollectionDialog",
@@ -236,8 +243,8 @@ public class BrowsePrivateCollectionsPage extends BasePage {
 
     private void doEdit(AjaxRequestTarget target,
             VirtualCollection vc) {
-        setResponsePage(new CreateVirtualCollectionPage(vc, getPage()));
-    };
+        setResponsePage(EditVirtualCollectionPage.class, new PageParameters(Collections.singletonMap("id", vc.getId())));
+    }
 
     private void doPublish(AjaxRequestTarget target,
             VirtualCollection vc) {
@@ -254,13 +261,5 @@ public class BrowsePrivateCollectionsPage extends BasePage {
         setResponsePage(new VirtualCollectionDetailsPage(vc, getPage()));
     }
 
-    private Principal getUser() {
-        ApplicationSession session = (ApplicationSession) getSession();
-        Principal principal = session.getPrincipal();
-        if (principal == null) {
-            throw new WicketRuntimeException("principal == null");
-        }
-        return principal;
-    }
 
 } // class BrowsePrivateCollectionsPage

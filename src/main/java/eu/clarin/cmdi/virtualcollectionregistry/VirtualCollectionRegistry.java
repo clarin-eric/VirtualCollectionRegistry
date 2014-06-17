@@ -353,6 +353,13 @@ public class VirtualCollectionRegistry {
         }
     }
     
+    /**
+     * 
+     * @param id identifier of the virtual collection to retrieve
+     * @return the identified virtual collection, never null
+     * @throws VirtualCollectionRegistryException if no virtual collection with
+     * the specified identifier exists
+     */
     public VirtualCollection retrieveVirtualCollection(long id)
             throws VirtualCollectionRegistryException {
         if (id <= 0) {

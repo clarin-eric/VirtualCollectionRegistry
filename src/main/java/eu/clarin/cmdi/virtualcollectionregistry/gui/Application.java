@@ -1,29 +1,30 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AdminPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePrivateCollectionsPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePublicCollectionsPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.CreateVirtualCollectionPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.EditVirtualCollectionPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.LoginPage;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.apache.wicket.Page;
 import org.apache.wicket.authentication.AuthenticatedWebApplication;
 import org.apache.wicket.authentication.AuthenticatedWebSession;
 import org.apache.wicket.authorization.strategies.role.Roles;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.request.target.coding.MixedParamHybridUrlCodingStrategy;
 import org.apache.wicket.session.pagemap.LeastRecentlyAccessedEvictionStrategy;
 
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AdminPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePrivateCollectionsPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.CreateVirtualCollectionPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePublicCollectionsPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.LoginPage;
-
 public class Application extends AuthenticatedWebApplication {
+
     private static final String CONFIG_PARAM_ADMINDB = "admindb";
-    private Set<String> adminUsers =
-        new HashSet<String>();
+    private Set<String> adminUsers
+            = new HashSet<String>();
 
     @Override
     protected void init() {
@@ -33,7 +34,7 @@ public class Application extends AuthenticatedWebApplication {
         if (s != null) {
             try {
                 loadAdminDatabase(s);
-            } catch (IOException e ) {
+            } catch (IOException e) {
                 // FIXME: handle error
             }
         }
@@ -50,6 +51,7 @@ public class Application extends AuthenticatedWebApplication {
             getMarkupSettings().setStripWicketTags(true);
             getMarkupSettings().setStripComments(true);
         }
+
         mountBookmarkablePage("/login",
                 LoginPage.class);
         mountBookmarkablePage("/public",
@@ -58,6 +60,10 @@ public class Application extends AuthenticatedWebApplication {
                 BrowsePrivateCollectionsPage.class);
         mountBookmarkablePage("/create", CreateVirtualCollectionPage.class);
         mountBookmarkablePage("/admin", AdminPage.class);
+
+        // editing an existing collection by ID, e.g. /edit/123
+        mount(new MixedParamHybridUrlCodingStrategy("/edit", 
+                EditVirtualCollectionPage.class, new String[]{"id"}));
     }
 
     @Override

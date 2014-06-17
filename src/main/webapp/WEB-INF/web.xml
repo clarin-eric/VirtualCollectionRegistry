@@ -113,6 +113,12 @@
             <http-method>GET</http-method>
         </web-resource-collection>
         <web-resource-collection>
+            <web-resource-name>REST-Web-Service</web-resource-name>
+            <description></description>
+            <url-pattern>/service/submit</url-pattern>
+            <http-method>POST</http-method>
+        </web-resource-collection>
+        <web-resource-collection>
             <web-resource-name>VirtualCollectionRegistryApplication</web-resource-name>
             <description></description>
             <url-pattern>/app/login</url-pattern>
