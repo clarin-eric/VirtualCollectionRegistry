@@ -27,16 +27,17 @@ if in doubt, please check the Apache Tomcat documentation):
   You need to choose, which persistent identifier provider you want to use.
   You can either use a dummy provider or the GWDG handle provider.
   a) For using the dummy provider add the following:
-  <Parameter name="pid_provider.class"
-             value="eu.clarin.cmdi.virtualcollectionregistry.DummyPersistentIdentifierProvider"
-             override="false"/>
+  <Parameter name="spring.profiles.active"
+             value="vcr.pid.dummy"
+             override="false"/>   
 
   b) For using the GWDG handle provider add following and customize the
      base URI for the virtual collection registry and the values for
      $gwdg_user and $gwdg_password:
-  <Parameter name="pid_provider.class"
-             value="eu.clarin.cmdi.virtualcollectionregistry.GWDGPersistentIdentifierProvider"
-             override="false"/>
+
+  <Parameter name="spring.profiles.active"
+             value="vcr.pid.gwdg"
+             override="false"/>   
   <Parameter name="pid_provider.base_uri"
              value="http://127.0.0.1:8080/VirtualCollectionRegistry"
              override="false"/>

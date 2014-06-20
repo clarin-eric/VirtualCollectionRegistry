@@ -1,8 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.pid;
 
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
-import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
-import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifierProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.net.URI;
 import org.springframework.context.annotation.Profile;

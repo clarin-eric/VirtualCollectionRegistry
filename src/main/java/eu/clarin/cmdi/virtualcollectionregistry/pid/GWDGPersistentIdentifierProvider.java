@@ -2,14 +2,11 @@ package eu.clarin.cmdi.virtualcollectionregistry.pid;
 
 import eu.clarin.cmdi.virtualcollectionregistry.ServletUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
-import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
-import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifierProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
