@@ -1,4 +1,4 @@
-package eu.clarin.cmdi.virtualcollectionregistry;
+package eu.clarin.cmdi.virtualcollectionregistry.service.impl;
 
 import static org.junit.Assert.assertEquals;
 import static org.junit.Assert.assertNotNull;
@@ -12,8 +12,7 @@ import java.text.SimpleDateFormat;
 
 import org.junit.Test;
 
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionMarshaller;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionMarshaller.Format;
+import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller.Format;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
 import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedByQuery;
@@ -24,8 +23,8 @@ public class VirtualCollectionMarshallerTest {
 
     @Test
     public void testMinmalExtensional() throws Exception {
-        VirtualCollectionMarshaller m =
-           new VirtualCollectionMarshaller();
+        VirtualCollectionMarshallerImpl m =
+           new VirtualCollectionMarshallerImpl();
         VirtualCollection vc = new VirtualCollection();
         vc.setType(VirtualCollection.Type.EXTENSIONAL);
         vc.setName("Test 12");
@@ -42,8 +41,8 @@ public class VirtualCollectionMarshallerTest {
 
     @Test
     public void testUnmarshallExtensionalCollection() throws Exception {
-        VirtualCollectionMarshaller m =
-            new VirtualCollectionMarshaller();
+        VirtualCollectionMarshallerImpl m =
+            new VirtualCollectionMarshallerImpl();
          InputStream in = this.getClass().getClassLoader()
                 .getResourceAsStream("VirtualCollection-extensional.xml");
         VirtualCollection vc = m.unmarshal(in, Format.XML, "utf-8");
@@ -135,8 +134,8 @@ public class VirtualCollectionMarshallerTest {
 
     @Test
     public void testUnmarshallIntensionalCollection() throws Exception {
-        VirtualCollectionMarshaller m =
-            new VirtualCollectionMarshaller();
+        VirtualCollectionMarshallerImpl m =
+            new VirtualCollectionMarshallerImpl();
         InputStream in = this.getClass().getClassLoader()
                 .getResourceAsStream("VirtualCollection-intensional.xml");
         VirtualCollection vc = m.unmarshal(in, Format.XML, "utf-8");

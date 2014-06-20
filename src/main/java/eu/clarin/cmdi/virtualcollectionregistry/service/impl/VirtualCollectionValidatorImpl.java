@@ -1,18 +1,23 @@
-package eu.clarin.cmdi.virtualcollectionregistry;
+package eu.clarin.cmdi.virtualcollectionregistry.service.impl;
 
-import java.util.HashSet;
-import java.util.Set;
-
+import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidator;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
 import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedByQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import java.util.HashSet;
+import java.util.Set;
 
-public class VirtualCollectionValidator {
-    private Set<Creator> uniqueCreators = new HashSet<Creator>(16);
-    private Set<String> uniqueResourceRefs = new HashSet<String>(512);
+//TODO: @Service
+//TODO: @Scope(value = SCOPE_PROTOTYPE)
+public class VirtualCollectionValidatorImpl implements VirtualCollectionValidator {
+    private final Set<Creator> uniqueCreators = new HashSet<Creator>(16);
+    private final Set<String> uniqueResourceRefs = new HashSet<String>(512);
 
+    @Override
     public void validate(VirtualCollection vc)
             throws VirtualCollectionRegistryException {
         if (vc == null) {

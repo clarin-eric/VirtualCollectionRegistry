@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
+import eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionValidatorImpl;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
@@ -40,8 +41,6 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
     private DataStore datastore; //TODO: replace with Spring managed EM
     @Autowired
     private PersistentIdentifierProvider pid_provider;
-    @Autowired
-    private VirtualCollectionMarshaller marshaller;
     @Autowired
     private OAIProvider oaiProvider;
     
@@ -87,14 +86,6 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
         oaiProvider.shutdown();
     }
 
-    public DataStore getDataStore() {
-        return datastore;
-    }
-
-    public VirtualCollectionMarshaller getMarshaller() {
-        return marshaller;
-    }
-
     public long createVirtualCollection(Principal principal,
             VirtualCollection vc) throws VirtualCollectionRegistryException {
         if (principal == null) {
@@ -106,8 +97,8 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
 
         logger.debug("creating virtual collection");
 
-        VirtualCollectionValidator validator =
-            new VirtualCollectionValidator();
+        VirtualCollectionValidatorImpl validator =
+            new VirtualCollectionValidatorImpl();
         validator.validate(vc);
         try {
             EntityManager em = datastore.getEntityManager();
@@ -146,8 +137,8 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
 
         logger.debug("updating virtual collection (id={})", id);
 
-        VirtualCollectionValidator validator =
-            new VirtualCollectionValidator();
+        VirtualCollectionValidatorImpl validator =
+            new VirtualCollectionValidatorImpl();
         validator.validate(vc);
 
         try {

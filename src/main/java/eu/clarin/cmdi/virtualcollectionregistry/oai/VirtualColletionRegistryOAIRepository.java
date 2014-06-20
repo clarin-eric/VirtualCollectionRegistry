@@ -8,12 +8,14 @@ import eu.clarin.cmdi.oai.provider.Record;
 import eu.clarin.cmdi.oai.provider.RecordList;
 import eu.clarin.cmdi.oai.provider.Repository;
 import eu.clarin.cmdi.oai.provider.SetSpecDesc;
+import eu.clarin.cmdi.virtualcollectionregistry.DataStore;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionNotFoundException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection_;
+import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionCMDIWriter;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
@@ -33,12 +35,17 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-class VirtualColletionRegistryOAIRepository implements Repository {
+public class VirtualColletionRegistryOAIRepository implements Repository {
+
+    @Autowired
+    private VirtualCollectionCMDIWriter cmdiWriter;
+    @Autowired
+    private DataStore dataStore;
 
     private static final Logger logger
             = LoggerFactory.getLogger(VirtualColletionRegistryOAIRepository.class);
 
-    private final class CMDIMetadataFormat implements MetadataFormat {
+    private class CMDIMetadataFormat implements MetadataFormat {
 
         @Override
         public String getPrefix() {
@@ -65,7 +72,7 @@ class VirtualColletionRegistryOAIRepository implements Repository {
         public void writeObject(XMLStreamWriter stream, Object item)
                 throws XMLStreamException {
             final VirtualCollection vc = (VirtualCollection) item;
-            registry.getMarshaller().writeCMDI(stream, vc);
+            cmdiWriter.writeCMDI(stream, vc);
         }
     } // class CMDIMetadataFormat
 
@@ -96,7 +103,7 @@ class VirtualColletionRegistryOAIRepository implements Repository {
     public Date getEarliestTimestamp() {
         Date result = null;
         try {
-            EntityManager em = registry.getDataStore().getEntityManager();
+            EntityManager em = dataStore.getEntityManager();
             CriteriaBuilder cb = em.getCriteriaBuilder();
 
             CriteriaQuery<Date> cq = cb.createQuery(Date.class);
@@ -115,7 +122,7 @@ class VirtualColletionRegistryOAIRepository implements Repository {
         } catch (Exception e) {
             logger.debug("error fetching earliest timestamp", e);
         } finally {
-            registry.getDataStore().closeEntityManager();
+            dataStore.closeEntityManager();
         }
         return result;
     }
@@ -241,7 +248,7 @@ class VirtualColletionRegistryOAIRepository implements Repository {
     public RecordList getRecords(String prefix, Date from, Date until,
             String set, int offset, boolean headerOnly) throws OAIException {
         try {
-            EntityManager em = registry.getDataStore().getEntityManager();
+            EntityManager em = dataStore.getEntityManager();
             CriteriaBuilder cb = em.getCriteriaBuilder();
 
             CriteriaQuery<Long> cq1 = cb.createQuery(Long.class);
@@ -295,7 +302,7 @@ class VirtualColletionRegistryOAIRepository implements Repository {
         } catch (Exception e) {
             throw new OAIException("error fetching records", e);
         } finally {
-            registry.getDataStore().closeEntityManager();
+            dataStore.closeEntityManager();
         }
     }
 

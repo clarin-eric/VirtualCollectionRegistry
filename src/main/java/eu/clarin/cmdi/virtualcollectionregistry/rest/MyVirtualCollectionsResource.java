@@ -1,10 +1,10 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
 import com.sun.jersey.api.core.InjectParam;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionMarshaller;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
+import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.net.URI;
@@ -34,6 +34,8 @@ public class MyVirtualCollectionsResource {
 
     @InjectParam
     private VirtualCollectionRegistry registry;
+    @InjectParam
+    private VirtualCollectionMarshaller marshaller;
     @Context
     private SecurityContext security;
     @Context
@@ -88,7 +90,7 @@ public class MyVirtualCollectionsResource {
             public void write(OutputStream output) throws IOException,
                     WebApplicationException {
                 final VirtualCollectionMarshaller.Format format = RestUtils.getOutputFormat(headers);
-                registry.getMarshaller().marshal(output, format, vcs);
+                marshaller.marshal(output, format, vcs);
                 output.close();
             }
         };

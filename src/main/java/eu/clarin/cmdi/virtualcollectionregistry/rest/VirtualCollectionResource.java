@@ -1,12 +1,12 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
 import com.sun.jersey.api.core.InjectParam;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionMarshaller;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionNotFoundException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -41,6 +41,8 @@ public final class VirtualCollectionResource {
 
     @InjectParam
     private VirtualCollectionRegistry registry;
+    @InjectParam
+    private VirtualCollectionMarshaller marshaller;
     @Context
     private SecurityContext security;
     @Context
@@ -90,7 +92,7 @@ public final class VirtualCollectionResource {
             public void write(OutputStream output) throws IOException,
                     WebApplicationException {
                 final VirtualCollectionMarshaller.Format format = RestUtils.getOutputFormat(headers);
-                registry.getMarshaller().marshal(output, format, vc);
+                marshaller.marshal(output, format, vc);
                 output.close();
             }
         };
@@ -125,7 +127,7 @@ public final class VirtualCollectionResource {
             VirtualCollectionMarshaller.Format format = RestUtils.getInputFormat(headers);
             String encoding = RestUtils.getInputEncoding(headers);
             VirtualCollection vc
-                    = registry.getMarshaller().unmarshal(input, format, encoding);
+                    = marshaller.unmarshal(input, format, encoding);
             registry.updateVirtualCollection(principal, id, vc);
             RestResponse response = new RestResponse();
             response.setIsSuccess(true);
@@ -184,7 +186,7 @@ public final class VirtualCollectionResource {
         StreamingOutput writer = new StreamingOutput() {
             public void write(OutputStream output) throws IOException,
                     WebApplicationException {
-                registry.getMarshaller().marshalAsCMDI(output, VirtualCollectionMarshaller.Format.XML, vc);
+                marshaller.marshalAsCMDI(output, VirtualCollectionMarshaller.Format.XML, vc);
                 output.close();
             }
         };

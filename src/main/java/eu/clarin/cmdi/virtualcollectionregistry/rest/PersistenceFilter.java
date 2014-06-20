@@ -18,8 +18,7 @@ public class PersistenceFilter implements Filter {
 
     @Override
     public void init(FilterConfig config) throws ServletException {
-        // DO NOTHING
-        WebApplicationContext springContext
+        final WebApplicationContext springContext
                 = WebApplicationContextUtils.getWebApplicationContext(config.getServletContext());
         Collection values = springContext.getBeansOfType(DataStore.class).values();
         if (values.isEmpty()) {

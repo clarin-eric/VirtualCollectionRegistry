@@ -2,12 +2,12 @@ package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
 import com.sun.jersey.api.core.InjectParam;
 import com.sun.jersey.api.core.ResourceContext;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionMarshaller;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionMarshaller.Format;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
+import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
+import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller.Format;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -41,7 +41,9 @@ public class VirtualCollectionsResource {
     @Context
     private ResourceContext resourceContext;
     @InjectParam
-    private VirtualCollectionRegistry registry;
+    private VirtualCollectionRegistry registry;    
+    @InjectParam
+    private VirtualCollectionMarshaller marshaller;
     @Context
     private SecurityContext security;
     @Context
@@ -77,7 +79,7 @@ public class VirtualCollectionsResource {
             public void write(OutputStream output) throws IOException,
                     WebApplicationException {
                 final Format format = RestUtils.getOutputFormat(headers);
-                registry.getMarshaller().marshal(output, format, vcs);
+                marshaller.marshal(output, format, vcs);
                 output.close();
             }
         };
@@ -127,7 +129,7 @@ public class VirtualCollectionsResource {
             VirtualCollectionMarshaller.Format format = RestUtils.getInputFormat(headers);
             String encoding = RestUtils.getInputEncoding(headers);
             VirtualCollection vc
-                    = registry.getMarshaller().unmarshal(input, format, encoding);
+                    = marshaller.unmarshal(input, format, encoding);
             long id = registry.createVirtualCollection(principal, vc);
             RestResponse response = new RestResponse();
             response.setIsSuccess(true);

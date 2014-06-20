@@ -1,6 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionMarshaller.Format;
+import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller.Format;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
