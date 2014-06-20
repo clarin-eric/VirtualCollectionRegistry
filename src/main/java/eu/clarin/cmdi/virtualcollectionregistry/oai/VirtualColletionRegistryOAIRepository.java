@@ -1,4 +1,4 @@
-package eu.clarin.cmdi.virtualcollectionregistry;
+package eu.clarin.cmdi.virtualcollectionregistry.oai;
 
 import eu.clarin.cmdi.oai.provider.DublinCoreAdapter;
 import eu.clarin.cmdi.oai.provider.DublinCoreConverter;
@@ -8,6 +8,9 @@ import eu.clarin.cmdi.oai.provider.Record;
 import eu.clarin.cmdi.oai.provider.RecordList;
 import eu.clarin.cmdi.oai.provider.Repository;
 import eu.clarin.cmdi.oai.provider.SetSpecDesc;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionNotFoundException;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection_;

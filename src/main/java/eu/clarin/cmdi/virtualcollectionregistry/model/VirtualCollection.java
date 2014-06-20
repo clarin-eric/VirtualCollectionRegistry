@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model;
 
+import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;

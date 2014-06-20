@@ -1,5 +1,6 @@
-package eu.clarin.cmdi.virtualcollectionregistry.model;
+package eu.clarin.cmdi.virtualcollectionregistry.pid;
 
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.io.Serializable;
 
 import javax.persistence.CascadeType;

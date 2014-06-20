@@ -23,7 +23,7 @@
     -->
     <bean name="oaiProvider" class="eu.clarin.cmdi.oai.provider.impl.OAIProvider">
         <property name="repository">
-            <bean name="vcrOAIRepositorty" class="eu.clarin.cmdi.virtualcollectionregistry.VirtualColletionRegistryOAIRepository" />             
+            <bean name="vcrOAIRepositorty" class="eu.clarin.cmdi.virtualcollectionregistry.oai.VirtualColletionRegistryOAIRepository" />             
         </property>
     </bean>
 

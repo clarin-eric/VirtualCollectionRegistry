@@ -1,8 +1,9 @@
-package eu.clarin.cmdi.virtualcollectionregistry.model;
+package eu.clarin.cmdi.virtualcollectionregistry.pid;
 
 import java.net.URI;
 
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
 public abstract interface PersistentIdentifierProvider {
     public static final String BASE_URI       = "pid_provider.base_uri";

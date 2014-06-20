@@ -22,8 +22,8 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import eu.clarin.cmdi.oai.provider.impl.OAIProvider;
-import eu.clarin.cmdi.virtualcollectionregistry.model.PersistentIdentifier;
-import eu.clarin.cmdi.virtualcollectionregistry.model.PersistentIdentifierProvider;
+import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
+import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifierProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
