@@ -11,21 +11,9 @@
     
     <!-- 
     Bootstrap component scanning, so that Spring picks up @Component, 
-    @Service and @Repository annotations on classes and creates beans for
-    these 
+    @Service, @Repository annotations on classes and creates beans for these, as
+    well as @Configuration annotations for classes defining beans and properties
     -->
     <context:component-scan base-package="eu.clarin.cmdi.virtualcollectionregistry" />
-    
-    <!-- 
-    OAI provider used by the Virtual Collection Registry.
-    Defined here since component scanning is not an option because of library. 
-    TODO: use Java based configuration instead to minimise XML configuration.
-    -->
-    <bean name="oaiProvider" class="eu.clarin.cmdi.oai.provider.impl.OAIProvider">
-        <property name="repository">
-            <bean name="vcrOAIRepositorty" class="eu.clarin.cmdi.virtualcollectionregistry.oai.VirtualColletionRegistryOAIRepository" />             
-        </property>
-    </bean>
-
             
 </beans>
