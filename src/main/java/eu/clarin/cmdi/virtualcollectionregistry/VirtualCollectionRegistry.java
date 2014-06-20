@@ -1,13 +1,20 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
-import eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionValidatorImpl;
+import eu.clarin.cmdi.oai.provider.impl.OAIProvider;
+import eu.clarin.cmdi.virtualcollectionregistry.model.User;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
+import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
+import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifierProvider;
+import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
+import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidator;
+import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidatorFactory;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.LockModeType;
@@ -18,17 +25,8 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
-import eu.clarin.cmdi.oai.provider.impl.OAIProvider;
-import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
-import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifierProvider;
-import eu.clarin.cmdi.virtualcollectionregistry.model.User;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
-import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,7 +41,9 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
     private PersistentIdentifierProvider pid_provider;
     @Autowired
     private OAIProvider oaiProvider;
-    
+    @Autowired
+    private VirtualCollectionValidatorFactory validatorFactory;
+
     private static final Logger logger =
         LoggerFactory.getLogger(VirtualCollectionRegistry.class);
     private final AtomicBoolean intialized = new AtomicBoolean(false);
@@ -81,7 +81,7 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
     public void destroy() throws VirtualCollectionRegistryException {
         logger.info("Stopping Virtual Collection Registry maintenance schedule");
         timer.cancel();
-        
+
         logger.info("Shutting down OAI provider");
         oaiProvider.shutdown();
     }
@@ -97,8 +97,7 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
 
         logger.debug("creating virtual collection");
 
-        VirtualCollectionValidatorImpl validator =
-            new VirtualCollectionValidatorImpl();
+        VirtualCollectionValidator validator = validatorFactory.createValidator();
         validator.validate(vc);
         try {
             EntityManager em = datastore.getEntityManager();
@@ -137,8 +136,7 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
 
         logger.debug("updating virtual collection (id={})", id);
 
-        VirtualCollectionValidatorImpl validator =
-            new VirtualCollectionValidatorImpl();
+        VirtualCollectionValidator validator = validatorFactory.createValidator();
         validator.validate(vc);
 
         try {
@@ -159,7 +157,7 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
                         "permission denied for user \"" +
                         principal.getName() + "\"");
             }
-            
+
             // update virtual collection
             c.updateFrom(vc);
 
@@ -298,12 +296,12 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
              */
             boolean update = false;
             switch (state) {
-            case PRIVATE:
+                case PRIVATE:
                 update =  vc.getState() != state;
-                break;
-            case PUBLIC_PENDING:
+                    break;
+                case PUBLIC_PENDING:
                 update =  vc.getState() != VirtualCollection.State.PUBLIC;
-                break;
+                    break;
             }
             if (update) {
                 vc.setState(state);
@@ -319,9 +317,9 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
                     "error while setting state of virtual collection", e);
         }
     }
-    
+
     /**
-     * 
+     *
      * @param id identifier of the virtual collection to retrieve
      * @return the identified virtual collection, never null
      * @throws VirtualCollectionRegistryException if no virtual collection with
@@ -513,7 +511,7 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
             }
         }
     }
-    
+
     public List<VirtualCollection> getVirtualCollections(
             int first, int count, QueryOptions options)
             throws VirtualCollectionRegistryException {
@@ -560,7 +558,7 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
         final Date nowDateAlloc = new Date(now - 30*1000);
         // (for now) purge deleted collection roughly after 30 seconds
         final Date nowDatePurge = new Date(now - 30*1000);
-        
+
         EntityManager em = datastore.getEntityManager();
         try {
             /*
@@ -569,7 +567,7 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
             em.getTransaction().begin();
             TypedQuery<VirtualCollection> q =
                 em.createNamedQuery("VirtualCollection.findAllByState",
-                                    VirtualCollection.class);
+                            VirtualCollection.class);
             q.setParameter("state", VirtualCollection.State.PUBLIC_PENDING);
             q.setParameter("date", nowDateAlloc);
             q.setLockMode(LockModeType.PESSIMISTIC_WRITE);
@@ -586,7 +584,7 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
                         vc.getId());
             }
             em.getTransaction().commit();
-            
+
             /*
              * delayed purging of deleted virtual collections 
              */

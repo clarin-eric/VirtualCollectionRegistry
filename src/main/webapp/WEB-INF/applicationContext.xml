@@ -15,5 +15,15 @@
     well as @Configuration annotations for classes defining beans and properties
     -->
     <context:component-scan base-package="eu.clarin.cmdi.virtualcollectionregistry" />
-            
+
+    <!-- 
+    Will generate a factory for virtual collection validator, based on the 
+    prototype bean for the VirtualCollectionValidator implementation
+    see http://docs.spring.io/spring/docs/4.0.5.RELEASE/javadoc-api/org/springframework/beans/factory/config/ServiceLocatorFactoryBean.html
+    -->
+    <bean id="validatorFactory"
+          class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">
+        <property name="serviceLocatorInterface" value="eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidatorFactory"/>
+    </bean>
+                
 </beans>

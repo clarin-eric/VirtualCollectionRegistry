@@ -10,9 +10,20 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.util.HashSet;
 import java.util.Set;
+import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
+import org.springframework.beans.factory.config.ServiceLocatorFactoryBean;
+import org.springframework.context.annotation.Scope;
+import org.springframework.stereotype.Service;
 
-//TODO: @Service
-//TODO: @Scope(value = SCOPE_PROTOTYPE)
+/**
+ * A virtual collection validator. Scoped prototype, because it carries state.
+ * Use a factory (e.g. dynamically generated using
+ * {@link ServiceLocatorFactoryBean}) to get new instances within a singleton.
+ *
+ * @author twagoo
+ */
+@Service
+@Scope(value = SCOPE_PROTOTYPE)
 public class VirtualCollectionValidatorImpl implements VirtualCollectionValidator {
     private final Set<Creator> uniqueCreators = new HashSet<Creator>(16);
     private final Set<String> uniqueResourceRefs = new HashSet<String>(512);
@@ -32,7 +43,7 @@ public class VirtualCollectionValidatorImpl implements VirtualCollectionValidato
             throw new VirtualCollectionRegistryUsageException(
                     "collection has an empty name");
         }
-        
+
         for (Creator creator : vc.getCreators()) {
             if (uniqueCreators.contains(creator)) {
                 throw new VirtualCollectionRegistryUsageException(
@@ -42,38 +53,38 @@ public class VirtualCollectionValidatorImpl implements VirtualCollectionValidato
         }
 
         switch (vc.getType()) {
-        case EXTENSIONAL:
-            if (vc.getResources().isEmpty()) {
-                throw new VirtualCollectionRegistryUsageException(
+            case EXTENSIONAL:
+                if (vc.getResources().isEmpty()) {
+                    throw new VirtualCollectionRegistryUsageException(
                         "extensional collection must contain on or " +
                         "more resources");
-            }
-            if (vc.getGeneratedBy() != null) {
-                throw new VirtualCollectionRegistryUsageException(
-                        "extensional collection must not contain GeneratedBy");
-            }
-            break;
-        case INTENSIONAL:
-            final GeneratedBy generatedBy = vc.getGeneratedBy();
-            if (generatedBy == null) {
-                throw new VirtualCollectionRegistryUsageException(
-                        "intensional collections needs GeneratedBy");
-            }
-            if (generatedBy.getDescription() == null) {
-                throw new VirtualCollectionRegistryUsageException(
-                        "GeneratedBy has empty description");
-            }
-            final GeneratedByQuery query = generatedBy.getQuery();
-            if (query != null) {
-                if (query.getProfile() == null) {
-                    throw new VirtualCollectionRegistryUsageException(
-                            "profile of GeneratedBy.Query is empty");
                 }
-                if (query.getValue() == null) {
+                if (vc.getGeneratedBy() != null) {
                     throw new VirtualCollectionRegistryUsageException(
-                            "query of GeneratedBy.Query is empty");
+                            "extensional collection must not contain GeneratedBy");
                 }
-            }
+                break;
+            case INTENSIONAL:
+                final GeneratedBy generatedBy = vc.getGeneratedBy();
+                if (generatedBy == null) {
+                    throw new VirtualCollectionRegistryUsageException(
+                            "intensional collections needs GeneratedBy");
+                }
+                if (generatedBy.getDescription() == null) {
+                    throw new VirtualCollectionRegistryUsageException(
+                            "GeneratedBy has empty description");
+                }
+                final GeneratedByQuery query = generatedBy.getQuery();
+                if (query != null) {
+                    if (query.getProfile() == null) {
+                        throw new VirtualCollectionRegistryUsageException(
+                                "profile of GeneratedBy.Query is empty");
+                    }
+                    if (query.getValue() == null) {
+                        throw new VirtualCollectionRegistryUsageException(
+                                "query of GeneratedBy.Query is empty");
+                    }
+                }
         }
 
         if ((vc.getReproducibilityNotice() != null) && 
