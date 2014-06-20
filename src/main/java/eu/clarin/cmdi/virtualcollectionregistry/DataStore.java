@@ -1,23 +1,33 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
+import com.sun.jersey.api.spring.Autowire;
+import java.util.Collections;
 import java.util.Map;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-
+import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
-public class DataStore {
-    private static final Logger logger =
-        LoggerFactory.getLogger(DataStore.class);
+@Repository
+public class DataStore implements DisposableBean {
+
+    private static final Logger logger = LoggerFactory.getLogger(DataStore.class);
     private final EntityManagerFactory emf;
     private final ThreadLocal<EntityManager> em;
 
-    DataStore(Map<String, String> config)
-        throws VirtualCollectionRegistryException {
+    @Autowired
+    public DataStore(ServletContext servletContext) throws VirtualCollectionRegistryException {
+        this(ServletUtils.createParameterMap(servletContext));
+    }
+
+    public DataStore(Map<String, String> config)
+            throws VirtualCollectionRegistryException {
         try {
             emf = Persistence.createEntityManagerFactory(
                     "VirtualCollectionStore", config);
@@ -38,8 +48,10 @@ public class DataStore {
         logger.debug("data store was successfully initialized");
     }
 
+    @Override
     public void destroy() throws VirtualCollectionRegistryException {
         if (emf != null) {
+            logger.info("Closing entity manager");
             emf.close();
         }
     }

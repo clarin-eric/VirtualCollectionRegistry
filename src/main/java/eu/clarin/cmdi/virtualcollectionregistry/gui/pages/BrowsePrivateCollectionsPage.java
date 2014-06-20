@@ -1,9 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
-import java.security.Principal;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authorization.strategies.role.Roles;
@@ -15,7 +13,6 @@ import org.apache.wicket.model.StringResourceModel;
 
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ConfirmationDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.menu.AjaxLinkMenuItem;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.menu.AjaxPopupMenu;
@@ -24,11 +21,15 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.State;
 import java.util.Collections;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 
 @AuthorizeInstantiation(Roles.USER)
 @SuppressWarnings("serial")
 public class BrowsePrivateCollectionsPage extends BasePage {
 
+    @SpringBean
+    private VirtualCollectionRegistry vcr;
+    
     private class ActionsColumn extends Panel {
 
         public ActionsColumn(String id, IModel<VirtualCollection> model) {
@@ -166,8 +167,6 @@ public class BrowsePrivateCollectionsPage extends BasePage {
         @Override
         public void onConfirm(AjaxRequestTarget target) {
             try {
-                final VirtualCollectionRegistry vcr
-                        = VirtualCollectionRegistry.instance();
                 vcr.setVirtualCollectionState(getUser(), vcId,
                         State.PUBLIC_PENDING);
             } catch (VirtualCollectionRegistryException e) {
@@ -196,8 +195,6 @@ public class BrowsePrivateCollectionsPage extends BasePage {
         @Override
         public void onConfirm(AjaxRequestTarget target) {
             try {
-                final VirtualCollectionRegistry vcr
-                        = VirtualCollectionRegistry.instance();
                 vcr.deleteVirtualCollection(getUser(), vcId);
             } catch (VirtualCollectionRegistryException e) {
                 e.printStackTrace();

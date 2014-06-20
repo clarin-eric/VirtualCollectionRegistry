@@ -1,17 +1,20 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
+import eu.clarin.cmdi.virtualcollectionregistry.model.PersistentIdentifier;
+import eu.clarin.cmdi.virtualcollectionregistry.model.PersistentIdentifierProvider;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Enumeration;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-
+import javax.servlet.ServletContext;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
-
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -28,14 +31,17 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
 
-import eu.clarin.cmdi.virtualcollectionregistry.model.PersistentIdentifier;
-import eu.clarin.cmdi.virtualcollectionregistry.model.PersistentIdentifierProvider;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-
-public class GWDGPersistentIdentifierProvider extends
+@Service
+@Profile("vcr.pid.gwdg")
+public class GWDGPersistentIdentifierProvider implements
         PersistentIdentifierProvider {
+
     private static enum Attribute {
+
         PID, URL, CREATOR, EXPDATE;
 
         public static Attribute fromString(String s) {
@@ -53,36 +59,41 @@ public class GWDGPersistentIdentifierProvider extends
 
         public String toString() {
             switch (this) {
-            case PID:
-                return "pid";
-            case URL:
-                return "url";
-            case CREATOR:
-                return "creator";
-            case EXPDATE:
-                return "expdate";
-            default:
-                throw new InternalError();
+                case PID:
+                    return "pid";
+                case URL:
+                    return "url";
+                case CREATOR:
+                    return "creator";
+                case EXPDATE:
+                    return "expdate";
+                default:
+                    throw new InternalError();
             }
         }
     } // private enum Attribute
 
     public static final String USERNAME = "pid_provider.username";
     public static final String PASSWORD = "pid_provider.password";
-    private static final String SERVICE_URI_BASE =
-        "http://handle.gwdg.de:8080/pidservice/";
-    private static final String USER_AGENT =
-        "CLARIN-VirtualCollectionRegisty/1.0";
-    private static final Logger logger =
-        LoggerFactory.getLogger(GWDGPersistentIdentifierProvider.class);
+    private static final String SERVICE_URI_BASE
+            = "http://handle.gwdg.de:8080/pidservice/";
+    private static final String USER_AGENT
+            = "CLARIN-VirtualCollectionRegisty/1.0";
+    private static final Logger logger
+            = LoggerFactory.getLogger(GWDGPersistentIdentifierProvider.class);
     private String base_uri = null;
     private String username = null;
     private String password = null;
     private XMLInputFactory factory;
 
+    @Autowired
+    public GWDGPersistentIdentifierProvider(ServletContext servletContext) throws VirtualCollectionRegistryException {
+        this(ServletUtils.createParameterMap(servletContext));
+    }
+
     public GWDGPersistentIdentifierProvider(Map<String, String> config)
             throws VirtualCollectionRegistryException {
-        super(config);
+        super();
         try {
             String base_uri = getConfigParameter(config, BASE_URI);
             if (!base_uri.endsWith("/")) {
@@ -124,7 +135,7 @@ public class GWDGPersistentIdentifierProvider extends
             }
             logger.info("created handle \"{}\" for virtual collection \"{}\"",
                     pid, vc.getId());
-            return doCreate(vc, PersistentIdentifier.Type.GWDG, pid);
+            return new PersistentIdentifier(vc, PersistentIdentifier.Type.GWDG, pid);
         } catch (VirtualCollectionRegistryException e) {
             throw new RuntimeException("failed to create handle", e);
         }
@@ -233,7 +244,7 @@ public class GWDGPersistentIdentifierProvider extends
                         if (reader.getEventType() != XMLStreamConstants.CHARACTERS) {
                             throw new VirtualCollectionRegistryException(
                                     "unexpected element type: "
-                                            + reader.getEventType());
+                                    + reader.getEventType());
                         }
                         String value = reader.getText();
                         if (value == null) {
@@ -265,6 +276,21 @@ public class GWDGPersistentIdentifierProvider extends
                 client.getConnectionManager().shutdown();
             }
         }
+    }
+
+    private static String getConfigParameter(Map<String, String> config,
+            String parameter) throws VirtualCollectionRegistryException {
+        String value = config.get(parameter);
+        if (value == null) {
+            throw new VirtualCollectionRegistryException("configuration "
+                    + "parameter \"" + parameter + "\" is not set");
+        }
+        value = value.trim();
+        if (value.isEmpty()) {
+            throw new VirtualCollectionRegistryException("configuration "
+                    + "parameter \"" + parameter + "\" is invalid");
+        }
+        return value;
     }
 
 } // class GWDGPersistentIdentifierProvider

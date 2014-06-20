@@ -1,25 +1,5 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
-
-import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
-import javax.persistence.NoResultException;
-import javax.persistence.TypedQuery;
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
-import javax.xml.stream.XMLStreamException;
-import javax.xml.stream.XMLStreamWriter;
-
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-
 import eu.clarin.cmdi.oai.provider.DublinCoreAdapter;
 import eu.clarin.cmdi.oai.provider.DublinCoreConverter;
 import eu.clarin.cmdi.oai.provider.MetadataFormat;
@@ -31,12 +11,32 @@ import eu.clarin.cmdi.oai.provider.SetSpecDesc;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection_;
+import java.util.ArrayList;
+import java.util.Date;
+import java.util.HashSet;
+import java.util.List;
+import java.util.Set;
+import javax.persistence.EntityManager;
+import javax.persistence.LockModeType;
+import javax.persistence.NoResultException;
+import javax.persistence.TypedQuery;
+import javax.persistence.criteria.CriteriaBuilder;
+import javax.persistence.criteria.CriteriaQuery;
+import javax.persistence.criteria.Predicate;
+import javax.persistence.criteria.Root;
+import javax.xml.stream.XMLStreamException;
+import javax.xml.stream.XMLStreamWriter;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
 
 class VirtualColletionRegistryOAIRepository implements Repository {
-    private static final Logger logger =
-        LoggerFactory.getLogger(VirtualColletionRegistryOAIRepository.class);
 
-    private final static class CMDIMetadataFormat implements MetadataFormat {
+    private static final Logger logger
+            = LoggerFactory.getLogger(VirtualColletionRegistryOAIRepository.class);
+
+    private final class CMDIMetadataFormat implements MetadataFormat {
+
         @Override
         public String getPrefix() {
             return "cmdi";
@@ -61,8 +61,6 @@ class VirtualColletionRegistryOAIRepository implements Repository {
         @Override
         public void writeObject(XMLStreamWriter stream, Object item)
                 throws XMLStreamException {
-            final VirtualCollectionRegistry registry =
-                VirtualCollectionRegistry.instance();
             final VirtualCollection vc = (VirtualCollection) item;
             registry.getMarshaller().writeCMDI(stream, vc);
         }
@@ -70,6 +68,7 @@ class VirtualColletionRegistryOAIRepository implements Repository {
 
     private final VirtualCollectionRegistry registry;
 
+    @Autowired
     VirtualColletionRegistryOAIRepository(VirtualCollectionRegistry registry) {
         this.registry = registry;
     }
@@ -86,8 +85,8 @@ class VirtualColletionRegistryOAIRepository implements Repository {
 
     @Override
     public String getDescription() {
-        return "The virtual collection registry is a component of the " +
-            "CLARIN metadata initiative.";
+        return "The virtual collection registry is a component of the "
+                + "CLARIN metadata initiative.";
     }
 
     @Override
@@ -147,8 +146,8 @@ class VirtualColletionRegistryOAIRepository implements Repository {
 
     @Override
     public Set<DublinCoreConverter> getDublinCoreConverters() {
-        Set<DublinCoreConverter> converters =
-            new HashSet<DublinCoreConverter>();
+        Set<DublinCoreConverter> converters
+                = new HashSet<DublinCoreConverter>();
         converters.add(new DublinCoreAdapter() {
             @Override
             public boolean canProcessResource(Class<?> clazz) {
@@ -163,7 +162,7 @@ class VirtualColletionRegistryOAIRepository implements Repository {
             @Override
             public String getIdentifier(Object resource) {
                 return ((VirtualCollection) resource)
-                    .getPersistentIdentifier().getActionableURI();
+                        .getPersistentIdentifier().getActionableURI();
             }
 
             @Override
@@ -247,13 +246,13 @@ class VirtualColletionRegistryOAIRepository implements Repository {
             cq1.select(cb.count(root1));
             cq1.where(buildWhere(cb, cq1, root1, from, until));
 
-            CriteriaQuery<VirtualCollection> cq2 =
-                cb.createQuery(VirtualCollection.class);
+            CriteriaQuery<VirtualCollection> cq2
+                    = cb.createQuery(VirtualCollection.class);
             Root<VirtualCollection> root2 = cq2.from(VirtualCollection.class);
             cq2.select(root2);
             cq2.where(buildWhere(cb, cq2, root2, from, until));
             cq2.orderBy(cb.asc(root2.get(VirtualCollection_.dateModified)));
-            
+
             em.getTransaction().begin();
             TypedQuery<Long> q1 = em.createQuery(cq1);
             TypedQuery<VirtualCollection> q2 = em.createQuery(cq2);
@@ -299,9 +298,9 @@ class VirtualColletionRegistryOAIRepository implements Repository {
 
     private Predicate buildWhere(CriteriaBuilder cb, CriteriaQuery<?> cq,
             Root<VirtualCollection> root, Date from, Date until) {
-        Predicate where =
-                cb.equal(root.get(VirtualCollection_.state),
-                                  VirtualCollection.State.PUBLIC);
+        Predicate where
+                = cb.equal(root.get(VirtualCollection_.state),
+                        VirtualCollection.State.PUBLIC);
         if ((from != null) && (until != null)) {
             where = cb.and(where, cb.between(root
                     .get(VirtualCollection_.dateModified), from, until));
@@ -316,6 +315,7 @@ class VirtualColletionRegistryOAIRepository implements Repository {
     }
 
     private final class RecordFullImpl implements Record {
+
         private final VirtualCollection vc;
 
         RecordFullImpl(VirtualCollection vc) {
@@ -354,6 +354,7 @@ class VirtualColletionRegistryOAIRepository implements Repository {
     }
 
     private final class RecordHeaderImpl implements Record {
+
         private final Long id;
         private final Date datestamp;
         private final boolean deleted;

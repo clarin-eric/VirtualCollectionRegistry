@@ -51,12 +51,10 @@ public class PersistentIdentifier implements Serializable {
             length = 255)
     private String identifier;
 
-    
     protected PersistentIdentifier() {
     }
-
-    PersistentIdentifier(VirtualCollection vc, Type type, String identifier) {
-        this();
+    
+    public PersistentIdentifier(VirtualCollection vc, Type type, String identifier) {
         if (vc == null) {
             throw new NullArgumentException("vc == null");
         }

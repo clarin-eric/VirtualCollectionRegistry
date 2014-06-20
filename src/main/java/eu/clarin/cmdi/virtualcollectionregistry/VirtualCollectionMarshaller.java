@@ -33,7 +33,9 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedByQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
+import org.springframework.stereotype.Service;
 
+@Service
 public class VirtualCollectionMarshaller {
     private static final String NS_CMDI = "http://www.clarin.eu/cmd/";
     private static final String NS_CMDI_PREFIX = "cmdi";

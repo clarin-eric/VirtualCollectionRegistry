@@ -11,6 +11,7 @@ import org.apache.wicket.PageParameters;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.authorization.strategies.role.Roles;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -18,6 +19,9 @@ import org.slf4j.LoggerFactory;
 @SuppressWarnings("serial")
 public class EditVirtualCollectionPage extends CreateVirtualCollectionPage {
 
+    @SpringBean
+    private VirtualCollectionRegistry vcr;
+    
     private final static Logger logger = LoggerFactory.getLogger(EditVirtualCollectionPage.class);
 
     public EditVirtualCollectionPage(PageParameters params) throws VirtualCollectionRegistryException {
@@ -26,7 +30,6 @@ public class EditVirtualCollectionPage extends CreateVirtualCollectionPage {
         if (id == null) {
             vc = new VirtualCollection();
         } else {
-            final VirtualCollectionRegistry vcr = VirtualCollectionRegistry.instance();
             vc = vcr.retrieveVirtualCollection(id);
             checkAccess(vc);
         }

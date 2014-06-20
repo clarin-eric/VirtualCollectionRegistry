@@ -383,6 +383,12 @@
       <artifactId>wicket-extensions</artifactId>
       <version>${wicket.version}</version>
     </dependency>
+    
+    <dependency>
+      <groupId>org.apache.wicket</groupId>
+      <artifactId>wicket-spring</artifactId>
+      <version>${wicket.version}</version>
+    </dependency>
 
     <dependency>
       <groupId>org.odlabs.wiquery</groupId>
@@ -443,6 +449,45 @@
       <artifactId>mpgaai-shhaa</artifactId>
       <version>1.0.5</version>
     </dependency>
+    
+    <dependency>
+      <groupId>org.springframework</groupId>
+      <artifactId>spring-web</artifactId>
+      <version>${spring.version}</version>
+      <type>jar</type>
+    </dependency>
+    
+    <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-spring</artifactId>
+      <version>${jersey.version}</version>
+      <exclusions>
+        <exclusion>
+          <artifactId>spring-aop</artifactId>
+          <groupId>org.springframework</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>spring-asm</artifactId>
+          <groupId>org.springframework</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>spring-beans</artifactId>
+          <groupId>org.springframework</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>spring-context</artifactId>
+          <groupId>org.springframework</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>spring-core</artifactId>
+          <groupId>org.springframework</groupId>
+        </exclusion>
+        <exclusion>
+          <artifactId>spring-web</artifactId>
+          <groupId>org.springframework</groupId>
+        </exclusion>
+      </exclusions>
+    </dependency>
   </dependencies>
 
   <dependencyManagement>
@@ -491,5 +536,7 @@
     <hibernate.jpaVersion>1.0.0.Final</hibernate.jpaVersion>
     <jersey.version>1.18.1</jersey.version>
     <wicket.version>1.4.23</wicket.version>
+    <spring.version>4.0.5.RELEASE</spring.version>
+    <log4j.appender>Console</log4j.appender> <!-- TODO: default to File -->
   </properties>
 </project>

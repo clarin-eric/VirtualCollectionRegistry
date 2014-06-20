@@ -1,10 +1,8 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
 import java.security.Principal;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.atomic.AtomicBoolean;
@@ -23,7 +21,6 @@ import javax.persistence.criteria.Root;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import eu.clarin.cmdi.oai.provider.OAIException;
 import eu.clarin.cmdi.oai.provider.impl.OAIProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.model.PersistentIdentifier;
 import eu.clarin.cmdi.virtualcollectionregistry.model.PersistentIdentifierProvider;
@@ -31,48 +28,41 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-public class VirtualCollectionRegistry {
+@Service
+public class VirtualCollectionRegistry implements InitializingBean, DisposableBean {
+
+    @Autowired
+    private DataStore datastore; //TODO: replace with Spring managed EM
+    @Autowired
+    private PersistentIdentifierProvider pid_provider;
+    @Autowired
+    private VirtualCollectionMarshaller marshaller;
+    @Autowired
+    private OAIProvider oaiProvider;
+    
     private static final Logger logger =
         LoggerFactory.getLogger(VirtualCollectionRegistry.class);
-    private static final VirtualCollectionRegistry s_instance =
-        new VirtualCollectionRegistry();
-    private AtomicBoolean intialized = new AtomicBoolean(false);
-    private DataStore datastore = null;
-    private PersistentIdentifierProvider pid_provider = null;
-    private VirtualCollectionMarshaller marshaller = null;
-    private Timer timer =
+    private final AtomicBoolean intialized = new AtomicBoolean(false);
+    private final Timer timer =
         new Timer("VirtualCollectionRegistry-Maintenance", true);
-
-    private VirtualCollectionRegistry() {
-        super();
+    
+    @Override
+    public void afterPropertiesSet() throws VirtualCollectionRegistryException {
+        // called by Spring directly after Bean construction
+        doInitalize();
     }
 
-    public static void initalize(Map<String, String> config)
-            throws VirtualCollectionRegistryException {
-        s_instance.doInitalize(config);
-    }
-
-    private void doInitalize(Map<String, String> config)
-            throws VirtualCollectionRegistryException {
+    private void doInitalize() throws VirtualCollectionRegistryException {
         if (intialized.get()) {
             throw new VirtualCollectionRegistryException("already initialized");
         }
-        logger.debug("initializing virtual collection registry ...");
-        if (config != null) {
-            config = Collections.unmodifiableMap(config);
-        } else {
-            config = Collections.emptyMap();
-        }
+        logger.info("Initializing virtual collection registry ...");
         try {
-            // XXX: the whole config / setup stuff is not very beautiful
-            this.datastore = new DataStore(config);
-            this.pid_provider = PersistentIdentifierProvider
-                    .createProvider(config);
-            this.marshaller = new VirtualCollectionMarshaller();
-            // setup OAIProvider
-            OAIProvider.instance().setRepository(
-                    new VirtualColletionRegistryOAIRepository(this));
             // setup VCR maintenance task
             timer.schedule(new TimerTask() {
                 @Override
@@ -85,30 +75,16 @@ public class VirtualCollectionRegistry {
         } catch (RuntimeException e) {
             logger.error("error initalizing virtual collection registry", e);
             throw e;
-        } catch (OAIException e) {
-            logger.error("error initalizing virtual collection registry", e);
-            throw new VirtualCollectionRegistryException(
-                    "setting OAI repository failed", e);
-        } catch (VirtualCollectionRegistryException e) {
-            logger.error("error initalizing virtual collection registry", e);
-            throw e;
         }
     }
 
+    @Override
     public void destroy() throws VirtualCollectionRegistryException {
+        logger.info("Stopping Virtual Collection Registry maintenance schedule");
         timer.cancel();
-        if (datastore != null) {
-            datastore.destroy();
-        }
-        OAIProvider.instance().shutdown();
-    }
-
-    public static VirtualCollectionRegistry instance() {
-        if (!s_instance.intialized.get()) {
-            throw new InternalError("virtual collection registry failed " +
-                                    "to initialize correctly");
-        }
-        return s_instance;
+        
+        logger.info("Shutting down OAI provider");
+        oaiProvider.shutdown();
     }
 
     public DataStore getDataStore() {

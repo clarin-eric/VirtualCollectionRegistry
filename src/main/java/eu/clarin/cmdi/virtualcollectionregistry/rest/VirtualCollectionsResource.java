@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
+import com.sun.jersey.api.core.InjectParam;
 import com.sun.jersey.api.core.ResourceContext;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionMarshaller;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionMarshaller.Format;
@@ -39,7 +40,7 @@ public class VirtualCollectionsResource {
 
     @Context
     private ResourceContext resourceContext;
-    @Context
+    @InjectParam
     private VirtualCollectionRegistry registry;
     @Context
     private SecurityContext security;

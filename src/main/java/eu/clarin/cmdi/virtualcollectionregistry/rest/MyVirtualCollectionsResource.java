@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
+import com.sun.jersey.api.core.InjectParam;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionMarshaller;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
@@ -31,7 +32,7 @@ import javax.ws.rs.core.UriInfo;
 @Path("/my-virtualcollections")
 public class MyVirtualCollectionsResource {
 
-    @Context
+    @InjectParam
     private VirtualCollectionRegistry registry;
     @Context
     private SecurityContext security;

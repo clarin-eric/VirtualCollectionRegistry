@@ -14,11 +14,15 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.wizard.CreateVirtualCollectionWizard;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 
 @AuthorizeInstantiation(Roles.USER)
 @SuppressWarnings("serial")
 public class CreateVirtualCollectionPage extends BasePage {
 
+    @SpringBean
+    private VirtualCollectionRegistry vcr;
+    
     // only for extensions
     protected CreateVirtualCollectionPage() {
     }
@@ -50,8 +54,6 @@ public class CreateVirtualCollectionPage extends BasePage {
             @Override
             protected void onFinishWizard(VirtualCollection vc) {
                 try {
-                    VirtualCollectionRegistry vcr
-                            = VirtualCollectionRegistry.instance();
                     ApplicationSession session
                             = (ApplicationSession) getSession();
                     Principal principal = session.getPrincipal();

@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
+import com.sun.jersey.api.core.InjectParam;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
@@ -33,7 +34,7 @@ import javax.ws.rs.core.UriInfo;
 @Path("/submit")
 public class VirtualCollectionFormSubmissionResource {
 
-    @Context
+    @InjectParam
     private VirtualCollectionRegistry registry;
     @Context
     private SecurityContext security;

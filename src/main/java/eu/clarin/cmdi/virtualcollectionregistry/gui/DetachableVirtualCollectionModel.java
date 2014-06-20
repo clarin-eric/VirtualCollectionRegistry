@@ -30,7 +30,7 @@ public class DetachableVirtualCollectionModel
     protected VirtualCollection load() {
         try {
             VirtualCollectionRegistry vcr
-                    = VirtualCollectionRegistry.instance();
+                    = Application.get().getRegistry();
             return vcr.retrieveVirtualCollection(this.id);
         } catch (VirtualCollectionRegistryException e) {
             return null;

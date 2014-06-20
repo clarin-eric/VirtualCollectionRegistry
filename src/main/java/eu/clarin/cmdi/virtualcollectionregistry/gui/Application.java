@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AdminPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePrivateCollectionsPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePublicCollectionsPage;
@@ -17,18 +18,26 @@ import org.apache.wicket.authentication.AuthenticatedWebApplication;
 import org.apache.wicket.authentication.AuthenticatedWebSession;
 import org.apache.wicket.authorization.strategies.role.Roles;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.target.coding.MixedParamHybridUrlCodingStrategy;
 import org.apache.wicket.session.pagemap.LeastRecentlyAccessedEvictionStrategy;
+import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component
 public class Application extends AuthenticatedWebApplication {
 
+    @Autowired
+    private VirtualCollectionRegistry registry;
+
     private static final String CONFIG_PARAM_ADMINDB = "admindb";
-    private Set<String> adminUsers
-            = new HashSet<String>();
+    private final Set<String> adminUsers = new HashSet<String>();
 
     @Override
     protected void init() {
         super.init();
+        addComponentInstantiationListener(new SpringComponentInjector(this));
 
         String s = getServletContext().getInitParameter(CONFIG_PARAM_ADMINDB);
         if (s != null) {
@@ -62,7 +71,7 @@ public class Application extends AuthenticatedWebApplication {
         mountBookmarkablePage("/admin", AdminPage.class);
 
         // editing an existing collection by ID, e.g. /edit/123
-        mount(new MixedParamHybridUrlCodingStrategy("/edit", 
+        mount(new MixedParamHybridUrlCodingStrategy("/edit",
                 EditVirtualCollectionPage.class, new String[]{"id"}));
     }
 
@@ -112,6 +121,14 @@ public class Application extends AuthenticatedWebApplication {
             adminUsers.add(line);
         } // while
         reader.close();
+    }
+
+    public VirtualCollectionRegistry getRegistry() {
+        return registry;
+    }
+
+    public static Application get() {
+        return (Application) WebApplication.get();
     }
 
 } // class Application

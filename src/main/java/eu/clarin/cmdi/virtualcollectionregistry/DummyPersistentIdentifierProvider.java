@@ -1,24 +1,25 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
-import java.net.URI;
-import java.util.Map;
-
 import eu.clarin.cmdi.virtualcollectionregistry.model.PersistentIdentifier;
 import eu.clarin.cmdi.virtualcollectionregistry.model.PersistentIdentifierProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import java.net.URI;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
 
-public class DummyPersistentIdentifierProvider extends
+@Service
+@Profile("vcr.pid.dummy")
+public class DummyPersistentIdentifierProvider implements
         PersistentIdentifierProvider {
 
-    public DummyPersistentIdentifierProvider(Map<String, String> config)
-            throws VirtualCollectionRegistryException {
-        super(config);
+    public DummyPersistentIdentifierProvider() throws VirtualCollectionRegistryException {
+        super();
     }
 
     public PersistentIdentifier createIdentifier(VirtualCollection vc)
             throws VirtualCollectionRegistryException {
-        return doCreate(vc, PersistentIdentifier.Type.DUMMY,
-                        "dummy-" + Long.toString(vc.getId()));
+        return new PersistentIdentifier(vc, PersistentIdentifier.Type.DUMMY,
+                "dummy-" + Long.toString(vc.getId()));
     }
 
     public void updateIdentifier(String pid, URI target)

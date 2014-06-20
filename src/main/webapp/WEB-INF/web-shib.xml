@@ -25,8 +25,16 @@
     <!-- Spring -->
     
     <listener>
-        <listener-class>eu.clarin.cmdi.virtualcollectionregistry.rest.ContextListener</listener-class>
+        <listener-class>
+            org.springframework.web.context.ContextLoaderListener
+        </listener-class>
     </listener>
+ 
+    <context-param>
+        <param-name>spring.profiles.active</param-name>
+        <param-value>vcr.pid.dummy</param-value>
+        <!--<param-value>vcr.pid.gwdg</param-value>-->
+    </context-param>
     
     <!-- Persistence -->
 
@@ -54,8 +62,8 @@
         <filter-name>VirtualCollectionRegistryApplication</filter-name>
         <filter-class>org.apache.wicket.protocol.http.WicketFilter</filter-class>
         <init-param>
-            <param-name>applicationClassName</param-name>
-            <param-value>eu.clarin.cmdi.virtualcollectionregistry.gui.Application</param-value>
+            <param-name>applicationFactoryClassName</param-name>
+            <param-value>org.apache.wicket.spring.SpringWebApplicationFactory</param-value>
         </init-param>
         <init-param>
             <param-name>configuration</param-name>
@@ -74,7 +82,7 @@
     <servlet>
         <display-name>Virtual Collection Registry REST web service</display-name>
         <servlet-name>REST-Web-Service</servlet-name>
-        <servlet-class>com.sun.jersey.spi.container.servlet.ServletContainer</servlet-class>
+        <servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>
         <init-param>
             <param-name>com.sun.jersey.config.property.packages</param-name>
             <param-value>eu.clarin.cmdi.virtualcollectionregistry.rest</param-value>

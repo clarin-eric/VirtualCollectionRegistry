@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
+import com.sun.jersey.api.core.InjectParam;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionMarshaller;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionNotFoundException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
@@ -38,7 +39,7 @@ import javax.ws.rs.core.StreamingOutput;
  */
 public final class VirtualCollectionResource {
 
-    @Context
+    @InjectParam
     private VirtualCollectionRegistry registry;
     @Context
     private SecurityContext security;
