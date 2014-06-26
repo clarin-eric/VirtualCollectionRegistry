@@ -12,7 +12,6 @@ import java.io.StringWriter;
 import java.text.DateFormat;
 import static java.text.DateFormat.SHORT;
 import java.text.ParseException;
-import java.util.Arrays;
 import java.util.List;
 import java.util.Locale;
 import java.util.concurrent.CopyOnWriteArrayList;
@@ -34,6 +33,8 @@ import org.xml.sax.SAXException;
  */
 public class VirtualCollectionCMDIWriterImplTest extends XMLTestCase {
 
+    private static final String CONTROL_INSTANCE = "/vc-instance1.xml";
+
     /**
      * Patterns for paths to be ignored in XML comparison
      */
@@ -50,6 +51,9 @@ public class VirtualCollectionCMDIWriterImplTest extends XMLTestCase {
      */
     @Test
     public void testWriteCMDIExtensional() throws Exception {
+        final VirtualCollectionCMDIWriterImpl instance = new VirtualCollectionCMDIWriterImpl();
+
+        // create a collection to serialize
         final VirtualCollection vc = createTestVC();
 
         // prepare an output writer
@@ -58,24 +62,26 @@ public class VirtualCollectionCMDIWriterImplTest extends XMLTestCase {
         final XMLStreamWriter xmlWriter = xmlOutputFactory.createXMLStreamWriter(stringWriter);
 
         // write CMDI for instance to the writer
-        final VirtualCollectionCMDIWriterImpl instance = new VirtualCollectionCMDIWriterImpl();
+        xmlWriter.writeStartDocument();
         instance.writeCMDI(xmlWriter, vc);
+        xmlWriter.writeEndDocument();
         xmlWriter.close();
 
         // compare output to control document
         final StringReader testOutputReader = new StringReader(stringWriter.toString());
-        final InputStreamReader controlReader = new InputStreamReader(getClass().getResourceAsStream("/vc-instance0.xml"));
+        final InputStreamReader controlReader = new InputStreamReader(getClass().getResourceAsStream(CONTROL_INSTANCE));
 
         assertCMDIEqual(controlReader, testOutputReader);
     }
 
     private VirtualCollection createTestVC() throws ParseException {
-        // create a VC to serialize
         final VirtualCollection vc = new VirtualCollection();
         vc.setName("Virtual Collection Name");
         vc.setDescription("Test collection description");
         vc.setType(VirtualCollection.Type.EXTENSIONAL);
         vc.setState(VirtualCollection.State.PUBLIC_PENDING);
+        vc.setReproducibility(VirtualCollection.Reproducibility.INTENDED);
+        vc.setPurpose(VirtualCollection.Purpose.SAMPLE);
 
         vc.setOwner(new User("Test user"));
         vc.setCreationDate(DateFormat.getDateInstance(SHORT, Locale.US).parse("01/01/14"));
