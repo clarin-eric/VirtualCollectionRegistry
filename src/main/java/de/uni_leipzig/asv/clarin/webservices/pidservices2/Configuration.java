@@ -4,51 +4,82 @@ import java.io.BufferedInputStream;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.util.Properties;
-
-import org.apache.log4j.Logger;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Stores some information needed for establishing connection to resolver server
  *
  * @author Thomas Eckart
+ * @author Twan Goosen
  *
  */
 public class Configuration {
 
-    private final static Logger LOG = Logger.getLogger(Configuration.class);
+    private final static Logger LOG = LoggerFactory.getLogger(Configuration.class);
 
     private final String serviceBaseURL;
     private final String handlePrefix;
     private final String user;
     private final String password;
 
+    /**
+     * Creates a configuration from the <em>config.properties</em>
+     * file. Expecting the following properties in the file:
+     * <ul>
+     * <li>SERVICE_BASE_URL</li>
+     * <li>HANDLE_PREFIX</li>
+     * <li>USER</li>
+     * <li>PASSWORD</li>
+     * </ul>
+     *
+     * A missing property will result in a runtime exception
+     *
+     * @throws IOException if the properties file could not be read
+     */
     public Configuration() throws IOException {
-        this(readProperties());
+        this(readProperties("config.properties"));
     }
 
-    /**
-     * private constructor for Singleton
-     *
-     * @return
-     * @throws java.io.IOException
-     */
-    public static Properties readProperties() throws IOException {
+    public static Properties readProperties(String file) throws IOException {
         final Properties properties = new Properties();
-        try (BufferedInputStream stream = new BufferedInputStream(new FileInputStream("config.properties"))) {
+        try (BufferedInputStream stream = new BufferedInputStream(new FileInputStream(file))) {
             properties.load(stream);
         }
         return properties;
     }
 
+    /**
+     * Creates a configuration from properties. Expecting the following
+     * properties:
+     * <ul>
+     * <li>SERVICE_BASE_URL</li>
+     * <li>HANDLE_PREFIX</li>
+     * <li>USER</li>
+     * <li>PASSWORD</li>
+     * </ul>
+     * A missing property will result in a runtime exception
+     *
+     *
+     * @param properties
+     */
     public Configuration(Properties properties) {
-        serviceBaseURL = properties.getProperty("SERVICE_BASE_URL");
-        handlePrefix = properties.getProperty("HANDLE_PREFIX");
-        user = properties.getProperty("USER");
-        password = properties.getProperty("PASSWORD");
+        this(getRequiredProperty(properties, "SERVICE_BASE_URL"),
+                getRequiredProperty(properties, "HANDLE_PREFIX"),
+                getRequiredProperty(properties, "USER"),
+                getRequiredProperty(properties, "PASSWORD"));
+    }
+
+    private static String getRequiredProperty(Properties properties, String name) {
+        final String value = properties.getProperty(name);
+        if (value == null) {
+            throw new RuntimeException("Required property " + name + " missing!");
+        }
+        LOG.debug("Read PID client configuration parameter {}: '{}'", name, value);
+        return value;
     }
 
     /**
-     * constructor
      *
      * @param serviceBaseURL
      * @param handlePrefix
