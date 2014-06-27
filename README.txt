@@ -43,3 +43,14 @@ if in doubt, please check the Apache Tomcat documentation):
              override="false"/>
   <Parameter name="pid_provider.username" value="$gwdg_user" override="false"/>
   <Parameter name="pid_provider.password" value="$gwdg_password" override="false"/>
+
+  c) For using the EPIC API v2 handle provider add following and customize the
+     base URI for the virtual collection registry and… TODO
+
+  <Parameter name="spring.profiles.active"
+             value="vcr.pid.epic2”
+             override="false"/>   
+  <Parameter name="pid_provider.base_uri"
+             value="http://127.0.0.1:8080/VirtualCollectionRegistry"
+             override="false"/>
+

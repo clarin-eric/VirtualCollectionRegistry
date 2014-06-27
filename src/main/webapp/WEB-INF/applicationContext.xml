@@ -15,6 +15,14 @@
     well as @Configuration annotations for classes defining beans and properties
     -->
     <context:component-scan base-package="eu.clarin.cmdi.virtualcollectionregistry" />
+    
+    <!--
+    Will enable reading properties from the servlet context (with fallback to a
+    packaged properties file). Used by EPIC persistent identifier provider.
+    -->
+    <bean class="org.springframework.web.context.support.ServletContextPropertyPlaceholderConfigurer">
+        <!--<property name="location" value="classpath:vcr-defaults.properties"/>-->
+    </bean>
 
     <!-- 
     Will generate a factory for virtual collection validator, based on the 
