@@ -26,9 +26,8 @@ public class PersistentIdentifier implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public static enum Type {
-        DUMMY, GWDG;
-    } // public enum Type
-
+        DUMMY, HANDLE;
+    } 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false, updatable = false)
@@ -94,7 +93,7 @@ public class PersistentIdentifier implements Serializable {
         switch (type) {
         case DUMMY:
             return "dummy:identifier-" + vc.getId();
-        case GWDG:
+        case HANDLE:
             return "http://hdl.handle.net/" + identifier;
         default:
             throw new InternalError();

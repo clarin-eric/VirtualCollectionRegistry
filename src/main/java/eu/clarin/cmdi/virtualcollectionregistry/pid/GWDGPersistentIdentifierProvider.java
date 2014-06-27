@@ -39,6 +39,8 @@ import org.springframework.stereotype.Service;
 public class GWDGPersistentIdentifierProvider implements
         PersistentIdentifierProvider {
 
+    public static final String BASE_URI = "pid_provider.base_uri";
+    
     private static enum Attribute {
 
         PID, URL, CREATOR, EXPDATE;
@@ -134,7 +136,7 @@ public class GWDGPersistentIdentifierProvider implements
             }
             logger.info("created handle \"{}\" for virtual collection \"{}\"",
                     pid, vc.getId());
-            return new PersistentIdentifier(vc, PersistentIdentifier.Type.GWDG, pid);
+            return new PersistentIdentifier(vc, PersistentIdentifier.Type.HANDLE, pid);
         } catch (VirtualCollectionRegistryException e) {
             throw new RuntimeException("failed to create handle", e);
         }

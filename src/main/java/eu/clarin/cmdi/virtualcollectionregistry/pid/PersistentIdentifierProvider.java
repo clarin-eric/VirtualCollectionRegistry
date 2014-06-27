@@ -6,8 +6,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryExcepti
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
 public abstract interface PersistentIdentifierProvider {
-    public static final String BASE_URI       = "pid_provider.base_uri";
-    public static final String PROVIDER_CLASS = "pid_provider.class";
 
     PersistentIdentifier createIdentifier(VirtualCollection vc)
             throws VirtualCollectionRegistryException;
@@ -18,4 +16,4 @@ public abstract interface PersistentIdentifierProvider {
     void deleteIdentifier(String pid)
             throws VirtualCollectionRegistryException;
 
-} 
+}
