@@ -381,6 +381,26 @@
         </exclusion>
       </exclusions>
     </dependency>
+    
+    <!-- Libraries required for de.uni_leipzig.* EPIC library (todo: replace with dependency on detached library) -->
+    <dependency>
+      <groupId>com.sun.jersey.contribs</groupId>
+      <artifactId>jersey-apache-client</artifactId>
+      <version>${jersey.version}</version>
+    </dependency>
+    
+    <dependency>
+            <groupId>com.jayway.jsonpath</groupId>
+            <artifactId>json-path</artifactId>
+            <version>0.9.1</version>
+    </dependency>
+    
+    <dependency>
+            <groupId>net.sf.json-lib</groupId>
+            <artifactId>json-lib</artifactId>
+            <version>2.4</version>
+            <classifier>jdk15</classifier>
+    </dependency>
 
     <dependency>
       <groupId>org.apache.httpcomponents</groupId>
