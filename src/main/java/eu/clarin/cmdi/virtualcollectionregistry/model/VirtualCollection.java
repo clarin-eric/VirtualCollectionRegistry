@@ -180,6 +180,10 @@ public class VirtualCollection implements Serializable {
     public Long getId() {
         return id;
     }
+    
+    public void setId(Long id) {
+        this.id = id;
+    }
 
     public User getOwner() {
         return owner;

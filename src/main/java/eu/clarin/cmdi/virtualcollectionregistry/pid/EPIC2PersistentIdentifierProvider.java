@@ -70,7 +70,7 @@ public class EPIC2PersistentIdentifierProvider implements PersistentIdentifierPr
     }
 
     private String makeCollectionURI(VirtualCollection vc) {
-        return baseUri + "service/clarin-virtualcollection/" + vc.getId();
+        return String.format("%sservice/virtualcollections/%d/cmdi", baseUri, vc.getId());
     }
 
     protected void setBaseUri(String baseUri) {
