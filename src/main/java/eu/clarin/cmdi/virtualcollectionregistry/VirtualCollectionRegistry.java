@@ -302,6 +302,9 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
                 case PUBLIC_PENDING:
                 update =  vc.getState() != VirtualCollection.State.PUBLIC;
                     break;
+                default:
+                    /* silence warning; update will stay false */
+                    break;
             }
             if (update) {
                 vc.setState(state);
