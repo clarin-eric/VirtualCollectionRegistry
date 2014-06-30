@@ -20,11 +20,11 @@ public class PersistenceFilter implements Filter {
     public void init(FilterConfig config) throws ServletException {
         final WebApplicationContext springContext
                 = WebApplicationContextUtils.getWebApplicationContext(config.getServletContext());
-        Collection values = springContext.getBeansOfType(DataStore.class).values();
+        Collection<DataStore> values = springContext.getBeansOfType(DataStore.class).values();
         if (values.isEmpty()) {
             throw new ServletException("No data store bean found");
         }
-        this.dataStore = (DataStore) values.iterator().next();
+        this.dataStore = values.iterator().next();
     }
 
     @Override
