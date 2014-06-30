@@ -26,7 +26,7 @@ import org.springframework.context.annotation.Profile;
  * @see Configuration#Configuration(java.lang.String, java.lang.String,
  * java.lang.String, java.lang.String)
  */
-@Profile("vcr.pid.epic2")
+@Profile("vcr.pid.epic")
 @org.springframework.context.annotation.Configuration
 public class EPICPersistentIdentifierConfiguration {
 

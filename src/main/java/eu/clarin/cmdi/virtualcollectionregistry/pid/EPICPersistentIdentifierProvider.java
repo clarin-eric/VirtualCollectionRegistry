@@ -17,22 +17,33 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 /**
+ * PID provider that uses the EPIC API v2 to communicate with a handle provider.
+ * Wraps around the PID Resolver / PID Writer library by Thomas Eckart (Leipzig
+ * University)
  *
  * @author twagoo
+ * @see ​http://www.pidconsortium.eu/
+ * @see http://epic.gwdg.de/wiki/index.php/EPIC:API
+ * @see ​https://github.com/CatchPlus/EPIC-API-v2/
  */
 @Service
-@Profile("vcr.pid.epic2")
-public class EPIC2PersistentIdentifierProvider implements PersistentIdentifierProvider {
+@Profile("vcr.pid.epic")
+public class EPICPersistentIdentifierProvider implements PersistentIdentifierProvider {
 
-    private static final Logger logger = LoggerFactory.getLogger(EPIC2PersistentIdentifierProvider.class);
+    private static final Logger logger = LoggerFactory.getLogger(EPICPersistentIdentifierProvider.class);
     private final PidWriter pidWriter;
     private final Configuration configuration;
 
     @Value("${pid_provider.base_uri}")
     private String baseUri;
 
+    /**
+     *
+     * @param pidWriter PID writer implementation to use
+     * @param configuration configuration to be passed to PID writer methods
+     */
     @Autowired
-    public EPIC2PersistentIdentifierProvider(PidWriter pidWriter, Configuration configuration) {
+    public EPICPersistentIdentifierProvider(PidWriter pidWriter, Configuration configuration) {
         this.pidWriter = pidWriter;
         this.configuration = configuration;
     }

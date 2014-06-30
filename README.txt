@@ -48,7 +48,7 @@ if in doubt, please check the Apache Tomcat documentation):
      base URI for the virtual collection registry and… TODO
 
   <Parameter name="spring.profiles.active"
-             value="vcr.pid.epic2”
+             value="vcr.pid.epic”
              override="false"/>   
   <Parameter name="pid_provider.base_uri"
              value="http://127.0.0.1:8080/VirtualCollectionRegistry"

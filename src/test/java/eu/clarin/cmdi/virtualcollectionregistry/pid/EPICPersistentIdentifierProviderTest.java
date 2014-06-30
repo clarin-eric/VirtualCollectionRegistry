@@ -4,10 +4,8 @@ import de.uni_leipzig.asv.clarin.webservices.pidservices2.Configuration;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.HandleField;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidWriter;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
-import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier.Type;
-import java.net.URI;
 import static org.hamcrest.Matchers.*;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
@@ -20,17 +18,17 @@ import org.junit.Test;
  *
  * @author twagoo
  */
-public class EPIC2PersistentIdentifierProviderTest {
+public class EPICPersistentIdentifierProviderTest {
 
     private final Mockery context = new JUnit4Mockery();
     private final Configuration pidConfig = new Configuration("http://epic/server", "9999", "user", "password");
-    private EPIC2PersistentIdentifierProvider instance;
+    private EPICPersistentIdentifierProvider instance;
     private PidWriter pidWriter;
 
     @Before
     public void setUp() {
         pidWriter = context.mock(PidWriter.class);
-        instance = new EPIC2PersistentIdentifierProvider(pidWriter, pidConfig);
+        instance = new EPICPersistentIdentifierProvider(pidWriter, pidConfig);
         instance.setBaseUri("http://vcr/");
     }
 
