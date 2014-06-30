@@ -16,12 +16,11 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @AuthorizeInstantiation(Roles.USER)
-@SuppressWarnings("serial")
 public class EditVirtualCollectionPage extends CreateVirtualCollectionPage {
 
     @SpringBean
     private VirtualCollectionRegistry vcr;
-    
+
     private final static Logger logger = LoggerFactory.getLogger(EditVirtualCollectionPage.class);
 
     public EditVirtualCollectionPage(PageParameters params) throws VirtualCollectionRegistryException {

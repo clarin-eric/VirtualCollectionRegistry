@@ -53,7 +53,7 @@ public class AjaxLinkMenuItem<T> implements Serializable, MenuItem {
             }
         };
     }
-    
+
     protected void onClick(AjaxRequestTarget target, IModel<T> model) {
         onClick(target);
     }

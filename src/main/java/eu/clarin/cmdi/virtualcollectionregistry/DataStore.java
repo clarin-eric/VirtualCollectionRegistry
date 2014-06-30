@@ -1,7 +1,5 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
-import com.sun.jersey.api.spring.Autowire;
-import java.util.Collections;
 import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
@@ -32,6 +30,7 @@ public class DataStore implements DisposableBean {
             emf = Persistence.createEntityManagerFactory(
                     "VirtualCollectionStore", config);
             em = new ThreadLocal<EntityManager>() {
+                @Override
                 protected EntityManager initialValue() {
                     if (emf == null) {
                         throw new InternalError(

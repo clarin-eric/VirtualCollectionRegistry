@@ -87,7 +87,7 @@ public class VirtualCollectionValidatorImpl implements VirtualCollectionValidato
                 }
         }
 
-        if ((vc.getReproducibilityNotice() != null) && 
+        if ((vc.getReproducibilityNotice() != null) &&
                 (vc.getReproducibility() == null)) {
             throw new VirtualCollectionRegistryUsageException(
                     "reproducibility notice without reproducubility");

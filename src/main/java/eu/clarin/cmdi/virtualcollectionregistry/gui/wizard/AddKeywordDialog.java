@@ -16,7 +16,7 @@ public abstract class AddKeywordDialog extends ModalEditDialogBase<String> {
             ModalEditDialogBase<String>.ContentPanel {
         private final Form<String> form;
         private final FeedbackPanel feedbackPanel;
-        
+
         public Content(String id, IModel<String> model) {
             super(id);
             form = new Form<String>("addKeywordForm", model);
@@ -55,7 +55,7 @@ public abstract class AddKeywordDialog extends ModalEditDialogBase<String> {
     protected final String newObjectInstance() {
         return new String();
     }
-    
+
     @Override
     protected final IModel<String> createModel() {
         return new Model<String>();

@@ -11,9 +11,9 @@ import com.jayway.jsonpath.PathNotFoundException;
 
 /**
  * Stores most(!) relevant information of a PID JSON object retrieved from the GWDG
- * 
+ *
  * @author Thomas Eckart
- * 
+ *
  */
 public class PidObject {
 	private final String handleIdentifier;
@@ -36,7 +36,7 @@ public class PidObject {
 
 	/**
 	 * Returns handle identifier
-	 * 
+	 *
 	 * @return handle identifier
 	 */
 	public String getHandleIdentifier() {
@@ -45,7 +45,7 @@ public class PidObject {
 
 	/**
 	 * Returns stored value in EPIC handle for a specific field
-	 * 
+	 *
 	 * @param field
 	 *            name of the stored field
 	 * @return value of the stored field ('parsed_data'), may be null

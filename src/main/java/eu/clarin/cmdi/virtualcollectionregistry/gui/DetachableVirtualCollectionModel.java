@@ -1,8 +1,5 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
-import org.apache.wicket.model.IDetachable;
-import org.apache.wicket.model.IModel;
-
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;

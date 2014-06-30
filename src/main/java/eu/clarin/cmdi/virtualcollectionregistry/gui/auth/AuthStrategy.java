@@ -17,15 +17,15 @@ public interface AuthStrategy {
     public class Result {
         private Action action;
         private AuthPrincipal principal;
-        
+
         protected Result() {
             this.action = Action.CONTINUE_UNAUTHENTICATED;
         }
-        
+
         public final Action getAction() {
             return action;
         }
-        
+
         public final void setAction(Action action) {
             if (action == null) {
                 throw new IllegalArgumentException("action == null");
@@ -40,7 +40,7 @@ public interface AuthStrategy {
         public AuthPrincipal getPrincipal() {
             return principal;
         }
-        
+
         public void setPrinicpal(AuthPrincipal principal) {
             this.principal = principal;
         }

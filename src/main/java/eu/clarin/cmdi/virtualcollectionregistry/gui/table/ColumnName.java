@@ -22,17 +22,17 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
 @SuppressWarnings("serial")
 final class ColumnName extends AbstractColumn<VirtualCollection> {
-    private static final ResourceReference JAVASCRIPT_RESOURCE = 
+    private static final ResourceReference JAVASCRIPT_RESOURCE =
         new ResourceReference(ColumnName.class, "ColumnName.js");
     private final VirtualCollectionTable table;
-    
+
     private final class ItemCell extends Panel implements IWiQueryPlugin {
         private final WebMarkupContainer nameColumn;
-        
+
         public ItemCell(String id, IModel<VirtualCollection> model) {
             super(id);
             setRenderBodyOnly(true);
-            
+
             nameColumn = new WebMarkupContainer("nameColumn");
             nameColumn.setOutputMarkupId(true);
             final VirtualCollection vc = model.getObject();
@@ -63,7 +63,7 @@ final class ColumnName extends AbstractColumn<VirtualCollection> {
             nameColumn.add(details);
             add(nameColumn);
         }
-        
+
         @Override
         public void contribute(WiQueryResourceManager manager) {
             manager.addJavaScriptResource(JAVASCRIPT_RESOURCE);

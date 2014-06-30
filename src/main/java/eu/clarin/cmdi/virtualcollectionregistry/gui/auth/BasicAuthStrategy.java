@@ -23,7 +23,7 @@ import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.codec.digest.DigestUtils;
 
 /**
- * 
+ *
  * @deprecated to be replaced with basic authentication mechanism at container
  * level (e.g. tomcat-users)
  */
@@ -50,14 +50,14 @@ final class BasicAuthStrategy implements AuthStrategy {
         private final String username;
         private final String password;
         private final Map<String, String> attributes;
-        
+
         public Entry(HashMethod type, String username, String password, Map<String, String> attributes) {
             this.type = type;
             this.username = username;
             this.password = password;
             this.attributes = attributes;
         }
-        
+
         public boolean checkPassword(String pw) {
             switch (type) {
                 case PLAIN:
@@ -73,7 +73,7 @@ final class BasicAuthStrategy implements AuthStrategy {
             } // switch
             return false;
         }
-        
+
         public Map<String, String> getAttributes() {
             return attributes;
         }
@@ -86,7 +86,7 @@ final class BasicAuthStrategy implements AuthStrategy {
                 .toString();
         }
     } // class Entry
-    
+
     private static final String CONFIG_PARAM_USERDB_FILE =
         "authfilter.basic.userdb";
     private final ReadWriteLock userDbLock =
@@ -94,6 +94,7 @@ final class BasicAuthStrategy implements AuthStrategy {
     private final Map<String, Entry> userDb =
         new HashMap<String, Entry>();
 
+    @Override
     public void init(FilterConfig filterConfig, Map<String, String> config)
             throws ServletException {
         String userdb = config.get(CONFIG_PARAM_USERDB_FILE);
@@ -108,10 +109,10 @@ final class BasicAuthStrategy implements AuthStrategy {
             throw new ServletException("error initializing user database", e);
         }
     }
-    
+
     @Override
     public String getAuthType() {
-        return HttpServletRequest.BASIC_AUTH; 
+        return HttpServletRequest.BASIC_AUTH;
     }
 
     @Override
@@ -206,7 +207,7 @@ final class BasicAuthStrategy implements AuthStrategy {
             return entry.getAttributes();
         }
         return null;
-        
+
     }
 
     private void loadUserDatabase(InputStream in) throws IOException {
@@ -235,7 +236,7 @@ final class BasicAuthStrategy implements AuthStrategy {
                     } else {
                         password = line.substring(pos + 1).trim();
                     }
-                    
+
                     if ((username != null) && (password != null)) {
                         if (!username.isEmpty() && !password.isEmpty()) {
                             HashMethod method = HashMethod.PLAIN;

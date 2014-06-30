@@ -89,6 +89,7 @@ public final class VirtualCollectionResource {
         final VirtualCollection vc = registry.retrieveVirtualCollection(id);
         // XXX: what about non-public VCs?
         StreamingOutput writer = new StreamingOutput() {
+            @Override
             public void write(OutputStream output) throws IOException,
                     WebApplicationException {
                 final VirtualCollectionMarshaller.Format format = RestUtils.getOutputFormat(headers);
@@ -184,6 +185,7 @@ public final class VirtualCollectionResource {
             throw new VirtualCollectionNotFoundException(id);
         }
         StreamingOutput writer = new StreamingOutput() {
+            @Override
             public void write(OutputStream output) throws IOException,
                     WebApplicationException {
                 marshaller.marshalAsCMDI(output, VirtualCollectionMarshaller.Format.XML, vc);

@@ -23,5 +23,5 @@ public interface VirtualCollectionMarshaller {
     void marshalAsCMDI(OutputStream out, Format format, VirtualCollection vc) throws IOException;
 
     VirtualCollection unmarshal(InputStream in, Format format, String encoding) throws IOException;
-    
+
 }

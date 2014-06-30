@@ -23,7 +23,7 @@ public abstract class EditResourceDialog extends ModalEditDialogBase<Resource> {
             ModalEditDialogBase<Resource>.ContentPanel {
         private final Form<Resource> form;
         private final FeedbackPanel feedbackPanel;
-        
+
         public Content(String id, IModel<Resource> model) {
             super(id);
             form = new Form<Resource>("editResourceForm", model);
@@ -70,7 +70,7 @@ public abstract class EditResourceDialog extends ModalEditDialogBase<Resource> {
     protected final Resource newObjectInstance() {
         return new Resource();
     }
-    
+
     @Override
     protected final IModel<Resource> createModel() {
         return new CompoundPropertyModel<Resource>(null);

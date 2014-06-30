@@ -27,7 +27,7 @@ public class PersistentIdentifier implements Serializable {
 
     public static enum Type {
         DUMMY, HANDLE;
-    } 
+    }
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false, updatable = false)
@@ -53,7 +53,7 @@ public class PersistentIdentifier implements Serializable {
 
     protected PersistentIdentifier() {
     }
-    
+
     public PersistentIdentifier(VirtualCollection vc, Type type, String identifier) {
         if (vc == null) {
             throw new NullArgumentException("vc == null");

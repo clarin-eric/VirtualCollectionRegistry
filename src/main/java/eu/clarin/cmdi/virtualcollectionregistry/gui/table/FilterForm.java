@@ -40,7 +40,7 @@ public class FilterForm extends Panel {
                 QueryOptions.Relation.EQ,
                 QueryOptions.Relation.GE,
                 QueryOptions.Relation.GT);
-    
+
     public FilterForm(String id, IFilterStateLocator<FilterState> locator,
             final DataTable<VirtualCollection> table, boolean privateMode) {
         super(id);

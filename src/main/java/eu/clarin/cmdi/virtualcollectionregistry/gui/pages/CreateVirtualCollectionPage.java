@@ -22,7 +22,7 @@ public class CreateVirtualCollectionPage extends BasePage {
 
     @SpringBean
     private VirtualCollectionRegistry vcr;
-    
+
     // only for extensions
     protected CreateVirtualCollectionPage() {
     }

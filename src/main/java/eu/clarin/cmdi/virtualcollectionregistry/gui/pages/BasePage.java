@@ -22,7 +22,7 @@ public class BasePage extends WebPage {
         // main navigation menu
         final Menu menu = new Menu("menu");
         menu.addMenuItem(new MenuItem<BrowsePublicCollectionsPage>(
-                new Model<String>("Virtual Collections"), 
+                new Model<String>("Virtual Collections"),
                 BrowsePublicCollectionsPage.class));
         menu.addMenuItem(new MenuItem<BrowsePrivateCollectionsPage>(
                 new Model<String>("My Virtual Collections"),

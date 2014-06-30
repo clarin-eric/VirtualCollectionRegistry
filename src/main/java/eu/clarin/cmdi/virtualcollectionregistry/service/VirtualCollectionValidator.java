@@ -10,5 +10,5 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 public interface VirtualCollectionValidator {
 
     void validate(VirtualCollection vc) throws VirtualCollectionRegistryException;
-    
+
 }

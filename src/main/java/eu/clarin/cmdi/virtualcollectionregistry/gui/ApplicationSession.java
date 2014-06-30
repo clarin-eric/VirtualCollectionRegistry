@@ -19,11 +19,11 @@ public class ApplicationSession extends AuthenticatedWebSession {
     private static final Roles ROLES_USER =
         new Roles(Roles.USER);
     private static final Roles ROLES_ADMIN =
-        new Roles(new String[] { Roles.USER, Roles.ADMIN}); 
+        new Roles(new String[] { Roles.USER, Roles.ADMIN});
     private String user;
     private boolean isAdmin;
     private String userDisplay;
-    
+
     public ApplicationSession(Request request) {
         super(request);
     }
@@ -38,7 +38,7 @@ public class ApplicationSession extends AuthenticatedWebSession {
                 userDisplay = findDisplayName(principal);
             }
         }
-        return result; 
+        return result;
     }
 
     @Override

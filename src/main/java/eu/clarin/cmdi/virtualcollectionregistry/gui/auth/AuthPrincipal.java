@@ -9,7 +9,7 @@ import java.util.Map;
 public final class AuthPrincipal implements Principal, Serializable {
     private final String name;
     private final Map<String, String> attributes;
-    
+
     AuthPrincipal(String name, Map<String, String> attributes) {
         if ((name == null) || name.isEmpty()) {
             throw new IllegalArgumentException("name is invalid");
@@ -33,7 +33,7 @@ public final class AuthPrincipal implements Principal, Serializable {
         }
         return null;
     }
-    
+
     public String getAttibute(String name) {
         if ((attributes != null) && (name != null)) {
             return attributes.get(name.toLowerCase());

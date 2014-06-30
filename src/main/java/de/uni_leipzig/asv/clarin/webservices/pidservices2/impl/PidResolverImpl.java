@@ -26,14 +26,15 @@ import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidResolver
 
 /**
  * Requests information about handle from handle server
- * 
+ *
  * @author Thomas Eckart
- * 
+ *
  */
 public class PidResolverImpl implements PidResolver {
 	private final static Logger LOG = Logger.getLogger(PidResolverImpl.class);
 
-	public JSONArray resolvePidAsJSON(final Configuration configuration, final String pid) throws IOException {
+	@Override
+    public JSONArray resolvePidAsJSON(final Configuration configuration, final String pid) throws IOException {
 		LOG.debug("Searching for \"" + pid + "\" at " + configuration.getServiceBaseURL());
 
 		final Client client = Client.create();
@@ -51,11 +52,13 @@ public class PidResolverImpl implements PidResolver {
 		return JSONArray.fromObject(clientResponse.getEntity(String.class));
 	}
 
-	public PidObject resolvePidAsPOJO(final Configuration configuration, final String pid) throws IOException {
+	@Override
+    public PidObject resolvePidAsPOJO(final Configuration configuration, final String pid) throws IOException {
 		return new PidObject(pid, resolvePidAsJSON(configuration, pid));
 	}
 
-	public Map<String, JSONArray> searchPidAsJSON(final Configuration configuration, Map<HandleField, String> fieldMap)
+	@Override
+    public Map<String, JSONArray> searchPidAsJSON(final Configuration configuration, Map<HandleField, String> fieldMap)
 			throws IOException {
 		Map<String, JSONArray> jsonArrayMap = new HashMap<String, JSONArray>();
 
@@ -66,7 +69,8 @@ public class PidResolverImpl implements PidResolver {
 		return jsonArrayMap;
 	}
 
-	public Map<String, PidObject> searchPidAsPOJO(final Configuration configuration, Map<HandleField, String> fieldMap)
+	@Override
+    public Map<String, PidObject> searchPidAsPOJO(final Configuration configuration, Map<HandleField, String> fieldMap)
 			throws IOException {
 		Map<String, JSONArray> jsonArrayMap = searchPidAsJSON(configuration, fieldMap);
 		Map<String, PidObject> pidObjectsMap = new HashMap<String, PidObject>();
@@ -79,7 +83,8 @@ public class PidResolverImpl implements PidResolver {
 		return pidObjectsMap;
 	}
 
-	public List<String> searchPidAsList(final Configuration configuration, Map<HandleField, String> fieldMap)
+	@Override
+    public List<String> searchPidAsList(final Configuration configuration, Map<HandleField, String> fieldMap)
 			throws IOException {
 		LOG.debug("Searching at " + configuration.getServiceBaseURL() + " with: " + fieldMap);
 		List<String> handleList = new ArrayList<String>();

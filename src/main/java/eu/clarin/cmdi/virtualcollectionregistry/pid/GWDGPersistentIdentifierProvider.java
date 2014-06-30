@@ -3,6 +3,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.pid;
 import eu.clarin.cmdi.virtualcollectionregistry.ServletUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -10,10 +11,12 @@ import java.util.Collections;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+
 import javax.servlet.ServletContext;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
+
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
@@ -24,7 +27,7 @@ import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.impl.client.DefaultHttpClient;
 import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.HttpProtocolParams;
+import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
@@ -40,7 +43,7 @@ public class GWDGPersistentIdentifierProvider implements
         PersistentIdentifierProvider {
 
     public static final String BASE_URI = "pid_provider.base_uri";
-    
+
     private static enum Attribute {
 
         PID, URL, CREATOR, EXPDATE;
@@ -58,6 +61,7 @@ public class GWDGPersistentIdentifierProvider implements
             return null;
         }
 
+        @Override
         public String toString() {
             switch (this) {
                 case PID:
@@ -115,6 +119,7 @@ public class GWDGPersistentIdentifierProvider implements
                 Boolean.TRUE);
     }
 
+    @Override
     public PersistentIdentifier createIdentifier(VirtualCollection vc)
             throws VirtualCollectionRegistryException {
         if (vc == null) {
@@ -142,6 +147,7 @@ public class GWDGPersistentIdentifierProvider implements
         }
     }
 
+    @Override
     public void updateIdentifier(String pid, URI target)
             throws VirtualCollectionRegistryException {
         if (pid == null) {
@@ -161,6 +167,7 @@ public class GWDGPersistentIdentifierProvider implements
         logger.info("updated handle \"{}\"", pid);
     }
 
+    @Override
     public void deleteIdentifier(String pid)
             throws VirtualCollectionRegistryException {
         if (pid == null) {
@@ -201,9 +208,9 @@ public class GWDGPersistentIdentifierProvider implements
                     new UsernamePasswordCredentials(username, password));
             // disable expect continue, GWDG does not like very well
             client.getParams().setParameter(
-                    HttpProtocolParams.USE_EXPECT_CONTINUE, Boolean.FALSE);
+                    CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
             // set a proper user agent
-            client.getParams().setParameter(HttpProtocolParams.USER_AGENT,
+            client.getParams().setParameter(CoreProtocolPNames.USER_AGENT,
                     USER_AGENT);
             HttpPost request = new HttpPost(serviceTargetURI);
             request.addHeader("Accept", "text/xml, application/xml");

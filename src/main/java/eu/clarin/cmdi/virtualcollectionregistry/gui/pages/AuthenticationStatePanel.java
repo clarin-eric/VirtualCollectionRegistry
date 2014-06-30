@@ -60,7 +60,7 @@ public class AuthenticationStatePanel extends Panel {
 
     private class LogoutFragment extends Fragment {
         private final Label usernameLabel;
-        
+
         public LogoutFragment(String id) {
             super(id, "logoutFragment", AuthenticationStatePanel.this);
             setRenderBodyOnly(true);

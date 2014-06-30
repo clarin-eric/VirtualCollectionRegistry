@@ -16,12 +16,12 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
         protected ContentPanel(String id) {
             super(id);
         }
-        
+
         public abstract Form<T> getForm();
-        
+
         public abstract FeedbackPanel getFeedbackPanel();
     } // class ModalEditDialogBase.ContentPanel
-    
+
     private final class ButtonBar extends Panel {
         public ButtonBar(String id, Form<?> form) {
             super(id);
@@ -83,6 +83,7 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
         contentPanel = createContentPanel(id, model);
         contentPanel.add(new AttributeAppender("class",
                 new AbstractReadOnlyModel<String>() {
+                    @Override
                     public String getObject() {
                         final String clazz = getCssClass();
                         if ((clazz != null) && !clazz.isEmpty()) {
@@ -129,7 +130,7 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
         form.setModelObject(null);
         onSubmit(target, object);
     }
-    
+
     private final void doCancel(AjaxRequestTarget target, Form<T> form) {
         close(target);
         final T object = form.getModelObject();
@@ -147,7 +148,7 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
 
     protected abstract ContentPanel createContentPanel(String id,
             IModel<T> model);
-    
+
     public abstract void onSubmit(AjaxRequestTarget target, T object);
 
     public void onCancel(AjaxRequestTarget target, T object) {

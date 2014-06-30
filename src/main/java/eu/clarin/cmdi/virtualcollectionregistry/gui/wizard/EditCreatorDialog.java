@@ -21,7 +21,7 @@ public abstract class EditCreatorDialog extends ModalEditDialogBase<Creator> {
             ModalEditDialogBase<Creator>.ContentPanel {
         private final Form<Creator> form;
         private final FeedbackPanel feedbackPanel;
-        
+
         public Content(String id, IModel<Creator> model) {
             super(id);
             form = new Form<Creator>("editCreatorForm", model);
@@ -87,7 +87,7 @@ public abstract class EditCreatorDialog extends ModalEditDialogBase<Creator> {
     protected final Creator newObjectInstance() {
         return new Creator();
     }
-    
+
     @Override
     protected final IModel<Creator> createModel() {
         return new CompoundPropertyModel<Creator>(null);

@@ -51,7 +51,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
     private final class GeneralStep extends DynamicWizardStep {
         private final class DeleteKeywordDialog extends ConfirmationDialog {
             private String keyword;
-            
+
             public DeleteKeywordDialog(String id,
                     final Component updateComponent) {
                 super(id, updateComponent);
@@ -61,7 +61,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
             public void onConfirm(AjaxRequestTarget target) {
                 vc.getKeywords().remove(keyword);
             }
-            
+
             public void show(AjaxRequestTarget target, String keyword) {
                 this.keyword = keyword;
                 super.show(target, new StringResourceModel("keywords.deleteconfirm", null, new Object[] { keyword }));
@@ -137,7 +137,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
             final TextArea<String> reproducibilityNoticeArea =
                 new TextArea<String>("vc.reproducibilityNotice");
             add(reproducibilityNoticeArea);
-            
+
             final KeywordsList keywordList =
                 new KeywordsList("keywordsList", vc.getKeywords());
             add(keywordList);
@@ -546,7 +546,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
             final TextArea<String> queryValueArea =
                 new TextArea<String>("vc.generatedBy.query.value");
             add(queryValueArea);
-            
+
             add(new AbstractFormValidator() {
                 @Override
                 public FormComponent<?>[] getDependentFormComponents() {
@@ -617,7 +617,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
     }
 
     protected abstract void onCancelWizard();
-    
+
     protected abstract void onFinishWizard(VirtualCollection vc);
 
 } // class CreateVirtualCollectionWizard

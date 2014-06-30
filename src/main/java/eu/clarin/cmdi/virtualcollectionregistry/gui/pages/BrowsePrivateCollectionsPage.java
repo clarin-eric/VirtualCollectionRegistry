@@ -29,7 +29,7 @@ public class BrowsePrivateCollectionsPage extends BasePage {
 
     @SpringBean
     private VirtualCollectionRegistry vcr;
-    
+
     private class ActionsColumn extends Panel {
 
         public ActionsColumn(String id, IModel<VirtualCollection> model) {

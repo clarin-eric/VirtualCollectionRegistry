@@ -9,14 +9,14 @@ import de.uni_leipzig.asv.clarin.webservices.pidservices2.HandleField;
 
 /**
  * Registers new handles at handle server or modifies existing handles
- * 
+ *
  * @author Thomas Eckart
- * 
+ *
  */
 public interface PidWriter {
 	/**
 	 * Try to register a new PID at handle server. Returns registered handle if successful.
-	 * 
+	 *
 	 * @param configuration
 	 * @param fieldMap
 	 *            handle mapping field -> value
@@ -28,7 +28,7 @@ public interface PidWriter {
 
 	/**
 	 * Modify existing PID. This method overwrites all existing fields! Fields that should remain stored for the PID have to be added to fieldMap.
-	 * 
+	 *
 	 * @param configuration
 	 * @param pid
 	 *            Persistent identifier that will be modified/overwritten

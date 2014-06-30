@@ -58,6 +58,7 @@ final class ShibbolethAuthStrategy implements AuthStrategy {
     private String[] usernameHeaderNames;
     private String[] attributeHeaderNames;
 
+    @Override
     public void init(FilterConfig filterconfig, Map<String, String> config)
             throws ServletException {
         loadConfig(config);

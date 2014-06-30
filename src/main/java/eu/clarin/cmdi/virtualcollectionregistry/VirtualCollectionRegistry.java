@@ -49,7 +49,7 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
     private final AtomicBoolean intialized = new AtomicBoolean(false);
     private final Timer timer =
         new Timer("VirtualCollectionRegistry-Maintenance", true);
-    
+
     @Override
     public void afterPropertiesSet() throws VirtualCollectionRegistryException {
         // called by Spring directly after Bean construction
@@ -292,7 +292,7 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
             }
 
             /*
-             * XXX: deny update from public to private? 
+             * XXX: deny update from public to private?
              */
             boolean update = false;
             switch (state) {
@@ -554,7 +554,7 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
     }
 
     private void maintenance(long now) {
-        // allocate persistent identifier roughly after 30 seconds 
+        // allocate persistent identifier roughly after 30 seconds
         final Date nowDateAlloc = new Date(now - 30*1000);
         // (for now) purge deleted collection roughly after 30 seconds
         final Date nowDatePurge = new Date(now - 30*1000);
@@ -586,7 +586,7 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
             em.getTransaction().commit();
 
             /*
-             * delayed purging of deleted virtual collections 
+             * delayed purging of deleted virtual collections
              */
             em.getTransaction().begin();
             q.setParameter("state", VirtualCollection.State.DELETED);

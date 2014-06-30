@@ -50,7 +50,7 @@ public class QueryOptions implements Serializable {
         }
     } // enum QueryOptions.Relation
 
-    
+
     private static final byte RELATION_EQ = 0x01;
     private static final byte RELATION_NE = 0x02;
     private static final byte RELATION_LT = 0x04;
@@ -73,7 +73,7 @@ public class QueryOptions implements Serializable {
     private Filter filter;
     private List<OrderBy> orderByItems;
 
-    
+
     public QueryOptions() {
         super();
     }
@@ -107,7 +107,7 @@ public class QueryOptions implements Serializable {
     public Filter and() {
         return new AndFilter();
     }
-    
+
     public Filter or() {
         return new OrFilter();
     }
@@ -158,7 +158,7 @@ public class QueryOptions implements Serializable {
         return null;
     }
 
-    
+
     public abstract class Filter implements Serializable {
         public final Filter add(Property property, Relation relation,
                 Object value) {
@@ -182,12 +182,12 @@ public class QueryOptions implements Serializable {
         public abstract Filter add(Filter filter);
 
         protected abstract void doAdd(ExpressionFilter filter);
-        
+
         protected abstract Predicate makePredicate(CriteriaBuilder cb,
                 CriteriaQuery<?> cq, Root<VirtualCollection> root);
     } // QueryOptions.Filter
 
-    
+
     public final class AndFilter extends Filter {
         private final List<Filter> items = new ArrayList<Filter>();
 
@@ -211,6 +211,7 @@ public class QueryOptions implements Serializable {
             items.add(filter);
         }
 
+        @Override
         protected Predicate makePredicate(CriteriaBuilder cb,
                 CriteriaQuery<?> cq, Root<VirtualCollection> root) {
             Predicate[] preds = new Predicate[items.size()];
@@ -222,7 +223,7 @@ public class QueryOptions implements Serializable {
         }
     } // QueryOptions.AndFilter
 
-    
+
     public final class OrFilter extends Filter {
         private final List<Filter> items = new ArrayList<Filter>();
 
@@ -246,6 +247,7 @@ public class QueryOptions implements Serializable {
             items.add(filter);
         }
 
+        @Override
         protected Predicate makePredicate(CriteriaBuilder cb,
                 CriteriaQuery<?> cq, Root<VirtualCollection> root) {
             Predicate[] preds = new Predicate[items.size()];
@@ -257,7 +259,7 @@ public class QueryOptions implements Serializable {
         }
     } // QueryOptions.OrFilter
 
-    
+
     private final class ExpressionFilter extends Filter {
         private final AbstractPropertyImpl property;
         private final byte relation;
@@ -280,26 +282,27 @@ public class QueryOptions implements Serializable {
             throw new RuntimeException("not permitted");
         }
 
+        @Override
         public Predicate makePredicate(CriteriaBuilder cb, CriteriaQuery<?> cq,
                 Root<VirtualCollection> root) {
             return property.getPredicate(cb, cq, root, relation, value);
         }
     } // QueryOptions.PropertyFilter
 
-    
+
     private static final class OrderBy implements Serializable {
         private final AbstractPropertyImpl property;
         private final boolean asc;
-        
+
         public OrderBy(AbstractPropertyImpl property, boolean asc) {
             this.property = property;
             this.asc = asc;
         }
-        
+
         public AbstractPropertyImpl getProperty() {
             return property;
         }
-        
+
         public Order makeOrder(CriteriaBuilder cb, Root<VirtualCollection> root) {
             if (asc) {
                 return cb.asc(property.getExpression(root));
@@ -316,7 +319,7 @@ public class QueryOptions implements Serializable {
 
         public abstract Expression<?> getExpression(
                 Root<VirtualCollection> root);
-        
+
         public abstract Predicate getPredicate(CriteriaBuilder cb,
                 CriteriaQuery<?> cq, Root<VirtualCollection> root,
                 byte relation, Object value);
@@ -384,7 +387,7 @@ public class QueryOptions implements Serializable {
         }
     } // class QueryOptions.AbstractPropertyImpl
 
-    
+
     private static final class PropertyImplOwner extends
             AbstractPropertyImpl {
         @Override
@@ -401,7 +404,7 @@ public class QueryOptions implements Serializable {
         public Expression<String> getExpression(Root<VirtualCollection> root) {
             return root.get(VirtualCollection_.owner).get(User_.name);
         }
-        
+
         @Override
         public Predicate getPredicate(CriteriaBuilder cb, CriteriaQuery<?> cq,
                 Root<VirtualCollection> root, byte relation, Object value) {
@@ -410,7 +413,7 @@ public class QueryOptions implements Serializable {
         }
     } // class QueryOptions.PropertyImplOwner
 
-    
+
     private static final class PropertyImplName extends
             AbstractPropertyImpl {
         @Override
@@ -436,7 +439,7 @@ public class QueryOptions implements Serializable {
         }
     } // class QueryOptions.PropertyImplName
 
-    
+
     private static final class PropertyImplType extends AbstractPropertyImpl {
         @Override
         public Property getProperty() {
@@ -489,7 +492,7 @@ public class QueryOptions implements Serializable {
             return makePredicate(cb, expr, relation, value);
         }
     } // class QueryOptions.PropertyImplName
-    
+
     private static final class PropertyImplDescription extends
             AbstractPropertyImpl {
         @Override

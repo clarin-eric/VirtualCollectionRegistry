@@ -41,7 +41,7 @@ public class VirtualCollectionsResource {
     @Context
     private ResourceContext resourceContext;
     @InjectParam
-    private VirtualCollectionRegistry registry;    
+    private VirtualCollectionRegistry registry;
     @InjectParam
     private VirtualCollectionMarshaller marshaller;
     @Context
@@ -76,6 +76,7 @@ public class VirtualCollectionsResource {
         final VirtualCollectionList vcs = registry.getVirtualCollections(query,
                 (offset > 0) ? offset : 0, count);
         StreamingOutput writer = new StreamingOutput() {
+            @Override
             public void write(OutputStream output) throws IOException,
                     WebApplicationException {
                 final Format format = RestUtils.getOutputFormat(headers);

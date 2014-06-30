@@ -87,6 +87,7 @@ public class MyVirtualCollectionsResource {
         final VirtualCollectionList vcs = registry.getVirtualCollections(
                 principal, query, (offset > 0) ? offset : 0, count);
         StreamingOutput writer = new StreamingOutput() {
+            @Override
             public void write(OutputStream output) throws IOException,
                     WebApplicationException {
                 final VirtualCollectionMarshaller.Format format = RestUtils.getOutputFormat(headers);

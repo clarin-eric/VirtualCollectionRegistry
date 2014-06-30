@@ -3,7 +3,6 @@ package eu.clarin.cmdi.virtualcollectionregistry.service.impl;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidatorFactory;
 import org.springframework.beans.factory.config.ServiceLocatorFactoryBean;
 import org.springframework.context.annotation.Bean;
-import org.springframework.context.annotation.Configuration;
 
 /**
  *

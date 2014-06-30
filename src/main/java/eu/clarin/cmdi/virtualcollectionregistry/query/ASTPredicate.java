@@ -13,14 +13,15 @@ public class ASTPredicate extends SimpleNode {
         super(p, id);
     }
 
+    @Override
     public Object jjtAccept(QueryParserVisitor visitor, Object data) {
         return visitor.visit(this, data);
     }
-    
+
     public void setAttribute(int attribute) {
         this.attribute = attribute;
     }
-    
+
     public int getAttribute() {
         return attribute;
     }
@@ -28,7 +29,7 @@ public class ASTPredicate extends SimpleNode {
     public void setOperator(int operator) {
         this.operator = operator;
     }
-    
+
     public int getOperator() {
         return operator;
     }
@@ -36,11 +37,12 @@ public class ASTPredicate extends SimpleNode {
     public void setValue(String value) {
         this.value = value;
     }
-    
+
     public String getValue() {
         return value;
     }
 
+    @Override
     public String toString() {
         StringBuilder sb = new StringBuilder();
         sb.append("Predicate[");

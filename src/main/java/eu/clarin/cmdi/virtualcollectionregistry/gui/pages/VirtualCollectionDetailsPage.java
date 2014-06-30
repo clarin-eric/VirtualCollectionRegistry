@@ -8,7 +8,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 
-import org.apache.commons.lang.time.FastDateFormat;
 import org.apache.wicket.Application;
 import org.apache.wicket.Component;
 import org.apache.wicket.Page;
@@ -64,7 +63,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
         }
     };
     private static final IConverter convDate = new DateConverter();
-    
+
     private static final String CSS_CLASS = "collectionDetails";
 
     /*
@@ -75,7 +74,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
      */
     private static final class HideIfEmptyBehavior extends AbstractBehavior {
         private final List<Component> components = new LinkedList<Component>();
-        
+
         @Override
         public void bind(Component component) {
             super.bind(component);
@@ -103,7 +102,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
             components.clear();
         }
     } // class VirtualCollectionDetailsPage.HideIfEmptyBehavior
-    
+
     private static class CustomLabel extends Label {
 
         public CustomLabel(String id) {
@@ -124,10 +123,10 @@ public class VirtualCollectionDetailsPage extends BasePage {
         }
     } // class VirtualCollectionDetailsPage.TypeLabel
 
-    
+
     private final HideIfEmptyBehavior hideIfEmpty = new HideIfEmptyBehavior();
 
-    
+
     public VirtualCollectionDetailsPage(final IModel<VirtualCollection> model,
             final Page previousPage) {
         super(new CompoundPropertyModel<VirtualCollection>(model.getObject()));
@@ -206,7 +205,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
         final Border resources = new AjaxToggleBorder("resourcesBorder",
                 new Model<String>("Resources"), CSS_CLASS + " resources");
         add(resources);
-        
+
         final VirtualCollection vc = model.getObject();
         @SuppressWarnings("rawtypes")
         final IColumn[] cols = new IColumn[2];

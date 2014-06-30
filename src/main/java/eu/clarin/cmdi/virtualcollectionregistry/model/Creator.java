@@ -21,13 +21,13 @@ public class Creator implements Serializable {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false, updatable = false)
     private Long id;
-    
+
     @Column(name = "person", nullable = false, length = 255)
     private String person;
 
     @Column(name = "address", length = 255)
     private String address;
-    
+
     @Column(name = "email", length = 255)
     private String email;
 
@@ -42,7 +42,7 @@ public class Creator implements Serializable {
 
     @Column(name = "role", length = 255)
     private String role;
-    
+
     public Creator() {
         super();
     }
@@ -67,7 +67,7 @@ public class Creator implements Serializable {
     public String getAddress() {
         return address;
     }
-    
+
     public void setAddress(String address) {
         this.address = address;
     }
@@ -91,7 +91,7 @@ public class Creator implements Serializable {
     public String getTelephone() {
         return telephone;
     }
-    
+
     public void setTelephone(String telephone) {
         this.telephone = telephone;
     }
@@ -99,7 +99,7 @@ public class Creator implements Serializable {
     public String getWebsite() {
         return website;
     }
-    
+
     public void setWebsite(String website) {
         this.website = website;
     }

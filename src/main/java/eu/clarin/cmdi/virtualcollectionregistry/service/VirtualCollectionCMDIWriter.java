@@ -11,5 +11,5 @@ import javax.xml.stream.XMLStreamWriter;
 public interface VirtualCollectionCMDIWriter {
 
     void writeCMDI(XMLStreamWriter out, VirtualCollection vc) throws XMLStreamException;
-    
+
 }

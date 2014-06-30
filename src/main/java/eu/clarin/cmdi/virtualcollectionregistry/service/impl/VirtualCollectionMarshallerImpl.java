@@ -3,6 +3,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.service.impl;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionCMDIWriter;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
+
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -13,6 +14,8 @@ import java.text.SimpleDateFormat;
 import java.util.Collections;
 import java.util.Map;
 
+import javax.xml.stream.XMLInputFactory;
+import javax.xml.stream.XMLOutputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamReader;
@@ -35,12 +38,13 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedByQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
+
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
 
 @Service
 public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshaller {
-    
+
     private static final String ENCODING = "UTF-8";
     private static final String VERSION = "1.0";
     private static final Logger logger =
@@ -51,7 +55,7 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
     private final XMLOutputFactory2 xmlWriterFactory;
     private final MappedXMLInputFactory jsonReaderFactory;
     private final MappedXMLOutputFactory jsonWriterFactory;
-    
+
     @Autowired
     private VirtualCollectionCMDIWriter cmdiWriter;
 
@@ -70,16 +74,16 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
 
             // XML factories
             xmlReaderFactory =
-                (XMLInputFactory2) XMLInputFactory2.newInstance();
+                (XMLInputFactory2) XMLInputFactory.newInstance();
             xmlReaderFactory.configureForSpeed();
             xmlReaderFactory
-                .setProperty(XMLInputFactory2.IS_NAMESPACE_AWARE, Boolean.TRUE);
+                .setProperty(XMLInputFactory.IS_NAMESPACE_AWARE, Boolean.TRUE);
             xmlReaderFactory
                 .setProperty(XMLInputFactory2.P_INTERN_NAMES, Boolean.TRUE);
             xmlReaderFactory
                 .setProperty(XMLInputFactory2.P_INTERN_NS_URIS, Boolean.TRUE);
             xmlWriterFactory =
-                (XMLOutputFactory2) XMLOutputFactory2.newInstance();
+                (XMLOutputFactory2) XMLOutputFactory.newInstance();
             xmlWriterFactory.configureForSpeed();
 
             // JSON factories

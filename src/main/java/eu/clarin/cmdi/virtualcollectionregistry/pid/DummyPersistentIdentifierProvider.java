@@ -15,16 +15,19 @@ public class DummyPersistentIdentifierProvider implements
         super();
     }
 
+    @Override
     public PersistentIdentifier createIdentifier(VirtualCollection vc)
             throws VirtualCollectionRegistryException {
         return new PersistentIdentifier(vc, PersistentIdentifier.Type.DUMMY,
                 "dummy-" + Long.toString(vc.getId()));
     }
 
+    @Override
     public void updateIdentifier(String pid, URI target)
             throws VirtualCollectionRegistryException {
     }
 
+    @Override
     public void deleteIdentifier(String pid)
             throws VirtualCollectionRegistryException {
     }
