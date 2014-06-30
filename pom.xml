@@ -90,25 +90,6 @@
             <scope>runtime</scope>
         </dependency>
 
-<!--
-        <dependency>
-            <groupId>org.hibernate</groupId>
-            <artifactId>hibernate-jpamodelgen</artifactId>
-            <version>${hibernate.jpaVersion}</version>
-            <!- - "provided" is actually a lie, but this dependency is only
-                 needed at compile time, and "provided" does the trick - ->
-            <scope>provided</scope>
-            <exclusions>
-                <exclusion>
-                    <!- - Use the jpa-api defined here, crossing fingers they
-                         match up signature-wise - ->
-                    <groupId>org.hibernate.javax.persistence</groupId>
-                    <artifactId>hibernate-jpa-2.0-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
--->
-
         <dependency>
             <groupId>javax.servlet</groupId>
             <artifactId>servlet-api</artifactId>
