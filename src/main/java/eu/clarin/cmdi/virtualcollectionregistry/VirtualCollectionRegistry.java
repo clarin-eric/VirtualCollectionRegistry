@@ -578,7 +578,7 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
                 }
                 vc.setState(VirtualCollection.State.PUBLIC);
                 em.persist(vc);
-                logger.debug("assigned pid (identifer='{}') to virtual" +
+                logger.info("assigned pid (identifer='{}') to virtual" +
                         "collection (id={})",
                         vc.getPersistentIdentifier().getIdentifier(),
                         vc.getId());

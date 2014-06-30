@@ -186,37 +186,40 @@ public class VirtualCollectionCMDIWriterImpl implements VirtualCollectionCMDIWri
 
     private ComplextypeReproducability1 getReproducability(VirtualCollection vc) {
         final ComplextypeReproducability1 reproducability = new ComplextypeReproducability1();
-        //if(vc.getReproducibility() == VirtualCollection.Reproducibility.FLUCTUATING)
-        switch (vc.getReproducibility()) {
-            //TODO: better mapping
-            case FLUCTUATING:
-                reproducability.setValue(SimpletypeReproducability1.INTENDED);
-                break;
-            case INTENDED:
-                reproducability.setValue(SimpletypeReproducability1.INTENDED);
-                break;
-            case UNTENDED:
-                reproducability.setValue(SimpletypeReproducability1.NOT_INTENDED);
-                break;
+        if (vc.getReproducibility() != null) {
+            switch (vc.getReproducibility()) {
+                //TODO: better mapping
+                case FLUCTUATING:
+                    reproducability.setValue(SimpletypeReproducability1.INTENDED);
+                    break;
+                case INTENDED:
+                    reproducability.setValue(SimpletypeReproducability1.INTENDED);
+                    break;
+                case UNTENDED:
+                    reproducability.setValue(SimpletypeReproducability1.NOT_INTENDED);
+                    break;
+            }
         }
         return reproducability;
     }
 
     private ComplextypePurpose1 getPurpose(VirtualCollection vc) {
         final ComplextypePurpose1 purpose = new ComplextypePurpose1();
-        switch (vc.getPurpose()) {
-            case FUTURE_USE:
-                purpose.setValue(SimpletypePurpose1.FUTURE_USE);
-                break;
-            case REFERENCE:
-                purpose.setValue(SimpletypePurpose1.REFERENCE);
-                break;
-            case RESEARCH:
-                purpose.setValue(SimpletypePurpose1.RESEARCH);
-                break;
-            case SAMPLE:
-                purpose.setValue(SimpletypePurpose1.SAMPLE);
-                break;
+        if (vc.getPurpose() != null) {
+            switch (vc.getPurpose()) {
+                case FUTURE_USE:
+                    purpose.setValue(SimpletypePurpose1.FUTURE_USE);
+                    break;
+                case REFERENCE:
+                    purpose.setValue(SimpletypePurpose1.REFERENCE);
+                    break;
+                case RESEARCH:
+                    purpose.setValue(SimpletypePurpose1.RESEARCH);
+                    break;
+                case SAMPLE:
+                    purpose.setValue(SimpletypePurpose1.SAMPLE);
+                    break;
+            }
         }
         return purpose;
     }
