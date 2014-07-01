@@ -14,11 +14,12 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.SimpletypePurpose1;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.SimpletypeReproducability1;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.SimpletypeStatus1;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionCMDIWriter;
+
 import java.io.IOException;
-import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
+
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -28,6 +29,8 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.TransformerConfigurationException;
+
+import org.apache.commons.lang3.time.FastDateFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Service;
@@ -57,7 +60,7 @@ public class VirtualCollectionCMDIWriterImpl implements VirtualCollectionCMDIWri
             + VIRTUAL_COLLECTION_PROFILE_ID
             + "/xsd";
     private static final String CMD_VERSION = "1.1";
-    private static final SimpleDateFormat DATE_FORMAT = new SimpleDateFormat("yyyy-MM-dd");
+    private static final FastDateFormat DATE_FORMAT = FastDateFormat.getInstance("yyyy-MM-dd");
     ///////// END OF CMDI CONSTANTS   /////////
 
     private final JAXBContext jc;
