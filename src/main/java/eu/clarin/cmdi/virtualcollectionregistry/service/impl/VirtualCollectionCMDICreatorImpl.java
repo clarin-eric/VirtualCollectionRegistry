@@ -91,7 +91,7 @@ public class VirtualCollectionCMDICreatorImpl implements VirtualCollectionCMDICr
         header.setMdCreationDate(dataTypeFactory.newXMLGregorianCalendar(DATE_FORMAT.format(new Date())));
         header.setMdProfile(VIRTUAL_COLLECTION_PROFILE_ID);
         header.getMdCreator().add(vc.getOwner().getName());
-        header.setMdSelfLink(vc.getPersistentIdentifier().getActionableURI());
+        header.setMdSelfLink(vc.getPersistentIdentifier().getURI());
         return header;
     }
 
