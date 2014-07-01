@@ -4,6 +4,11 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD;
+import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD.Components.VirtualCollection.Creator.Email;
+import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD.Components.VirtualCollection.Creator.Organisation;
+import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD.Components.VirtualCollection.Description;
+import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD.Components.VirtualCollection.Name;
+import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD.Components.VirtualCollection.ReproducabilityNotice;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD.Resources.ResourceProxyList.ResourceProxy;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD.Resources.ResourceProxyList.ResourceProxy.ResourceType;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.ComplextypePurpose1;
@@ -14,12 +19,9 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.SimpletypePurpose1;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.SimpletypeReproducability1;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.SimpletypeStatus1;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionCMDIWriter;
-
-import java.io.IOException;
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
-
 import javax.xml.bind.JAXBContext;
 import javax.xml.bind.JAXBException;
 import javax.xml.bind.Marshaller;
@@ -29,7 +31,6 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import javax.xml.transform.TransformerConfigurationException;
-
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -59,7 +60,7 @@ public class VirtualCollectionCMDIWriterImpl implements VirtualCollectionCMDIWri
     // generated from by JAXB                  
     /////////////////////////////////////////////
     private static final String VIRTUAL_COLLECTION_PROFILE_ID
-            = "clarin.eu:cr1:p_1271859438175";
+            = "clarin.eu:cr1:p_1404130561238";
     private static final String VIRTUAL_COLLECTION_PROFILE_SCHEMA_LOCATION
             = "http://www.clarin.eu/cmd/ http://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/profiles/"
             + VIRTUAL_COLLECTION_PROFILE_ID
@@ -83,7 +84,6 @@ public class VirtualCollectionCMDIWriterImpl implements VirtualCollectionCMDIWri
      * ({@link XMLStreamWriter#writeEndDocument() }
      * will <em>not</em> be called!
      * @param vc collection to write as CMDI
-     * @throws IOException
      * @throws XMLStreamException
      */
     @Override
@@ -154,20 +154,28 @@ public class VirtualCollectionCMDIWriterImpl implements VirtualCollectionCMDIWri
 
     private CMD.Components createComponents(VirtualCollection vc) {
         final CMD.Components.VirtualCollection virtualCollection = new CMD.Components.VirtualCollection();
-        virtualCollection.setName(vc.getName());
-        virtualCollection.setDescription(vc.getDescription());
+
+        final Name name = new Name();
+        name.setValue(vc.getName());
+        virtualCollection.setName(name);
+
+        if (vc.getDescription() != null) {
+            final Description description = new Description();
+            description.setValue(vc.getDescription());
+            virtualCollection.setDescription(description);
+        }
+
         virtualCollection.setCreationDate(getCreationDate(vc));
         virtualCollection.setStatus(getStatus(vc));
         virtualCollection.setReproducability(getReproducability(vc));
         virtualCollection.setPurpose(getPurpose(vc));
-        virtualCollection.setOrigin(""); //TODO: ??
-        virtualCollection.setCreator(getCreator(vc));
+        virtualCollection.getCreator().add(getCreator(vc));
         virtualCollection.setGeneratedBy(new CMD.Components.VirtualCollection.GeneratedBy());
 
-        if (vc.getReproducibilityNotice() == null) {
-            virtualCollection.setReproducabilityNotice("");
-        } else {
-            virtualCollection.setReproducabilityNotice(vc.getReproducibilityNotice());
+        if (vc.getReproducibilityNotice() != null) {
+            final ReproducabilityNotice reproducabilityNotice = new ReproducabilityNotice();
+            reproducabilityNotice.setValue(vc.getReproducibilityNotice());
+            virtualCollection.setReproducabilityNotice(reproducabilityNotice);
         }
 
         final CMD.Components components = new CMD.Components();
@@ -183,9 +191,15 @@ public class VirtualCollectionCMDIWriterImpl implements VirtualCollectionCMDIWri
     private ComplextypeStatus1 getStatus(VirtualCollection vc) {
         final ComplextypeStatus1 status = new ComplextypeStatus1();
         switch (vc.getState()) {
-            //TODO: Improve mapping
             case PUBLIC:
-                status.setValue(SimpletypeStatus1.FINAL);
+                status.setValue(SimpletypeStatus1.PUBLISHED);
+                break;
+            case DELETED:
+                status.setValue(SimpletypeStatus1.DEPRECATED);
+                break;
+            case DEAD:
+                status.setValue(SimpletypeStatus1.DEPRECATED);
+                break;
             default:
                 status.setValue(SimpletypeStatus1.DRAFT);
         }
@@ -198,13 +212,13 @@ public class VirtualCollectionCMDIWriterImpl implements VirtualCollectionCMDIWri
             switch (vc.getReproducibility()) {
                 //TODO: better mapping
                 case FLUCTUATING:
-                    reproducability.setValue(SimpletypeReproducability1.INTENDED);
+                    reproducability.setValue(SimpletypeReproducability1.FLUCTUATING);
                     break;
                 case INTENDED:
                     reproducability.setValue(SimpletypeReproducability1.INTENDED);
                     break;
                 case UNTENDED:
-                    reproducability.setValue(SimpletypeReproducability1.NOT_INTENDED);
+                    reproducability.setValue(SimpletypeReproducability1.UNTENDED);
                     break;
             }
         }
@@ -236,9 +250,18 @@ public class VirtualCollectionCMDIWriterImpl implements VirtualCollectionCMDIWri
         final CMD.Components.VirtualCollection.Creator creator = new CMD.Components.VirtualCollection.Creator();
         if (vc.getCreators().size() > 0) {
             final Creator vcCreator = vc.getCreators().get(0);
-            creator.setName(vcCreator.getPerson());
-            creator.setEmail(vcCreator.getEMail());
-            creator.setOrganisation(vcCreator.getOrganisation());
+
+            final CMD.Components.VirtualCollection.Creator.Name name = new CMD.Components.VirtualCollection.Creator.Name();
+            name.setValue(vcCreator.getPerson());
+            creator.setName(name);
+
+            final Email email = new Email();
+            email.setValue(vcCreator.getEMail());
+            creator.setEmail(email);
+
+            final Organisation organisation = new Organisation();
+            organisation.setValue(vcCreator.getOrganisation());
+            creator.setOrganisation(organisation);
         }
         return creator;
     }

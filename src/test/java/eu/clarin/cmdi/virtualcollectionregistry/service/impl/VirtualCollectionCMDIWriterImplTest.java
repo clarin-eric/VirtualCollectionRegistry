@@ -79,12 +79,14 @@ public class VirtualCollectionCMDIWriterImplTest extends XMLTestCase {
         vc.setName("Virtual Collection Name");
         vc.setDescription("Test collection description");
         vc.setType(VirtualCollection.Type.EXTENSIONAL);
-        vc.setState(VirtualCollection.State.PUBLIC_PENDING);
         vc.setReproducibility(VirtualCollection.Reproducibility.INTENDED);
         vc.setPurpose(VirtualCollection.Purpose.SAMPLE);
 
         vc.setOwner(new User("Test user"));
         vc.setCreationDate(DateFormat.getDateInstance(SHORT, Locale.US).parse("01/01/14"));
+
+        vc.setState(VirtualCollection.State.PUBLIC_PENDING);
+        //setting the pid requires 'public pending' state and will set the state to public
         vc.setPersistentIdentifier(new PersistentIdentifier(vc, PersistentIdentifier.Type.DUMMY, "test-pid"));
 
         final Creator creator = new Creator("Test creator");

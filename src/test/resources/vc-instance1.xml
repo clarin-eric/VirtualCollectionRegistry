@@ -2,12 +2,12 @@
 <!-- CMDI instance valid to cmdi-virtual-collection (clarin.eu:cr1:p_1271859438175) profile -->
 <cmd:CMD xmlns:cmd="http://www.clarin.eu/cmd/"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-         xsi:schemaLocation="http://www.clarin.eu/cmd/ http://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/profiles/clarin.eu:cr1:p_1271859438175/xsd" CMDVersion="1.1">
+         xsi:schemaLocation="http://www.clarin.eu/cmd/ http://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/profiles/clarin.eu:cr1:p_1404130561238/xsd" CMDVersion="1.1">
     <cmd:Header>
         <cmd:MdCreator>Test user</cmd:MdCreator>
         <cmd:MdCreationDate>2014-01-01</cmd:MdCreationDate>
         <cmd:MdSelfLink>test-pid</cmd:MdSelfLink>
-        <cmd:MdProfile>clarin.eu:cr1:p_1271859438175</cmd:MdProfile>
+        <cmd:MdProfile>clarin.eu:cr1:p_1404130561238</cmd:MdProfile>
     </cmd:Header>
     <cmd:Resources>
         <cmd:ResourceProxyList>
@@ -30,11 +30,9 @@
             <cmd:Name>Virtual Collection Name</cmd:Name>
             <cmd:Description>Test collection description</cmd:Description>
             <cmd:CreationDate>2014-01-01</cmd:CreationDate>
-            <cmd:Status>draft</cmd:Status>
+            <cmd:Status>published</cmd:Status>
             <cmd:Reproducability>intended</cmd:Reproducability>
             <cmd:Purpose>sample</cmd:Purpose>
-            <cmd:ReproducabilityNotice></cmd:ReproducabilityNotice>
-            <cmd:Origin></cmd:Origin>
             <cmd:Creator>
                 <cmd:Name>Test creator</cmd:Name>
                 <cmd:Email>test@creator.org</cmd:Email>
