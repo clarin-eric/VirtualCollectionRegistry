@@ -6,7 +6,7 @@
     <cmd:Header>
         <cmd:MdCreator>Test user</cmd:MdCreator>
         <cmd:MdCreationDate>2014-01-01</cmd:MdCreationDate>
-        <cmd:MdSelfLink>test-pid</cmd:MdSelfLink>
+        <cmd:MdSelfLink>hdl:9999/1234-5678</cmd:MdSelfLink>
         <cmd:MdProfile>clarin.eu:cr1:p_1404130561238</cmd:MdProfile>
     </cmd:Header>
     <cmd:Resources>

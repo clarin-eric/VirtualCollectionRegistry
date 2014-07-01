@@ -94,7 +94,7 @@ public class PersistentIdentifier implements Serializable {
         case DUMMY:
             return "dummy:identifier-" + vc.getId();
         case HANDLE:
-            return "http://hdl.handle.net/" + identifier;
+            return "hdl:" + identifier;
         default:
             throw new InternalError();
         }

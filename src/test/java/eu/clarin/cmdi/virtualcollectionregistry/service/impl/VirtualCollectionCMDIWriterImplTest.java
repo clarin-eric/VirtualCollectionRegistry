@@ -87,7 +87,7 @@ public class VirtualCollectionCMDIWriterImplTest extends XMLTestCase {
 
         vc.setState(VirtualCollection.State.PUBLIC_PENDING);
         //setting the pid requires 'public pending' state and will set the state to public
-        vc.setPersistentIdentifier(new PersistentIdentifier(vc, PersistentIdentifier.Type.DUMMY, "test-pid"));
+        vc.setPersistentIdentifier(new PersistentIdentifier(vc, PersistentIdentifier.Type.HANDLE, "9999/1234-5678"));
 
         final Creator creator = new Creator("Test creator");
         creator.setEMail("test@creator.org");

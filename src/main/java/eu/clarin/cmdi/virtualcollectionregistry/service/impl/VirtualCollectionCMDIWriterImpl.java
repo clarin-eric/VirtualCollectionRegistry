@@ -114,7 +114,7 @@ public class VirtualCollectionCMDIWriterImpl implements VirtualCollectionCMDIWri
         header.setMdCreationDate(dataTypeFactory.newXMLGregorianCalendar(DATE_FORMAT.format(new Date())));
         header.setMdProfile(VIRTUAL_COLLECTION_PROFILE_ID);
         header.getMdCreator().add(vc.getOwner().getName());
-        header.setMdSelfLink(vc.getPersistentIdentifier().getIdentifier());
+        header.setMdSelfLink(vc.getPersistentIdentifier().getActionableURI());
         return header;
     }
 
