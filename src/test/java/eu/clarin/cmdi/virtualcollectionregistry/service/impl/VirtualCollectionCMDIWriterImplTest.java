@@ -51,7 +51,7 @@ public class VirtualCollectionCMDIWriterImplTest extends XMLTestCase {
      */
     @Test
     public void testWriteCMDIExtensional() throws Exception {
-        final VirtualCollectionCMDIWriterImpl instance = new VirtualCollectionCMDIWriterImpl();
+        final VirtualCollectionCMDIWriterImpl instance = new VirtualCollectionCMDIWriterImpl(new VirtualCollectionCMDICreatorImpl());
 
         // create a collection to serialize
         final VirtualCollection vc = createTestVC();
