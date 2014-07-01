@@ -52,7 +52,12 @@ public class VirtualCollectionCMDIWriterImpl implements VirtualCollectionCMDIWri
 
     private final static Logger logger = LoggerFactory.getLogger(VirtualCollectionCMDIWriterImpl.class);
 
-    ///////// CMDI CONSTANTS            /////////
+    ///////// CMDI CONSTANTS ////////////////////
+    // These should match up with the schema   
+    // the classes in eu.clarin.cmdi.          
+    // virtualcollectionregistry.model.cmdi are
+    // generated from by JAXB                  
+    /////////////////////////////////////////////
     private static final String VIRTUAL_COLLECTION_PROFILE_ID
             = "clarin.eu:cr1:p_1271859438175";
     private static final String VIRTUAL_COLLECTION_PROFILE_SCHEMA_LOCATION
