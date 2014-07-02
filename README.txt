@@ -54,3 +54,27 @@ if in doubt, please check the Apache Tomcat documentation):
              value="http://127.0.0.1:8080/VirtualCollectionRegistry"
              override="false"/>
 
+To shibbolize this application, the following steps are required:
+
+1. Use the shibboleth version of web.xml called 'web-shib.xml' instead of
+the default one by renaming it to and overwriting web.xml (you can make a
+backup of the original web.xml)
+
+2. Add the following to the relevant Apache configuration:
+
+        <Location /vcr>
+            ProxyPass ajp://localhost:8009/vcr
+            AuthType            shibboleth
+            ShibRequireSession  Off
+            ShibUseHeaders      On
+            Satisfy             All
+            Require             shibboleth
+        </Location>
+
+        <Location /vcr/service/submit>
+            ShibRequireSession  On
+        </Location>
+
+Adjust locations to the desired and relevant local alternatives. The second
+block is required to make the virtual collection form submit service work
+with POSTs (current versions of SHHAA do not support this).
