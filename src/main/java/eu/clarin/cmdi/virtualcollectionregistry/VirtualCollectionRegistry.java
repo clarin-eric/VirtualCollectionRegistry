@@ -44,11 +44,11 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
     @Autowired
     private VirtualCollectionValidatorFactory validatorFactory;
 
-    private static final Logger logger =
-        LoggerFactory.getLogger(VirtualCollectionRegistry.class);
+    private static final Logger logger
+            = LoggerFactory.getLogger(VirtualCollectionRegistry.class);
     private final AtomicBoolean intialized = new AtomicBoolean(false);
-    private final Timer timer =
-        new Timer("VirtualCollectionRegistry-Maintenance", true);
+    private final Timer timer
+            = new Timer("VirtualCollectionRegistry-Maintenance", true);
 
     @Override
     public void afterPropertiesSet() throws VirtualCollectionRegistryException {
@@ -112,8 +112,10 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
 
             // store virtual collection
             vc.setOwner(user);
+            logger.debug("persisting new virtual collection", vc.getId());
             em.persist(vc);
             em.getTransaction().commit();
+            logger.debug("virtual collection created (id={})", vc.getId());
             return vc.getId();
         } catch (Exception e) {
             logger.error("error while creating virtual collection", e);
@@ -154,8 +156,8 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
             }
             if (!c.getOwner().equalsPrincipal(principal)) {
                 throw new VirtualCollectionRegistryPermissionException(
-                        "permission denied for user \"" +
-                        principal.getName() + "\"");
+                        "permission denied for user \""
+                        + principal.getName() + "\"");
             }
 
             // update virtual collection
@@ -198,15 +200,15 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
                 throw new VirtualCollectionNotFoundException(id);
             }
             if (!vc.getOwner().equalsPrincipal(principal)) {
-                logger.debug("virtual collection (id={}) not owned by " +
-                        "user '{}'", id, principal.getName());
+                logger.debug("virtual collection (id={}) not owned by "
+                        + "user '{}'", id, principal.getName());
                 throw new VirtualCollectionRegistryPermissionException(
-                        "permission denied for user \"" +
-                        principal.getName() + "\"");
+                        "permission denied for user \""
+                        + principal.getName() + "\"");
             }
             if (!vc.isPrivate()) {
-                logger.debug("virtual collection (id={}) cannot be " +
-                        "deleted (invalid state)", id);
+                logger.debug("virtual collection (id={}) cannot be "
+                        + "deleted (invalid state)", id);
                 throw new VirtualCollectionRegistryPermissionException(
                         "virtual collection cannot be deleted");
             }
@@ -235,8 +237,8 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
         try {
             EntityManager em = datastore.getEntityManager();
             em.getTransaction().begin();
-            VirtualCollection vc =
-                em.find(VirtualCollection.class, Long.valueOf(id));
+            VirtualCollection vc
+                    = em.find(VirtualCollection.class, Long.valueOf(id));
             em.getTransaction().commit();
             if ((vc == null) || vc.isDeleted()) {
                 logger.debug("virtual collection (id={}) not found", id);
@@ -265,8 +267,8 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
         if (state == null) {
             throw new NullPointerException("state == null");
         }
-        if ((state != VirtualCollection.State.PUBLIC_PENDING) &&
-            (state != VirtualCollection.State.PRIVATE)) {
+        if ((state != VirtualCollection.State.PUBLIC_PENDING)
+                && (state != VirtualCollection.State.PRIVATE)) {
             throw new IllegalArgumentException(
                     "only PUBLIC_PENDING or PRIVATE are allowed");
         }
@@ -284,11 +286,11 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
                 throw new VirtualCollectionNotFoundException(id);
             }
             if (!vc.getOwner().equalsPrincipal(principal)) {
-                logger.debug("virtual collection (id={}) not owned by " +
-                        "user '{}'", id, principal.getName());
+                logger.debug("virtual collection (id={}) not owned by "
+                        + "user '{}'", id, principal.getName());
                 throw new VirtualCollectionRegistryPermissionException(
-                        "permission denied for user \"" +
-                        principal.getName() + "\"");
+                        "permission denied for user \""
+                        + principal.getName() + "\"");
             }
 
             /*
@@ -297,10 +299,10 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
             boolean update = false;
             switch (state) {
                 case PRIVATE:
-                update =  vc.getState() != state;
+                    update = vc.getState() != state;
                     break;
                 case PUBLIC_PENDING:
-                update =  vc.getState() != VirtualCollection.State.PUBLIC;
+                    update = vc.getState() != VirtualCollection.State.PUBLIC;
                     break;
                 default:
                     /* silence warning; update will stay false */
@@ -339,13 +341,14 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
         try {
             EntityManager em = datastore.getEntityManager();
             em.getTransaction().begin();
-            VirtualCollection vc =
-                em.find(VirtualCollection.class, Long.valueOf(id));
+            VirtualCollection vc
+                    = em.find(VirtualCollection.class, Long.valueOf(id));
             em.getTransaction().commit();
             if ((vc == null) || vc.isDeleted()) {
                 logger.debug("virtual collection (id={}) not found", id);
                 throw new VirtualCollectionNotFoundException(id);
             }
+            logger.debug("virtual collection retrieved (id={})", id);
             return vc;
         } catch (VirtualCollectionRegistryException e) {
             throw e;
@@ -439,7 +442,7 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
                         logger.debug(parsedQuery.getPrettyPrinted());
                     }
                     cq = parsedQuery.getCountQuery(em, user, null);
-                    q  = parsedQuery.getQuery(em, user, null);
+                    q = parsedQuery.getQuery(em, user, null);
                 } else {
                     cq = em.createNamedQuery("VirtualCollection.countByOwner",
                             Long.class);
@@ -483,6 +486,7 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
 
     public int getVirtualCollectionCount(QueryOptions options)
             throws VirtualCollectionRegistryException {
+        logger.debug("Getting virtual collection count");
         EntityManager em = datastore.getEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -495,8 +499,8 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
                 }
             }
             em.getTransaction().begin();
-            TypedQuery<Long> query =
-                em.createQuery(cq.select(cb.count(root)));
+            TypedQuery<Long> query
+                    = em.createQuery(cq.select(cb.count(root)));
             final long count = query.getSingleResult();
             if (count >= Integer.MAX_VALUE) {
                 throw new VirtualCollectionRegistryException(
@@ -521,8 +525,8 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
         EntityManager em = datastore.getEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<VirtualCollection> cq =
-                cb.createQuery(VirtualCollection.class);
+            CriteriaQuery<VirtualCollection> cq
+                    = cb.createQuery(VirtualCollection.class);
             Root<VirtualCollection> root = cq.from(VirtualCollection.class);
             if (options != null) {
                 final Predicate where = options.getWhere(cb, cq, root);
@@ -535,8 +539,8 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
                 }
             }
             em.getTransaction().begin();
-            TypedQuery<VirtualCollection> query =
-                em.createQuery(cq.select(root));
+            TypedQuery<VirtualCollection> query
+                    = em.createQuery(cq.select(root));
             if (first > -1) {
                 query.setFirstResult(first);
             }
@@ -557,10 +561,11 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
     }
 
     private void maintenance(long now) {
+        logger.debug("Maintenance check");
         // allocate persistent identifier roughly after 30 seconds
-        final Date nowDateAlloc = new Date(now - 30*1000);
+        final Date nowDateAlloc = new Date(now - 30 * 1000);
         // (for now) purge deleted collection roughly after 30 seconds
-        final Date nowDatePurge = new Date(now - 30*1000);
+        final Date nowDatePurge = new Date(now - 30 * 1000);
 
         EntityManager em = datastore.getEntityManager();
         try {
@@ -568,8 +573,8 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
              * delayed allocation of persistent identifier
              */
             em.getTransaction().begin();
-            TypedQuery<VirtualCollection> q =
-                em.createNamedQuery("VirtualCollection.findAllByState",
+            TypedQuery<VirtualCollection> q
+                    = em.createNamedQuery("VirtualCollection.findAllByState",
                             VirtualCollection.class);
             q.setParameter("state", VirtualCollection.State.PUBLIC_PENDING);
             q.setParameter("date", nowDateAlloc);
@@ -581,8 +586,8 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
                 }
                 vc.setState(VirtualCollection.State.PUBLIC);
                 em.persist(vc);
-                logger.info("assigned pid (identifer='{}') to virtual" +
-                        "collection (id={})",
+                logger.info("assigned pid (identifer='{}') to virtual"
+                        + "collection (id={})",
                         vc.getPersistentIdentifier().getIdentifier(),
                         vc.getId());
             }
@@ -611,8 +616,8 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
     private static User fetchUser(EntityManager em, Principal principal) {
         User user = null;
         try {
-            TypedQuery<User> q =
-                em.createNamedQuery("User.findByName", User.class);
+            TypedQuery<User> q
+                    = em.createNamedQuery("User.findByName", User.class);
             q.setParameter("name", principal.getName());
             user = q.getSingleResult();
         } catch (NoResultException e) {

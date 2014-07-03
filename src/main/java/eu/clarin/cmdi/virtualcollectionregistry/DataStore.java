@@ -36,6 +36,9 @@ public class DataStore implements DisposableBean {
                         throw new InternalError(
                                 "JPA not initalizied correctly");
                     }
+                    if (logger.isDebugEnabled()) {
+                        logger.debug("Creating new thread local entity manager in thread {}", Thread.currentThread().getName());
+                    }
                     return emf.createEntityManager();
                 }
             };
@@ -50,23 +53,36 @@ public class DataStore implements DisposableBean {
     @Override
     public void destroy() throws VirtualCollectionRegistryException {
         if (emf != null) {
-            logger.info("Closing entity manager");
+            logger.info("Closing entity manager factory");
             emf.close();
         }
     }
 
     public EntityManager getEntityManager() {
-        return em.get();
+        if (logger.isDebugEnabled()) {
+            logger.debug("Entity manager requested in thread {}", Thread.currentThread().getName());
+        }
+
+        final EntityManager manager = em.get();
+        if (logger.isDebugEnabled()) {
+            logger.debug("Returning entity manager {} (isOpen = {}) in thread {}", manager, manager.isOpen(), Thread.currentThread().getName());
+        }
+        return manager;
     }
 
     public void closeEntityManager() {
+        if (logger.isDebugEnabled()) {
+            logger.debug("Closing of entity manager requested in thread {}", Thread.currentThread().getName());
+        }
         EntityManager manager = em.get();
         if (manager != null) {
             em.remove();
             EntityTransaction tx = manager.getTransaction();
             if (tx.isActive()) {
+                logger.debug("Entity manager has active transaction, rolling back");
                 tx.rollback();
             }
+            logger.debug("Closing entity manager");
             manager.close();
         }
     }
