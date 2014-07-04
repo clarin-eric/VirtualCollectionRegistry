@@ -47,6 +47,11 @@
         <filter-name>PersistenceFilter</filter-name>
         <servlet-name>REST-Web-Service</servlet-name>
     </filter-mapping>
+    
+    <filter-mapping>
+        <filter-name>PersistenceFilter</filter-name>
+        <url-pattern>/app/*</url-pattern>
+    </filter-mapping>
 
     <filter>
         <filter-name>CharacterEncodingFilter</filter-name>
