@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
+import eu.clarin.cmdi.virtualcollectionregistry.DataStore;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AdminPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePrivateCollectionsPage;
@@ -30,6 +31,8 @@ public class Application extends AuthenticatedWebApplication {
 
     @Autowired
     private VirtualCollectionRegistry registry;
+    @Autowired
+    private DataStore dataStore;
 
     private static final String CONFIG_PARAM_ADMINDB = "admindb";
     private final Set<String> adminUsers = new HashSet<String>();
@@ -125,6 +128,10 @@ public class Application extends AuthenticatedWebApplication {
 
     public VirtualCollectionRegistry getRegistry() {
         return registry;
+    }
+
+    public DataStore getDataStore() {
+        return dataStore;
     }
 
     public static Application get() {

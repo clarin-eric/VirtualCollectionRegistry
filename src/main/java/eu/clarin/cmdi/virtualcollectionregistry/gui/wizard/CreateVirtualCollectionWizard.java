@@ -59,7 +59,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
             @Override
             public void onConfirm(AjaxRequestTarget target) {
-                vc.getKeywords().remove(keyword);
+                vc.getObject().getKeywords().remove(keyword);
             }
 
             public void show(AjaxRequestTarget target, String keyword) {
@@ -113,33 +113,34 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
         public GeneralStep() {
             super(null, "General", null);
+            setDefaultModel(new CompoundPropertyModel<VirtualCollection>(vc));
             final TextField<String> nameField =
-                new RequiredTextField<String>("vc.name");
+                new RequiredTextField<String>("name");
             nameField.add(new StringValidator.MaximumLengthValidator(255));
             add(nameField);
             final DropDownChoice<VirtualCollection.Type> typeChoice =
-                new DropDownChoice<VirtualCollection.Type>("vc.type",
+                new DropDownChoice<VirtualCollection.Type>("type",
                         Arrays.asList(VirtualCollection.Type.values()),
                         new EnumChoiceRenderer<VirtualCollection.Type>(this));
             typeChoice.setRequired(true);
             add(typeChoice);
-            add(new TextArea<String>("vc.description"));
+            add(new TextArea<String>("description"));
             final DropDownChoice<VirtualCollection.Purpose> purposeChoice =
-                new DropDownChoice<VirtualCollection.Purpose>("vc.purpose",
+                new DropDownChoice<VirtualCollection.Purpose>("purpose",
                         Arrays.asList(VirtualCollection.Purpose.values()),
                         new EnumChoiceRenderer<VirtualCollection.Purpose>(this));
             add(purposeChoice);
             final DropDownChoice<VirtualCollection.Reproducibility> reproducibilityChoice =
-                new DropDownChoice<VirtualCollection.Reproducibility>("vc.reproducibility",
+                new DropDownChoice<VirtualCollection.Reproducibility>("reproducibility",
                         Arrays.asList(VirtualCollection.Reproducibility.values()),
                         new EnumChoiceRenderer<VirtualCollection.Reproducibility>(this));
             add(reproducibilityChoice);
             final TextArea<String> reproducibilityNoticeArea =
-                new TextArea<String>("vc.reproducibilityNotice");
+                new TextArea<String>("reproducibilityNotice");
             add(reproducibilityNoticeArea);
 
             final KeywordsList keywordList =
-                new KeywordsList("keywordsList", vc.getKeywords());
+                new KeywordsList("keywordsList", vc.getObject().getKeywords());
             add(keywordList);
             add(new AjaxLink<String>("keywordsAdd") {
                 @Override
@@ -151,8 +152,8 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
             addKeywordDialog = new AddKeywordDialog("addKeywordDialog") {
                 @Override
                 public void onSubmit(AjaxRequestTarget target, String keyword) {
-                    if (!vc.getKeywords().contains(keyword)) {
-                        vc.getKeywords().add(keyword);
+                    if (!vc.getObject().getKeywords().contains(keyword)) {
+                        vc.getObject().getKeywords().add(keyword);
                     }
                     target.addComponent(keywordList);
                 }
@@ -177,12 +178,12 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
         @Override
         public void applyState() {
             super.applyState();
-            switch (vc.getType()) {
+            switch (vc.getObject().getType()) {
             case EXTENSIONAL:
-                vc.setGeneratedBy(null);
+                vc.getObject().setGeneratedBy(null);
                 break;
             case INTENSIONAL:
-                vc.getResources().clear();
+                vc.getObject().getResources().clear();
                 break;
             }
         }
@@ -226,7 +227,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
             @Override
             public void onConfirm(AjaxRequestTarget target) {
                 if (creator != null) {
-                    vc.getCreators().remove(creator);
+                    vc.getObject().getCreators().remove(creator);
                 }
             }
 
@@ -250,7 +251,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                             @Override
                             public Iterator<? extends Creator>
                                 iterator(int first, int count) {
-                                return vc.getCreators().listIterator(first);
+                                return vc.getObject().getCreators().listIterator(first);
                             }
 
                             @Override
@@ -259,7 +260,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                             }
                             @Override
                             public int size() {
-                                return vc.getCreators().size();
+                                return vc.getObject().getCreators().size();
                             }
                         },
                         8);
@@ -269,8 +270,8 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
             editCreatorDialog = new EditCreatorDialog("editCreatorDialog") {
                 @Override
                 public void onSubmit(AjaxRequestTarget target, Creator creator) {
-                    if (!vc.getCreators().contains(creator)) {
-                        vc.getCreators().add(creator);
+                    if (!vc.getObject().getCreators().contains(creator)) {
+                        vc.getObject().getCreators().add(creator);
                     }
                     target.addComponent(creatorsTable);
                 }
@@ -296,7 +297,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
         @Override
         public IDynamicWizardStep next() {
-            switch (vc.getType()) {
+            switch (vc.getObject().getType()) {
             case EXTENSIONAL:
                 return new ResourcesStep(this);
             case INTENSIONAL:
@@ -371,7 +372,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
             @Override
             public void onConfirm(AjaxRequestTarget target) {
                 if (resource != null) {
-                    vc.getResources().remove(resource);
+                    vc.getObject().getResources().remove(resource);
                 }
             }
 
@@ -395,7 +396,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                             @Override
                             public Iterator<? extends Resource>
                                 iterator(int first, int count) {
-                                return vc.getResources().listIterator(first);
+                                return vc.getObject().getResources().listIterator(first);
                             }
 
                             @Override
@@ -405,7 +406,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
                             @Override
                             public int size() {
-                                return vc.getResources().size();
+                                return vc.getObject().getResources().size();
                             }
                         },
                         64);
@@ -416,8 +417,8 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                 @Override
                 public void onSubmit(AjaxRequestTarget target,
                         Resource resource) {
-                    if (!vc.getResources().contains(resource)) {
-                        vc.getResources().add(resource);
+                    if (!vc.getObject().getResources().contains(resource)) {
+                        vc.getObject().getResources().add(resource);
                     }
                     target.addComponent(resourcesTable);
                 }
@@ -434,8 +435,8 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                 public void onSubmit(AjaxRequestTarget target,
                         Resource[] resources) {
                     for (Resource resource : resources) {
-                        if (!vc.getResources().contains(resource)) {
-                            vc.getResources().add(resource);
+                        if (!vc.getObject().getResources().contains(resource)) {
+                            vc.getObject().getResources().add(resource);
                         }
                     }
                     target.addComponent(resourcesTable);
@@ -466,7 +467,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
                 @Override
                 public void validate(Form<?> form) {
-                    if (vc.getResources().isEmpty()) {
+                    if (vc.getObject().getResources().isEmpty()) {
                         form.error("An extensional collection requires at "
                                 + "least one resource.");
                     }
@@ -531,20 +532,21 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
     private final class GeneratedByStep extends DynamicWizardStep {
         public GeneratedByStep(IDynamicWizardStep previousStep) {
             super(previousStep, "Intensional Collection Query", null);
+            setDefaultModel(new CompoundPropertyModel<VirtualCollection>(vc));
             final TextArea<String> descriptionArea =
-                new TextArea<String>("vc.generatedBy.description");
+                new TextArea<String>("generatedBy.description");
             descriptionArea.setRequired(true);
             add(descriptionArea);
             final TextField<String> uriField =
-                new TextField<String>("vc.generatedBy.uri");
+                new TextField<String>("generatedBy.uri");
             uriField.add(new StringValidator.MaximumLengthValidator(255));
             uriField.add(new UrlValidator(UrlValidator.NO_FRAGMENTS));
             add(uriField);
             final TextField<String> queryProfileField =
-                new TextField<String>("vc.generatedBy.query.profile");
+                new TextField<String>("generatedBy.query.profile");
             add(queryProfileField);
             final TextArea<String> queryValueArea =
-                new TextArea<String>("vc.generatedBy.query.value");
+                new TextArea<String>("generatedBy.query.value");
             add(queryValueArea);
 
             add(new AbstractFormValidator() {
@@ -571,8 +573,8 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                          * XXX: clear Query object as side-effect. This is
                          * more a hack than a clean solution.
                          */
-                        if (vc.getGeneratedBy() != null) {
-                            vc.getGeneratedBy().setQuery(null);
+                        if (vc.getObject().getGeneratedBy() != null) {
+                            vc.getObject().getGeneratedBy().setQuery(null);
                         }
                     }
                 }
@@ -590,10 +592,9 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
         }
     } // class CreateVirtualCollectionWizard.GeneratedByStep
 
-    private static final VirtualCollection EMPTY_VC = new VirtualCollection();
-    private final VirtualCollection vc;
+    private final IModel<VirtualCollection> vc;
 
-    public CreateVirtualCollectionWizard(String id, VirtualCollection vc) {
+    public CreateVirtualCollectionWizard(String id, IModel<VirtualCollection> vc) {
         super(id);
         if (vc == null) {
             throw new IllegalArgumentException("vc == null");
@@ -605,15 +606,12 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
     @Override
     public final void onCancel() {
-        if (!EMPTY_VC.equals(vc)) {
-            System.err.println("XXX: VC was modified!");
-        }
         onCancelWizard();
     }
 
     @Override
     public final void onFinish() {
-        onFinishWizard(vc);
+        onFinishWizard(vc.getObject());
     }
 
     protected abstract void onCancelWizard();

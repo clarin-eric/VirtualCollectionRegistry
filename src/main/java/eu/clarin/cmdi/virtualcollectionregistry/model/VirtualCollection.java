@@ -97,7 +97,9 @@ public class VirtualCollection implements Serializable {
 
     @ManyToOne(cascade = { CascadeType.PERSIST,
                            CascadeType.REFRESH,
-                           CascadeType.MERGE },
+                           CascadeType.MERGE,
+                           CascadeType.DETACH
+    },
                fetch = FetchType.EAGER)
     @JoinColumn(name = "owner_id",
                 nullable = false)

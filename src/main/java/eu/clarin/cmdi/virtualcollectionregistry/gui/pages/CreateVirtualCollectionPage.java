@@ -1,19 +1,18 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
-import java.security.Principal;
-import java.util.Date;
-
-import org.apache.wicket.Page;
-import org.apache.wicket.WicketRuntimeException;
-import org.apache.wicket.authorization.strategies.role.Roles;
-import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
-
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileVirtualCollectionModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.wizard.CreateVirtualCollectionWizard;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import java.security.Principal;
+import java.util.Date;
+import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.authorization.strategies.role.Roles;
+import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
 @AuthorizeInstantiation(Roles.USER)
@@ -39,7 +38,7 @@ public class CreateVirtualCollectionPage extends BasePage {
     }
 
     protected final CreateVirtualCollectionWizard createWizard(VirtualCollection vc, final Page previousPage) {
-        return new CreateVirtualCollectionWizard("wizard", vc) {
+        return new CreateVirtualCollectionWizard("wizard", new VolatileVirtualCollectionModel(vc)) {
 
             @Override
             protected void onCancelWizard() {
