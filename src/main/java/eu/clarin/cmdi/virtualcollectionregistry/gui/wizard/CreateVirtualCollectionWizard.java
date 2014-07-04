@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.wizard;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.LoadableDetachableVolatileEntityModel;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -112,7 +113,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
         private final DeleteKeywordDialog deleteKeywordDialog;
 
         public GeneralStep() {
-            super(null, "General", null);
+            super(null, "General", null, vc);
             setDefaultModel(new CompoundPropertyModel<VirtualCollection>(vc));
             final TextField<String> nameField =
                 new RequiredTextField<String>("name");
@@ -198,8 +199,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                     new AjaxLink<Creator>("edit") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        final Creator creator = model.getObject();
-                        editCreatorDialog.show(target, creator);
+                        editCreatorDialog.show(target, model);
                     }
                 };
                 add(editLink);
@@ -207,8 +207,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                     new AjaxLink<Creator>("delete") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        final Creator creator = model.getObject();
-                        deleteCreatorDialog.show(target, creator);
+                        deleteCreatorDialog.showCreator(target, model);
                     }
                 };
                 add(deleteLink);
@@ -216,7 +215,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
         } // class CreateVirtualCollectionWizard.CreatorsStep.ActionsPanel
 
         private final class DeleteCreatorDialog extends ConfirmationDialog {
-            private Creator creator;
+            private IModel<Creator> creator;
 
             public DeleteCreatorDialog(String id,
                     final Component updateComponent) {
@@ -227,15 +226,15 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
             @Override
             public void onConfirm(AjaxRequestTarget target) {
                 if (creator != null) {
-                    vc.getObject().getCreators().remove(creator);
+                    vc.getObject().getCreators().remove(creator.getObject());
                 }
             }
 
-            public void show(AjaxRequestTarget target, Creator creator) {
+            public void showCreator(AjaxRequestTarget target, IModel<Creator> creator) {
                 this.creator = creator;
                 super.show(target,
                         new StringResourceModel("creators.deleteconfirm",
-                                new Model<Creator>(creator)));
+                                creator));
             }
         } // class CreateVirtualCollectionWizard.CreatorsStep.DeleteCreatorDialog
 
@@ -243,7 +242,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
         private final DeleteCreatorDialog deleteCreatorDialog;
 
         public CreatorsStep(IDynamicWizardStep previousStep) {
-            super(previousStep, "Creators", null);
+            super(previousStep, "Creators", null, vc);
             final DataTable<Creator> creatorsTable =
                 new AjaxFallbackDefaultDataTable<Creator>("creatorsTable",
                         createColumns(),
@@ -256,7 +255,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
                             @Override
                             public IModel<Creator> model(Creator creator) {
-                                return new Model<Creator>(creator);
+                                return new LoadableDetachableVolatileEntityModel<Creator>(creator);
                             }
                             @Override
                             public int size() {
@@ -343,8 +342,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                     new AjaxLink<Resource>("edit") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        final Resource resource = model.getObject();
-                        editResourceDialog.show(target, resource);
+                        editResourceDialog.show(target, model);
                     }
                 };
                 add(editLink);
@@ -352,8 +350,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                     new AjaxLink<Resource>("delete") {
                     @Override
                     public void onClick(AjaxRequestTarget target) {
-                        final Resource resource = model.getObject();
-                        deleteResourceDialog.show(target, resource);
+                        deleteResourceDialog.showResource(target, model);
                     }
                 };
                 add(deleteLink);
@@ -361,7 +358,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
         } // class CreateVirtualCollectionWizard.ResourcesStep.ActionsPanel
 
         private final class DeleteResourceDialog extends ConfirmationDialog {
-            private Resource resource;
+            private IModel<Resource> resource;
 
             public DeleteResourceDialog(String id,
                     final Component updateComponenet) {
@@ -372,15 +369,15 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
             @Override
             public void onConfirm(AjaxRequestTarget target) {
                 if (resource != null) {
-                    vc.getObject().getResources().remove(resource);
+                    vc.getObject().getResources().remove(resource.getObject());
                 }
             }
 
-            public void show(AjaxRequestTarget target, Resource resource) {
+            public void showResource(AjaxRequestTarget target, IModel<Resource> resource) {
                 this.resource = resource;
                 super.show(target,
                         new StringResourceModel("resources.deleteconfirm",
-                        new Model<Resource>(resource)));
+                        resource));
             }
         } // class CreateVirtualCollectionWizard.CreatorsStep.DeleteResourceDialog
 
@@ -388,7 +385,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
         private final DeleteResourceDialog deleteResourceDialog;
 
         public ResourcesStep(IDynamicWizardStep previousStep) {
-            super(previousStep, "Resources", null);
+            super(previousStep, "Resources", null, vc);
             final DataTable<Resource> resourcesTable =
                 new AjaxFallbackDefaultDataTable<Resource>("resourcesTable",
                         createColumns(),
@@ -401,7 +398,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
                             @Override
                             public IModel<Resource> model(Resource resource) {
-                                return new Model<Resource>(resource);
+                                return new LoadableDetachableVolatileEntityModel<Resource>(resource);
                             }
 
                             @Override
@@ -493,14 +490,13 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                         public void populateItem(
                                 Item<ICellPopulator<Resource>> item,
                                 String componentId, IModel<Resource> model) {
-                            final Resource resource = model.getObject();
-                            switch (resource.getType()) {
-                            case METADATA:
-                                item.add(new Label(componentId, "Metadata"));
-                                break;
-                            case RESOURCE:
-                                item.add(new Label(componentId, "Resource"));
-                                break;
+                            switch (model.getObject().getType()) {
+                                case METADATA:
+                                    item.add(new Label(componentId, "Metadata"));
+                                    break;
+                                case RESOURCE:
+                                    item.add(new Label(componentId, "Resource"));
+                                    break;
                             }
                         }
 
@@ -531,7 +527,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
     private final class GeneratedByStep extends DynamicWizardStep {
         public GeneratedByStep(IDynamicWizardStep previousStep) {
-            super(previousStep, "Intensional Collection Query", null);
+            super(previousStep, "Intensional Collection Query", null, vc);
             setDefaultModel(new CompoundPropertyModel<VirtualCollection>(vc));
             final TextArea<String> descriptionArea =
                 new TextArea<String>("generatedBy.description");

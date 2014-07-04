@@ -3,7 +3,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileVirtualCollectionModel;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.LoadableDetachableVolatileEntityModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.wizard.CreateVirtualCollectionWizard;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.security.Principal;
@@ -38,7 +38,7 @@ public class CreateVirtualCollectionPage extends BasePage {
     }
 
     protected final CreateVirtualCollectionWizard createWizard(VirtualCollection vc, final Page previousPage) {
-        return new CreateVirtualCollectionWizard("wizard", new VolatileVirtualCollectionModel(vc)) {
+        return new CreateVirtualCollectionWizard("wizard", new LoadableDetachableVolatileEntityModel(vc)) {
 
             @Override
             protected void onCancelWizard() {

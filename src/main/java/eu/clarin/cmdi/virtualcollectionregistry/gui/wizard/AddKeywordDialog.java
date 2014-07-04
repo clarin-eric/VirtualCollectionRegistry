@@ -52,8 +52,8 @@ public abstract class AddKeywordDialog extends ModalEditDialogBase<String> {
     }
 
     @Override
-    protected final String newObjectInstance() {
-        return new String();
+    protected final IModel<String> newObjectInstance() {
+        return new Model<String>();
     }
 
     @Override

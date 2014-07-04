@@ -111,16 +111,16 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
         this.show(target, null);
     }
 
-    public final void show(AjaxRequestTarget target, T object) {
-        if (object == null) {
-            object = newObjectInstance();
+    public final void show(AjaxRequestTarget target, IModel<T> model) {
+        if (model == null) {
+            model = newObjectInstance();
             addButton.setVisible(true);
             modifyButton.setVisible(false);
         } else {
             addButton.setVisible(false);
             modifyButton.setVisible(true);
         }
-        contentPanel.getForm().setModelObject(object);
+        contentPanel.getForm().setModel(model);
         super.show(target);
     }
 
@@ -142,7 +142,7 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
         return null;
     }
 
-    protected abstract T newObjectInstance();
+    protected abstract IModel<T> newObjectInstance();
 
     protected abstract IModel<T> createModel();
 

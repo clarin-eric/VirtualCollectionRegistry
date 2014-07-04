@@ -67,8 +67,8 @@ public abstract class EditResourceDialog extends ModalEditDialogBase<Resource> {
     }
 
     @Override
-    protected final Resource newObjectInstance() {
-        return new Resource();
+    protected final IModel<Resource> newObjectInstance() {
+        return Model.of(new Resource());
     }
 
     @Override
