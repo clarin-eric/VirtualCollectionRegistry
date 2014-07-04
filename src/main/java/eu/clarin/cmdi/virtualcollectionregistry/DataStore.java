@@ -37,7 +37,7 @@ public class DataStore implements DisposableBean {
                                 "JPA not initalizied correctly");
                     }
                     if (logger.isDebugEnabled()) {
-                        logger.debug("Creating new thread local entity manager in thread {}", Thread.currentThread().getName());
+                        logger.trace("Creating new thread local entity manager in thread {}", Thread.currentThread().getName());
                     }
                     return emf.createEntityManager();
                 }
@@ -47,7 +47,7 @@ public class DataStore implements DisposableBean {
             throw new VirtualCollectionRegistryException(
                     "error initializing", e);
         }
-        logger.debug("data store was successfully initialized");
+        logger.trace("data store was successfully initialized");
     }
 
     @Override
@@ -59,21 +59,16 @@ public class DataStore implements DisposableBean {
     }
 
     public EntityManager getEntityManager() {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Entity manager requested in thread {}", Thread.currentThread().getName());
-        }
-
+        logger.trace("Entity manager requested in thread");
         final EntityManager manager = em.get();
-        if (logger.isDebugEnabled()) {
-            logger.debug("Returning entity manager {} (isOpen = {}) in thread {}", manager, manager.isOpen(), Thread.currentThread().getName());
+        if (logger.isTraceEnabled()) {
+            logger.trace("Returning entity manager {} (isOpen = {})", manager, manager.isOpen());
         }
         return manager;
     }
 
     public void closeEntityManager() {
-        if (logger.isDebugEnabled()) {
-            logger.debug("Closing of entity manager requested in thread {}", Thread.currentThread().getName());
-        }
+        logger.trace("Closing of entity manager requested");
         EntityManager manager = em.get();
         if (manager != null) {
             em.remove();
@@ -82,7 +77,7 @@ public class DataStore implements DisposableBean {
                 logger.debug("Entity manager has active transaction, rolling back");
                 tx.rollback();
             }
-            logger.debug("Closing entity manager");
+            logger.trace("Closing entity manager");
             manager.close();
         }
     }

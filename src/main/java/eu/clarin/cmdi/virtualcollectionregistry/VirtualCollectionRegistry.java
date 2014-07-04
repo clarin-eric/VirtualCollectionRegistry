@@ -486,7 +486,7 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
 
     public int getVirtualCollectionCount(QueryOptions options)
             throws VirtualCollectionRegistryException {
-        logger.debug("Getting virtual collection count");
+        logger.trace("Getting virtual collection count");
         EntityManager em = datastore.getEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -506,6 +506,7 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
                 throw new VirtualCollectionRegistryException(
                         "resultset too large");
             }
+            logger.trace("Counted {} collections", count);
             return (int) count;
         } catch (Exception e) {
             logger.error("error while counting virtual collections", e);

@@ -40,7 +40,7 @@ public class VolatileEntityModel<T> implements IModel<T> {
     }
 
     private void attach() {
-        logger.debug("Merging volatile object ({}) into persistence context", object);
+        logger.trace("Merging volatile object ({}) into persistence context", object);
         final EntityManager em = Application.get().getDataStore().getEntityManager();
         attached = true;
         object = em.merge(object);
@@ -53,7 +53,7 @@ public class VolatileEntityModel<T> implements IModel<T> {
 
     @Override
     public void detach() {
-        logger.debug("Detaching volatile object ({})", object);
+        logger.trace("Detaching volatile object ({})", object);
         // set flag so that on next call to getObject() object will be merged
         attached = false;
     }
