@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.DateConverter;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
 import java.sql.Date;
 import java.util.Collection;
 import java.util.Iterator;
@@ -129,7 +130,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
 
     public VirtualCollectionDetailsPage(final IModel<VirtualCollection> model,
             final Page previousPage) {
-        super(new CompoundPropertyModel<VirtualCollection>(model.getObject()));
+        super(new CompoundPropertyModel<VirtualCollection>(model));
         if (previousPage == null) {
             throw new IllegalArgumentException("previousPage == null");
         }
@@ -183,7 +184,8 @@ public class VirtualCollectionDetailsPage extends BasePage {
             protected IModel<Creator> getListItemModel(
                     IModel<? extends List<Creator>> listViewModel, int index) {
                 final List<Creator> creators = listViewModel.getObject();
-                return new CompoundPropertyModel<Creator>(creators.get(index));
+                return new CompoundPropertyModel<Creator>(
+                        new VolatileEntityModel<>(creators.get(index)));
             }
 
             @Override
@@ -206,7 +208,6 @@ public class VirtualCollectionDetailsPage extends BasePage {
                 new Model<String>("Resources"), CSS_CLASS + " resources");
         add(resources);
 
-        final VirtualCollection vc = model.getObject();
         @SuppressWarnings("rawtypes")
         final IColumn[] cols = new IColumn[2];
         cols[0] = new PropertyColumn<Resource>(
@@ -230,17 +231,17 @@ public class VirtualCollectionDetailsPage extends BasePage {
                         @Override
                         public Iterator<? extends Resource>
                             iterator(int first, int count) {
-                            return vc.getResources().listIterator(first);
+                            return model.getObject().getResources().listIterator(first);
                         }
 
                         @Override
                         public IModel<Resource> model(Resource resource) {
-                            return new Model<Resource>(resource);
+                            return new VolatileEntityModel<Resource>(resource);
                         }
 
                         @Override
                         public int size() {
-                            return vc.getResources().size();
+                            return model.getObject().getResources().size();
                         }
                     },
                     64);

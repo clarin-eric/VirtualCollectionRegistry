@@ -1,6 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.wizard;
 
-import eu.clarin.cmdi.virtualcollectionregistry.gui.LoadableDetachableVolatileEntityModel;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -232,7 +232,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
             public void showCreator(AjaxRequestTarget target, IModel<Creator> creator) {
                 this.creator = creator;
-                super.show(target,
+                super.show(target, 
                         new StringResourceModel("creators.deleteconfirm",
                                 creator));
             }
@@ -255,7 +255,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
                             @Override
                             public IModel<Creator> model(Creator creator) {
-                                return new LoadableDetachableVolatileEntityModel<Creator>(creator);
+                                return new VolatileEntityModel<Creator>(creator);
                             }
                             @Override
                             public int size() {
@@ -398,7 +398,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
                             @Override
                             public IModel<Resource> model(Resource resource) {
-                                return new LoadableDetachableVolatileEntityModel<Resource>(resource);
+                                return new VolatileEntityModel<Resource>(resource);
                             }
 
                             @Override
@@ -607,11 +607,11 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
     @Override
     public final void onFinish() {
-        onFinishWizard(vc.getObject());
+        onFinishWizard(vc);
     }
 
     protected abstract void onCancelWizard();
 
-    protected abstract void onFinishWizard(VirtualCollection vc);
+    protected abstract void onFinishWizard(IModel<VirtualCollection> vc);
 
 } // class CreateVirtualCollectionWizard

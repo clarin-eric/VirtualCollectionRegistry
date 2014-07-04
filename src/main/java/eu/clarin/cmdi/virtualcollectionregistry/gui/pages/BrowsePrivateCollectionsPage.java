@@ -13,6 +13,7 @@ import org.apache.wicket.model.StringResourceModel;
 
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ConfirmationDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.menu.AjaxLinkMenuItem;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.menu.AjaxPopupMenu;
@@ -178,7 +179,7 @@ public class BrowsePrivateCollectionsPage extends BasePage {
             this.vcId = vc.getId();
             super.show(target,
                     new StringResourceModel("collections.publishconfirm",
-                            new Model<VirtualCollection>(vc)));
+                            new VolatileEntityModel<VirtualCollection>(vc)));
         }
     } // class BrowsePrivateCollectionsPage.PublishCollectionDialog
 
@@ -205,7 +206,7 @@ public class BrowsePrivateCollectionsPage extends BasePage {
             this.vcId = vc.getId();
             super.show(target,
                     new StringResourceModel("collections.deleteconfirm",
-                            new Model<VirtualCollection>(vc)));
+                            new VolatileEntityModel<VirtualCollection>(vc)));
         }
     } // class BrowsePrivateCollectionsPage.PublishCollectionDialog
 
