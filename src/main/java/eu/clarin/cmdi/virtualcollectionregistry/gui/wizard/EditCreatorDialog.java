@@ -84,12 +84,12 @@ public abstract class EditCreatorDialog extends ModalEditDialogBase<Creator> {
     }
 
     @Override
-    protected final IModel<Creator> newObjectInstance() {
-        return Model.of(new Creator());
+    protected final IModel<Creator> newInstanceModel() {
+        return new CompoundPropertyModel<>(new Creator());
     }
 
     @Override
-    protected final IModel<Creator> createModel() {
+    protected final IModel<Creator> createEmptyModel() {
         return new CompoundPropertyModel<Creator>(null);
     }
 

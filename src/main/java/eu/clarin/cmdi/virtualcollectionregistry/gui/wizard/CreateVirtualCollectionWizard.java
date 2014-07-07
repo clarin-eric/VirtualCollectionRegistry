@@ -49,8 +49,11 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
 @SuppressWarnings("serial")
 public abstract class CreateVirtualCollectionWizard extends WizardBase {
+
     private final class GeneralStep extends DynamicWizardStep {
+
         private final class DeleteKeywordDialog extends ConfirmationDialog {
+
             private String keyword;
 
             public DeleteKeywordDialog(String id,
@@ -65,11 +68,12 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
             public void show(AjaxRequestTarget target, String keyword) {
                 this.keyword = keyword;
-                super.show(target, new StringResourceModel("keywords.deleteconfirm", null, new Object[] { keyword }));
+                super.show(target, new StringResourceModel("keywords.deleteconfirm", null, new Object[]{keyword}));
             }
         } // class CreateVirtualCollectionWizard.GeneralStep.DeleteKeywordDialog
 
         private final class KeywordsList extends WebMarkupContainer {
+
             private final ListView<String> itemsView;
 
             public KeywordsList(String id, final List<String> items) {
@@ -92,8 +96,8 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
                     @Override
                     protected ListItem<String> newItem(int index) {
-                        final IModel<String> model =
-                            getListItemModel(getModel(), index);
+                        final IModel<String> model
+                                = getListItemModel(getModel(), index);
                         return new OddEvenListItem<String>(index, model) {
                             @Override
                             protected void onComponentTag(ComponentTag tag) {
@@ -115,33 +119,33 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
         public GeneralStep() {
             super(null, "General", null, vc);
             setDefaultModel(new CompoundPropertyModel<VirtualCollection>(vc));
-            final TextField<String> nameField =
-                new RequiredTextField<String>("name");
+            final TextField<String> nameField
+                    = new RequiredTextField<String>("name");
             nameField.add(new StringValidator.MaximumLengthValidator(255));
             add(nameField);
-            final DropDownChoice<VirtualCollection.Type> typeChoice =
-                new DropDownChoice<VirtualCollection.Type>("type",
-                        Arrays.asList(VirtualCollection.Type.values()),
-                        new EnumChoiceRenderer<VirtualCollection.Type>(this));
+            final DropDownChoice<VirtualCollection.Type> typeChoice
+                    = new DropDownChoice<VirtualCollection.Type>("type",
+                            Arrays.asList(VirtualCollection.Type.values()),
+                            new EnumChoiceRenderer<VirtualCollection.Type>(this));
             typeChoice.setRequired(true);
             add(typeChoice);
             add(new TextArea<String>("description"));
-            final DropDownChoice<VirtualCollection.Purpose> purposeChoice =
-                new DropDownChoice<VirtualCollection.Purpose>("purpose",
-                        Arrays.asList(VirtualCollection.Purpose.values()),
-                        new EnumChoiceRenderer<VirtualCollection.Purpose>(this));
+            final DropDownChoice<VirtualCollection.Purpose> purposeChoice
+                    = new DropDownChoice<VirtualCollection.Purpose>("purpose",
+                            Arrays.asList(VirtualCollection.Purpose.values()),
+                            new EnumChoiceRenderer<VirtualCollection.Purpose>(this));
             add(purposeChoice);
-            final DropDownChoice<VirtualCollection.Reproducibility> reproducibilityChoice =
-                new DropDownChoice<VirtualCollection.Reproducibility>("reproducibility",
-                        Arrays.asList(VirtualCollection.Reproducibility.values()),
-                        new EnumChoiceRenderer<VirtualCollection.Reproducibility>(this));
+            final DropDownChoice<VirtualCollection.Reproducibility> reproducibilityChoice
+                    = new DropDownChoice<VirtualCollection.Reproducibility>("reproducibility",
+                            Arrays.asList(VirtualCollection.Reproducibility.values()),
+                            new EnumChoiceRenderer<VirtualCollection.Reproducibility>(this));
             add(reproducibilityChoice);
-            final TextArea<String> reproducibilityNoticeArea =
-                new TextArea<String>("reproducibilityNotice");
+            final TextArea<String> reproducibilityNoticeArea
+                    = new TextArea<String>("reproducibilityNotice");
             add(reproducibilityNoticeArea);
 
-            final KeywordsList keywordList =
-                new KeywordsList("keywordsList", vc.getObject().getKeywords());
+            final KeywordsList keywordList
+                    = new KeywordsList("keywordsList", vc.getObject().getKeywords());
             add(keywordList);
             add(new AjaxLink<String>("keywordsAdd") {
                 @Override
@@ -180,12 +184,12 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
         public void applyState() {
             super.applyState();
             switch (vc.getObject().getType()) {
-            case EXTENSIONAL:
-                vc.getObject().setGeneratedBy(null);
-                break;
-            case INTENSIONAL:
-                vc.getObject().getResources().clear();
-                break;
+                case EXTENSIONAL:
+                    vc.getObject().setGeneratedBy(null);
+                    break;
+                case INTENSIONAL:
+                    vc.getObject().getResources().clear();
+                    break;
             }
         }
     } // class CreateVirtualCollectionWizard.GeneralStep
@@ -197,19 +201,19 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                 setRenderBodyOnly(true);
                 final AjaxLink<Creator> editLink =
                     new AjaxLink<Creator>("edit") {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        editCreatorDialog.show(target, model);
-                    }
-                };
+                            @Override
+                            public void onClick(AjaxRequestTarget target) {
+                                editCreatorDialog.show(target, model);
+                            }
+                        };
                 add(editLink);
                 final AjaxLink<Creator> deleteLink =
                     new AjaxLink<Creator>("delete") {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        deleteCreatorDialog.showCreator(target, model);
-                    }
-                };
+                            @Override
+                            public void onClick(AjaxRequestTarget target) {
+                                deleteCreatorDialog.showCreator(target, model);
+                            }
+                        };
                 add(deleteLink);
             }
         } // class CreateVirtualCollectionWizard.CreatorsStep.ActionsPanel
@@ -232,7 +236,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
             public void showCreator(AjaxRequestTarget target, IModel<Creator> creator) {
                 this.creator = creator;
-                super.show(target, 
+                super.show(target,
                         new StringResourceModel("creators.deleteconfirm",
                                 creator));
             }
@@ -243,42 +247,50 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
         public CreatorsStep(IDynamicWizardStep previousStep) {
             super(previousStep, "Creators", null, vc);
-            final DataTable<Creator> creatorsTable =
-                new AjaxFallbackDefaultDataTable<Creator>("creatorsTable",
-                        createColumns(),
-                        new SortableDataProvider<Creator>() {
-                            @Override
-                            public Iterator<? extends Creator>
+            final DataTable<Creator> creatorsTable
+                    = new AjaxFallbackDefaultDataTable<Creator>("creatorsTable",
+                            createColumns(),
+                            new SortableDataProvider<Creator>() {
+                                @Override
+                                public Iterator<? extends Creator>
                                 iterator(int first, int count) {
-                                return vc.getObject().getCreators().listIterator(first);
-                            }
+                                    return vc.getObject().getCreators().listIterator(first);
+                                }
 
-                            @Override
-                            public IModel<Creator> model(Creator creator) {
-                                return new VolatileEntityModel<Creator>(creator);
-                            }
-                            @Override
-                            public int size() {
-                                return vc.getObject().getCreators().size();
-                            }
-                        },
-                        8);
+                                @Override
+                                public IModel<Creator> model(Creator creator) {
+                                    return new VolatileEntityModel<Creator>(creator);
+                                }
+                                @Override
+                                public int size() {
+                                    return vc.getObject().getCreators().size();
+                                }
+                            },
+                            8);
             creatorsTable.setOutputMarkupId(true);
             add(creatorsTable);
 
             editCreatorDialog = new EditCreatorDialog("editCreatorDialog") {
                 @Override
                 public void onSubmit(AjaxRequestTarget target, Creator creator) {
-                    if (!vc.getObject().getCreators().contains(creator)) {
-                        vc.getObject().getCreators().add(creator);
+                    // create a copy first because retrieving the creators may
+                    // reset the state of the object
+                    final Creator copy = creator.getCopy();
+                    final List<Creator> creators = vc.getObject().getCreators();
+                    if (creators.contains(creator)) {
+                        // update existig creator (needed since we're dealing with a volatile instance)
+                        creator.setValuesFrom(copy);
+                    } else {
+                        // new entry, add
+                        creators.add(creator);
                     }
                     target.addComponent(creatorsTable);
                 }
             };
             add(editCreatorDialog);
 
-            deleteCreatorDialog =
-                new DeleteCreatorDialog("deleteCreatorDialog", creatorsTable);
+            deleteCreatorDialog
+                    = new DeleteCreatorDialog("deleteCreatorDialog", creatorsTable);
             add(deleteCreatorDialog);
 
             add(new AjaxLink<Object>("add") {
@@ -297,37 +309,37 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
         @Override
         public IDynamicWizardStep next() {
             switch (vc.getObject().getType()) {
-            case EXTENSIONAL:
-                return new ResourcesStep(this);
-            case INTENSIONAL:
-                return new GeneratedByStep(this);
-            default:
-                throw new InternalError("bad vc type");
+                case EXTENSIONAL:
+                    return new ResourcesStep(this);
+                case INTENSIONAL:
+                    return new GeneratedByStep(this);
+                default:
+                    throw new InternalError("bad vc type");
             } // switch
         }
 
         @SuppressWarnings("unchecked")
         private IColumn<Creator>[] createColumns() {
-            final IColumn<?>[] columns = new IColumn<?>[] {
-                    new PropertyColumn<Creator>(new Model<String>("Person"),
-                            "person"),
-                    new PropertyColumn<Creator>(new Model<String>("EMail"),
-                            "email"),
-                    new PropertyColumn<Creator>(new Model<String>(
-                            "Organisation"), "organisation"),
-                    new HeaderlessColumn<Creator>() {
-                        @Override
-                        public void populateItem(
-                                Item<ICellPopulator<Creator>> item,
-                                String compontentId, IModel<Creator> model) {
-                            item.add(new ActionsPanel(compontentId, model));
-                        }
-
-                        @Override
-                        public String getCssClass() {
-                            return "action";
-                        }
+            final IColumn<?>[] columns = new IColumn<?>[]{
+                new PropertyColumn<Creator>(new Model<String>("Person"),
+                "person"),
+                new PropertyColumn<Creator>(new Model<String>("EMail"),
+                "email"),
+                new PropertyColumn<Creator>(new Model<String>(
+                "Organisation"), "organisation"),
+                new HeaderlessColumn<Creator>() {
+                    @Override
+                    public void populateItem(
+                            Item<ICellPopulator<Creator>> item,
+                            String compontentId, IModel<Creator> model) {
+                        item.add(new ActionsPanel(compontentId, model));
                     }
+
+                    @Override
+                    public String getCssClass() {
+                        return "action";
+                    }
+                }
             };
             return (IColumn<Creator>[]) columns;
         }
@@ -340,19 +352,19 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                 setRenderBodyOnly(true);
                 final AjaxLink<Resource> editLink =
                     new AjaxLink<Resource>("edit") {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        editResourceDialog.show(target, model);
-                    }
-                };
+                            @Override
+                            public void onClick(AjaxRequestTarget target) {
+                                editResourceDialog.show(target, model);
+                            }
+                        };
                 add(editLink);
                 final AjaxLink<Resource> deleteLink =
                     new AjaxLink<Resource>("delete") {
-                    @Override
-                    public void onClick(AjaxRequestTarget target) {
-                        deleteResourceDialog.showResource(target, model);
-                    }
-                };
+                            @Override
+                            public void onClick(AjaxRequestTarget target) {
+                                deleteResourceDialog.showResource(target, model);
+                            }
+                        };
                 add(deleteLink);
             }
         } // class CreateVirtualCollectionWizard.ResourcesStep.ActionsPanel
@@ -377,7 +389,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                 this.resource = resource;
                 super.show(target,
                         new StringResourceModel("resources.deleteconfirm",
-                        resource));
+                                resource));
             }
         } // class CreateVirtualCollectionWizard.CreatorsStep.DeleteResourceDialog
 
@@ -388,25 +400,25 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
             super(previousStep, "Resources", null, vc);
             final DataTable<Resource> resourcesTable =
                 new AjaxFallbackDefaultDataTable<Resource>("resourcesTable",
-                        createColumns(),
-                        new SortableDataProvider<Resource>() {
-                            @Override
-                            public Iterator<? extends Resource>
+                            createColumns(),
+                            new SortableDataProvider<Resource>() {
+                                @Override
+                                public Iterator<? extends Resource>
                                 iterator(int first, int count) {
-                                return vc.getObject().getResources().listIterator(first);
-                            }
+                                    return vc.getObject().getResources().listIterator(first);
+                                }
 
-                            @Override
-                            public IModel<Resource> model(Resource resource) {
-                                return new VolatileEntityModel<Resource>(resource);
-                            }
+                                @Override
+                                public IModel<Resource> model(Resource resource) {
+                                    return new VolatileEntityModel<Resource>(resource);
+                                }
 
-                            @Override
-                            public int size() {
-                                return vc.getObject().getResources().size();
-                            }
-                        },
-                        64);
+                                @Override
+                                public int size() {
+                                    return vc.getObject().getResources().size();
+                                }
+                            },
+                            64);
             resourcesTable.setOutputMarkupId(true);
             add(resourcesTable);
 
@@ -428,18 +440,18 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
             final AddResourcesDialog addResourcesDialog =
                 new AddResourcesDialog("addResourcesDialog") {
-                @Override
-                public void onSubmit(AjaxRequestTarget target,
-                        Resource[] resources) {
-                    for (Resource resource : resources) {
-                        if (!vc.getObject().getResources().contains(resource)) {
-                            vc.getObject().getResources().add(resource);
+                        @Override
+                        public void onSubmit(AjaxRequestTarget target,
+                                Resource[] resources) {
+                            for (Resource resource : resources) {
+                                if (!vc.getObject().getResources().contains(resource)) {
+                                    vc.getObject().getResources().add(resource);
+                                }
+                            }
+                            target.addComponent(resourcesTable);
                         }
-                    }
-                    target.addComponent(resourcesTable);
-                }
 
-            };
+                    };
             add(addResourcesDialog);
 
             add(new AjaxLink<Object>("add") {
@@ -484,42 +496,42 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
         @SuppressWarnings("unchecked")
         private IColumn<Resource>[] createColumns() {
-            final IColumn<?>[] columns = new IColumn<?>[] {
-                    new AbstractColumn<Resource>(new Model<String>("Type")) {
-                        @Override
-                        public void populateItem(
-                                Item<ICellPopulator<Resource>> item,
-                                String componentId, IModel<Resource> model) {
-                            switch (model.getObject().getType()) {
-                                case METADATA:
-                                    item.add(new Label(componentId, "Metadata"));
-                                    break;
-                                case RESOURCE:
-                                    item.add(new Label(componentId, "Resource"));
-                                    break;
-                            }
-                        }
-
-                        @Override
-                        public String getCssClass() {
-                            return "type";
-                        }
-                    },
-                    new PropertyColumn<Resource>(
-                            new Model<String>("Reference"), "ref"),
-                    new HeaderlessColumn<Resource>() {
-                        @Override
-                        public void populateItem(
-                                Item<ICellPopulator<Resource>> item,
-                                String compontentId, IModel<Resource> model) {
-                            item.add(new ActionsPanel(compontentId, model));
-                        }
-
-                        @Override
-                        public String getCssClass() {
-                            return "action";
+            final IColumn<?>[] columns = new IColumn<?>[]{
+                new AbstractColumn<Resource>(new Model<String>("Type")) {
+                    @Override
+                    public void populateItem(
+                            Item<ICellPopulator<Resource>> item,
+                            String componentId, IModel<Resource> model) {
+                        switch (model.getObject().getType()) {
+                            case METADATA:
+                                item.add(new Label(componentId, "Metadata"));
+                                break;
+                            case RESOURCE:
+                                item.add(new Label(componentId, "Resource"));
+                                break;
                         }
                     }
+
+                    @Override
+                    public String getCssClass() {
+                        return "type";
+                    }
+                },
+                new PropertyColumn<Resource>(
+                new Model<String>("Reference"), "ref"),
+                new HeaderlessColumn<Resource>() {
+                    @Override
+                    public void populateItem(
+                            Item<ICellPopulator<Resource>> item,
+                            String compontentId, IModel<Resource> model) {
+                        item.add(new ActionsPanel(compontentId, model));
+                    }
+
+                    @Override
+                    public String getCssClass() {
+                        return "action";
+                    }
+                }
             };
             return (IColumn<Resource>[]) columns;
         }
@@ -548,14 +560,14 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
             add(new AbstractFormValidator() {
                 @Override
                 public FormComponent<?>[] getDependentFormComponents() {
-                    return new FormComponent[] { queryProfileField,
-                                                 queryValueArea };
+                    return new FormComponent[]{queryProfileField,
+                        queryValueArea};
                 }
 
                 @Override
                 public void validate(Form<?> form) {
                     final String profile = queryProfileField.getInput();
-                    final String value   = queryValueArea.getInput();
+                    final String value = queryValueArea.getInput();
                     if (profile.isEmpty() && !value.isEmpty()) {
                         form.error("profile is required with value");
                         queryProfileField.invalid();

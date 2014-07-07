@@ -7,6 +7,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.AbstractReadOnlyModel;
+import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
@@ -79,7 +80,7 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
 
     @Override
     protected final Panel createContent(String id) {
-        final IModel<T> model = createModel();
+        final IModel<T> model = newInstanceModel();
         contentPanel = createContentPanel(id, model);
         contentPanel.add(new AttributeAppender("class",
                 new AbstractReadOnlyModel<String>() {
@@ -113,14 +114,14 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
 
     public final void show(AjaxRequestTarget target, IModel<T> model) {
         if (model == null) {
-            model = newObjectInstance();
+            model = newInstanceModel();
             addButton.setVisible(true);
             modifyButton.setVisible(false);
         } else {
             addButton.setVisible(false);
             modifyButton.setVisible(true);
         }
-        contentPanel.getForm().setModel(model);
+        contentPanel.getForm().setModel(new CompoundPropertyModel<T>(model));
         super.show(target);
     }
 
@@ -142,9 +143,9 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
         return null;
     }
 
-    protected abstract IModel<T> newObjectInstance();
+    protected abstract IModel<T> newInstanceModel();
 
-    protected abstract IModel<T> createModel();
+    protected abstract IModel<T> createEmptyModel();
 
     protected abstract ContentPanel createContentPanel(String id,
             IModel<T> model);
