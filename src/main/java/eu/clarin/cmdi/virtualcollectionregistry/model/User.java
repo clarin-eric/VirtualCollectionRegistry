@@ -26,7 +26,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
     @NamedQuery(name = "User.findByName",
                 query = "SELECT u FROM User u WHERE u.name = :name")
 })
-public class User implements Serializable {
+public class User implements Serializable, IdentifiedEntity {
     private static final long serialVersionUID = 1L;
 
     @Id

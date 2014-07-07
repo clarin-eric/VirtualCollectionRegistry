@@ -61,7 +61,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
                     query = "SELECT c FROM VirtualCollection c " +
                             "WHERE c.state = :state AND c.dateModified < :date")
 })
-public class VirtualCollection implements Serializable {
+public class VirtualCollection implements Serializable, IdentifiedEntity {
     private static final long serialVersionUID = 1L;
 
     public static enum State {

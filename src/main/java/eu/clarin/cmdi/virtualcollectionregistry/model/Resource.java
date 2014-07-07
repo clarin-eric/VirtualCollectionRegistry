@@ -16,7 +16,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Entity
 @Table(name = "resource")
-public class Resource implements Serializable {
+public class Resource implements Serializable, IdentifiedEntity {
     private static final long serialVersionUID = 1L;
 
     public static enum Type {

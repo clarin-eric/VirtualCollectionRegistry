@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
+import eu.clarin.cmdi.virtualcollectionregistry.model.IdentifiedEntity;
 import javax.persistence.EntityManager;
 import org.apache.wicket.model.IModel;
 import org.slf4j.Logger;
@@ -15,7 +16,7 @@ import org.slf4j.LoggerFactory;
  * @author twagoo
  * @see EntityManager#merge(java.lang.Object)
  */
-public class VolatileEntityModel<T> implements IModel<T> {
+public class VolatileEntityModel<T extends IdentifiedEntity> implements IModel<T> {
 
     private final static Logger logger = LoggerFactory.getLogger(VolatileEntityModel.class);
     private T object;
@@ -41,9 +42,11 @@ public class VolatileEntityModel<T> implements IModel<T> {
 
     private void attach() {
         logger.trace("Merging volatile object ({}) into persistence context", object);
-        final EntityManager em = Application.get().getDataStore().getEntityManager();
+        if (object != null && object.getId() != null) {
+            final EntityManager em = Application.get().getDataStore().getEntityManager();
+            object = em.merge(object);
+        }
         attached = true;
-        object = em.merge(object);
     }
 
     @Override

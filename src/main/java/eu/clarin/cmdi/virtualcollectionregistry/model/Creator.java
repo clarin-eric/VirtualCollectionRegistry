@@ -14,7 +14,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Entity
 @Table(name = "creator")
-public class Creator implements Serializable {
+public class Creator implements Serializable, IdentifiedEntity {
+
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -52,6 +53,7 @@ public class Creator implements Serializable {
         this.setPerson(person);
     }
 
+    @Override
     public Long getId() {
         return id;
     }
@@ -123,14 +125,14 @@ public class Creator implements Serializable {
         if (obj instanceof Creator) {
             final Creator rhs = (Creator) obj;
             return new EqualsBuilder()
-                .append(this.getPerson(), rhs.getPerson())
-                .append(this.getAddress(), rhs.getAddress())
-                .append(this.getEMail(), rhs.getEMail())
-                .append(this.getOrganisation(), rhs.getOrganisation())
-                .append(this.getTelephone(), rhs.getTelephone())
-                .append(this.getWebsite(), rhs.getWebsite())
-                .append(this.getRole(), rhs.getRole())
-                .isEquals();
+                    .append(this.getPerson(), rhs.getPerson())
+                    .append(this.getAddress(), rhs.getAddress())
+                    .append(this.getEMail(), rhs.getEMail())
+                    .append(this.getOrganisation(), rhs.getOrganisation())
+                    .append(this.getTelephone(), rhs.getTelephone())
+                    .append(this.getWebsite(), rhs.getWebsite())
+                    .append(this.getRole(), rhs.getRole())
+                    .isEquals();
         }
         return false;
     }
@@ -138,14 +140,42 @@ public class Creator implements Serializable {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(32361, 7611)
-            .append(this.getPerson())
-            .append(this.getAddress())
-            .append(this.getEMail())
-            .append(this.getOrganisation())
-            .append(this.getTelephone())
-            .append(this.getWebsite())
-            .append(this.getRole())
-            .toHashCode();
+                .append(this.getPerson())
+                .append(this.getAddress())
+                .append(this.getEMail())
+                .append(this.getOrganisation())
+                .append(this.getTelephone())
+                .append(this.getWebsite())
+                .append(this.getRole())
+                .toHashCode();
+    }
+    
+    public void setValuesFrom(Creator other) {
+        address = other.getAddress();
+        email = other.getEMail();
+        organisation = other.getOrganisation();
+        person = other.getPerson();
+        role = other.getRole();
+        telephone = other.getTelephone();
+        website = other.getWebsite();
+    }
+
+    /**
+     * Creates a copy 
+     *
+     * @return a clone of this creator
+     */
+    public Creator getCopy() {
+        final Creator copy = new Creator();
+        copy.id = id;
+        copy.setAddress(address);
+        copy.setEMail(email);
+        copy.setOrganisation(organisation);
+        copy.setPerson(person);
+        copy.setRole(role);
+        copy.setTelephone(telephone);
+        copy.setWebsite(website);
+        return copy;
     }
 
 } // class Creator
