@@ -17,9 +17,11 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Entity
 @Table(name = "resource")
 public class Resource implements Serializable, IdentifiedEntity {
+    
     private static final long serialVersionUID = 1L;
-
+    
     public static enum Type {
+        
         METADATA,
         RESOURCE;
     } // enum Resource.Type
@@ -28,44 +30,43 @@ public class Resource implements Serializable, IdentifiedEntity {
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false, updatable = false)
     private Long id;
-
+    
     @Column(name = "type", nullable = false)
     @Enumerated(EnumType.ORDINAL)
     private Type type;
-
+    
     @Column(name = "ref", nullable = false, length = 255)
     private String ref;
-
-
+    
     public Resource() {
         super();
     }
-
+    
     public Resource(Resource.Type type, String ref) {
         super();
         this.setType(type);
         this.setRef(ref);
     }
-
+    
     public Long getId() {
         return id;
     }
-
+    
     public Resource.Type getType() {
         return type;
     }
-
+    
     public void setType(Resource.Type type) {
         if (type == null) {
             throw new NullPointerException("type == null");
         }
         this.type = type;
     }
-
+    
     public String getRef() {
         return ref;
     }
-
+    
     public void setRef(String ref) {
         if (ref == null) {
             throw new NullPointerException("ref == null");
@@ -76,7 +77,7 @@ public class Resource implements Serializable, IdentifiedEntity {
         }
         this.ref = ref;
     }
-
+    
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -88,19 +89,32 @@ public class Resource implements Serializable, IdentifiedEntity {
         if (obj instanceof Resource) {
             final Resource rhs = (Resource) obj;
             return new EqualsBuilder()
-                .append(this.getType(), rhs.getType())
-                .append(this.getRef(), rhs.getRef())
-                .isEquals();
+                    .append(this.getType(), rhs.getType())
+                    .append(this.getRef(), rhs.getRef())
+                    .isEquals();
         }
         return false;
     }
-
+    
     @Override
     public int hashCode() {
         return new HashCodeBuilder(25973, 1815)
-            .append(this.getType())
-            .append(this.getRef())
-            .toHashCode();
+                .append(this.getType())
+                .append(this.getRef())
+                .toHashCode();
     }
-
+    
+    public void valuesFrom(Resource resource) {
+        ref = resource.getRef();
+        type = resource.getType();
+    }
+    
+    public Resource getCopy() {
+        final Resource copy = new Resource();
+        copy.id = id;
+        copy.setRef(ref);
+        copy.setType(type);
+        return copy;
+    }
+    
 } // class Resource

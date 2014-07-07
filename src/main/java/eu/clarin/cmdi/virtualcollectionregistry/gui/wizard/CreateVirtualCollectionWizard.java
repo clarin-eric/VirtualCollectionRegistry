@@ -426,8 +426,16 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                 @Override
                 public void onSubmit(AjaxRequestTarget target,
                         Resource resource) {
-                    if (!vc.getObject().getResources().contains(resource)) {
-                        vc.getObject().getResources().add(resource);
+                    // create a copy first because retrieving the resources may
+                    // reset the state of the object
+                    final Resource copy = resource.getCopy();
+                    final List<Resource> resources = vc.getObject().getResources();
+                    if (resources.contains(resource)) {
+                        // update existig resource (needed since we're dealing with a volatile instance)
+                        resource.valuesFrom(copy);
+                    } else {
+                        // new entry, add
+                        resources.add(resource);
                     }
                     target.addComponent(resourcesTable);
                 }
