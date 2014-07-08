@@ -1,36 +1,52 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project xmlns="http://maven.apache.org/POM/4.0.0"
-    xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
-	xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
-	<modelVersion>4.0.0</modelVersion>
-	<groupId>eu.clarin.cmdi</groupId>
-	<artifactId>VirtualCollectionRegistry</artifactId>
-	<packaging>war</packaging>
-	<name>CLARIN Virtual Collection Registry</name>
-	<version>0.4.0-SNAPSHOT</version>
+         xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+    <modelVersion>4.0.0</modelVersion>
+    <groupId>eu.clarin.cmdi</groupId>
+    <artifactId>VirtualCollectionRegistry</artifactId>
+    <packaging>war</packaging>
+    <name>CLARIN Virtual Collection Registry</name>
+    <version>0.4.0-SNAPSHOT</version>
 
-	<organization>
-		<name>Institut für Deutsche Sprache</name>
-		<url>http://www.ids-mannheim.de/</url>
-	</organization>
+    <organization>
+        <name>Institut für Deutsche Sprache</name>
+        <url>http://www.ids-mannheim.de/</url>
+    </organization>
 
 
-	<properties>
-		<!-- project settings -->
-		<project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-		<!-- plug-in settings -->
-		<maven.compiler.source>1.7</maven.compiler.source>
-		<maven.compiler.target>1.7</maven.compiler.target>
-		<!-- dependency versions -->
-		<slf4j.version>1.7.7</slf4j.version>
-		<hibernate.version>3.6.10.Final</hibernate.version>
-		<hibernate.jpaVersion>1.0.0.Final</hibernate.jpaVersion>
-		<jersey.version>1.18.1</jersey.version>
-		<jackson.version>1.6.1</jackson.version>
-		<wicket.version>1.4.23</wicket.version>
-		<spring.version>4.0.5.RELEASE</spring.version>
-		<log4j.appender>Console</log4j.appender> <!-- TODO: default to File -->
-	</properties>
+    <properties>
+        <!-- project settings -->
+        <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
+        <!-- plug-in settings -->
+        <maven.compiler.source>1.7</maven.compiler.source>
+        <maven.compiler.target>1.7</maven.compiler.target>
+        <!-- dependency versions -->
+        <slf4j.version>1.7.7</slf4j.version>
+        <hibernate.version>3.6.10.Final</hibernate.version>
+        <hibernate.jpaVersion>1.0.0.Final</hibernate.jpaVersion>
+        <jersey.version>1.18.1</jersey.version>
+        <jackson.version>1.6.1</jackson.version>
+        <wicket.version>1.4.23</wicket.version>
+        <spring.version>4.0.5.RELEASE</spring.version>
+        
+        <!-- Production settings below -->
+        <log4j.appender>File</log4j.appender>
+        <war.webxml>src/main/webapp/WEB-INF/web-shib.xml</war.webxml>
+    </properties>
+    
+    <profiles>
+        <profile>
+            <!-- Development profile -->
+            <id>development</id>
+            <properties>
+                <!-- Log to console -->
+                <log4j.appender>Console</log4j.appender>     
+                <!-- Use the user database realm version of web.xml -->           
+                <war.webxml>src/main/webapp/WEB-INF/web-dev.xml</war.webxml>
+            </properties>
+        </profile>
+    </profiles>
 
     <dependencies>
         <dependency>
@@ -147,7 +163,7 @@
         </dependency>
 
         <!-- Libraries required for de.uni_leipzig.* EPIC library (todo: replace 
-            with dependency on detached library) -->
+        with dependency on detached library) -->
         <dependency>
             <groupId>com.sun.jersey.contribs</groupId>
             <artifactId>jersey-apache-client</artifactId>
@@ -215,15 +231,15 @@
             </exclusions>
         </dependency>
 
-<!--
-        <dependency>
-            <groupId>net.java.dev.javacc</groupId>
-            <artifactId>javacc</artifactId>
-            <version>5.0</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
--->
+        <!--
+                <dependency>
+                    <groupId>net.java.dev.javacc</groupId>
+                    <artifactId>javacc</artifactId>
+                    <version>5.0</version>
+                    <type>jar</type>
+                    <scope>provided</scope>
+                </dependency>
+        -->
 
         <dependency>
             <groupId>mysql</groupId>
@@ -376,82 +392,82 @@
         </dependencies>
     </dependencyManagement>
 
-	<build>
-		<resources>
-			<resource>
-				<filtering>true</filtering>
-				<directory>src/main/resources</directory>
-			</resource>
-			<resource>
-				<filtering>true</filtering>
-				<directory>src/main/java</directory>
-				<includes>
-					<include>**/BasePage.html</include>
-				</includes>
-			</resource>
-			<resource>
-				<filtering>false</filtering>
-				<directory>src/main/java</directory>
-				<includes>
-					<include>**/*.html</include>
-					<include>**/*.css</include>
-					<include>**/*.js</include>
-					<include>**/*.properties</include>
-				</includes>
-			</resource>
-		</resources>
+    <build>
+        <resources>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/BasePage.html</include>
+                </includes>
+            </resource>
+            <resource>
+                <filtering>false</filtering>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.html</include>
+                    <include>**/*.css</include>
+                    <include>**/*.js</include>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+        </resources>
 
-		<testResources>
-			<testResource>
-				<directory>src/test/resources</directory>
-			</testResource>
-		</testResources>
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+        </testResources>
 
-		<plugins>
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>javacc-maven-plugin</artifactId>
-				<version>2.6</version>
-				<executions>
-					<execution>
-						<id>javacc</id>
-						<goals>
-							<goal>jjtree-javacc</goal>
-						</goals>
-						<phase>generate-sources</phase>
-					</execution>
-				</executions>
-			</plugin>
+        <plugins>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>javacc-maven-plugin</artifactId>
+                <version>2.6</version>
+                <executions>
+                    <execution>
+                        <id>javacc</id>
+                        <goals>
+                            <goal>jjtree-javacc</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                    </execution>
+                </executions>
+            </plugin>
 
-			<plugin>
-				<groupId>org.bsc.maven</groupId>
-				<artifactId>maven-processor-plugin</artifactId>
-				<version>2.0.0</version>
-				<executions>
-					<execution>
-						<id>process</id>
-						<goals>
-							<goal>process</goal>
-						</goals>
-						<phase>generate-sources</phase>
-						<configuration>
-							<processors>
-								<processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
-							</processors>
-							<sourceDirectory>${basedir}/src/main/java/eu/clarin/cmdi/virtualcollectionregistry/model</sourceDirectory>
-							<outputDirectory>${project.build.directory}/generated-sources/metamodel</outputDirectory>
-						</configuration>
-					</execution>
-				</executions>
+            <plugin>
+                <groupId>org.bsc.maven</groupId>
+                <artifactId>maven-processor-plugin</artifactId>
+                <version>2.0.0</version>
+                <executions>
+                    <execution>
+                        <id>process</id>
+                        <goals>
+                            <goal>process</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <processors>
+                                <processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
+                            </processors>
+                            <sourceDirectory>${basedir}/src/main/java/eu/clarin/cmdi/virtualcollectionregistry/model</sourceDirectory>
+                            <outputDirectory>${project.build.directory}/generated-sources/metamodel</outputDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
                 <dependencies>
-		            <dependency>
+                    <dependency>
                         <groupId>org.hibernate</groupId>
                         <artifactId>hibernate-jpamodelgen</artifactId>
                         <version>${hibernate.jpaVersion}</version>
                         <scope>compile</scope>
                     </dependency>
                 </dependencies>
-			</plugin>
+            </plugin>
 
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
@@ -470,127 +486,129 @@
                 </configuration>
             </plugin>
 
-			<plugin>
-				<groupId>org.codehaus.mojo</groupId>
-				<artifactId>build-helper-maven-plugin</artifactId>
-				<version>1.3</version>
-				<executions>
-					<execution>
-						<id>add-source</id>
-						<goals>
-							<goal>add-source</goal>
-						</goals>
-						<phase>generate-sources</phase>
-						<configuration>
-							<sources>
-								<source>${project.build.directory}/generated-sources/metamodel</source>
-								<source>${project.build.directory}/generated-sources/javacc</source>
-								<source>${project.build.directory}/generated-sources/jjtree</source>
-								<source>${project.build.directory}/generated-sources/jaxb</source>
-							</sources>
-						</configuration>
-					</execution>
-				</executions>
-			</plugin>
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>build-helper-maven-plugin</artifactId>
+                <version>1.3</version>
+                <executions>
+                    <execution>
+                        <id>add-source</id>
+                        <goals>
+                            <goal>add-source</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <sources>
+                                <source>${project.build.directory}/generated-sources/metamodel</source>
+                                <source>${project.build.directory}/generated-sources/javacc</source>
+                                <source>${project.build.directory}/generated-sources/jjtree</source>
+                                <source>${project.build.directory}/generated-sources/jaxb</source>
+                            </sources>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-compiler-plugin</artifactId>
-				<version>2.3.2</version>
-				<configuration>
-					<source>${maven.compiler.source}</source>
-					<target>${maven.compiler.target}</target>
-					<compilerArgument>-proc:none</compilerArgument>
-				</configuration>
-			</plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>2.3.2</version>
+                <configuration>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <compilerArgument>-proc:none</compilerArgument>
+                </configuration>
+            </plugin>
 
-			<plugin>
-				<groupId>org.apache.maven.plugins</groupId>
-				<artifactId>maven-war-plugin</artifactId>
-				<version>2.1.1</version>
-				<configuration>
-					<webResources>
-						<!-- additional web resources: also copy schemas to web-app -->
-						<resource>
-							<directory>src/main/resources/META-INF</directory>
-							<targetPath>schema</targetPath>
-							<includes>
-								<include>*.xsd</include>
-							</includes>
-						</resource>
-					</webResources>
-				</configuration>
-			</plugin>
-		</plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>2.1.1</version>
+                <configuration>
+                    <failOnMissingWebXml>true</failOnMissingWebXml>
+                    <webXml>${war.webxml}</webXml>
+                    <webResources>
+                        <!-- additional web resources: also copy schemas to web-app -->
+                        <resource>
+                            <directory>src/main/resources/META-INF</directory>
+                            <targetPath>schema</targetPath>
+                            <includes>
+                                <include>*.xsd</include>
+                            </includes>
+                        </resource>
+                    </webResources>
+                </configuration>
+            </plugin>
+        </plugins>
 
-		<pluginManagement>
-			<plugins>
-				<!-- This plugin's configuration is used to store Eclipse m2e settings 
-					only. It has no influence on the Maven build itself. -->
-				<plugin>
-					<groupId>org.eclipse.m2e</groupId>
-					<artifactId>lifecycle-mapping</artifactId>
-					<version>1.0.0</version>
-					<configuration>
-						<lifecycleMappingMetadata>
-							<pluginExecutions>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.codehaus.mojo</groupId>
-										<artifactId>javacc-maven-plugin</artifactId>
-										<versionRange>[2.6,)</versionRange>
-										<goals>
-											<goal>jjtree-javacc</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<execute />
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.bsc.maven</groupId>
-										<artifactId>maven-processor-plugin</artifactId>
-										<versionRange>[2.0.0,)</versionRange>
-										<goals>
-											<goal>process</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<execute />
-									</action>
-								</pluginExecution>
-								<pluginExecution>
-									<pluginExecutionFilter>
-										<groupId>org.codehaus.mojo</groupId>
-										<artifactId>jaxb2-maven-plugin</artifactId>
-										<versionRange>[1.6,)</versionRange>
-										<goals>
-											<goal>xjc</goal>
-										</goals>
-									</pluginExecutionFilter>
-									<action>
-										<execute />
-									</action>
-								</pluginExecution>
-							</pluginExecutions>
-						</lifecycleMappingMetadata>
-					</configuration>
-				</plugin>
-				<!-- JAX-B If we e.g. execute on JDK 1.7, we should compile for
-				     Java 7 to get the same (or higher) JAXB API version as
-                     used during the xjc execution. -->
-				<plugin>
-					<groupId>org.apache.maven.plugins</groupId>
-					<artifactId>maven-compiler-plugin</artifactId>
-					<configuration>
-						<source>${maven.compiler.source}</source>
-						<target>${maven.compiler.source}</target>
-					</configuration>
-				</plugin>
-			</plugins>
-		</pluginManagement>
-	</build>
+        <pluginManagement>
+            <plugins>
+                <!-- This plugin's configuration is used to store Eclipse m2e settings 
+                only. It has no influence on the Maven build itself. -->
+                <plugin>
+                    <groupId>org.eclipse.m2e</groupId>
+                    <artifactId>lifecycle-mapping</artifactId>
+                    <version>1.0.0</version>
+                    <configuration>
+                        <lifecycleMappingMetadata>
+                            <pluginExecutions>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.codehaus.mojo</groupId>
+                                        <artifactId>javacc-maven-plugin</artifactId>
+                                        <versionRange>[2.6,)</versionRange>
+                                        <goals>
+                                            <goal>jjtree-javacc</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <execute />
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.bsc.maven</groupId>
+                                        <artifactId>maven-processor-plugin</artifactId>
+                                        <versionRange>[2.0.0,)</versionRange>
+                                        <goals>
+                                            <goal>process</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <execute />
+                                    </action>
+                                </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.codehaus.mojo</groupId>
+                                        <artifactId>jaxb2-maven-plugin</artifactId>
+                                        <versionRange>[1.6,)</versionRange>
+                                        <goals>
+                                            <goal>xjc</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <execute />
+                                    </action>
+                                </pluginExecution>
+                            </pluginExecutions>
+                        </lifecycleMappingMetadata>
+                    </configuration>
+                </plugin>
+                <!-- JAX-B If we e.g. execute on JDK 1.7, we should compile for
+                                Java 7 to get the same (or higher) JAXB API version as
+                used during the xjc execution. -->
+                <plugin>
+                    <groupId>org.apache.maven.plugins</groupId>
+                    <artifactId>maven-compiler-plugin</artifactId>
+                    <configuration>
+                        <source>${maven.compiler.source}</source>
+                        <target>${maven.compiler.source}</target>
+                    </configuration>
+                </plugin>
+            </plugins>
+        </pluginManagement>
+    </build>
 
     <repositories>
         <repository>

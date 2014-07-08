@@ -58,7 +58,8 @@ To shibbolize this application, the following steps are required:
 
 1. Use the shibboleth version of web.xml called 'web-shib.xml' instead of
 the default one by renaming it to and overwriting web.xml (you can make a
-backup of the original web.xml)
+backup of the original web.xml). If the package was built for a production
+environment, it should already have the right web.xml in place.
 
 2. Add the following to the relevant Apache configuration:
 
