@@ -1,10 +1,13 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.wizard;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ConfirmationDialog;
+import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
+import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -38,14 +41,10 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.validation.validator.StringValidator;
 import org.apache.wicket.validation.validator.UrlValidator;
-
-import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ConfirmationDialog;
-import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
-import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
 @SuppressWarnings("serial")
 public abstract class CreateVirtualCollectionWizard extends WizardBase {
@@ -76,11 +75,11 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
             private final ListView<String> itemsView;
 
-            public KeywordsList(String id, final List<String> items) {
+            public KeywordsList(String id, final IModel<List<String>> itemsModel) {
                 super(id);
                 setOutputMarkupId(true);
 
-                itemsView = new ListView<String>("keywords", items) {
+                itemsView = new ListView<String>("keywords", itemsModel) {
                     @Override
                     protected void populateItem(final ListItem<String> item) {
                         final IModel<String> model = item.getModel();
@@ -140,12 +139,13 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                             Arrays.asList(VirtualCollection.Reproducibility.values()),
                             new EnumChoiceRenderer<VirtualCollection.Reproducibility>(this));
             add(reproducibilityChoice);
-            final TextArea<String> reproducibilityNoticeArea
+                final TextArea<String> reproducibilityNoticeArea
                     = new TextArea<String>("reproducibilityNotice");
             add(reproducibilityNoticeArea);
 
             final KeywordsList keywordList
-                    = new KeywordsList("keywordsList", vc.getObject().getKeywords());
+                    = new KeywordsList("keywordsList", 
+                            new PropertyModel<List<String>>(vc, "keywords"));
             add(keywordList);
             add(new AjaxLink<String>("keywordsAdd") {
                 @Override
@@ -157,8 +157,9 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
             addKeywordDialog = new AddKeywordDialog("addKeywordDialog") {
                 @Override
                 public void onSubmit(AjaxRequestTarget target, String keyword) {
-                    if (!vc.getObject().getKeywords().contains(keyword)) {
-                        vc.getObject().getKeywords().add(keyword);
+                    final List<String> keywords = vc.getObject().getKeywords();
+                    if (!keywords.contains(keyword)) {
+                        keywords.add(keyword);
                     }
                     target.addComponent(keywordList);
                 }
