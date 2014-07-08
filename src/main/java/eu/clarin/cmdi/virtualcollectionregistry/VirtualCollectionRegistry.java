@@ -12,9 +12,12 @@ import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidat
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.LockModeType;
@@ -36,7 +39,7 @@ import org.springframework.stereotype.Service;
 public class VirtualCollectionRegistry implements InitializingBean, DisposableBean {
 
     @Autowired
-    private DataStore datastore; //TODO: replace with Spring managed EM
+    private DataStore datastore; //TODO: replace with Spring managed EM?
     @Autowired
     private PersistentIdentifierProvider pid_provider;
     @Autowired
@@ -47,8 +50,13 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
     private static final Logger logger
             = LoggerFactory.getLogger(VirtualCollectionRegistry.class);
     private final AtomicBoolean intialized = new AtomicBoolean(false);
-    private final Timer timer
-            = new Timer("VirtualCollectionRegistry-Maintenance", true);
+    /**
+     * Scheduled executor service for the maintenance check
+     *
+     * @see #maintenance(long)
+     */
+    private final ScheduledExecutorService maintenanceExecutor
+            = createSingleThreadScheduledExecutor("VirtualCollectionRegistry-Maintenance");
 
     @Override
     public void afterPropertiesSet() throws VirtualCollectionRegistryException {
@@ -62,13 +70,13 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
         }
         logger.info("Initializing virtual collection registry ...");
         try {
-            // setup VCR maintenance task
-            timer.schedule(new TimerTask() {
+            maintenanceExecutor.scheduleWithFixedDelay(new Runnable() {
+
                 @Override
                 public void run() {
-                    maintenance(this.scheduledExecutionTime());
+                    maintenance(new Date().getTime());
                 }
-            }, 60000, 60000);
+            }, 60, 60, TimeUnit.SECONDS);
             this.intialized.set(true);
             logger.info("virtual collection registry successfully intialized");
         } catch (RuntimeException e) {
@@ -78,9 +86,12 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
     }
 
     @Override
-    public void destroy() throws VirtualCollectionRegistryException {
+    public void destroy() throws VirtualCollectionRegistryException, InterruptedException {
         logger.info("Stopping Virtual Collection Registry maintenance schedule");
-        timer.cancel();
+        maintenanceExecutor.shutdown();
+        if (!maintenanceExecutor.awaitTermination(60, TimeUnit.SECONDS)) {
+            logger.warn("Timeout while waiting for maintenance thread to terminate, will try to shut down");
+        }
 
         logger.info("Shutting down OAI provider");
         oaiProvider.shutdown();
@@ -607,7 +618,7 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
                 logger.debug("purged virtual collection (id={})", vc.getId());
             }
             em.getTransaction().commit();
-        } catch (Exception e) {
+        } catch (VirtualCollectionRegistryException e) {
             logger.error("error while doing maintenance", e);
         } finally {
             datastore.closeEntityManager();
@@ -625,6 +636,27 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
             /* IGNORE */
         }
         return user;
+    }
+
+    /**
+     * Creates a single thread scheduled executor with the specified thread name
+     *
+     * @param threadName name for new executor threads
+     * @return
+     */
+    private static ScheduledExecutorService createSingleThreadScheduledExecutor(final String threadName) {
+        return Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+            // decorate default thread factory so that we can provide a 
+            // custom thread name
+            final AtomicInteger i = new AtomicInteger(0);
+
+            @Override
+            public Thread newThread(Runnable r) {
+                final Thread thread = Executors.defaultThreadFactory().newThread(r);
+                thread.setName(threadName + "-" + i.addAndGet(1));
+                return thread;
+            }
+        });
     }
 
 } // class VirtualCollectionRegistry
