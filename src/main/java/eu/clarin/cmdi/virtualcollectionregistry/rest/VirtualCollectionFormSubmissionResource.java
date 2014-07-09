@@ -51,6 +51,7 @@ public class VirtualCollectionFormSubmissionResource {
             @FormParam("resourceUri") List<String> resourceUris,
             @FormParam("description") String description,
             //optional params
+            @FormParam("keyword") List<String> keyword,
             @FormParam("purpose") Purpose purpose,
             @FormParam("reproducibility") Reproducibility reproducibility,
             @FormParam("reproducibilityNotice") String reproducibilityNotice,
@@ -72,7 +73,7 @@ public class VirtualCollectionFormSubmissionResource {
         try {
             // construct a proto-VC from the form parameters
             final VirtualCollection vc = constructVirtualCollection(type, name,
-                    metadataUris, resourceUris, description, purpose,
+                    metadataUris, resourceUris, description, keyword, purpose,
                     reproducibility, reproducibilityNotice, creationDate,
                     intensionalDescription, intensionalUri, intensionalQueryProfile, intensionalQueryValue);
 
@@ -94,9 +95,9 @@ public class VirtualCollectionFormSubmissionResource {
 
     private VirtualCollection constructVirtualCollection(Type type, String name,
             List<String> metadataUris, List<String> resourceUris, String description,
-            Purpose purpose, Reproducibility reproducibility, String reproducibilityNotice,
-            Date creationDate, String intensionalDescription, String intensionalUri,
-            String intensionalQueryProfile, String intensionalQueryValue) throws VirtualCollectionRegistryException {
+            List<String> keywords, Purpose purpose, Reproducibility reproducibility,
+            String reproducibilityNotice, Date creationDate, String intensionalDescription,
+            String intensionalUri, String intensionalQueryProfile, String intensionalQueryValue) throws VirtualCollectionRegistryException {
         final VirtualCollection vc = new VirtualCollection();
 
         if (type == null) {
@@ -119,6 +120,12 @@ public class VirtualCollectionFormSubmissionResource {
             vc.getResources().add(new Resource(Resource.Type.RESOURCE, uri));
         }
         // set optional values
+        for (String keyword : keywords) {
+            final String trimmed = keyword.trim();
+            if (!trimmed.isEmpty()) {
+                vc.getKeywords().add(keyword);
+            }
+        }
         if (description != null) {
             vc.setDescription(description);
         }
