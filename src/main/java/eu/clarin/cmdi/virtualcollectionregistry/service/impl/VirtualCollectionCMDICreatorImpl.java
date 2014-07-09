@@ -144,10 +144,10 @@ public class VirtualCollectionCMDICreatorImpl implements VirtualCollectionCMDICr
 
         virtualCollection.setCreationDate(getCreationDate(vc));
         virtualCollection.setStatus(getStatus(vc));
-        virtualCollection.setReproducability(getReproducability(vc));
         virtualCollection.setPurpose(getPurpose(vc));
         virtualCollection.getCreator().add(getCreator(vc));
         virtualCollection.setGeneratedBy(new CMD.Components.VirtualCollection.GeneratedBy());
+        virtualCollection.setReproducability(getReproducability(vc));
 
         if (vc.getReproducibilityNotice() != null) {
             final ReproducabilityNotice reproducabilityNotice = new ReproducabilityNotice();
@@ -166,6 +166,7 @@ public class VirtualCollectionCMDICreatorImpl implements VirtualCollectionCMDICr
     }
 
     private ComplextypeStatus1 getStatus(VirtualCollection vc) {
+        // status is a mandatory field
         final ComplextypeStatus1 status = new ComplextypeStatus1();
         switch (vc.getState()) {
             case PUBLIC:
@@ -184,8 +185,10 @@ public class VirtualCollectionCMDICreatorImpl implements VirtualCollectionCMDICr
     }
 
     private ComplextypeReproducability1 getReproducability(VirtualCollection vc) {
-        final ComplextypeReproducability1 reproducability = new ComplextypeReproducability1();
-        if (vc.getReproducibility() != null) {
+        if (vc.getReproducibility() == null) {
+            return null;
+        } else {
+            final ComplextypeReproducability1 reproducability = new ComplextypeReproducability1();
             switch (vc.getReproducibility()) {
                 //TODO: better mapping
                 case FLUCTUATING:
@@ -198,13 +201,15 @@ public class VirtualCollectionCMDICreatorImpl implements VirtualCollectionCMDICr
                     reproducability.setValue(SimpletypeReproducability1.UNTENDED);
                     break;
             }
+            return reproducability;
         }
-        return reproducability;
     }
 
     private ComplextypePurpose1 getPurpose(VirtualCollection vc) {
-        final ComplextypePurpose1 purpose = new ComplextypePurpose1();
-        if (vc.getPurpose() != null) {
+        if (vc.getPurpose() == null) {
+            return null;
+        } else {
+            final ComplextypePurpose1 purpose = new ComplextypePurpose1();
             switch (vc.getPurpose()) {
                 case FUTURE_USE:
                     purpose.setValue(SimpletypePurpose1.FUTURE_USE);
@@ -219,27 +224,34 @@ public class VirtualCollectionCMDICreatorImpl implements VirtualCollectionCMDICr
                     purpose.setValue(SimpletypePurpose1.SAMPLE);
                     break;
             }
+            return purpose;
         }
-        return purpose;
     }
 
     private CMD.Components.VirtualCollection.Creator getCreator(VirtualCollection vc) {
-        final CMD.Components.VirtualCollection.Creator creator = new CMD.Components.VirtualCollection.Creator();
-        if (vc.getCreators().size() > 0) {
+        if (vc.getCreators().isEmpty()) {
+            return null;
+        } else {
+            final CMD.Components.VirtualCollection.Creator creator = new CMD.Components.VirtualCollection.Creator();
             final Creator vcCreator = vc.getCreators().get(0);
 
+            // name/creator is a mandatory field
             final CMD.Components.VirtualCollection.Creator.Name name = new CMD.Components.VirtualCollection.Creator.Name();
             name.setValue(vcCreator.getPerson());
             creator.setName(name);
 
-            final Email email = new Email();
-            email.setValue(vcCreator.getEMail());
-            creator.setEmail(email);
+            if (vcCreator.getEMail() != null) {
+                final Email email = new Email();
+                email.setValue(vcCreator.getEMail());
+                creator.setEmail(email);
+            }
 
-            final Organisation organisation = new Organisation();
-            organisation.setValue(vcCreator.getOrganisation());
-            creator.setOrganisation(organisation);
+            if (vcCreator.getOrganisation() != null) {
+                final Organisation organisation = new Organisation();
+                organisation.setValue(vcCreator.getOrganisation());
+                creator.setOrganisation(organisation);
+            }
+            return creator;
         }
-        return creator;
     }
 }
