@@ -82,4 +82,11 @@ public class BasePage extends WebPage {
         return principal;
     }
 
+    @Override
+    public ApplicationSession getSession() {
+        return (ApplicationSession) super.getSession();
+    }
+    
+    
+
 } // class BasePage

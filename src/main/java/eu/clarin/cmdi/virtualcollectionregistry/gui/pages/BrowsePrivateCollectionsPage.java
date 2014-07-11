@@ -1,6 +1,5 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
-
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -254,10 +253,8 @@ public class BrowsePrivateCollectionsPage extends BasePage {
         deleteDialog.show(target, vc);
     }
 
-    private void doDetails(AjaxRequestTarget target,
-            IModel<VirtualCollection> vc) {
-        setResponsePage(new VirtualCollectionDetailsPage(vc, getPage()));
+    private void doDetails(AjaxRequestTarget target, IModel<VirtualCollection> vc) {
+        setResponsePage(VirtualCollectionDetailsPage.class, VirtualCollectionDetailsPage.createPageParameters(vc.getObject(), getPageReference()));
     }
-
 
 } // class BrowsePrivateCollectionsPage

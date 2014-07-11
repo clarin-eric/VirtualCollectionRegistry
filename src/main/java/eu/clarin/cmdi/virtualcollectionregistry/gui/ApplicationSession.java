@@ -2,6 +2,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
 import de.mpg.aai.shhaa.model.AuthAttribute;
 import de.mpg.aai.shhaa.model.AuthPrincipal;
+import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import java.security.Principal;
 import java.util.regex.Pattern;
 import org.apache.wicket.Request;
@@ -66,6 +67,16 @@ public class ApplicationSession extends AuthenticatedWebSession {
                 return user;
             }
         };
+    }
+
+    /**
+     *
+     * @param user user to check for
+     * @return whether the specified user is the user currently signed in (false
+     * if {@link #isSignedIn() } returns false)
+     */
+    public boolean isCurrentUser(User user) {
+        return isSignedIn() && getUser().equals(user.getName());
     }
 
     public String getUser() {

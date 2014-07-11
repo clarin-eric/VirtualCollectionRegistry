@@ -8,6 +8,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePublicCollection
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.CreateVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.EditVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.LoginPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.VirtualCollectionDetailsPage;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
@@ -73,6 +74,9 @@ public class Application extends AuthenticatedWebApplication {
         mountBookmarkablePage("/create", CreateVirtualCollectionPage.class);
         mountBookmarkablePage("/admin", AdminPage.class);
 
+        // details of an existing collection by ID, e.g. /details/123
+        mount(new MixedParamHybridUrlCodingStrategy("/details",
+                VirtualCollectionDetailsPage.class, new String[]{VirtualCollectionDetailsPage.PARAM_VC_ID}));
         // editing an existing collection by ID, e.g. /edit/123
         mount(new MixedParamHybridUrlCodingStrategy("/edit",
                 EditVirtualCollectionPage.class, new String[]{"id"}));
