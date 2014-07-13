@@ -10,6 +10,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
+import org.apache.wicket.WicketRuntimeException;
 
 public class BasePage extends WebPage {
 
@@ -21,7 +22,7 @@ public class BasePage extends WebPage {
         // main navigation menu
         final Menu menu = new Menu("menu");
         menu.addMenuItem(new MenuItem<BrowsePublicCollectionsPage>(
-                new Model<String>("Virtual Collections"), 
+                new Model<String>("Virtual Collections"),
                 BrowsePublicCollectionsPage.class));
         menu.addMenuItem(new MenuItem<BrowsePrivateCollectionsPage>(
                 new Model<String>("My Virtual Collections"),
@@ -71,5 +72,21 @@ public class BasePage extends WebPage {
         }
         super.onBeforeRender();
     }
+
+    protected Principal getUser() {
+        ApplicationSession session = (ApplicationSession) getSession();
+        Principal principal = session.getPrincipal();
+        if (principal == null) {
+            throw new WicketRuntimeException("principal == null");
+        }
+        return principal;
+    }
+
+    @Override
+    public ApplicationSession getSession() {
+        return (ApplicationSession) super.getSession();
+    }
+    
+    
 
 } // class BasePage

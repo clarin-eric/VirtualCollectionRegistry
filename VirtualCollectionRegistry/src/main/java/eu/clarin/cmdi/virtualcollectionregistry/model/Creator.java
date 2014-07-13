@@ -14,20 +14,21 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Entity
 @Table(name = "creator")
-public class Creator implements Serializable {
+public class Creator implements Serializable, IdentifiedEntity {
+
     private static final long serialVersionUID = 1L;
 
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false, updatable = false)
     private Long id;
-    
+
     @Column(name = "person", nullable = false, length = 255)
     private String person;
 
     @Column(name = "address", length = 255)
     private String address;
-    
+
     @Column(name = "email", length = 255)
     private String email;
 
@@ -42,7 +43,7 @@ public class Creator implements Serializable {
 
     @Column(name = "role", length = 255)
     private String role;
-    
+
     public Creator() {
         super();
     }
@@ -52,6 +53,7 @@ public class Creator implements Serializable {
         this.setPerson(person);
     }
 
+    @Override
     public Long getId() {
         return id;
     }
@@ -67,7 +69,7 @@ public class Creator implements Serializable {
     public String getAddress() {
         return address;
     }
-    
+
     public void setAddress(String address) {
         this.address = address;
     }
@@ -91,7 +93,7 @@ public class Creator implements Serializable {
     public String getTelephone() {
         return telephone;
     }
-    
+
     public void setTelephone(String telephone) {
         this.telephone = telephone;
     }
@@ -99,7 +101,7 @@ public class Creator implements Serializable {
     public String getWebsite() {
         return website;
     }
-    
+
     public void setWebsite(String website) {
         this.website = website;
     }
@@ -123,14 +125,14 @@ public class Creator implements Serializable {
         if (obj instanceof Creator) {
             final Creator rhs = (Creator) obj;
             return new EqualsBuilder()
-                .append(this.getPerson(), rhs.getPerson())
-                .append(this.getAddress(), rhs.getAddress())
-                .append(this.getEMail(), rhs.getEMail())
-                .append(this.getOrganisation(), rhs.getOrganisation())
-                .append(this.getTelephone(), rhs.getTelephone())
-                .append(this.getWebsite(), rhs.getWebsite())
-                .append(this.getRole(), rhs.getRole())
-                .isEquals();
+                    .append(this.getPerson(), rhs.getPerson())
+                    .append(this.getAddress(), rhs.getAddress())
+                    .append(this.getEMail(), rhs.getEMail())
+                    .append(this.getOrganisation(), rhs.getOrganisation())
+                    .append(this.getTelephone(), rhs.getTelephone())
+                    .append(this.getWebsite(), rhs.getWebsite())
+                    .append(this.getRole(), rhs.getRole())
+                    .isEquals();
         }
         return false;
     }
@@ -138,14 +140,42 @@ public class Creator implements Serializable {
     @Override
     public int hashCode() {
         return new HashCodeBuilder(32361, 7611)
-            .append(this.getPerson())
-            .append(this.getAddress())
-            .append(this.getEMail())
-            .append(this.getOrganisation())
-            .append(this.getTelephone())
-            .append(this.getWebsite())
-            .append(this.getRole())
-            .toHashCode();
+                .append(this.getPerson())
+                .append(this.getAddress())
+                .append(this.getEMail())
+                .append(this.getOrganisation())
+                .append(this.getTelephone())
+                .append(this.getWebsite())
+                .append(this.getRole())
+                .toHashCode();
+    }
+    
+    public void setValuesFrom(Creator other) {
+        address = other.getAddress();
+        email = other.getEMail();
+        organisation = other.getOrganisation();
+        person = other.getPerson();
+        role = other.getRole();
+        telephone = other.getTelephone();
+        website = other.getWebsite();
+    }
+
+    /**
+     * Creates a copy 
+     *
+     * @return a clone of this creator
+     */
+    public Creator getCopy() {
+        final Creator copy = new Creator();
+        copy.id = id;
+        copy.setAddress(address);
+        copy.setEMail(email);
+        copy.setOrganisation(organisation);
+        copy.setPerson(person);
+        copy.setRole(role);
+        copy.setTelephone(telephone);
+        copy.setWebsite(website);
+        return copy;
     }
 
 } // class Creator

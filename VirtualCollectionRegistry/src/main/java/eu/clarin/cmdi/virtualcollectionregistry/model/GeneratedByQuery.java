@@ -23,7 +23,7 @@ public class GeneratedByQuery implements Serializable {
     @Column(name = "generatedby_query_value", length = 8192)
     private String value;
 
-    
+
     public GeneratedByQuery() {
         super();
     }

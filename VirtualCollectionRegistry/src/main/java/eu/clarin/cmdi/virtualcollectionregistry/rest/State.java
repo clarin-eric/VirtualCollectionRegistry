@@ -11,7 +11,8 @@ public enum State {
     PRIVATE,
     @XmlEnumValue("public")
     PUBLIC;
-    
+
+    @Override
     public String toString() {
         switch (this) {
         case PRIVATE:

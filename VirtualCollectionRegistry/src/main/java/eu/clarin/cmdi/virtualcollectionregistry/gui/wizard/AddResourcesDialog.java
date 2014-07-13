@@ -28,7 +28,7 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
     private static final class Data implements Serializable {
         private Resource.Type type;
         private String[] references;
-        
+
         public Resource[] getResources() {
             Resource[] value = null;
             if ((type != null) && (references != null) &&
@@ -110,7 +110,7 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
         public Form<Data> getForm() {
             return form;
         }
-        
+
         public FeedbackPanel getFeedbackPanel() {
             return feedbackPanel;
         }

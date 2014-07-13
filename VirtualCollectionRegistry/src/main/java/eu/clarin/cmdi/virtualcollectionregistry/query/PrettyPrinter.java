@@ -78,7 +78,7 @@ public class PrettyPrinter implements QueryParserVisitor {
             out.append("\n");
         }
     }
-    
+
     private boolean isLastSibling(Node node) {
         Node parent = node.jjtGetParent();
         if (parent == null) {

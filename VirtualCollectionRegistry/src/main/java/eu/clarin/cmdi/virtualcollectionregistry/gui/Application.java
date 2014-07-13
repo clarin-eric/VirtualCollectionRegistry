@@ -1,39 +1,53 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
+import eu.clarin.cmdi.virtualcollectionregistry.DataStore;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AdminPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePrivateCollectionsPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePublicCollectionsPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.CreateVirtualCollectionPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.EditVirtualCollectionPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.LoginPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.VirtualCollectionDetailsPage;
 import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.util.HashSet;
 import java.util.Set;
-
 import org.apache.wicket.Page;
 import org.apache.wicket.authentication.AuthenticatedWebApplication;
 import org.apache.wicket.authentication.AuthenticatedWebSession;
 import org.apache.wicket.authorization.strategies.role.Roles;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.request.target.coding.MixedParamHybridUrlCodingStrategy;
 import org.apache.wicket.session.pagemap.LeastRecentlyAccessedEvictionStrategy;
+import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AdminPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePrivateCollectionsPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.CreateVirtualCollectionPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePublicCollectionsPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.LoginPage;
-
+@Component
 public class Application extends AuthenticatedWebApplication {
+
+    @Autowired
+    private VirtualCollectionRegistry registry;
+    @Autowired
+    private DataStore dataStore;
+
     private static final String CONFIG_PARAM_ADMINDB = "admindb";
-    private Set<String> adminUsers =
-        new HashSet<String>();
+    private final Set<String> adminUsers = new HashSet<String>();
 
     @Override
     protected void init() {
         super.init();
+        addComponentInstantiationListener(new SpringComponentInjector(this));
 
         String s = getServletContext().getInitParameter(CONFIG_PARAM_ADMINDB);
         if (s != null) {
             try {
                 loadAdminDatabase(s);
-            } catch (IOException e ) {
+            } catch (IOException e) {
                 // FIXME: handle error
             }
         }
@@ -50,12 +64,22 @@ public class Application extends AuthenticatedWebApplication {
             getMarkupSettings().setStripWicketTags(true);
             getMarkupSettings().setStripComments(true);
         }
+
+        mountBookmarkablePage("/login",
+                LoginPage.class);
         mountBookmarkablePage("/public",
                 BrowsePublicCollectionsPage.class);
         mountBookmarkablePage("/private",
                 BrowsePrivateCollectionsPage.class);
         mountBookmarkablePage("/create", CreateVirtualCollectionPage.class);
         mountBookmarkablePage("/admin", AdminPage.class);
+
+        // details of an existing collection by ID, e.g. /details/123
+        mount(new MixedParamHybridUrlCodingStrategy("/details",
+                VirtualCollectionDetailsPage.class, new String[]{VirtualCollectionDetailsPage.PARAM_VC_ID}));
+        // editing an existing collection by ID, e.g. /edit/123
+        mount(new MixedParamHybridUrlCodingStrategy("/edit",
+                EditVirtualCollectionPage.class, new String[]{"id"}));
     }
 
     @Override
@@ -104,6 +128,18 @@ public class Application extends AuthenticatedWebApplication {
             adminUsers.add(line);
         } // while
         reader.close();
+    }
+
+    public VirtualCollectionRegistry getRegistry() {
+        return registry;
+    }
+
+    public DataStore getDataStore() {
+        return dataStore;
+    }
+
+    public static Application get() {
+        return (Application) WebApplication.get();
     }
 
 } // class Application

@@ -11,5 +11,5 @@ public class AdminPage extends BasePage {
     public AdminPage() {
         super();
     }
-    
+
 } // class AdminPage

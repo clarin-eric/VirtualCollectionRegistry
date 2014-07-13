@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.wizard;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
 import java.util.Arrays;
 
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -23,7 +24,7 @@ public abstract class EditResourceDialog extends ModalEditDialogBase<Resource> {
             ModalEditDialogBase<Resource>.ContentPanel {
         private final Form<Resource> form;
         private final FeedbackPanel feedbackPanel;
-        
+
         public Content(String id, IModel<Resource> model) {
             super(id);
             form = new Form<Resource>("editResourceForm", model);
@@ -67,13 +68,13 @@ public abstract class EditResourceDialog extends ModalEditDialogBase<Resource> {
     }
 
     @Override
-    protected final Resource newObjectInstance() {
-        return new Resource();
+    protected final IModel<Resource> newInstanceModel() {
+        return new VolatileEntityModel<>(new Resource());
     }
-    
+
     @Override
-    protected final IModel<Resource> createModel() {
-        return new CompoundPropertyModel<Resource>(null);
+    protected final IModel<Resource> createEmptyModel() {
+        return new VolatileEntityModel<>(null);
     }
 
     @Override

@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model;
 
+import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
@@ -60,7 +61,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
                     query = "SELECT c FROM VirtualCollection c " +
                             "WHERE c.state = :state AND c.dateModified < :date")
 })
-public class VirtualCollection implements Serializable {
+public class VirtualCollection implements Serializable, IdentifiedEntity {
     private static final long serialVersionUID = 1L;
 
     public static enum State {
@@ -96,7 +97,9 @@ public class VirtualCollection implements Serializable {
 
     @ManyToOne(cascade = { CascadeType.PERSIST,
                            CascadeType.REFRESH,
-                           CascadeType.MERGE },
+                           CascadeType.MERGE,
+                           CascadeType.DETACH
+    },
                fetch = FetchType.EAGER)
     @JoinColumn(name = "owner_id",
                 nullable = false)
@@ -178,6 +181,10 @@ public class VirtualCollection implements Serializable {
 
     public Long getId() {
         return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
     }
 
     public User getOwner() {

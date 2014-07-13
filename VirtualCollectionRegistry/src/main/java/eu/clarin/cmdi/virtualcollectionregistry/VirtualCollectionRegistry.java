@@ -1,14 +1,23 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
+import eu.clarin.cmdi.oai.provider.impl.OAIProvider;
+import eu.clarin.cmdi.virtualcollectionregistry.model.User;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
+import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
+import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifierProvider;
+import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
+import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidator;
+import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidatorFactory;
 import java.security.Principal;
-import java.util.Collections;
 import java.util.Date;
 import java.util.List;
-import java.util.Map;
-import java.util.Timer;
-import java.util.TimerTask;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.ThreadFactory;
+import java.util.concurrent.TimeUnit;
 import java.util.concurrent.atomic.AtomicBoolean;
-
+import java.util.concurrent.atomic.AtomicInteger;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityTransaction;
 import javax.persistence.LockModeType;
@@ -19,104 +28,73 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Service;
 
-import eu.clarin.cmdi.oai.provider.OAIException;
-import eu.clarin.cmdi.oai.provider.impl.OAIProvider;
-import eu.clarin.cmdi.virtualcollectionregistry.model.PersistentIdentifier;
-import eu.clarin.cmdi.virtualcollectionregistry.model.PersistentIdentifierProvider;
-import eu.clarin.cmdi.virtualcollectionregistry.model.User;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
-import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
+@Service
+public class VirtualCollectionRegistry implements InitializingBean, DisposableBean {
 
-public class VirtualCollectionRegistry {
-    private static final Logger logger =
-        LoggerFactory.getLogger(VirtualCollectionRegistry.class);
-    private static final VirtualCollectionRegistry s_instance =
-        new VirtualCollectionRegistry();
-    private AtomicBoolean intialized = new AtomicBoolean(false);
-    private DataStore datastore = null;
-    private PersistentIdentifierProvider pid_provider = null;
-    private VirtualCollectionMarshaller marshaller = null;
-    private Timer timer =
-        new Timer("VirtualCollectionRegistry-Maintenance", true);
+    @Autowired
+    private DataStore datastore; //TODO: replace with Spring managed EM?
+    @Autowired
+    private PersistentIdentifierProvider pid_provider;
+    @Autowired
+    private OAIProvider oaiProvider;
+    @Autowired
+    private VirtualCollectionValidatorFactory validatorFactory;
 
-    private VirtualCollectionRegistry() {
-        super();
+    private static final Logger logger
+            = LoggerFactory.getLogger(VirtualCollectionRegistry.class);
+    private final AtomicBoolean intialized = new AtomicBoolean(false);
+    /**
+     * Scheduled executor service for the maintenance check
+     *
+     * @see #maintenance(long)
+     */
+    private final ScheduledExecutorService maintenanceExecutor
+            = createSingleThreadScheduledExecutor("VirtualCollectionRegistry-Maintenance");
+
+    @Override
+    public void afterPropertiesSet() throws VirtualCollectionRegistryException {
+        // called by Spring directly after Bean construction
+        doInitalize();
     }
 
-    public static void initalize(Map<String, String> config)
-            throws VirtualCollectionRegistryException {
-        s_instance.doInitalize(config);
-    }
-
-    private void doInitalize(Map<String, String> config)
-            throws VirtualCollectionRegistryException {
+    private void doInitalize() throws VirtualCollectionRegistryException {
         if (intialized.get()) {
             throw new VirtualCollectionRegistryException("already initialized");
         }
-        logger.debug("initializing virtual collection registry ...");
-        if (config != null) {
-            config = Collections.unmodifiableMap(config);
-        } else {
-            config = Collections.emptyMap();
-        }
+        logger.info("Initializing virtual collection registry ...");
         try {
-            // XXX: the whole config / setup stuff is not very beautiful
-            this.datastore = new DataStore(config);
-            this.pid_provider = PersistentIdentifierProvider
-                    .createProvider(config);
-            this.marshaller = new VirtualCollectionMarshaller();
-            // setup OAIProvider
-            OAIProvider.instance().setRepository(
-                    new VirtualColletionRegistryOAIRepository(this));
-            // setup VCR maintenance task
-            timer.schedule(new TimerTask() {
+            maintenanceExecutor.scheduleWithFixedDelay(new Runnable() {
+
                 @Override
                 public void run() {
-                    maintenance(this.scheduledExecutionTime());
+                    maintenance(new Date().getTime());
                 }
-            }, 60000, 60000);
+            }, 60, 60, TimeUnit.SECONDS);
             this.intialized.set(true);
             logger.info("virtual collection registry successfully intialized");
         } catch (RuntimeException e) {
             logger.error("error initalizing virtual collection registry", e);
             throw e;
-        } catch (OAIException e) {
-            logger.error("error initalizing virtual collection registry", e);
-            throw new VirtualCollectionRegistryException(
-                    "setting OAI repository failed", e);
-        } catch (VirtualCollectionRegistryException e) {
-            logger.error("error initalizing virtual collection registry", e);
-            throw e;
         }
     }
 
-    public void destroy() throws VirtualCollectionRegistryException {
-        timer.cancel();
-        if (datastore != null) {
-            datastore.destroy();
+    @Override
+    public void destroy() throws VirtualCollectionRegistryException, InterruptedException {
+        logger.info("Stopping Virtual Collection Registry maintenance schedule");
+        maintenanceExecutor.shutdown();
+        if (!maintenanceExecutor.awaitTermination(60, TimeUnit.SECONDS)) {
+            logger.warn("Timeout while waiting for maintenance thread to terminate, will try to shut down");
         }
-        OAIProvider.instance().shutdown();
-    }
 
-    public static VirtualCollectionRegistry instance() {
-        if (!s_instance.intialized.get()) {
-            throw new InternalError("virtual collection registry failed " +
-                                    "to initialize correctly");
-        }
-        return s_instance;
-    }
-
-    public DataStore getDataStore() {
-        return datastore;
-    }
-
-    public VirtualCollectionMarshaller getMarshaller() {
-        return marshaller;
+        logger.info("Shutting down OAI provider");
+        oaiProvider.shutdown();
     }
 
     public long createVirtualCollection(Principal principal,
@@ -130,8 +108,7 @@ public class VirtualCollectionRegistry {
 
         logger.debug("creating virtual collection");
 
-        VirtualCollectionValidator validator =
-            new VirtualCollectionValidator();
+        VirtualCollectionValidator validator = validatorFactory.createValidator();
         validator.validate(vc);
         try {
             EntityManager em = datastore.getEntityManager();
@@ -146,8 +123,10 @@ public class VirtualCollectionRegistry {
 
             // store virtual collection
             vc.setOwner(user);
+            logger.debug("persisting new virtual collection", vc.getId());
             em.persist(vc);
             em.getTransaction().commit();
+            logger.debug("virtual collection created (id={})", vc.getId());
             return vc.getId();
         } catch (Exception e) {
             logger.error("error while creating virtual collection", e);
@@ -170,8 +149,7 @@ public class VirtualCollectionRegistry {
 
         logger.debug("updating virtual collection (id={})", id);
 
-        VirtualCollectionValidator validator =
-            new VirtualCollectionValidator();
+        VirtualCollectionValidator validator = validatorFactory.createValidator();
         validator.validate(vc);
 
         try {
@@ -189,10 +167,10 @@ public class VirtualCollectionRegistry {
             }
             if (!c.getOwner().equalsPrincipal(principal)) {
                 throw new VirtualCollectionRegistryPermissionException(
-                        "permission denied for user \"" +
-                        principal.getName() + "\"");
+                        "permission denied for user \""
+                        + principal.getName() + "\"");
             }
-            
+
             // update virtual collection
             c.updateFrom(vc);
 
@@ -233,15 +211,15 @@ public class VirtualCollectionRegistry {
                 throw new VirtualCollectionNotFoundException(id);
             }
             if (!vc.getOwner().equalsPrincipal(principal)) {
-                logger.debug("virtual collection (id={}) not owned by " +
-                        "user '{}'", id, principal.getName());
+                logger.debug("virtual collection (id={}) not owned by "
+                        + "user '{}'", id, principal.getName());
                 throw new VirtualCollectionRegistryPermissionException(
-                        "permission denied for user \"" +
-                        principal.getName() + "\"");
+                        "permission denied for user \""
+                        + principal.getName() + "\"");
             }
             if (!vc.isPrivate()) {
-                logger.debug("virtual collection (id={}) cannot be " +
-                        "deleted (invalid state)", id);
+                logger.debug("virtual collection (id={}) cannot be "
+                        + "deleted (invalid state)", id);
                 throw new VirtualCollectionRegistryPermissionException(
                         "virtual collection cannot be deleted");
             }
@@ -270,8 +248,8 @@ public class VirtualCollectionRegistry {
         try {
             EntityManager em = datastore.getEntityManager();
             em.getTransaction().begin();
-            VirtualCollection vc =
-                em.find(VirtualCollection.class, Long.valueOf(id));
+            VirtualCollection vc
+                    = em.find(VirtualCollection.class, Long.valueOf(id));
             em.getTransaction().commit();
             if ((vc == null) || vc.isDeleted()) {
                 logger.debug("virtual collection (id={}) not found", id);
@@ -300,8 +278,8 @@ public class VirtualCollectionRegistry {
         if (state == null) {
             throw new NullPointerException("state == null");
         }
-        if ((state != VirtualCollection.State.PUBLIC_PENDING) &&
-            (state != VirtualCollection.State.PRIVATE)) {
+        if ((state != VirtualCollection.State.PUBLIC_PENDING)
+                && (state != VirtualCollection.State.PRIVATE)) {
             throw new IllegalArgumentException(
                     "only PUBLIC_PENDING or PRIVATE are allowed");
         }
@@ -319,24 +297,27 @@ public class VirtualCollectionRegistry {
                 throw new VirtualCollectionNotFoundException(id);
             }
             if (!vc.getOwner().equalsPrincipal(principal)) {
-                logger.debug("virtual collection (id={}) not owned by " +
-                        "user '{}'", id, principal.getName());
+                logger.debug("virtual collection (id={}) not owned by "
+                        + "user '{}'", id, principal.getName());
                 throw new VirtualCollectionRegistryPermissionException(
-                        "permission denied for user \"" +
-                        principal.getName() + "\"");
+                        "permission denied for user \""
+                        + principal.getName() + "\"");
             }
 
             /*
-             * XXX: deny update from public to private? 
+             * XXX: deny update from public to private?
              */
             boolean update = false;
             switch (state) {
-            case PRIVATE:
-                update =  vc.getState() != state;
-                break;
-            case PUBLIC_PENDING:
-                update =  vc.getState() != VirtualCollection.State.PUBLIC;
-                break;
+                case PRIVATE:
+                    update = vc.getState() != state;
+                    break;
+                case PUBLIC_PENDING:
+                    update = vc.getState() != VirtualCollection.State.PUBLIC;
+                    break;
+                default:
+                    /* silence warning; update will stay false */
+                    break;
             }
             if (update) {
                 vc.setState(state);
@@ -352,7 +333,14 @@ public class VirtualCollectionRegistry {
                     "error while setting state of virtual collection", e);
         }
     }
-    
+
+    /**
+     *
+     * @param id identifier of the virtual collection to retrieve
+     * @return the identified virtual collection, never null
+     * @throws VirtualCollectionRegistryException if no virtual collection with
+     * the specified identifier exists
+     */
     public VirtualCollection retrieveVirtualCollection(long id)
             throws VirtualCollectionRegistryException {
         if (id <= 0) {
@@ -364,13 +352,14 @@ public class VirtualCollectionRegistry {
         try {
             EntityManager em = datastore.getEntityManager();
             em.getTransaction().begin();
-            VirtualCollection vc =
-                em.find(VirtualCollection.class, Long.valueOf(id));
+            VirtualCollection vc
+                    = em.find(VirtualCollection.class, Long.valueOf(id));
             em.getTransaction().commit();
             if ((vc == null) || vc.isDeleted()) {
                 logger.debug("virtual collection (id={}) not found", id);
                 throw new VirtualCollectionNotFoundException(id);
             }
+            logger.debug("virtual collection retrieved (id={})", id);
             return vc;
         } catch (VirtualCollectionRegistryException e) {
             throw e;
@@ -464,7 +453,7 @@ public class VirtualCollectionRegistry {
                         logger.debug(parsedQuery.getPrettyPrinted());
                     }
                     cq = parsedQuery.getCountQuery(em, user, null);
-                    q  = parsedQuery.getQuery(em, user, null);
+                    q = parsedQuery.getQuery(em, user, null);
                 } else {
                     cq = em.createNamedQuery("VirtualCollection.countByOwner",
                             Long.class);
@@ -508,6 +497,7 @@ public class VirtualCollectionRegistry {
 
     public int getVirtualCollectionCount(QueryOptions options)
             throws VirtualCollectionRegistryException {
+        logger.trace("Getting virtual collection count");
         EntityManager em = datastore.getEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -520,13 +510,14 @@ public class VirtualCollectionRegistry {
                 }
             }
             em.getTransaction().begin();
-            TypedQuery<Long> query =
-                em.createQuery(cq.select(cb.count(root)));
+            TypedQuery<Long> query
+                    = em.createQuery(cq.select(cb.count(root)));
             final long count = query.getSingleResult();
             if (count >= Integer.MAX_VALUE) {
                 throw new VirtualCollectionRegistryException(
                         "resultset too large");
             }
+            logger.trace("Counted {} collections", count);
             return (int) count;
         } catch (Exception e) {
             logger.error("error while counting virtual collections", e);
@@ -539,15 +530,15 @@ public class VirtualCollectionRegistry {
             }
         }
     }
-    
+
     public List<VirtualCollection> getVirtualCollections(
             int first, int count, QueryOptions options)
             throws VirtualCollectionRegistryException {
         EntityManager em = datastore.getEntityManager();
         try {
             CriteriaBuilder cb = em.getCriteriaBuilder();
-            CriteriaQuery<VirtualCollection> cq =
-                cb.createQuery(VirtualCollection.class);
+            CriteriaQuery<VirtualCollection> cq
+                    = cb.createQuery(VirtualCollection.class);
             Root<VirtualCollection> root = cq.from(VirtualCollection.class);
             if (options != null) {
                 final Predicate where = options.getWhere(cb, cq, root);
@@ -560,8 +551,8 @@ public class VirtualCollectionRegistry {
                 }
             }
             em.getTransaction().begin();
-            TypedQuery<VirtualCollection> query =
-                em.createQuery(cq.select(root));
+            TypedQuery<VirtualCollection> query
+                    = em.createQuery(cq.select(root));
             if (first > -1) {
                 query.setFirstResult(first);
             }
@@ -582,20 +573,21 @@ public class VirtualCollectionRegistry {
     }
 
     private void maintenance(long now) {
-        // allocate persistent identifier roughly after 30 seconds 
-        final Date nowDateAlloc = new Date(now - 30*1000);
+        logger.debug("Maintenance check");
+        // allocate persistent identifier roughly after 30 seconds
+        final Date nowDateAlloc = new Date(now - 30 * 1000);
         // (for now) purge deleted collection roughly after 30 seconds
-        final Date nowDatePurge = new Date(now - 30*1000);
-        
+        final Date nowDatePurge = new Date(now - 30 * 1000);
+
         EntityManager em = datastore.getEntityManager();
         try {
             /*
              * delayed allocation of persistent identifier
              */
             em.getTransaction().begin();
-            TypedQuery<VirtualCollection> q =
-                em.createNamedQuery("VirtualCollection.findAllByState",
-                                    VirtualCollection.class);
+            TypedQuery<VirtualCollection> q
+                    = em.createNamedQuery("VirtualCollection.findAllByState",
+                            VirtualCollection.class);
             q.setParameter("state", VirtualCollection.State.PUBLIC_PENDING);
             q.setParameter("date", nowDateAlloc);
             q.setLockMode(LockModeType.PESSIMISTIC_WRITE);
@@ -606,15 +598,15 @@ public class VirtualCollectionRegistry {
                 }
                 vc.setState(VirtualCollection.State.PUBLIC);
                 em.persist(vc);
-                logger.debug("assigned pid (identifer='{}') to virtual" +
-                        "collection (id={})",
+                logger.info("assigned pid (identifer='{}') to virtual"
+                        + "collection (id={})",
                         vc.getPersistentIdentifier().getIdentifier(),
                         vc.getId());
             }
             em.getTransaction().commit();
-            
+
             /*
-             * delayed purging of deleted virtual collections 
+             * delayed purging of deleted virtual collections
              */
             em.getTransaction().begin();
             q.setParameter("state", VirtualCollection.State.DELETED);
@@ -626,7 +618,7 @@ public class VirtualCollectionRegistry {
                 logger.debug("purged virtual collection (id={})", vc.getId());
             }
             em.getTransaction().commit();
-        } catch (Exception e) {
+        } catch (VirtualCollectionRegistryException e) {
             logger.error("error while doing maintenance", e);
         } finally {
             datastore.closeEntityManager();
@@ -636,14 +628,35 @@ public class VirtualCollectionRegistry {
     private static User fetchUser(EntityManager em, Principal principal) {
         User user = null;
         try {
-            TypedQuery<User> q =
-                em.createNamedQuery("User.findByName", User.class);
+            TypedQuery<User> q
+                    = em.createNamedQuery("User.findByName", User.class);
             q.setParameter("name", principal.getName());
             user = q.getSingleResult();
         } catch (NoResultException e) {
             /* IGNORE */
         }
         return user;
+    }
+
+    /**
+     * Creates a single thread scheduled executor with the specified thread name
+     *
+     * @param threadName name for new executor threads
+     * @return
+     */
+    private static ScheduledExecutorService createSingleThreadScheduledExecutor(final String threadName) {
+        return Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
+            // decorate default thread factory so that we can provide a 
+            // custom thread name
+            final AtomicInteger i = new AtomicInteger(0);
+
+            @Override
+            public Thread newThread(Runnable r) {
+                final Thread thread = Executors.defaultThreadFactory().newThread(r);
+                thread.setName(threadName + "-" + i.addAndGet(1));
+                return thread;
+            }
+        });
     }
 
 } // class VirtualCollectionRegistry

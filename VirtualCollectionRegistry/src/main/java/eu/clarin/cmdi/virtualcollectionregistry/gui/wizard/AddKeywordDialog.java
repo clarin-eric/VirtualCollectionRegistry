@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.wizard;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.DynamicProxyModel;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.TextField;
@@ -12,16 +13,25 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ModalEditDialogBase;
 
 @SuppressWarnings("serial")
 public abstract class AddKeywordDialog extends ModalEditDialogBase<String> {
+
+
     private final class Content extends
             ModalEditDialogBase<String>.ContentPanel {
+
         private final Form<String> form;
         private final FeedbackPanel feedbackPanel;
-        
+
         public Content(String id, IModel<String> model) {
             super(id);
             form = new Form<String>("addKeywordForm", model);
-            final TextField<String> keywordField =
-                new RequiredTextField<String>("keyword", form.getModel());
+            final TextField<String> keywordField
+                    = new RequiredTextField<String>("keyword", new DynamicProxyModel<String>() {
+
+                @Override
+                protected IModel<String> getWrappedModel() {
+                    return form.getModel();
+                }
+            });
             keywordField.add(new StringValidator.MaximumLengthValidator(255));
             form.add(keywordField);
             feedbackPanel = new FeedbackPanel("feedback");
@@ -47,17 +57,17 @@ public abstract class AddKeywordDialog extends ModalEditDialogBase<String> {
 
     @Override
     protected ModalEditDialogBase<String>.ContentPanel
-        createContentPanel(String id, IModel<String> model) {
+            createContentPanel(String id, IModel<String> model) {
         return new Content(id, model);
     }
 
     @Override
-    protected final String newObjectInstance() {
-        return new String();
+    protected final IModel<String> newInstanceModel() {
+        return Model.of("");
     }
-    
+
     @Override
-    protected final IModel<String> createModel() {
+    protected final IModel<String> createEmptyModel() {
         return new Model<String>();
     }
 
