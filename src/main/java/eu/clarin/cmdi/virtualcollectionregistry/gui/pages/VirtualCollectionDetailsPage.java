@@ -21,8 +21,6 @@ import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
-import org.apache.wicket.authorization.Action;
-import org.apache.wicket.authorization.AuthorizationException;
 import org.apache.wicket.authorization.UnauthorizedActionException;
 import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
@@ -46,6 +44,7 @@ import org.apache.wicket.model.ComponentPropertyModel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.string.Strings;
 
@@ -172,6 +171,12 @@ public class VirtualCollectionDetailsPage extends BasePage {
         general.add(new CustomLabel("purpose").add(hideIfEmpty));
         general.add(new CustomLabel("reproducibility").add(hideIfEmpty));
         general.add(new Label("reproducibilityNotice").add(hideIfEmpty));
+        
+        final ExternalLink pidLink = new ExternalLink("pidLink", new PropertyModel<String>(model,"persistentIdentifier.actionableURI"));
+        pidLink.add(new Label("persistentIdentifier.URI"));
+        pidLink.add(hideIfEmpty);
+        general.add(pidLink);
+        
         final ListView<String> keywords = new ListView<String>("keywords") {
             @Override
             protected void populateItem(ListItem<String> item) {

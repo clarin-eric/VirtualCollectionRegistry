@@ -43,6 +43,14 @@
         <div wicket:id="reproducibilityNotice"></div>
       </div>
     </wicket:enclosure>
+    <wicket:enclosure child="pidLink">
+      <div class="property">
+        <label>Persistent identifier</label>
+        <div>
+            <a wicket:id="pidLink"><wicket:container wicket:id="persistentIdentifier.URI">1234/5678</wicket:container></a>
+        </div>
+      </div>
+    </wicket:enclosure>     
     <wicket:enclosure child="keywords">
       <div class="property">
         <label>Keywords</label>
@@ -95,7 +103,7 @@
             <label>Role</label>
             <div wicket:id="role"></div>
           </div>
-        </wicket:enclosure>
+        </wicket:enclosure> 
       </li>
     </ul>
   </div>
