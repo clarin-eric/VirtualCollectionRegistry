@@ -11,15 +11,14 @@ import de.uni_leipzig.asv.clarin.webservices.pidservices2.PidObject;
 
 /**
  * Requests information about handle from handle server
- *
+ * 
  * @author Thomas Eckart
- *
  */
 public interface PidResolver {
 
 	/**
 	 * Get information about handle from handle server.
-	 *
+	 * 
 	 * @param configuration
 	 * @param pid
 	 *            Handle Id
@@ -30,9 +29,9 @@ public interface PidResolver {
 
 	/**
 	 * Get information about handle from handle server.
-	 *
+	 * 
 	 * The returned object only provides some fields of the handle (like referenced URL). To have access to the complete content use resolvePidAsJSON().
-	 *
+	 * 
 	 * @param configuration
 	 * @param pid
 	 *            Handle Id
@@ -43,7 +42,7 @@ public interface PidResolver {
 
 	/**
 	 * Search all handles with matching field assignments.
-	 *
+	 * 
 	 * @param configuration
 	 * @param fieldMap
 	 *            searched handle field assignments
@@ -55,7 +54,7 @@ public interface PidResolver {
 
 	/**
 	 * Search all handles with matching field assignments.
-	 *
+	 * 
 	 * @param configuration
 	 * @param fieldMap
 	 *            searched handle field assignments
@@ -67,7 +66,7 @@ public interface PidResolver {
 
 	/**
 	 * Search all handles with matching field assignments.
-	 *
+	 * 
 	 * @param configuration
 	 * @param fieldMap
 	 *            searched handle field assignments

@@ -162,8 +162,18 @@
             </exclusions>
         </dependency>
 
-        <!-- Libraries required for de.uni_leipzig.* EPIC library (todo: replace 
-        with dependency on detached library) -->
+        <!-- 
+            Below: libraries required for de.uni_leipzig.* EPIC library 
+            
+            TODO: replace with dependency on detached library once available
+
+            <dependency>
+                <groupId>de.uni_leipzig.asv</groupId>
+                <artifactId>clarin.webservices.pidservices2</artifactId>
+                <version>2.0.6-SNAPSHOT</version>
+            </dependency>
+        -->
+
         <dependency>
             <groupId>com.sun.jersey.contribs</groupId>
             <artifactId>jersey-apache-client</artifactId>

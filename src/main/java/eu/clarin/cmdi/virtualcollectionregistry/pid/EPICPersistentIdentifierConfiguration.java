@@ -10,7 +10,7 @@ import org.springframework.context.annotation.Profile;
 
 /**
  * Configuration for
- * {@link EPICPersistentIdentifierConfiguration EPIC API v2 persistent identifier provider}.
+ * {@link EPICPersistentIdentifierProvider EPIC API v2 persistent identifier provider}.
  * Reads a number of configuration values; assumes a
  * {@link PropertyPlaceholderConfigurer} to be configured.
  *
