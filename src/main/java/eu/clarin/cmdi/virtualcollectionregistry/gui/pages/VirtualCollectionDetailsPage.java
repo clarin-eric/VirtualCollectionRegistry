@@ -55,6 +55,9 @@ public class VirtualCollectionDetailsPage extends BasePage {
     public static final String PARAM_BACK_PAGE_ID = "backPage";
     public static final String PARAM_BACK_PAGE_VERSION = "backPageVersion";
     public static final String PARAM_BACK_PAGE_PAGEMAP_NAME = "backPageMapName";
+    private static final String CSS_CLASS = "collectionDetails";
+    private static final IConverter convDate = new DateConverter();
+    private final HideIfEmptyBehavior hideIfEmpty = new HideIfEmptyBehavior();
 
     private static final IConverter convEnum = new IConverter() {
         @Override
@@ -73,9 +76,6 @@ public class VirtualCollectionDetailsPage extends BasePage {
             return null;
         }
     };
-    private static final IConverter convDate = new DateConverter();
-
-    private static final String CSS_CLASS = "collectionDetails";
 
     /*
      * Actually, we really want the behavior to hide the component on
@@ -135,7 +135,6 @@ public class VirtualCollectionDetailsPage extends BasePage {
         }
     } // class VirtualCollectionDetailsPage.TypeLabel
 
-    private final HideIfEmptyBehavior hideIfEmpty = new HideIfEmptyBehavior();
 
     public VirtualCollectionDetailsPage(PageParameters params) {
         this(getVirtualCollectionModel(params), getPageReference(params));
@@ -161,6 +160,13 @@ public class VirtualCollectionDetailsPage extends BasePage {
         };
         add(backLink);
 
+        addGeneralProperties(model);
+        addCreators();
+        addResources(model);
+        addGeneratedBy(model);
+    }
+
+    private void addGeneralProperties(final IModel<VirtualCollection> model) {
         final Border general = new AjaxToggleBorder("generalBorder",
                 new Model<String>("General"), CSS_CLASS);
         add(general);
@@ -171,12 +177,16 @@ public class VirtualCollectionDetailsPage extends BasePage {
         general.add(new CustomLabel("purpose").add(hideIfEmpty));
         general.add(new CustomLabel("reproducibility").add(hideIfEmpty));
         general.add(new Label("reproducibilityNotice").add(hideIfEmpty));
-        
-        final ExternalLink pidLink = new ExternalLink("pidLink", new PropertyModel<String>(model,"persistentIdentifier.actionableURI"));
+
+        final ExternalLink pidLink = new ExternalLink("pidLink", new PropertyModel<String>(model, "persistentIdentifier.actionableURI"));
         pidLink.add(new Label("persistentIdentifier.URI"));
         pidLink.add(hideIfEmpty);
         general.add(pidLink);
-        
+
+        addKeywords(general);
+    }
+
+    private void addKeywords(final Border general) {
         final ListView<String> keywords = new ListView<String>("keywords") {
             @Override
             protected void populateItem(ListItem<String> item) {
@@ -185,7 +195,9 @@ public class VirtualCollectionDetailsPage extends BasePage {
         };
         keywords.add(hideIfEmpty);
         general.add(keywords);
+    }
 
+    private void addCreators() {
         final Border creators = new AjaxToggleBorder("creatorsBorder",
                 new Model<String>("Creators"), CSS_CLASS);
         add(creators);
@@ -228,7 +240,9 @@ public class VirtualCollectionDetailsPage extends BasePage {
                 };
             }
         });
+    }
 
+    private void addResources(final IModel<VirtualCollection> model) {
         final Border resources = new AjaxToggleBorder("resourcesBorder",
                 new Model<String>("Resources"), CSS_CLASS + " resources");
         add(resources);
@@ -247,32 +261,33 @@ public class VirtualCollectionDetailsPage extends BasePage {
                 };
         cols[1] = new PropertyColumn<Resource>(
                 new Model<String>("Reference"), "ref");
+        
+        final SortableDataProvider<Resource> resourcesProvider = new SortableDataProvider<Resource>() {
+            @Override
+            public Iterator<? extends Resource>
+                    iterator(int first, int count) {
+                return model.getObject().getResources().listIterator(first);
+            }
 
-        @SuppressWarnings("unchecked")
+            @Override
+            public IModel<Resource> model(Resource resource) {
+                return new VolatileEntityModel<Resource>(resource);
+            }
+
+            @Override
+            public int size() {
+                return model.getObject().getResources().size();
+            }
+        };
+
         final DataTable<Resource> resourcesTable
                 = new AjaxFallbackDefaultDataTable<Resource>("resourcesTable",
-                        cols,
-                        new SortableDataProvider<Resource>() {
-                            @Override
-                            public Iterator<? extends Resource>
-                            iterator(int first, int count) {
-                                return model.getObject().getResources().listIterator(first);
-                            }
-
-                            @Override
-                            public IModel<Resource> model(Resource resource) {
-                                return new VolatileEntityModel<Resource>(resource);
-                            }
-
-                            @Override
-                            public int size() {
-                                return model.getObject().getResources().size();
-                            }
-                        },
-                        64);
+                        cols, resourcesProvider, 64);
         resources.add(resourcesTable);
         resources.setVisible(model.getObject().getType() == Type.EXTENSIONAL);
+    }
 
+    private void addGeneratedBy(final IModel<VirtualCollection> model) {
         final Border generated = new AjaxToggleBorder("generatedByBorder",
                 new Model<String>("Intensional Collection Query"), CSS_CLASS);
         add(generated);
@@ -324,7 +339,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
     }
 
     /**
-     * 
+     *
      * @param vc collection to check for
      * @throws UnauthorizedActionException if the VC is private and the current
      * user is not the owner
