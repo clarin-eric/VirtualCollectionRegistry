@@ -637,6 +637,19 @@
         </pluginManagement>
     </build>
 
+    <reporting>
+        <plugins>
+            <!-- NCSS plugin has issues with Java 7 at the moment, check back later -->
+            <!--
+            <plugin>
+                <groupId>org.codehaus.mojo</groupId>
+                <artifactId>javancss-maven-plugin</artifactId>
+                <version>2.0-beta-2</version>
+            </plugin>
+            -->
+        </plugins>
+    </reporting>
+
     <repositories>
         <repository>
             <id>jboss</id>

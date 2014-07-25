@@ -21,15 +21,20 @@ import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
+import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigator;
 import org.apache.wicket.authorization.UnauthorizedActionException;
 import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
+import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxNavigationToolbar;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
+import org.apache.wicket.extensions.markup.html.repeater.data.table.NavigationToolbar;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.border.Border;
@@ -40,6 +45,8 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.OddEvenListItem;
 import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.markup.repeater.OddEvenItem;
+import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.ComponentPropertyModel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
@@ -134,7 +141,6 @@ public class VirtualCollectionDetailsPage extends BasePage {
             return super.getConverter(type);
         }
     } // class VirtualCollectionDetailsPage.TypeLabel
-
 
     public VirtualCollectionDetailsPage(PageParameters params) {
         this(getVirtualCollectionModel(params), getPageReference(params));
@@ -250,7 +256,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
         @SuppressWarnings("rawtypes")
         final IColumn[] cols = new IColumn[2];
         cols[0] = new PropertyColumn<Resource>(
-                new Model<String>("Type"), "type") {
+                Model.of("Type"), "type") {
                     @Override
                     public void populateItem(Item<ICellPopulator<Resource>> item,
                             String componentId, IModel<Resource> model) {
@@ -259,9 +265,15 @@ public class VirtualCollectionDetailsPage extends BasePage {
                                         convEnum.convertToString(type, getLocale())));
                     }
                 };
-        cols[1] = new PropertyColumn<Resource>(
-                new Model<String>("Reference"), "ref");
-        
+        cols[1] = new AbstractColumn<Resource>(Model.of("Reference")) {
+
+            @Override
+            public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> rowModel) {
+                item.add(new ReferenceLinkPanel(componentId, rowModel));
+            }
+
+        };
+
         final SortableDataProvider<Resource> resourcesProvider = new SortableDataProvider<Resource>() {
             @Override
             public Iterator<? extends Resource>
