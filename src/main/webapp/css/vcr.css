@@ -601,6 +601,32 @@ table td.action {
 	text-align: right;
 }
 
+table.resourcesTable tr td.move {
+    width: 2em;
+}
+
+table.resourcesTable tr td.move a {
+    display: none;
+}
+
+table.resourcesTable th.move {
+    text-align: center;    
+}
+
+table.resourcesTable tr:hover td.move a, table.resourcesTable tr.moving td.move a {
+    display: inline-block;
+    width: 100%;
+    text-align: center;
+}
+
+table.resourcesTable tr.moving {
+    background: #ccc;
+}
+
+table.resourcesTable tr.moving td, table.resourcesTable tr.moving td a {
+    color: #333;
+}
+
 a {
 	color: #AE0000;
 	background-color: inherit;
@@ -638,6 +664,10 @@ table tr.navigation div {
 table.creatorsTable,
 table.resourcesTable {
     width: 805px;
+}
+
+table.moving tr:hover td {
+    border-top: 2px solid;
 }
 
 table.creatorsTable td {

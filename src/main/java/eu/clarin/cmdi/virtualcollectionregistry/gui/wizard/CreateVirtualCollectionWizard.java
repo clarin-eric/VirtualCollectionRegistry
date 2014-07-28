@@ -9,10 +9,12 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
@@ -40,6 +42,7 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.OddEvenListItem;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
+import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -336,9 +339,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                 "Organisation"), "organisation"),
                 new HeaderlessColumn<Creator>() {
                     @Override
-                    public void populateItem(
-                            Item<ICellPopulator<Creator>> item,
-                            String compontentId, IModel<Creator> model) {
+                    public void populateItem(Item<ICellPopulator<Creator>> item, String compontentId, IModel<Creator> model) {
                         item.add(new ActionsPanel(compontentId, model));
                     }
 
@@ -389,19 +390,36 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                             }
                         };
                 add(deleteLink);
+            }
+
+        }
+
+        private final class MoveItemPanel extends Panel {
+
+            public MoveItemPanel(String id, final IModel<Resource> model) {
+                super(id, model);
+
                 final AjaxLink<Resource> moveLink
                         = new AjaxLink<Resource>("move") {
 
                             @Override
                             public void onClick(AjaxRequestTarget target) {
-                                movingResource.setObject(model.getObject());
+                                if (movingResource.getObject() == null) {
+                                    // start moving this resource
+                                    movingResource.setObject(model.getObject());
+                                } else {
+                                    // already moving, cancel
+                                    movingResource.setObject(null);
+                                }
                                 target.addComponent(resourcesContainer);
                             }
 
                             @Override
                             protected void onConfigure() {
                                 // only allow to start moving when not moving
-                                setVisible(movingResource.getObject() == null);
+                                setVisible(movingResource.getObject() == null
+                                        || model.getObject().equals(movingResource.getObject())
+                                );
                             }
 
                         };
@@ -439,6 +457,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                             }
 
                         };
+
                 add(targetLink);
             }
         } // class CreateVirtualCollectionWizard.ResourcesStep.ActionsPanel
@@ -498,8 +517,37 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                                     return vc.getObject().getResources().size();
                                 }
                             },
-                            64);
+                            64) {
+
+                        @Override
+                        protected Item<Resource> newRowItem(String id, int index, final IModel<Resource> model) {
+                            final Item<Resource> item = super.newRowItem(id, index, model);
+                            // mark the row that is being moved
+                            item.add(new AttributeAppender("class", new AbstractReadOnlyModel<String>() {
+
+                                @Override
+                                public String getObject() {
+                                    if (model.getObject().equals(movingResource.getObject())) {
+                                        return "moving";
+                                    } else {
+                                        return "";
+                                    }
+                                }
+                            }, " "));
+                            return item;
+                        }
+
+                    };
             resourcesTable.setOutputMarkupId(true);
+
+            // add 'moving' class if table is in moving mode
+            resourcesTable.add(new AttributeAppender("class", new AbstractReadOnlyModel<String>() {
+
+                @Override
+                public String getObject() {
+                    return movingResource.getObject() == null ? "" : "moving";
+                }
+            }, " "));
             resourcesContainer.add(resourcesTable);
 
             editResourceDialog = new EditResourceDialog("editResourceDialog") {
@@ -585,6 +633,19 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
         @SuppressWarnings("unchecked")
         private IColumn<Resource>[] createColumns() {
             final IColumn<?>[] columns = new IColumn<?>[]{
+                new AbstractColumn<Resource>(Model.of("\u2195")) {
+
+                    @Override
+                    public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> model) {
+                        item.add(new MoveItemPanel(componentId, model));
+                    }
+
+                    @Override
+                    public String getCssClass() {
+                        return "move";
+                    }
+
+                },
                 new AbstractColumn<Resource>(new Model<String>("Type")) {
                     @Override
                     public void populateItem(
