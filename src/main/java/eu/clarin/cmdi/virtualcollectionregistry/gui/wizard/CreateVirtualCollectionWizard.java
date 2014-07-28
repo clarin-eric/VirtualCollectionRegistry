@@ -2,6 +2,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.wizard;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ConfirmationDialog;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.ReferenceLinkPanel;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
@@ -527,7 +528,14 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                     }
                 },
                 new PropertyColumn<Resource>(
-                new Model<String>("Reference"), "ref"),
+                    new Model<String>("Reference"), "ref") {
+
+                        @Override
+                        public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> rowModel) {
+                            item.add(new ReferenceLinkPanel(componentId, rowModel));
+                        }
+                        
+                    },
                 new HeaderlessColumn<Resource>() {
                     @Override
                     public void populateItem(
