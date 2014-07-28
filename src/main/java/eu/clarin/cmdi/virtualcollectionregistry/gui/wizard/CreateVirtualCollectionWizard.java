@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.wicket.Component;
+import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
@@ -140,12 +141,12 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                             Arrays.asList(VirtualCollection.Reproducibility.values()),
                             new EnumChoiceRenderer<VirtualCollection.Reproducibility>(this));
             add(reproducibilityChoice);
-                final TextArea<String> reproducibilityNoticeArea
+            final TextArea<String> reproducibilityNoticeArea
                     = new TextArea<String>("reproducibilityNotice");
             add(reproducibilityNoticeArea);
 
             final KeywordsList keywordList
-                    = new KeywordsList("keywordsList", 
+                    = new KeywordsList("keywordsList",
                             new PropertyModel<List<String>>(vc, "keywords"));
             add(keywordList);
             add(new AjaxLink<String>("keywordsAdd") {
@@ -167,8 +168,8 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
             };
             add(addKeywordDialog);
 
-            deleteKeywordDialog =
-                new DeleteKeywordDialog("deleteKeywordDialog", keywordList);
+            deleteKeywordDialog
+                    = new DeleteKeywordDialog("deleteKeywordDialog", keywordList);
             add(deleteKeywordDialog);
         }
 
@@ -197,20 +198,22 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
     } // class CreateVirtualCollectionWizard.GeneralStep
 
     private final class CreatorsStep extends DynamicWizardStep {
+
         private final class ActionsPanel extends Panel {
+
             public ActionsPanel(String id, final IModel<Creator> model) {
                 super(id, model);
                 setRenderBodyOnly(true);
-                final AjaxLink<Creator> editLink =
-                    new AjaxLink<Creator>("edit") {
+                final AjaxLink<Creator> editLink
+                        = new AjaxLink<Creator>("edit") {
                             @Override
                             public void onClick(AjaxRequestTarget target) {
                                 editCreatorDialog.show(target, model);
                             }
                         };
                 add(editLink);
-                final AjaxLink<Creator> deleteLink =
-                    new AjaxLink<Creator>("delete") {
+                final AjaxLink<Creator> deleteLink
+                        = new AjaxLink<Creator>("delete") {
                             @Override
                             public void onClick(AjaxRequestTarget target) {
                                 deleteCreatorDialog.showCreator(target, model);
@@ -221,6 +224,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
         } // class CreateVirtualCollectionWizard.CreatorsStep.ActionsPanel
 
         private final class DeleteCreatorDialog extends ConfirmationDialog {
+
             private IModel<Creator> creator;
 
             public DeleteCreatorDialog(String id,
@@ -263,6 +267,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                                 public IModel<Creator> model(Creator creator) {
                                     return new VolatileEntityModel<Creator>(creator);
                                 }
+
                                 @Override
                                 public int size() {
                                     return vc.getObject().getCreators().size();
@@ -348,30 +353,98 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
     } // class CreateVirtualCollectionWizard.CreatorsStep
 
     private final class ResourcesStep extends DynamicWizardStep {
+
+        private final WebMarkupContainer resourcesContainer;
+
         private final class ActionsPanel extends Panel {
+
             public ActionsPanel(String id, final IModel<Resource> model) {
                 super(id, model);
                 setRenderBodyOnly(true);
-                final AjaxLink<Resource> editLink =
-                    new AjaxLink<Resource>("edit") {
+                final AjaxLink<Resource> editLink
+                        = new AjaxLink<Resource>("edit") {
                             @Override
                             public void onClick(AjaxRequestTarget target) {
                                 editResourceDialog.show(target, model);
                             }
+
+                            @Override
+                            protected void onConfigure() {
+                                // only allow when not moving
+                                setVisible(movingResource.getObject() == null);
+                            }
                         };
                 add(editLink);
-                final AjaxLink<Resource> deleteLink =
-                    new AjaxLink<Resource>("delete") {
+                final AjaxLink<Resource> deleteLink
+                        = new AjaxLink<Resource>("delete") {
                             @Override
                             public void onClick(AjaxRequestTarget target) {
                                 deleteResourceDialog.showResource(target, model);
                             }
+
+                            @Override
+                            protected void onConfigure() {
+                                // only allow when not moving
+                                setVisible(movingResource.getObject() == null);
+                            }
                         };
                 add(deleteLink);
+                final AjaxLink<Resource> moveLink
+                        = new AjaxLink<Resource>("move") {
+
+                            @Override
+                            public void onClick(AjaxRequestTarget target) {
+                                movingResource.setObject(model.getObject());
+                                target.addComponent(resourcesContainer);
+                            }
+
+                            @Override
+                            protected void onConfigure() {
+                                // only allow to start moving when not moving
+                                setVisible(movingResource.getObject() == null);
+                            }
+
+                        };
+                add(moveLink);
+                final AjaxLink<Resource> targetLink
+                        = new AjaxLink<Resource>("target") {
+
+                            @Override
+                            public void onClick(AjaxRequestTarget target) {
+                                final List<Resource> resources = vc.getObject().getResources();
+                                final Resource toMove = movingResource.getObject();
+                                try {
+                                    if (resources.remove(toMove)) {
+                                        final int targetIndex = resources.indexOf(model.getObject());
+                                        if (targetIndex >= 0) {
+                                            resources.add(targetIndex, toMove);
+                                            return;
+                                        }
+                                    }
+                                    Session.get().warn("Could not move reference");
+
+                                } finally {
+                                    movingResource.setObject(null);
+                                    target.addComponent(resourcesContainer);
+                                }
+                            }
+
+                            @Override
+                            protected void onConfigure() {
+                                final Resource toMove = movingResource.getObject();
+                                // only allow to drop when moving
+                                setVisible(toMove != null
+                                        && !toMove.equals(model.getObject())
+                                );
+                            }
+
+                        };
+                add(targetLink);
             }
         } // class CreateVirtualCollectionWizard.ResourcesStep.ActionsPanel
 
         private final class DeleteResourceDialog extends ConfirmationDialog {
+
             private IModel<Resource> resource;
 
             public DeleteResourceDialog(String id,
@@ -398,10 +471,15 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
         private final EditResourceDialog editResourceDialog;
         private final DeleteResourceDialog deleteResourceDialog;
 
+        private IModel<Resource> movingResource = new Model<>();
+
         public ResourcesStep(IDynamicWizardStep previousStep) {
             super(previousStep, "Resources", null, vc);
-            final DataTable<Resource> resourcesTable =
-                new AjaxFallbackDefaultDataTable<Resource>("resourcesTable",
+            resourcesContainer = new WebMarkupContainer("resourcesContainer");
+            resourcesContainer.setOutputMarkupId(true);
+            add(resourcesContainer);
+            final DataTable<Resource> resourcesTable
+                    = new AjaxFallbackDefaultDataTable<Resource>("resourcesTable",
                             createColumns(),
                             new SortableDataProvider<Resource>() {
                                 @Override
@@ -422,7 +500,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                             },
                             64);
             resourcesTable.setOutputMarkupId(true);
-            add(resourcesTable);
+            resourcesContainer.add(resourcesTable);
 
             editResourceDialog = new EditResourceDialog("editResourceDialog") {
                 @Override
@@ -448,8 +526,8 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                     "deleteResourceDialog", resourcesTable);
             add(deleteResourceDialog);
 
-            final AddResourcesDialog addResourcesDialog =
-                new AddResourcesDialog("addResourcesDialog") {
+            final AddResourcesDialog addResourcesDialog
+                    = new AddResourcesDialog("addResourcesDialog") {
                         @Override
                         public void onSubmit(AjaxRequestTarget target,
                                 Resource[] resources) {
@@ -464,14 +542,14 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                     };
             add(addResourcesDialog);
 
-            add(new AjaxLink<Object>("add") {
+            resourcesContainer.add(new AjaxLink<Object>("add") {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
                     editResourceDialog.show(target);
                 }
             });
 
-            add(new AjaxLink<Object>("addMore") {
+            resourcesContainer.add(new AjaxLink<Object>("addMore") {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
                     addResourcesDialog.show(target);
@@ -528,14 +606,14 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                     }
                 },
                 new PropertyColumn<Resource>(
-                    new Model<String>("Reference"), "ref") {
+                new Model<String>("Reference"), "ref") {
 
-                        @Override
-                        public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> rowModel) {
-                            item.add(new ReferenceLinkPanel(componentId, rowModel));
-                        }
-                        
-                    },
+                    @Override
+                    public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> rowModel) {
+                        item.add(new ReferenceLinkPanel(componentId, rowModel));
+                    }
+
+                },
                 new HeaderlessColumn<Resource>() {
                     @Override
                     public void populateItem(
@@ -555,23 +633,24 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
     } // class CreateVirtualCollectionWizard.ResourcesStep
 
     private final class GeneratedByStep extends DynamicWizardStep {
+
         public GeneratedByStep(IDynamicWizardStep previousStep) {
             super(previousStep, "Intensional Collection Query", null, vc);
             setDefaultModel(new CompoundPropertyModel<VirtualCollection>(vc));
-            final TextArea<String> descriptionArea =
-                new TextArea<String>("generatedBy.description");
+            final TextArea<String> descriptionArea
+                    = new TextArea<String>("generatedBy.description");
             descriptionArea.setRequired(true);
             add(descriptionArea);
-            final TextField<String> uriField =
-                new TextField<String>("generatedBy.uri");
+            final TextField<String> uriField
+                    = new TextField<String>("generatedBy.uri");
             uriField.add(new StringValidator.MaximumLengthValidator(255));
             uriField.add(new UrlValidator(UrlValidator.NO_FRAGMENTS));
             add(uriField);
-            final TextField<String> queryProfileField =
-                new TextField<String>("generatedBy.query.profile");
+            final TextField<String> queryProfileField
+                    = new TextField<String>("generatedBy.query.profile");
             add(queryProfileField);
-            final TextArea<String> queryValueArea =
-                new TextArea<String>("generatedBy.query.value");
+            final TextArea<String> queryValueArea
+                    = new TextArea<String>("generatedBy.query.value");
             add(queryValueArea);
 
             add(new AbstractFormValidator() {

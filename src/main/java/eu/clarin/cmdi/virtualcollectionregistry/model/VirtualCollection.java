@@ -29,6 +29,7 @@ import javax.persistence.NamedQuery;
 import javax.persistence.OneToMany;
 import javax.persistence.OneToOne;
 import javax.persistence.OrderBy;
+import javax.persistence.OrderColumn;
 import javax.persistence.Table;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
@@ -158,8 +159,8 @@ public class VirtualCollection implements Serializable, IdentifiedEntity {
     @OneToMany(cascade = CascadeType.ALL,
                fetch = FetchType.LAZY,
                orphanRemoval = true)
-    @JoinColumn(name = "vc_id", nullable = false)
-    @OrderBy("id")
+    @JoinColumn(name = "vc_id", nullable = false)    
+    @OrderColumn(nullable = false)
     private List<Resource> resources;
 
     @Embedded
