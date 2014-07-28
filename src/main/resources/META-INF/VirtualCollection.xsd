@@ -100,6 +100,16 @@
                         <xs:restriction base="xs:anyURI"/>
                       </xs:simpleType>
                     </xs:element>
+                    <xs:element name="Label" minOccurs="0">
+                      <xs:simpleType>
+                        <xs:restriction base="xs:string"/>
+                      </xs:simpleType>
+                    </xs:element>
+                    <xs:element name="Description" minOccurs="0">
+                      <xs:simpleType>
+                        <xs:restriction base="xs:string"/>
+                      </xs:simpleType>
+                    </xs:element>
                   </xs:sequence>
                 </xs:complexType>
               </xs:element>

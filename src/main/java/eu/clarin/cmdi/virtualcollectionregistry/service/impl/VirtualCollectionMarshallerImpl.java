@@ -218,25 +218,8 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
             writer.writeAttribute("persistentId",
                     vc.getPersistentIdentifier().getIdentifier());
         }
-        String s = null;
-        switch (vc.getState()) {
-        case PRIVATE:
-            s = "private";
-            break;
-        case PUBLIC_PENDING:
-            s = "public-pending";
-            break;
-        case PUBLIC:
-            s = "public";
-            break;
-        case DELETED:
-            s = "deleted";
-            break;
-        case DEAD:
-            s = "dead";
-            break;
-        }
-        writer.writeAttribute("state", s);
+        writer.writeAttribute("state", getStateRepresentation(vc.getState()));
+
         writer.writeStartElement("Type");
         switch (vc.getType()) {
         case EXTENSIONAL:
@@ -270,49 +253,7 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
         if ((vc.getCreators() != null) && !vc.getCreators().isEmpty()) {
             writer.writeStartElement("Creators");
             for (Creator creator : vc.getCreators()) {
-                writer.writeStartElement("Creator");
-
-                writer.writeStartElement("Person");
-                writer.writeCharacters(creator.getPerson());
-                writer.writeEndElement(); // "Person" element
-
-                if (creator.getAddress() != null) {
-                    writer.writeStartElement("Address");
-                    writer.writeCharacters(creator.getAddress());
-                    writer.writeEndElement(); // "Address" element
-                }
-
-                if (creator.getEMail() != null) {
-                    writer.writeStartElement("Email");
-                    writer.writeCharacters(creator.getEMail());
-                    writer.writeEndElement(); // "Email" element
-                }
-
-                if (creator.getOrganisation() != null) {
-                    writer.writeStartElement("Organisation");
-                    writer.writeCharacters(creator.getOrganisation());
-                    writer.writeEndElement(); // "Organisation" element
-                }
-
-                if (creator.getTelephone() != null) {
-                    writer.writeStartElement("Telephone");
-                    writer.writeCharacters(creator.getTelephone());
-                    writer.writeEndElement(); // "Telephone" element
-                }
-
-                if (creator.getWebsite() != null) {
-                    writer.writeStartElement("Website");
-                    writer.writeCharacters(creator.getWebsite());
-                    writer.writeEndElement(); // "Website" element
-                }
-
-                if (creator.getRole() != null) {
-                    writer.writeStartElement("Role");
-                    writer.writeCharacters(creator.getRole());
-                    writer.writeEndElement(); // "Role" element
-                }
-
-                writer.writeEndElement(); // "Creator" element
+                writeCreator(writer, creator);
             }
             writer.writeEndElement(); // "Creators" element
         } // Creators
@@ -374,24 +315,7 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
             writer.writeStartElement("Resources");
 
             for (final Resource resource : vc.getResources()) {
-                writer.writeStartElement("Resource");
-
-                writer.writeStartElement("ResourceType");
-                switch (resource.getType()) {
-                case METADATA:
-                    writer.writeCharacters("Metadata");
-                    break;
-                case RESOURCE:
-                    writer.writeCharacters("Resource");
-                    break;
-                } // switch
-                writer.writeEndElement(); // "ResourceType" element
-
-                writer.writeStartElement("ResourceRef");
-                writer.writeCharacters(resource.getRef());
-                writer.writeEndElement(); // "ResourceRef" element
-
-                writer.writeEndElement(); // "Resource" element
+                writeResource(writer, resource);
             }
 
             writer.writeEndElement(); // "Resources" element
@@ -423,6 +347,107 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
         }
 
         writer.writeEndElement(); // "VirtualCollection" element
+    }
+
+    private String getStateRepresentation(final VirtualCollection.State state) {
+        String s = null;
+        switch (state) {
+            case PRIVATE:
+                s = "private";
+                break;
+            case PUBLIC_PENDING:
+                s = "public-pending";
+                break;
+            case PUBLIC:
+                s = "public";
+                break;
+            case DELETED:
+                s = "deleted";
+                break;
+            case DEAD:
+                s = "dead";
+                break;
+        }
+        return s;
+    }
+
+    private void writeCreator(XMLStreamWriter writer, Creator creator) throws XMLStreamException {
+        writer.writeStartElement("Creator");
+        
+        writer.writeStartElement("Person");
+        writer.writeCharacters(creator.getPerson());
+        writer.writeEndElement(); // "Person" element
+        
+        if (creator.getAddress() != null) {
+            writer.writeStartElement("Address");
+            writer.writeCharacters(creator.getAddress());
+            writer.writeEndElement(); // "Address" element
+        }
+        
+        if (creator.getEMail() != null) {
+            writer.writeStartElement("Email");
+            writer.writeCharacters(creator.getEMail());
+            writer.writeEndElement(); // "Email" element
+        }
+        
+        if (creator.getOrganisation() != null) {
+            writer.writeStartElement("Organisation");
+            writer.writeCharacters(creator.getOrganisation());
+            writer.writeEndElement(); // "Organisation" element
+        }
+        
+        if (creator.getTelephone() != null) {
+            writer.writeStartElement("Telephone");
+            writer.writeCharacters(creator.getTelephone());
+            writer.writeEndElement(); // "Telephone" element
+        }
+        
+        if (creator.getWebsite() != null) {
+            writer.writeStartElement("Website");
+            writer.writeCharacters(creator.getWebsite());
+            writer.writeEndElement(); // "Website" element
+        }
+        
+        if (creator.getRole() != null) {
+            writer.writeStartElement("Role");
+            writer.writeCharacters(creator.getRole());
+            writer.writeEndElement(); // "Role" element
+        }
+        
+        writer.writeEndElement(); // "Creator" element
+    }
+
+    private void writeResource(XMLStreamWriter writer, final Resource resource) throws XMLStreamException {
+        writer.writeStartElement("Resource");
+        
+        writer.writeStartElement("ResourceType");
+        switch (resource.getType()) {
+            case METADATA:
+                writer.writeCharacters("Metadata");
+                break;
+            case RESOURCE:
+                writer.writeCharacters("Resource");
+                break;
+        } // switch
+        writer.writeEndElement(); // "ResourceType" element
+        
+        writer.writeStartElement("ResourceRef");
+        writer.writeCharacters(resource.getRef());
+        writer.writeEndElement(); // "ResourceRef" element
+        
+        if(resource.getLabel() != null) {
+            writer.writeStartElement("Label");
+            writer.writeCharacters(resource.getLabel());
+            writer.writeEndElement(); // "Label" element
+        }
+        
+        if(resource.getDescription() != null) {
+            writer.writeStartElement("Description");
+            writer.writeCharacters(resource.getDescription());
+            writer.writeEndElement();
+        }
+        
+        writer.writeEndElement(); // "Resource" element
     }
 
     private VirtualCollection readVirtualCollection(
@@ -559,8 +584,18 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
                             "or 'Resource'");
                 }
                 readStart(reader, "ResourceRef", true, true);
-                vc.getResources().add(
-                        new Resource(r_type, readString(reader, false)));
+                final Resource resource = new Resource(r_type, readString(reader, false));
+                
+                if(readStart(reader, "Label", false, true)){
+                    resource.setLabel(readString(reader, false));
+                }
+
+                if(readStart(reader, "Description", false, true)){
+                    resource.setDescription(readString(reader, false));
+                }
+
+                vc.getResources().add(resource);
+                
             } while (readStart(reader, "Resource", false, true));
         }
         if (readStart(reader, "GeneratedBy", false, true)) {

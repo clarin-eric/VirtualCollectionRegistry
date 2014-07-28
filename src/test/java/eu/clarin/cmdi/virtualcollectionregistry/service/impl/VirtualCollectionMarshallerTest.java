@@ -1,23 +1,33 @@
 package eu.clarin.cmdi.virtualcollectionregistry.service.impl;
 
-import static org.junit.Assert.assertEquals;
-import static org.junit.Assert.assertNotNull;
-import static org.junit.Assert.assertNull;
-
-import java.io.ByteArrayInputStream;
-import java.io.ByteArrayOutputStream;
-import java.io.InputStream;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-
-import org.junit.Test;
-
-import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller.Format;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
 import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedByQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller.Format;
+import java.io.ByteArrayInputStream;
+import java.io.ByteArrayOutputStream;
+import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.Reader;
+import java.io.StringReader;
+import java.text.DateFormat;
+import java.text.SimpleDateFormat;
+import org.custommonkey.xmlunit.Diff;
+import org.custommonkey.xmlunit.XMLUnit;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertEquals;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNotNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNull;
+import static org.junit.Assert.assertNull;
+
+import static org.junit.Assert.assertTrue;
+import org.junit.Test;
 
 public class VirtualCollectionMarshallerTest {
 
@@ -94,16 +104,24 @@ public class VirtualCollectionMarshallerTest {
         assertEquals(Resource.Type.METADATA, r.getType());
         assertEquals("http://hdl.handle.net/1839/00-0000-0000-0005-671C-C",
                 r.getRef());
+        assertNull(r.getLabel());
+        assertNull(r.getDescription());
+
         r = vc.getResources().get(1);
         assertNotNull(r);
         assertEquals(Resource.Type.METADATA, r.getType());
         assertEquals("http://hdl.handle.net/1839/00-0000-0000-0006-671C-C",
                 r.getRef());
+        assertEquals("Second metadata resource", r.getLabel());
+        assertNull(r.getDescription());
+        
         r = vc.getResources().get(2);
         assertNotNull(r);
         assertEquals(Resource.Type.METADATA, r.getType());
         assertEquals("http://hdl.handle.net/1839/00-0000-0000-0007-671C-C",
                 r.getRef());
+        assertNull(r.getLabel());
+        assertEquals("Third metadata resource", r.getDescription());
 
         assertNull(vc.getGeneratedBy());
 
@@ -129,7 +147,7 @@ public class VirtualCollectionMarshallerTest {
         assertEquals(vc.getKeywords(), vc2.getKeywords());
         assertEquals(vc.getResources(), vc2.getResources());
         assertEquals(vc.getGeneratedBy(), vc2.getGeneratedBy());
-        assertEquals(vc, vc2);
+        assertEquals(vc, vc2);        
     }
 
     @Test
