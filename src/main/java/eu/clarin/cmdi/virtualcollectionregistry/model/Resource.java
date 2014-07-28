@@ -38,6 +38,12 @@ public class Resource implements Serializable, IdentifiedEntity {
     @Column(name = "ref", nullable = false, length = 255)
     private String ref;
     
+    @Column(name = "label", nullable = true)
+    private String label;
+    
+    @Column(name = "description", nullable = true)
+    private String description;
+    
     public Resource() {
         super();
     }
@@ -48,6 +54,7 @@ public class Resource implements Serializable, IdentifiedEntity {
         this.setRef(ref);
     }
     
+    @Override
     public Long getId() {
         return id;
     }
@@ -76,6 +83,22 @@ public class Resource implements Serializable, IdentifiedEntity {
             throw new IllegalArgumentException("ref is empty");
         }
         this.ref = ref;
+    }
+
+    public String getLabel() {
+        return label;
+    }
+
+    public void setLabel(String label) {
+        this.label = label;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        this.description = description;
     }
     
     @Override
@@ -107,6 +130,8 @@ public class Resource implements Serializable, IdentifiedEntity {
     public void valuesFrom(Resource resource) {
         ref = resource.getRef();
         type = resource.getType();
+        label = resource.getLabel();
+        description = resource.getDescription();
     }
     
     public Resource getCopy() {
@@ -114,6 +139,8 @@ public class Resource implements Serializable, IdentifiedEntity {
         copy.id = id;
         copy.setRef(ref);
         copy.setType(type);
+        copy.setLabel(label);
+        copy.setDescription(description);
         return copy;
     }
     
