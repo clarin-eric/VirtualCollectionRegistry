@@ -29,7 +29,6 @@ public class ReferenceLinkPanel extends Panel {
         link.add(new AttributeModifier("title", true, refModel));
 
         // Set label on link
-        // TODO: get label from 'label' property if available
         final ReferenceLabelModel labelModel = new ReferenceLabelModel(model);
         link.add(new Label("referenceLabel", labelModel));
 
