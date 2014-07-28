@@ -1,6 +1,8 @@
 CLARIN Virtual Collection Registry
 ----------------------------------
 
+* DATABASE CONNECTION *
+
 The connection to the database is configured using JNDI using the
 name "jdbc/VirtualCollectionStore".
 When using Apache Tomcat add the following to the context configuration
@@ -23,6 +25,8 @@ if in doubt, please check the Apache Tomcat documentation):
   This will configure a DBCP data source for the virtual collection registry.
   Customize $dbuser, $dbpass and $dbname to match your local settings.
   NOTE: currently only MySQL is supported.
+
+* PID PROVIDER *
 
   You need to choose, which persistent identifier provider you want to use.
   You can either use a dummy provider or the GWDG handle provider.
@@ -54,6 +58,12 @@ if in doubt, please check the Apache Tomcat documentation):
              value="http://127.0.0.1:8080/VirtualCollectionRegistry"
              override="false"/>
 
+* AUTHENTICATION *
+
+The application has two alternative authentication configuration represented by two
+versions of the web.xml file. The default web.xml assumes Tomcat UserDatabaseRealm,
+which is useful for testing purposes.
+
 To shibbolize this application, the following steps are required:
 
 1. Use the shibboleth version of web.xml called 'web-shib.xml' instead of
@@ -79,3 +89,17 @@ environment, it should already have the right web.xml in place.
 Adjust locations to the desired and relevant local alternatives. The second
 block is required to make the virtual collection form submit service work
 with POSTs (current versions of SHHAA do not support this).
+
+* OAI PROVIDER *
+
+Collection display name:
+
+Add the following to the Tomcat context.xml file to set a custom collection display name 
+(MdCollectionDisplayName header element) for the CMDI representations provided by the 
+built-in OAI provider:
+
+<Parameter name="eu.clarin.cmdi.virtualcollectionregistry.collectiondisplayname
+           value="CLARIN Virtual Collection Registry" />
+
+Change the value of the 'value' attribute if desired. If this parameter is not set,
+the default value "CLARIN Virtual Collection Registry" will be used as a collection name.

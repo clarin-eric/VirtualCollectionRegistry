@@ -31,6 +31,7 @@ import javax.xml.datatype.XMLGregorianCalendar;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Service;
 
 /**
@@ -46,6 +47,10 @@ public class VirtualCollectionCMDICreatorImpl implements VirtualCollectionCMDICr
 
     private final static Logger logger = LoggerFactory.getLogger(VirtualCollectionCMDICreatorImpl.class);
     private final DatatypeFactory dataTypeFactory;
+    
+    // Collection display name value read from context.xml with a fallback value inserted by Spring
+    @Value("${eu.clarin.cmdi.virtualcollectionregistry.collectiondisplayname:CLARIN Virtual Collection Registry}")
+    private String collectionDisplayName;
 
     public VirtualCollectionCMDICreatorImpl() throws DatatypeConfigurationException {
         dataTypeFactory = DatatypeFactory.newInstance();
@@ -92,6 +97,9 @@ public class VirtualCollectionCMDICreatorImpl implements VirtualCollectionCMDICr
         header.setMdProfile(VIRTUAL_COLLECTION_PROFILE_ID);
         header.getMdCreator().add(vc.getOwner().getName());
         header.setMdSelfLink(vc.getPersistentIdentifier().getURI());
+        if (collectionDisplayName != null) {
+            header.setMdCollectionDisplayName(collectionDisplayName);
+        }
         return header;
     }
 
