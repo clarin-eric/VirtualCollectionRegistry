@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
@@ -15,9 +16,18 @@ public class ReferenceLinkPanel extends Panel {
 
     public ReferenceLinkPanel(String id, IModel<Resource> model) {
         super(id, model);
-        final ExternalLink link = new ExternalLink("reference", new PropertyModel(model, "ref"));
+        
+        // Rerence model shared by link and label
+        final PropertyModel refModel = new PropertyModel(model, "ref");
+        
+        // Wrapper for link model that detects handles
+        final HandleLinkModel linkModel = new HandleLinkModel(refModel);
+        final ExternalLink link = new ExternalLink("reference", linkModel);
+        
+        // Set label on link
         // TODO: get label from 'label' property if available
-        link.add(new Label("referenceLabel", new PropertyModel(model, "ref")));
+        link.add(new Label("referenceLabel", refModel));
+        
         add(link);
     }
 
