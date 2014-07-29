@@ -404,26 +404,38 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
                             @Override
                             public void onClick(AjaxRequestTarget target) {
-                                if (movingResource.getObject() == null) {
-                                    // start moving this resource
                                     movingResource.setObject(model.getObject());
-                                } else {
-                                    // already moving, cancel
-                                    movingResource.setObject(null);
-                                }
                                 target.addComponent(resourcesContainer);
                             }
 
                             @Override
                             protected void onConfigure() {
                                 // only allow to start moving when not moving
-                                setVisible(movingResource.getObject() == null
-                                        || model.getObject().equals(movingResource.getObject())
-                                );
+                                setVisible(movingResource.getObject() == null);
                             }
 
                         };
                 add(moveLink);
+                
+                final AjaxLink<Resource> cancelLink
+                        = new AjaxLink<Resource>("cancel") {
+
+                            @Override
+                            public void onClick(AjaxRequestTarget target) {
+                                    movingResource.setObject(null);
+                                target.addComponent(resourcesContainer);
+                            }
+
+                            @Override
+                            protected void onConfigure() {
+                                    // only allow cancelling resource being moved
+                                    setVisible(model.getObject().equals(movingResource.getObject())
+                                );
+                            }
+
+                        };
+                add(cancelLink);
+                
                 final AjaxLink<Resource> targetLink
                         = new AjaxLink<Resource>("target") {
 
@@ -633,19 +645,6 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
         @SuppressWarnings("unchecked")
         private IColumn<Resource>[] createColumns() {
             final IColumn<?>[] columns = new IColumn<?>[]{
-                new AbstractColumn<Resource>(Model.of("\u2195")) {
-
-                    @Override
-                    public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> model) {
-                        item.add(new MoveItemPanel(componentId, model));
-                    }
-
-                    @Override
-                    public String getCssClass() {
-                        return "move";
-                    }
-
-                },
                 new AbstractColumn<Resource>(new Model<String>("Type")) {
                     @Override
                     public void populateItem(
@@ -687,6 +686,19 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                     public String getCssClass() {
                         return "action";
                     }
+                },
+                new HeaderlessColumn<Resource>() {
+
+                    @Override
+                    public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> model) {
+                        item.add(new MoveItemPanel(componentId, model));
+                    }
+
+                    @Override
+                    public String getCssClass() {
+                        return "move";
+                    }
+
                 }
             };
             return (IColumn<Resource>[]) columns;

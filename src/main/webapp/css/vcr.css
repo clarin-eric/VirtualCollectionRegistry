@@ -597,30 +597,24 @@ table tfoot {
 }
 
 table td.action {
-	width: 98px;
+	width: 8em;
 	text-align: right;
 }
 
-table.resourcesTable tr td.move {
-    width: 2em;
-}
-
-table.resourcesTable tr td.move a {
-    display: none;
-}
-
-table.resourcesTable th.move {
-    text-align: center;    
-}
-
-table.resourcesTable tr:hover td.move a, table.resourcesTable tr.moving td.move a {
-    display: inline-block;
-    width: 100%;
-    text-align: center;
+table.resourcesTable td.move {
+    width: 5em;
 }
 
 table.resourcesTable tr.moving {
     background: #ccc;
+}
+
+table.moving tr:hover td {
+    border-top: 6px solid #ccc;
+}
+
+table.moving tr.moving:hover td {
+    border-top: 0px;
 }
 
 table.resourcesTable tr.moving td, table.resourcesTable tr.moving td a {
@@ -664,10 +658,6 @@ table tr.navigation div {
 table.creatorsTable,
 table.resourcesTable {
     width: 805px;
-}
-
-table.moving tr:hover td {
-    border-top: 2px solid;
 }
 
 table.creatorsTable td {
