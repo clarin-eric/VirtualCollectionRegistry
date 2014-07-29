@@ -14,6 +14,20 @@ import de.uni_leipzig.asv.clarin.webservices.pidservices2.HandleField;
  * 
  */
 public interface PidWriter {
+    
+	/**
+	 * Try to register a new PID at handle server. Returns registered handle if successful.
+	 * 
+	 * @param configuration
+	 * @param fieldMap
+	 *            handle mapping field -> value
+         * @param pid PID to register
+	 * @return registered handle identifier
+	 * @throws HTTPException if the handle could not be created, possibly
+         * because the ID already exists at the server
+	 */
+        public String registerNewPID(final Configuration configuration, Map<HandleField, String> fieldMap, String pid)
+            throws HttpException;
 	/**
 	 * Try to register a new PID at handle server. Returns registered handle if successful.
 	 * 

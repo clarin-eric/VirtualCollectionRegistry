@@ -8,6 +8,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.net.URI;
 import java.util.EnumMap;
 import java.util.Map;
+import java.util.UUID;
 import org.apache.commons.httpclient.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -53,7 +54,8 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
         logger.debug("creating handle for virtual collection \"{}\"", vc.getId());
         final Map<HandleField, String> fieldMap = createPIDFieldMap(vc);
         try {
-            final String pid = pidWriter.registerNewPID(configuration, fieldMap);
+            final String requestedPid = "VCR-" + UUID.randomUUID().toString();
+            final String pid = pidWriter.registerNewPID(configuration, fieldMap, requestedPid);
             return new PersistentIdentifier(vc, PersistentIdentifier.Type.HANDLE, pid);
         } catch (HttpException ex) {
             throw new VirtualCollectionRegistryException("Could not create EPIC identifier", ex);

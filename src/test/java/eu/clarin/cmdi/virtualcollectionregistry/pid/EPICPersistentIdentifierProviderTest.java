@@ -53,14 +53,15 @@ public class EPICPersistentIdentifierProviderTest {
                                 hasEntry(HandleField.URL, "http://vcr/service/virtualcollections/123/cmdi"),
                                 hasEntry(HandleField.TITLE, "VC Name"),
                                 hasEntry(HandleField.CREATOR, "Joe Unit")
-                        )
+                        ),
+                        startsWith("VCR-")
                 );
-                will(returnValue("9999/1234-567"));
+                will(returnValue("9999/VCR-1234-567"));
             }
         });
 
         PersistentIdentifier result = instance.createIdentifier(vc);
-        assertEquals("9999/1234-567", result.getIdentifier());
+        assertEquals("9999/VCR-1234-567", result.getIdentifier());
         assertEquals(Type.HANDLE, result.getType());
     }
 
