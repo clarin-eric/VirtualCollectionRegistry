@@ -27,24 +27,45 @@ import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidWriter;
  * Registering new handles at handle server or modifying existing PID entries
  *
  * @author Thomas Eckart
+ * @author Twan Goosen
  */
 public class PidWriterImpl implements PidWriter {
 
     private final static Logger LOG = LoggerFactory.getLogger(PidWriterImpl.class);
+    public static final Pattern PID_INPUT_PATTERN = Pattern.compile("^[0-9A-z-]+$");
     private static final Pattern PID_OUTPUT_PATTERN = Pattern.compile(".*location</dt><dd><a href=\"([0-9A-z-]+)\">.*");
 
+    /**
+     *
+     * @param configuration
+     * @param fieldMap
+     * @param pid PID to be created, must match {@link #PID_INPUT_PATTERN}
+     * @return
+     * @throws HttpException if the PID could not be created, for instance
+     * because the requested PID already exists
+     * @throws IllegalArgumentException if the provided PID does not match
+     * {@link #PID_INPUT_PATTERN}
+     */
     @Override
     public String registerNewPID(final Configuration configuration, Map<HandleField, String> fieldMap, String pid)
-            throws HttpException {
+            throws HttpException, IllegalArgumentException {
         LOG.debug("Try to create handle {} at {} with values: {}", pid, configuration.getServiceBaseURL(), fieldMap);
 
+        // validate the requested PID
+        if (!PID_INPUT_PATTERN.matcher(pid).matches()) {
+            throw new IllegalArgumentException(pid);
+        }
+
+        // adding the PID to the request URL
         final String baseUrl = String.format("%s%s/%s",
                 configuration.getServiceBaseURL(), configuration.getHandlePrefix(), pid);
-        final WebResource.Builder resourceBuilder = createResourceBuilder(configuration, baseUrl);
+        final WebResource.Builder resourceBuilder = createResourceBuilderForNewPID(configuration, baseUrl);
 
         final JSONArray jsonArray = createJSONArray(fieldMap);
         final ClientResponse response = resourceBuilder
+                // this header will tell the server to fail if the requested PID already exists
                 .header("If-None-Match", "*")
+                // PUT the handle at the specified location
                 .put(ClientResponse.class, jsonArray.toString());
         return processCreateResponse(response, configuration);
     }
@@ -55,18 +76,20 @@ public class PidWriterImpl implements PidWriter {
         LOG.debug("Try to create handle at {} with values: {}", configuration.getServiceBaseURL(), fieldMap);
 
         final String baseUrl = configuration.getServiceBaseURL() + configuration.getHandlePrefix();
-        final WebResource.Builder resourceBuilder = createResourceBuilder(configuration, baseUrl);
+        final WebResource.Builder resourceBuilder = createResourceBuilderForNewPID(configuration, baseUrl);
 
         final JSONArray jsonArray = createJSONArray(fieldMap);
         final ClientResponse response = resourceBuilder
+                // POST the new handle definition to the handles resource
                 .post(ClientResponse.class, jsonArray.toString());
         return processCreateResponse(response, configuration);
     }
 
-    private WebResource.Builder createResourceBuilder(final Configuration configuration, final String baseUrl) {
+    private WebResource.Builder createResourceBuilderForNewPID(final Configuration configuration, final String baseUrl) {
         final Client client = Client.create();
         client.addFilter(new HTTPBasicAuthFilter(configuration.getUser(), configuration.getPassword()));
-        final WebResource.Builder resourceBuilder = client.resource(baseUrl).accept("application/json").type("application/json");
+        // TODO: request JSON ("application/json") as soon as GWDG respects that accept header
+        final WebResource.Builder resourceBuilder = client.resource(baseUrl).accept("application/xhtml+xml").type("application/json");
         return resourceBuilder;
     }
 
@@ -75,7 +98,7 @@ public class PidWriterImpl implements PidWriter {
             throw new HttpException("" + response.getStatus());
         }
 
-        // TODO CHANGE this ASAP, when GWDG respects accept header
+        // TODO CHANGE this to JSON processing ASAP, when GWDG respects accept header
         String responseString = response.getEntity(String.class).trim().replaceAll("\n", "");
         Matcher matcher = PID_OUTPUT_PATTERN.matcher(responseString);
         if (matcher.matches()) {
