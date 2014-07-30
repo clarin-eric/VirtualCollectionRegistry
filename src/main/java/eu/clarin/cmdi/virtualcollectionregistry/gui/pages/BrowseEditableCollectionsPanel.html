@@ -5,8 +5,10 @@
       xmlns:wicket="http://wicket.apache.org/">
 <head />
 <body>
-<wicket:extend>
-    <wicket:container wicket:id="collections">[collections]</wicket:container>
-</wicket:extend>
+<wicket:panel>
+  <div style="display: none" wicket:id="publishCollectionDialog"></div>
+  <div style="display: none" wicket:id="deleteCollectionDialog"></div>
+  <div wicket:id="collectionsTable"></div>
+</wicket:panel>
 </body>
 </html>
