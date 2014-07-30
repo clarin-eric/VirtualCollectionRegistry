@@ -5,7 +5,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.QueryOptions.Property;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.DetachableVirtualCollectionModel;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.util.Iterator;
@@ -17,14 +16,13 @@ import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvid
 import org.apache.wicket.model.IModel;
 
 @SuppressWarnings("serial")
-class Provider extends
+public abstract class CollectionsProvider extends
         SortableDataProvider<VirtualCollection> implements
         IFilterStateLocator<FilterState> {
-    private final boolean privateMode;
+
     private FilterState filterstate = new FilterState();
 
-    public Provider(boolean privateMode) {
-        this.privateMode = privateMode;
+    public CollectionsProvider() {
         setSort("created", false);
     }
 
@@ -46,8 +44,8 @@ class Provider extends
     @Override
     public int size() {
         try {
-            final VirtualCollectionRegistry vcr =
-                Application.get().getRegistry();
+            final VirtualCollectionRegistry vcr
+                    = Application.get().getRegistry();
             return vcr.getVirtualCollectionCount(getFilter());
         } catch (VirtualCollectionRegistryException e) {
             throw new WicketRuntimeException(e);
@@ -58,10 +56,10 @@ class Provider extends
     public Iterator<? extends VirtualCollection> iterator(int first,
             int count) {
         try {
-            final VirtualCollectionRegistry vcr =
-                Application.get().getRegistry();
-            final List<VirtualCollection> results =
-                vcr.getVirtualCollections(first, count, getFilter());
+            final VirtualCollectionRegistry vcr
+                    = Application.get().getRegistry();
+            final List<VirtualCollection> results
+                    = vcr.getVirtualCollections(first, count, getFilter());
             return results.iterator();
         } catch (VirtualCollectionRegistryException e) {
             throw new WicketRuntimeException(e);
@@ -72,40 +70,33 @@ class Provider extends
         QueryOptions options = new QueryOptions();
 
         QueryOptions.Filter filter = options.and();
-        if (privateMode) {
-            ApplicationSession session = ApplicationSession.get();
-            filter.add(QueryOptions.Property.VC_OWNER,
-                       QueryOptions.Relation.EQ,
-                       session.getUser());
-        } else {
-            filter.add(QueryOptions.Property.VC_STATE,
-                       QueryOptions.Relation.EQ,
-                       VirtualCollection.State.PUBLIC);
-        }
+        // add the filter that selects the public or private space
+        addSpaceFilter(filter);
+        // apply the filter state
         if (filterstate.hasName()) {
             filter.add(QueryOptions.Property.VC_NAME,
-                       QueryOptions.Relation.EQ,
-                       filterstate.getNameWithWildcard());
+                    QueryOptions.Relation.EQ,
+                    filterstate.getNameWithWildcard());
         }
         if (filterstate.hasType()) {
             filter.add(QueryOptions.Property.VC_TYPE,
-                       QueryOptions.Relation.EQ,
-                       filterstate.getType());
+                    QueryOptions.Relation.EQ,
+                    filterstate.getType());
         }
         if (filterstate.hasState()) {
             filter.add(QueryOptions.Property.VC_STATE,
-                       QueryOptions.Relation.EQ,
-                       filterstate.getState());
+                    QueryOptions.Relation.EQ,
+                    filterstate.getState());
         }
         if (filterstate.hasDescription()) {
             filter.add(QueryOptions.Property.VC_DESCRIPTION,
-                       QueryOptions.Relation.EQ,
-                       filterstate.getDescriptionWithWildcard());
+                    QueryOptions.Relation.EQ,
+                    filterstate.getDescriptionWithWildcard());
         }
         if (filterstate.hasCreated()) {
             filter.add(QueryOptions.Property.VC_CREATION_DATE,
-                       filterstate.getCreatedRelation(),
-                       filterstate.getCreated());
+                    filterstate.getCreatedRelation(),
+                    filterstate.getCreated());
         }
         options.setFilter(filter);
 
@@ -130,5 +121,12 @@ class Provider extends
         }
         return options;
     }
+
+    /**
+     * Adds a filter that limits the results to a specific collections space
+     * ({@lit i.e.} the public space or a user's private work space
+     * @param filter 
+     */
+    protected abstract void addSpaceFilter(QueryOptions.Filter filter);
 
 } // class VirtualCollectionProvider

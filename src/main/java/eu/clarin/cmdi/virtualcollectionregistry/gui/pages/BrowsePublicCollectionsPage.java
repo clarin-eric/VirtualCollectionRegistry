@@ -1,12 +1,13 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.table.CollectionsProvider;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.table.PublishedCollectionsProvider;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-
-import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
 @SuppressWarnings("serial")
 public class BrowsePublicCollectionsPage extends BasePage {
@@ -31,7 +32,7 @@ public class BrowsePublicCollectionsPage extends BasePage {
     public BrowsePublicCollectionsPage() {
         super();
         final VirtualCollectionTable table
-                = new VirtualCollectionTable("collectionsTable", false) {
+                = new VirtualCollectionTable("collectionsTable", new PublishedCollectionsProvider(), false) {
                     @Override
                     protected Panel createActionColumn(String componentId,
                             IModel<VirtualCollection> model) {

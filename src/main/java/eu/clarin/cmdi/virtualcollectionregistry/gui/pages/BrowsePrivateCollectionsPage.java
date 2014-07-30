@@ -1,6 +1,19 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ConfirmationDialog;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.menu.AjaxLinkMenuItem;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.menu.AjaxPopupMenu;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.table.PrivateCollectionsProvider;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.table.CollectionsProvider;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.State;
+import java.util.Collections;
 import org.apache.wicket.Component;
+import org.apache.wicket.PageParameters;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authorization.strategies.role.Roles;
@@ -9,18 +22,6 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
-
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ConfirmationDialog;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.menu.AjaxLinkMenuItem;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.menu.AjaxPopupMenu;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.State;
-import java.util.Collections;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
 @AuthorizeInstantiation(Roles.USER)
@@ -215,7 +216,7 @@ public class BrowsePrivateCollectionsPage extends BasePage {
     public BrowsePrivateCollectionsPage() {
         super();
         final VirtualCollectionTable table
-                = new VirtualCollectionTable("collectionsTable", true) {
+                = new VirtualCollectionTable("collectionsTable", new PrivateCollectionsProvider(), true) {
                     @Override
                     protected Panel createActionColumn(String componentId,
                             IModel<VirtualCollection> model) {
