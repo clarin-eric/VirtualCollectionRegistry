@@ -21,20 +21,16 @@ import org.apache.wicket.Page;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
-import org.apache.wicket.ajax.markup.html.navigation.paging.AjaxPagingNavigator;
 import org.apache.wicket.authorization.UnauthorizedActionException;
 import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
-import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxNavigationToolbar;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.NavigationToolbar;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.border.Border;
@@ -45,8 +41,6 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.OddEvenListItem;
 import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.markup.repeater.OddEvenItem;
-import org.apache.wicket.markup.repeater.data.DataView;
 import org.apache.wicket.model.ComponentPropertyModel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
@@ -255,7 +249,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
 
         @SuppressWarnings("rawtypes")
         final IColumn[] cols = new IColumn[2];
-        cols[0] = new PropertyColumn<Resource>(
+        cols[1] = new PropertyColumn<Resource>(
                 Model.of("Type"), "type") {
                     @Override
                     public void populateItem(Item<ICellPopulator<Resource>> item,
@@ -264,8 +258,15 @@ public class VirtualCollectionDetailsPage extends BasePage {
                         item.add(new Label(componentId,
                                         convEnum.convertToString(type, getLocale())));
                     }
+
+                    @Override
+                    public String getCssClass() {
+                        return "type";
+                    }
+                    
+                    
                 };
-        cols[1] = new AbstractColumn<Resource>(Model.of("Reference")) {
+        cols[0] = new AbstractColumn<Resource>(Model.of("Reference")) {
 
             @Override
             public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> rowModel) {

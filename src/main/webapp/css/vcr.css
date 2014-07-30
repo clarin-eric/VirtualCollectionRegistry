@@ -665,7 +665,7 @@ table.creatorsTable td {
     overflow: hidden;
 }
 
-table.resourcesTable td.type {
+table td.type {
 	width: 60px;
 }
 
