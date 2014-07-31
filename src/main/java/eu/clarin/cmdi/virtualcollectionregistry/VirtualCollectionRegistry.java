@@ -2,6 +2,7 @@ package eu.clarin.cmdi.virtualcollectionregistry;
 
 import eu.clarin.cmdi.oai.provider.impl.OAIProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
+import eu.clarin.cmdi.virtualcollectionregistry.model.User_;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
@@ -523,6 +524,30 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
             logger.error("error while counting virtual collections", e);
             throw new VirtualCollectionRegistryException(
                     "error while counting virtual collections", e);
+        } finally {
+            EntityTransaction tx = em.getTransaction();
+            if ((tx != null) && tx.isActive() && !tx.getRollbackOnly()) {
+                tx.commit();
+            }
+        }
+    }
+
+    public List<User> getUsers() {
+        final EntityManager em = datastore.getEntityManager();
+        try {
+            final CriteriaBuilder cb = em.getCriteriaBuilder();
+            final CriteriaQuery<User> cq = cb.createQuery(User.class);
+            final Root<User> root = cq.from(User.class);
+
+            // select all users, sort by display name then name
+            cq.select(root);
+            cq.orderBy(
+                    cb.asc(root.get(User_.displayName)),
+                    cb.asc(root.get(User_.name)));
+
+            em.getTransaction().begin();
+            final TypedQuery<User> query = em.createQuery(cq);
+            return query.getResultList();
         } finally {
             EntityTransaction tx = em.getTransaction();
             if ((tx != null) && tx.isActive() && !tx.getRollbackOnly()) {

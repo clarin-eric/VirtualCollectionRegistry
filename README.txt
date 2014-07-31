@@ -103,3 +103,14 @@ built-in OAI provider:
 
 Change the value of the 'value' attribute if desired. If this parameter is not set,
 the default value "CLARIN Virtual Collection Registry" will be used as a collection name.
+
+* ADMINISTRATOR USERS *
+
+Add the following context parameter:
+
+<Parameter
+	   name="eu.clarin.cmdi.virtualcollectionregistry.admindb"
+	   value="/path/to/vcr-admin.conf" />
+
+Add the username of each user that should get administrator rights to the referenced
+file, one username per line.

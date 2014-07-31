@@ -24,19 +24,23 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.target.coding.MixedParamHybridUrlCodingStrategy;
 import org.apache.wicket.session.pagemap.LeastRecentlyAccessedEvictionStrategy;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
 public class Application extends AuthenticatedWebApplication {
 
+    private final static Logger logger = LoggerFactory.getLogger(Application.class);
+    
     @Autowired
     private VirtualCollectionRegistry registry;
     @Autowired
     private DataStore dataStore;
 
-    private static final String CONFIG_PARAM_ADMINDB = "admindb";
-    private final Set<String> adminUsers = new HashSet<String>();
+    private static final String CONFIG_PARAM_ADMINDB = "eu.clarin.cmdi.virtualcollectionregistry.admindb";
+    private final Set<String> adminUsers = new HashSet<>();
 
     @Override
     protected void init() {
@@ -48,19 +52,20 @@ public class Application extends AuthenticatedWebApplication {
             try {
                 loadAdminDatabase(s);
             } catch (IOException e) {
-                // FIXME: handle error
+                throw new RuntimeException("Could not load admin user database", e);
             }
         }
         if (adminUsers.isEmpty()) {
-            // FIXME: better logging
-            System.err.println("WARNING: no admin users have been defined");
+            logger.warn("No admin users have been defined");
+        } else {
+            logger.debug("Admin users: {}", adminUsers);
         }
         getMarkupSettings().setDefaultMarkupEncoding("utf-8");
         getRequestCycleSettings().setResponseRequestEncoding("utf-8");
         getSessionSettings().setMaxPageMaps(3);
         getSessionSettings().setPageMapEvictionStrategy(
                 new LeastRecentlyAccessedEvictionStrategy(3));
-        if (getConfigurationType() != DEPLOYMENT) {
+        if (!DEPLOYMENT.equals(getConfigurationType())) {
             getMarkupSettings().setStripWicketTags(true);
             getMarkupSettings().setStripComments(true);
         }
@@ -117,17 +122,17 @@ public class Application extends AuthenticatedWebApplication {
 
     private void loadAdminDatabase(String filename) throws IOException {
         adminUsers.clear();
-        BufferedReader reader = new BufferedReader(new InputStreamReader(
-                new FileInputStream(filename)));
-        String line;
-        while ((line = reader.readLine()) != null) {
-            line = line.trim();
-            if (line.isEmpty() || line.startsWith("#")) {
-                continue;
-            }
-            adminUsers.add(line);
-        } // while
-        reader.close();
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(
+                new FileInputStream(filename)))) {
+            String line;
+            while ((line = reader.readLine()) != null) {
+                line = line.trim();
+                if (line.isEmpty() || line.startsWith("#")) {
+                    continue;
+                }
+                adminUsers.add(line);
+            } // while
+        }
     }
 
     public VirtualCollectionRegistry getRegistry() {
