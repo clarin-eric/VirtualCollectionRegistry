@@ -47,6 +47,8 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
     private OAIProvider oaiProvider;
     @Autowired
     private VirtualCollectionValidatorFactory validatorFactory;
+    @Autowired
+    private AdminUsersService adminUsersService;
 
     private static final Logger logger
             = LoggerFactory.getLogger(VirtualCollectionRegistry.class);
@@ -166,7 +168,7 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
                 logger.debug("virtual collection (id={}) not found", id);
                 throw new VirtualCollectionNotFoundException(id);
             }
-            if (!c.getOwner().equalsPrincipal(principal)) {
+            if (!isAllowedToModify(principal, c)) {
                 throw new VirtualCollectionRegistryPermissionException(
                         "permission denied for user \""
                         + principal.getName() + "\"");
@@ -211,7 +213,7 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
                 logger.debug("virtual collection (id={}) not found", id);
                 throw new VirtualCollectionNotFoundException(id);
             }
-            if (!vc.getOwner().equalsPrincipal(principal)) {
+            if (!isAllowedToModify(principal, vc)) {
                 logger.debug("virtual collection (id={}) not owned by "
                         + "user '{}'", id, principal.getName());
                 throw new VirtualCollectionRegistryPermissionException(
@@ -297,7 +299,7 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
                 logger.debug("virtual collection (id={}) not found", id);
                 throw new VirtualCollectionNotFoundException(id);
             }
-            if (!vc.getOwner().equalsPrincipal(principal)) {
+            if (!isAllowedToModify(principal, vc)) {
                 logger.debug("virtual collection (id={}) not owned by "
                         + "user '{}'", id, principal.getName());
                 throw new VirtualCollectionRegistryPermissionException(
@@ -682,6 +684,12 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
                 return thread;
             }
         });
+    }
+    
+    private boolean isAllowedToModify(Principal principal, VirtualCollection c) {
+        // admin and owner are allowed to modify collections
+        return adminUsersService.isAdmin(principal.getName())
+                || c.getOwner().equalsPrincipal(principal);
     }
 
 } // class VirtualCollectionRegistry

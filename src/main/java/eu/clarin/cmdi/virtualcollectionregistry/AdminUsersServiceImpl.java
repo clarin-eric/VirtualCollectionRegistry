@@ -27,6 +27,7 @@ public class AdminUsersServiceImpl implements AdminUsersService {
 
     @Override
     public final boolean isAdmin(String user) {
+        logger.debug("Checking admin rights of {}", user);
         return adminUsers.contains(user);
     }
 
