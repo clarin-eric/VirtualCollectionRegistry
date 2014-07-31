@@ -331,6 +331,19 @@ form.wizard textarea {
 	margin-bottom: 5px;
 }
 
+#feedback ul {
+    padding-left: 0px;
+}
+
+#feedback ul li {
+    font-weight: bold;
+    padding: 5px;
+    list-style: none;    
+}
+
+#feedback ul li.feedbackPanelERROR {
+    background: red;
+}
 
 /*
 form.wizard div label.labelCheckbox, form div label.labelRadio {

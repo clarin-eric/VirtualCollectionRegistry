@@ -71,8 +71,7 @@ public class CreateVirtualCollectionPage extends BasePage {
                         vcr.updateVirtualCollection(principal, vc.getId(), vc);
                     }
                 } catch (VirtualCollectionRegistryException e) {
-                    // FIXME: handle error
-                    e.printStackTrace();
+                    getSession().error(e.getMessage());
                 }
 
                 // proceed to response page

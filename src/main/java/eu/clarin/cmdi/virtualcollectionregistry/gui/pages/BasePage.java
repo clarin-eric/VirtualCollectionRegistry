@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 
@@ -32,6 +33,8 @@ public class BasePage extends WebPage {
                 new Model<String>("Admin Page"),
                 AdminPage.class));
         add(menu);
+        
+        add(new FeedbackPanel("feedback"));
     }
 
     protected BasePage() {

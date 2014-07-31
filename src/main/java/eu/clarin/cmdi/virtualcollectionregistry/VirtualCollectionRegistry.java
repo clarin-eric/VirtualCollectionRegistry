@@ -181,7 +181,7 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
             logger.debug("updated virtual collection (id={})", vc.getId());
             return c.getId();
         } catch (VirtualCollectionRegistryException e) {
-            logger.debug("failed updating virtual collecion (id={}): {}", id,
+            logger.warn("failed updating virtual collecion (id={}): {}", id,
                     e.getMessage());
             throw e;
         } catch (Exception e) {

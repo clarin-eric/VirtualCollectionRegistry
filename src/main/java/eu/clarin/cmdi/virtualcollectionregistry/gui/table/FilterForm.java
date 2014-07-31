@@ -112,8 +112,6 @@ public class FilterForm extends Panel {
             }
         };
         form.add(clearButton);
-
-        form.add(new FeedbackPanel("feedback"));
         add(form);
     }
 
