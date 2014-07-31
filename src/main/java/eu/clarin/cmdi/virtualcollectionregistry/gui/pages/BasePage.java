@@ -1,6 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
-import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
+import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
@@ -10,8 +10,12 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class BasePage extends WebPage {
+    
+    @SpringBean
+    private AdminUsersService adminUsersService;
 
     protected BasePage(IModel<?> model) {
         super(model);
@@ -85,7 +89,7 @@ public class BasePage extends WebPage {
     
     protected boolean isUserAdmin() {
         final String userName = getUser().getName();
-        return userName != null && ((Application)getApplication()).isAdmin(userName);
+        return userName != null && adminUsersService.isAdmin(userName);
     }
     
     @Override

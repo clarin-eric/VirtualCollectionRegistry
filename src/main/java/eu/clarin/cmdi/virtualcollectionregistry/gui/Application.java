@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
+import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.DataStore;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AdminPage;
@@ -9,12 +10,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.CreateVirtualCollectio
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.EditVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.LoginPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.VirtualCollectionDetailsPage;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.Set;
 import org.apache.wicket.Page;
 import org.apache.wicket.authentication.AuthenticatedWebApplication;
 import org.apache.wicket.authentication.AuthenticatedWebSession;
@@ -38,34 +33,22 @@ public class Application extends AuthenticatedWebApplication {
     private VirtualCollectionRegistry registry;
     @Autowired
     private DataStore dataStore;
-
-    private static final String CONFIG_PARAM_ADMINDB = "eu.clarin.cmdi.virtualcollectionregistry.admindb";
-    private final Set<String> adminUsers = new HashSet<>();
+    @Autowired
+    private AdminUsersService adminUsersService;
 
     @Override
     protected void init() {
         super.init();
+        logger.info("Initialising VCR web application");
         addComponentInstantiationListener(new SpringComponentInjector(this));
 
-        String s = getServletContext().getInitParameter(CONFIG_PARAM_ADMINDB);
-        if (s != null) {
-            try {
-                loadAdminDatabase(s);
-            } catch (IOException e) {
-                throw new RuntimeException("Could not load admin user database", e);
-            }
-        }
-        if (adminUsers.isEmpty()) {
-            logger.warn("No admin users have been defined");
-        } else {
-            logger.debug("Admin users: {}", adminUsers);
-        }
         getMarkupSettings().setDefaultMarkupEncoding("utf-8");
         getRequestCycleSettings().setResponseRequestEncoding("utf-8");
         getSessionSettings().setMaxPageMaps(3);
         getSessionSettings().setPageMapEvictionStrategy(
                 new LeastRecentlyAccessedEvictionStrategy(3));
         if (!DEPLOYMENT.equals(getConfigurationType())) {
+            logger.warn("Web application configured for development");
             getMarkupSettings().setStripWicketTags(true);
             getMarkupSettings().setStripComments(true);
         }
@@ -115,26 +98,11 @@ public class Application extends AuthenticatedWebApplication {
         }
         return false;
     }
-
-    public boolean isAdmin(String user) {
-        return adminUsers.contains(user);
+    
+    boolean isAdmin(String user) {
+        return adminUsersService.isAdmin(user);
     }
-
-    private void loadAdminDatabase(String filename) throws IOException {
-        adminUsers.clear();
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-                new FileInputStream(filename)))) {
-            String line;
-            while ((line = reader.readLine()) != null) {
-                line = line.trim();
-                if (line.isEmpty() || line.startsWith("#")) {
-                    continue;
-                }
-                adminUsers.add(line);
-            } // while
-        }
-    }
-
+    
     public VirtualCollectionRegistry getRegistry() {
         return registry;
     }
