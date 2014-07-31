@@ -116,7 +116,7 @@ public class Application extends AuthenticatedWebApplication {
         return false;
     }
 
-    boolean isAdmin(String user) {
+    public boolean isAdmin(String user) {
         return adminUsers.contains(user);
     }
 

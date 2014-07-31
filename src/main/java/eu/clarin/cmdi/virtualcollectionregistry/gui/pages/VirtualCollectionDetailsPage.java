@@ -359,6 +359,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
      */
     private void checkAccess(final VirtualCollection vc) throws UnauthorizedActionException {
         if (vc.isPrivate()
+                && !isUserAdmin()
                 && !getSession().isCurrentUser(vc.getOwner())) {
             // user trying to access other user's collection
             throw new UnauthorizedActionException(this, Component.RENDER);

@@ -1,16 +1,14 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import java.security.Principal;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.wicket.RestartResponseException;
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-
-import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
-import org.apache.wicket.WicketRuntimeException;
 
 public class BasePage extends WebPage {
 
@@ -81,7 +79,12 @@ public class BasePage extends WebPage {
         }
         return principal;
     }
-
+    
+    protected boolean isUserAdmin() {
+        final String userName = getUser().getName();
+        return userName != null && ((Application)getApplication()).isAdmin(userName);
+    }
+    
     @Override
     public ApplicationSession getSession() {
         return (ApplicationSession) super.getSession();

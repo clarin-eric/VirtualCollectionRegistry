@@ -38,9 +38,10 @@ public class EditVirtualCollectionPage extends CreateVirtualCollectionPage {
 
     private void checkAccess(final VirtualCollection vc) throws VirtualCollectionRegistryPermissionException {
         // do not allow editing of VC's that are non-private or owned
-        // by someone else!
-        if (vc.getState() != State.PRIVATE
-                || !vc.getOwner().equalsPrincipal(getUser())) {
+        // by someone else! (except for admin)
+        if (!isUserAdmin() && 
+                (vc.getState() != State.PRIVATE
+                || !vc.getOwner().equalsPrincipal(getUser()))) {
             logger.warn("User {} attempts to edit virtual collection {} with state {} owned by {}", new Object[]{getUser().getName(), vc.getId(), vc.getState(), vc.getOwner().getName()});
             throw new UnauthorizedInstantiationException(EditVirtualCollectionPage.class);
         }
