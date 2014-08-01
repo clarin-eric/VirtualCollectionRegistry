@@ -37,12 +37,8 @@ import javax.ws.rs.core.Variant;
  * calling {@link #setId(long) } before handing it over or doing anything else
  * with it.
  *
- * FIXME: make this default to {@link #getVirtualCollectionCmdi() } instead of
- * XML.
- *
  * @author twagoo
  */
-@Produces(VirtualCollectionResource.MediaTypes.CMDI)
 public final class VirtualCollectionResource {
 
     public static class MediaTypes {
