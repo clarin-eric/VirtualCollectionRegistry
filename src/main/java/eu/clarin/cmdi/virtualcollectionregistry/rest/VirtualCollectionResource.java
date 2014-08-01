@@ -10,6 +10,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshal
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import java.security.Principal;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
@@ -26,6 +27,8 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.StreamingOutput;
+import javax.ws.rs.core.UriBuilder;
+import javax.ws.rs.core.UriInfo;
 
 /**
  * REST resource representing an individual virtual collection.
@@ -35,10 +38,19 @@ import javax.ws.rs.core.StreamingOutput;
  * calling {@link #setId(long) } before handing it over or doing anything else
  * with it.
  *
+ * FIXME: make this default to {@link #getVirtualCollectionCmdi() } instead
+ * of XML.
+ * 
  * @author twagoo
  */
+@Produces(VirtualCollectionResource.MediaTypes.CMDI) 
 public final class VirtualCollectionResource {
 
+    public static class MediaTypes {
+        public static final String CMDI = "application/x-cmdi+xml";
+        public static final MediaType CMDI_TYPE = new MediaType("application", "x-cmdi+xml");
+    }
+    
     @InjectParam
     private VirtualCollectionRegistry registry;
     @InjectParam
@@ -47,6 +59,8 @@ public final class VirtualCollectionResource {
     private SecurityContext security;
     @Context
     private HttpHeaders headers;
+    @Context
+    private UriInfo uriInfo;
 
     private Long id;
 
@@ -70,6 +84,33 @@ public final class VirtualCollectionResource {
             throw new IllegalStateException("Id was already set for Virtual Collection resource! Resource is recycled (by Jersey)?");
         }
         this.id = id;
+    }
+    
+    /**
+     * The virtual collection referenced by the URI will be retrieved in CMDI
+     * format.
+     *
+     * @return A response containing the virtual collection in CMDI format. If
+     * the virtual collection is not found the appropriate HTTP status code is
+     * issued and an error message is returned.
+     * @throws VirtualCollectionRegistryException
+     */
+    @GET
+    public Response getVirtualCollectionCmdi()
+            throws VirtualCollectionRegistryException {
+        final VirtualCollection vc = registry.retrieveVirtualCollection(id);
+        if (!vc.isPublic() || (vc.getPersistentIdentifier() == null)) {
+            throw new VirtualCollectionNotFoundException(id);
+        }
+        StreamingOutput writer = new StreamingOutput() {
+            @Override
+            public void write(OutputStream output) throws IOException,
+                    WebApplicationException {
+                marshaller.marshalAsCMDI(output, VirtualCollectionMarshaller.Format.XML, vc);
+                output.close();
+            }
+        };
+        return Response.ok(writer).build();
     }
 
     /**
@@ -166,33 +207,17 @@ public final class VirtualCollectionResource {
     }
 
     /**
-     * The virtual collection referenced by the URI will be retrieved in CMDI
-     * format.
-     *
-     * @return A response containing the virtual collection in CMDI format. If
-     * the virtual collection is not found the appropriate HTTP status code is
-     * issued and an error message is returned.
-     * @throws VirtualCollectionRegistryException
+     * Redirects the client to the VC's details page in the Wicket frontend
+     * @return
+     * @throws VirtualCollectionRegistryException 
      */
     @GET
-    @Path("/cmdi")
-    @Produces({MediaType.TEXT_XML,
-        MediaType.APPLICATION_XML})
-    public Response getVirtualCollectionCmdi()
+    @Produces({MediaType.TEXT_HTML})
+    public Response getVirtualCollectionDetailsRedirect()
             throws VirtualCollectionRegistryException {
-        final VirtualCollection vc = registry.retrieveVirtualCollection(id);
-        if (!vc.isPublic() || (vc.getPersistentIdentifier() == null)) {
-            throw new VirtualCollectionNotFoundException(id);
-        }
-        StreamingOutput writer = new StreamingOutput() {
-            @Override
-            public void write(OutputStream output) throws IOException,
-                    WebApplicationException {
-                marshaller.marshalAsCMDI(output, VirtualCollectionMarshaller.Format.XML, vc);
-                output.close();
-            }
-        };
-        return Response.ok(writer).build();
+        final UriBuilder pathBuilder = uriInfo.getBaseUriBuilder().path("../app/details/{arg1}");
+        final URI detailsUri = pathBuilder.build(id);
+        return Response.seeOther(detailsUri).build();
     }
 
     /**
