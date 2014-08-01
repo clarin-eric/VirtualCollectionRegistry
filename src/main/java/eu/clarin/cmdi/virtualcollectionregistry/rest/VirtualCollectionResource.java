@@ -1,7 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
 import com.sun.jersey.api.core.InjectParam;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionNotFoundException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
@@ -9,9 +8,9 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.OutputStream;
 import java.net.URI;
 import java.security.Principal;
+import java.util.List;
 import javax.ws.rs.Consumes;
 import javax.ws.rs.DELETE;
 import javax.ws.rs.GET;
@@ -20,15 +19,15 @@ import javax.ws.rs.PUT;
 import javax.ws.rs.Path;
 import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
-import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import javax.ws.rs.core.Variant;
 
 /**
  * REST resource representing an individual virtual collection.
@@ -90,6 +89,7 @@ public final class VirtualCollectionResource {
     /**
      * The virtual collection referenced by the URI will be retrieved
      *
+     * @param request request object, to be injected by JAX-RS context
      * @return A response containing a representation of the requested Virtual
      * Collection. If the virtual collection is not found the appropriate HTTP
      * status code is issued and an error message is returned.
@@ -100,9 +100,23 @@ public final class VirtualCollectionResource {
         MediaType.TEXT_XML,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_JSON})
-    public Response getVirtualCollection()
+    public Response getVirtualCollection(@Context Request request)
             throws VirtualCollectionRegistryException {
         final VirtualCollection vc = registry.retrieveVirtualCollection(id);
+        // CMDI's should not be returned for non-public VC's, so check this...
+        if (!vc.isPublic() || (vc.getPersistentIdentifier() == null)) {
+            // exclude CMDI from the options and check if this is ok for request
+            final List<Variant> variants = Variant.mediaTypes(
+                    MediaType.TEXT_XML_TYPE, 
+                    MediaType.APPLICATION_XML_TYPE, 
+                    MediaType.APPLICATION_JSON_TYPE).add().build();
+            final Variant selectVariant = request.selectVariant(variants);
+            if (selectVariant != null) {
+                // alternative option is accepted, return this
+                return Response.ok(vc, selectVariant).build();
+            }
+            // else proceed anyway, will probably fail on writing CMDI body
+        }
         return Response.ok(vc).build();
     }
 
