@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller.Format;
+import java.util.List;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
 
@@ -46,8 +47,8 @@ public final class RestUtils {
      * headers
      * @see HttpHeaders#getAcceptableMediaTypes()
      */
-    public static Format getOutputFormat(HttpHeaders headers) {
-        for (MediaType type : headers.getAcceptableMediaTypes()) {
+    public static Format getOutputFormat(List<MediaType> mediaTypes) {
+        for (MediaType type : mediaTypes) {
             Format format = getMediaType(type);
             if (format != null) {
                 return format;

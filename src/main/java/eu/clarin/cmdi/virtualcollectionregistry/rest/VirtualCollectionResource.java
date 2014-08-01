@@ -38,19 +38,20 @@ import javax.ws.rs.core.UriInfo;
  * calling {@link #setId(long) } before handing it over or doing anything else
  * with it.
  *
- * FIXME: make this default to {@link #getVirtualCollectionCmdi() } instead
- * of XML.
- * 
+ * FIXME: make this default to {@link #getVirtualCollectionCmdi() } instead of
+ * XML.
+ *
  * @author twagoo
  */
-@Produces(VirtualCollectionResource.MediaTypes.CMDI) 
+@Produces(VirtualCollectionResource.MediaTypes.CMDI)
 public final class VirtualCollectionResource {
 
     public static class MediaTypes {
+
         public static final String CMDI = "application/x-cmdi+xml";
         public static final MediaType CMDI_TYPE = new MediaType("application", "x-cmdi+xml");
     }
-    
+
     @InjectParam
     private VirtualCollectionRegistry registry;
     @InjectParam
@@ -85,33 +86,6 @@ public final class VirtualCollectionResource {
         }
         this.id = id;
     }
-    
-    /**
-     * The virtual collection referenced by the URI will be retrieved in CMDI
-     * format.
-     *
-     * @return A response containing the virtual collection in CMDI format. If
-     * the virtual collection is not found the appropriate HTTP status code is
-     * issued and an error message is returned.
-     * @throws VirtualCollectionRegistryException
-     */
-    @GET
-    public Response getVirtualCollectionCmdi()
-            throws VirtualCollectionRegistryException {
-        final VirtualCollection vc = registry.retrieveVirtualCollection(id);
-        if (!vc.isPublic() || (vc.getPersistentIdentifier() == null)) {
-            throw new VirtualCollectionNotFoundException(id);
-        }
-        StreamingOutput writer = new StreamingOutput() {
-            @Override
-            public void write(OutputStream output) throws IOException,
-                    WebApplicationException {
-                marshaller.marshalAsCMDI(output, VirtualCollectionMarshaller.Format.XML, vc);
-                output.close();
-            }
-        };
-        return Response.ok(writer).build();
-    }
 
     /**
      * The virtual collection referenced by the URI will be retrieved
@@ -122,23 +96,29 @@ public final class VirtualCollectionResource {
      * @throws VirtualCollectionRegistryException
      */
     @GET
-    @Produces({MediaType.TEXT_XML,
+    @Produces({VirtualCollectionResource.MediaTypes.CMDI,
+        MediaType.TEXT_XML,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_JSON})
     public Response getVirtualCollection()
             throws VirtualCollectionRegistryException {
         final VirtualCollection vc = registry.retrieveVirtualCollection(id);
-        // XXX: what about non-public VCs?
-        StreamingOutput writer = new StreamingOutput() {
-            @Override
-            public void write(OutputStream output) throws IOException,
-                    WebApplicationException {
-                final VirtualCollectionMarshaller.Format format = RestUtils.getOutputFormat(headers);
-                marshaller.marshal(output, format, vc);
-                output.close();
-            }
-        };
-        return Response.ok(writer).build();
+        return Response.ok(vc).build();
+    }
+
+    /**
+     * Redirects the client to the VC's details page in the Wicket frontend
+     *
+     * @return
+     * @throws VirtualCollectionRegistryException
+     */
+    @GET
+    @Produces({MediaType.TEXT_HTML})
+    public Response getVirtualCollectionDetailsRedirect()
+            throws VirtualCollectionRegistryException {
+        final UriBuilder pathBuilder = uriInfo.getBaseUriBuilder().path("../app/details/{arg1}");
+        final URI detailsUri = pathBuilder.build(id);
+        return Response.seeOther(detailsUri).build();
     }
 
     /**
@@ -204,20 +184,6 @@ public final class VirtualCollectionResource {
         response.setInfo("deleted");
         response.setId(id);
         return Response.ok(response).build();
-    }
-
-    /**
-     * Redirects the client to the VC's details page in the Wicket frontend
-     * @return
-     * @throws VirtualCollectionRegistryException 
-     */
-    @GET
-    @Produces({MediaType.TEXT_HTML})
-    public Response getVirtualCollectionDetailsRedirect()
-            throws VirtualCollectionRegistryException {
-        final UriBuilder pathBuilder = uriInfo.getBaseUriBuilder().path("../app/details/{arg1}");
-        final URI detailsUri = pathBuilder.build(id);
-        return Response.seeOther(detailsUri).build();
     }
 
     /**

@@ -79,7 +79,7 @@ public class VirtualCollectionsResource {
             @Override
             public void write(OutputStream output) throws IOException,
                     WebApplicationException {
-                final Format format = RestUtils.getOutputFormat(headers);
+                final Format format = RestUtils.getOutputFormat(headers.getAcceptableMediaTypes());
                 marshaller.marshal(output, format, vcs);
                 output.close();
             }
