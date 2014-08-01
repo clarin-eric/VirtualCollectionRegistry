@@ -83,7 +83,7 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
     }
 
     private String makeCollectionURI(VirtualCollection vc) {
-        return String.format("%sservice/virtualcollections/%d/cmdi", baseUri, vc.getId());
+        return String.format("%sservice/virtualcollections/%d", baseUri, vc.getId());
     }
 
     protected void setBaseUri(String baseUri) {

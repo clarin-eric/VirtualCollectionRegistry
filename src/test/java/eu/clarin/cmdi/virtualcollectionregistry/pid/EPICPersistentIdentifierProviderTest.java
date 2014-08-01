@@ -50,7 +50,7 @@ public class EPICPersistentIdentifierProviderTest {
                 exactly(1).of(equal(pidWriter)).method("registerNewPID").with(
                         equal(pidConfig),
                         allOf(
-                                hasEntry(HandleField.URL, "http://vcr/service/virtualcollections/123/cmdi"),
+                                hasEntry(HandleField.URL, "http://vcr/service/virtualcollections/123"),
                                 hasEntry(HandleField.TITLE, "VC Name"),
                                 hasEntry(HandleField.CREATOR, "Joe Unit")
                         ),
