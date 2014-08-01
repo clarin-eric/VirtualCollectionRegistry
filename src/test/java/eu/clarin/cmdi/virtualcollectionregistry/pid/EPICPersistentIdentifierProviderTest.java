@@ -54,14 +54,14 @@ public class EPICPersistentIdentifierProviderTest {
                                 hasEntry(HandleField.TITLE, "VC Name"),
                                 hasEntry(HandleField.CREATOR, "Joe Unit")
                         ),
-                        startsWith("VCR-")
+                        equalTo("VCR-00123")
                 );
-                will(returnValue("9999/VCR-1234-567"));
+                will(returnValue("9999/VCR-00123"));
             }
         });
 
         PersistentIdentifier result = instance.createIdentifier(vc);
-        assertEquals("9999/VCR-1234-567", result.getIdentifier());
+        assertEquals("9999/VCR-123", result.getIdentifier());
         assertEquals(Type.HANDLE, result.getType());
     }
 
