@@ -61,7 +61,7 @@ public class EPICPersistentIdentifierProviderTest {
         });
 
         PersistentIdentifier result = instance.createIdentifier(vc);
-        assertEquals("9999/VCR-123", result.getIdentifier());
+        assertEquals("9999/VCR-00123", result.getIdentifier());
         assertEquals(Type.HANDLE, result.getType());
     }
 
