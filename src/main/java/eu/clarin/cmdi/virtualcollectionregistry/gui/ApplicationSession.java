@@ -5,6 +5,7 @@ import de.mpg.aai.shhaa.model.AuthPrincipal;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import java.security.Principal;
 import java.util.regex.Pattern;
+import org.apache.http.auth.BasicUserPrincipal;
 import org.apache.wicket.Request;
 import org.apache.wicket.authentication.AuthenticatedWebSession;
 import org.apache.wicket.authorization.strategies.role.Roles;
@@ -61,12 +62,7 @@ public class ApplicationSession extends AuthenticatedWebSession {
     }
 
     public Principal getPrincipal() {
-        return new Principal() {
-            @Override
-            public String getName() {
-                return user;
-            }
-        };
+        return new BasicUserPrincipal(getUser());
     }
 
     /**

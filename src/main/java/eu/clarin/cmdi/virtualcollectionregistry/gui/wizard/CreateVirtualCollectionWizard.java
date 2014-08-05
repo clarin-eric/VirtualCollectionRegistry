@@ -1,11 +1,13 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.wizard;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ConfirmationDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.ReferenceLinkPanel;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.service.CreatorProvider;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
@@ -48,11 +50,15 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.StringValidator;
 import org.apache.wicket.validation.validator.UrlValidator;
 
 @SuppressWarnings("serial")
 public abstract class CreateVirtualCollectionWizard extends WizardBase {
+
+    @SpringBean
+    private CreatorProvider creatorProvider;
 
     private final class GeneralStep extends DynamicWizardStep {
 
@@ -307,6 +313,20 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
                     editCreatorDialog.show(target);
+                }
+            });
+            add(new AjaxLink("addme") {
+
+                @Override
+                public void onClick(AjaxRequestTarget target) {
+                    final Creator creator = creatorProvider.getCreator(ApplicationSession.get().getPrincipal());
+                    if (creator.getPerson() == null) {
+                        Session.get().error("Could not retrieve required user information");
+                        setResponsePage(getPage());
+                    } else {
+                        vc.getObject().getCreators().add(creator);
+                        target.addComponent(creatorsTable);
+                    }
                 }
             });
         }

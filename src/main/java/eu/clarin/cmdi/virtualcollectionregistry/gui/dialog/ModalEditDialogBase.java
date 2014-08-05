@@ -111,7 +111,7 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
     public final void show(AjaxRequestTarget target) {
         this.show(target, null);
     }
-
+    
     public final void show(AjaxRequestTarget target, IModel<T> model) {
         if (model == null) {
             model = newInstanceModel();
