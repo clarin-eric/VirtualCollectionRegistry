@@ -404,7 +404,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
                             @Override
                             public void onClick(AjaxRequestTarget target) {
-                                    movingResource.setObject(model.getObject());
+                                movingResource.setObject(model.getObject());
                                 target.addComponent(resourcesContainer);
                             }
 
@@ -416,26 +416,26 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
                         };
                 add(moveLink);
-                
+
                 final AjaxLink<Resource> cancelLink
                         = new AjaxLink<Resource>("cancel") {
 
                             @Override
                             public void onClick(AjaxRequestTarget target) {
-                                    movingResource.setObject(null);
+                                movingResource.setObject(null);
                                 target.addComponent(resourcesContainer);
                             }
 
                             @Override
                             protected void onConfigure() {
-                                    // only allow cancelling resource being moved
-                                    setVisible(model.getObject().equals(movingResource.getObject())
+                                // only allow cancelling resource being moved
+                                setVisible(model.getObject().equals(movingResource.getObject())
                                 );
                             }
 
                         };
                 add(cancelLink);
-                
+
                 final AjaxLink<Resource> targetLink
                         = new AjaxLink<Resource>("target") {
 

@@ -128,14 +128,12 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
     private final void doSubmit(AjaxRequestTarget target, Form<T> form) {
         close(target);
         final T object = form.getModelObject();
-        form.setModelObject(null);
         onSubmit(target, object);
     }
 
     private final void doCancel(AjaxRequestTarget target, Form<T> form) {
         close(target);
         final T object = form.getModelObject();
-        form.setModelObject(null);
         onCancel(target, object);
     }
 
