@@ -31,8 +31,16 @@
 	
         <composition action="rF">
             <shibheader>
-                <attribute>displayName</attribute>
+                <attribute>cn</attribute>
                 <attribute>commonName</attribute>
+                <attribute>displayName</attribute>
+                
+                <attribute>mail</attribute>
+                
+                <attribute>o</attribute>                
+                <attribute>organizationName</attribute>
+                <attribute>schacHomeOrganization</attribute>
+                
             </shibheader>
         </composition>
 	

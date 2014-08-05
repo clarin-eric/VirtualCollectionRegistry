@@ -5,10 +5,12 @@ import de.mpg.aai.shhaa.model.AuthPrincipal;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import java.security.Principal;
 import java.util.regex.Pattern;
-import org.apache.http.auth.BasicUserPrincipal;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.Request;
+import org.apache.wicket.RequestCycle;
 import org.apache.wicket.authentication.AuthenticatedWebSession;
 import org.apache.wicket.authorization.strategies.role.Roles;
+import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -62,7 +64,9 @@ public class ApplicationSession extends AuthenticatedWebSession {
     }
 
     public Principal getPrincipal() {
-        return new BasicUserPrincipal(getUser());
+        ServletWebRequest servletWebRequest = (ServletWebRequest) RequestCycle.get().getRequest();
+        HttpServletRequest request = servletWebRequest.getHttpServletRequest();
+        return request.getUserPrincipal();
     }
 
     /**
