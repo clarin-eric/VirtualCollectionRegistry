@@ -10,10 +10,29 @@
     <version>0.4.0-SNAPSHOT</version>
 
     <organization>
-        <name>Institut für Deutsche Sprache</name>
-        <url>http://www.ids-mannheim.de/</url>
+        <name>CLARIN</name>
+        <url>http://www.clarin.eu/</url>
     </organization>
-
+    
+    <developers>
+        <developer>
+            <name>Oliver Schonefeld</name>
+            <organization>Institut für Deutsche Sprache</organization>
+            <url>http://www.ids-mannheim.de/</url>
+        </developer>
+        <developer>
+            <name>Twan Goosen</name>
+            <organization>CLARIN</organization>
+            <url>http://www.clarin.eu/</url>
+        </developer>
+    </developers>
+    
+    <licenses>
+        <license>
+            <name>GNU General Public License Version 3 (GPLv3)</name>
+            <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
+          </license>
+    </licenses>
 
     <properties>
         <!-- project settings -->
@@ -33,6 +52,9 @@
         <!-- Production settings below -->
         <log4j.appender>File</log4j.appender>
         <war.webxml>src/main/webapp/WEB-INF/web-shib.xml</war.webxml>
+        
+        <!-- Tell Netbeans to insert the right license header -->
+        <netbeans.hint.license>gpl30</netbeans.hint.license> 
     </properties>
     
     <profiles>

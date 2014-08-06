@@ -11,7 +11,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.service.CreatorProvider;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
-import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;

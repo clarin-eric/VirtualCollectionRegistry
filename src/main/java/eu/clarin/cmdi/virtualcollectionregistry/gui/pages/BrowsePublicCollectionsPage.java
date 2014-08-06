@@ -1,6 +1,5 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
-import eu.clarin.cmdi.virtualcollectionregistry.gui.table.CollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.PublishedCollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
