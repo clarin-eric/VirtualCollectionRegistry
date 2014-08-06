@@ -15,8 +15,8 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
-/* jQuery script to activate tooltip on annotated labels */
 $(document).ready(function() {
+    /* activate tooltip on annotated labels */
     $(".tooltipparent").each(function() {
         var tooltip = '#' + $(this).attr('id') + ' .tooltip';
         $(this).qtip({
@@ -25,5 +25,17 @@ $(document).ready(function() {
             hide: 'mouseout'
         });
         $(".tooltip", this).hide();
+    });
+
+    /* toggle extra help information*/
+    $(".extrainfotoggle").click(function(event) {
+        event.preventDefault();
+        $(this).parent(".extrainfo").children(".notes").slideToggle();
+    });
+    $(".extrainfo .notes").hide();
+    $(".extrainfotoggle").qtip({
+        content: 'Help',
+        show: 'mouseover',
+        hide: 'mouseout'
     });
 });

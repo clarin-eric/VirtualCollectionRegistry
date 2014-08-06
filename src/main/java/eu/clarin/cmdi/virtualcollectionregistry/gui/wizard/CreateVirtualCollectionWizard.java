@@ -65,7 +65,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
     private CreatorProvider creatorProvider;
     
     private final static ResourceReference TOOLTIP_JAVASCRIPT_REFERENCE = 
-            new JavascriptResourceReference(CreateVirtualCollectionWizard.class, "tooltips.js");
+            new JavascriptResourceReference(CreateVirtualCollectionWizard.class, "wizardhelp.js");
 
     @Override
     public void renderHead(HtmlHeaderContainer container) {

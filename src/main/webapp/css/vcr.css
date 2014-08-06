@@ -261,11 +261,30 @@ div.editDialog div {
   */
 }
 
+form.wizard .extrainfo {
+    margin-left: 50px;
+}
+
+form.wizard .extrainfo a.extrainfotoggle {
+    display: inline-block;
+    float: right;
+    vertical-align: top;
+    width: 16px;
+    height: 16px;
+    background-image: url(about-128.png); /* from http://www.iconsdb.com/ */
+    background-size: 16px 16px;
+    background-repeat: no-repeat;
+}
+
+form.wizard .extrainfo a.extrainfotoggle span {
+    display: none;
+}
+
 form.wizard div.notes {
-  float: right;
-  width: 198px;
+  display: inline-block;
+  width: 80%;
   height: auto;
-  margin: 0 0 10px 10px;
+  margin: 0 0 10px 70px;
   padding: 5px;
   border: 1px solid #666666;
   background-color: #ffffe1;
