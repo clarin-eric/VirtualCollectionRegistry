@@ -10,7 +10,10 @@
 <div style="display: none" wicket:id="deleteResourceDialog"></div>
 <div style="display: none" wicket:id="addResourcesDialog"></div>
 <div wicket:id="resourcesContainer" class="fieldset">
-  <label class="required">Resources<br /><a wicket:id="add" href="#" class="add"><span>[add]</span></a><br /><a wicket:id="addMore" href="#" class="addMore"><span>[add more]</span></a></label>
+  <label class="required">Resources<br />
+      <a id="add" wicket:id="add" href="#" class="add tooltipparent"><span>[add]</span><span class="tooltip">Add a single new resource or metadata reference with an optional label and/or description</span></a><br />
+      <a id="addmore" wicket:id="addMore" href="#" class="addMore tooltipparent"><span>[add more]</span><span class="tooltip">Add one or reference of the same type</span></a>
+  </label>
   <table wicket:id="resourcesTable" class="resourcesTable"></table>
 </div>
 </wicket:panel>

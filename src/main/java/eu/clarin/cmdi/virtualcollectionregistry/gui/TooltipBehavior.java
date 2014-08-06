@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
 import org.apache.wicket.ResourceReference;
+import org.apache.wicket.markup.html.resources.JavascriptResourceReference;
 import org.apache.wicket.model.IModel;
 import org.odlabs.wiquery.core.behavior.WiQueryAbstractBehavior;
 import org.odlabs.wiquery.core.commons.WiQueryResourceManager;
@@ -16,8 +17,8 @@ import org.odlabs.wiquery.core.options.Options;
  */
 public class TooltipBehavior extends WiQueryAbstractBehavior {
 
-    private static final ResourceReference JAVASCRIPT_RESOURCE
-            = new ResourceReference(TooltipBehavior.class, "jquery.qtip-1.0.0-rc3.min.js");
+    public static final ResourceReference QTIP_JAVASCRIPT_RESOURCE
+            = new JavascriptResourceReference(TooltipBehavior.class, "jquery.qtip-1.0.0-rc3.min.js");
 
     private final IModel<String> tooltipModel;
 
@@ -27,7 +28,7 @@ public class TooltipBehavior extends WiQueryAbstractBehavior {
 
     @Override
     public void contribute(WiQueryResourceManager wiQueryResourceManager) {
-        wiQueryResourceManager.addJavaScriptResource(JAVASCRIPT_RESOURCE);
+        wiQueryResourceManager.addJavaScriptResource(QTIP_JAVASCRIPT_RESOURCE);
     }
 
     @Override

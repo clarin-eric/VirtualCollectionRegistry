@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.wizard;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.TooltipBehavior;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ConfirmationDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.ReferenceLinkPanel;
@@ -12,6 +13,7 @@ import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.wicket.Component;
+import org.apache.wicket.ResourceReference;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -38,10 +40,12 @@ import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
+import org.apache.wicket.markup.html.internal.HtmlHeaderContainer;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.OddEvenListItem;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.markup.html.resources.JavascriptResourceReference;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -52,13 +56,26 @@ import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.StringValidator;
 import org.apache.wicket.validation.validator.UrlValidator;
+import org.odlabs.wiquery.core.commons.CoreJavaScriptResourceReference;
 
 @SuppressWarnings("serial")
 public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
     @SpringBean
     private CreatorProvider creatorProvider;
+    
+    private final static ResourceReference TOOLTIP_JAVASCRIPT_REFERENCE = 
+            new JavascriptResourceReference(CreateVirtualCollectionWizard.class, "tooltips.js");
 
+    @Override
+    public void renderHead(HtmlHeaderContainer container) {
+        super.renderHead(container);
+        // Javascript dependencies for this page (jQuery tooltips)
+        container.getHeaderResponse().renderJavascriptReference(CoreJavaScriptResourceReference.get());
+        container.getHeaderResponse().renderJavascriptReference(TooltipBehavior.QTIP_JAVASCRIPT_RESOURCE);
+        container.getHeaderResponse().renderJavascriptReference(TOOLTIP_JAVASCRIPT_REFERENCE);
+    }
+    
     private final class GeneralStep extends DynamicWizardStep {
 
         private final class DeleteKeywordDialog extends ConfirmationDialog {
@@ -132,12 +149,15 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                     = new RequiredTextField<String>("name");
             nameField.add(new StringValidator.MaximumLengthValidator(255));
             add(nameField);
+            
             final DropDownChoice<VirtualCollection.Type> typeChoice
                     = new DropDownChoice<VirtualCollection.Type>("type",
                             Arrays.asList(VirtualCollection.Type.values()),
                             new EnumChoiceRenderer<VirtualCollection.Type>(this));
             typeChoice.setRequired(true);
+//            typeChoice.add(new TooltipBehavior(new StringResourceModel("type.tooltip", CreateVirtualCollectionWizard.this, null)));
             add(typeChoice);
+            
             add(new TextArea<String>("description"));
             final DropDownChoice<VirtualCollection.Purpose> purposeChoice
                     = new DropDownChoice<VirtualCollection.Purpose>("purpose",

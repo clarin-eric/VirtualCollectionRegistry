@@ -964,3 +964,6 @@ div.collectionDetails.buttons {
 	text-align: center;
 }
 
+.tooltipparent .tooltip {
+    display: none;
+}
