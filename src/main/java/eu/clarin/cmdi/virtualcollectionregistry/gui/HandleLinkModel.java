@@ -16,6 +16,8 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.wicket.model.IModel;
 
 /**
@@ -27,10 +29,11 @@ import org.apache.wicket.model.IModel;
 public class HandleLinkModel implements IModel<String> {
 
     private final IModel<String> linkModel;
-    public static final String HANDLE_PREFIX = "hdl:";
+    public static final Pattern HANDLE_PATTERN = Pattern.compile("^(hdl|doi):(.*)$", Pattern.CASE_INSENSITIVE);
     public static final String HANDLE_PROXY = "http://hdl.handle.net/";
     public static final String URN_NBN_PREFIX = "urn:nbn";
     public static final String URN_NBN_RESOLVER_URL = "http://www.nbn-resolving.org/redirect/";
+    private static final int HANDLE_ID_GROUP = 2;
 
     public HandleLinkModel(IModel<String> linkModel) {
         this.linkModel = linkModel;
@@ -40,8 +43,9 @@ public class HandleLinkModel implements IModel<String> {
     public String getObject() {
         final String link = linkModel.getObject();
         if (link != null) {
-            if (link.toLowerCase().startsWith(HANDLE_PREFIX)) {
-                return HANDLE_PROXY + link.substring(HANDLE_PREFIX.length());
+            final Matcher handleMatcher = HANDLE_PATTERN.matcher(link);
+            if (handleMatcher.matches()) {
+                return HANDLE_PROXY + handleMatcher.group(HANDLE_ID_GROUP);
             }
             if (link.toLowerCase().startsWith(URN_NBN_PREFIX)) {
                 return URN_NBN_RESOLVER_URL + link;
