@@ -627,6 +627,7 @@ table th,
 table td {
     padding: 2px;
     text-align: left;
+    vertical-align: top;
 }
 
 table thead,

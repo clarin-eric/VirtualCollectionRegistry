@@ -9,6 +9,7 @@ import javax.persistence.Enumerated;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.Lob;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -38,10 +39,11 @@ public class Resource implements Serializable, IdentifiedEntity {
     @Column(name = "ref", nullable = false, length = 255)
     private String ref;
     
-    @Column(name = "label", nullable = true)
+    @Column(name = "label", nullable = true, length = 255)
     private String label;
     
-    @Column(name = "description", nullable = true)
+    @Lob
+    @Column(name = "description", length = 8192)
     private String description;
     
     public Resource() {

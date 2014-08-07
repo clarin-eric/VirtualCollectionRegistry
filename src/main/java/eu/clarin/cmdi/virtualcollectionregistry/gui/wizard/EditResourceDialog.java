@@ -16,6 +16,7 @@ import org.apache.wicket.validation.validator.UrlValidator;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ModalEditDialogBase;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
+import org.apache.wicket.markup.html.form.TextArea;
 
 @SuppressWarnings("serial")
 public abstract class EditResourceDialog extends ModalEditDialogBase<Resource> {
@@ -40,8 +41,10 @@ public abstract class EditResourceDialog extends ModalEditDialogBase<Resource> {
                     .add(new StringValidator.MaximumLengthValidator(255))
                     .add(new UrlValidator(UrlValidator.NO_FRAGMENTS)));
             
-            form.add(new TextField<String>("label"));
-            form.add(new TextField<String>("description"));
+            form.add(new TextField<String>("label")
+                    .add(new StringValidator.MaximumLengthValidator(255)));
+            
+            form.add(new TextArea<String>("description"));
             
             feedbackPanel = new FeedbackPanel("feedback");
             form.add(feedbackPanel);
