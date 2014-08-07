@@ -18,10 +18,10 @@ import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.Validatable;
 import org.apache.wicket.validation.ValidationError;
 import org.apache.wicket.validation.validator.AbstractValidator;
-import org.apache.wicket.validation.validator.UrlValidator;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ModalDialogBase;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
+import eu.clarin.cmdi.virtualcollectionregistry.service.impl.ReferenceValidator;
 
 @SuppressWarnings("serial")
 public abstract class AddResourcesDialog extends ModalDialogBase {
@@ -78,7 +78,7 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
                 protected void onValidate(IValidatable<String[]> input) {
                     String[] refs = input.getValue();
                     if (refs != null) {
-                        UrlValidator v = new UrlValidator();
+                        ReferenceValidator v = new ReferenceValidator();
                         for (String ref : refs) {
                             if (ref.length() > 255) {
                                 ValidationError ve = new ValidationError();
