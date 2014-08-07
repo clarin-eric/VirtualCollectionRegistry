@@ -8,7 +8,9 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
 import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedByQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import java.util.ArrayList;
 import java.util.HashSet;
+import java.util.List;
 import java.util.Set;
 import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
 import org.springframework.beans.factory.config.ServiceLocatorFactoryBean;
@@ -25,6 +27,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Scope(value = SCOPE_PROTOTYPE)
 public class VirtualCollectionValidatorImpl implements VirtualCollectionValidator {
+
     private final Set<Creator> uniqueCreators = new HashSet<Creator>(16);
     private final Set<String> uniqueResourceRefs = new HashSet<String>(512);
 
@@ -56,12 +59,19 @@ public class VirtualCollectionValidatorImpl implements VirtualCollectionValidato
             case EXTENSIONAL:
                 if (vc.getResources().isEmpty()) {
                     throw new VirtualCollectionRegistryUsageException(
-                        "extensional collection must contain on or " +
-                        "more resources");
+                            "extensional collection must contain on or "
+                            + "more resources");
                 }
                 if (vc.getGeneratedBy() != null) {
                     throw new VirtualCollectionRegistryUsageException(
                             "extensional collection must not contain GeneratedBy");
+                }
+                final List<String> invalidRefs = getInvalidReferences(vc);
+                if (!invalidRefs.isEmpty()) {
+                    throw new VirtualCollectionRegistryUsageException(
+                            String.format(
+                                    "one or more references are not valid: %s",
+                                    invalidRefs));
                 }
                 break;
             case INTENSIONAL:
@@ -87,8 +97,8 @@ public class VirtualCollectionValidatorImpl implements VirtualCollectionValidato
                 }
         }
 
-        if ((vc.getReproducibilityNotice() != null) &&
-                (vc.getReproducibility() == null)) {
+        if ((vc.getReproducibilityNotice() != null)
+                && (vc.getReproducibility() == null)) {
             throw new VirtualCollectionRegistryUsageException(
                     "reproducibility notice without reproducubility");
         }
@@ -112,6 +122,17 @@ public class VirtualCollectionValidatorImpl implements VirtualCollectionValidato
             }
             uniqueResourceRefs.add(ref);
         }
+    }
+
+    private List<String> getInvalidReferences(VirtualCollection vc) {
+        final ReferenceValidator referenceValidator = new ReferenceValidator();
+        final List<String> invalidRefs = new ArrayList<>();
+        for (Resource resource : vc.getResources()) {
+            if (!referenceValidator.validate(resource.getRef())) {
+                invalidRefs.add(resource.getRef());
+            }
+        }
+        return invalidRefs;
     }
 
     private void reset() {

@@ -48,11 +48,9 @@ public class ReferenceValidator extends AbstractValidator<String> {
         }
     }
 
-    private final static ReferenceValidator validator = new ReferenceValidator();
-
-    public static boolean validate(String value) {
+    public boolean validate(String value) {
         final Validatable<String> validatable = new Validatable<>(value);
-        validator.validate(validatable);
+        validate(validatable);
         return validatable.isValid();
     }
 
