@@ -15,17 +15,12 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 
+/* For tooltips, the qtip jQuery plugin is used. For more info, see
+ * <http://craigsworks.com/projects/qtip/docs/>
+ */
+
 $(document).ready(function() {
-    /* activate tooltip on annotated labels */
-    $(".tooltipparent").each(function() {
-        var tooltip = '#' + $(this).attr('id') + ' .tooltip';
-        $(this).qtip({
-            content: $(tooltip),
-            show: 'mouseover',
-            hide: 'mouseout'
-        });
-        $(".tooltip", this).hide();
-    });
+    activeTooltips();
 
     /* toggle extra help information*/
     $(".extrainfotoggle").click(function(event) {
@@ -36,6 +31,30 @@ $(document).ready(function() {
     $(".extrainfotoggle").qtip({
         content: 'Help',
         show: 'mouseover',
-        hide: 'mouseout'
+        hide: 'mouseout',
+        style: {
+            background: '#ffffe1'
+        }
     });
 });
+
+function activeTooltips() {
+    /* activate tooltip on annotated labels */
+    $(".tooltipparent").each(function() {
+        var tooltip = '#' + $(this).attr('id') + ' .tooltip';
+        $(this).qtip({
+            content: $(tooltip),
+            show: 'mouseover',
+            hide: 'mouseout',
+            position: {
+                adjust: {
+                    x: -5
+                }
+            },
+            style: {
+                background: '#ffffe1'
+            }
+        });
+        $(".tooltip", this).hide();
+    });
+}

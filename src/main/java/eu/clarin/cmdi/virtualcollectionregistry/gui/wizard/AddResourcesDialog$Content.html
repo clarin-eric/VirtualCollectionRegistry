@@ -1,25 +1,38 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:wicket="http://wicket.apache.org/">
-<head />
-<body>
-<wicket:panel>
-<form wicket:id="addResourcesForm">
-<fieldset>
-  <div class="required">
-    <label for="add_resources_type">Type</label>
-    <select wicket:id="type" id="add_resources_type"></select>
-  </div>
-  <div class="required">
-    <label for="add_resources_refs">References</label>
-    <textarea wicket:id="references"
-              id="add_resources_refs" rows="24" cols="30"></textarea>
-  </div>
-</fieldset>
-<div wicket:id="feedback"></div>
-</form>
-</wicket:panel>
-</body>
+    <head />
+    <body>
+        <wicket:panel>
+            <form wicket:id="addResourcesForm">
+                <fieldset>
+                    <div class="required">
+                        <label id="typelabel" class="tooltipparent" for="add_resources_type">Type
+                            <span class="tooltip">
+                                Type of reference<br /><br />
+                                Metadata: the referenced item is a CMDI metadata document that
+                                <em>describes</em> one or more resources<br /><br />
+                                Resource: the reference item is a resource that can be accessed
+                                directly through the specified URI
+                            </span>
+                        </label>
+                        <select wicket:id="type" id="add_resources_type"></select>
+                    </div>
+                    <div class="required">
+                        <label id="referenceslabel" class="tooltipparent" for="add_resources_refs">References
+                            <span class="tooltip">
+                                List of references of the specified type to add.
+                                Each line should consist of one PID or URI.
+                            </span>
+                        </label>
+                        <textarea wicket:id="references"
+                                  id="add_resources_refs" rows="24" cols="30"></textarea>
+                    </div>
+                </fieldset>
+                <div wicket:id="feedback"></div>
+            </form>
+        </wicket:panel>
+    </body>
 </html>

@@ -1,30 +1,30 @@
 * {
     margin: 0;
-/*    padding: 0; */	
+    /*    padding: 0; */	
 }
 
 html {
-	overflow-y: scroll
+    overflow-y: scroll
 }
 
 html, body {
-	font-family: Verdana, sans-serif;
-	font-size: 12px;
-	margin: 0 auto;
-	padding: 0;
-	line-height: 1;
+    font-family: Verdana, sans-serif;
+    font-size: 12px;
+    margin: 0 auto;
+    padding: 0;
+    line-height: 1;
     height: 100%;
     color: #000000;
-/*    background-color: #E9EEFA; */
+    /*    background-color: #E9EEFA; */
     width: 990px;
     min-width: 990px;
     height: 100%;
 }
 
 noscript {
-	margin: 0 auto;
-	padding: 0;
-	width: 1024px;
+    margin: 0 auto;
+    padding: 0;
+    width: 1024px;
 }
 
 #noscript-warning {
@@ -48,19 +48,19 @@ noscript {
 #header {
     border-top: 2px solid #D4DEEF;
 }
-	
+
 #header-logo {
-	margin: 0;
-	padding: 5px; 
+    margin: 0;
+    padding: 5px; 
     height: 70px;
     color: #004071;
     background-color: #E9EEF7;
 }
-	
+
 #header-logo #clarin-logo {
-	background: transparent url('../images/clarin-logo.png') no-repeat;
-	float: left;
-	width: 298px;
+    background: transparent url('../images/clarin-logo.png') no-repeat;
+    float: left;
+    width: 298px;
     height: 70px;
 }
 
@@ -82,23 +82,23 @@ noscript {
 }
 
 #navigation {
-	margin: 0;
-	padding: 0;
-	height: 20px;
-	clear: both;
+    margin: 0;
+    padding: 0;
+    height: 20px;
+    clear: both;
     color: #000000;
     background-color: #D4DEEF;
     font-size: 12px;
     line-height: 12px;
     vertical-align: middle;
 }
-	
+
 #menu {
     margin: 0 100px 0 0;
 }
-	
+
 #menu ul {
-	list-style-type: none;
+    list-style-type: none;
     margin: 0;
     padding: 0;
 }
@@ -120,25 +120,25 @@ noscript {
 }
 
 #menu ul li + #menu ul li {
-	border-left: 1px solid black;
+    border-left: 1px solid black;
 }
-	
+
 #menu a, #menu a:active, #menu a:visited {
-	color: #000000;
-	background-color: inherit;
+    color: #000000;
+    background-color: inherit;
 }
 
 #menu a:hover {
-	color: #AE0000;
-	background-color: #E9EEF7;
+    color: #AE0000;
+    background-color: #E9EEF7;
 }
 
 #menu span.active {
     font-style: italic;
 }
-	
+
 #login {
-	float: right;
+    float: right;
     padding: 4px 4px 4px 4px;
     width: auto;
 }
@@ -160,14 +160,14 @@ noscript {
 }
 
 #container .push {
-	height: 20px;
+    height: 20px;
     width: auto;
 }
 
 #footer {
-	padding: 0 4px;
-	margin: 0 auto;
-	height: 18px;
+    padding: 0 4px;
+    margin: 0 auto;
+    height: 18px;
     line-height: 18px;
     text-align: right;
     color: #004071;
@@ -188,37 +188,37 @@ input, select, textarea {
  * wizard
  */
 div.wizard .wicketExtensionsWizardHeaderTitle {
-	padding: 0px 10px;
-	font-size: 16px;
-	font-weight: bold;
+    padding: 0px 10px;
+    font-size: 16px;
+    font-weight: bold;
 }
 
 div.wizard .wicketExtensionsWizardHeaderSummary {
-	padding: 5px 10px 0 10px;
-	font-style: italics;
+    padding: 5px 10px 0 10px;
+    font-style: italics;
 }
 
 div.wizard .wizardHeader {
-	border-bottom: 1px solid #000000;
+    border-bottom: 1px solid #000000;
     margin: 0 0 10px 0;
-	padding: 0 0 10px 0;
+    padding: 0 0 10px 0;
 }
 
 form.wizard {
-  margin: 5px 4px;
-  padding: 0;
-  font-size: 100%;
-  width: 978px;
-  min-width: 978px;
+    margin: 5px 4px;
+    padding: 0;
+    font-size: 100%;
+    width: 978px;
+    min-width: 978px;
 }
 
 form.wizard fieldset,
 div.wizard div.fieldset {
-  clear: both;
-  font-size: 100%;
-  border: none;
-  padding: 0 10px 0 10px;
-  margin: 0 0 0 0;
+    clear: both;
+    font-size: 100%;
+    border: none;
+    padding: 0 10px 0 10px;
+    margin: 0 0 0 0;
 }
 
 /*
@@ -252,13 +252,13 @@ div.wizard textarea {
 
 form.wizard div,
 div.editDialog div {
-  clear: left;
-  display: block;
-/*  width: 354px;
-  zoom: 1;
-  margin: 5px 0 0 0;
-  padding: 1px 3px;
-  */
+    clear: left;
+    display: block;
+    /*  width: 354px;
+      zoom: 1;
+      margin: 5px 0 0 0;
+      padding: 1px 3px;
+    */
 }
 
 form.wizard .extrainfo {
@@ -271,7 +271,7 @@ form.wizard .extrainfo a.extrainfotoggle {
     vertical-align: top;
     width: 16px;
     height: 16px;
-    background-image: url(about-128.png); /* from http://www.iconsdb.com/ */
+    background-image: url(help-128.png); /* from http://www.iconsdb.com/ */
     background-size: 16px 16px;
     background-repeat: no-repeat;
 }
@@ -280,56 +280,65 @@ form.wizard .extrainfo a.extrainfotoggle span {
     display: none;
 }
 
+form.wizard div.notes, form.wizard div.sidenotes {
+    display: inline-block;
+    height: auto;
+    padding: 5px;
+    border: 1px solid #666666;
+    background-color: #ffffe1;
+    color: #666666;
+}
+
 form.wizard div.notes {
-  display: inline-block;
-  width: 80%;
-  height: auto;
-  margin: 0 0 10px 70px;
-  padding: 5px;
-  border: 1px solid #666666;
-  background-color: #ffffe1;
-  color: #666666;
+    width: 80%;
+    margin: 0 0 10px 70px;
+}
+
+form.wizard div.sidenotes {
+    float: right;
+    width: 198px;
+    margin: 0 0 10px 10px;
 }
 
 form.wizard div.notes h4 {
-  /*
-  background-image: url(/images/icon_info.gif);
-  background-repeat: no-repeat;
-  background-position: top left;
-  */
-  text-align: center;
-  padding: 3px 0 3px 0; /*27px; */
-  margin: 0 0 3px 0;
-  border-width: 0 0 1px 0;
-  border-style: solid;
-  border-color: #666666;
-  color: #666666;
-  font-size: 100%;
+    /*
+    background-image: url(/images/icon_info.gif);
+    background-repeat: no-repeat;
+    background-position: top left;
+    */
+    text-align: center;
+    padding: 3px 0 3px 0; /*27px; */
+    margin: 0 0 3px 0;
+    border-width: 0 0 1px 0;
+    border-style: solid;
+    border-color: #666666;
+    color: #666666;
+    font-size: 100%;
 }
 
 form.wizard div.notes p {
-  margin: 0em 0em 0.5em 0em;
-  color: #666666;
-  font-size: 80%;
+    margin: 0em 0em 0.5em 0em;
+    color: #666666;
+    font-size: 80%;
 }
 
 form.wizard div.notes p.last {
-  margin: 0em;
+    margin: 0em;
 }
 
 form.wizard div label {
-  display: block;
-  float: left;
-  width: 140px;
-  padding: 3px 5px;
-  margin: 0 0 5px 0;
-  text-align: right;
-  font-weight: normal;
+    display: block;
+    float: left;
+    width: 140px;
+    padding: 3px 5px;
+    margin: 0 0 5px 0;
+    text-align: right;
+    font-weight: normal;
 }
 
 div.required label,
 label.required {
-  font-weight: bold !important;
+    font-weight: bold !important;
 }
 
 /*
@@ -343,11 +352,11 @@ div.required label:after {
 */
 
 form.wizard textarea {
-	font-family: Verdana, sans-serif;
-	font-size: 100%;
-	width: 570px;
-	overflow: auto;
-	margin-bottom: 5px;
+    font-family: Verdana, sans-serif;
+    font-size: 100%;
+    width: 570px;
+    overflow: auto;
+    margin-bottom: 5px;
 }
 
 #feedback ul {
@@ -492,11 +501,11 @@ form.wizard .wizardButtons {
     margin: 10px 0 0 0;
     clear: both;
 }
-	
+
 form.wizard .buttonbar {
-	margin: 10px 220px 0 0;
-	padding: 0 10px 0 0;
-	text-align: right; 
+    margin: 10px 220px 0 0;
+    padding: 0 10px 0 0;
+    text-align: right; 
 }
 
 /*
@@ -504,12 +513,12 @@ form.wizard .buttonbar input.button,
 div.modalDialog div.modalDialogButtons input.button
 */
 input.button {
-	padding: 1px 4px;
-	margin: 0 2px;
-	color: #000000;
-	background-color: #E9EEF7;
-	border: 2px solid #D4DEEF;
-	border-radius: 4px;
+    padding: 1px 4px;
+    margin: 0 2px;
+    color: #000000;
+    background-color: #E9EEF7;
+    border: 2px solid #D4DEEF;
+    border-radius: 4px;
     -moz-border-radius: 4px;
 }
 
@@ -523,8 +532,8 @@ form.wizard .buttonbar  input.button[disabled],
 form.wizard .buttonbar  input.button[disabled]:hover,
 div.modalDialog div.modalDialogButtons input.button[disabled],
 div.modalDialog div.modalDialogButtons input.button[disabled]:hover {
-	color: #AFAFAF;
-	border-color: #EFEFEF;
+    color: #AFAFAF;
+    border-color: #EFEFEF;
 }
 
 
@@ -532,19 +541,19 @@ div.modalDialog div.modalDialogButtons input.button[disabled]:hover {
  * modal dialog
  */
 div.modalDialog {
-	margin: 0;
-	padding: 0;
+    margin: 0;
+    padding: 0;
 }
 
 div.modalDialog div.modalDialogContent {
-	margin: 10px;
+    margin: 10px;
 }
-	
+
 div.modalDialog div.modalDialogButtons {
-	border-top: 1px solid #BBBBBB;
-	margin: 0 5px 5px 5px;
-	padding: 5px 0 0 0;
-	text-align: center;
+    border-top: 1px solid #BBBBBB;
+    margin: 0 5px 5px 5px;
+    padding: 5px 0 0 0;
+    text-align: center;
 }
 
 div.confirmationDialog {
@@ -552,18 +561,18 @@ div.confirmationDialog {
 }
 
 div.editDialog fieldset {
-	border: none;
-	margin: 0;
-	padding: 0;
+    border: none;
+    margin: 0;
+    padding: 0;
 }
 
 div.editDialog fieldset label {
-  display: block;
-  float: left;
-  /* width: 100px; */
-  padding: 3px 5px 3px 0;
-  margin: 0 0 5px 0;
-  text-align: right;
+    display: block;
+    float: left;
+    /* width: 100px; */
+    padding: 3px 5px 3px 0;
+    margin: 0 0 5px 0;
+    text-align: right;
 }
 
 
@@ -571,7 +580,7 @@ div.editDialog fieldset label {
  * dialog customizations
  */
 div.editCreatorDialog  fieldset label {
-	width: 90px;
+    width: 90px;
 }
 
 div.editCreatorDialog fieldset input,
@@ -589,7 +598,7 @@ div.editResourceDialog fieldset textarea {
 }
 
 div.addResourcesDialog fieldset label {
-	width: 85px;
+    width: 85px;
 }
 
 div.addResourcesDialog fieldset input,
@@ -598,7 +607,7 @@ div.addResourcesDialog fieldset textarea {
 }
 
 div.addKeywordDialog fieldset input {
-	width: 285px;
+    width: 285px;
 }
 
 /*
@@ -611,26 +620,26 @@ div.wizard a {
 
 table {
     font-size: 100%;
-	border-collapse: collapse;
+    border-collapse: collapse;
 }
 
 table th,
 table td {
-	padding: 2px;
-	text-align: left;
+    padding: 2px;
+    text-align: left;
 }
 
 table thead,
 table tfoot {
-	color: inherit;
-	background-color: #D4DEEF;
+    color: inherit;
+    background-color: #D4DEEF;
     border-top: 1px solid #000000;
-	border-bottom: 1px solid #000000;
+    border-bottom: 1px solid #000000;
 }
 
 table td.action {
-	width: 8em;
-	text-align: right;
+    width: 8em;
+    text-align: right;
 }
 
 table.resourcesTable td.move {
@@ -654,13 +663,13 @@ table.resourcesTable tr.moving td, table.resourcesTable tr.moving td a {
 }
 
 a {
-	color: #AE0000;
-	background-color: inherit;
-	text-decoration: none;
+    color: #AE0000;
+    background-color: inherit;
+    text-decoration: none;
 }
 
 table tbody {
-	border-bottom: 1px solid #000000;
+    border-bottom: 1px solid #000000;
 }
 
 table tr.even {
@@ -674,17 +683,17 @@ table tr.odd {
 }
 
 table td.norecords-td {
-	text-align: center;
-	color: inherit;
-	background-color: #FFFFFF;
+    text-align: center;
+    color: inherit;
+    background-color: #FFFFFF;
 }
 
 table thead tr.navigation {
-	border-bottom: 1px dotted #BBBBBB;
+    border-bottom: 1px dotted #BBBBBB;
 }
 
 table tr.navigation div {
-	clear: none !important;
+    clear: none !important;
 }
 
 table.creatorsTable,
@@ -698,18 +707,18 @@ table.creatorsTable td {
 }
 
 table td.type {
-	width: 60px;
+    width: 60px;
 }
 
 div.keywordsList {
-	clear: none !important;
-	width: 602px;
-	margin-left: 160px;
-	padding: 3px 0;
+    clear: none !important;
+    width: 602px;
+    margin-left: 160px;
+    padding: 3px 0;
 }
 
 div.keywordsList div {
-	clear: none;
+    clear: none;
 }
 
 div.keywordsList ul {
@@ -719,7 +728,7 @@ div.keywordsList ul {
 }
 
 div.keywordsList ul li {
-	margin-top: 2px;
+    margin-top: 2px;
 }
 
 div.keywordsList ul li.first {
@@ -727,8 +736,8 @@ div.keywordsList ul li.first {
 }
 
 table.collectionsTable {
-	width: auto;
-	table-layout: fixed;
+    width: auto;
+    table-layout: fixed;
 }
 
 table.collectionsTable th,
@@ -738,7 +747,7 @@ table.collectionsTable td {
 
 table.collectionsTable.public th.name,
 table.collectionsTable.public td.name {
-	width: 796px;
+    width: 796px;
 }
 
 table.collectionsTable.private th.name,
@@ -747,7 +756,7 @@ table.collectionsTable.private td.name {
 }
 
 table.collectionsTable td.name div.name {
-	padding-left: 16px;
+    padding-left: 16px;
     background-image: url('../icons/bullet_arrow_down.png');
     background-repeat: no-repeat;
     background-position: center left;
@@ -755,8 +764,8 @@ table.collectionsTable td.name div.name {
 }
 
 table.collectionsTable td.name div.name:hover {
-	color: #AE0000;
-	background-color: inherit;
+    color: #AE0000;
+    background-color: inherit;
 }
 
 table.collectionsTable td.name div.name.detailsShown {
@@ -771,7 +780,7 @@ table.collectionsTable td.name div.name.noDetails{
 }
 
 table.collectionsTable td.name div.details {
-	margin-left: 16px;
+    margin-left: 16px;
     margin-right: -248px;
     width: 964px;
 }
@@ -782,7 +791,7 @@ table.collectionsTable td.name div.desc {
 }
 
 table.collectionsTable td.name div.actions {
-	margin: 4px 0 2px 0;
+    margin: 4px 0 2px 0;
 }
 
 table.collectionsTable th.state,
@@ -802,7 +811,7 @@ table.collectionsTable td.created {
 
 table.collectionsTable td.action,
 table.collectionsTable th.action {
-	width: 12px;
+    width: 12px;
 }
 
 table.collectionsTable.public td.action span,
@@ -827,8 +836,8 @@ table.collectionsTable.private td.action div.popupTrigger {
 }
 
 tr.headers a.wicket_orderNone {
-	padding-right: 7px;
-	background: transparent url('../icons/order_none.png') no-repeat center right;
+    padding-right: 7px;
+    background: transparent url('../icons/order_none.png') no-repeat center right;
 }
 
 tr.headers a.wicket_orderUp {
@@ -842,13 +851,13 @@ tr.headers a.wicket_orderDown {
 }
 
 div.toggleBorder {
-	border-top: 1px solid #000000;
+    border-top: 1px solid #000000;
 }
 
 div.toggleBorder div.toggleBorderHeader {
-	margin: 0;
-	padding: 2px 2px 2px 16px;
-	border-bottom: 1px solid #000000;
+    margin: 0;
+    padding: 2px 2px 2px 16px;
+    border-bottom: 1px solid #000000;
     color: inherit;
     background-color: #D4DEEF;
     background-image: url('../icons/bullet_arrow_up.png');
@@ -858,13 +867,13 @@ div.toggleBorder div.toggleBorderHeader {
 }
 
 div.toggleBorder div.toggleBorderHeader span {
-	font-weight: bold;
+    font-weight: bold;
 }
 
 div.toggleBorder div.toggleBorderHeader.collapsed {
-	background-image: url('../icons/bullet_arrow_down.png');
-	background-repeat: no-repeat;
-	background-position: center left;
+    background-image: url('../icons/bullet_arrow_down.png');
+    background-repeat: no-repeat;
+    background-position: center left;
 }
 
 div.toggleBorder div.toggleBorderContent {
@@ -873,27 +882,27 @@ div.toggleBorder div.toggleBorderContent {
 }
 
 form.filterForm {
-	margin: 0;
-	padding: 0;
+    margin: 0;
+    padding: 0;
 }
-	
+
 form.filterForm fieldset {
-	padding: 0;
-	margin: 0;
-	border: none;
+    padding: 0;
+    margin: 0;
+    border: none;
 }
 
 form.filterForm div.optional {
-	margin-bottom: 4px;
+    margin-bottom: 4px;
 }
 
 form.filterForm label {
-	width: 75px !important;
+    width: 75px !important;
 }
 
 form.filterForm input.name,
 form.filterForm input.desc {
-	width: 790px;
+    width: 790px;
 }
 
 div.popupMenu {
@@ -905,7 +914,7 @@ div.popupMenu {
 }
 
 div.popupMenu li a {
-	color: #000000;
+    color: #000000;
 }
 
 div.popupMenu li a:hover {
@@ -918,25 +927,25 @@ div.popupTrigger span.title {
 
 
 div.collectionDetails div.property {
-  clear: both;
-  font-size: 100%;
-  border: none;
-  padding: 0 10px 0 10px;
-  margin: 0 0 4px 0;
+    clear: both;
+    font-size: 100%;
+    border: none;
+    padding: 0 10px 0 10px;
+    margin: 0 0 4px 0;
 }
 
 div.collectionDetails div label {
-  display: block;
-  float: left;
-  width: 140px;
-  padding: 0px 2px;
-  margin: 0;
-  text-align: right;
-  font-weight: normal;
+    display: block;
+    float: left;
+    width: 140px;
+    padding: 0px 2px;
+    margin: 0;
+    text-align: right;
+    font-weight: normal;
 }
 
 div.collectionDetails div label:after {
-	content: ':';
+    content: ':';
 }
 
 div.collectionDetails div div {
@@ -953,34 +962,34 @@ div.collectionDetails ul.keywords {
 }
 
 div.collectionDetails ul.creators {
-	margin: 0;
-	padding: 0;
+    margin: 0;
+    padding: 0;
     list-style: none;
 }
 
 div.collectionDetails ul.creators li {
-	border-top: 1px dotted #000000;
+    border-top: 1px dotted #000000;
     margin-top: 4px;
     padding-top: 4px;
 }
 
 div.collectionDetails ul.creators li.first {
-	border-top: none;
-	margin-top: 0;
-	padding-top: 0;
+    border-top: none;
+    margin-top: 0;
+    padding-top: 0;
 }
 
 div.collectionDetails.resources {
-	padding: 0 !important;
+    padding: 0 !important;
 }
 
 div.collectionDetails.resources table {
-	width: 100%;
+    width: 100%;
 }
 
 div.collectionDetails.buttons {
-	margin: 10px 0 10px 0;
-	text-align: center;
+    margin: 10px 0 10px 0;
+    text-align: center;
 }
 
 .tooltipparent .tooltip {

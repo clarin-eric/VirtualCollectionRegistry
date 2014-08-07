@@ -122,6 +122,7 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
             modifyButton.setVisible(true);
         }
         contentPanel.getForm().setModel(new CompoundPropertyModel<T>(model));
+        target.appendJavascript("activeTooltips()");
         super.show(target);
     }
 
