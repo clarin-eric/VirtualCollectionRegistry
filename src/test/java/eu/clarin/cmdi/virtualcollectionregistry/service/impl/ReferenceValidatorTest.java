@@ -20,6 +20,7 @@ import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.Validatable;
 import org.junit.Test;
 import static org.junit.Assert.*;
+import org.junit.Before;
 
 /**
  *
@@ -27,14 +28,19 @@ import static org.junit.Assert.*;
  */
 public class ReferenceValidatorTest {
 
+    private ReferenceValidator instance;
+
+    @Before
+    public void setUp() {
+        instance = new ReferenceValidator();
+    }
+
     /**
      * Test of onValidate method, of class ReferenceValidator.
      */
     @Test
     public void testOnValidateUrl() {
-        System.out.println("onValidate");
         IValidatable<String> validatable = new Validatable<>("http://www.clarin.eu");
-        ReferenceValidator instance = new ReferenceValidator();
         instance.validate(validatable);
         assertTrue(validatable.isValid());
     }
@@ -44,9 +50,7 @@ public class ReferenceValidatorTest {
      */
     @Test
     public void testOnValidateHdl() {
-        System.out.println("onValidate");
         IValidatable<String> validatable = new Validatable<>("hdl:1234/abcd-EF-5678");
-        ReferenceValidator instance = new ReferenceValidator();
         instance.validate(validatable);
         assertTrue(validatable.isValid());
     }
@@ -56,9 +60,7 @@ public class ReferenceValidatorTest {
      */
     @Test
     public void testOnValidateDoi() {
-        System.out.println("onValidate");
         IValidatable<String> validatable = new Validatable<>("doi:10.1000/182");
-        ReferenceValidator instance = new ReferenceValidator();
         instance.validate(validatable);
         assertTrue(validatable.isValid());
     }
@@ -68,9 +70,7 @@ public class ReferenceValidatorTest {
      */
     @Test
     public void testOnValidateIllegal() {
-        System.out.println("onValidate");
         IValidatable<String> validatable = new Validatable<>("not a legal URL or handle");
-        ReferenceValidator instance = new ReferenceValidator();
         instance.validate(validatable);
         assertFalse(validatable.isValid());
     }
@@ -80,9 +80,7 @@ public class ReferenceValidatorTest {
      */
     @Test
     public void testOnValidateIllegalHdl() {
-        System.out.println("onValidate");
         IValidatable<String> validatable = new Validatable<>("hdl:12a4/abcd-EF-5678");
-        ReferenceValidator instance = new ReferenceValidator();
         instance.validate(validatable);
         assertFalse(validatable.isValid());
     }

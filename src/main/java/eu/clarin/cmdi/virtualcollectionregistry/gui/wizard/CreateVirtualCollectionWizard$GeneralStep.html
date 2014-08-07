@@ -35,8 +35,8 @@
                     <label id="typelabel" class="tooltipparent" for="gen_vc_type">Type
                         <span class="tooltip">
                             Type of Virtual Collection, either intensional or extensional<br /><br /> 
-                            Extensional: Type of virtual collection that explicitly enumerates the references to resources or metadata documents that make up the collection<br /><br /> 
-                            Intensional: Type of virtual collection that defines a query by which the items of the collection can be retrieved ad-hoc from a secondary service <em>(experimental, use at own risk!)</em>
+                            <b>Extensional</b>: Type of virtual collection that explicitly enumerates the references to resources or metadata documents that make up the collection<br /><br /> 
+                            <b>Intensional</b>: Type of virtual collection that defines a query by which the items of the collection can be retrieved ad-hoc from a secondary service <em>(experimental, use at own risk!)</em>
                         </span>
                     </label>
                     <select wicket:id="type" id="gen_vc_type"></select>
@@ -55,10 +55,10 @@
                     <label id="purposelabel" class="tooltipparent" for="gen_vc_purpose">Purpose
                         <span class="tooltip">
                             An indication of the intended usage of the present virtual collection<br /><br /> 
-                            Research: The virtual collection bundles resources that are relevant to a specific research (question).<br /><br /> 
-                            Reference: The virtual collection bundles resources, that are to be cited in a publication.<br /><br /> 
-                            Sample: This virtual collection bundles is intended to serve as an sample for research data<br /><br /> 
-                            Future-use: The purpose of this virtual collection is not specified yet. Used in published collection is advised against.
+                            <b>Research</b>: The virtual collection bundles resources that are relevant to a specific research (question).<br /><br /> 
+                            <b>Reference</b>: The virtual collection bundles resources, that are to be cited in a publication.<br /><br /> 
+                            <b>Sample</b>: This virtual collection bundles is intended to serve as an sample for research data<br /><br /> 
+                            <b>Future-use</b>: The purpose of this virtual collection is not specified yet. Used in published collection is advised against.
                         </span>
                     </label>
                     <select wicket:id="purpose" id="gen_vc_purpose"></select>
@@ -67,9 +67,9 @@
                     <label id="reproducibilitylabel" class="tooltipparent" for="gen_vc_reproducibility">Reproducibility
                         <span class="tooltip">
                             An indication of the degree to which results obtained from processing of the present collection can be expected to be stable<br /><br />
-                            Intended: Processing results can be expected to remain stable<br /><br />
-                            Fluctuating: Processing results may vary<br /><br />
-                            Untended: No claims with respect to the stability of the processing results are made
+                            <b>Intended</b>: Processing results can be expected to remain stable<br /><br />
+                            <b>Fluctuating</b>: Processing results may vary<br /><br />
+                            <b>Untended</b>: No claims with respect to the stability of the processing results are made
                         </span>
                     </label>
                     <select wicket:id="reproducibility"
