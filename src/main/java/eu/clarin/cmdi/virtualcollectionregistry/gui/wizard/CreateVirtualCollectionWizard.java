@@ -820,6 +820,10 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
         init(new DynamicWizardModel(new GeneralStep()));
     }
 
+    public IModel<VirtualCollection> getVirtualCollectionModel() {
+        return vc;
+    }
+
     @Override
     public final void onCancel() {
         onCancelWizard();
@@ -828,6 +832,12 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
     @Override
     public final void onFinish() {
         onFinishWizard(vc);
+    }
+
+    @Override
+    public void detachModels() {
+        super.detachModels();
+        vc.detach();
     }
 
     protected abstract void onCancelWizard();
