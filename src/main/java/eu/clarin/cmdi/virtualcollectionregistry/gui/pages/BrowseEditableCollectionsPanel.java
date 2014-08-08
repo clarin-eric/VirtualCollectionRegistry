@@ -89,9 +89,9 @@ public class BrowseEditableCollectionsPanel extends Panel {
                                             final VirtualCollection vc = model.getObject();
                                             if (vc.isDeleted()) {
                                                 detailsItem.setVisible(false).setEnabled(false);
+                                                editItem.setVisible(false).setEnabled(false);
                                             }
                                             if (!vc.isPrivate()) {
-                                                editItem.setVisible(false).setEnabled(false);
                                                 publishItem.setVisible(false).setEnabled(false);
                                                 deleteItem.setVisible(false).setEnabled(false);
                                             }
@@ -143,9 +143,9 @@ public class BrowseEditableCollectionsPanel extends Panel {
             final VirtualCollection vc = model.getObject();
             if (vc.isDeleted()) {
                 detailsLink.setVisible(false).setEnabled(false);
+                editLink.setVisible(false).setEnabled(false);
             }
             if (!vc.isPrivate()) {
-                editLink.setVisible(false).setEnabled(false);
                 publishLink.setVisible(false).setEnabled(false);
                 deleteLink.setVisible(false).setEnabled(false);
             }
@@ -211,11 +211,35 @@ public class BrowseEditableCollectionsPanel extends Panel {
         }
     } // class BrowsePrivateCollectionsPage.PublishCollectionDialog
 
+    private final class EditPublishedCollectionDialog extends ConfirmationDialog {
+
+        private long vcId;
+
+        public EditPublishedCollectionDialog(String id,
+                final Component updateComponenet) {
+            super(id, updateComponenet);
+            setInitialWidth(400);
+        }
+
+        @Override
+        public void onConfirm(AjaxRequestTarget target) {
+            setResponsePage(EditVirtualCollectionPage.class, new PageParameters(Collections.singletonMap("id", vcId)));
+        }
+
+        public void showDialogue(AjaxRequestTarget target, VirtualCollection vc) {
+            this.vcId = vc.getId();
+            super.show(target,
+                    new StringResourceModel("collections.editpublishedconfirm",
+                            new VolatileEntityModel<>(vc)));
+        }
+    }
+
     private final PublishCollectionDialog publishDialog;
     private final DeleteCollectionDialog deleteDialog;
+    private final EditPublishedCollectionDialog editPublishedDialog;
 
     /**
-     * 
+     *
      * @param id panel id
      * @param provider provider for collections that should be shown
      */
@@ -237,17 +261,24 @@ public class BrowseEditableCollectionsPanel extends Panel {
                 };
         add(table);
 
-        publishDialog = new PublishCollectionDialog("publishCollectionDialog",
-                table);
+        publishDialog = new PublishCollectionDialog("publishCollectionDialog", table);
         add(publishDialog);
-        deleteDialog = new DeleteCollectionDialog("deleteCollectionDialog",
-                table);
+        
+        deleteDialog = new DeleteCollectionDialog("deleteCollectionDialog", table);
         add(deleteDialog);
+        
+        editPublishedDialog = new EditPublishedCollectionDialog("editPublishedCollectionDialog", table);
+        add(editPublishedDialog);
+
     }
 
-    private void doEdit(AjaxRequestTarget target,
-            VirtualCollection vc) {
-        setResponsePage(EditVirtualCollectionPage.class, new PageParameters(Collections.singletonMap("id", vc.getId())));
+    private void doEdit(AjaxRequestTarget target, VirtualCollection vc) {
+        if (vc.isPublic()) {
+            // ask for confirmation when trying to edit a published collection
+            editPublishedDialog.showDialogue(target, vc);
+        } else {
+            setResponsePage(EditVirtualCollectionPage.class, new PageParameters(Collections.singletonMap("id", vc.getId())));
+        }
     }
 
     private void doPublish(AjaxRequestTarget target,

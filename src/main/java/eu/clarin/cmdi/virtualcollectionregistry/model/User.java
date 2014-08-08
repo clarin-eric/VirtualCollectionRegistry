@@ -101,7 +101,7 @@ public class User implements Serializable, IdentifiedEntity {
     public boolean equalsPrincipal(Principal principal) {
         if (principal == null) {
             throw new NullPointerException("principal == null");
-        }
+    }
         return name.equals(principal.getName());
     }
 
