@@ -23,15 +23,5 @@
     <bean class="org.springframework.web.context.support.ServletContextPropertyPlaceholderConfigurer">
         <!--<property name="location" value="classpath:vcr-defaults.properties"/>-->
     </bean>
-
-    <!-- 
-    Will generate a factory for virtual collection validator, based on the 
-    prototype bean for the VirtualCollectionValidator implementation
-    see http://docs.spring.io/spring/docs/4.0.5.RELEASE/javadoc-api/org/springframework/beans/factory/config/ServiceLocatorFactoryBean.html
-    -->
-    <bean id="validatorFactory"
-          class="org.springframework.beans.factory.config.ServiceLocatorFactoryBean">
-        <property name="serviceLocatorInterface" value="eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidatorFactory"/>
-    </bean>
                 
 </beans>

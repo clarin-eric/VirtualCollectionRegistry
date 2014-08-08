@@ -9,7 +9,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifierProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidator;
-import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidatorFactory;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
@@ -34,6 +33,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 @Service
@@ -46,7 +46,8 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
     @Autowired
     private OAIProvider oaiProvider;
     @Autowired
-    private VirtualCollectionValidatorFactory validatorFactory;
+    @Qualifier("creation")
+    private VirtualCollectionValidator validator;
     @Autowired
     private AdminUsersService adminUsersService;
 
@@ -111,7 +112,6 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
 
         logger.debug("creating virtual collection");
 
-        VirtualCollectionValidator validator = validatorFactory.createValidator();
         validator.validate(vc);
         try {
             EntityManager em = datastore.getEntityManager();
@@ -152,7 +152,6 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
 
         logger.debug("updating virtual collection (id={})", id);
 
-        VirtualCollectionValidator validator = validatorFactory.createValidator();
         validator.validate(vc);
 
         try {

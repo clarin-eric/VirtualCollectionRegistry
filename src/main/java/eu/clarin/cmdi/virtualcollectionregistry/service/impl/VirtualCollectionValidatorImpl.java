@@ -1,7 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.service.impl;
 
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidator;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
@@ -12,24 +11,17 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
-import static org.springframework.beans.factory.config.ConfigurableBeanFactory.SCOPE_PROTOTYPE;
-import org.springframework.beans.factory.config.ServiceLocatorFactoryBean;
-import org.springframework.context.annotation.Scope;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
 /**
- * A virtual collection validator. Scoped prototype, because it carries state.
- * Use a factory (e.g. dynamically generated using
- * {@link ServiceLocatorFactoryBean}) to get new instances within a singleton.
+ * A virtual collection validator. Reusable and thread safe.
  *
  * @author twagoo
  */
 @Service
-@Scope(value = SCOPE_PROTOTYPE)
+@Qualifier("creation")
 public class VirtualCollectionValidatorImpl implements VirtualCollectionValidator {
-
-    private final Set<Creator> uniqueCreators = new HashSet<Creator>(16);
-    private final Set<String> uniqueResourceRefs = new HashSet<String>(512);
 
     @Override
     public void validate(VirtualCollection vc)
@@ -38,8 +30,8 @@ public class VirtualCollectionValidatorImpl implements VirtualCollectionValidato
             throw new NullPointerException("vc == null");
         }
 
-        // reset internal state
-        reset();
+        final Set<Creator> uniqueCreators = new HashSet<Creator>(16);
+        final Set<String> uniqueResourceRefs = new HashSet<String>(512);
 
         // proceed to validate ...
         if ((vc.getName() == null) || vc.getName().trim().isEmpty()) {
@@ -133,11 +125,6 @@ public class VirtualCollectionValidatorImpl implements VirtualCollectionValidato
             }
         }
         return invalidRefs;
-    }
-
-    private void reset() {
-        uniqueCreators.clear();
-        uniqueResourceRefs.clear();
     }
 
 } // class VirtualCollectionValidator
