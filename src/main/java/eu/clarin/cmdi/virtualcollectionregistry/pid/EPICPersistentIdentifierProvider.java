@@ -56,7 +56,7 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
         logger.debug("creating handle for virtual collection \"{}\"", vc.getId());
         final Map<HandleField, String> fieldMap = createPIDFieldMap(vc);
         try {
-            final String requestedPid = String.format("VCR-%05d", vc.getId());
+            final String requestedPid = String.format("VCR-%d", vc.getId());
             final String pid = pidWriter.registerNewPID(configuration, fieldMap, requestedPid);
             return new PersistentIdentifier(vc, PersistentIdentifier.Type.HANDLE, pid);
         } catch (HttpException ex) {
