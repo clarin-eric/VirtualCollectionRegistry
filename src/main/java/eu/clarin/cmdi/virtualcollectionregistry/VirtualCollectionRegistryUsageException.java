@@ -11,12 +11,17 @@ public class VirtualCollectionRegistryUsageException extends
     private final List<String> validationErrors;
 
     public VirtualCollectionRegistryUsageException(String msg) {
-        this(msg, null);
+        this(msg, null, null);
     }
 
     public VirtualCollectionRegistryUsageException(String msg,
             Throwable cause) {
         this(msg, cause, null);
+    }
+
+    public VirtualCollectionRegistryUsageException(String msg,
+            List<String> validationErrors) {
+        this(msg, null, validationErrors);
     }
 
     public VirtualCollectionRegistryUsageException(String msg,

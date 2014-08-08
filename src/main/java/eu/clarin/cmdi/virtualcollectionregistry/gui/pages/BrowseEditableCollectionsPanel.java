@@ -2,6 +2,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ConfirmationDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.menu.AjaxLinkMenuItem;
@@ -9,10 +10,13 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.menu.AjaxPopupMenu;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.CollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidator;
 import java.security.Principal;
 import java.util.Collections;
+import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.PageParameters;
+import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -20,6 +24,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Panel that shows a table with view, edit, publish, delete options for the
@@ -28,6 +34,8 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
  * @author twagoo
  */
 public class BrowseEditableCollectionsPanel extends Panel {
+
+    private final static Logger logger = LoggerFactory.getLogger(BrowseEditableCollectionsPanel.class);
 
     @SpringBean
     private VirtualCollectionRegistry vcr;
@@ -47,7 +55,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
                                 @Override
                                 protected void onClick(AjaxRequestTarget target,
                                         IModel<VirtualCollection> model) {
-                                    doPublish(target, model.getObject());
+                                    doPublish(target, model);
                                 }
                             };
                     menu.add(publishItem);
@@ -108,7 +116,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
                     = new AjaxLink<VirtualCollection>("publish", model) {
                         @Override
                         public void onClick(AjaxRequestTarget target) {
-                            doPublish(target, getModelObject());
+                            doPublish(target, getModel());
                         }
                     };
             add(publishLink);
@@ -158,7 +166,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
 
     private final class PublishCollectionDialog extends ConfirmationDialog {
 
-        private long vcId;
+        private IModel<VirtualCollection> vcModel;
 
         public PublishCollectionDialog(String id,
                 final Component updateComponenet) {
@@ -169,20 +177,57 @@ public class BrowseEditableCollectionsPanel extends Panel {
         @Override
         public void onConfirm(AjaxRequestTarget target) {
             try {
-                vcr.setVirtualCollectionState(getUser(), vcId,
-                        VirtualCollection.State.PUBLIC_PENDING);
-            } catch (VirtualCollectionRegistryException e) {
-                e.printStackTrace();
+                try {
+                    prePublicationValidator.validate(vcModel.getObject());
+                    doPublish(vcModel.getObject().getId());
+                } catch (VirtualCollectionRegistryUsageException ex) {
+                    confirmPublishCollectionDialog.showDialogue(target, vcModel, ex.getValidationErrors());
+                }
+            } catch (VirtualCollectionRegistryException ex) {
+                logger.error("Could not publish collection {}, id {}", vcModel.getObject().getName(), vcModel.getObject().getId(), ex);
+                Session.get().error(ex.getMessage());
             }
         }
 
-        public void show(AjaxRequestTarget target, VirtualCollection vc) {
-            this.vcId = vc.getId();
+        public void showDialogue(AjaxRequestTarget target, IModel<VirtualCollection> vc) {
+            this.vcModel = vc;
             super.show(target,
-                    new StringResourceModel("collections.publishconfirm",
-                            new VolatileEntityModel<VirtualCollection>(vc)));
+                    new StringResourceModel("collections.publishconfirm", vc));
         }
     } // class BrowsePrivateCollectionsPage.PublishCollectionDialog
+
+    private void doPublish(long vcId) throws VirtualCollectionRegistryException {
+        vcr.setVirtualCollectionState(getUser(), vcId,
+                VirtualCollection.State.PUBLIC_PENDING);
+    }
+
+    private final class ConfirmPublishCollectionDialog extends ConfirmationDialog {
+
+        private long vcId;
+
+        public ConfirmPublishCollectionDialog(String id,
+                final Component updateComponenet) {
+            super(id, updateComponenet);
+            setInitialWidth(400);
+        }
+
+        @Override
+        public void onConfirm(AjaxRequestTarget target) {
+            try {
+                doPublish(vcId);
+            } catch (VirtualCollectionRegistryException ex) {
+                logger.error("Could not publish collection with id {}", vcId, ex);
+                Session.get().error(ex.getMessage());
+            }
+        }
+
+        public void showDialogue(AjaxRequestTarget target, IModel<VirtualCollection> vc, List<String> warnings) {
+            this.vcId = vc.getObject().getId();
+            super.show(target,
+                    new StringResourceModel("collections.publishwarningsconfirm", vc, new Object[]{warnings}));
+        }
+
+    }
 
     private final class DeleteCollectionDialog extends ConfirmationDialog {
 
@@ -237,6 +282,10 @@ public class BrowseEditableCollectionsPanel extends Panel {
     private final PublishCollectionDialog publishDialog;
     private final DeleteCollectionDialog deleteDialog;
     private final EditPublishedCollectionDialog editPublishedDialog;
+    private final ConfirmPublishCollectionDialog confirmPublishCollectionDialog;
+
+    @SpringBean(name = "publication-soft")
+    private VirtualCollectionValidator prePublicationValidator;
 
     /**
      *
@@ -263,13 +312,15 @@ public class BrowseEditableCollectionsPanel extends Panel {
 
         publishDialog = new PublishCollectionDialog("publishCollectionDialog", table);
         add(publishDialog);
-        
+
         deleteDialog = new DeleteCollectionDialog("deleteCollectionDialog", table);
         add(deleteDialog);
-        
+
         editPublishedDialog = new EditPublishedCollectionDialog("editPublishedCollectionDialog", table);
         add(editPublishedDialog);
-
+        
+        confirmPublishCollectionDialog = new ConfirmPublishCollectionDialog("confirmPublishCollectionDialog", table);
+        add(confirmPublishCollectionDialog);
     }
 
     private void doEdit(AjaxRequestTarget target, VirtualCollection vc) {
@@ -282,8 +333,8 @@ public class BrowseEditableCollectionsPanel extends Panel {
     }
 
     private void doPublish(AjaxRequestTarget target,
-            VirtualCollection vc) {
-        publishDialog.show(target, vc);
+            IModel<VirtualCollection> vc) {
+        publishDialog.showDialogue(target, vc);
     }
 
     private void doDelete(AjaxRequestTarget target,
