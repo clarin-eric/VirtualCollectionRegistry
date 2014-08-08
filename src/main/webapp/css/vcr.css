@@ -549,6 +549,10 @@ div.modalDialog div.modalDialogContent {
     margin: 10px;
 }
 
+div.modalDialog div.modalDialogContent p {
+    margin: 1em;
+}
+
 div.modalDialog div.modalDialogButtons {
     border-top: 1px solid #BBBBBB;
     margin: 0 5px 5px 5px;
@@ -558,6 +562,10 @@ div.modalDialog div.modalDialogButtons {
 
 div.confirmationDialog {
     text-align: center;
+}
+
+div.longConfirmationDialog {
+    text-align: left;
 }
 
 div.editDialog fieldset {

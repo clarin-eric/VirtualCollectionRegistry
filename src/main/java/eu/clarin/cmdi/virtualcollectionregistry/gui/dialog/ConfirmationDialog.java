@@ -89,11 +89,14 @@ public abstract class ConfirmationDialog extends ModalDialogBase {
     }
 
     @Override
-    protected Content createContent(String id) {
+    protected Panel createContent(String id) {
         Content content = new Content(id);
-        content.add(new AttributeAppender("class",
-                new Model<String>("confirmationDialog"), " "));
+        content.add(new AttributeAppender("class", getCssClass(), " "));
         return content;
+    }
+
+    protected Model<String> getCssClass() {
+        return Model.of("confirmationDialog");
     }
 
     @Override

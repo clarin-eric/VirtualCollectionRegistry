@@ -53,5 +53,9 @@ public class ReferenceValidator extends AbstractValidator<String> {
         validate(validatable);
         return validatable.isValid();
     }
+    
+    public static boolean isPid(CharSequence uri) {
+        return HANDLE_PATTERN.matcher(uri).matches();
+    }
 
 }

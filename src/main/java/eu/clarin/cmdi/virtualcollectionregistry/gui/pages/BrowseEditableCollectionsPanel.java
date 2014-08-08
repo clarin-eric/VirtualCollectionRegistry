@@ -223,8 +223,17 @@ public class BrowseEditableCollectionsPanel extends Panel {
 
         public void showDialogue(AjaxRequestTarget target, IModel<VirtualCollection> vc, List<String> warnings) {
             this.vcId = vc.getObject().getId();
+            StringBuilder sb = new StringBuilder();
+            for (String warning : warnings) {
+                sb.append(" -").append(warning).append("\n");
+            }
             super.show(target,
-                    new StringResourceModel("collections.publishwarningsconfirm", vc, new Object[]{warnings}));
+                    new StringResourceModel("collections.publishwarningsconfirm", vc, new Object[]{sb}));
+        }
+
+        @Override
+        protected Model<String> getCssClass() {
+            return Model.of("longConfirmationDialog");
         }
 
     }
@@ -318,7 +327,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
 
         editPublishedDialog = new EditPublishedCollectionDialog("editPublishedCollectionDialog", table);
         add(editPublishedDialog);
-        
+
         confirmPublishCollectionDialog = new ConfirmPublishCollectionDialog("confirmPublishCollectionDialog", table);
         add(confirmPublishCollectionDialog);
     }
