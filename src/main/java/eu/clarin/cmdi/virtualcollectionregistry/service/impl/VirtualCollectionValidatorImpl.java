@@ -33,7 +33,7 @@ public class VirtualCollectionValidatorImpl implements VirtualCollectionValidato
 
     @Override
     public void validate(VirtualCollection vc)
-            throws VirtualCollectionRegistryException {
+            throws VirtualCollectionRegistryUsageException {
         if (vc == null) {
             throw new NullPointerException("vc == null");
         }

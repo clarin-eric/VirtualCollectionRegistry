@@ -47,7 +47,7 @@
         <jersey.version>1.18.1</jersey.version>
         <jackson.version>1.6.1</jackson.version>
         <wicket.version>1.4.23</wicket.version>
-        <spring.version>4.0.5.RELEASE</spring.version>
+        <spring.version>4.0.6.RELEASE</spring.version>
         
         <!-- Production settings below -->
         <log4j.appender>File</log4j.appender>

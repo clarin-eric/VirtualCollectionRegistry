@@ -1,6 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.service;
 
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
 /**
@@ -9,6 +9,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
  */
 public interface VirtualCollectionValidator {
 
-    void validate(VirtualCollection vc) throws VirtualCollectionRegistryException;
+    void validate(VirtualCollection vc) throws VirtualCollectionRegistryUsageException;
 
 }
