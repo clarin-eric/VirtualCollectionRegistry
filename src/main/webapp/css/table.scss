@@ -1,0 +1,180 @@
+/*
+Copyright (C) 2014 CLARIN
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+table td.action {
+    width: 8em;
+    text-align: right;
+}
+
+table.resourcesTable td.move {
+    width: 5em;
+}
+
+table.resourcesTable tr.moving {
+    background: #ccc;
+}
+
+table.moving tr:hover td {
+    border-top: 6px solid #ccc;
+}
+
+table.moving tr.moving:hover td {
+    border-top: 0px;
+}
+
+table.resourcesTable tr.moving td, table.resourcesTable tr.moving td a {
+    color: #333;
+}
+
+/*
+table td.norecords-td {
+    text-align: center;
+    color: inherit;
+    background-color: #FFFFFF;
+}
+
+table thead tr.navigation {
+    border-bottom: 1px dotted #BBBBBB;
+}
+
+table tr.navigation div {
+    clear: none !important;
+}
+*/
+
+table.creatorsTable,
+table.resourcesTable {
+    width: 805px;
+}
+
+table.creatorsTable td {
+    width: 252px;
+    overflow: hidden;
+}
+
+table td.type {
+    width: 60px;
+}
+
+/* ORDERING */
+
+tr.headers a.wicket_orderNone {
+    padding-right: 7px;
+    background: transparent url('../icons/order_none.png') no-repeat center right;
+}
+
+tr.headers a.wicket_orderUp {
+    padding-right: 7px;
+    background: transparent url('../icons/order_up.png') no-repeat center right;
+}
+
+tr.headers a.wicket_orderDown {
+    padding-right: 7px;
+    background: transparent url('../icons/order_down.png') no-repeat center right;
+}
+
+/* COLLECTIONS TABLE */
+
+table.collectionsTable {
+    width: 100%;
+    table-layout: fixed;
+}
+
+table.collectionsTable th,
+table.collectionsTable td {
+    vertical-align: top;
+}
+
+table.collectionsTable td.name div.name {
+    padding-left: 16px;
+    background-image: url('../icons/bullet_arrow_down.png');
+    background-repeat: no-repeat;
+    background-position: center left;
+    cursor: pointer;
+}
+
+table.collectionsTable td.name div.name:hover {
+    color: #AE0000;
+    background-color: inherit;
+}
+
+table.collectionsTable td.name div.name.detailsShown {
+    padding-left: 16px;
+    background-image: url('../icons/bullet_arrow_up.png');
+    background-repeat: no-repeat;
+    background-position: center left;
+}
+
+table.collectionsTable td.name div.name.noDetails{
+    background-image: none;
+}
+
+table.collectionsTable td.name div.details {
+    margin-left: 16px;
+    margin-right: -248px;
+    width: 964px;
+}
+
+table.collectionsTable td.name div.desc {
+    text-align: justify;
+    padding: 4px 0 0 0;
+}
+
+table.collectionsTable td.name div.actions {
+    margin: 4px 0 2px 0;
+}
+
+table.collectionsTable th.state,
+table.collectionsTable td.state {
+    width: 5em;
+}
+
+table.collectionsTable th.type,
+table.collectionsTable td.type {
+    width: 7em;
+}
+
+table.collectionsTable th.created,
+table.collectionsTable td.created {
+    width: 7em;
+}
+
+table.collectionsTable td.action,
+table.collectionsTable th.action {
+    width: 2em;
+}
+
+table.collectionsTable.public td.action span,
+table.collectionsTable.private td.action div.popupTrigger span {
+    display: none;
+}
+
+table.collectionsTable.public td.action a {
+    display: block;
+    width: 12px;
+    height: 12px;
+    margin-right: 2px;
+    background: transparent url('../icons/magnifier.png') no-repeat center center;
+}
+
+table.collectionsTable.private td.action div.popupTrigger {
+    display: block;
+    width: 12px;
+    height: 12px;
+    margin-right: 2px;
+    background: transparent url('../icons/wrench.png') no-repeat center center;
+}
