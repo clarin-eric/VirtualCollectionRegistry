@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<beans xmlns="http://www.springframework.org/schema/beans"
+       xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+       xmlns:context="http://www.springframework.org/schema/context"
+       xsi:schemaLocation="http://www.springframework.org/schema/beans http://www.springframework.org/schema/beans/spring-beans-4.0.xsd
+          http://www.springframework.org/schema/context http://www.springframework.org/schema/context/spring-context-4.0.xsd
+">
+    <!-- 
+    Spring configuration for Virtual Collection Registry 
+    -->
+    
+    <!-- 
+    Bootstrap component scanning, so that Spring picks up @Component, 
+    @Service, @Repository annotations on classes and creates beans for these, as
+    well as @Configuration annotations for classes defining beans and properties
+    -->
+    <context:component-scan base-package="eu.clarin.cmdi.virtualcollectionregistry" />
+    
+    <!--
+    Will enable reading properties from the servlet context (with fallback to a
+    packaged properties file). Used by EPIC persistent identifier provider.
+    -->
+    <bean class="org.springframework.web.context.support.ServletContextPropertyPlaceholderConfigurer">
+        <!--<property name="location" value="classpath:vcr-defaults.properties"/>-->
+    </bean>
+                
+</beans>

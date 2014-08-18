@@ -34,9 +34,9 @@ public abstract class ModalDialogBase extends ModalWindow {
         setTitle(title);
         setContent(new Content(this.getContentId()));
     }
-    
+
     protected abstract Panel createButtonBar(String id);
 
     protected abstract Panel createContent(String id);
-    
+
 } // class ModalDialogBase;

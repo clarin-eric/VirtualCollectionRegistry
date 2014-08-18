@@ -1,31 +1,43 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
 import java.util.Map;
-
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-
+import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.DisposableBean;
+import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Repository;
 
-public class DataStore {
-    private static final Logger logger =
-        LoggerFactory.getLogger(DataStore.class);
+@Repository
+public class DataStore implements DisposableBean {
+
+    private static final Logger logger = LoggerFactory.getLogger(DataStore.class);
     private final EntityManagerFactory emf;
     private final ThreadLocal<EntityManager> em;
 
-    DataStore(Map<String, String> config)
-        throws VirtualCollectionRegistryException {
+    @Autowired
+    public DataStore(ServletContext servletContext) throws VirtualCollectionRegistryException {
+        this(ServletUtils.createParameterMap(servletContext));
+    }
+
+    public DataStore(Map<String, String> config)
+            throws VirtualCollectionRegistryException {
         try {
             emf = Persistence.createEntityManagerFactory(
                     "VirtualCollectionStore", config);
             em = new ThreadLocal<EntityManager>() {
+                @Override
                 protected EntityManager initialValue() {
                     if (emf == null) {
                         throw new InternalError(
                                 "JPA not initalizied correctly");
+                    }
+                    if (logger.isDebugEnabled()) {
+                        logger.trace("Creating new thread local entity manager in thread {}", Thread.currentThread().getName());
                     }
                     return emf.createEntityManager();
                 }
@@ -35,27 +47,37 @@ public class DataStore {
             throw new VirtualCollectionRegistryException(
                     "error initializing", e);
         }
-        logger.debug("data store was successfully initialized");
+        logger.trace("data store was successfully initialized");
     }
 
+    @Override
     public void destroy() throws VirtualCollectionRegistryException {
         if (emf != null) {
+            logger.info("Closing entity manager factory");
             emf.close();
         }
     }
 
     public EntityManager getEntityManager() {
-        return em.get();
+        logger.trace("Entity manager requested in thread");
+        final EntityManager manager = em.get();
+        if (logger.isTraceEnabled()) {
+            logger.trace("Returning entity manager {} (isOpen = {})", manager, manager.isOpen());
+        }
+        return manager;
     }
 
     public void closeEntityManager() {
+        logger.trace("Closing of entity manager requested");
         EntityManager manager = em.get();
         if (manager != null) {
             em.remove();
             EntityTransaction tx = manager.getTransaction();
             if (tx.isActive()) {
+                logger.debug("Entity manager has active transaction, rolling back");
                 tx.rollback();
             }
+            logger.trace("Closing entity manager");
             manager.close();
         }
     }

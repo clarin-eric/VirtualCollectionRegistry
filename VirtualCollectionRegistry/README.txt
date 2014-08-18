@@ -1,6 +1,8 @@
 CLARIN Virtual Collection Registry
 ----------------------------------
 
+* DATABASE CONNECTION *
+
 The connection to the database is configured using JNDI using the
 name "jdbc/VirtualCollectionStore".
 When using Apache Tomcat add the following to the context configuration
@@ -24,21 +26,91 @@ if in doubt, please check the Apache Tomcat documentation):
   Customize $dbuser, $dbpass and $dbname to match your local settings.
   NOTE: currently only MySQL is supported.
 
+* PID PROVIDER *
+
   You need to choose, which persistent identifier provider you want to use.
   You can either use a dummy provider or the GWDG handle provider.
   a) For using the dummy provider add the following:
-  <Parameter name="pid_provider.class"
-             value="eu.clarin.cmdi.virtualcollectionregistry.DummyPersistentIdentifierProvider"
-             override="false"/>
+  <Parameter name="spring.profiles.active"
+             value="vcr.pid.dummy"
+             override="false"/>   
 
   b) For using the GWDG handle provider add following and customize the
      base URI for the virtual collection registry and the values for
      $gwdg_user and $gwdg_password:
-  <Parameter name="pid_provider.class"
-             value="eu.clarin.cmdi.virtualcollectionregistry.GWDGPersistentIdentifierProvider"
-             override="false"/>
+
+  <Parameter name="spring.profiles.active"
+             value="vcr.pid.gwdg"
+             override="false"/>   
   <Parameter name="pid_provider.base_uri"
              value="http://127.0.0.1:8080/VirtualCollectionRegistry"
              override="false"/>
   <Parameter name="pid_provider.username" value="$gwdg_user" override="false"/>
   <Parameter name="pid_provider.password" value="$gwdg_password" override="false"/>
+
+  c) For using the EPIC API v2 handle provider add following and customize the
+     base URI for the virtual collection registry and… TODO
+
+  <Parameter name="spring.profiles.active"
+             value="vcr.pid.epic”
+             override="false"/>   
+  <Parameter name="pid_provider.base_uri"
+             value="http://127.0.0.1:8080/VirtualCollectionRegistry"
+             override="false"/>
+
+* AUTHENTICATION *
+
+The application has two alternative authentication configuration represented by two
+versions of the web.xml file. The default web.xml assumes Tomcat UserDatabaseRealm,
+which is useful for testing purposes.
+
+To shibbolize this application, the following steps are required:
+
+1. Use the shibboleth version of web.xml called 'web-shib.xml' instead of
+the default one by renaming it to and overwriting web.xml (you can make a
+backup of the original web.xml). If the package was built for a production
+environment, it should already have the right web.xml in place.
+
+2. Add the following to the relevant Apache configuration:
+
+        <Location /vcr>
+            ProxyPass ajp://localhost:8009/vcr
+            AuthType            shibboleth
+            ShibRequireSession  Off
+            ShibUseHeaders      On
+            Satisfy             All
+            Require             shibboleth
+        </Location>
+
+        <Location /vcr/service/submit>
+            ShibRequireSession  On
+        </Location>
+
+Adjust locations to the desired and relevant local alternatives. The second
+block is required to make the virtual collection form submit service work
+with POSTs (current versions of SHHAA do not support this).
+
+* OAI PROVIDER *
+
+Collection display name:
+
+Add the following to the Tomcat context.xml file to set a custom collection display name 
+(MdCollectionDisplayName header element) for the CMDI representations provided by the 
+built-in OAI provider:
+
+<Parameter name="eu.clarin.cmdi.virtualcollectionregistry.collectiondisplayname
+           value="CLARIN Virtual Collection Registry" />
+
+Change the value of the 'value' attribute if desired. If this parameter is not set,
+the default value "CLARIN Virtual Collection Registry" will be used as a collection name.
+
+* ADMINISTRATOR USERS *
+
+Add the following context parameter:
+
+<Parameter
+	   name="eu.clarin.cmdi.virtualcollectionregistry.admindb"
+	   value="/path/to/vcr-admin.conf" />
+
+Add the username of each user that should get administrator rights to the referenced
+file, one username per line.

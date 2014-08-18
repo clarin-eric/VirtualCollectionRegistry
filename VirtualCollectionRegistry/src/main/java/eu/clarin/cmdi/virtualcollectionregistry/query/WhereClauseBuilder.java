@@ -23,7 +23,7 @@ class WhereClauseBuilder implements QueryParserVisitor {
         private CriteriaQuery<?> cq;
         private Root<VirtualCollection> root;
         private Stack<Predicate> stack;
-        
+
         public Data(CriteriaBuilder cb, CriteriaQuery<?> cq,
                 Root<VirtualCollection> root) {
             this.cb = cb;
@@ -31,7 +31,7 @@ class WhereClauseBuilder implements QueryParserVisitor {
             this.root = root;
             this.stack = new Stack<Predicate>();
         }
-        
+
         public CriteriaBuilder getBuilder() {
             return cb;
         }
@@ -39,20 +39,20 @@ class WhereClauseBuilder implements QueryParserVisitor {
         public CriteriaQuery<?> getQuery() {
             return cq;
         }
-        
+
         public Root<VirtualCollection> getRoot() {
             return root;
         }
-        
+
         public Stack<Predicate> getStack() {
             return stack;
         }
-        
+
         public Predicate getWhere() {
             return stack.peek();
         }
     } // inner class Data
-    
+
     @Override
     public Object visit(ASTStart node, Object d) {
         final Data data = (Data) d;
@@ -91,7 +91,7 @@ class WhereClauseBuilder implements QueryParserVisitor {
     public Object visit(ASTPredicate node, Object d) {
         final Data data = (Data) d;
         final Root<VirtualCollection> root = data.getRoot();
-        
+
         Predicate predicate = null;
         switch (node.getAttribute()) {
         case QueryParserConstants.VC_NAME:
@@ -172,7 +172,7 @@ class WhereClauseBuilder implements QueryParserVisitor {
         // replace query language wildcards with add SQL wildcards
         value = value.replace("*", "%");
 
-        // XXX: HSQLDB/Hibernate seems have trouble with escape char  
+        // XXX: HSQLDB/Hibernate seems have trouble with escape char
         switch (operator) {
         case QueryParserConstants.EQ:
             return data.getBuilder().like(attribute, value/*, '\\'*/);
@@ -206,7 +206,7 @@ class WhereClauseBuilder implements QueryParserVisitor {
                         cb.equal(attribute,
                                  VirtualCollection.State.PUBLIC),
                         cb.equal(attribute,
-                                 VirtualCollection.State.PUBLIC_PENDING)); 
+                                 VirtualCollection.State.PUBLIC_PENDING));
             } else {
                 return data.getBuilder().equal(attribute, state);
             }
@@ -217,8 +217,8 @@ class WhereClauseBuilder implements QueryParserVisitor {
                         cb.notEqual(attribute,
                                     VirtualCollection.State.PUBLIC),
                         cb.notEqual(attribute,
-                                    VirtualCollection.State.PUBLIC_PENDING)); 
-                
+                                    VirtualCollection.State.PUBLIC_PENDING));
+
             } else {
                 return data.getBuilder().notEqual(attribute, state);
             }
@@ -253,7 +253,7 @@ class WhereClauseBuilder implements QueryParserVisitor {
         } // switch (operator)
     }
 
-    private static Predicate makeReproducibilityPredicate(Data data, 
+    private static Predicate makeReproducibilityPredicate(Data data,
             int operator, String value) {
         VirtualCollection.Reproducibility reproducability = null;
         if ("intended".equalsIgnoreCase(value)) {
@@ -296,7 +296,7 @@ class WhereClauseBuilder implements QueryParserVisitor {
         } catch (ParseException e) {
             throw new RuntimeException("invalid date", e);
         }
-        
+
         CriteriaBuilder cb = data.getBuilder();
         switch (operator) {
         case QueryParserConstants.EQ:

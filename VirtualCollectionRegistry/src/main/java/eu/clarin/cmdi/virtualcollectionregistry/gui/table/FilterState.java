@@ -29,14 +29,14 @@ final class FilterState implements Serializable {
     public SearchMode getNameMode() {
         return nameMode;
     }
-    
+
     public void setNameMode(SearchMode nameMode) {
         if (nameMode == null) {
             throw new IllegalArgumentException("nameMode == null");
         }
         this.nameMode = nameMode;
     }
-    
+
     public String getName() {
         return name;
     }
@@ -52,7 +52,7 @@ final class FilterState implements Serializable {
     public String getNameWithWildcard() {
         return addWildcards(name, nameMode);
     }
-    
+
     public SearchMode getDescriptionMode() {
         return descriptionMode;
     }
@@ -63,7 +63,7 @@ final class FilterState implements Serializable {
         }
         this.descriptionMode = descriptionMode;
     }
-    
+
     public String getDescription() {
         return description;
     }
@@ -107,7 +107,7 @@ final class FilterState implements Serializable {
     public QueryOptions.Relation getCreatedRelation() {
         return createdRelation;
     }
-    
+
     public void setCreatedRelation(QueryOptions.Relation createdRelation) {
         if (createdRelation == null) {
             throw new IllegalArgumentException("createdRelation == null");
@@ -118,7 +118,7 @@ final class FilterState implements Serializable {
     public Date getCreated() {
         return created;
     }
-    
+
     public void setCreated(Date created) {
         this.created = created;
     }

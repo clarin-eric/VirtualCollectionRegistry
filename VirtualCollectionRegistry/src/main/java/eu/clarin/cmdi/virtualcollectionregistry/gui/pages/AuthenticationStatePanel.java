@@ -1,14 +1,12 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
-import org.apache.wicket.Page;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import org.apache.wicket.authentication.AuthenticatedWebSession;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.link.StatelessLink;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Fragment;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
-
-import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 
 @SuppressWarnings("serial")
 public class AuthenticationStatePanel extends Panel {
@@ -21,30 +19,17 @@ public class AuthenticationStatePanel extends Panel {
     }
 
     private class LoginFragment extends Fragment {
+
         public LoginFragment(String id) {
             super(id, "loginFragment", AuthenticationStatePanel.this);
             setRenderBodyOnly(true);
-            final StatelessLink loginLink = new StatelessLink("loginLink") {
-                @Override
-                public void onClick() {
-                }
+            add(new Link("loginLink") {
 
                 @Override
-                protected CharSequence getURL() {
-                    final Page page = getPage();
-                    StringBuilder url =
-                        new StringBuilder(urlFor(page.getClass(),
-                                page.getPageParameters()));
-                    if (url.indexOf("?") != -1) {
-                        url.append('&');
-                    } else {
-                        url.append('?');
-                    }
-                    url.append("authAction=LOGIN");
-                    return url.toString();
+                public void onClick() {
+                    setResponsePage(new DummyLoginPage(getPage().getPageReference()));
                 }
-            };
-            add(loginLink);
+            });
         }
 
         @Override
@@ -59,8 +44,9 @@ public class AuthenticationStatePanel extends Panel {
     } // private class LoginFragment
 
     private class LogoutFragment extends Fragment {
+
         private final Label usernameLabel;
-        
+
         public LogoutFragment(String id) {
             super(id, "logoutFragment", AuthenticationStatePanel.this);
             setRenderBodyOnly(true);
@@ -83,8 +69,8 @@ public class AuthenticationStatePanel extends Panel {
         @Override
         protected void onBeforeRender() {
             ApplicationSession session = (ApplicationSession) getSession();
-            final Model<String> userModel =
-                new Model<String>(session.getUserDisplay());
+            final Model<String> userModel
+                    = new Model<String>(session.getUserDisplay());
             usernameLabel.setDefaultModel(userModel);
             super.onBeforeRender();
         }

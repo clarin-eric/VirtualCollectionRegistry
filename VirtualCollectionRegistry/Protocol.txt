@@ -10,16 +10,23 @@ working with the registry.
     a) Internal XML format for virtual collections:
        A virtual collection is represented in an internal XML format, which is
        defined by the W3C XML schema "VirtualCollection.xsd" found in the
-       "src/main/resources" directory.
+       "src/resources/META-INF" directory.
        
     b) The VCR relies on various HTTP headers:
         - "Content-Type" must be set for POST and PUT requests. Accepted
           values are "text/xml", "application/xml" or "application/json".
         - "Accept" can be used all requests. Accepted values are "text/xml",
           "application/xml" or "application/json". If the header is not set,
-          the VCR assumes "application/xml" as default.
+          the VCR assumes "application/xml" as default. An exception is the retrieval
+          of individual collections (2d). This call also accepts "application/x-cmdi+xml"
+          and "text/html" and defaults to the former of these two.
         - Headers for HTTP Basic Auth need to be set on POST, PUT and DELETE
           requests.      
+          
+	Note that, as an alternative to the usage of the HTTP "Accept" header, the respons 
+	type can be controlled by providing one of the following suffixes to the service
+	URL: ".xml", ".json", ".cmdi", ".html". Not all operations will accept all of
+	these types.
 
 
 2. RESTful web service operations
@@ -33,7 +40,7 @@ working with the registry.
                               representation of the virtual collection sent in
                               the request body.
                  HTTP method: POST
-                         URI: $BASE/service/virtualcollection
+                         URI: $BASE/service/virtualcollections
          URI path parameters: none
             query parameters: none 
                 HTTP headers: Content-Type (required), Accept (optional)
@@ -54,7 +61,7 @@ working with the registry.
                               representation of the virtual collection sent in
                               the request body.
                  HTTP method: PUT
-                         URI: $BASE/service/virtualcollection/$id
+                         URI: $BASE/service/virtualcollections/$id
          URI path parameters: $id := (required) is the ID of the virtual
                                      collection, which is to be changed 
             query parameters: none 
@@ -73,7 +80,7 @@ working with the registry.
                  description: The virtual collection referenced by the URI will
                               be deleted.
                  HTTP method: DELETE
-                         URI: $BASE/service/virtualcollection/$id
+                         URI: $BASE/service/virtualcollections/$id
          URI path parameters: $id := (required) is the ID of the virtual
                                      collection, which is to be deleted  
             query parameters: none
@@ -88,18 +95,24 @@ working with the registry.
                  description: The virtual collection referenced by the URI will
                               be retrieved.
                  HTTP method: GET
-                         URI: $BASE/service/virtualcollection/$id
+                         URI: $BASE/service/virtualcollections/$id
          URI path parameters: $id := (required) is the ID of the virtual
                                      collection, which is to be retrieved
             query parameters: none
                 HTTP headers: Accept (optional)
               authentication: not required
                 request body: none
-                 result body: Depending on Accept header either an XML instance
-                              or the JSON representation of the virtual
-                              collection. If the virtual collection is not found
-                              the appropriate HTTP status code is issued and an
+                 result body: Depending on Accept header either a CMDI, XML or
+                              JSON representation of the virtual collection, or a redirect
+                              to the collection's detail view in the user interface in 
+                              case HTML is requested. If the virtual collection is not 
+                              found the appropriate HTTP status code is issued and an 
                               error message is returned.
+                              By default, it returns the CMDI representation for published
+                              collections. If the collection is not published, the
+                              service will respond with another accepted representation.
+                              If only CMDI is represented, it responds with code 406
+                              (Not Acceptable).
 
     e) Retrieve all / search virtual collections (GET)
                  description: All virtual collections will be retrieved; if a
@@ -145,21 +158,7 @@ working with the registry.
                               collection. If no virtual collection are found
                               an empty list will be returned.
 
-    g) Retrieve a virtual collection in CMDI format (GET)
-                 description: The virtual collection referenced by the URI will
-                              be retrieved in CMDI format.
-                 HTTP method: GET
-                         URI: $BASE/service/clarin-virtualcollection/$id
-         URI path parameters: $id := is the ID of the virtual collection,
-                                     which is to be retrieved
-            query parameters: none
-                HTTP headers: none
-              authentication: not required
-                request body: none
-                 result body: The virtual collection in CMDI format If the
-                              virtual collection is not found the appropriate
-                              HTTP status code is issued and an error message
-                              is returned.
+TODO: Add {id}/state
 
 
 3. Virtual Collection Query language (VCRQL)

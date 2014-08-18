@@ -40,10 +40,12 @@
         <Resource>
             <ResourceType>Metadata</ResourceType>
             <ResourceRef>http://hdl.handle.net/1839/00-0000-0000-0006-671C-C</ResourceRef>
+            <Label>Second metadata resource</Label>
         </Resource>
         <Resource>
             <ResourceType>Metadata</ResourceType>
             <ResourceRef>http://hdl.handle.net/1839/00-0000-0000-0007-671C-C</ResourceRef>
+            <Description>Third metadata resource</Description>
         </Resource>
     </Resources>
 </VirtualCollection>

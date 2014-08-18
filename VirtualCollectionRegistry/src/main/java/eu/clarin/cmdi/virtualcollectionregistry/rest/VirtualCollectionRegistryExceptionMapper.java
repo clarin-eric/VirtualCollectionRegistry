@@ -21,6 +21,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageEx
 public class VirtualCollectionRegistryExceptionMapper implements
         ExceptionMapper<VirtualCollectionRegistryException> {
 
+    @Override
     public Response toResponse(VirtualCollectionRegistryException e) {
         Status       status = null;
         List<String> errors = null;

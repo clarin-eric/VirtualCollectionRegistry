@@ -7,30 +7,46 @@
 <body>
 <wicket:panel>
 <fieldset>
-  <div class="notes">
+  <div class="sidenotes">
     <h4>Note</h4>
     <p class="last">
         Intensional virtual collections are very experimental. Use at own risk!
     </p>
   </div>
   <div class="required">
-     <label for="gen_desc">Description</label>
-     <textarea wicket:id="vc.generatedBy.description"
+     <label id="descriptionlabel" class="tooltipparent" for="gen_desc">Description
+         <span class="tooltip">
+             A prose description of the procedure by which the collection items can be retrieved from the external service.
+         </span>
+     </label>
+     <textarea wicket:id="generatedBy.description"
                id="gen_desc" rows="5" cols="80"></textarea>
   </div>
   <div class="optional">
-     <label for="gen_uri">URI</label>
-     <input wicket:id="vc.generatedBy.uri"
+     <label id="urilabel" class="tooltipparent" for="gen_uri">URI
+         <span class="tooltip">
+            The location of the service from which the items should be retrieved. This value may be a persistent identifier, but could also be a plain URI although this is advised against for published collections.
+         </span>
+     </label>
+     <input wicket:id="generatedBy.uri"
             id="gen_uri" type="text" size="64" maxlength="255" />
   </div>
   <div class="optional">
-     <label for="gen_query_profile">Query Profile</label>
-     <input wicket:id="vc.generatedBy.query.profile"
+     <label id="profilelabel" class="tooltipparent" for="gen_query_profile">Query Profile
+         <span class="tooltip">
+            Identifier of the mechanism, i.e. the protocol to be used, by which the members of the virtual collection should be retrieved. A application exploiting the query can use this to use a proper driver to talk to the service. Example: In case of CLARIN-FCS access the endpoint by FCS-compatible means.
+         </span>
+     </label>
+     <input wicket:id="generatedBy.query.profile"
             id="gen_query_profile" type="text" size="64" maxlength="255" />
   </div>
   <div class="optional">
-     <label for="gen_query_value">Query value</label>
-     <textarea wicket:id="vc.generatedBy.query.value"
+     <label id="valuelabel" class="tooltipparent" for="gen_query_value">Query value
+         <span class="tooltip">
+            The query that should be passed on to the service by which it can look up the items that are part of this collection. This value should be in the query language supported by the service. Example: In case of CLARIN-FCS, this value is the CQL query to be send to the endpoint.
+         </span>
+     </label>
+     <textarea wicket:id="generatedBy.query.value"
                id="gen_query_value" rows="5" cols="80"></textarea>
   </div>
 </fieldset>

@@ -40,7 +40,7 @@ public class FilterForm extends Panel {
                 QueryOptions.Relation.EQ,
                 QueryOptions.Relation.GE,
                 QueryOptions.Relation.GT);
-    
+
     public FilterForm(String id, IFilterStateLocator<FilterState> locator,
             final DataTable<VirtualCollection> table, boolean privateMode) {
         super(id);
@@ -112,8 +112,6 @@ public class FilterForm extends Panel {
             }
         };
         form.add(clearButton);
-
-        form.add(new FeedbackPanel("feedback"));
         add(form);
     }
 

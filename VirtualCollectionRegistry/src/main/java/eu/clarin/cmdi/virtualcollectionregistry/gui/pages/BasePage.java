@@ -1,17 +1,21 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
+import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import java.security.Principal;
-
 import javax.servlet.http.HttpServletRequest;
-
 import org.apache.wicket.RestartResponseException;
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-
-import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class BasePage extends WebPage {
+    
+    @SpringBean
+    private AdminUsersService adminUsersService;
 
     protected BasePage(IModel<?> model) {
         super(model);
@@ -21,7 +25,7 @@ public class BasePage extends WebPage {
         // main navigation menu
         final Menu menu = new Menu("menu");
         menu.addMenuItem(new MenuItem<BrowsePublicCollectionsPage>(
-                new Model<String>("Virtual Collections"), 
+                new Model<String>("Virtual Collections"),
                 BrowsePublicCollectionsPage.class));
         menu.addMenuItem(new MenuItem<BrowsePrivateCollectionsPage>(
                 new Model<String>("My Virtual Collections"),
@@ -33,6 +37,8 @@ public class BasePage extends WebPage {
                 new Model<String>("Admin Page"),
                 AdminPage.class));
         add(menu);
+        
+        add(new FeedbackPanel("feedback"));
     }
 
     protected BasePage() {
@@ -71,5 +77,26 @@ public class BasePage extends WebPage {
         }
         super.onBeforeRender();
     }
+
+    protected Principal getUser() {
+        ApplicationSession session = (ApplicationSession) getSession();
+        Principal principal = session.getPrincipal();
+        if (principal == null) {
+            throw new WicketRuntimeException("principal == null");
+        }
+        return principal;
+    }
+    
+    protected boolean isUserAdmin() {
+        final String userName = getUser().getName();
+        return userName != null && adminUsersService.isAdmin(userName);
+    }
+    
+    @Override
+    public ApplicationSession getSession() {
+        return (ApplicationSession) super.getSession();
+    }
+    
+    
 
 } // class BasePage

@@ -19,7 +19,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 @SuppressWarnings("serial")
 public abstract class VirtualCollectionTable extends Panel {
 
-    public VirtualCollectionTable(String id, final boolean privateMode) {
+    public VirtualCollectionTable(String id, CollectionsProvider provider, final boolean showState) {
         super(id);
         setOutputMarkupId(true);
 
@@ -27,13 +27,12 @@ public abstract class VirtualCollectionTable extends Panel {
         List<IColumn<VirtualCollection>> columns =
             new ArrayList<IColumn<VirtualCollection>>();
         columns.add(new ColumnName(this));
-        if (privateMode) {
+        if (showState) {
             columns.add(new ColumnState(this));
         }
         columns.add(new ColumnType(this));
         columns.add(new ColumnCreated(this));
         columns.add(new ColumnActions(this));
-        Provider provider = new Provider(privateMode);
 
         // setup table
         final DataTable<VirtualCollection> table =
@@ -43,7 +42,7 @@ public abstract class VirtualCollectionTable extends Panel {
                 new AbstractReadOnlyModel<String>() {
                     @Override
                     public String getObject() {
-                        return privateMode ? "private" : "public";
+                        return showState ? "private" : "public";
                     }
                 }, " "));
         table.addBottomToolbar(new AjaxNavigationToolbar(table));
@@ -52,7 +51,7 @@ public abstract class VirtualCollectionTable extends Panel {
         final AjaxToggleBorder border =
             new AjaxToggleBorder("border", new Model<String>("Filter"));
         final FilterForm form =
-            new FilterForm("filterForm", provider, table, privateMode);
+            new FilterForm("filterForm", provider, table, showState);
         border.add(form);
         add(border);
         add(table);

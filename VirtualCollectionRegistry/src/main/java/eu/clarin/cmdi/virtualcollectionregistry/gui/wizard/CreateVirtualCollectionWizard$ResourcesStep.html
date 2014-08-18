@@ -1,18 +1,37 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:wicket="http://wicket.apache.org/">
-<head />
-<body>
-<wicket:panel>
-<div style="display: none" wicket:id="editResourceDialog"></div>
-<div style="display: none" wicket:id="deleteResourceDialog"></div>
-<div style="display: none" wicket:id="addResourcesDialog"></div>
-<div class="fieldset">
-  <label class="required">Resources<br /><a wicket:id="add" href="#" class="add"><span>[add]</span></a><br /><a wicket:id="addMore" href="#" class="addMore"><span>[add more]</span></a></label>
-  <table wicket:id="resourcesTable" class="resourcesTable"></table>
-</div>
-</wicket:panel>
-</body>
+    <head />
+    <body>
+        <wicket:panel>
+            <div style="display: none" wicket:id="editResourceDialog"></div>
+            <div style="display: none" wicket:id="deleteResourceDialog"></div>
+            <div style="display: none" wicket:id="addResourcesDialog"></div>
+            <div wicket:id="resourcesContainer" class="fieldset">
+                <div class="extrainfo">
+                    <a href="#" class="extrainfotoggle"><span>[info]</span></a>
+                    <div class="notes">
+                        <h4>Add resource or metadata references</h4>
+                        <p>
+                            Click 'add' to add an individual reference of the 
+                            type 'Metadata' or 'Resource' and optionally add a 
+                            label and/or description. 
+                        </p>
+                        <p class="last">
+                            Click 'add more' to add multiple references (one per
+                            line) of one type without labels or resources.
+                            Individual resources can be edited at any stage.
+                        </p>
+                    </div>
+                </div>
+                <label class="required">Resources<br />
+                    <a id="add" wicket:id="add" href="#" class="add tooltipparent"><span>[add]</span><span class="tooltip">Add a single new resource or metadata reference with an optional label and/or description</span></a><br />
+                    <a id="addmore" wicket:id="addMore" href="#" class="addMore tooltipparent"><span>[add more]</span><span class="tooltip">Add one or reference of the same type</span></a>
+                </label>
+                <table wicket:id="resourcesTable" class="resourcesTable"></table>
+            </div>
+        </wicket:panel>
+    </body>
 </html>
