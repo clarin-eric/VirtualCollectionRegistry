@@ -588,6 +588,47 @@
                     </webResources>
                 </configuration>
             </plugin>
+            
+            <plugin>
+                <groupId>org.jasig.maven</groupId>
+                <artifactId>sass-maven-plugin</artifactId>
+                <version>1.1.1</version>
+                <executions>
+                    <execution>
+                        <phase>generate-resources</phase>
+                        <goals>
+                            <goal>update-stylesheets</goal>
+                        </goals>
+                    </execution>
+                </executions>
+<!--                <configuration>
+                    <sassSourceDirectory>src/main/webapp/css</sassSourceDirectory>
+                </configuration>-->
+            </plugin>
+            <!--            <plugin>
+                <groupId>ro.isdc.wro4j</groupId>
+                <artifactId>wro4j-maven-plugin</artifactId>
+                <version>1.7.6</version>
+                <executions>
+                    <execution>
+                        <phase>compile</phase>
+                        <goals>
+                            <goal>run</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <targetGroups>all</targetGroups>
+                    <minimize>true</minimize>
+                    <destinationFolder>${basedir}/src/main/webapp/wro/</destinationFolder>
+                    <cssDestinationFolder>d:/static/css/</cssDestinationFolder>
+                    <jsDestinationFolder>d:/static/js/</jsDestinationFolder>
+                    <contextFolder>${basedir}/src/main/webapp/</contextFolder>
+                    <wroFile>${basedir}/src/main/webapp/WEB-INF/wro.xml</wroFile>
+                    <wroManagerFactory>com.mycompany.MyCustomWroManagerFactory</wroManagerFactory>
+                    <ignoreMissingResources>false</ignoreMissingResources>
+                </configuration>
+            </plugin>-->
         </plugins>
 
         <pluginManagement>
