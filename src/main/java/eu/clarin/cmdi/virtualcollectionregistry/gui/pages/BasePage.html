@@ -1,37 +1,60 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
-                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
 <html xmlns="http://www.w3.org/1999/xhtml"
       xmlns:wicket="http://wicket.apache.org/">
-  <head>
-    <title>CLARIN Virtual Collection Registry</title>
-    <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-    <link href="css/vcr.css" rel="stylesheet" type="text/css" />
-  </head>
-  <body>
-    <noscript>
-      <div id="noscript-warning">Virtual Collection Registry requires JavaScript to be enabled!</div>
-    </noscript>
-    <div id="container">
-      <div id="header">
-        <div id="header-logo">
-          <div id="clarin-logo" />
-          <div id="ids-logo"/>
-          <h1>Virtual Collection Registry</h1>
+    <head>
+        <title>CLARIN Virtual Collection Registry</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <link href="css/vcr.css" rel="stylesheet" type="text/css" />
+        <link rel="stylesheet" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css">
+    </head>
+    <body>
+        <noscript>
+            <div id="noscript-warning">Virtual Collection Registry requires JavaScript to be enabled!</div>
+        </noscript>
+
+
+        <div id="body">
+            <div class="navbar navbar-default navbar-fixed-top" role="navigation">
+                <div class="container">
+                    <div class="navbar-header">
+                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
+                            <span class="sr-only">Toggle navigation</span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                            <span class="icon-bar"></span>
+                        </button>
+                        <a class="navbar-brand" href="/"><header>Virtual Collection Registry</header></a>
+                    </div>
+
+                    <div class="navbar-collapse collapse">
+                        <wicket:container wicket:id="menu"></wicket:container>
+                        <ul id="CLARIN_header_right" class="nav navbar-nav navbar-right">
+                            <li wicket:id="authstate">[auth]</li>
+                        </ul>
+                    </div>
+                </div>
+            </div>
+            <div id="push"></div>
+            <div class="container">
+                <div id="feedback" wicket:id="feedback">[Feedback]</div>
+                <wicket:child />
+            </div>
         </div>
-        <div id="navigation">
-          <div id="menu" wicket:id="menu"></div>
-          <div id="login">
-            <div wicket:id="authstate"></div>
-          </div>
+
+        <div id="footer">
+            <div class="container">
+                <div id="CLARIN_footer_left">
+                    <a title="about" href="?view=about"><span>VERSION ${pom.version} </span><span class="glyphicon glyphicon-info-sign"></span></a>
+                </div>
+                <div id="CLARIN_footer_middle">
+                    <a title="CLARIN ERIC" href="https://www.clarin.eu/"><img src="//infra.clarin.eu/content/CLARIN-logo-4C14-60pxh.png" alt="CLARIN ERIC logo"/></a>
+                </div>
+                <div id="CLARIN_footer_right">
+                    <a title="contact" class="glyphicon glyphicon-envelope" href="mailto:centre-registry@clarin.eu"><span> CONTACT</span></a>
+                </div>
+            </div>
         </div>
-      </div>
-      <div id="feedback" wicket:id="feedback">[Feedback]</div>
-      <div id="content"><wicket:child /></div>
-      <div class="push"></div>
-    </div>
-    <div id="footer">
-      Version ${pom.version}      
-    </div>
-  </body>
+    </body>
 </html>

@@ -1,25 +1,4 @@
-* {
-    margin: 0;
-    /*    padding: 0; */	
-}
-
-html {
-    overflow-y: scroll
-}
-
-html, body {
-    font-family: Verdana, sans-serif;
-    font-size: 12px;
-    margin: 0 auto;
-    padding: 0;
-    line-height: 1;
-    height: 100%;
-    color: #000000;
-    /*    background-color: #E9EEFA; */
-    width: 990px;
-    min-width: 990px;
-    height: 100%;
-}
+@import 'CLARIN';
 
 noscript {
     margin: 0 auto;
@@ -43,145 +22,6 @@ noscript {
     left: 0;
     width: 100%;
     z-index: 101;
-}
-
-#header {
-    border-top: 2px solid #D4DEEF;
-}
-
-#header-logo {
-    margin: 0;
-    padding: 5px; 
-    height: 70px;
-    color: #004071;
-    background-color: #E9EEF7;
-}
-
-#header-logo #clarin-logo {
-    background: transparent url('../images/clarin-logo.png') no-repeat;
-    float: left;
-    width: 298px;
-    height: 70px;
-}
-
-#header-logo #ids-logo {
-    background: transparent url('../images/ids-logo.png') no-repeat;
-    float: right;
-    width: 55px;
-    height: 70px;
-}
-
-#header-logo h1 {
-    margin: 0 55px 0 298px;
-    padding: 0 32px 0 32px;
-    height: 70px;
-    line-height: 70px;
-    font-size: 34px;
-    font-weight: bold;
-    font-variant: small-caps;
-}
-
-#navigation {
-    margin: 0;
-    padding: 0;
-    height: 20px;
-    clear: both;
-    color: #000000;
-    background-color: #D4DEEF;
-    font-size: 12px;
-    line-height: 12px;
-    vertical-align: middle;
-}
-
-#menu {
-    margin: 0 100px 0 0;
-}
-
-#menu ul {
-    list-style-type: none;
-    margin: 0;
-    padding: 0;
-}
-
-#menu li {
-    float: left;
-    margin-left: 4px;
-}
-
-#menu a, #menu span.active {
-    display: block;
-    margin: 0;
-    padding: 4px 8px;
-    width: auto;
-    height: 12px;
-    text-align: center;
-    text-decoration: none;
-    font-weight: bold;
-}
-
-#menu ul li + #menu ul li {
-    border-left: 1px solid black;
-}
-
-#menu a, #menu a:active, #menu a:visited {
-    color: #000000;
-    background-color: inherit;
-}
-
-#menu a:hover {
-    color: #AE0000;
-    background-color: #E9EEF7;
-}
-
-#menu span.active {
-    font-style: italic;
-}
-
-#login {
-    float: right;
-    padding: 4px 4px 4px 4px;
-    width: auto;
-}
-
-#container {
-    min-height: 100%;
-    height: auto !important;
-    height: 100%;
-    margin: 0 auto -20px; /* the bottom margin is the negative value of the footer's height */
-    color: #000000;
-    background-color: #FFFFFF;
-    border-left: 2px solid #D4DEEF;
-    border-right: 2px solid #D4DEEF;
-}
-
-#content {
-    margin: 0;
-    padding: 0;
-}
-
-#container .push {
-    height: 20px;
-    width: auto;
-}
-
-#footer {
-    padding: 0 4px;
-    margin: 0 auto;
-    height: 18px;
-    line-height: 18px;
-    text-align: right;
-    color: #004071;
-    background-color: #D4DEEF;
-    border-left: 2px solid #D4DEEF;
-    border-right: 2px solid #D4DEEF;
-    border-bottom: 2px solid #D4DEEF;
-}
-
-/* general */
-input, select, textarea {
-    font-family: Verdana, sans-serif;
-    font-size: 100%;
-    border: 1px solid #000000;
 }
 
 /*
@@ -220,35 +60,6 @@ div.wizard div.fieldset {
     padding: 0 10px 0 10px;
     margin: 0 0 0 0;
 }
-
-/*
-form.wizard fieldset legend {
-  font-size: 150%;
-  font-weight: normal;
-  color: #000000;
-  margin: 0 0 0 0;
-  padding: 0 5px;
-}
-
-div.wizard label {
-  font-size: 100%;
-}
-
-div.wizard label u {
-  font-style: normal;
-  text-decoration: underline;
-}
-
-div.wizard input, div.wizard select, div.wizard textarea {
-  font-family: Tahoma, Arial, sans-serif; 
-  font-size: 100%;
-  color: #000000;
-}
-
-div.wizard textarea {
-  overflow: auto;
-}
-*/
 
 form.wizard div,
 div.editDialog div {
@@ -341,16 +152,6 @@ label.required {
     font-weight: bold !important;
 }
 
-/*
-div.optional label:after {
-  content: ':';
-}
-
-div.required label:after {
-  content: ':';
-}
-*/
-
 form.wizard textarea {
     font-family: Verdana, sans-serif;
     font-size: 100%;
@@ -373,129 +174,6 @@ form.wizard textarea {
     background: red;
 }
 
-/*
-form.wizard div label.labelCheckbox, form div label.labelRadio {
-  float: none;
-  display: block;
-  width: 200px;
-  zoom: 1;
-  padding: 0;
-  margin: 0 0 5px 142px;
-  text-align: left;
-}
-
-form.wizard div fieldset label.labelCheckbox, form div fieldset label.labelRadio {
-  margin: 0 0 5px 0;
-  width: 170px;
-}
-
-form.wizard div img {
-  float: left;
-  border: 1px solid #000000;
-  margin: 0 0 5px 0;
-}
-
-p.error {
-  background-color: #ff0000;
-  background-image: url(/images/icon_error.gif);
-  background-repeat: no-repeat;
-  background-position: 3px 3px;
-  color: #ffffff;
-  padding: 3px 3px 5px 27px;
-  border: 1px solid #000000;
-  margin: auto 100px;
-}
-
-form.wizard div.error {
-  background-color: #ffffe1;
-  background-image: url(/images/required_bg.gif);
-  background-repeat: no-repeat;
-  background-position: top left;
-  color: #666666;
-  border: 1px solid #ff0000;
-}
-
-form.wizard div.error p.error {
-  background-image: url(/images/icon_error.gif);
-  background-position: top left;
-  background-color: transparent;
-  border-style: none;
-  font-size: 88%;
-  font-weight: bold;
-  margin: 0 0 0 118px;
-  width: 200px;
-  color: #ff0000;
-}
-
-form.wizard div select, form div textarea {
-  width: 200px;
-  padding: 1px 3px;
-  margin: 0 0 0 0;
-}
-
-form.wizard div input.inputText, form div input.inputPassword {
-  width: 200px;
-  padding: 1px 3px;
-  margin: 0 0 0 0;
-}
-
-form.wizard div input.inputFile {
-  width: 211px;
-}
-
-form.wizard div select.selectOne, form div select.selectMultiple {
-  width: 211px;
-  padding: 1px 3px;
-}
-
-form.wizard div input.inputCheckbox, form div input.inputRadio, input.inputCheckbox, input.inputRadio {
-  display: inline;
-  height: auto;
-  width: auto;
-  background-color: transparent;
-  border-width: 0;
-  padding: 0;
-  margin: 0 0 0 140px;
-}
-
-form.wizard div.submit {
-  width: 214px;
-  padding: 0 0 0 146px;
-}
-
-form.wizard div.submit div {
-  display: inline;
-  float: left;
-  text-align: left;
-  width: auto;
-  padding: 0;
-  margin: 0;
-}
-
-form.wizard div input.inputSubmit,
-form div input.inputButton, input.inputSubmit, input.inputButton {
-  background-color: #cccccc;
-  color: #000000;
-  width: auto;
-  padding: 0 6px;
-  margin: 0;
-}
-
-form.wizard div.submit div input.inputSubmit,
-form div.submit div input.inputButton {
-  float: right;
-  margin: 0 0 0 5px;
-}
-
-form.wizard div small {
-  display: block;
-  margin: 0 0 5px 142px;
-  padding: 1px 3px;
-  font-size: 88%;
-  zoom: 1;
-}
-*/
-
 form.wizard .wizardButtons {
     border-top: 1px solid #000000;
     margin: 10px 0 0 0;
@@ -508,10 +186,6 @@ form.wizard .buttonbar {
     text-align: right; 
 }
 
-/*
-form.wizard .buttonbar input.button,
-div.modalDialog div.modalDialogButtons input.button
-*/
 input.button {
     padding: 1px 4px;
     margin: 0 2px;
@@ -535,7 +209,6 @@ div.modalDialog div.modalDialogButtons input.button[disabled]:hover {
     color: #AFAFAF;
     border-color: #EFEFEF;
 }
-
 
 /*
  * modal dialog
@@ -625,7 +298,7 @@ div.wizard a {
     font-weight: normal;
 }
 
-
+/*
 table {
     font-size: 100%;
     border-collapse: collapse;
@@ -644,7 +317,7 @@ table tfoot {
     background-color: #D4DEEF;
     border-top: 1px solid #000000;
     border-bottom: 1px solid #000000;
-}
+}*/
 
 table td.action {
     width: 8em;
@@ -671,26 +344,7 @@ table.resourcesTable tr.moving td, table.resourcesTable tr.moving td a {
     color: #333;
 }
 
-a {
-    color: #AE0000;
-    background-color: inherit;
-    text-decoration: none;
-}
-
-table tbody {
-    border-bottom: 1px solid #000000;
-}
-
-table tr.even {
-    color: inherit;
-    background-color: #FFFFFF;
-}
-
-table tr.odd {
-    color: inherit;
-    background-color: #E9EEF7;
-}
-
+/*
 table td.norecords-td {
     text-align: center;
     color: inherit;
@@ -704,6 +358,7 @@ table thead tr.navigation {
 table tr.navigation div {
     clear: none !important;
 }
+*/
 
 table.creatorsTable,
 table.resourcesTable {
