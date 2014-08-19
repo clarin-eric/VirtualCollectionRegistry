@@ -160,6 +160,8 @@ public class VirtualCollectionDetailsPage extends BasePage {
         };
         add(backLink);
 
+        add(new Label("name"));
+        
         addGeneralProperties(model);
         addCreators();
         addResources(model);
@@ -271,6 +273,11 @@ public class VirtualCollectionDetailsPage extends BasePage {
             @Override
             public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> rowModel) {
                 item.add(new ReferenceLinkPanel(componentId, rowModel));
+            }
+
+            @Override
+            public String getCssClass() {
+                return "reference";
             }
 
         };

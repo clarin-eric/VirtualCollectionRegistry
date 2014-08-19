@@ -15,70 +15,95 @@ You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
+div.collectionDetails { 
 
+    div.property {
+        clear: both;
+        font-size: 100%;
+        border: none;
+        padding: 0 10px 0 10px;
+        margin: 0 0 4px 0;
 
-div.collectionDetails div.property {
-    clear: both;
-    font-size: 100%;
-    border: none;
-    padding: 0 10px 0 10px;
-    margin: 0 0 4px 0;
-}
+        label, div {
+            line-height: 1.5em;
+        }
 
-div.collectionDetails div label {
-    display: block;
-    float: left;
-    width: 140px;
-    padding: 0px 2px;
-    margin: 0;
-    text-align: right;
-    font-weight: normal;
-}
+        label {
+            display: block;
+            float: left;
+            width: 140px;
+            padding: 0px 2px;
+            margin: 0;
+            text-align: right;
+            font-weight: normal;
 
-div.collectionDetails div label:after {
-    content: ':';
-}
+            &:after {
+                content: ':';
+            }
+        }
 
-div.collectionDetails div div {
-    display: block;
-    clear: none;
-    padding: 0px 2px;
-    margin-left: 144px;
-}
+        div {
+            display: block;
+            clear: none;
+            padding: 0px 2px;
+            margin-left: 144px;
+        }
 
-div.collectionDetails ul.keywords {
-    margin: 0 0 0 16px;
-    padding: 0;
-    list-style: square;
-}
+    } //div.collectionDetails div.property
 
-div.collectionDetails ul.creators {
-    margin: 0;
-    padding: 0;
-    list-style: none;
-}
+    ul {
 
-div.collectionDetails ul.creators li {
-    border-top: 1px dotted #000000;
-    margin-top: 4px;
-    padding-top: 4px;
-}
+        &.keywords {
+            margin: 0 0 0 16px;
+            padding: 0;
+            list-style: square;
+        }
 
-div.collectionDetails ul.creators li.first {
-    border-top: none;
-    margin-top: 0;
-    padding-top: 0;
-}
+        &.creators {
+            margin: 0;
+            padding: 0;
+            list-style: none;
 
-div.collectionDetails.resources {
-    padding: 0 !important;
-}
+            li {
+                border-top: 1px dotted #000000;
+                margin-top: 4px;
+                padding-top: 4px;
+            }
 
-div.collectionDetails.resources table {
-    width: 100%;
-}
+            li.first {
+                border-top: none;
+                margin-top: 0;
+                padding-top: 0;
+            }
+        }
+    } //div.collectionDetails ul
 
-div.collectionDetails.buttons {
-    margin: 10px 0 10px 0;
-    text-align: center;
-}
+    &.resources {
+        padding-left: 1em !important;
+
+        table {
+            width: 100%;
+            table-layout: fixed;
+
+            td, th {
+                padding-left: .5em;
+                width: auto;
+
+                &.reference {
+                    width: auto;
+                }
+
+                &.type {
+                    width: 9em;
+                }
+            }
+        }
+
+    } //div.collectionDetails.resources
+
+    &.buttons {
+        margin: 10px 0 10px 0;
+        text-align: center;
+    } //div.collectionDetails.buttons
+
+} //div.collectionDetails

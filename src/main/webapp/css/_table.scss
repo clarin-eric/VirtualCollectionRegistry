@@ -22,7 +22,7 @@ table {
     }
 
     td.type {
-        width: 60px;
+        width: 5em;
     }
 }
 
@@ -61,7 +61,7 @@ table.creatorsTable {
         width: 252px;
         overflow: hidden;
     }
-} //table.resourcesTable
+} //table.creatorsTable
 
 table.collectionsTable {
 
@@ -72,66 +72,75 @@ table.collectionsTable {
     th, td {
         vertical-align: top;
         padding-left: .5em;
+
+        &.state {
+            width: 5em;
+        }
+
+        &.type {
+            width: 7em;
+        }
+
+        &.created {
+            width: 7em;
+        }
+
+        &.action {
+            width: 2em;
+        }
     }
 
-    td.name div.name {
-        padding-left: 16px;
-        /* icon from GLYPHICONS.com */
-        background-image: url('../icons/glyphicons_367_expand.png');
-        background-size: $iconsize;
-        background-repeat: no-repeat;
-        background-position: center left;
-        cursor: pointer;
-    }
+    td.name {
 
-    td.name div.name:hover {
-        color: #AE0000;
-        background-color: inherit;
-    }
+        width: auto;
+        
+        div.name {
+            padding-left: 16px;
+            /* icon from GLYPHICONS.com */
+            background-image: url('../icons/glyphicons_367_expand.png');
+            background-size: $iconsize;
+            background-repeat: no-repeat;
+            background-position: center left;
+            cursor: pointer;
 
-    td.name div.name.detailsShown {
-        padding-left: 16px;
-        /* icon from GLYPHICONS.com */
-        background-image: url('../icons/glyphicons_369_collapse_top.png');
-        background-size: $iconsize;
-        background-repeat: no-repeat;
-        background-position: center left;
-    }
 
-    td.name div.name.noDetails{
-        background-image: none;
-    }
 
-    td.name div.details {
-        margin-left: 16px;
-        margin-right: -248px;
-        width: 964px;
-    }
+            &:hover {
+                color: #AE0000;
+                background-color: inherit;
+            }
 
-    td.name div.desc {
-        text-align: justify;
-        padding: 4px 0 0 0;
-    }
+            &.detailsShown {
+                padding-left: 16px;
+                /* icon from GLYPHICONS.com */
+                background-image: url('../icons/glyphicons_369_collapse_top.png');
+                background-size: $iconsize;
+                background-repeat: no-repeat;
+                background-position: center left;
+            }
 
-    td.name div.actions {
-        margin: 4px 0 2px 0;
-    }
+            &.noDetails{
+                background-image: none;
+            }
 
-    th.state, td.state {
-        width: 5em;
-    }
+        }
 
-    th.type, td.type {
-        width: 7em;
-    }
+        div.details {
+            margin-left: 16px;
+            margin-right: -248px;
+            width: 964px;
+        }
 
-    th.created, td.created {
-        width: 7em;
-    }
+        div.desc {
+            text-align: justify;
+            padding: 4px 0 0 0;
+        }
 
-    td.action, th.action {
-        width: 2em;
-    }
+        div.actions {
+            margin: 4px 0 2px 0;
+        }
+    } //td.name
+
 
     &.public td.action span,
     &.private td.action div.popupTrigger span {
