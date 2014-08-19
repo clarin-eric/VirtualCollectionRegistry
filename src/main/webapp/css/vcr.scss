@@ -1,5 +1,7 @@
 @import 'CLARIN';
-@import 'globals';
+
+/* global variables */
+$iconsize: 12px;
 
 @import 'toggleborder';
 @import 'table';
@@ -8,6 +10,7 @@
 @import 'feedback';
 @import 'filterform';
 @import 'popup';
+
 
 noscript {
     margin: 0 auto;
