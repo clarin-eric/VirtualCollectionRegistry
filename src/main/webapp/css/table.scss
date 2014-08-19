@@ -14,167 +14,171 @@ GNU General Public License for more details.
 You should have received a copy of the GNU General Public License
 along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
+@import 'globals';
 
-table td.action {
-    width: 8em;
-    text-align: right;
+table {
+    td.action {
+        width: 8em;
+        text-align: right;
+    }
+
+    td.type {
+        width: 60px;
+    }
 }
 
-table.resourcesTable td.move {
-    width: 5em;
+table.moving {
+
+    tr:hover td {
+        border-top: 6px solid #ccc;
+    }
+
+    tr.moving:hover td {
+        border-top: 0px;
+    }
 }
 
-table.resourcesTable tr.moving {
-    background: #ccc;
-}
-
-table.moving tr:hover td {
-    border-top: 6px solid #ccc;
-}
-
-table.moving tr.moving:hover td {
-    border-top: 0px;
-}
-
-table.resourcesTable tr.moving td, table.resourcesTable tr.moving td a {
-    color: #333;
-}
-
-/*
-table td.norecords-td {
-    text-align: center;
-    color: inherit;
-    background-color: #FFFFFF;
-}
-
-table thead tr.navigation {
-    border-bottom: 1px dotted #BBBBBB;
-}
-
-table tr.navigation div {
-    clear: none !important;
-}
-*/
-
-table.creatorsTable,
 table.resourcesTable {
+
+    td.move {
+        width: 5em;
+    }
+
+    tr.moving {
+        background: #ccc;
+
+        td, td a {
+            color: #333;
+        }
+    }
+
+} //table.resourcesTable
+
+table.creatorsTable {
+
     width: 805px;
-}
 
-table.creatorsTable td {
-    width: 252px;
-    overflow: hidden;
-}
+    td {
+        width: 252px;
+        overflow: hidden;
+    }
+} //table.resourcesTable
 
-table td.type {
-    width: 60px;
-}
+table.collectionsTable {
+
+    width: 100%;
+    table-layout: fixed;
+
+    th, td {
+        vertical-align: top;
+        padding-left: .5em;
+    }
+
+    td.name div.name {
+        padding-left: 16px;
+        /* icon from GLYPHICONS.com */
+        background-image: url('../icons/glyphicons_367_expand.png');
+        background-size: $iconsize;
+        background-repeat: no-repeat;
+        background-position: center left;
+        cursor: pointer;
+    }
+
+    td.name div.name:hover {
+        color: #AE0000;
+        background-color: inherit;
+    }
+
+    td.name div.name.detailsShown {
+        padding-left: 16px;
+        /* icon from GLYPHICONS.com */
+        background-image: url('../icons/glyphicons_369_collapse_top.png');
+        background-size: $iconsize;
+        background-repeat: no-repeat;
+        background-position: center left;
+    }
+
+    td.name div.name.noDetails{
+        background-image: none;
+    }
+
+    td.name div.details {
+        margin-left: 16px;
+        margin-right: -248px;
+        width: 964px;
+    }
+
+    td.name div.desc {
+        text-align: justify;
+        padding: 4px 0 0 0;
+    }
+
+    td.name div.actions {
+        margin: 4px 0 2px 0;
+    }
+
+    th.state, td.state {
+        width: 5em;
+    }
+
+    th.type, td.type {
+        width: 7em;
+    }
+
+    th.created, td.created {
+        width: 7em;
+    }
+
+    td.action, th.action {
+        width: 2em;
+    }
+
+    &.public td.action span,
+    &.private td.action div.popupTrigger span {
+        display: none;
+    }
+
+    &.public td.action a, &.private td.action div.popupTrigger {
+        display: block;
+        width: $iconsize;
+        height: $iconsize;
+        background: transparent no-repeat center center;
+        background-size: $iconsize;
+        margin-right: 2px;
+        margin-top: 3px;
+    }
+    
+    &.public td.action a {
+        /* icon from GLYPHICONS.com */
+        background-image: url('../icons/glyphicons_236_zoom_in.png');
+    }
+
+    &.private td.action div.popupTrigger {
+        /* icon from GLYPHICONS.com */
+        background-image: url('../icons/glyphicons_136_cogwheel.png');
+    }
+} //table.collectionsTable
 
 /* ORDERING */
 
-tr.headers a.wicket_orderNone {
-    padding-right: 7px;
-    background: transparent url('../icons/order_none.png') no-repeat center right;
-}
+tr.headers {
 
-tr.headers a.wicket_orderUp {
-    padding-right: 7px;
-    background: transparent url('../icons/order_up.png') no-repeat center right;
-}
+    a.wicket_orderNone, a.wicket_orderUp, a.wicket_orderDown {        
+        padding-right: 18px;
+        background-color: transparent;
+        background-repeat: no-repeat;
+        background-position: center right;
+    }
 
-tr.headers a.wicket_orderDown {
-    padding-right: 7px;
-    background: transparent url('../icons/order_down.png') no-repeat center right;
-}
+    a.wicket_orderNone {
+        background-image: url('../icons/sort_both.png');
+    }
 
-/* COLLECTIONS TABLE */
+    a.wicket_orderUp {
+        background-image: url('../icons/sort_asc.png');
+    }
 
-table.collectionsTable {
-    width: 100%;
-    table-layout: fixed;
-}
-
-table.collectionsTable th,
-table.collectionsTable td {
-    vertical-align: top;
-}
-
-table.collectionsTable td.name div.name {
-    padding-left: 16px;
-    background-image: url('../icons/bullet_arrow_down.png');
-    background-repeat: no-repeat;
-    background-position: center left;
-    cursor: pointer;
-}
-
-table.collectionsTable td.name div.name:hover {
-    color: #AE0000;
-    background-color: inherit;
-}
-
-table.collectionsTable td.name div.name.detailsShown {
-    padding-left: 16px;
-    background-image: url('../icons/bullet_arrow_up.png');
-    background-repeat: no-repeat;
-    background-position: center left;
-}
-
-table.collectionsTable td.name div.name.noDetails{
-    background-image: none;
-}
-
-table.collectionsTable td.name div.details {
-    margin-left: 16px;
-    margin-right: -248px;
-    width: 964px;
-}
-
-table.collectionsTable td.name div.desc {
-    text-align: justify;
-    padding: 4px 0 0 0;
-}
-
-table.collectionsTable td.name div.actions {
-    margin: 4px 0 2px 0;
-}
-
-table.collectionsTable th.state,
-table.collectionsTable td.state {
-    width: 5em;
-}
-
-table.collectionsTable th.type,
-table.collectionsTable td.type {
-    width: 7em;
-}
-
-table.collectionsTable th.created,
-table.collectionsTable td.created {
-    width: 7em;
-}
-
-table.collectionsTable td.action,
-table.collectionsTable th.action {
-    width: 2em;
-}
-
-table.collectionsTable.public td.action span,
-table.collectionsTable.private td.action div.popupTrigger span {
-    display: none;
-}
-
-table.collectionsTable.public td.action a {
-    display: block;
-    width: 12px;
-    height: 12px;
-    margin-right: 2px;
-    background: transparent url('../icons/magnifier.png') no-repeat center center;
-}
-
-table.collectionsTable.private td.action div.popupTrigger {
-    display: block;
-    width: 12px;
-    height: 12px;
-    margin-right: 2px;
-    background: transparent url('../icons/wrench.png') no-repeat center center;
+    a.wicket_orderDown {
+        background-image: url('../icons/sort_desc.png');
+    }
 }
