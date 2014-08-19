@@ -68,6 +68,7 @@ table.collectionsTable {
 
     width: 100%;
     table-layout: fixed;
+    position: static !important;
 
     th, td {
         vertical-align: top;
@@ -147,7 +148,7 @@ table.collectionsTable {
         margin-right: 2px;
         margin-top: 3px;
     }
-    
+
     &.public td.action a {
         /* icon from GLYPHICONS.com */
         background-image: url('../icons/glyphicons_236_zoom_in.png');
