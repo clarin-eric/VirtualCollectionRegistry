@@ -100,7 +100,28 @@ form.wizard {
         border: 1px solid #666666;
         background-color: #ffffe1;
         color: #666666;
-    }
+
+        h4 {
+            text-align: center;
+            padding: 3px 0 3px 0;
+            margin: 0 0 3px 0;
+            border-width: 0 0 1px 0;
+            border-style: solid;
+            border-color: #666666;
+            color: #666666;
+            font-size: 100%;
+        }
+
+        p, ul {
+            margin: 0em 0em 0.5em 0em;
+            color: #666666;
+            font-size: 80%;
+        }
+
+        p.last {
+            margin: 0em;
+        }
+    } //div.notes, div.sidenotes
 
     div.notes {
         width: 80%;
@@ -110,33 +131,7 @@ form.wizard {
     div.sidenotes {
         float: right;
         width: 198px;
-        margin: 0 0 10px 10px;
-    }
-
-    div.notes h4 {
-        /*
-        background-image: url(/images/icon_info.gif);
-        background-repeat: no-repeat;
-        background-position: top left;
-        */
-        text-align: center;
-        padding: 3px 0 3px 0; /*27px; */
-        margin: 0 0 3px 0;
-        border-width: 0 0 1px 0;
-        border-style: solid;
-        border-color: #666666;
-        color: #666666;
-        font-size: 100%;
-    }
-
-    div.notes p {
-        margin: 0em 0em 0.5em 0em;
-        color: #666666;
-        font-size: 80%;
-    }
-
-    div.notes p.last {
-        margin: 0em;
+        margin: 0 0 10px 10px;    
     }
 
     div label {
@@ -199,7 +194,7 @@ div.modalDialog {
 
     div.modalDialogContent {
         margin: 10px;
-        
+
         p {
             margin: 1em;
         }

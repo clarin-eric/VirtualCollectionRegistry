@@ -53,6 +53,8 @@ public class VirtualCollectionPrePublicationValidatorTest {
         // this is a valid resource set
         vc.getResources().add(new Resource(Resource.Type.METADATA, "hdl:1234/5678"));
         vc.getResources().add(new Resource(Resource.Type.METADATA, "doi:1.2.3/456"));
+        vc.getResources().add(new Resource(Resource.Type.METADATA, "http://hdl.handle.net/1234/5678"));
+        vc.getResources().add(new Resource(Resource.Type.METADATA, "http://dx.doi.org/1.2.3/456"));
         try {
             instance.validate(vc);
         } catch (VirtualCollectionRegistryUsageException ex) {

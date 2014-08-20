@@ -33,7 +33,9 @@ import org.apache.wicket.validation.validator.UrlValidator;
  */
 public class ReferenceValidator extends AbstractValidator<String> {
 
-    private static final Pattern HANDLE_PATTERN = Pattern.compile("^(hdl|doi):[0-9\\.]+\\/.+$");
+    private static final String HANDLE_SPECIFIC_PART_PATTERN = "[0-9\\.]+\\/.+$";
+    private static final Pattern HANDLE_PATTERN = Pattern.compile("^(hdl|doi):" + HANDLE_SPECIFIC_PART_PATTERN);
+    private static final Pattern HANDLE_RESOLVER_PATTERN = Pattern.compile("^http://(hdl\\.handle\\.net|dx\\.doi\\.org|)/" + HANDLE_SPECIFIC_PART_PATTERN);
     private final IValidator<String> urlValidator = new UrlValidator(UrlValidator.NO_FRAGMENTS);
 
     @Override
@@ -53,9 +55,18 @@ public class ReferenceValidator extends AbstractValidator<String> {
         validate(validatable);
         return validatable.isValid();
     }
-    
+
+    /**
+     *
+     * @param uri
+     * @return true IFF the expression is a URI consisting of a valid handle
+     * pattern preceded by a handle scheme expression (hdl: or doi:) OR one of
+     * the accepted handle resolver base URL's (http://hdl.handle.net or
+     * http://dx.doi.org)
+     */
     public static boolean isPid(CharSequence uri) {
-        return HANDLE_PATTERN.matcher(uri).matches();
+        return HANDLE_PATTERN.matcher(uri).matches()
+                || HANDLE_RESOLVER_PATTERN.matcher(uri).matches();
     }
 
 }
