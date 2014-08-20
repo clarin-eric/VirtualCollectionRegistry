@@ -8,7 +8,7 @@
         <wicket:panel>
             <div style="display: none" wicket:id="editCreatorDialog"></div>
             <div style="display: none" wicket:id="deleteCreatorDialog"></div>
-            <div class="fieldset">
+            <div id="creatorfields" class="fieldset">
                 <div class="extrainfo">
                     <a href="#" class="extrainfotoggle"><span>[info]</span></a>
                     <div class="notes">
@@ -28,7 +28,7 @@
                     <a id="add" href="#" wicket:id="add" class="add tooltipparent"><span>[add]</span><span class="tooltip">Add a new creator</span></a><br />
                     <a id="addme" href="#" wicket:id="addme" class="add tooltipparent"><span>[add me]</span><span class="tooltip">Add a new creator with the available user details already filled in</span></a>
                 </label>
-                <table wicket:id="creatorsTable" class="creatorsTable"></table>
+                <table wicket:id="creatorsTable" class="creatorsTable display"></table>
             </div>
         </wicket:panel>
     </body>

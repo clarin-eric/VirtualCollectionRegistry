@@ -27,19 +27,7 @@ div.toggleBorder {
         /* mimick header of 'display' table (CLARIN style) */
         background-color: $clarin_blue;
 
-        border-top-left-radius: 6px !important;
-        border-bottom-left-radius: 6px !important;
-        -webkit-border-top-left-radius: 6px !important;
-        -webkit-border-bottom-left-radius: 6px !important;
-        -moz-border-top-left-radius: 6px !important;
-        -moz-border-bottom-left-radius: 6px !important;  
-
-        border-top-right-radius: 6px !important;
-        border-bottom-right-radius: 6px !important;
-        -webkit-border-top-right-radius: 6px !important;
-        -webkit-border-bottom-right-radius: 6px !important;
-        -moz-border-top-right-radius: 6px !important;
-        -moz-border-bottom-right-radius: 6px !important;
+        @include roundborder(6px);
 
         span {
             font-weight: bold;
