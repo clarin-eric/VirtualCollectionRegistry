@@ -7,6 +7,7 @@ import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.markup.html.WebPage;
+import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -16,7 +17,7 @@ public class BasePage extends WebPage {
     
     @SpringBean
     private AdminUsersService adminUsersService;
-
+    
     protected BasePage(IModel<?> model) {
         super(model);
         // authentication state
@@ -39,20 +40,23 @@ public class BasePage extends WebPage {
         add(menu);
         
         add(new FeedbackPanel("feedback"));
+        
+        add(new BookmarkablePageLink("homelink", getApplication().getHomePage())
+                .setAutoEnable(false));
     }
-
+    
     protected BasePage() {
         this(null);
     }
-
+    
     @Override
     protected void onBeforeRender() {
         // skip lazy auto-auth for login page
         if (!this.getClass().isInstance(LoginPage.class)) {
-            final HttpServletRequest request =
-                getWebRequestCycle().getWebRequest().getHttpServletRequest();
-            final ApplicationSession session =
-                (ApplicationSession) getSession();
+            final HttpServletRequest request
+                    = getWebRequestCycle().getWebRequest().getHttpServletRequest();
+            final ApplicationSession session
+                    = (ApplicationSession) getSession();
             if (!session.isSignedIn()) {
                 if (request.getAuthType() != null) {
                     // FIXME: better logging
@@ -77,7 +81,7 @@ public class BasePage extends WebPage {
         }
         super.onBeforeRender();
     }
-
+    
     protected Principal getUser() {
         ApplicationSession session = (ApplicationSession) getSession();
         Principal principal = session.getPrincipal();
@@ -97,6 +101,4 @@ public class BasePage extends WebPage {
         return (ApplicationSession) super.getSession();
     }
     
-    
-
 } // class BasePage
