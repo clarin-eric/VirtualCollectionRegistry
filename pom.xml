@@ -31,7 +31,7 @@
         <license>
             <name>GNU General Public License Version 3 (GPLv3)</name>
             <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
-          </license>
+        </license>
     </licenses>
 
     <properties>
@@ -183,36 +183,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-        <!-- 
-            Below: libraries required for de.uni_leipzig.* EPIC library 
-            
-            TODO: replace with dependency on detached library once available
-
-            <dependency>
-                <groupId>de.uni_leipzig.asv</groupId>
-                <artifactId>clarin.webservices.pidservices2</artifactId>
-                <version>2.0.6-SNAPSHOT</version>
-            </dependency>
-        -->
-
+        
         <dependency>
-            <groupId>com.sun.jersey.contribs</groupId>
-            <artifactId>jersey-apache-client</artifactId>
-            <version>${jersey.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.jayway.jsonpath</groupId>
-            <artifactId>json-path</artifactId>
-            <version>0.9.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.sf.json-lib</groupId>
-            <artifactId>json-lib</artifactId>
-            <version>2.4</version>
-            <classifier>jdk15</classifier>
+            <groupId>de.uni_leipzig.asv</groupId>
+            <artifactId>clarin.webservices.pidservices2</artifactId>
+            <version>2.1.0</version>
         </dependency>
 
         <dependency>
@@ -221,7 +196,7 @@
             <version>4.3.4</version>
             <type>jar</type>
         </dependency>
-
+        
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket</artifactId>
@@ -601,7 +576,7 @@
                         </goals>
                     </execution>
                 </executions>
-<!--                <configuration>
+                <!--                <configuration>
                     <sassSourceDirectory>src/main/webapp/css</sassSourceDirectory>
                 </configuration>-->
             </plugin>
