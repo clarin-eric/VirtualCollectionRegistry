@@ -19,6 +19,10 @@
                 <cmd:ResourceType>Resource</cmd:ResourceType>
                 <cmd:ResourceRef>http://my/resource.mpg</cmd:ResourceRef>
             </cmd:ResourceProxy>
+            <cmd:ResourceProxy id="r3">
+                <cmd:ResourceType>Resource</cmd:ResourceType>
+                <cmd:ResourceRef>http://other/resource.mpg</cmd:ResourceRef>
+            </cmd:ResourceProxy>
         </cmd:ResourceProxyList>
         <cmd:JournalFileProxyList>
         </cmd:JournalFileProxyList>
@@ -38,7 +42,12 @@
                 <cmd:Email>test@creator.org</cmd:Email>
                 <cmd:Organisation>Test Inc.</cmd:Organisation>
             </cmd:Creator>
-            <cmd:GeneratedBy/>
+            <cmd:Resource ref="r1">
+                <cmd:Label>Label of first</cmd:Label>
+            </cmd:Resource>
+            <cmd:Resource ref="r2">
+                <cmd:Description>Description of second</cmd:Description>
+            </cmd:Resource>
         </cmd:VirtualCollection>
     </cmd:Components>
 </cmd:CMD>
