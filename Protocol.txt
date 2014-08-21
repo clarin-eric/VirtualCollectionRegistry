@@ -38,7 +38,9 @@ working with the registry.
     a) Create a virtual collection (POST) 
                  description: A virtual collection will be created based on the
                               representation of the virtual collection sent in
-                              the request body.
+                              the request body. ID and state, if provided, will be 
+                              ignored so this will always result in a private collection
+                              with a new identifier.
                  HTTP method: POST
                          URI: $BASE/service/virtualcollections
          URI path parameters: none
