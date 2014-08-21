@@ -19,16 +19,18 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.target.coding.MixedParamHybridUrlCodingStrategy;
 import org.apache.wicket.session.pagemap.LeastRecentlyAccessedEvictionStrategy;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
+import org.odlabs.wiquery.core.commons.IWiQuerySettings;
+import org.odlabs.wiquery.core.commons.WiQuerySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Application extends AuthenticatedWebApplication {
+public class Application extends AuthenticatedWebApplication implements IWiQuerySettings {
 
     private final static Logger logger = LoggerFactory.getLogger(Application.class);
-    
+
     @Autowired
     private VirtualCollectionRegistry registry;
     @Autowired
@@ -98,11 +100,11 @@ public class Application extends AuthenticatedWebApplication {
         }
         return false;
     }
-    
+
     boolean isAdmin(String user) {
         return adminUsersService.isAdmin(user);
     }
-    
+
     public VirtualCollectionRegistry getRegistry() {
         return registry;
     }
@@ -113,6 +115,16 @@ public class Application extends AuthenticatedWebApplication {
 
     public static Application get() {
         return (Application) WebApplication.get();
+    }
+
+    @Override
+    public WiQuerySettings getWiQuerySettings() {
+        final WiQuerySettings settings = new WiQuerySettings();
+        // WiQuery should not import the jQuery library because it is already
+        // provided in the template as a dependency of Bootstrap
+        settings.setAutoImportJQueryResource(false);
+        settings.setAutoImportJQueryUIResource(false);
+        return settings;
     }
 
 } // class Application
