@@ -14,10 +14,10 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class BasePage extends WebPage {
-    
+
     @SpringBean
     private AdminUsersService adminUsersService;
-    
+
     protected BasePage(IModel<?> model) {
         super(model);
         // authentication state
@@ -38,17 +38,20 @@ public class BasePage extends WebPage {
                 new Model<String>("Admin Page"),
                 AdminPage.class));
         add(menu);
-        
+
         add(new FeedbackPanel("feedback"));
-        
+
         add(new BookmarkablePageLink("homelink", getApplication().getHomePage())
                 .setAutoEnable(false));
+        add(new BookmarkablePageLink("aboutlink", AboutPage.class)
+                .setAutoEnable(false));
+
     }
-    
+
     protected BasePage() {
         this(null);
     }
-    
+
     @Override
     protected void onBeforeRender() {
         // skip lazy auto-auth for login page
@@ -81,7 +84,7 @@ public class BasePage extends WebPage {
         }
         super.onBeforeRender();
     }
-    
+
     protected Principal getUser() {
         ApplicationSession session = (ApplicationSession) getSession();
         Principal principal = session.getPrincipal();
@@ -90,15 +93,15 @@ public class BasePage extends WebPage {
         }
         return principal;
     }
-    
+
     protected boolean isUserAdmin() {
         final String userName = getUser().getName();
         return userName != null && adminUsersService.isAdmin(userName);
     }
-    
+
     @Override
     public ApplicationSession getSession() {
         return (ApplicationSession) super.getSession();
     }
-    
+
 } // class BasePage

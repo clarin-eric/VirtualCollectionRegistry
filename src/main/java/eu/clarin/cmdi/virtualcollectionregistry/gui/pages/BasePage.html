@@ -6,12 +6,12 @@
     <head>
         <title>CLARIN Virtual Collection Registry</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-        
+
         <!-- Bootstrap styles required for CLARIN style to work properly -->
         <link rel="stylesheet" type="text/css" href="//maxcdn.bootstrapcdn.com/bootstrap/3.2.0/css/bootstrap.min.css" />
         <!-- CLARIN + VCR style compiled from SASS -->
         <link rel="stylesheet" type="text/css" href="css/vcr.css" />
-        
+
         <!-- jQuery library for Bootstrap, WiQuery and custom use -->
         <script type="text/javascript" src="//code.jquery.com/jquery-1.11.1.min.js"></script>
         <!-- Compatibility for WiQuery (depends on jQuery 1.5) TODO: investigate if this can be left out -->
@@ -56,7 +56,7 @@
         <div id="footer">
             <div class="container">
                 <div id="CLARIN_footer_left">
-                    <a title="about" href="?view=about"><span>VERSION ${pom.version} </span><span class="glyphicon glyphicon-info-sign"></span></a>
+                    <a title="about" wicket:id="aboutlink"><span>VERSION ${pom.version} </span><span class="glyphicon glyphicon-info-sign"></span></a>
                 </div>
                 <div id="CLARIN_footer_middle">
                     <a title="CLARIN ERIC" href="https://www.clarin.eu/"><img src="//infra.clarin.eu/content/CLARIN-logo-4C14-60pxh.png" alt="CLARIN ERIC logo"/></a>
