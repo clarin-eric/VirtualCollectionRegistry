@@ -25,17 +25,15 @@ public class BasePage extends WebPage {
 
         // main navigation menu
         final Menu menu = new Menu("menu");
-        menu.addMenuItem(new MenuItem<BrowsePublicCollectionsPage>(
-                new Model<String>("Virtual Collections"),
+        menu.addMenuItem(new MenuItem<>(Model.of("Virtual Collections"),
                 BrowsePublicCollectionsPage.class));
-        menu.addMenuItem(new MenuItem<BrowsePrivateCollectionsPage>(
-                new Model<String>("My Virtual Collections"),
+        menu.addMenuItem(new MenuItem<>(Model.of("My Virtual Collections"),
                 BrowsePrivateCollectionsPage.class));
-        menu.addMenuItem(new MenuItem<CreateVirtualCollectionPage>(
-                new Model<String>("Create Virtual Collection"),
+        menu.addMenuItem(new MenuItem<>(Model.of("Create Virtual Collection"),
                 CreateVirtualCollectionPage.class));
-        menu.addMenuItem(new MenuItem<AdminPage>(
-                new Model<String>("Admin Page"),
+        menu.addMenuItem(new MenuItem<>(Model.of("Help"),
+                HelpPage.class));        
+        menu.addMenuItem(new MenuItem<>(Model.of("Admin Page"),
                 AdminPage.class));
         add(menu);
 
