@@ -7,8 +7,8 @@
     <body>
         <wicket:extend>
             <div id="help">
-                <h1>Definitions</h1>
-                <h3>Collection types</h3>
+                <h1>Glossary</h1>
+                <h2>Collection types</h2>
                 <dl>
                     <dt>extensional</dt>
                     <dd>
@@ -16,7 +16,7 @@
                         <dl>
                             <dt>resources</dt>
                             <dd>
-                                The members that make up the virtual collection by means of a persistent reference.
+                                The members that make up an extensional virtual collection by means of a persistent reference.
                                 These members may be of type <em>metadata</em> for referencing metadata, or <em>resource</em> for directly referencing a resource.
                             </dd>
                         </dl>
@@ -46,7 +46,7 @@
                     </dd>
                 </dl>
 
-                <h3>General collection properties</h3>
+                <h2>General collection properties</h2>
                 <dl>                    
                     <dt>purpose</dt>
                     <dd>
@@ -105,6 +105,15 @@
                     </dd>
                 </dl>
 
+                <h2>REST service</h2>
+                <p>
+                    The Virtual Collection Registry REST service is accessible
+                    at <a wicket:id="restLink"><wicket:container wicket:id="restUrl">[url]</wicket:container></a> (base URL).
+                </p>
+                <p>
+                    Documentation can be found <a href="Protocol.txt">here</a>.
+                    You can also consult the <a wicket:id="wadlLink">WADL</a> file.
+                </p>
             </div>
         </wicket:extend>
     </body>

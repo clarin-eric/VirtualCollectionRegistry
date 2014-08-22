@@ -42,7 +42,7 @@ import org.springframework.stereotype.Service;
 public class GWDGPersistentIdentifierProvider implements
         PersistentIdentifierProvider {
 
-    public static final String BASE_URI = "pid_provider.base_uri";
+    public static final String BASE_URI = "eu.clarin.cmdi.virtualcollectionregistry.base_uri";
 
     private static enum Attribute {
 

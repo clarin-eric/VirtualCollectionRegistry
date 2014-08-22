@@ -26,6 +26,31 @@ if in doubt, please check the Apache Tomcat documentation):
   Customize $dbuser, $dbpass and $dbname to match your local settings.
   NOTE: currently only MySQL is supported.
 
+* CONTEXT PARAMETERS *
+
+PUBLIC APPLICATION URL:
+
+Add the following context parameter (typically to the global context.xml file)
+and substitute the value with the correct *public* base location of the VCR:
+
+  <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.base_uri"
+             value="http://my/server/VirtualCollectionRegistry"
+             override="false"/>
+
+Add no trailing slash. You can verify this by checking the service links in the
+help page of the running application.
+
+ADMINISTRATOR USERS:
+
+Add the following context parameter:
+
+<Parameter
+	   name="eu.clarin.cmdi.virtualcollectionregistry.admindb"
+	   value="/path/to/vcr-admin.conf" />
+
+Add the username of each user that should get administrator rights to the 
+referenced file, one username per line.
+
 * PID PROVIDER *
 
   You need to choose, which persistent identifier provider you want to use.
@@ -42,9 +67,6 @@ if in doubt, please check the Apache Tomcat documentation):
   <Parameter name="spring.profiles.active"
              value="vcr.pid.gwdg"
              override="false"/>   
-  <Parameter name="pid_provider.base_uri"
-             value="http://127.0.0.1:8080/VirtualCollectionRegistry"
-             override="false"/>
   <Parameter name="pid_provider.username" value="$gwdg_user" override="false"/>
   <Parameter name="pid_provider.password" value="$gwdg_password" override="false"/>
 
@@ -54,9 +76,6 @@ if in doubt, please check the Apache Tomcat documentation):
   <Parameter name="spring.profiles.active"
              value="vcr.pid.epic”
              override="false"/>   
-  <Parameter name="pid_provider.base_uri"
-             value="http://127.0.0.1:8080/VirtualCollectionRegistry"
-             override="false"/>
 
 * AUTHENTICATION *
 
@@ -103,14 +122,3 @@ built-in OAI provider:
 
 Change the value of the 'value' attribute if desired. If this parameter is not set,
 the default value "CLARIN Virtual Collection Registry" will be used as a collection name.
-
-* ADMINISTRATOR USERS *
-
-Add the following context parameter:
-
-<Parameter
-	   name="eu.clarin.cmdi.virtualcollectionregistry.admindb"
-	   value="/path/to/vcr-admin.conf" />
-
-Add the username of each user that should get administrator rights to the referenced
-file, one username per line.

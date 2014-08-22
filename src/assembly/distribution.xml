@@ -8,14 +8,8 @@
     </formats>
     <fileSets>
         <fileSet>
-            <directory>${project.basedir}</directory>
+            <directory>${project.basedir}/doc</directory>
             <outputDirectory>/doc</outputDirectory>
-            <includes>
-                <include>README*</include>
-                <include>LICENSE*</include>
-                <include>NOTICE*</include>
-                <include>Protocol.txt</include>
-            </includes>
         </fileSet>
         <fileSet>
             <directory>${project.build.directory}</directory>
