@@ -29,7 +29,7 @@ public class EPICPersistentIdentifierProviderTest {
     public void setUp() {
         pidWriter = context.mock(PidWriter.class);
         instance = new EPICPersistentIdentifierProvider(pidWriter, pidConfig);
-        instance.setBaseUri("http://vcr/");
+        instance.setBaseUri("http://vcr");
     }
 
     /**
