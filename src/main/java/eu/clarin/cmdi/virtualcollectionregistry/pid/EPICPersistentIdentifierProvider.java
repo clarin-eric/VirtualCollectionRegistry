@@ -8,9 +8,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.net.URI;
 import java.util.EnumMap;
 import java.util.Map;
-import java.util.UUID;
-import java.util.zip.CRC32;
-import org.apache.commons.codec.binary.Base64;
 import org.apache.commons.httpclient.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -37,7 +34,7 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
     private final PidWriter pidWriter;
     private final Configuration configuration;
 
-    @Value("${pid_provider.base_uri}")
+    @Value("${eu.clarin.cmdi.virtualcollectionregistry.base_uri}")
     private String baseUri;
 
     /**

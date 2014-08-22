@@ -38,11 +38,14 @@ public class VirtualCollectionCMDIWriterImplTest extends XMLTestCase {
     /**
      * Patterns for paths to be ignored in XML comparison
      */
-    private final List<Pattern> IGNORE_PATHS = new CopyOnWriteArrayList<Pattern>(new Pattern[]{
+    private final List<Pattern> IGNORE_PATHS = new CopyOnWriteArrayList<>(new Pattern[]{
         //ignore creation date
         Pattern.compile("\\/CMD\\[1\\]\\/Header\\[1\\]\\/MdCreationDate\\[1\\]\\/text\\(\\).*"),
         //ignore resource proxy id's
-        Pattern.compile("\\/CMD\\[1\\]\\/Resources\\[1\\]\\/ResourceProxyList\\[1\\]\\/ResourceProxy\\[.*\\]\\/@id")});
+        Pattern.compile("\\/CMD\\[1\\]\\/Resources\\[1\\]\\/ResourceProxyList\\[1\\]\\/ResourceProxy\\[.*\\]\\/@id"),
+        //ignore resource proxy references from Resource component instances
+        Pattern.compile("\\/CMD\\[1\\]\\/Components\\[1\\]\\/VirtualCollection\\[1\\]\\/Resource\\[.*\\]\\/@ref")    
+    });
 
     /**
      * Test of writeCMDI method, of class VirtualCollectionCMDIWriterImpl.
@@ -94,8 +97,16 @@ public class VirtualCollectionCMDIWriterImplTest extends XMLTestCase {
         creator.setOrganisation("Test Inc.");
         vc.getCreators().add(creator);
 
-        vc.getResources().add(new Resource(Resource.Type.METADATA, "http://my/metadata.cmdi"));
-        vc.getResources().add(new Resource(Resource.Type.RESOURCE, "http://my/resource.mpg"));
+        final Resource resource1 = new Resource(Resource.Type.METADATA, "http://my/metadata.cmdi");
+        resource1.setLabel("Label of first");
+        vc.getResources().add(resource1);
+
+        final Resource resource2 = new Resource(Resource.Type.RESOURCE, "http://my/resource.mpg");
+        resource2.setDescription("Description of second");
+        vc.getResources().add(resource2);
+
+        // add one without label or description
+        vc.getResources().add(new Resource(Resource.Type.RESOURCE, "http://other/resource.mpg"));
         return vc;
     }
 

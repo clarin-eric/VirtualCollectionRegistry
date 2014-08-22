@@ -10,12 +10,13 @@
   <div class="sidenotes">
     <h4>Note</h4>
     <p class="last">
-        Intensional virtual collections are very experimental. Use at own risk!
+        Intensional virtual collections are very experimental. 
+        <strong>Use at own risk!</strong>
     </p>
   </div>
   <div class="required">
      <label id="descriptionlabel" class="tooltipparent" for="gen_desc">Description
-         <span class="tooltip">
+         <span class="tooltipcontent">
              A prose description of the procedure by which the collection items can be retrieved from the external service.
          </span>
      </label>
@@ -24,7 +25,7 @@
   </div>
   <div class="optional">
      <label id="urilabel" class="tooltipparent" for="gen_uri">URI
-         <span class="tooltip">
+         <span class="tooltipcontent">
             The location of the service from which the items should be retrieved. This value may be a persistent identifier, but could also be a plain URI although this is advised against for published collections.
          </span>
      </label>
@@ -33,7 +34,7 @@
   </div>
   <div class="optional">
      <label id="profilelabel" class="tooltipparent" for="gen_query_profile">Query Profile
-         <span class="tooltip">
+         <span class="tooltipcontent">
             Identifier of the mechanism, i.e. the protocol to be used, by which the members of the virtual collection should be retrieved. A application exploiting the query can use this to use a proper driver to talk to the service. Example: In case of CLARIN-FCS access the endpoint by FCS-compatible means.
          </span>
      </label>
@@ -42,7 +43,7 @@
   </div>
   <div class="optional">
      <label id="valuelabel" class="tooltipparent" for="gen_query_value">Query value
-         <span class="tooltip">
+         <span class="tooltipcontent">
             The query that should be passed on to the service by which it can look up the items that are part of this collection. This value should be in the query language supported by the service. Example: In case of CLARIN-FCS, this value is the CQL query to be send to the endpoint.
          </span>
      </label>

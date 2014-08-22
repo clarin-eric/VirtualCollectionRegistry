@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.service.impl;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
+import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import static eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.State.DEAD;
@@ -10,6 +11,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD.Components.VirtualCollection.Creator.Email;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD.Components.VirtualCollection.Creator.Organisation;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD.Components.VirtualCollection.Description;
+import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD.Components.VirtualCollection.GeneratedBy.QueryProfile;
+import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD.Components.VirtualCollection.GeneratedBy.QueryValue;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD.Components.VirtualCollection.Name;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD.Components.VirtualCollection.ReproducabilityNotice;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD.Resources.ResourceProxyList.ResourceProxy;
@@ -28,6 +31,7 @@ import java.util.UUID;
 import javax.xml.datatype.DatatypeConfigurationException;
 import javax.xml.datatype.DatatypeFactory;
 import javax.xml.datatype.XMLGregorianCalendar;
+import org.apache.commons.lang.StringUtils;
 import org.apache.commons.lang3.time.FastDateFormat;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -47,7 +51,7 @@ public class VirtualCollectionCMDICreatorImpl implements VirtualCollectionCMDICr
 
     private final static Logger logger = LoggerFactory.getLogger(VirtualCollectionCMDICreatorImpl.class);
     private final DatatypeFactory dataTypeFactory;
-    
+
     // Collection display name value read from context.xml with a fallback value inserted by Spring
     @Value("${eu.clarin.cmdi.virtualcollectionregistry.collectiondisplayname:CLARIN Virtual Collection Registry}")
     private String collectionDisplayName;
@@ -85,9 +89,10 @@ public class VirtualCollectionCMDICreatorImpl implements VirtualCollectionCMDICr
         logger.trace("Creating header");
         cmdRoot.setHeader(createHeader(vc));
         logger.trace("Creating resources");
-        cmdRoot.setResources(createResources(vc));
+        final CMD.Resources resources = createResources(vc);
+        cmdRoot.setResources(resources);
         logger.trace("Creating components");
-        cmdRoot.setComponents(createComponents(vc));
+        cmdRoot.setComponents(createComponents(vc, resources));
         return cmdRoot;
     }
 
@@ -137,7 +142,7 @@ public class VirtualCollectionCMDICreatorImpl implements VirtualCollectionCMDICr
         return resources;
     }
 
-    private CMD.Components createComponents(VirtualCollection vc) {
+    private CMD.Components createComponents(VirtualCollection vc, CMD.Resources resources) {
         final CMD.Components.VirtualCollection virtualCollection = new CMD.Components.VirtualCollection();
 
         final Name name = new Name();
@@ -154,7 +159,6 @@ public class VirtualCollectionCMDICreatorImpl implements VirtualCollectionCMDICr
         virtualCollection.setStatus(getStatus(vc));
         virtualCollection.setPurpose(getPurpose(vc));
         virtualCollection.getCreator().add(getCreator(vc));
-        virtualCollection.setGeneratedBy(new CMD.Components.VirtualCollection.GeneratedBy());
         virtualCollection.setReproducability(getReproducability(vc));
 
         if (vc.getReproducibilityNotice() != null) {
@@ -163,9 +167,51 @@ public class VirtualCollectionCMDICreatorImpl implements VirtualCollectionCMDICr
             virtualCollection.setReproducabilityNotice(reproducabilityNotice);
         }
 
+        for (Resource resource : vc.getResources()) {
+            addResource(virtualCollection, resource, resources);
+        }
+
+        if (vc.getType() == VirtualCollection.Type.INTENSIONAL && vc.getGeneratedBy() != null) {
+            virtualCollection.setGeneratedBy(getGeneratedBy(vc.getGeneratedBy()));
+        }
+
         final CMD.Components components = new CMD.Components();
         components.setVirtualCollection(virtualCollection);
         return components;
+    }
+
+    private CMD.Components.VirtualCollection.GeneratedBy getGeneratedBy(GeneratedBy generatedBy) {
+        final CMD.Components.VirtualCollection.GeneratedBy component = new CMD.Components.VirtualCollection.GeneratedBy();
+
+        final String uri = generatedBy.getURI();
+        if (uri != null) {
+            component.setURI(uri);
+        }
+
+        final String description = generatedBy.getDescription();
+        if (description != null) {
+            final CMD.Components.VirtualCollection.GeneratedBy.Description descriptionElement = new CMD.Components.VirtualCollection.GeneratedBy.Description();
+            descriptionElement.setValue(description);
+            component.setDescription(descriptionElement);
+        }
+
+        if (generatedBy.getQuery() != null) {
+            final String profile = generatedBy.getQuery().getProfile();
+            if (profile != null) {
+                final QueryProfile profileElement = new QueryProfile();
+                profileElement.setValue(profile);
+                component.setQueryProfile(profileElement);
+            }
+
+            final String value = generatedBy.getQuery().getValue();
+            if (value != null) {
+                final QueryValue valueElement = new QueryValue();
+                valueElement.setValue(value);
+                component.setQueryValue(valueElement);
+            }
+        }
+
+        return component;
     }
 
     private XMLGregorianCalendar getCreationDate(VirtualCollection vc) {
@@ -260,6 +306,32 @@ public class VirtualCollectionCMDICreatorImpl implements VirtualCollectionCMDICr
                 creator.setOrganisation(organisation);
             }
             return creator;
+        }
+    }
+
+    private void addResource(final CMD.Components.VirtualCollection virtualCollection, Resource resource, CMD.Resources resources) {
+        if (!StringUtils.isEmpty(resource.getLabel()) || !StringUtils.isEmpty(resource.getDescription())) {
+            final CMD.Components.VirtualCollection.Resource resourceComponent = new CMD.Components.VirtualCollection.Resource();
+            if (!StringUtils.isEmpty(resource.getLabel())) {
+                // add label
+                final CMD.Components.VirtualCollection.Resource.Label label = new CMD.Components.VirtualCollection.Resource.Label();
+                label.setValue(resource.getLabel());
+                resourceComponent.setLabel(label);
+            }
+            if (!StringUtils.isEmpty(resource.getDescription())) {
+                // add description
+                final CMD.Components.VirtualCollection.Resource.Description description = new CMD.Components.VirtualCollection.Resource.Description();
+                description.setValue(resource.getDescription());
+                resourceComponent.setDescription(description);
+            }
+            // look up the resource proxy (by URI) and set a reference
+            for (ResourceProxy rp : resources.getResourceProxyList().getResourceProxy()) {
+                if (rp.getResourceRef().equals(resource.getRef())) {
+                    resourceComponent.getRef().add(rp);
+                    break;
+                }
+            }
+            virtualCollection.getResource().add(resourceComponent);
         }
     }
 }

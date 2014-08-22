@@ -101,6 +101,16 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
         oaiProvider.shutdown();
     }
 
+    /**
+     * Will store the specified collection; it will also set the owner according
+     * to the specified principal and set its state to
+     * {@link VirtualCollection.State#PRIVATE}
+     *
+     * @param principal owner principal
+     * @param vc collection to store
+     * @return identifier of the persisted collection
+     * @throws VirtualCollectionRegistryException
+     */
     public long createVirtualCollection(Principal principal,
             VirtualCollection vc) throws VirtualCollectionRegistryException {
         if (principal == null) {
@@ -123,9 +133,12 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
                 user = new User(principal.getName());
                 em.persist(user);
             }
+            vc.setOwner(user);
+
+            // force new collection to be private
+            vc.setState(VirtualCollection.State.PRIVATE);
 
             // store virtual collection
-            vc.setOwner(user);
             logger.debug("persisting new virtual collection", vc.getId());
             em.persist(vc);
             em.getTransaction().commit();
@@ -684,7 +697,7 @@ public class VirtualCollectionRegistry implements InitializingBean, DisposableBe
             }
         });
     }
-    
+
     private boolean isAllowedToModify(Principal principal, VirtualCollection c) {
         // admin and owner are allowed to modify collections
         return adminUsersService.isAdmin(principal.getName())

@@ -41,7 +41,7 @@ $(document).ready(function() {
 function activeTooltips() {
     /* activate tooltip on annotated labels */
     $(".tooltipparent").each(function() {
-        var tooltip = '#' + $(this).attr('id') + ' .tooltip';
+        var tooltip = '#' + $(this).attr('id') + ' .tooltipcontent';
         $(this).qtip({
             content: $(tooltip),
             show: 'mouseover',
@@ -55,6 +55,6 @@ function activeTooltips() {
                 background: '#ffffe1'
             }
         });
-        $(".tooltip", this).hide();
+        $(".tooltipcontent", this).hide();
     });
 }

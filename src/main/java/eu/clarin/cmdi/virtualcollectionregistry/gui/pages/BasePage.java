@@ -14,10 +14,10 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class BasePage extends WebPage {
-    
+
     @SpringBean
     private AdminUsersService adminUsersService;
-    
+
     protected BasePage(IModel<?> model) {
         super(model);
         // authentication state
@@ -25,30 +25,31 @@ public class BasePage extends WebPage {
 
         // main navigation menu
         final Menu menu = new Menu("menu");
-        menu.addMenuItem(new MenuItem<BrowsePublicCollectionsPage>(
-                new Model<String>("Virtual Collections"),
+        menu.addMenuItem(new MenuItem<>(Model.of("Virtual Collections"),
                 BrowsePublicCollectionsPage.class));
-        menu.addMenuItem(new MenuItem<BrowsePrivateCollectionsPage>(
-                new Model<String>("My Virtual Collections"),
+        menu.addMenuItem(new MenuItem<>(Model.of("My Virtual Collections"),
                 BrowsePrivateCollectionsPage.class));
-        menu.addMenuItem(new MenuItem<CreateVirtualCollectionPage>(
-                new Model<String>("Create Virtual Collection"),
+        menu.addMenuItem(new MenuItem<>(Model.of("Create Virtual Collection"),
                 CreateVirtualCollectionPage.class));
-        menu.addMenuItem(new MenuItem<AdminPage>(
-                new Model<String>("Admin Page"),
+        menu.addMenuItem(new MenuItem<>(Model.of("Help"),
+                HelpPage.class));        
+        menu.addMenuItem(new MenuItem<>(Model.of("Admin Page"),
                 AdminPage.class));
         add(menu);
-        
+
         add(new FeedbackPanel("feedback"));
-        
+
         add(new BookmarkablePageLink("homelink", getApplication().getHomePage())
                 .setAutoEnable(false));
+        add(new BookmarkablePageLink("aboutlink", AboutPage.class)
+                .setAutoEnable(false));
+
     }
-    
+
     protected BasePage() {
         this(null);
     }
-    
+
     @Override
     protected void onBeforeRender() {
         // skip lazy auto-auth for login page
@@ -81,7 +82,7 @@ public class BasePage extends WebPage {
         }
         super.onBeforeRender();
     }
-    
+
     protected Principal getUser() {
         ApplicationSession session = (ApplicationSession) getSession();
         Principal principal = session.getPrincipal();
@@ -90,15 +91,15 @@ public class BasePage extends WebPage {
         }
         return principal;
     }
-    
+
     protected boolean isUserAdmin() {
         final String userName = getUser().getName();
         return userName != null && adminUsersService.isAdmin(userName);
     }
-    
+
     @Override
     public ApplicationSession getSession() {
         return (ApplicationSession) super.getSession();
     }
-    
+
 } // class BasePage

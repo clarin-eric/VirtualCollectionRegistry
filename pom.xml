@@ -7,7 +7,7 @@
     <artifactId>VirtualCollectionRegistry</artifactId>
     <packaging>war</packaging>
     <name>CLARIN Virtual Collection Registry</name>
-    <version>0.4.0-SNAPSHOT</version>
+    <version>1.0-beta-SNAPSHOT</version>
 
     <organization>
         <name>CLARIN</name>
@@ -31,7 +31,7 @@
         <license>
             <name>GNU General Public License Version 3 (GPLv3)</name>
             <url>http://www.gnu.org/licenses/gpl-3.0.txt</url>
-          </license>
+        </license>
     </licenses>
 
     <properties>
@@ -183,36 +183,11 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
-        <!-- 
-            Below: libraries required for de.uni_leipzig.* EPIC library 
-            
-            TODO: replace with dependency on detached library once available
-
-            <dependency>
-                <groupId>de.uni_leipzig.asv</groupId>
-                <artifactId>clarin.webservices.pidservices2</artifactId>
-                <version>2.0.6-SNAPSHOT</version>
-            </dependency>
-        -->
-
+        
         <dependency>
-            <groupId>com.sun.jersey.contribs</groupId>
-            <artifactId>jersey-apache-client</artifactId>
-            <version>${jersey.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>com.jayway.jsonpath</groupId>
-            <artifactId>json-path</artifactId>
-            <version>0.9.1</version>
-        </dependency>
-
-        <dependency>
-            <groupId>net.sf.json-lib</groupId>
-            <artifactId>json-lib</artifactId>
-            <version>2.4</version>
-            <classifier>jdk15</classifier>
+            <groupId>de.uni_leipzig.asv</groupId>
+            <artifactId>clarin.webservices.pidservices2</artifactId>
+            <version>2.1.0</version>
         </dependency>
 
         <dependency>
@@ -221,7 +196,7 @@
             <version>4.3.4</version>
             <type>jar</type>
         </dependency>
-
+        
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket</artifactId>
@@ -572,7 +547,7 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
-                <version>2.1.1</version>
+                <version>2.4</version>
                 <configuration>
                     <failOnMissingWebXml>true</failOnMissingWebXml>
                     <webXml>${war.webxml}</webXml>
@@ -584,6 +559,10 @@
                             <includes>
                                 <include>*.xsd</include>
                             </includes>
+                        </resource>
+                        <!-- Make documentation available -->
+                        <resource>
+                            <directory>doc</directory>
                         </resource>
                     </webResources>
                 </configuration>
@@ -601,34 +580,26 @@
                         </goals>
                     </execution>
                 </executions>
-<!--                <configuration>
-                    <sassSourceDirectory>src/main/webapp/css</sassSourceDirectory>
-                </configuration>-->
             </plugin>
-            <!--            <plugin>
-                <groupId>ro.isdc.wro4j</groupId>
-                <artifactId>wro4j-maven-plugin</artifactId>
-                <version>1.7.6</version>
+            
+            <plugin>
+                <artifactId>maven-assembly-plugin</artifactId>
+                <version>2.4.1</version>
                 <executions>
                     <execution>
-                        <phase>compile</phase>
+                        <id>make-assembly</id>
+                        <phase>package</phase>
                         <goals>
-                            <goal>run</goal>
+                            <goal>single</goal>
                         </goals>
                     </execution>
                 </executions>
                 <configuration>
-                    <targetGroups>all</targetGroups>
-                    <minimize>true</minimize>
-                    <destinationFolder>${basedir}/src/main/webapp/wro/</destinationFolder>
-                    <cssDestinationFolder>d:/static/css/</cssDestinationFolder>
-                    <jsDestinationFolder>d:/static/js/</jsDestinationFolder>
-                    <contextFolder>${basedir}/src/main/webapp/</contextFolder>
-                    <wroFile>${basedir}/src/main/webapp/WEB-INF/wro.xml</wroFile>
-                    <wroManagerFactory>com.mycompany.MyCustomWroManagerFactory</wroManagerFactory>
-                    <ignoreMissingResources>false</ignoreMissingResources>
+                    <descriptors>
+                        <descriptor>src/assembly/distribution.xml</descriptor>
+                    </descriptors>
                 </configuration>
-            </plugin>-->
+            </plugin>
         </plugins>
 
         <pluginManagement>
