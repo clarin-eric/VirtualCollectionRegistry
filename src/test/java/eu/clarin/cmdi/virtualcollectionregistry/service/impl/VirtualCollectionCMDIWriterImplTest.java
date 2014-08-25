@@ -44,7 +44,7 @@ public class VirtualCollectionCMDIWriterImplTest extends XMLTestCase {
         //ignore resource proxy id's
         Pattern.compile("\\/CMD\\[1\\]\\/Resources\\[1\\]\\/ResourceProxyList\\[1\\]\\/ResourceProxy\\[.*\\]\\/@id"),
         //ignore resource proxy references from Resource component instances
-        Pattern.compile("\\/CMD\\[1\\]\\/Components\\[1\\]\\/VirtualCollection\\[1\\]\\/Resource\\[.*\\]\\/@ref")    
+        Pattern.compile("\\/CMD\\[1\\]\\/Components\\[1\\]\\/VirtualCollection\\[1\\]\\/Resource\\[.*\\]\\/@ref")
     });
 
     /**
@@ -91,6 +91,9 @@ public class VirtualCollectionCMDIWriterImplTest extends XMLTestCase {
         vc.setState(VirtualCollection.State.PUBLIC_PENDING);
         //setting the pid requires 'public pending' state and will set the state to public
         vc.setPersistentIdentifier(new PersistentIdentifier(vc, PersistentIdentifier.Type.HANDLE, "9999/1234-5678"));
+
+        vc.getKeywords().add("keyword1");
+        vc.getKeywords().add("keyword2");
 
         final Creator creator = new Creator("Test creator");
         creator.setEMail("test@creator.org");

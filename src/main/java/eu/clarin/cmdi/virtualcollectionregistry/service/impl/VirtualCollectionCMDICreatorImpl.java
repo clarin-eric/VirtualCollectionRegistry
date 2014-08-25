@@ -167,6 +167,12 @@ public class VirtualCollectionCMDICreatorImpl implements VirtualCollectionCMDICr
             virtualCollection.setReproducabilityNotice(reproducabilityNotice);
         }
 
+        for (String keyword : vc.getKeywords()) {
+            final CMD.Components.VirtualCollection.Keyword keywordElement = new CMD.Components.VirtualCollection.Keyword();
+            keywordElement.setValue(keyword);
+            virtualCollection.getKeyword().add(keywordElement);
+        }
+
         for (Resource resource : vc.getResources()) {
             addResource(virtualCollection, resource, resources);
         }

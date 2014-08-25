@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <!-- CMDI instance valid to cmdi-virtual-collection (clarin.eu:cr1:p_1271859438175) profile -->
+<!-- It should reflect the collection created programatically in the VirtualCollectionCMDIWriterImplTest -->
 <cmd:CMD xmlns:cmd="http://www.clarin.eu/cmd/"
          xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
          xsi:schemaLocation="http://www.clarin.eu/cmd/ http://catalog.clarin.eu/ds/ComponentRegistry/rest/registry/profiles/clarin.eu:cr1:p_1404130561238/xsd" CMDVersion="1.1">
@@ -37,6 +38,8 @@
             <cmd:Status>published</cmd:Status>
             <cmd:Reproducability>intended</cmd:Reproducability>
             <cmd:Purpose>sample</cmd:Purpose>
+            <cmd:Keyword>keyword1</cmd:Keyword>
+            <cmd:Keyword>keyword2</cmd:Keyword>
             <cmd:Creator>
                 <cmd:Name>Test creator</cmd:Name>
                 <cmd:Email>test@creator.org</cmd:Email>
