@@ -3,11 +3,13 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui;
 import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.DataStore;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AboutPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AdminPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePrivateCollectionsPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePublicCollectionsPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.CreateVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.EditVirtualCollectionPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.HelpPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.LoginPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.VirtualCollectionDetailsPage;
 import org.apache.wicket.Page;
@@ -62,6 +64,8 @@ public class Application extends AuthenticatedWebApplication implements IWiQuery
         mountBookmarkablePage("/private",
                 BrowsePrivateCollectionsPage.class);
         mountBookmarkablePage("/create", CreateVirtualCollectionPage.class);
+        mountBookmarkablePage("/about", AboutPage.class);
+        mountBookmarkablePage("/help", HelpPage.class);
         mountBookmarkablePage("/admin", AdminPage.class);
 
         // details of an existing collection by ID, e.g. /details/123
