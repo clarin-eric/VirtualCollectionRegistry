@@ -111,6 +111,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
      * @return identifier of the persisted collection
      * @throws VirtualCollectionRegistryException
      */
+    @Override
     public long createVirtualCollection(Principal principal,
             VirtualCollection vc) throws VirtualCollectionRegistryException {
         if (principal == null) {
@@ -151,6 +152,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         }
     }
 
+    @Override
     public long updateVirtualCollection(Principal principal, long id,
             VirtualCollection vc) throws VirtualCollectionRegistryException {
         if (principal == null) {
@@ -205,6 +207,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         }
     }
 
+    @Override
     public long deleteVirtualCollection(Principal principal, long id)
             throws VirtualCollectionRegistryException {
         if (principal == null) {
@@ -252,6 +255,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         }
     }
 
+    @Override
     public VirtualCollection.State getVirtualCollectionState(long id)
             throws VirtualCollectionRegistryException {
         if (id <= 0) {
@@ -281,6 +285,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         }
     }
 
+    @Override
     public void setVirtualCollectionState(Principal principal, long id,
             VirtualCollection.State state)
             throws VirtualCollectionRegistryException {
@@ -356,6 +361,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
      * @throws VirtualCollectionRegistryException if no virtual collection with
      * the specified identifier exists
      */
+    @Override
     public VirtualCollection retrieveVirtualCollection(long id)
             throws VirtualCollectionRegistryException {
         if (id <= 0) {
@@ -385,6 +391,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         }
     }
 
+    @Override
     public VirtualCollectionList getVirtualCollections(String query,
             int offset, int count) throws VirtualCollectionRegistryException {
         EntityManager em = datastore.getEntityManager();
@@ -440,6 +447,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         }
     }
 
+    @Override
     public VirtualCollectionList getVirtualCollections(Principal principal,
             String query, int offset, int count)
             throws VirtualCollectionRegistryException {
@@ -510,6 +518,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         }
     }
 
+    @Override
     public int getVirtualCollectionCount(QueryOptions options)
             throws VirtualCollectionRegistryException {
         logger.trace("Getting virtual collection count");
@@ -546,6 +555,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         }
     }
 
+    @Override
     public List<User> getUsers() {
         final EntityManager em = datastore.getEntityManager();
         try {
@@ -570,6 +580,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         }
     }
 
+    @Override
     public List<VirtualCollection> getVirtualCollections(
             int first, int count, QueryOptions options)
             throws VirtualCollectionRegistryException {
