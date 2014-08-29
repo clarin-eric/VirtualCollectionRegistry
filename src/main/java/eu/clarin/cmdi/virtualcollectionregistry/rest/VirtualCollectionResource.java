@@ -68,6 +68,18 @@ public final class VirtualCollectionResource {
     public VirtualCollectionResource() {
     }
 
+    // for testing
+    protected VirtualCollectionResource(VirtualCollectionRegistry registry, VirtualCollectionMarshaller marshaller, SecurityContext security, HttpHeaders headers, UriInfo uriInfo, Long id) {
+        this.registry = registry;
+        this.marshaller = marshaller;
+        this.security = security;
+        this.headers = headers;
+        this.uriInfo = uriInfo;
+        this.id = id;
+    }
+
+    
+    
     /**
      * Sets the id for this resource; should be called exactly once per
      * instance; <strong>mandatory call</strong>, not setting will lead to
@@ -103,8 +115,8 @@ public final class VirtualCollectionResource {
         if (!vc.isPublic() || (vc.getPersistentIdentifier() == null)) {
             // exclude CMDI from the options and check if this is ok for request
             final List<Variant> variants = Variant.mediaTypes(
-                    MediaType.TEXT_XML_TYPE, 
-                    MediaType.APPLICATION_XML_TYPE, 
+                    MediaType.TEXT_XML_TYPE,
+                    MediaType.APPLICATION_XML_TYPE,
                     MediaType.APPLICATION_JSON_TYPE).add().build();
             final Variant selectVariant = request.selectVariant(variants);
             if (selectVariant != null) {
@@ -211,7 +223,7 @@ public final class VirtualCollectionResource {
     public Response getVirtualCollectionState()
             throws VirtualCollectionRegistryException {
         VirtualCollection.State state = registry.getVirtualCollectionState(id);
-        State result = null;
+        final State result;
         switch (state) {
             case PUBLIC_PENDING:
             /* FALL-THROUGH */
