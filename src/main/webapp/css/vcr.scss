@@ -44,6 +44,14 @@ noscript {
     display: none;
 }
 
+.navbar-collapse {
+    font-size: 120%;
+}
+
+a.navbar-brand {
+    line-height: 20px;
+}
+
 ul#CLARIN_header_right li.authenticated {
     text-shadow: none;
     padding-top: 15px;
