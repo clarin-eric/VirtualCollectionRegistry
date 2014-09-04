@@ -52,7 +52,7 @@ ul#CLARIN_header_right li.authenticated {
 }
 
 div#CLARIN_footer_middle img {
-    max-height: 60px;
+    max-height: 80px !important;
     padding: 6px 4px;
 }
 
@@ -66,7 +66,7 @@ div#help  {
 
 div#betabadge {
     position: relative;
-    
+
     span {
         display: block;
         position: absolute;
@@ -78,4 +78,9 @@ div#betabadge {
         opacity: .7;
         padding: .2em .4em;
     }
+}
+
+#aboutlogos img {
+    max-height: 6em;
+    margin: 1em;
 }
