@@ -61,8 +61,7 @@ referenced file, one username per line.
              override="false"/>   
 
   b) For using the GWDG handle provider add following and customize the
-     base URI for the virtual collection registry and the values for
-     $gwdg_user and $gwdg_password:
+     values for $gwdg_user and $gwdg_password:
 
   <Parameter name="spring.profiles.active"
              value="vcr.pid.gwdg"
@@ -71,11 +70,24 @@ referenced file, one username per line.
   <Parameter name="pid_provider.password" value="$gwdg_password" override="false"/>
 
   c) For using the EPIC API v2 handle provider add following and customize the
-     base URI for the virtual collection registry and… TODO
-
+     values for $epic_user and $epic_password:
+     
   <Parameter name="spring.profiles.active"
              value="vcr.pid.epic”
              override="false"/>   
+
+  <Parameter name="pid_provider.epic.service_base_url"
+             value="http://pid-vm04.gwdg.de:8080/handles/"
+             override="false"/>               
+  <Parameter name="pid_provider.epic.handle_prefix"
+             value="11148"
+             override="false"/>     
+  <Parameter name="pid_provider.epic.user"
+             value="$epic_user"
+             override="false"/>     
+  <Parameter name="pid_provider.epic.password"
+             value="$epic_password"
+             override="false"/>
 
 * AUTHENTICATION *
 
@@ -108,6 +120,14 @@ environment, it should already have the right web.xml in place.
 Adjust locations to the desired and relevant local alternatives. The second
 block is required to make the virtual collection form submit service work
 with POSTs (current versions of SHHAA do not support this).
+
+3. Configure the right SSO and SLO locations in WEB-INF/shhaa.xml: 
+
+        <authentication>
+            ...
+            <sso action="lI">https://shib-host/Shibboleth.sso/Login</sso> 
+            <slo action="lO">https://shib-host/Shibboleth.sso/Logout</slo>     
+        </authentication>
 
 * OAI PROVIDER *
 
