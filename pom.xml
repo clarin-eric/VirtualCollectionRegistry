@@ -652,6 +652,19 @@
                                         <execute />
                                     </action>
                                 </pluginExecution>
+                                <pluginExecution>
+                                    <pluginExecutionFilter>
+                                        <groupId>org.jasig.maven</groupId>
+                                        <artifactId>sass-maven-plugin</artifactId>
+                                        <versionRange>[1.1.1,)</versionRange>
+                                        <goals>
+                                            <goal>update-stylesheets</goal>
+                                        </goals>
+                                    </pluginExecutionFilter>
+                                    <action>
+                                        <execute />
+                                    </action>
+                                </pluginExecution>
                             </pluginExecutions>
                         </lifecycleMappingMetadata>
                     </configuration>

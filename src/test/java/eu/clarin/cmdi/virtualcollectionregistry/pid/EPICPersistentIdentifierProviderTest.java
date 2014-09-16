@@ -30,6 +30,7 @@ public class EPICPersistentIdentifierProviderTest {
         pidWriter = context.mock(PidWriter.class);
         instance = new EPICPersistentIdentifierProvider(pidWriter, pidConfig);
         instance.setBaseUri("http://vcr");
+        instance.setInfix("VCR-test-");
     }
 
     /**
@@ -54,14 +55,14 @@ public class EPICPersistentIdentifierProviderTest {
                                 hasEntry(HandleField.TITLE, "VC Name"),
                                 hasEntry(HandleField.CREATOR, "Joe Unit")
                         ),
-                        equalTo("VCR-123")
+                        equalTo("VCR-test-123")
                 );
-                will(returnValue("9999/VCR-123"));
+                will(returnValue("9999/VCR-test-123"));
             }
         });
 
         PersistentIdentifier result = instance.createIdentifier(vc);
-        assertEquals("9999/VCR-123", result.getIdentifier());
+        assertEquals("9999/VCR-test-123", result.getIdentifier());
         assertEquals(Type.HANDLE, result.getType());
     }
 
