@@ -41,6 +41,21 @@ div.wizard {
 
 }
 
+form.wizard div.wizardView {
+    
+    label {
+        width: 15%;
+        min-width: 10em;
+    }
+    
+    input[type=text], textarea {
+        width: 50%;
+    }
+    
+    
+    
+}
+
 form.wizard {
     margin: 5px 4px;
     padding: 0;
