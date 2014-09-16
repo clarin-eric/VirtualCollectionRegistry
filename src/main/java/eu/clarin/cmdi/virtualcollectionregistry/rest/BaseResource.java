@@ -41,7 +41,6 @@ public class BaseResource {
      * @return
      */
     @GET
-    @Path("/")
     @Produces({MediaType.TEXT_XML})
     public Response getDescription() {
         final StreamingOutput writer = new StreamingOutput() {
