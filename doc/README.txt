@@ -88,7 +88,13 @@ referenced file, one username per line.
   <Parameter name="pid_provider.epic.password"
              value="$epic_password"
              override="false"/>
-
+             
+  Add the following parameter to configure a custom PID 'infix'. The example below
+  configures the default behaviour, i.e. '{prefix}/VCR-{id}'.
+   
+  <Parameter name="pid_provider.epic.infix"
+             value="VCR-"/>
+             
 * AUTHENTICATION *
 
 The application has two alternative authentication configuration represented by two

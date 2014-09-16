@@ -37,6 +37,9 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
     @Value("${eu.clarin.cmdi.virtualcollectionregistry.base_uri}")
     private String baseUri;
 
+    @Value("${pid_provider.epic.infix:VCR-}")
+    private String infix;
+
     /**
      *
      * @param pidWriter PID writer implementation to use
@@ -53,7 +56,7 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
         logger.debug("creating handle for virtual collection \"{}\"", vc.getId());
         final Map<HandleField, String> fieldMap = createPIDFieldMap(vc);
         try {
-            final String requestedPid = String.format("VCR-%d", vc.getId());
+            final String requestedPid = String.format("%s%d", infix, vc.getId());
             final String pid = pidWriter.registerNewPID(configuration, fieldMap, requestedPid);
             return new PersistentIdentifier(vc, PersistentIdentifier.Type.HANDLE, pid);
         } catch (HttpException ex) {
@@ -87,6 +90,10 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
 
     protected void setBaseUri(String baseUri) {
         this.baseUri = baseUri;
+    }
+    
+    protected void setInfix(String infix) {
+        this.infix = infix;
     }
 
 }
