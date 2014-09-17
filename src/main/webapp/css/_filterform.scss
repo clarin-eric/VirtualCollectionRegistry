@@ -19,14 +19,24 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 form.filterForm {
     margin: 0;
     padding: 0;
-}
 
-form.filterForm fieldset {
-    padding: 0;
-    margin: 0;
-    border: none;
-}
+    fieldset {
+        padding: 0;
+        margin: 0;
+        border: none;
+    }
 
-form.filterForm div.optional {
-    margin-bottom: 4px;
+    div.optional {
+        margin-bottom: 4px;
+    }
+    
+    select {
+        width: 20%;
+        min-width: 8em;
+    }
+
+    input[type=text] {
+        width: 40%;
+    }
+
 }

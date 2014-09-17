@@ -113,10 +113,8 @@ table.collectionsTable {
             background-position: center left;
             cursor: pointer;
 
-
-
             &:hover {
-                color: #AE0000;
+                color: $hyperlink_text_emphasized_color;
                 background-color: inherit;
             }
 
@@ -176,6 +174,15 @@ table.collectionsTable {
         /* icon from GLYPHICONS.com */
         background-image: url('../icons/glyphicons_136_cogwheel.png');
     }
+    
+    a:visited {
+        color: $hyperlink;
+    }
+    
+    a:hover, a:active {
+        color: $hyperlink_text_emphasized_color;
+    }
+    
 } //table.collectionsTable
 
 /* ORDERING */

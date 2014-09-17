@@ -6,7 +6,7 @@
     <head>
         <title>CLARIN Virtual Collection Registry</title>
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
-
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <!-- Bootstrap styles required for CLARIN style to work properly -->
         <link rel="stylesheet" type="text/css" href="//infra.clarin.eu/content/libs/bootstrap-3.2.0-dist/css/bootstrap.min.css" />
         <!-- CLARIN + VCR style compiled from SASS -->
@@ -59,13 +59,19 @@
         <div id="footer">
             <div class="container">
                 <div id="CLARIN_footer_left">
-                    <a title="about" wicket:id="aboutlink"><span>VERSION ${pom.version} </span><span class="glyphicon glyphicon-info-sign"></span></a>
+                    <a title="about" wicket:id="aboutlink">
+                        <span class="glyphicon glyphicon-info-sign"></span>
+                        <span>VERSION ${pom.version} </span>
+                    </a>
                 </div>
                 <div id="CLARIN_footer_middle">
                     <a title="CLARIN ERIC" href="https://www.clarin.eu/"><img src="images/clarin-logo.png" alt="CLARIN ERIC logo"/></a>
                 </div>
                 <div id="CLARIN_footer_right">
-                    <a title="contact" class="glyphicon glyphicon-envelope" href="mailto:vcr@clarin.eu"><span> CONTACT</span></a>
+                    <a title="contact" href="mailto:vcr@clarin.eu">
+                        <span class="glyphicon glyphicon-envelope"></span>
+                        <span> CONTACT</span>
+                    </a>
                 </div>
             </div>
         </div>
