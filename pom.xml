@@ -7,7 +7,7 @@
     <artifactId>VirtualCollectionRegistry</artifactId>
     <packaging>war</packaging>
     <name>CLARIN Virtual Collection Registry</name>
-    <version>1.0-beta-SNAPSHOT</version>
+    <version>1.0-beta2</version>
 
     <organization>
         <name>CLARIN</name>
