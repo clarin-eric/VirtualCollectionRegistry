@@ -30,11 +30,17 @@ public class HelpPage extends BasePage {
 
     public HelpPage() {
         final String baseUri = WebApplication.get().getServletContext().getInitParameter(BASE_URI);
-        final String serviceBaseUri = String.format("%s/service", baseUri);
 
+        final String serviceBaseUri = String.format("%s/service", baseUri);
         add(new ExternalLink("restLink", serviceBaseUri)
                 .add(new Label("restUrl", serviceBaseUri)));
+
+        final String oaiIdentifyUri = String.format("%s/oai?verb=Identify", baseUri);
+        add(new ExternalLink("oaiLink", oaiIdentifyUri)
+                .add(new Label("oaiUrl", oaiIdentifyUri)));
+
         add(new ExternalLink("wadlLink", String.format("%s/application.wadl", serviceBaseUri)));
+
     }
 
 }
