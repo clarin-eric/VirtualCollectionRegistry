@@ -425,48 +425,69 @@ div#footer {
     align-items: center;
     align-content: space-around;
 
+    div#CLARIN_footer_left, div#CLARIN_footer_right {
+        a span.glyphicon {
+            margin-right: .2em;
+        }
+    }
+    
     div#CLARIN_footer_left {
-      order: 1;
+        order: 1;
       //float: left;
       //display: inline-block;
-      display: flex !important;
-      text-align: left;
-      vertical-align: middle;
-      margin: auto;
-      align-content: space-around;
+        display: flex !important;
+        text-align: left;
+        vertical-align: middle;
+        margin: auto;
+        width: 33%;
+        align-content: space-around;
+        padding-left: 1em;
       //width: 25%;
       //max-height: 100%;
     }
 
     div#CLARIN_footer_middle {
-      order: 2;
+        order: 2;
       //float: left;
       //display: inline-block;
-      display: flex !important;
-      text-align: center;
-      margin: auto;
-      align-content: space-around;
+        display: flex !important;
+        text-align: center;
+        margin: auto;
+        width: 33%;
+        align-content: space-around;
       //width: 50%;
       //max-height: 100%;
 
-      img {
-        display: inline-block;
-        max-width: 100%;
-        max-height: 100%;
-        overflow: hidden;
+      a {
+          display: block;
+          width: 100%;
+      
+        img {
+          margin: 0 auto;
+          display: block;
+          max-width: 100%;
+          max-height: 100%;
+          overflow: hidden;
+        }
       }
     }
 
     div#CLARIN_footer_right {
-      order: 3;
+        order: 3;
       //float: left;
-      text-align: right;
-      vertical-align: middle;
-      display: flex !important;
-      margin: auto;
-      align-content: space-around;
+        text-align: right;
+        vertical-align: middle;
+        display: flex !important;
+        /* margin: auto; */
+        width: 33%;
+        align-content: space-around;
+        padding-right: 1em;
       //width: 25%;
       //max-height: 100%;
+      
+      a {
+          width: 100%;
+      }
     }
   }
 }
