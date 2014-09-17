@@ -16,10 +16,20 @@ $thin_separator_grey: #e7e7e7;
 $text_emphasized: #222;
 $text_deemphasized: #666;
 //$hyperlink_color: #03683f;
+
+$hyperlink_text_color: $clarin_blue;
+$hyperlink_text_emphasized_color: $red;
+$hyperlink_text_deemphasized_color: $text_deemphasized;
+
+$hyperlink_text_periphery_color: #6b5741;
+$hyperlink_text_emphasized_periphery_color: $red;
+$hyperlink_text_deemphasized_periphery_color: #8c765a;
+
 $text_emphasized_periphery: #806a52;
 $text_deemphasized_periphery: #c0a37c;
-$hyperlink: $text_emphasized_periphery;
-$hyperlink_visited: $text_deemphasized_periphery;
+$hyperlink: $hyperlink_text_color;
+$hyperlink_visited: $hyperlink_text_deemphasized_color;
+
 $background_color: #f9f9f9;
 
 // Font
@@ -51,18 +61,31 @@ body {
   word-wrap: break-word;
 }
 
+
 a {
-  color: $hyperlink;
-  text-decoration: dotted !important;
-
-  &:hover, &:focus {
-    // color: inherit;
+    //color: $text_emphasized_periphery;
     text-decoration: none !important;
-  }
+    //, font-weight 1s linear;
+    //font-weight: 700;
 
-  &:visited {
-    color: $hyperlink_visited;
-  }
+    &:link {
+        color: $hyperlink_text_color;
+    }
+
+    &:hover,
+    &:focus {
+        color: $hyperlink_text_emphasized_color;
+        //transform: scale(2, 2) !important;
+        //transform: scale(1.1, 1.1) !important;
+    }
+    
+    &:active {
+        color: $hyperlink_text_emphasized_color;
+    }
+
+    &:visited {
+        color: $hyperlink_text_deemphasized_color;
+    }
 }
 
 div.navbar-header {
@@ -306,7 +329,6 @@ table.display {
 
     tr th a {
       color: #fff !important;
-      text-decoration: underline !important;
     }
 
     tr th:last-child {
