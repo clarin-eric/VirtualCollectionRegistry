@@ -670,6 +670,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             em.getTransaction().commit();
         } catch (VirtualCollectionRegistryException e) {
             logger.error("error while doing maintenance", e);
+        } catch (RuntimeException e) {
+            logger.error("unexpected error while doing maintenance", e);
         } finally {
             datastore.closeEntityManager();
         }
