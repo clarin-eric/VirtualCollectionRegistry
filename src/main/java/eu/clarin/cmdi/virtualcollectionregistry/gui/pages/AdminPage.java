@@ -65,7 +65,7 @@ public class AdminPage extends BasePage {
             @Override
             public Object getDisplayValue(User user) {
                 if (user == null) {
-                    return "Published profiles";
+                    return "Published collections";
                 } else {
                     final String displayName = user.getDisplayName();
                     if (displayName == null) {
