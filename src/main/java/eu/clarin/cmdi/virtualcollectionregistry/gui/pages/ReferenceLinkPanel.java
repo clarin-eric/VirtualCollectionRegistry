@@ -2,6 +2,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
+
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
@@ -15,6 +16,7 @@ import org.apache.wicket.util.string.Strings;
  *
  * @author twagoo
  */
+@SuppressWarnings("serial")
 public class ReferenceLinkPanel extends Panel {
 
     public ReferenceLinkPanel(String id, IModel<Resource> model) {

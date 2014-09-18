@@ -15,6 +15,7 @@ import org.odlabs.wiquery.core.options.Options;
  *
  * @author twagoo
  */
+@SuppressWarnings("serial")
 public class TooltipBehavior extends WiQueryAbstractBehavior {
 
     public static final ResourceReference QTIP_JAVASCRIPT_RESOURCE

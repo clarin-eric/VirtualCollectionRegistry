@@ -1,12 +1,24 @@
 package eu.clarin.cmdi.virtualcollectionregistry.service.impl;
 
+import java.util.Date;
+import java.util.List;
+import java.util.UUID;
+
+import javax.xml.datatype.DatatypeConfigurationException;
+import javax.xml.datatype.DatatypeFactory;
+import javax.xml.datatype.XMLGregorianCalendar;
+
+import org.apache.commons.lang.StringUtils;
+import org.apache.commons.lang3.time.FastDateFormat;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Value;
+import org.springframework.stereotype.Service;
+
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import static eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.State.DEAD;
-import static eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.State.DELETED;
-import static eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.State.PUBLIC;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD.Components.VirtualCollection.Creator.Email;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD.Components.VirtualCollection.Creator.Organisation;
@@ -25,18 +37,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.SimpletypePurpose1;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.SimpletypeReproducability1;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.SimpletypeStatus1;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionCMDICreator;
-import java.util.Date;
-import java.util.List;
-import java.util.UUID;
-import javax.xml.datatype.DatatypeConfigurationException;
-import javax.xml.datatype.DatatypeFactory;
-import javax.xml.datatype.XMLGregorianCalendar;
-import org.apache.commons.lang.StringUtils;
-import org.apache.commons.lang3.time.FastDateFormat;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Value;
-import org.springframework.stereotype.Service;
 
 /**
  * A service implementation that creates a CMDI object hierarchy for a

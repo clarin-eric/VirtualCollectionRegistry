@@ -7,6 +7,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
  *
  * @author twagoo
  */
+@SuppressWarnings("serial")
 public class PublishedCollectionsProvider extends CollectionsProvider {
 
     @Override

@@ -11,9 +11,11 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.table.CollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidator;
+
 import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.Session;
@@ -33,6 +35,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author twagoo
  */
+@SuppressWarnings("serial")
 public class BrowseEditableCollectionsPanel extends Panel {
 
     private final static Logger logger = LoggerFactory.getLogger(BrowseEditableCollectionsPanel.class);
