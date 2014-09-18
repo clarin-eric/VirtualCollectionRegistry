@@ -9,9 +9,11 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.service.CreatorProvider;
+
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+
 import org.apache.wicket.Component;
 import org.apache.wicket.ResourceReference;
 import org.apache.wicket.Session;
@@ -334,7 +336,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                     editCreatorDialog.show(target);
                 }
             });
-            add(new AjaxLink("addme") {
+            add(new AjaxLink<Object>("addme") {
 
                 @Override
                 public void onClick(AjaxRequestTarget target) {
