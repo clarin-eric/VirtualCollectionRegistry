@@ -643,6 +643,11 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             q.setLockMode(LockModeType.PESSIMISTIC_WRITE);
             for (VirtualCollection vc : q.getResultList()) {
                 if (vc.getPersistentIdentifier() == null) {
+                    /*
+                     * TODO: if an error occurred while minting PID, the VCR
+                     * should handle this more gracefully and not stubbornly
+                     * re-try ... 
+                     */
                     PersistentIdentifier pid = pid_provider.createIdentifier(vc);
                     vc.setPersistentIdentifier(pid);
                 }
