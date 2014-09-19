@@ -113,7 +113,7 @@ public class PersistentIdentifier implements Serializable {
      * present identifier (as if clicked on in a standard web browser).
      * <em>Actionable URI</em> is defined as follows: "URI (3.2.2) that has a
      * resource-associated identifier (3.2.1) that is suitably encoded, such
-     * that when the URI is embedded in a web document and “clicked” on, the
+     * that when the URI is embedded in a web document and 'clicked' on, the
      * browser will be redirected to the resource (3.1.1), and possibly
      * supplementary services related to the resource" (ISO 24619:2011 (PISA),
      * section 3.2.6.)

@@ -10,6 +10,7 @@ import org.apache.wicket.model.IModel;
  * @author twagoo
  * @param <T> type of model object
  */
+@SuppressWarnings("serial")
 public abstract class DynamicProxyModel<T> implements IModel<T> {
 
     /**

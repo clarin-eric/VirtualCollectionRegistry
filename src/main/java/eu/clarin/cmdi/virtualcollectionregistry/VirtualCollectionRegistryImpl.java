@@ -643,6 +643,11 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             q.setLockMode(LockModeType.PESSIMISTIC_WRITE);
             for (VirtualCollection vc : q.getResultList()) {
                 if (vc.getPersistentIdentifier() == null) {
+                    /*
+                     * TODO: if an error occurred while minting PID, the VCR
+                     * should handle this more gracefully and not stubbornly
+                     * re-try ... 
+                     */
                     PersistentIdentifier pid = pid_provider.createIdentifier(vc);
                     vc.setPersistentIdentifier(pid);
                 }
@@ -670,6 +675,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             em.getTransaction().commit();
         } catch (VirtualCollectionRegistryException e) {
             logger.error("error while doing maintenance", e);
+        } catch (RuntimeException e) {
+            logger.error("unexpected error while doing maintenance", e);
         } finally {
             datastore.closeEntityManager();
         }

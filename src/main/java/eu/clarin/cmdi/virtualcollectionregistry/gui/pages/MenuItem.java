@@ -1,6 +1,5 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
-import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.authorization.IAuthorizationStrategy;
 import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeAction;
@@ -11,8 +10,9 @@ import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.apache.wicket.util.lang.Classes;
+
+import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 
 @SuppressWarnings("serial")
 public class MenuItem<T extends WebPage> extends Panel {

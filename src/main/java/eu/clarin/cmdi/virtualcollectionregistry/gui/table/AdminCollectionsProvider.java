@@ -3,6 +3,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.table;
 import eu.clarin.cmdi.virtualcollectionregistry.QueryOptions;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+
 import org.apache.wicket.model.IModel;
 
 /**
@@ -13,6 +14,7 @@ import org.apache.wicket.model.IModel;
  *
  * @author twagoo
  */
+@SuppressWarnings("serial")
 public class AdminCollectionsProvider extends CollectionsProvider {
 
     private final IModel<User> userModel;

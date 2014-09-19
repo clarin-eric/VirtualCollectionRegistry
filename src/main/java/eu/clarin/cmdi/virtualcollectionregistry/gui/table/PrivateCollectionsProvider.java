@@ -7,6 +7,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
  *
  * @author twagoo
  */
+@SuppressWarnings("serial")
 public class PrivateCollectionsProvider extends CollectionsProvider {
 
     @Override

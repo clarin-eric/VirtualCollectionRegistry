@@ -18,6 +18,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
 import org.apache.wicket.model.IModel;
 
 /**
@@ -26,6 +27,7 @@ import org.apache.wicket.model.IModel;
  *
  * @author twagoo
  */
+@SuppressWarnings("serial")
 public class HandleLinkModel implements IModel<String> {
 
     private final IModel<String> linkModel;

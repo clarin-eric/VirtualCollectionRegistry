@@ -1,8 +1,11 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.IdentifiedEntity;
+
 import java.io.Serializable;
+
 import javax.persistence.EntityManager;
+
 import org.apache.wicket.model.IModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -17,6 +20,7 @@ import org.slf4j.LoggerFactory;
  * @author twagoo
  * @see EntityManager#merge(java.lang.Object)
  */
+@SuppressWarnings("serial")
 public class VolatileEntityModel<T extends IdentifiedEntity & Serializable> implements IModel<T> {
 
     private final static Logger logger = LoggerFactory.getLogger(VolatileEntityModel.class);

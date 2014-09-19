@@ -17,6 +17,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.service.impl;
 
 import java.util.regex.Pattern;
+
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.Validatable;
@@ -31,6 +32,7 @@ import org.apache.wicket.validation.validator.UrlValidator;
  *
  * @author twagoo
  */
+@SuppressWarnings("serial")
 public class ReferenceValidator extends AbstractValidator<String> {
 
     private static final String HANDLE_SPECIFIC_PART_PATTERN = "[0-9\\.]+\\/.+$";
