@@ -151,7 +151,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity {
     @Column(name = "reproducibility_notice", length = 8192)
     private String reproducibilityNotice;
 
-    @ElementCollection
+    @ElementCollection(fetch = FetchType.EAGER)
     @CollectionTable(name = "keyword",
                      joinColumns = @JoinColumn(name="vc_id"))
     private List<String> keywords;
