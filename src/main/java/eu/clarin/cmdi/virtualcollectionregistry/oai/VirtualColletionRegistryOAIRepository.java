@@ -16,11 +16,13 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection_;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionCMDIWriter;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.NoResultException;
@@ -31,19 +33,22 @@ import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
+
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
+@Component //TODO: Check if this annotation is needed... it shouldn't be. See https://trac.clarin.eu/ticket/658
 public class VirtualColletionRegistryOAIRepository implements Repository {
 
+    private static final Logger logger
+            = LoggerFactory.getLogger(VirtualColletionRegistryOAIRepository.class);
+    private VirtualCollectionRegistry registry;
     @Autowired
     private VirtualCollectionCMDIWriter cmdiWriter;
     @Autowired
     private DataStore dataStore;
-
-    private static final Logger logger
-            = LoggerFactory.getLogger(VirtualColletionRegistryOAIRepository.class);
 
     private class CMDIMetadataFormat implements MetadataFormat {
 
@@ -76,11 +81,13 @@ public class VirtualColletionRegistryOAIRepository implements Repository {
         }
     } // class CMDIMetadataFormat
 
-    private final VirtualCollectionRegistry registry;
-
     @Autowired
     VirtualColletionRegistryOAIRepository(VirtualCollectionRegistry registry) {
+        if (registry == null) {
+            throw new NullPointerException("internal error: registry == null");
+        }
         this.registry = registry;
+        logger.info("VirtualColletionRegistryOAIRepository (hash {}) has been constructed with VCR (hash {})", hashCode(), registry.hashCode());
     }
 
     @Override
