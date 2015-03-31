@@ -44,8 +44,6 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
     @Autowired
     private PersistentIdentifierProvider pid_provider;
     @Autowired
-    private OAIProvider oaiProvider;
-    @Autowired
     @Qualifier("creation")
     private VirtualCollectionValidator validator;
     @Autowired
@@ -97,8 +95,11 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             logger.warn("Timeout while waiting for maintenance thread to terminate, will try to shut down");
         }
 
-        logger.info("Shutting down OAI provider");
-        oaiProvider.shutdown();
+        final OAIProvider oaiProvider = OAIProvider.instance();
+        if (oaiProvider != null) {
+            logger.info("Shutting down OAI provider");
+            oaiProvider.shutdown();
+        }
     }
 
     /**
@@ -646,7 +647,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                     /*
                      * TODO: if an error occurred while minting PID, the VCR
                      * should handle this more gracefully and not stubbornly
-                     * re-try ... 
+                     * re-try ...
                      */
                     PersistentIdentifier pid = pid_provider.createIdentifier(vc);
                     vc.setPersistentIdentifier(pid);
@@ -703,7 +704,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
      */
     private static ScheduledExecutorService createSingleThreadScheduledExecutor(final String threadName) {
         return Executors.newSingleThreadScheduledExecutor(new ThreadFactory() {
-            // decorate default thread factory so that we can provide a 
+            // decorate default thread factory so that we can provide a
             // custom thread name
             final AtomicInteger i = new AtomicInteger(0);
 
