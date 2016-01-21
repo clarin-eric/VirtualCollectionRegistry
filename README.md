@@ -10,7 +10,7 @@ This application is currently documented on the [CLARIN trac](https://trac.clari
 
 ### Developers
 * Oliver Schonefeld, original developer.
-* Twan Goosen, developer of the <x> release.
+* Twan Goosen, contributor to the 1.0 release.
 * Willem Elbers, current maintainer
 
 ### GitHub migration
