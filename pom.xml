@@ -25,6 +25,11 @@
             <organization>CLARIN</organization>
             <url>http://www.clarin.eu/</url>
         </developer>
+        <developer>
+            <name>Willem Elbers</name>
+            <organization>CLARIN</organization>
+            <url>http://www.clarin.eu/</url>
+        </developer>
     </developers>
     
     <licenses>
