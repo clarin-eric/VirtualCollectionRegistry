@@ -6,11 +6,13 @@ import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
 public class BasePage extends WebPage {
@@ -18,8 +20,17 @@ public class BasePage extends WebPage {
     @SpringBean
     private AdminUsersService adminUsersService;
 
+    public static final String BETA_MODE = "eu.clarin.cmdi.virtualcollectionregistry.beta_mode";
+    
     protected BasePage(IModel<?> model) {
         super(model);
+        
+        final boolean beta_mode = Boolean.valueOf(WebApplication.get().getServletContext().getInitParameter(BETA_MODE));
+        
+        WebMarkupContainer betaBadge = new WebMarkupContainer ("betabadge");
+        betaBadge.setVisible(beta_mode);
+        add(betaBadge);
+        
         // authentication state
         add(new AuthenticationStatePanel("authstate"));
 

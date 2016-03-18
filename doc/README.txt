@@ -40,6 +40,17 @@ and substitute the value with the correct *public* base location of the VCR:
 Add no trailing slash. You can verify this by checking the service links in the
 help page of the running application.
 
+BETA MODE:
+
+Add the following context parameter (typically to the global context.xml file):
+
+    <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.beta_mode"
+             value="true"
+             override="false"/>
+
+Set the value "true" to enable beta mode or "false" to disable beta mode.
+Defaults to "false" if this parameter is not provided.
+
 ADMINISTRATOR USERS:
 
 Add the following context parameter:
