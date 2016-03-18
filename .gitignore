@@ -1,2 +1,4 @@
+nb-configuration.xml
 migrate-svn-to-git.sh
 users.txt
+/target/
