@@ -361,6 +361,9 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
             case PUBLIC:
                 s = "public";
                 break;
+            case PUBLIC_FROZEN:
+                s = "public_frozen";
+                break;
             case DELETED:
                 s = "deleted";
                 break;
@@ -463,6 +466,8 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
                 vc.setState(VirtualCollection.State.PUBLIC_PENDING);
             } else if ("public".equals(s)) {
                 vc.setState(VirtualCollection.State.PUBLIC);
+            } else if ("public_frozen".equals(s)) {
+                vc.setState(VirtualCollection.State.PUBLIC_FROZEN);
             } else if ("deleted".equals(s)) {
                 vc.setState(VirtualCollection.State.DELETED);
             } else if ("dead".equals(s)) {

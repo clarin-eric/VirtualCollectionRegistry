@@ -268,6 +268,9 @@ public final class VirtualCollectionResource {
             case PUBLIC:
                 vc_state = VirtualCollection.State.PUBLIC_PENDING;
                 break;
+            case PUBLIC_FROZEN:
+                vc_state = VirtualCollection.State.PUBLIC_FROZEN_PENDING;
+                break;
             case PRIVATE:
                 vc_state = VirtualCollection.State.PRIVATE;
                 break;

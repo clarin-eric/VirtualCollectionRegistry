@@ -200,10 +200,19 @@ public class BrowseEditableCollectionsPanel extends Panel {
     } // class BrowsePrivateCollectionsPage.PublishCollectionDialog
 
     private void doPublish(long vcId) throws VirtualCollectionRegistryException {
-        vcr.setVirtualCollectionState(getUser(), vcId,
-                VirtualCollection.State.PUBLIC_PENDING);
+        //vcr.setVirtualCollectionState(getUser(), vcId,
+        //        VirtualCollection.State.PUBLIC_PENDING);
+        doPublish(vcId, false);
     }
 
+    private void doPublish(long vcId, boolean frozen) throws VirtualCollectionRegistryException {
+        VirtualCollection.State newState = VirtualCollection.State.PUBLIC_PENDING;
+        if(frozen) {
+            newState = VirtualCollection.State.PUBLIC_FROZEN_PENDING;
+        }        
+        vcr.setVirtualCollectionState(getUser(), vcId, newState);
+    }
+    
     private final class ConfirmPublishCollectionDialog extends ConfirmationDialog {
 
         private long vcId;

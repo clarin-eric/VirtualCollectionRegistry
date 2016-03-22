@@ -69,6 +69,8 @@ public class VirtualCollection implements Serializable, IdentifiedEntity {
         PRIVATE,
         PUBLIC_PENDING,
         PUBLIC,
+        PUBLIC_FROZEN_PENDING,
+        PUBLIC_FROZEN,
         DELETED,
         DEAD
     } // enum VirtualCollection.State

@@ -10,8 +10,10 @@ public enum State {
     @XmlEnumValue("private")
     PRIVATE,
     @XmlEnumValue("public")
-    PUBLIC;
-
+    PUBLIC,
+    @XmlEnumValue("public_frozen")
+    PUBLIC_FROZEN;
+    
     @Override
     public String toString() {
         switch (this) {
@@ -19,6 +21,8 @@ public enum State {
             return "private";
         case PUBLIC:
             return "public";
+        case PUBLIC_FROZEN:
+            return "public_frozen";
         default:
             throw new InternalError();
 
