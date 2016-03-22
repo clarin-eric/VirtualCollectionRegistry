@@ -112,6 +112,9 @@ The application has two alternative authentication configuration represented by 
 versions of the web.xml file. The default web.xml assumes Tomcat UserDatabaseRealm,
 which is useful for testing purposes.
 
+Ensure that a user entry exists in tomcat-users.xml and that it has role "vcr":
+<user password="tomcat" roles="vcr" username="tomcat"/>
+
 To shibbolize this application, the following steps are required:
 
 1. Use the shibboleth version of web.xml called 'web-shib.xml' instead of
