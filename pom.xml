@@ -537,9 +537,9 @@
                 </dependencies>
             </plugin>
 
-            <plugin>
+            <plugin>                
                 <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxb2-maven-plugin</artifactId>
+                <artifactId>jaxb2-maven-plugin</artifactId>                
                 <version>1.6</version>
                 <executions>
                     <execution>
@@ -550,10 +550,29 @@
                     </execution>
                 </executions>
                 <configuration>
-                    <packageName>eu.clarin.cmdi.virtualcollectionregistry.model.cmdi</packageName> <!-- The name of your generated source package -->
+                    <packageName>eu.clarin.cmdi.virtualcollectionregistry.model.cmdi</packageName>
                 </configuration>
             </plugin>
-
+                        
+            <!--
+            <plugin>
+                <groupId>org.jvnet.jaxb2.maven2</groupId>
+                <artifactId>maven-jaxb2-plugin</artifactId>
+                <version>0.13.1</version>
+                <executions>
+                    <execution>
+                        <id>generate</id>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+                <configuration>
+                    <generatePackage>eu.clarin.cmdi.virtualcollectionregistry.model.cmdi</generatePackage>    
+                </configuration>
+            </plugin>
+            -->
+            
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
