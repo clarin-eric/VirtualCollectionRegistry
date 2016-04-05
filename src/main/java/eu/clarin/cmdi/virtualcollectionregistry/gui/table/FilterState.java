@@ -5,6 +5,8 @@ import java.util.Date;
 
 import eu.clarin.cmdi.virtualcollectionregistry.QueryOptions;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import java.util.LinkedList;
+import java.util.List;
 
 @SuppressWarnings("serial")
 final class FilterState implements Serializable {
@@ -18,7 +20,7 @@ final class FilterState implements Serializable {
     private SearchMode descriptionMode;
     private String description;
     private VirtualCollection.Type type;
-    private VirtualCollection.State state;
+    private List<VirtualCollection.State> state = new LinkedList<>();
     private QueryOptions.Relation createdRelation;
     private Date created;
 
@@ -84,16 +86,16 @@ final class FilterState implements Serializable {
         return type != null;
     }
 
-    public VirtualCollection.State getState() {
+    public List<VirtualCollection.State> getState() {
         return state;
     }
 
-    public void setType(VirtualCollection.State state) {
-        this.state = state;
+    public void setState(VirtualCollection.State state) {
+        this.state.add(state);
     }
 
     public boolean hasState() {
-        return state != null;
+        return state != null && !state.isEmpty();
     }
 
     public boolean hasDescription() {
@@ -133,7 +135,7 @@ final class FilterState implements Serializable {
         descriptionMode = SearchMode.CONTAINS;
         description = null;
         type = null;
-        state = null;
+        state = new LinkedList<>();
         createdRelation = QueryOptions.Relation.EQ;
         created = null;
     }

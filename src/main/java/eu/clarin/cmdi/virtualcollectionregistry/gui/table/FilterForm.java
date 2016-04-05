@@ -30,7 +30,8 @@ public class FilterForm extends Panel {
         Arrays.asList(VirtualCollection.State.PUBLIC,
                 VirtualCollection.State.PRIVATE,
                 VirtualCollection.State.DELETED,
-                VirtualCollection.State.PUBLIC_PENDING);
+                VirtualCollection.State.PUBLIC_PENDING,
+                VirtualCollection.State.PUBLIC_FROZEN_PENDING);
     private static final List<VirtualCollection.Type> TYPE_VALUES =
         Arrays.asList(VirtualCollection.Type.values());
     private static final List<QueryOptions.Relation> CREATED_RELATIONS =
@@ -60,12 +61,12 @@ public class FilterForm extends Panel {
                 MODE_VALUES, searchModeRenderer));
         form.add(new TextField<String>("description")
                 .add(new StringValidator.MaximumLengthValidator(255)));
-        final WebMarkupContainer state = new WebMarkupContainer("state");
-        state.add(new DropDownChoice<VirtualCollection.State>("state",
-                STATE_VALUES,
-                new EnumChoiceRenderer<VirtualCollection.State>(this)));
-        state.setVisible(privateMode);
-        form.add(state);
+        //final WebMarkupContainer state = new WebMarkupContainer("state");
+        //state.add(new DropDownChoice<VirtualCollection.State>("state",
+        //        STATE_VALUES,
+        //        new EnumChoiceRenderer<VirtualCollection.State>(this)));
+        //state.setVisible(privateMode);
+        //form.add(state);
         form.add(new DropDownChoice<VirtualCollection.Type>("type",
                 TYPE_VALUES,
                 new EnumChoiceRenderer<VirtualCollection.Type>(this)));

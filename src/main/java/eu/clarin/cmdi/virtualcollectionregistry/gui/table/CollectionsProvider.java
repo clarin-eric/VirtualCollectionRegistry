@@ -85,7 +85,7 @@ public abstract class CollectionsProvider extends
         }
         if (filterstate.hasState()) {
             filter.add(QueryOptions.Property.VC_STATE,
-                    QueryOptions.Relation.EQ,
+                    QueryOptions.Relation.IN,
                     filterstate.getState());
         }
         if (filterstate.hasDescription()) {

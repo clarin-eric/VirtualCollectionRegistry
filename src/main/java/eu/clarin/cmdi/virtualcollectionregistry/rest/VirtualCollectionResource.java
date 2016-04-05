@@ -230,6 +230,10 @@ public final class VirtualCollectionResource {
             case PUBLIC:
                 result = State.PUBLIC;
                 break;
+            case PUBLIC_FROZEN_PENDING:
+            case PUBLIC_FROZEN:
+                result = State.PUBLIC_FROZEN;
+                break;
             default:
                 result = State.PRIVATE;
         } // switch

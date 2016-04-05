@@ -60,7 +60,10 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
                             "WHERE c.owner = :owner"),
         @NamedQuery(name = "VirtualCollection.findAllByState",
                     query = "SELECT c FROM VirtualCollection c " +
-                            "WHERE c.state = :state AND c.dateModified < :date")
+                            "WHERE c.state = :state AND c.dateModified < :date"),
+        @NamedQuery(name = "VirtualCollection.findAllByStates",
+                    query = "SELECT c FROM VirtualCollection c " +
+                            "WHERE c.state IN :states AND c.dateModified < :date")
 })
 public class VirtualCollection implements Serializable, IdentifiedEntity {
     private static final long serialVersionUID = 1L;
@@ -213,7 +216,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity {
         if (persistentId == null) {
             throw new NullPointerException("pid == null");
         }
-        if ((this.persistentId != null) || (state != State.PUBLIC_PENDING)) {
+        if (this.persistentId != null || !(state == State.PUBLIC_PENDING || state == State.PUBLIC_FROZEN_PENDING)) {
             throw new IllegalStateException("illegal state");
         }
         this.persistentId = persistentId;
@@ -236,7 +239,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity {
     }
 
     public boolean isPublic() {
-        return (state == State.PUBLIC_PENDING) || (state == State.PUBLIC);
+        return (state == State.PUBLIC_PENDING) || (state == State.PUBLIC_FROZEN_PENDING) || (state == State.PUBLIC);
     }
 
     public boolean isDeleted() {

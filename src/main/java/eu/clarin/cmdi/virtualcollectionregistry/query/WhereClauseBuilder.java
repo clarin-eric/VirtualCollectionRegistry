@@ -199,28 +199,40 @@ class WhereClauseBuilder implements QueryParserVisitor {
         Expression<VirtualCollection.State> attribute =
             data.getRoot().get(VirtualCollection_.state);
         switch (operator) {
-        case QueryParserConstants.EQ:
-            // special case for public state
-            if (state == VirtualCollection.State.PUBLIC) {
-                return cb.or(
-                        cb.equal(attribute,
-                                 VirtualCollection.State.PUBLIC),
-                        cb.equal(attribute,
-                                 VirtualCollection.State.PUBLIC_PENDING));
-            } else {
-                return data.getBuilder().equal(attribute, state);
-            }
+            case QueryParserConstants.EQ:            
+                switch (state) {
+                    case PUBLIC: // special case for public state
+                        return cb.or(
+                                cb.equal(attribute,
+                                        VirtualCollection.State.PUBLIC),
+                                cb.equal(attribute,
+                                        VirtualCollection.State.PUBLIC_PENDING));
+                    case PUBLIC_FROZEN: // special case for public forzen state
+                        return cb.or(
+                                cb.equal(attribute,
+                                        VirtualCollection.State.PUBLIC_FROZEN),
+                                cb.equal(attribute,
+                                        VirtualCollection.State.PUBLIC_FROZEN_PENDING));
+                    default: // normal case
+                        return data.getBuilder().equal(attribute, state);
+                }
         case QueryParserConstants.NE:
             // special case for public state
-            if (state == VirtualCollection.State.PUBLIC) {
-                return cb.and(
-                        cb.notEqual(attribute,
+            switch (state) {
+                case PUBLIC:
+                    return cb.and(
+                            cb.notEqual(attribute,
                                     VirtualCollection.State.PUBLIC),
-                        cb.notEqual(attribute,
+                            cb.notEqual(attribute,
                                     VirtualCollection.State.PUBLIC_PENDING));
-
-            } else {
-                return data.getBuilder().notEqual(attribute, state);
+                case PUBLIC_FROZEN:
+                    return cb.and(
+                            cb.notEqual(attribute,
+                                    VirtualCollection.State.PUBLIC_FROZEN),
+                            cb.notEqual(attribute,
+                                    VirtualCollection.State.PUBLIC_FROZEN_PENDING));
+                default:
+                    return data.getBuilder().notEqual(attribute, state);
             }
         default:
             throw new InternalError("bad operator");

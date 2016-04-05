@@ -29,22 +29,24 @@ public class QueryOptions implements Serializable {
     } // enum QueryOptions.Property
 
     public enum Relation {
-        EQ, NE, LT, LE, GT, GE;
+        EQ, NE, LT, LE, GT, GE, IN;
 
         private byte getCode() {
             switch (this) {
-            case EQ:
-                return RELATION_EQ;
-            case NE:
-                return RELATION_NE;
-            case LT:
-                return RELATION_LT;
-            case LE:
-                return RELATION_LE;
-            case GT:
-                return RELATION_GT;
-            case GE:
-                return RELATION_GE;
+                case EQ:
+                    return RELATION_EQ;
+                case NE:
+                    return RELATION_NE;
+                case LT:
+                    return RELATION_LT;
+                case LE:
+                    return RELATION_LE;
+                case GT:
+                    return RELATION_GT;
+                case GE:
+                    return RELATION_GE;
+                case IN:
+                    return RELATION_IN;
             }
             return -1;
         }
@@ -57,10 +59,13 @@ public class QueryOptions implements Serializable {
     private static final byte RELATION_LE = 0x08;
     private static final byte RELATION_GT = 0x10;
     private static final byte RELATION_GE = 0x20;
+    private static final byte RELATION_IN = 0x40;
     private static final byte RELATIONS_EQ_NE = RELATION_EQ | RELATION_NE;
+    private static final byte RELATIONS_EQ_NE_IN = RELATION_EQ | RELATION_NE | RELATION_IN;
     private static final byte RELATIONS_ALL   = RELATION_EQ | RELATION_NE |
                                                 RELATION_LT | RELATION_LE |
-                                                RELATION_GT | RELATION_GE;
+                                                RELATION_GT | RELATION_GE |
+                                                RELATION_IN;
     public static final List<AbstractPropertyImpl> PROPERTIES =
         Arrays.asList(
                 new PropertyImplOwner(),
@@ -340,6 +345,8 @@ public class QueryOptions implements Serializable {
                 return cb.equal(expr, value);
             case RELATION_NE:
                 return cb.notEqual(expr, value);
+            case RELATION_IN:
+                return expr.in(value);
             default:
                 throw new InternalError("bad relation");
             } // switch
@@ -475,7 +482,7 @@ public class QueryOptions implements Serializable {
 
         @Override
         public byte getValidRelationMask() {
-            return RELATIONS_EQ_NE;
+            return RELATIONS_EQ_NE_IN;
         }
 
         @Override

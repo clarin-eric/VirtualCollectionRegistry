@@ -11,6 +11,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidator;
 import java.security.Principal;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -300,9 +301,10 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             throw new NullPointerException("state == null");
         }
         if ((state != VirtualCollection.State.PUBLIC_PENDING)
+                && (state != VirtualCollection.State.PUBLIC_FROZEN_PENDING)
                 && (state != VirtualCollection.State.PRIVATE)) {
             throw new IllegalArgumentException(
-                    "only PUBLIC_PENDING or PRIVATE are allowed");
+                    "only PUBLIC_PENDING, PUBLIC_FROZEN_PENDING or PRIVATE are allowed");
         }
 
         logger.debug("setting state virtual collection state (id={}) to '{}'",
@@ -335,6 +337,9 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                     break;
                 case PUBLIC_PENDING:
                     update = vc.getState() != VirtualCollection.State.PUBLIC;
+                    break;
+                case PUBLIC_FROZEN_PENDING:
+                    update = vc.getState() != VirtualCollection.State.PUBLIC_FROZEN_PENDING;
                     break;
                 default:
                     /* silence warning; update will stay false */
@@ -637,12 +642,18 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
              */
             em.getTransaction().begin();
             TypedQuery<VirtualCollection> q
-                    = em.createNamedQuery("VirtualCollection.findAllByState",
+                    = em.createNamedQuery("VirtualCollection.findAllByStates",
                             VirtualCollection.class);
-            q.setParameter("state", VirtualCollection.State.PUBLIC_PENDING);
+            List<VirtualCollection.State> states = new LinkedList<>();
+            states.add(VirtualCollection.State.PUBLIC_PENDING);
+            states.add(VirtualCollection.State.PUBLIC_FROZEN_PENDING);
+            q.setParameter("states", states);
             q.setParameter("date", nowDateAlloc);
             q.setLockMode(LockModeType.PESSIMISTIC_WRITE);
             for (VirtualCollection vc : q.getResultList()) {
+                VirtualCollection.State currentState = vc.getState();
+                logger.info("Found {} with state {}", vc.getName(), currentState);
+                
                 if (vc.getPersistentIdentifier() == null) {
                     /*
                      * TODO: if an error occurred while minting PID, the VCR
@@ -652,7 +663,12 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                     PersistentIdentifier pid = pid_provider.createIdentifier(vc);
                     vc.setPersistentIdentifier(pid);
                 }
-                vc.setState(VirtualCollection.State.PUBLIC);
+                
+                switch(currentState) {
+                    case PUBLIC_PENDING: vc.setState(VirtualCollection.State.PUBLIC); break;
+                    case PUBLIC_FROZEN_PENDING: vc.setState(VirtualCollection.State.PUBLIC_FROZEN); break;
+                    default: throw new RuntimeException("Invalid state transition from state: "+vc.getState());
+                }
                 em.persist(vc);
                 logger.info("assigned pid (identifer='{}') to virtual"
                         + "collection (id={})",
@@ -665,6 +681,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
              * delayed purging of deleted virtual collections
              */
             em.getTransaction().begin();
+            q = em.createNamedQuery("VirtualCollection.findAllByState", VirtualCollection.class);
             q.setParameter("state", VirtualCollection.State.DELETED);
             q.setParameter("date", nowDatePurge);
             q.setLockMode(LockModeType.PESSIMISTIC_WRITE);
