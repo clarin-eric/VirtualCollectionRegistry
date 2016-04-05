@@ -21,13 +21,16 @@ import org.apache.wicket.validation.validator.StringValidator;
 
 import eu.clarin.cmdi.virtualcollectionregistry.QueryOptions;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import org.apache.wicket.markup.html.form.ListMultipleChoice;
 
 @SuppressWarnings("serial")
 public class FilterForm extends Panel {
     private static final List<FilterState.SearchMode> MODE_VALUES =
         Arrays.asList(FilterState.SearchMode.values());
     private static final List<VirtualCollection.State> STATE_VALUES =
-        Arrays.asList(VirtualCollection.State.PUBLIC,
+        Arrays.asList(
+                VirtualCollection.State.PUBLIC,
+                VirtualCollection.State.PUBLIC_FROZEN,
                 VirtualCollection.State.PRIVATE,
                 VirtualCollection.State.DELETED,
                 VirtualCollection.State.PUBLIC_PENDING,
@@ -61,12 +64,12 @@ public class FilterForm extends Panel {
                 MODE_VALUES, searchModeRenderer));
         form.add(new TextField<String>("description")
                 .add(new StringValidator.MaximumLengthValidator(255)));
-        //final WebMarkupContainer state = new WebMarkupContainer("state");
-        //state.add(new DropDownChoice<VirtualCollection.State>("state",
-        //        STATE_VALUES,
-        //        new EnumChoiceRenderer<VirtualCollection.State>(this)));
-        //state.setVisible(privateMode);
-        //form.add(state);
+        
+        final WebMarkupContainer state = new WebMarkupContainer("state");
+        state.add(new ListMultipleChoice("state", STATE_VALUES));
+        state.setVisible(privateMode);
+        form.add(state);
+        
         form.add(new DropDownChoice<VirtualCollection.Type>("type",
                 TYPE_VALUES,
                 new EnumChoiceRenderer<VirtualCollection.Type>(this)));

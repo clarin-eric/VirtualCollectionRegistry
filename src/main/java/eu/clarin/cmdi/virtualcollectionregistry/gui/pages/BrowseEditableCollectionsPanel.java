@@ -74,8 +74,6 @@ public class BrowseEditableCollectionsPanel extends Panel {
                                     doEdit(target, model.getObject());
                                 }
                             };
-            //Hide the edit option if the vc is frozen
-            editItem.setVisible(model.getObject().getState() != VirtualCollection.State.PUBLIC_FROZEN);
             menu.add(editItem);
             
             final AjaxLinkMenuItem<VirtualCollection> deleteItem
@@ -109,6 +107,9 @@ public class BrowseEditableCollectionsPanel extends Panel {
             if (!vc.isPrivate()) {
                 publishItem.setVisible(false).setEnabled(false);
                 deleteItem.setVisible(false).setEnabled(false);
+            }
+            if(model.getObject().getState() == VirtualCollection.State.PUBLIC_FROZEN) {
+                editItem.setVisible(false).setEnabled(false);
             }
         }
     }
@@ -163,6 +164,9 @@ public class BrowseEditableCollectionsPanel extends Panel {
             if (!vc.isPrivate()) {
                 publishLink.setVisible(false).setEnabled(false);
                 deleteLink.setVisible(false).setEnabled(false);
+            }
+            if(vc.getState() == VirtualCollection.State.PUBLIC_FROZEN) {
+                editLink.setVisible(false).setEnabled(false);
             }
             boolean isVisible = detailsLink.isVisible()
                     || editLink.isVisible() || publishLink.isVisible()
