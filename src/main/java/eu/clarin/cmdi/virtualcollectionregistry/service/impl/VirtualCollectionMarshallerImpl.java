@@ -214,7 +214,7 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
         if (vc.getId() != null) {
             writer.writeAttribute("id", Long.toString(vc.getId()));
         }
-        if (vc.getPersistentIdentifier() != null) {
+        if (vc.hasPersistentIdentifier()) {
             writer.writeAttribute("persistentId",
                     vc.getPersistentIdentifier().getIdentifier());
         }

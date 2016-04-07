@@ -112,7 +112,7 @@ public final class VirtualCollectionResource {
             throws VirtualCollectionRegistryException {
         final VirtualCollection vc = registry.retrieveVirtualCollection(id);
         // CMDI's should not be returned for non-public VC's, so check this...
-        if (!(vc.isPublic() || vc.isPublicFrozen()) || (vc.getPersistentIdentifier() == null)) {
+        if (!(vc.isPublic() || vc.isPublicFrozen()) || (!vc.hasPersistentIdentifier())) {
             // exclude CMDI from the options and check if this is ok for request
             final List<Variant> variants = Variant.mediaTypes(
                     MediaType.TEXT_XML_TYPE,

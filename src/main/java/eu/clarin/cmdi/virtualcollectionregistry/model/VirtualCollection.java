@@ -75,7 +75,8 @@ public class VirtualCollection implements Serializable, IdentifiedEntity {
         PUBLIC_FROZEN_PENDING,
         PUBLIC_FROZEN,
         DELETED,
-        DEAD
+        DEAD,
+        ERROR
     } // enum VirtualCollection.State
 
     public static enum Type {
@@ -96,6 +97,12 @@ public class VirtualCollection implements Serializable, IdentifiedEntity {
         UNTENDED
     } // enum VirtualCollecion.Reproducibility
 
+    public static enum Problem {
+        PID_MINTING_API_UNREACHABLE,
+        PID_MINTING_UNKOWN,
+        UNKOWN
+    }
+    
     @Id
     @GeneratedValue(strategy = GenerationType.AUTO)
     @Column(name = "id", nullable = false, updatable = false)
@@ -117,6 +124,10 @@ public class VirtualCollection implements Serializable, IdentifiedEntity {
               optional = true)
     private PersistentIdentifier persistentId = null;
 
+    /* Indication of the issue if state = ERROR */
+    @Column(name = "problem", nullable = true)
+    private VirtualCollection.Problem problem;
+    
     @Column(name = "state", nullable = false)
     private VirtualCollection.State state;
 
@@ -211,6 +222,10 @@ public class VirtualCollection implements Serializable, IdentifiedEntity {
     public PersistentIdentifier getPersistentIdentifier() {
         return persistentId;
     }
+    
+    public boolean hasPersistentIdentifier() {
+        return persistentId != null;
+    }
 
     public void setPersistentIdentifier(PersistentIdentifier persistentId) {
         if (persistentId == null) {
@@ -227,6 +242,14 @@ public class VirtualCollection implements Serializable, IdentifiedEntity {
         }
     }
 
+    public VirtualCollection.Problem getProblem() {
+        return problem;
+    }
+
+    public void setProblem(VirtualCollection.Problem problem) {
+        this.problem = problem;
+    }
+    
     public State getState() {
         return state;
     }
@@ -378,7 +401,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity {
         if (this == vc) {
             return;
         }
-        if (vc.getPersistentIdentifier() != null) {
+        if (vc.hasPersistentIdentifier()) {
             this.setPersistentIdentifier(vc.getPersistentIdentifier());
         }
         this.setState(state);

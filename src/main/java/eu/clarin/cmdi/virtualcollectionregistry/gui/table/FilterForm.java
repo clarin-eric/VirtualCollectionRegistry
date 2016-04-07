@@ -21,6 +21,7 @@ import org.apache.wicket.validation.validator.StringValidator;
 
 import eu.clarin.cmdi.virtualcollectionregistry.QueryOptions;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import java.util.ArrayList;
 import org.apache.wicket.markup.html.form.ListMultipleChoice;
 
 @SuppressWarnings("serial")
@@ -45,10 +46,16 @@ public class FilterForm extends Panel {
                 QueryOptions.Relation.GT);
 
     public FilterForm(String id, IFilterStateLocator<FilterState> locator,
-            final DataTable<VirtualCollection> table, boolean privateMode) {
+            final DataTable<VirtualCollection> table, boolean privateMode, boolean isAdmin) {
         super(id);
         setRenderBodyOnly(true);
 
+        List<VirtualCollection.State> states = new ArrayList<>();
+        states.addAll(STATE_VALUES);
+        if(isAdmin) { //Admins should be able to filter on VCs in error
+            states.add(VirtualCollection.State.ERROR);
+        }
+        
         final IModel<FilterState> model =
             new CompoundPropertyModel<FilterState>(locator.getFilterState());
         final Form<FilterState> form = new Form<FilterState>("form", model);
@@ -66,7 +73,7 @@ public class FilterForm extends Panel {
                 .add(new StringValidator.MaximumLengthValidator(255)));
         
         final WebMarkupContainer state = new WebMarkupContainer("state");
-        state.add(new ListMultipleChoice("state", STATE_VALUES));
+        state.add(new ListMultipleChoice("state", states));
         state.setVisible(privateMode);
         form.add(state);
         

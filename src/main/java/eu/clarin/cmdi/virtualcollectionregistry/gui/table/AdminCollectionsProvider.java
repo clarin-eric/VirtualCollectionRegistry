@@ -32,6 +32,7 @@ public class AdminCollectionsProvider extends CollectionsProvider {
             List<VirtualCollection.State> states = new LinkedList<>();
             states.add(VirtualCollection.State.PUBLIC);
             states.add(VirtualCollection.State.PUBLIC_FROZEN);
+            states.add(VirtualCollection.State.ERROR);
             // select public collections
             filter.add(QueryOptions.Property.VC_STATE,
                     QueryOptions.Relation.IN,

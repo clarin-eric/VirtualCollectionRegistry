@@ -29,6 +29,7 @@ import javax.persistence.criteria.CriteriaQuery;
 import javax.persistence.criteria.Order;
 import javax.persistence.criteria.Predicate;
 import javax.persistence.criteria.Root;
+import org.apache.commons.httpclient.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -654,29 +655,58 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                 VirtualCollection.State currentState = vc.getState();
                 logger.info("Found {} with state {}", vc.getName(), currentState);
                 
-                if (vc.getPersistentIdentifier() == null) {
+                if(!vc.hasPersistentIdentifier()) {
                     /*
-                     * TODO: if an error occurred while minting PID, the VCR
-                     * should handle this more gracefully and not stubbornly
-                     * re-try ...
+                     * TODO: check that catching this exception doesn't cause a 
+                     * rollback of the JPA transaction
                      */
-                    PersistentIdentifier pid = pid_provider.createIdentifier(vc);
-                    vc.setPersistentIdentifier(pid);
+                    try {
+                        PersistentIdentifier pid = pid_provider.createIdentifier(vc);
+                        vc.setPersistentIdentifier(pid);
+                    } catch (VirtualCollectionRegistryException ex) {
+                        logger.error("Failed to mint PID, setting vc to error state");
+                        vc.setState(VirtualCollection.State.ERROR);
+                        if(ex.getCause() instanceof HttpException) {                                                  
+                            vc.setProblem(VirtualCollection.Problem.PID_MINTING_UNKOWN);
+                        } else {
+                            vc.setProblem(VirtualCollection.Problem.PID_MINTING_UNKOWN);
+                        }
+                    }
                 }
-                
+                /*
                 switch(currentState) {
                     case PUBLIC_PENDING: vc.setState(VirtualCollection.State.PUBLIC); break;
                     case PUBLIC_FROZEN_PENDING: vc.setState(VirtualCollection.State.PUBLIC_FROZEN); break;
                     default: throw new RuntimeException("Invalid state transition from state: "+vc.getState());
                 }
+                */
                 em.persist(vc);
-                logger.info("assigned pid (identifer='{}') to virtual"
-                        + "collection (id={})",
-                        vc.getPersistentIdentifier().getIdentifier(),
-                        vc.getId());
+                if(vc.hasPersistentIdentifier()) {
+                    logger.info("assigned pid (identifer='{}') to virtual"
+                            + "collection (id={})",
+                            vc.getPersistentIdentifier().getIdentifier(),
+                            vc.getId());
+                }
             }
             em.getTransaction().commit();
 
+            /*
+             * Handle virtualcollections in error
+            */
+            em.getTransaction().begin();
+            q = em.createNamedQuery("VirtualCollection.findAllByStates", VirtualCollection.class);
+            states.clear();
+            states.add(VirtualCollection.State.ERROR);
+            q.setParameter("states", states);
+            q.setParameter("date", nowDateAlloc);
+            q.setLockMode(LockModeType.PESSIMISTIC_WRITE);
+            for (VirtualCollection vc : q.getResultList()) {
+                VirtualCollection.State currentState = vc.getState();
+                logger.info("Found [{}] in error state.", vc.getName(), currentState);
+                //TODO: handle virtual collections in error state
+            }
+            em.getTransaction().commit();
+            
             /*
              * delayed purging of deleted virtual collections
              */
@@ -691,8 +721,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                 logger.debug("purged virtual collection (id={})", vc.getId());
             }
             em.getTransaction().commit();
-        } catch (VirtualCollectionRegistryException e) {
-            logger.error("error while doing maintenance", e);
+        //} catch (VirtualCollectionRegistryException e) {
+        //    logger.error("error while doing maintenance", e);
         } catch (RuntimeException e) {
             logger.error("unexpected error while doing maintenance", e);
         } finally {
