@@ -32,7 +32,7 @@ public class WizardBase extends Wizard {
                         public String getObject() {
                             if (wizard instanceof CreateVirtualCollectionWizard) {
                                 final CreateVirtualCollectionWizard vcWizard = (CreateVirtualCollectionWizard) wizard;
-                                if (vcWizard.getVirtualCollectionModel().getObject().isPublic()) {
+                                if (vcWizard.getVirtualCollectionModel().getObject().isPublic()) {                                    
                                     return "return confirm('Are you sure you want to update this published collection?');";
                                 }
                             }

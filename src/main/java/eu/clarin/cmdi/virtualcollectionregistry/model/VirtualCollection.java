@@ -220,7 +220,11 @@ public class VirtualCollection implements Serializable, IdentifiedEntity {
             throw new IllegalStateException("illegal state");
         }
         this.persistentId = persistentId;
-        this.state = State.PUBLIC;
+        switch(state) {
+            case PUBLIC_PENDING: this.state = State.PUBLIC; break;
+            case PUBLIC_FROZEN_PENDING: this.state = State.PUBLIC_FROZEN; break;
+            default: throw new IllegalStateException("Invalid state transition. Unexpected source state: "+state);
+        }
     }
 
     public State getState() {
@@ -239,9 +243,13 @@ public class VirtualCollection implements Serializable, IdentifiedEntity {
     }
 
     public boolean isPublic() {
-        return (state == State.PUBLIC_PENDING) || (state == State.PUBLIC_FROZEN_PENDING) || (state == State.PUBLIC);
+        return (state == State.PUBLIC_PENDING) || (state == State.PUBLIC);
     }
 
+    public boolean isPublicFrozen() {
+        return (state == State.PUBLIC_FROZEN_PENDING) || (state == State.PUBLIC_FROZEN) ;
+    }
+    
     public boolean isDeleted() {
         return (state == State.DELETED) || (state == State.DEAD);
     }

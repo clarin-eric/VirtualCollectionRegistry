@@ -95,8 +95,36 @@ public class VirtualCollectionResourceTest {
         final Response response = instance.getVirtualCollection(request);
         assertEquals(200, response.getStatus());
         assertEquals(vc, response.getEntity());
+        assertEquals(VirtualCollection.State.PUBLIC, vc.getState());
     }
 
+    /**
+     * Test of getVirtualCollection method, of class VirtualCollectionResource.
+     */
+    @Test
+    public void testGetPublicFrozenVirtualCollection() throws Exception {
+        final Request request = context.mock(Request.class);
+
+        // create a public VC to have returned by the registry service
+        final VirtualCollection vc = new VirtualCollection();
+        vc.setId(ID);
+        vc.setName("Test VC");
+        vc.setState(VirtualCollection.State.PUBLIC_FROZEN_PENDING);
+        // set PID and set state to public_frozen
+        vc.setPersistentIdentifier(new PersistentIdentifier(vc, PersistentIdentifier.Type.DUMMY, "PID"));
+
+        context.checking(new Expectations() {
+            {
+                oneOf(registry).retrieveVirtualCollection(ID);
+                will(returnValue(vc));
+            }
+        });
+        final Response response = instance.getVirtualCollection(request);
+        assertEquals(200, response.getStatus());
+        assertEquals(vc, response.getEntity());
+        assertEquals(VirtualCollection.State.PUBLIC_FROZEN, vc.getState());
+    }
+    
     /**
      * Test of getVirtualCollection method, of class VirtualCollectionResource.
      */

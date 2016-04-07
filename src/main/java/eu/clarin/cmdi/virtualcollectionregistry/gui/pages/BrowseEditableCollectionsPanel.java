@@ -1,8 +1,10 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
+import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ConfirmationDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.PublishConfirmationDialog;
@@ -20,6 +22,7 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.PageParameters;
 import org.apache.wicket.Session;
+import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -45,7 +48,33 @@ public class BrowseEditableCollectionsPanel extends Panel {
     @SpringBean
     private VirtualCollectionRegistry vcr;
 
-    private class ActionsColumn extends Panel {
+    @SpringBean
+    private AdminUsersService adminUsersService;
+    
+    private abstract class PanelWithUserInformation extends Panel {
+        
+        public PanelWithUserInformation(String id, IModel<VirtualCollection> model) {
+            super(id, model);            
+        }
+        
+        protected Principal getUser() {
+            ApplicationSession session = (ApplicationSession) getSession();
+            Principal principal = session.getPrincipal();
+            if (principal == null) {
+                throw new WicketRuntimeException("principal == null");
+            }
+            return principal;
+        }
+
+        protected boolean isUserAdmin() {
+            final String userName = getUser().getName();
+            final boolean admin = userName != null && adminUsersService.isAdmin(userName);
+            logger.info("username={}, admin={}", userName, admin);
+            return admin;
+        }
+    }
+    
+    private class ActionsColumn extends PanelWithUserInformation {
 
         public ActionsColumn(String id, IModel<VirtualCollection> model) {
             super(id, model);
@@ -104,17 +133,21 @@ public class BrowseEditableCollectionsPanel extends Panel {
                 detailsItem.setVisible(false).setEnabled(false);
                 editItem.setVisible(false).setEnabled(false);
             }
+            
             if (!vc.isPrivate()) {
                 publishItem.setVisible(false).setEnabled(false);
-                deleteItem.setVisible(false).setEnabled(false);
+                if(!isUserAdmin()) {
+                    deleteItem.setVisible(false).setEnabled(false);
+                }
             }
+            
             if(model.getObject().getState() == VirtualCollection.State.PUBLIC_FROZEN) {
                 editItem.setVisible(false).setEnabled(false);
             }
         }
     }
 
-    private class ActionsPanel extends Panel {
+    private class ActionsPanel extends PanelWithUserInformation {
 
         public ActionsPanel(String id, IModel<VirtualCollection> model) {
             super(id, model);
@@ -163,7 +196,9 @@ public class BrowseEditableCollectionsPanel extends Panel {
             }
             if (!vc.isPrivate()) {
                 publishLink.setVisible(false).setEnabled(false);
-                deleteLink.setVisible(false).setEnabled(false);
+                if(!isUserAdmin()) {
+                    deleteLink.setVisible(false).setEnabled(false);
+                }
             }
             if(vc.getState() == VirtualCollection.State.PUBLIC_FROZEN) {
                 editLink.setVisible(false).setEnabled(false);
@@ -355,7 +390,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
     }
 
     private void doEdit(AjaxRequestTarget target, VirtualCollection vc) {
-        if(vc.getState() != VirtualCollection.State.PUBLIC_FROZEN) {
+        if(!vc.isPublicFrozen()) {
             if (vc.isPublic()) {
                 // ask for confirmation when trying to edit a published collection
                 editPublishedDialog.showDialogue(target, vc);
