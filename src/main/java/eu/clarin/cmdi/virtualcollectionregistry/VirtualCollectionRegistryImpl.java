@@ -238,7 +238,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                         "permission denied for user \""
                         + principal.getName() + "\"");
             }
-            if (!vc.isPrivate()) {
+            if (!vc.isPrivate() && vc.getState() != VirtualCollection.State.ERROR) {
                 logger.debug("virtual collection (id={}) cannot be "
                         + "deleted (invalid state)", id);
                 throw new VirtualCollectionRegistryPermissionException(
@@ -540,6 +540,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                     cq.where(where);
                 }
             }
+            
             em.getTransaction().begin();
             TypedQuery<Long> query
                     = em.createQuery(cq.select(cb.count(root)));
