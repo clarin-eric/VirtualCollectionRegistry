@@ -5,7 +5,9 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryExcepti
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.wizard.CreateVirtualCollectionWizard;
+import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.service.CreatorProvider;
 import java.security.Principal;
 import java.util.Date;
 import org.apache.wicket.Page;
@@ -22,6 +24,9 @@ public class CreateVirtualCollectionPage extends BasePage {
 
     @SpringBean
     private VirtualCollectionRegistry vcr;
+    
+    @SpringBean
+    private CreatorProvider creatorProvider;
 
     // only for extensions
     protected CreateVirtualCollectionPage() {
@@ -30,10 +35,22 @@ public class CreateVirtualCollectionPage extends BasePage {
     // used when page constructed by framework
     public CreateVirtualCollectionPage(PageParameters params) {
         //ignore any params
-        this(new VirtualCollection(), null);
+        this(null, null);
     }
 
     public CreateVirtualCollectionPage(VirtualCollection vc, final Page previousPage) {
+        if(vc == null) {
+            VirtualCollection defaultVc = new VirtualCollection();
+            defaultVc.setType(VirtualCollection.Type.EXTENSIONAL);
+            defaultVc.setPurpose(VirtualCollection.Purpose.RESEARCH);
+            defaultVc.setReproducibility(VirtualCollection.Reproducibility.INTENDED);
+            
+            final Creator creator = creatorProvider.getCreator(ApplicationSession.get().getPrincipal());
+            if (creator.getPerson() != null) {
+                defaultVc.getCreators().add(creator);
+            }
+            vc = defaultVc;
+        }
         final CreateVirtualCollectionWizard wizard = createWizard(vc, previousPage);
         add(wizard);
     }

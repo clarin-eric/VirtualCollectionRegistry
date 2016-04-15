@@ -69,7 +69,6 @@ public class BrowseEditableCollectionsPanel extends Panel {
         protected boolean isUserAdmin() {
             final String userName = getUser().getName();
             final boolean admin = userName != null && adminUsersService.isAdmin(userName);
-            logger.info("username={}, admin={}", userName, admin);
             return admin;
         }
     }
@@ -354,14 +353,24 @@ public class BrowseEditableCollectionsPanel extends Panel {
     private VirtualCollectionValidator prePublicationValidator;
 
     /**
-     *
+     * 
      * @param id panel id
      * @param provider provider for collections that should be shown
      */
     public BrowseEditableCollectionsPanel(String id, CollectionsProvider provider) {
+        this(id, provider, false);
+    }
+    
+    /**
+     *
+     * @param id panel id.
+     * @param provider provider for collections that should be shown.
+     * @param isAdmin enable (true) or disable (false) the admin options.
+     */
+    public BrowseEditableCollectionsPanel(String id, CollectionsProvider provider, final boolean isAdmin) {
         super(id);
         final VirtualCollectionTable table
-                = new VirtualCollectionTable("collectionsTable", provider, true) {
+                = new VirtualCollectionTable("collectionsTable", provider, true, isAdmin) {
                     @Override
                     protected Panel createActionColumn(String componentId,
                             IModel<VirtualCollection> model) {
