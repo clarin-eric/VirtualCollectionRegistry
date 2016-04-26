@@ -14,9 +14,13 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 public class BasePage extends WebPage {
 
+    private static Logger logger = LoggerFactory.getLogger(BasePage.class);
+    
     @SpringBean
     private AdminUsersService adminUsersService;
 
@@ -104,8 +108,13 @@ public class BasePage extends WebPage {
     }
 
     protected boolean isUserAdmin() {
-        final String userName = getUser().getName();
-        return userName != null && adminUsersService.isAdmin(userName);
+        try {
+            final String userName = getUser().getName();
+            return userName != null && adminUsersService.isAdmin(userName);
+        } catch(WicketRuntimeException ex) {
+            logger.error("Invalid principal", ex);
+            return false;
+        }
     }
 
     @Override
