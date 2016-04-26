@@ -159,9 +159,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
             }
         };
         add(backLink);
-
-        add(new Label("name"));
-        
+        add(new HeaderPanel("headerPanel", model));
         addGeneralProperties(model);
         addCreators();
         addResources(model);
