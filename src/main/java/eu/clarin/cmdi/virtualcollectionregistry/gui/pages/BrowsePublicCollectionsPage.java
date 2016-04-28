@@ -31,7 +31,7 @@ public class BrowsePublicCollectionsPage extends BasePage {
     public BrowsePublicCollectionsPage() {
         super();
         final VirtualCollectionTable table
-                = new VirtualCollectionTable("collectionsTable", new PublishedCollectionsProvider(), false) {
+                = new VirtualCollectionTable("collectionsTable", new PublishedCollectionsProvider(), false, false) {
                     @Override
                     protected Panel createActionColumn(String componentId,
                             IModel<VirtualCollection> model) {

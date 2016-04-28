@@ -19,7 +19,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 @SuppressWarnings("serial")
 public abstract class VirtualCollectionTable extends Panel {
 
-    public VirtualCollectionTable(String id, CollectionsProvider provider, final boolean showState) {
+    public VirtualCollectionTable(String id, CollectionsProvider provider, final boolean showState, final boolean isAdmin) {
         super(id);
         setOutputMarkupId(true);
 
@@ -32,6 +32,7 @@ public abstract class VirtualCollectionTable extends Panel {
         }
         columns.add(new ColumnType(this));
         columns.add(new ColumnCreated(this));
+        columns.add(new ColumnCitation(this));
         columns.add(new ColumnActions(this));
 
         // setup table
@@ -51,7 +52,7 @@ public abstract class VirtualCollectionTable extends Panel {
         final AjaxToggleBorder border =
             new AjaxToggleBorder("border", new Model<String>("Filter"));
         final FilterForm form =
-            new FilterForm("filterForm", provider, table, showState);
+            new FilterForm("filterForm", provider, table, showState, isAdmin);
         border.add(form);
         add(border);
         add(table);

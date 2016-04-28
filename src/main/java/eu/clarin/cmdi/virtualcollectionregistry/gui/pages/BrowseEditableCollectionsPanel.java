@@ -65,13 +65,6 @@ public class BrowseEditableCollectionsPanel extends Panel {
             }
             return principal;
         }
-
-        protected boolean isUserAdmin() {
-            final String userName = getUser().getName();
-            final boolean admin = userName != null && adminUsersService.isAdmin(userName);
-            logger.info("username={}, admin={}", userName, admin);
-            return admin;
-        }
     }
     
     private class ActionsColumn extends PanelWithUserInformation {
@@ -141,7 +134,8 @@ public class BrowseEditableCollectionsPanel extends Panel {
                 }
             }
             
-            if(model.getObject().getState() == VirtualCollection.State.PUBLIC_FROZEN) {
+            //Disable editing of frozen collection for non-admin users
+            if(model.getObject().getState() == VirtualCollection.State.PUBLIC_FROZEN && !isUserAdmin()) {
                 editItem.setVisible(false).setEnabled(false);
             }
         }
@@ -200,7 +194,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
                     deleteLink.setVisible(false).setEnabled(false);
                 }
             }
-            if(vc.getState() == VirtualCollection.State.PUBLIC_FROZEN) {
+            if(vc.getState() == VirtualCollection.State.PUBLIC_FROZEN && !isUserAdmin()) {
                 editLink.setVisible(false).setEnabled(false);
             }
             boolean isVisible = detailsLink.isVisible()
@@ -294,7 +288,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
         }
 
     }
-
+    
     private final class DeleteCollectionDialog extends ConfirmationDialog {
 
         private long vcId;
@@ -337,11 +331,10 @@ public class BrowseEditableCollectionsPanel extends Panel {
             setResponsePage(EditVirtualCollectionPage.class, new PageParameters(Collections.singletonMap("id", vcId)));
         }
 
-        public void showDialogue(AjaxRequestTarget target, VirtualCollection vc) {
+        public void showDialogue(AjaxRequestTarget target, VirtualCollection vc, String key) {
             this.vcId = vc.getId();
             super.show(target,
-                    new StringResourceModel("collections.editpublishedconfirm",
-                            new VolatileEntityModel<>(vc)));
+                new StringResourceModel(key, new VolatileEntityModel<>(vc)));
         }
     }
 
@@ -354,14 +347,24 @@ public class BrowseEditableCollectionsPanel extends Panel {
     private VirtualCollectionValidator prePublicationValidator;
 
     /**
-     *
+     * 
      * @param id panel id
      * @param provider provider for collections that should be shown
      */
     public BrowseEditableCollectionsPanel(String id, CollectionsProvider provider) {
+        this(id, provider, false);
+    }
+    
+    /**
+     *
+     * @param id panel id.
+     * @param provider provider for collections that should be shown.
+     * @param isAdmin enable (true) or disable (false) the admin options.
+     */
+    public BrowseEditableCollectionsPanel(String id, CollectionsProvider provider, final boolean isAdmin) {
         super(id);
         final VirtualCollectionTable table
-                = new VirtualCollectionTable("collectionsTable", provider, true) {
+                = new VirtualCollectionTable("collectionsTable", provider, true, isAdmin) {
                     @Override
                     protected Panel createActionColumn(String componentId,
                             IModel<VirtualCollection> model) {
@@ -390,10 +393,14 @@ public class BrowseEditableCollectionsPanel extends Panel {
     }
 
     private void doEdit(AjaxRequestTarget target, VirtualCollection vc) {
-        if(!vc.isPublicFrozen()) {
+        if(!vc.isPublicFrozen() || isUserAdmin()) {
             if (vc.isPublic()) {
                 // ask for confirmation when trying to edit a published collection
-                editPublishedDialog.showDialogue(target, vc);
+                editPublishedDialog.showDialogue(target, vc, "collections.editpublishedconfirm");
+            } else if (vc.isPublicFrozen()) {
+                // ask for confirmation when trying to edit a published collection
+                // todo: custom message for editing of frozen collections
+                editPublishedDialog.showDialogue(target, vc, "collections.editpublishedfrozenconfirm");
             } else {
                 setResponsePage(EditVirtualCollectionPage.class, new PageParameters(Collections.singletonMap("id", vc.getId())));
             }
@@ -416,5 +423,11 @@ public class BrowseEditableCollectionsPanel extends Panel {
 
     private Principal getUser() {
         return ((BasePage) getPage()).getUser();
+    }
+    
+    protected boolean isUserAdmin() {
+        final String userName = getUser().getName();
+        final boolean admin = userName != null && adminUsersService.isAdmin(userName);
+        return admin;
     }
 }

@@ -145,13 +145,13 @@ a:active {
 }
 */
 
-h1, h2, h3, h4, h5, h6, label {
+h1, h2, h3, h4, h5, h6, label, .details-title {
   color: $text_deemphasized;
   font-weight: normal;
   line-height: 1.2em;
 }
 
-body, h1, h2, h3, h4, h5, h6 {
+body, h1, h2, h3, h4, h5, h6, .details-title {
   font-size-adjust: 0.5;
 }
 
@@ -173,7 +173,7 @@ h1 {
   margin-bottom: 0px !important;
 }
 
-h2 {
+h2, .details-title {
   font-size: 1.625em;
   /* 1.625x body copy size = 26px */
   line-height: 1.15384615;
@@ -209,7 +209,7 @@ blockquote {
     and something more appropriate for display headings */
   }
 
-  h2 {
+  h2, .details-title {
     font-size: 2.25em;
     /* 2.25x body copy size = 36px */
     line-height: 1.25;
@@ -236,7 +236,7 @@ blockquote {
     line-height: 1.125;
   }
 
-  h2 {
+  h2, .details-title {
     font-size: 2em;
     /* 2x body copy size = 32px */
     line-height: 1.25;
@@ -541,5 +541,9 @@ ul#CLARIN_header_right, div#CLARIN_footer_left, div#CLARIN_footer_right {
   //text-shadow: -1px -1px 1px #fff, 1px 1px 1px #000;
   color: $text_emphasized_periphery;
   //opacity: 0.8;
+}
+
+input.citation {
+    background-color: orange;
 }
 

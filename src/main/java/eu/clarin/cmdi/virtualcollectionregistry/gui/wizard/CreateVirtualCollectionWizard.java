@@ -157,7 +157,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                             Arrays.asList(VirtualCollection.Type.values()),
                             new EnumChoiceRenderer<VirtualCollection.Type>(this));
             typeChoice.setRequired(true);
-//            typeChoice.add(new TooltipBehavior(new StringResourceModel("type.tooltip", CreateVirtualCollectionWizard.this, null)));
+            typeChoice.add(new TooltipBehavior(new StringResourceModel("type.tooltip", CreateVirtualCollectionWizard.this, null)));
             add(typeChoice);
             
             add(new TextArea<String>("description"));

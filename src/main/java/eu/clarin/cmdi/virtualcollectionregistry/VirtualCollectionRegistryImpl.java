@@ -5,13 +5,10 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User_;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
-import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
-import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifierProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidator;
 import java.security.Principal;
 import java.util.Date;
-import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -43,16 +40,17 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
     @Autowired
     private DataStore datastore; //TODO: replace with Spring managed EM?
     @Autowired
-    private PersistentIdentifierProvider pid_provider;
-    @Autowired
     @Qualifier("creation")
     private VirtualCollectionValidator validator;
     @Autowired
     private AdminUsersService adminUsersService;
-
+    @Autowired
+    private VirtualCollectionRegistryMaintenanceImpl maintenance;
+    
     private static final Logger logger
             = LoggerFactory.getLogger(VirtualCollectionRegistryImpl.class);
     private final AtomicBoolean intialized = new AtomicBoolean(false);
+    
     /**
      * Scheduled executor service for the maintenance check
      *
@@ -74,10 +72,10 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         logger.info("Initializing virtual collection registry ...");
         try {
             maintenanceExecutor.scheduleWithFixedDelay(new Runnable() {
-
                 @Override
                 public void run() {
-                    maintenance(new Date().getTime());
+                    logger.info("Running maintenance");
+                    maintenance.perform(new Date().getTime());
                 }
             }, 60, 60, TimeUnit.SECONDS);
             this.intialized.set(true);
@@ -237,7 +235,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                         "permission denied for user \""
                         + principal.getName() + "\"");
             }
-            if (!vc.isPrivate()) {
+            if (!vc.isPrivate() && vc.getState() != VirtualCollection.State.ERROR) {
                 logger.debug("virtual collection (id={}) cannot be "
                         + "deleted (invalid state)", id);
                 throw new VirtualCollectionRegistryPermissionException(
@@ -539,6 +537,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                     cq.where(where);
                 }
             }
+            
             em.getTransaction().begin();
             TypedQuery<Long> query
                     = em.createQuery(cq.select(cb.count(root)));
@@ -625,78 +624,6 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             if ((tx != null) && tx.isActive() && !tx.getRollbackOnly()) {
                 tx.commit();
             }
-        }
-    }
-
-    private void maintenance(long now) {
-        logger.debug("Maintenance check");
-        // allocate persistent identifier roughly after 30 seconds
-        final Date nowDateAlloc = new Date(now - 30 * 1000);
-        // (for now) purge deleted collection roughly after 30 seconds
-        final Date nowDatePurge = new Date(now - 30 * 1000);
-
-        EntityManager em = datastore.getEntityManager();
-        try {
-            /*
-             * delayed allocation of persistent identifier
-             */
-            em.getTransaction().begin();
-            TypedQuery<VirtualCollection> q
-                    = em.createNamedQuery("VirtualCollection.findAllByStates",
-                            VirtualCollection.class);
-            List<VirtualCollection.State> states = new LinkedList<>();
-            states.add(VirtualCollection.State.PUBLIC_PENDING);
-            states.add(VirtualCollection.State.PUBLIC_FROZEN_PENDING);
-            q.setParameter("states", states);
-            q.setParameter("date", nowDateAlloc);
-            q.setLockMode(LockModeType.PESSIMISTIC_WRITE);
-            for (VirtualCollection vc : q.getResultList()) {
-                VirtualCollection.State currentState = vc.getState();
-                logger.info("Found {} with state {}", vc.getName(), currentState);
-                
-                if (vc.getPersistentIdentifier() == null) {
-                    /*
-                     * TODO: if an error occurred while minting PID, the VCR
-                     * should handle this more gracefully and not stubbornly
-                     * re-try ...
-                     */
-                    PersistentIdentifier pid = pid_provider.createIdentifier(vc);
-                    vc.setPersistentIdentifier(pid);
-                }
-                
-                switch(currentState) {
-                    case PUBLIC_PENDING: vc.setState(VirtualCollection.State.PUBLIC); break;
-                    case PUBLIC_FROZEN_PENDING: vc.setState(VirtualCollection.State.PUBLIC_FROZEN); break;
-                    default: throw new RuntimeException("Invalid state transition from state: "+vc.getState());
-                }
-                em.persist(vc);
-                logger.info("assigned pid (identifer='{}') to virtual"
-                        + "collection (id={})",
-                        vc.getPersistentIdentifier().getIdentifier(),
-                        vc.getId());
-            }
-            em.getTransaction().commit();
-
-            /*
-             * delayed purging of deleted virtual collections
-             */
-            em.getTransaction().begin();
-            q = em.createNamedQuery("VirtualCollection.findAllByState", VirtualCollection.class);
-            q.setParameter("state", VirtualCollection.State.DELETED);
-            q.setParameter("date", nowDatePurge);
-            q.setLockMode(LockModeType.PESSIMISTIC_WRITE);
-            for (VirtualCollection vc : q.getResultList()) {
-                vc.setState(VirtualCollection.State.DEAD);
-                em.remove(vc);
-                logger.debug("purged virtual collection (id={})", vc.getId());
-            }
-            em.getTransaction().commit();
-        } catch (VirtualCollectionRegistryException e) {
-            logger.error("error while doing maintenance", e);
-        } catch (RuntimeException e) {
-            logger.error("unexpected error while doing maintenance", e);
-        } finally {
-            datastore.closeEntityManager();
         }
     }
 
