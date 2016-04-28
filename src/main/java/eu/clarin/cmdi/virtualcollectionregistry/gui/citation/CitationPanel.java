@@ -28,14 +28,19 @@ import org.apache.wicket.model.Model;
  * @author wilelb
  */
 public class CitationPanel extends Panel {
+    
+    private CitationDialog citationDialog;
+    
     public CitationPanel(String id, final IModel<VirtualCollection> model) {
         super(id);
         AjaxLink citeButton = new AjaxLink( "citeButton", new Model<String>("Cite") ){ 
             @Override
-            public void onClick( AjaxRequestTarget target ){ 
-                System.out.println("Clicked cite button for collection:"+model.getObject().getName());
+            public void onClick( AjaxRequestTarget target ) {
+                citationDialog.show(target);
             } 
         };
         add(citeButton);
+        citationDialog = new CitationDialog("citationDialog", model);
+        add(citationDialog);
     }
 }

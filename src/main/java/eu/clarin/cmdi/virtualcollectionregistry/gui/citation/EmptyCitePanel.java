@@ -14,28 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
+package eu.clarin.cmdi.virtualcollectionregistry.gui.citation;
 
-import eu.clarin.cmdi.virtualcollectionregistry.gui.citation.CitationPanel;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.citation.EmptyCitePanel;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.CompoundPropertyModel;
-import org.apache.wicket.model.IModel;
 
 /**
  *
  * @author wilelb
  */
-public class HeaderPanel extends Panel {
-    public HeaderPanel(String id, final IModel<VirtualCollection> model) {
-        super(id, new CompoundPropertyModel<VirtualCollection>(model));
-        add(new Label("name"));
-        if(model.getObject().hasPersistentIdentifier()) {
-            add(new CitationPanel("citation", model));
-        } else {
-            add(new EmptyCitePanel("citation"));
-        }
+public class EmptyCitePanel extends Panel {
+    public EmptyCitePanel(String id) {
+        super(id);
+        add(new Label("lbl"));
     }
 }
