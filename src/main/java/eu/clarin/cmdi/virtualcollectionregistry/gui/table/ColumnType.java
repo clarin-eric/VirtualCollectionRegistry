@@ -11,7 +11,7 @@ import org.apache.wicket.model.ResourceModel;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
 @SuppressWarnings("serial")
-final class ColumnType extends AbstractColumn<VirtualCollection> {
+final class ColumnType extends AbstractColumn<VirtualCollection, String> {
     private final EnumChoiceRenderer<VirtualCollection.Type> renderer;
 
     ColumnType(VirtualCollectionTable table) {

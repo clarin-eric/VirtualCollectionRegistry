@@ -20,7 +20,7 @@ import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
-import org.odlabs.wiquery.core.WiQuerySettings;
+import org.apache.wicket.validation.validator.StringValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -31,6 +31,9 @@ public class Application extends AuthenticatedWebApplication { //implements IWiQ
 
     private final static Logger logger = LoggerFactory.getLogger(Application.class);
 
+    public final static StringValidator MAX_LENGTH_VALIDATOR = 
+        new StringValidator(null, 255);
+    
     @Autowired
     private VirtualCollectionRegistry registry;
     @Autowired

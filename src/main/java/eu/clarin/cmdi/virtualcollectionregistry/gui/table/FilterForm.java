@@ -20,6 +20,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.validation.validator.StringValidator;
 
 import eu.clarin.cmdi.virtualcollectionregistry.QueryOptions;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.util.ArrayList;
 import org.apache.wicket.markup.html.form.ListMultipleChoice;
@@ -46,7 +47,7 @@ public class FilterForm extends Panel {
                 QueryOptions.Relation.GT);
 
     public FilterForm(String id, IFilterStateLocator<FilterState> locator,
-            final DataTable<VirtualCollection> table, boolean privateMode, boolean isAdmin) {
+            final DataTable<VirtualCollection, String> table, boolean privateMode, boolean isAdmin) {
         super(id);
         setRenderBodyOnly(true);
 
@@ -66,11 +67,11 @@ public class FilterForm extends Panel {
         form.add(new DropDownChoice<FilterState.SearchMode>("nameMode",
                 MODE_VALUES, searchModeRenderer));
         form.add(new TextField<String>("name")
-                .add(new StringValidator.MaximumLengthValidator(255)));
+                .add(Application.MAX_LENGTH_VALIDATOR));
         form.add(new DropDownChoice<FilterState.SearchMode>("descriptionMode",
                 MODE_VALUES, searchModeRenderer));
         form.add(new TextField<String>("description")
-                .add(new StringValidator.MaximumLengthValidator(255)));
+                .add(Application.MAX_LENGTH_VALIDATOR));
         
         final WebMarkupContainer state = new WebMarkupContainer("state");
         state.add(new ListMultipleChoice("state", states));
@@ -92,14 +93,14 @@ public class FilterForm extends Panel {
                 new ResourceModel("button.filter")) {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
-                target.addComponent(form);
-                target.addComponent(table);
+                target.add(form);
+                target.add(table);
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
                 super.onError(target, form);
-                target.addComponent(form);
+                target.add(form);
             }
         };
         form.add(goButton);
@@ -111,14 +112,14 @@ public class FilterForm extends Panel {
                 final FilterState state =
                     ((Form<FilterState>) form).getModelObject();
                 state.clear();
-                target.addComponent(form);
-                target.addComponent(table);
+                target.add(form);
+                target.add(table);
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
                 super.onError(target, form);
-                target.addComponent(form);
+                target.add(form);
             }
         };
         form.add(clearButton);

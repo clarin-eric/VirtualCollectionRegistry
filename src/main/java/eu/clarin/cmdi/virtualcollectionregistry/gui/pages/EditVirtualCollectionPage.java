@@ -24,6 +24,7 @@ public class EditVirtualCollectionPage extends CreateVirtualCollectionPage {
     private final static Logger logger = LoggerFactory.getLogger(EditVirtualCollectionPage.class);
 
     public EditVirtualCollectionPage(PageParameters params) throws VirtualCollectionRegistryException {
+        super(params);
         final Long id = params.get("id").toLong();
         final VirtualCollection vc;
         if (id == null) {

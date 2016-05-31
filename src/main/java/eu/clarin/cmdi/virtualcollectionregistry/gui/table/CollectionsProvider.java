@@ -18,7 +18,7 @@ import org.apache.wicket.model.IModel;
 
 @SuppressWarnings("serial")
 public abstract class CollectionsProvider extends
-        SortableDataProvider<VirtualCollection> implements
+        SortableDataProvider<VirtualCollection, String> implements
         IFilterStateLocator<FilterState> {
 
     private FilterState filterstate = new FilterState();
@@ -43,7 +43,7 @@ public abstract class CollectionsProvider extends
     }
 
     @Override
-    public int size() {
+    public long size() {
         try {
             final VirtualCollectionRegistry vcr
                     = Application.get().getRegistry();
@@ -54,13 +54,13 @@ public abstract class CollectionsProvider extends
     }
 
     @Override
-    public Iterator<? extends VirtualCollection> iterator(int first,
-            int count) {
+    public Iterator<? extends VirtualCollection> iterator(long first,
+            long count) {
         try {
             final VirtualCollectionRegistry vcr
                     = Application.get().getRegistry();
             final List<VirtualCollection> results
-                    = vcr.getVirtualCollections(first, count, getFilter());
+                    = vcr.getVirtualCollections((int)first, (int)count, getFilter());
             return results.iterator();
         } catch (VirtualCollectionRegistryException e) {
             throw new WicketRuntimeException(e);
@@ -101,7 +101,7 @@ public abstract class CollectionsProvider extends
         }
         options.setFilter(filter);
 
-        final SortParam s = getSort();
+        final SortParam<String> s = getSort();
         if (s != null) {
             final String p = s.getProperty();
             Property property = null;

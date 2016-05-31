@@ -30,7 +30,7 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
                     new Model<String>("Add"), form) {
                 @Override
                 protected void onError(AjaxRequestTarget target, Form<?> form) {
-                    target.addComponent(contentPanel.getFeedbackPanel());
+                    target.add(contentPanel.getFeedbackPanel());
                     super.onError(target, form);
                 }
 
@@ -45,7 +45,7 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
                     new Model<String>("Modify"), form) {
                 @Override
                 protected void onError(AjaxRequestTarget target, Form<?> form) {
-                    target.addComponent(contentPanel.getFeedbackPanel());
+                    target.add(contentPanel.getFeedbackPanel());
                     super.onError(target, form);
                 }
 

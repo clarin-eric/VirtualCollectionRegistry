@@ -63,7 +63,7 @@ public abstract class ConfirmationDialog extends ModalDialogBase {
                 if (answer) {
                     onConfirm(target);
                     if (updateComponent != null) {
-                        target.addComponent(updateComponent);
+                        target.add(updateComponent);
                     }
                 } else {
                     onCancel(target);

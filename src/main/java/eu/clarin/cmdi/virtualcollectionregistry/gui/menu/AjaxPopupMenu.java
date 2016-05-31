@@ -3,9 +3,9 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.menu;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
+import org.apache.wicket.AttributeModifier;
 
 
-import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.AbstractLink;
@@ -43,7 +43,7 @@ public class AjaxPopupMenu extends Panel implements Serializable, IWiQueryPlugin
                 link.add(new Label("label", menuitem.getLabel()));
                 String cssClass = menuitem.getCssClass();
                 if (cssClass != null) {
-                    link.add(new SimpleAttributeModifier("class", cssClass));
+                    link.add(new AttributeModifier("class", cssClass));
                 }
                 item.add(link);
                 item.setVisible(menuitem.isVisible());

@@ -96,7 +96,7 @@ public abstract class PublishConfirmationDialog extends ModalDialogBase {
                 if (answer == ButtonState.PUBLISH || answer == ButtonState.PUBLISH_FROZEN) {
                     onConfirm(target);
                     if (updateComponent != null) {
-                        target.addComponent(updateComponent);
+                        target.add(updateComponent);
                     }
                 } else {
                     onCancel(target);

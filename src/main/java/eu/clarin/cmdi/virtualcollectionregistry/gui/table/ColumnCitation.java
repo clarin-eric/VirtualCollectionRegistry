@@ -28,7 +28,7 @@ import org.apache.wicket.model.IModel;
  *
  * @author wilelb
  */
-public class ColumnCitation extends HeaderlessColumn<VirtualCollection> {
+public class ColumnCitation extends HeaderlessColumn<VirtualCollection, String> {
     ColumnCitation(VirtualCollectionTable table) {
         super();
     }

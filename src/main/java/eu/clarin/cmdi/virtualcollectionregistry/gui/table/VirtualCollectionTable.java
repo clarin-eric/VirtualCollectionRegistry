@@ -24,8 +24,7 @@ public abstract class VirtualCollectionTable extends Panel {
         setOutputMarkupId(true);
 
         // setup table provider
-        List<IColumn<VirtualCollection>> columns =
-            new ArrayList<IColumn<VirtualCollection>>();
+        List<IColumn<VirtualCollection, String>> columns = new ArrayList<>();
         columns.add(new ColumnName(this));
         if (showState) {
             columns.add(new ColumnState(this));
@@ -36,8 +35,8 @@ public abstract class VirtualCollectionTable extends Panel {
         columns.add(new ColumnActions(this));
 
         // setup table
-        final DataTable<VirtualCollection> table =
-            new AjaxFallbackDefaultDataTable<VirtualCollection>("table",
+        final DataTable<VirtualCollection, String> table =
+            new AjaxFallbackDefaultDataTable<>("table",
                 columns, provider, 30);
         table.add(new AttributeAppender("class",
                 new AbstractReadOnlyModel<String>() {

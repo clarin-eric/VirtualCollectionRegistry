@@ -2,10 +2,10 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
 
 
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
-import org.odlabs.wiquery.core.behavior.WiQueryAbstractBehavior;
 import org.odlabs.wiquery.core.javascript.JsQuery;
 import org.odlabs.wiquery.core.javascript.JsStatement;
 import org.odlabs.wiquery.core.options.DefaultOptionsRenderer;
@@ -17,7 +17,7 @@ import org.odlabs.wiquery.core.options.Options;
  * @author twagoo
  */
 @SuppressWarnings("serial")
-public class TooltipBehavior extends WiQueryAbstractBehavior {
+public class TooltipBehavior extends Behavior { //WiQueryAbstractAjaxBehavior {
 
     public static final ResourceReference QTIP_JAVASCRIPT_RESOURCE
             = new PackageResourceReference(TooltipBehavior.class, "jquery.qtip-1.0.0-rc3.min.js");
@@ -28,7 +28,7 @@ public class TooltipBehavior extends WiQueryAbstractBehavior {
         this.tooltipModel = tooltipModel;
     }
     
-    //TODO: WiQuery
+    //TODO: Fix WiQuery
     /*
     @Override
     public void contribute(WiQueryResourceManager wiQueryResourceManager) {
@@ -36,11 +36,13 @@ public class TooltipBehavior extends WiQueryAbstractBehavior {
     }
     */
     
+    //TODO: Fix WiQuery
+    /*
     @Override
     public JsStatement statement() {
         return new JsQuery(getComponent()).$().chain("qtip", getOptions().getJavaScriptOptions());
     }
-
+    */
     public Options getOptions() {
         final Options options = new Options();
         options.setRenderer(optionsRenderer);

@@ -33,10 +33,10 @@ public class LoginPage extends WebPage {
             final Principal principal = request.getUserPrincipal();
             ApplicationSession session = (ApplicationSession) getSession();
             if (session.signIn(principal)) {
-                if (!continueToOriginalDestination()) {
-                    throw new RestartResponseAtInterceptPageException(
-                            Application.get().getHomePage());
-                }
+                continueToOriginalDestination();
+                // if we reach this line there was no intercept page, so go to home page
+                throw new RestartResponseAtInterceptPageException(
+                    Application.get().getHomePage());
             } else {
                 throw new RestartResponseException(
                         Application.get().getApplicationSettings()

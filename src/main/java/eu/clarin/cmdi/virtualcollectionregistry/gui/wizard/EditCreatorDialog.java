@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.wizard;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.TextArea;
@@ -9,7 +10,6 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.validation.validator.EmailAddressValidator;
-import org.apache.wicket.validation.validator.StringValidator;
 import org.apache.wicket.validation.validator.UrlValidator;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ModalEditDialogBase;
@@ -17,6 +17,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 
 @SuppressWarnings("serial")
 public abstract class EditCreatorDialog extends ModalEditDialogBase<Creator> {
+    
+    
     private final class Content extends
             ModalEditDialogBase<Creator>.ContentPanel {
         private final Form<Creator> form;
@@ -24,37 +26,29 @@ public abstract class EditCreatorDialog extends ModalEditDialogBase<Creator> {
 
         public Content(String id, IModel<Creator> model) {
             super(id);
-            form = new Form<Creator>("editCreatorForm", model);
-            final TextField<String> personField =
-                new RequiredTextField<String>("person");
-            personField.add(new StringValidator.MaximumLengthValidator(255));
+            form = new Form<>("editCreatorForm", model);
+            final TextField<String> personField = new RequiredTextField<>("person");
+            personField.add(Application.MAX_LENGTH_VALIDATOR);
             form.add(personField);
-            final TextArea<String> addressArea =
-                new TextArea<String>("address");
-            addressArea.add(new StringValidator.MaximumLengthValidator(255));
+            final TextArea<String> addressArea = new TextArea<>("address");
+            addressArea.add(Application.MAX_LENGTH_VALIDATOR);
             form.add(addressArea);
-            final TextField<String> emailField =
-                new TextField<String>("email");
-            emailField.add(new StringValidator.MaximumLengthValidator(255));
+            final TextField<String> emailField = new TextField<>("email");
+            emailField.add(Application.MAX_LENGTH_VALIDATOR);
             emailField.add(EmailAddressValidator.getInstance());
             form.add(emailField);
-            final TextField<String> organisationField =
-                new TextField<String>("organisation");
-            organisationField.add(
-                    new StringValidator.MaximumLengthValidator(255));
+            final TextField<String> organisationField = new TextField<>("organisation");
+            organisationField.add(Application.MAX_LENGTH_VALIDATOR);
             form.add(organisationField);
-            final TextField<String> telephoneField =
-                new TextField<String>("telephone");
-            telephoneField.add(new StringValidator.MaximumLengthValidator(255));
+            final TextField<String> telephoneField = new TextField<>("telephone");
+            telephoneField.add(Application.MAX_LENGTH_VALIDATOR);
             form.add(telephoneField);
-            final TextField<String> websiteField =
-                new TextField<String>("website");
-            websiteField.add(new StringValidator.MaximumLengthValidator(255));
+            final TextField<String> websiteField = new TextField<>("website");
+            websiteField.add(Application.MAX_LENGTH_VALIDATOR);
             websiteField.add(new UrlValidator());
             form.add(websiteField);
-            final TextField<String> roleField =
-                new TextField<String>("role");
-            roleField.add(new StringValidator.MaximumLengthValidator(255));
+            final TextField<String> roleField = new TextField<>("role");
+            roleField.add(Application.MAX_LENGTH_VALIDATOR);
             form.add(roleField);
             feedbackPanel = new FeedbackPanel("feedback");
             form.add(feedbackPanel);

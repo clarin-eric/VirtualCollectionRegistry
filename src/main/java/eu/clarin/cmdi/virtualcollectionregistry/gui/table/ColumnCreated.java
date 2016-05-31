@@ -13,7 +13,7 @@ import org.apache.wicket.model.ResourceModel;
 import org.apache.wicket.util.convert.IConverter;
 
 @SuppressWarnings("serial")
-final class ColumnCreated extends AbstractColumn<VirtualCollection> {
+final class ColumnCreated extends AbstractColumn<VirtualCollection, String> {
 
     private static final IConverter dateConverter = new DateConverter();
 

@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.wizard;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.DynamicProxyModel;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.RequiredTextField;
@@ -7,7 +8,6 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.validation.validator.StringValidator;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ModalEditDialogBase;
 
@@ -23,16 +23,16 @@ public abstract class AddKeywordDialog extends ModalEditDialogBase<String> {
 
         public Content(String id, IModel<String> model) {
             super(id);
-            form = new Form<String>("addKeywordForm", model);
+            form = new Form<>("addKeywordForm", model);
             final TextField<String> keywordField
-                    = new RequiredTextField<String>("keyword", new DynamicProxyModel<String>() {
+                    = new RequiredTextField<>("keyword", new DynamicProxyModel<String>() {
 
                 @Override
                 protected IModel<String> getWrappedModel() {
                     return form.getModel();
                 }
             });
-            keywordField.add(new StringValidator.MaximumLengthValidator(255));
+            keywordField.add(Application.MAX_LENGTH_VALIDATOR);
             form.add(keywordField);
             feedbackPanel = new FeedbackPanel("feedback");
             form.add(feedbackPanel);

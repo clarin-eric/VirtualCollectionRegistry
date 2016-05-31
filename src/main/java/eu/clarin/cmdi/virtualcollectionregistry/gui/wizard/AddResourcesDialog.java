@@ -123,7 +123,7 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
                     new Model<String>("Add"), form) {
                 @Override
                 protected void onError(AjaxRequestTarget target, Form<?> form) {
-                    target.addComponent(contentPanel.getFeedbackPanel());
+                    target.add(contentPanel.getFeedbackPanel());
                     super.onError(target, form);
                 }
 

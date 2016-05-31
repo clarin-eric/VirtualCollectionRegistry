@@ -1,7 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.table;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
@@ -16,12 +15,13 @@ import org.apache.wicket.model.ResourceModel;
 import org.odlabs.wiquery.core.javascript.JsStatement;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.odlabs.wiquery.core.IWiQueryPlugin;
 
 @SuppressWarnings("serial")
-final class ColumnName extends AbstractColumn<VirtualCollection> {
+final class ColumnName extends AbstractColumn<VirtualCollection, String> {
     private static final ResourceReference JAVASCRIPT_RESOURCE =
         new PackageResourceReference(ColumnName.class, "ColumnName.js");
     private final VirtualCollectionTable table;
@@ -49,7 +49,7 @@ final class ColumnName extends AbstractColumn<VirtualCollection> {
             final Panel actionsPanel =
                 table.createActionPanel("actionsPanel", model);
             details.add(actionsPanel);
-            details.add(new AbstractBehavior() {
+            details.add(new Behavior() {
 
                 @Override
                 public void bind(Component component) {

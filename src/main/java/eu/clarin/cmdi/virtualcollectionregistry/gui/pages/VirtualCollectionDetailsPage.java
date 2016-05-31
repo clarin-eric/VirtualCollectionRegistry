@@ -20,7 +20,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
 import org.apache.wicket.authorization.UnauthorizedActionException;
-import org.apache.wicket.behavior.AbstractBehavior;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
@@ -83,7 +83,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
      * that we are not supposed to change the page hierarchy anymore. This
      * class is a hack to avoid this exception.
      */
-    private static final class HideIfEmptyBehavior extends AbstractBehavior {
+    private static final class HideIfEmptyBehavior extends Behavior {
 
         private final List<Component> components = new LinkedList<Component>();
 
@@ -106,13 +106,14 @@ public class VirtualCollectionDetailsPage extends BasePage {
                     }
                 }
             }
+            
         }
 
-        @Override
-        public void cleanup() {
-            super.cleanup();
-            components.clear();
-        }
+       // @Override
+        //public void cleanup() {
+        //    super.cleanup();
+        //    components.clear();
+        //}
     } // class VirtualCollectionDetailsPage.HideIfEmptyBehavior
 
     private static class CustomLabel<C> extends Label {
@@ -248,8 +249,8 @@ public class VirtualCollectionDetailsPage extends BasePage {
         add(resources);
 
         @SuppressWarnings("rawtypes")
-        final List<IColumn<Resource>>cols = new ArrayList<>();
-        cols.add(new PropertyColumn<Resource>(
+        final List<IColumn<Resource, String>> cols = new ArrayList<>();
+        cols.add(new PropertyColumn<Resource, String>(
                 Model.of("Type"), "type") {
                     @Override
                     public void populateItem(Item<ICellPopulator<Resource>> item,
@@ -264,7 +265,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
                         return "type";
                     }
                 });
-        cols.add(new AbstractColumn<Resource>(Model.of("Reference")) {
+        cols.add(new AbstractColumn<Resource, String>(Model.of("Reference")) {
             @Override
             public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> rowModel) {
                 item.add(new ReferenceLinkPanel(componentId, rowModel));
@@ -276,11 +277,10 @@ public class VirtualCollectionDetailsPage extends BasePage {
             }
         });
 
-        final SortableDataProvider<Resource> resourcesProvider = new SortableDataProvider<Resource>() {
+        final SortableDataProvider<Resource, String> resourcesProvider = new SortableDataProvider<Resource, String>() {
             @Override
-            public Iterator<? extends Resource>
-                    iterator(int first, int count) {
-                return model.getObject().getResources().listIterator(first);
+            public Iterator<? extends Resource> iterator(long first, long count) {
+                return model.getObject().getResources().listIterator((int)first);
             }
 
             @Override
@@ -289,13 +289,13 @@ public class VirtualCollectionDetailsPage extends BasePage {
             }
 
             @Override
-            public int size() {
+            public long size() {
                 return model.getObject().getResources().size();
             }
         };
 
-        final DataTable<Resource> resourcesTable
-                = new AjaxFallbackDefaultDataTable<Resource>("resourcesTable",
+        final DataTable<Resource, String> resourcesTable
+                = new AjaxFallbackDefaultDataTable<>("resourcesTable",
                         cols, resourcesProvider, 64);
         resources.add(resourcesTable);
         resources.setVisible(model.getObject().getType() == Type.EXTENSIONAL);

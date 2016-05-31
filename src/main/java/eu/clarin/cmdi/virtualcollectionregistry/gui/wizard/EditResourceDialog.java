@@ -12,8 +12,7 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.validation.validator.StringValidator;
-
+import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ModalEditDialogBase;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import org.apache.wicket.markup.html.form.TextArea;
@@ -38,11 +37,11 @@ public abstract class EditResourceDialog extends ModalEditDialogBase<Resource> {
             );
 
             form.add(new RequiredTextField<String>("ref")
-                    .add(new StringValidator.MaximumLengthValidator(255))
-                    .add(new ReferenceValidator()));
+                .add(Application.MAX_LENGTH_VALIDATOR)
+                .add(new ReferenceValidator()));
 
             form.add(new TextField<String>("label")
-                    .add(new StringValidator.MaximumLengthValidator(255)));
+                .add(Application.MAX_LENGTH_VALIDATOR));
 
             form.add(new TextArea<String>("description"));
 

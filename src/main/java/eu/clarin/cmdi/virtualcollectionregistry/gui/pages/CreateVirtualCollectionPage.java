@@ -29,8 +29,8 @@ public class CreateVirtualCollectionPage extends BasePage {
     private CreatorProvider creatorProvider;
 
     // only for extensions
-    protected CreateVirtualCollectionPage() {
-    }
+    //protected CreateVirtualCollectionPage() {
+    //}
 
     // used when page constructed by framework
     public CreateVirtualCollectionPage(PageParameters params) {
