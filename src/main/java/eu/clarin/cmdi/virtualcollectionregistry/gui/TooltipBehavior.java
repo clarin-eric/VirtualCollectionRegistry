@@ -1,10 +1,11 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
-import org.apache.wicket.ResourceReference;
-import org.apache.wicket.markup.html.resources.JavascriptResourceReference;
+
+
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.odlabs.wiquery.core.behavior.WiQueryAbstractBehavior;
-import org.odlabs.wiquery.core.commons.WiQueryResourceManager;
 import org.odlabs.wiquery.core.javascript.JsQuery;
 import org.odlabs.wiquery.core.javascript.JsStatement;
 import org.odlabs.wiquery.core.options.DefaultOptionsRenderer;
@@ -19,19 +20,22 @@ import org.odlabs.wiquery.core.options.Options;
 public class TooltipBehavior extends WiQueryAbstractBehavior {
 
     public static final ResourceReference QTIP_JAVASCRIPT_RESOURCE
-            = new JavascriptResourceReference(TooltipBehavior.class, "jquery.qtip-1.0.0-rc3.min.js");
+            = new PackageResourceReference(TooltipBehavior.class, "jquery.qtip-1.0.0-rc3.min.js");
 
     private final IModel<String> tooltipModel;
 
     public TooltipBehavior(IModel<String> tooltipModel) {
         this.tooltipModel = tooltipModel;
     }
-
+    
+    //TODO: WiQuery
+    /*
     @Override
     public void contribute(WiQueryResourceManager wiQueryResourceManager) {
         wiQueryResourceManager.addJavaScriptResource(QTIP_JAVASCRIPT_RESOURCE);
     }
-
+    */
+    
     @Override
     public JsStatement statement() {
         return new JsQuery(getComponent()).$().chain("qtip", getOptions().getJavaScriptOptions());
@@ -77,20 +81,4 @@ public class TooltipBehavior extends WiQueryAbstractBehavior {
             DefaultOptionsRenderer.get().renderAfter(stringBuilder);
         }
     };
-//
-//    private static class StringQuoteModel extends AbstractReadOnlyModel<String> {
-//
-//        private final IModel<String> wrappedModel;
-//
-//        public StringQuoteModel(IModel<String> wrappedModel) {
-//            this.wrappedModel = wrappedModel;
-//        }
-//
-//        @Override
-//        public String getObject() {
-//            return String.format("'%s'", wrappedModel.getObject());
-//        }
-//
-//    }
-
 }

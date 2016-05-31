@@ -13,23 +13,21 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.HelpPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.LoginPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.VirtualCollectionDetailsPage;
 import org.apache.wicket.Page;
-import org.apache.wicket.authentication.AuthenticatedWebApplication;
-import org.apache.wicket.authentication.AuthenticatedWebSession;
-import org.apache.wicket.authorization.strategies.role.Roles;
+import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
+import org.apache.wicket.authroles.authentication.AuthenticatedWebApplication;
+import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
+import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
-import org.apache.wicket.request.target.coding.MixedParamHybridUrlCodingStrategy;
-import org.apache.wicket.session.pagemap.LeastRecentlyAccessedEvictionStrategy;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
-import org.odlabs.wiquery.core.commons.IWiQuerySettings;
-import org.odlabs.wiquery.core.commons.WiQuerySettings;
+import org.odlabs.wiquery.core.WiQuerySettings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Application extends AuthenticatedWebApplication implements IWiQuerySettings {
+public class Application extends AuthenticatedWebApplication { //implements IWiQuerySettings {
 
     private final static Logger logger = LoggerFactory.getLogger(Application.class);
 
@@ -44,36 +42,38 @@ public class Application extends AuthenticatedWebApplication implements IWiQuery
     protected void init() {
         super.init();
         logger.info("Initialising VCR web application");
-        addComponentInstantiationListener(new SpringComponentInjector(this));
+        getComponentInstantiationListeners().add(new SpringComponentInjector(this));
 
         getMarkupSettings().setDefaultMarkupEncoding("utf-8");
         getRequestCycleSettings().setResponseRequestEncoding("utf-8");
+        //TODO: fix migration to wicket 1.5
+        /*
         getSessionSettings().setMaxPageMaps(3);
         getSessionSettings().setPageMapEvictionStrategy(
                 new LeastRecentlyAccessedEvictionStrategy(3));
+        */
         if (!DEPLOYMENT.equals(getConfigurationType())) {
             logger.warn("Web application configured for development");
             getMarkupSettings().setStripWicketTags(true);
             getMarkupSettings().setStripComments(true);
         }
 
-        mountBookmarkablePage("/login",
-                LoginPage.class);
-        mountBookmarkablePage("/public",
-                BrowsePublicCollectionsPage.class);
-        mountBookmarkablePage("/private",
-                BrowsePrivateCollectionsPage.class);
-        mountBookmarkablePage("/create", CreateVirtualCollectionPage.class);
-        mountBookmarkablePage("/about", AboutPage.class);
-        mountBookmarkablePage("/help", HelpPage.class);
-        mountBookmarkablePage("/admin", AdminPage.class);
+        mountPage("/login", LoginPage.class);
+        mountPage("/public", BrowsePublicCollectionsPage.class);
+        mountPage("/private", BrowsePrivateCollectionsPage.class);
+        mountPage("/create", CreateVirtualCollectionPage.class);
+        mountPage("/about", AboutPage.class);
+        mountPage("/help", HelpPage.class);
+        mountPage("/admin", AdminPage.class);
 
         // details of an existing collection by ID, e.g. /details/123
-        mount(new MixedParamHybridUrlCodingStrategy("/details",
-                VirtualCollectionDetailsPage.class, new String[]{VirtualCollectionDetailsPage.PARAM_VC_ID}));
+        //mountPage(new MixedParamHybridUrlCodingStrategy("/details",
+        //        VirtualCollectionDetailsPage.class, new String[]{VirtualCollectionDetailsPage.PARAM_VC_ID}));
+        mountPage("/details/${id}", VirtualCollectionDetailsPage.class);
         // editing an existing collection by ID, e.g. /edit/123
-        mount(new MixedParamHybridUrlCodingStrategy("/edit",
-                EditVirtualCollectionPage.class, new String[]{"id"}));
+        //mountPage(new MixedParamHybridUrlCodingStrategy("/edit",
+                //EditVirtualCollectionPage.class, new String[]{"id"}));
+        mountPage("/edit/${id}", EditVirtualCollectionPage.class);
     }
 
     @Override
@@ -120,15 +120,17 @@ public class Application extends AuthenticatedWebApplication implements IWiQuery
     public static Application get() {
         return (Application) WebApplication.get();
     }
-
+//TODO: WiQuery
+/*
     @Override
     public WiQuerySettings getWiQuerySettings() {
         final WiQuerySettings settings = new WiQuerySettings();
         // WiQuery should not import the jQuery library because it is already
         // provided in the template as a dependency of Bootstrap
         settings.setAutoImportJQueryResource(false);
-        settings.setAutoImportJQueryUIResource(false);
+        settings.setAutoImportJQueryUIJavaScriptResource(false);
+        settings.setAutoImportJQueryUIStyleSheetResource(false);
         return settings;
     }
-
+*/
 } // class Application

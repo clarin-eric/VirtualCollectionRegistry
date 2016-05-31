@@ -52,7 +52,7 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
             add(new AttributeAppender("class",
                     new Model<String>("editDialog addResourcesDialog"), " "));
             form = new Form<Data>("addResourcesForm",
-                    new CompoundPropertyModel<Data>(null));
+                    new CompoundPropertyModel<>((Data)null));
             final DropDownChoice<Resource.Type> typeChoice =
                 new DropDownChoice<Resource.Type>("type",
                         Arrays.asList(Resource.Type.values()),
@@ -164,7 +164,8 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
     @Override
     protected Panel createContent(String id) {
         contentPanel = new Content(id);
-        contentPanel.getForm().removePersistentFormComponentValues(true);
+        //TODO: wicket 1.5 upgrade, is this removed? See https://issues.apache.org/jira/browse/WICKET-2213
+        //contentPanel.getForm().removePersistentFormComponentValues(true);
         return contentPanel;
     }
 

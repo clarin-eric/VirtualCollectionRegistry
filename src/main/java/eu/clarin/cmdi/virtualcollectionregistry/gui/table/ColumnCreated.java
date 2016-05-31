@@ -26,9 +26,9 @@ final class ColumnCreated extends AbstractColumn<VirtualCollection> {
             String componentId, IModel<VirtualCollection> model) {
         item.add(new Label(componentId,
                 new PropertyModel<Date>(model, "creationDate")) {
-
+                    @SuppressWarnings("unchecked")
                     @Override
-                    public IConverter getConverter(Class<?> type) {
+                    public <C> IConverter<C> getConverter(Class<C> type) {
                         if (Date.class.isAssignableFrom(type)) {
                             return dateConverter;
                         }

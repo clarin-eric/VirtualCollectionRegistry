@@ -10,15 +10,13 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Type;
 import java.sql.Date;
+import java.util.ArrayList;
 import java.util.Collection;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import org.apache.wicket.Component;
-import org.apache.wicket.IPageMap;
-import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
 import org.apache.wicket.authorization.UnauthorizedActionException;
@@ -46,6 +44,7 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.string.Strings;
 
@@ -116,14 +115,15 @@ public class VirtualCollectionDetailsPage extends BasePage {
         }
     } // class VirtualCollectionDetailsPage.HideIfEmptyBehavior
 
-    private static class CustomLabel extends Label {
+    private static class CustomLabel<C> extends Label {
 
         public CustomLabel(String id) {
             super(id);
         }
 
+        @SuppressWarnings("unchecked")
         @Override
-        public IConverter getConverter(Class<?> type) {
+        public <C> IConverter<C> getConverter(Class<C> type) {
             if (VirtualCollection.Type.class.isAssignableFrom(type)
                     || VirtualCollection.Purpose.class.isAssignableFrom(type)
                     || VirtualCollection.Reproducibility.class.isAssignableFrom(type)) {
@@ -226,9 +226,9 @@ public class VirtualCollectionDetailsPage extends BasePage {
             }
 
             @Override
-            protected ListItem<Creator> newItem(int index) {
-                final IModel<Creator> model
-                        = getListItemModel(getModel(), index);
+            protected ListItem<Creator> newItem(int index,  IModel<Creator> model) {
+                //final IModel<Creator> model
+                //        = getListItemModel(getModel(), index);
                 return new OddEvenListItem<Creator>(index, model) {
                     @Override
                     protected void onComponentTag(ComponentTag tag) {
@@ -248,8 +248,8 @@ public class VirtualCollectionDetailsPage extends BasePage {
         add(resources);
 
         @SuppressWarnings("rawtypes")
-        final IColumn[] cols = new IColumn[2];
-        cols[1] = new PropertyColumn<Resource>(
+        final List<IColumn<Resource>>cols = new ArrayList<>();
+        cols.add(new PropertyColumn<Resource>(
                 Model.of("Type"), "type") {
                     @Override
                     public void populateItem(Item<ICellPopulator<Resource>> item,
@@ -263,11 +263,8 @@ public class VirtualCollectionDetailsPage extends BasePage {
                     public String getCssClass() {
                         return "type";
                     }
-                    
-                    
-                };
-        cols[0] = new AbstractColumn<Resource>(Model.of("Reference")) {
-
+                });
+        cols.add(new AbstractColumn<Resource>(Model.of("Reference")) {
             @Override
             public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> rowModel) {
                 item.add(new ReferenceLinkPanel(componentId, rowModel));
@@ -277,8 +274,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
             public String getCssClass() {
                 return "reference";
             }
-
-        };
+        });
 
         final SortableDataProvider<Resource> resourcesProvider = new SortableDataProvider<Resource>() {
             @Override
@@ -317,7 +313,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
     }
 
     private static IModel<VirtualCollection> getVirtualCollectionModel(PageParameters params) {
-        final Long collectionId = params.getAsLong(PARAM_VC_ID);
+        final Long collectionId = params.get(PARAM_VC_ID).toLong();
         if (collectionId == null) {
             Session.get().error("Collection could not be retrieved, id not provided");
             return null;
@@ -326,9 +322,14 @@ public class VirtualCollectionDetailsPage extends BasePage {
     }
 
     private static PageReference getPageReference(PageParameters params) {
-        final Integer pageId = params.getAsInteger(PARAM_BACK_PAGE_ID);
-        final Integer pageVersion = params.getAsInteger(PARAM_BACK_PAGE_VERSION);
-        final String pageMap = params.getString(PARAM_BACK_PAGE_PAGEMAP_NAME);
+        final Integer pageId = params.get(PARAM_BACK_PAGE_ID).toInt();
+        //final Integer pageVersion = params.get(PARAM_BACK_PAGE_VERSION).toInt();
+        
+        
+        //final String pageMap = params.get(PARAM_BACK_PAGE_PAGEMAP_NAME).toString();
+        
+        //TODO: fix in wicket 1.5
+        /*
         if (pageId != null && pageVersion != null) {
             for (IPageMap map : Session.get().getPageMaps()) {
                 if (pageMap == null && map.getName() == null || pageMap != null && pageMap.equals(map.getName())) {
@@ -339,19 +340,23 @@ public class VirtualCollectionDetailsPage extends BasePage {
                 }
             }
         }
+        */
         return null;
     }
 
     public static PageParameters createPageParameters(VirtualCollection vc, PageReference pageReference) {
         final PageParameters params = new PageParameters();
-        params.put(VirtualCollectionDetailsPage.PARAM_VC_ID, vc.getId());
+        params.set(VirtualCollectionDetailsPage.PARAM_VC_ID, vc.getId());
 
         if (pageReference != null) {
-            params.put(VirtualCollectionDetailsPage.PARAM_BACK_PAGE_ID, pageReference.getPageNumber());
-            params.put(VirtualCollectionDetailsPage.PARAM_BACK_PAGE_VERSION, pageReference.getPageVersion());
+            params.set(VirtualCollectionDetailsPage.PARAM_BACK_PAGE_ID, pageReference.getPageId());
+            //TODO: fix in wicket 1.5
+            /*
+            params.set(VirtualCollectionDetailsPage.PARAM_BACK_PAGE_VERSION, pageReference.getPage().getVersion());
             if (pageReference.getPageMapName() != null) {
-                params.put(VirtualCollectionDetailsPage.PARAM_BACK_PAGE_PAGEMAP_NAME, pageReference.getPageMapName());
+                params.set(VirtualCollectionDetailsPage.PARAM_BACK_PAGE_PAGEMAP_NAME, pageReference.getPageMapName());
             }
+            */
         }
         return params;
     }

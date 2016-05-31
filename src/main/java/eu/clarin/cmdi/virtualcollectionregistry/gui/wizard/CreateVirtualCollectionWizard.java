@@ -9,13 +9,14 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.service.CreatorProvider;
+import java.util.ArrayList;
 
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -32,6 +33,7 @@ import org.apache.wicket.extensions.wizard.dynamic.DynamicWizardModel;
 import org.apache.wicket.extensions.wizard.dynamic.DynamicWizardStep;
 import org.apache.wicket.extensions.wizard.dynamic.IDynamicWizardStep;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.IHeaderResponse;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -47,7 +49,6 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.OddEvenListItem;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.markup.html.resources.JavascriptResourceReference;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -55,10 +56,11 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.StringValidator;
 import org.apache.wicket.validation.validator.UrlValidator;
-import org.odlabs.wiquery.core.commons.CoreJavaScriptResourceReference;
+import org.odlabs.wiquery.core.resources.CoreJavaScriptResourceReference;
 
 @SuppressWarnings("serial")
 public abstract class CreateVirtualCollectionWizard extends WizardBase {
@@ -67,15 +69,16 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
     private CreatorProvider creatorProvider;
     
     private final static ResourceReference TOOLTIP_JAVASCRIPT_REFERENCE = 
-            new JavascriptResourceReference(CreateVirtualCollectionWizard.class, "wizardhelp.js");
+            new PackageResourceReference(CreateVirtualCollectionWizard.class, "wizardhelp.js");
 
     @Override
     public void renderHead(HtmlHeaderContainer container) {
         super.renderHead(container);
         // Javascript dependencies for this page (jQuery tooltips)
-        container.getHeaderResponse().renderJavascriptReference(CoreJavaScriptResourceReference.get());
-        container.getHeaderResponse().renderJavascriptReference(TooltipBehavior.QTIP_JAVASCRIPT_RESOURCE);
-        container.getHeaderResponse().renderJavascriptReference(TOOLTIP_JAVASCRIPT_REFERENCE);
+        IHeaderResponse response = container.getHeaderResponse();
+        response.renderJavaScriptReference(CoreJavaScriptResourceReference.get());
+        response.renderJavaScriptReference(TooltipBehavior.QTIP_JAVASCRIPT_RESOURCE);
+        response.renderJavaScriptReference(TOOLTIP_JAVASCRIPT_REFERENCE);
     }
     
     private final class GeneralStep extends DynamicWizardStep {
@@ -123,9 +126,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                     }
 
                     @Override
-                    protected ListItem<String> newItem(int index) {
-                        final IModel<String> model
-                                = getListItemModel(getModel(), index);
+                    protected ListItem<String> newItem(int index, IModel<String> model) {
                         return new OddEvenListItem<String>(index, model) {
                             @Override
                             protected void onComponentTag(ComponentTag tag) {
@@ -370,14 +371,19 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
         }
 
         @SuppressWarnings("unchecked")
-        private IColumn<Creator>[] createColumns() {
-            final IColumn<?>[] columns = new IColumn<?>[]{
-                new PropertyColumn<Creator>(new Model<String>("Person"),
-                "person"),
-                new PropertyColumn<Creator>(new Model<String>("EMail"),
-                "email"),
-                new PropertyColumn<Creator>(new Model<String>(
-                "Organisation"), "organisation"),
+        //private IColumn<Creator>[] createColumns() {
+        private List<IColumn<Creator>> createColumns() {
+            List<IColumn<Creator>> columns = new ArrayList<>();
+            columns.add(
+                new PropertyColumn<Creator>(new Model<>("Person"),
+                "person"));
+            columns.add(
+                new PropertyColumn<Creator>(new Model<>("EMail"),
+                "email"));
+            columns.add(
+                new PropertyColumn<Creator>(new Model<>(
+                "Organisation"), "organisation"));
+            columns.add(
                 new HeaderlessColumn<Creator>() {
                     @Override
                     public void populateItem(Item<ICellPopulator<Creator>> item, String compontentId, IModel<Creator> model) {
@@ -389,8 +395,8 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                         return "action";
                     }
                 }
-            };
-            return (IColumn<Creator>[]) columns;
+            );
+            return columns;
         }
     } // class CreateVirtualCollectionWizard.CreatorsStep
 
@@ -684,8 +690,9 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
         }
 
         @SuppressWarnings("unchecked")
-        private IColumn<Resource>[] createColumns() {
-            final IColumn<?>[] columns = new IColumn<?>[]{
+        private List<IColumn<Resource>>createColumns() {
+            final List<IColumn<Resource>>columns = new ArrayList<>();
+            columns.add(
                 new AbstractColumn<Resource>(new Model<String>("Type")) {
                     @Override
                     public void populateItem(
@@ -705,16 +712,17 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                     public String getCssClass() {
                         return "type";
                     }
-                },
+                });
+            columns.add(
                 new PropertyColumn<Resource>(
                 new Model<String>("Reference"), "ref") {
-
                     @Override
                     public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> rowModel) {
                         item.add(new ReferenceLinkPanel(componentId, rowModel));
                     }
 
-                },
+                });
+            columns.add(
                 new HeaderlessColumn<Resource>() {
                     @Override
                     public void populateItem(
@@ -727,9 +735,9 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                     public String getCssClass() {
                         return "action";
                     }
-                },
+                });
+            columns.add(
                 new HeaderlessColumn<Resource>() {
-
                     @Override
                     public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> model) {
                         item.add(new MoveItemPanel(componentId, model));
@@ -739,10 +747,8 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                     public String getCssClass() {
                         return "move";
                     }
-
-                }
-            };
-            return (IColumn<Resource>[]) columns;
+                });
+            return columns;
         }
     } // class CreateVirtualCollectionWizard.ResourcesStep
 
@@ -818,7 +824,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
             throw new IllegalArgumentException("vc == null");
         }
         this.vc = vc;
-        setDefaultModel(new CompoundPropertyModel<VirtualCollection>(this));
+        setDefaultModel(new CompoundPropertyModel<>(vc));//this));
         init(new DynamicWizardModel(new GeneralStep()));
     }
 

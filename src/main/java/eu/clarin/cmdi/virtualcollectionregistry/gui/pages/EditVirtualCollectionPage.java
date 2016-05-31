@@ -7,10 +7,10 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.wizard.CreateVirtualCollecti
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.State;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
-import org.apache.wicket.authorization.strategies.role.Roles;
-import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.authroles.authorization.strategies.role.Roles;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,7 +24,7 @@ public class EditVirtualCollectionPage extends CreateVirtualCollectionPage {
     private final static Logger logger = LoggerFactory.getLogger(EditVirtualCollectionPage.class);
 
     public EditVirtualCollectionPage(PageParameters params) throws VirtualCollectionRegistryException {
-        final Long id = params.getAsLong("id");
+        final Long id = params.get("id").toLong();
         final VirtualCollection vc;
         if (id == null) {
             vc = new VirtualCollection();

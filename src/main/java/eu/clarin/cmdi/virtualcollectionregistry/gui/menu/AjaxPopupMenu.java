@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-import org.apache.wicket.ResourceReference;
+
 import org.apache.wicket.behavior.SimpleAttributeModifier;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -13,16 +13,18 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
-import org.odlabs.wiquery.core.commons.IWiQueryPlugin;
-import org.odlabs.wiquery.core.commons.WiQueryResourceManager;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
+import org.odlabs.wiquery.core.IWiQueryPlugin;
+
 import org.odlabs.wiquery.core.javascript.JsStatement;
 
 @SuppressWarnings("serial")
 public class AjaxPopupMenu extends Panel implements Serializable, IWiQueryPlugin {
     private static final ResourceReference CSS_RESOURCE =
-        new ResourceReference(AjaxPopupMenu.class, "AjaxPopupMenu.css");
+        new PackageResourceReference(AjaxPopupMenu.class, "AjaxPopupMenu.css");
     private static final ResourceReference JAVASCRIPT_RESOURCE =
-        new ResourceReference(AjaxPopupMenu.class, "AjaxPopupMenu.js");
+        new PackageResourceReference(AjaxPopupMenu.class, "AjaxPopupMenu.js");
     private final WebMarkupContainer menu;
     private List<MenuItem> items = new ArrayList<MenuItem>();
 
@@ -55,12 +57,15 @@ public class AjaxPopupMenu extends Panel implements Serializable, IWiQueryPlugin
         items.add(item);
     }
 
+    //TODO: WiQuery
+    /*
     @Override
     public void contribute(WiQueryResourceManager manager) {
         manager.addJavaScriptResource(JAVASCRIPT_RESOURCE);
         manager.addCssResource(CSS_RESOURCE);
     }
-
+    */
+    
     @Override
     public JsStatement statement() {
         return new JsStatement().$(menu).append(".ajaxPopupMenu()");

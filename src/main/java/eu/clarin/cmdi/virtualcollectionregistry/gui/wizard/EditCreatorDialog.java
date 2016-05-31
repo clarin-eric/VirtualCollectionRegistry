@@ -90,7 +90,7 @@ public abstract class EditCreatorDialog extends ModalEditDialogBase<Creator> {
 
     @Override
     protected final IModel<Creator> createEmptyModel() {
-        return new CompoundPropertyModel<Creator>(null);
+        return new CompoundPropertyModel<>((Creator)null);
     }
 
     @Override

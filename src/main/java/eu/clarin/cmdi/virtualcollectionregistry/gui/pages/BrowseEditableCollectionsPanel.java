@@ -18,9 +18,9 @@ import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidat
 import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.Session;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -29,6 +29,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -328,7 +329,10 @@ public class BrowseEditableCollectionsPanel extends Panel {
 
         @Override
         public void onConfirm(AjaxRequestTarget target) {
-            setResponsePage(EditVirtualCollectionPage.class, new PageParameters(Collections.singletonMap("id", vcId)));
+            PageParameters params = new PageParameters();
+            
+            setResponsePage(EditVirtualCollectionPage.class, 
+                buildParamsFromMap(Collections.singletonMap("id", vcId)));
         }
 
         public void showDialogue(AjaxRequestTarget target, VirtualCollection vc, String key) {
@@ -402,7 +406,8 @@ public class BrowseEditableCollectionsPanel extends Panel {
                 // todo: custom message for editing of frozen collections
                 editPublishedDialog.showDialogue(target, vc, "collections.editpublishedfrozenconfirm");
             } else {
-                setResponsePage(EditVirtualCollectionPage.class, new PageParameters(Collections.singletonMap("id", vc.getId())));
+                setResponsePage(EditVirtualCollectionPage.class, 
+                        buildParamsFromMap(Collections.singletonMap("id", vc.getId())));
             }
         }
     }
@@ -418,7 +423,9 @@ public class BrowseEditableCollectionsPanel extends Panel {
     }
 
     private void doDetails(AjaxRequestTarget target, IModel<VirtualCollection> vc) {
-        setResponsePage(VirtualCollectionDetailsPage.class, VirtualCollectionDetailsPage.createPageParameters(vc.getObject(), getPage().getPageReference()));
+        setResponsePage(VirtualCollectionDetailsPage.class,
+            VirtualCollectionDetailsPage.createPageParameters(
+                vc.getObject(), getPage().getPageReference()));
     }
 
     private Principal getUser() {
@@ -429,5 +436,13 @@ public class BrowseEditableCollectionsPanel extends Panel {
         final String userName = getUser().getName();
         final boolean admin = userName != null && adminUsersService.isAdmin(userName);
         return admin;
+    }
+    
+    protected PageParameters buildParamsFromMap(Map<String, Long> map) {
+        PageParameters params = new PageParameters();
+        for(String key : map.keySet()) {
+            params.add(key, map.get(key));
+        }
+        return params;
     }
 }

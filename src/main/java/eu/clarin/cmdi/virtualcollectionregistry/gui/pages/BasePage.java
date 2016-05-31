@@ -13,6 +13,8 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,8 +71,9 @@ public class BasePage extends WebPage {
     protected void onBeforeRender() {
         // skip lazy auto-auth for login page
         if (!this.getClass().isInstance(LoginPage.class)) {
-            final HttpServletRequest request
-                    = getWebRequestCycle().getWebRequest().getHttpServletRequest();
+            final RequestCycle cycle =  RequestCycle.get();
+            final HttpServletRequest request = 
+                ((ServletWebRequest)cycle.getRequest()).getContainerRequest();
             final ApplicationSession session
                     = (ApplicationSession) getSession();
             if (!session.isSignedIn()) {

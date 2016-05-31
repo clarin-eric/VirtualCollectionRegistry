@@ -2,8 +2,8 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
 import org.apache.wicket.PageReference;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
-import org.apache.wicket.authorization.strategies.role.Roles;
-import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.authroles.authorization.strategies.role.Roles;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 
 /**
  * Only serves as a target for the 'login' link of the

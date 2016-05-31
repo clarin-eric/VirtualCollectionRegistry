@@ -97,7 +97,8 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
                         }
                     }
                 }, " "));
-        contentPanel.getForm().removePersistentFormComponentValues(true);
+        //TODO: fix wicket 1.5 migration
+        //contentPanel.getForm().removePersistentFormComponentValues(true);
         contentPanel.getFeedbackPanel().setOutputMarkupId(true);
         return contentPanel;
     }
@@ -122,7 +123,8 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
             modifyButton.setVisible(true);
         }
         contentPanel.getForm().setModel(new CompoundPropertyModel<T>(model));
-        target.appendJavascript("activeTooltips()");
+        //TODO: fix wicket 1.5 migration
+        //target.appendJavascript("activeTooltips()");
         super.show(target);
     }
 

@@ -1,7 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.table;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
 import org.apache.wicket.behavior.AbstractBehavior;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
@@ -14,16 +13,17 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
-import org.odlabs.wiquery.core.commons.IWiQueryPlugin;
-import org.odlabs.wiquery.core.commons.WiQueryResourceManager;
 import org.odlabs.wiquery.core.javascript.JsStatement;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
+import org.odlabs.wiquery.core.IWiQueryPlugin;
 
 @SuppressWarnings("serial")
 final class ColumnName extends AbstractColumn<VirtualCollection> {
     private static final ResourceReference JAVASCRIPT_RESOURCE =
-        new ResourceReference(ColumnName.class, "ColumnName.js");
+        new PackageResourceReference(ColumnName.class, "ColumnName.js");
     private final VirtualCollectionTable table;
 
     private final class ItemCell extends Panel implements IWiQueryPlugin {
@@ -64,11 +64,14 @@ final class ColumnName extends AbstractColumn<VirtualCollection> {
             add(nameColumn);
         }
 
+        //TODO: WiQuery Update
+        /*
         @Override
         public void contribute(WiQueryResourceManager manager) {
             manager.addJavaScriptResource(JAVASCRIPT_RESOURCE);
         }
-
+        */
+        
         @Override
         public JsStatement statement() {
             return new JsStatement().$(nameColumn).append(".detailsToggle()");
