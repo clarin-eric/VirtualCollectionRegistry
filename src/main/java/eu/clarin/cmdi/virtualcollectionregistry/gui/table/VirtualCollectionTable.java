@@ -15,10 +15,17 @@ import org.apache.wicket.model.Model;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.border.AjaxToggleBorder;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 
 @SuppressWarnings("serial")
 public abstract class VirtualCollectionTable extends Panel {
 
+    private static final ResourceReference JAVASCRIPT_RESOURCE =
+        new PackageResourceReference(VirtualCollectionTable.class, "VirtualCollectionTable.js");
+    
     public VirtualCollectionTable(String id, CollectionsProvider provider, final boolean showState, final boolean isAdmin) {
         super(id);
         setOutputMarkupId(true);
@@ -55,6 +62,12 @@ public abstract class VirtualCollectionTable extends Panel {
         border.add(form);
         add(border);
         add(table);
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        response.render(JavaScriptHeaderItem.forReference(JAVASCRIPT_RESOURCE));
     }
 
     protected abstract Panel createActionColumn(String componentId,

@@ -14,15 +14,18 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.behavior.Behavior;
-import org.apache.wicket.request.resource.PackageResourceReference;
-import org.apache.wicket.request.resource.ResourceReference;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 
 @SuppressWarnings("serial")
 final class ColumnName extends AbstractColumn<VirtualCollection, String> {
-    private static final ResourceReference JAVASCRIPT_RESOURCE =
-        new PackageResourceReference(ColumnName.class, "ColumnName.js");
+    
+    //private static final ResourceReference JAVASCRIPT_RESOURCE =
+    //    new PackageResourceReference(ColumnName.class, "ColumnName.js");
+    
     private final VirtualCollectionTable table;
 
+    
     private final class ItemCell extends Panel {
         private final WebMarkupContainer nameColumn;
 
@@ -55,27 +58,10 @@ final class ColumnName extends AbstractColumn<VirtualCollection, String> {
             });
 
             // move to css?
-            details.add(new AttributeAppender("style",
-                    new Model<String>("display:none"), ";"));
+            //details.add(new AttributeAppender("style", new Model<String>("display:none"), ";"));
             nameColumn.add(details);
             add(nameColumn);
         }
-
-        //TODO: WiQuery Update
-        /*
-        @Override
-        public void contribute(WiQueryResourceManager manager) {
-            manager.addJavaScriptResource(JAVASCRIPT_RESOURCE);
-        }
-        */
-        
-        /*
-        @Override
-        public JsStatement statement() {
-            return new JsStatement().$(nameColumn).append(".detailsToggle()");
-        }
-        */
-
     } // class ColumnName.ItemCell
 
     ColumnName(VirtualCollectionTable table) {
@@ -93,5 +79,4 @@ final class ColumnName extends AbstractColumn<VirtualCollection, String> {
     public String getCssClass() {
         return "name";
     }
-
 } // class ColumnName
