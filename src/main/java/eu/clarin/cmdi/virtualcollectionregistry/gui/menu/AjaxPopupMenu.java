@@ -43,7 +43,7 @@ public class AjaxPopupMenu extends Panel implements Serializable {
         new CssResourceReference(AjaxPopupMenu.class, "AjaxPopupMenu.css");
     
     private static final ResourceReference JAVASCRIPT_RESOURCE =
-        new PackageResourceReference(AjaxPopupMenu.class, "AjaxPopupMenu2.js");
+        new PackageResourceReference(AjaxPopupMenu.class, "AjaxPopupMenu.js");
     
     private final List<MenuItem> items = new ArrayList<>();
 
