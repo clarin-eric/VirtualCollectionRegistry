@@ -51,8 +51,7 @@
         <hibernate.jpaVersion>1.0.0.Final</hibernate.jpaVersion>
         <jersey.version>1.18.1</jersey.version>
         <jackson.version>1.6.1</jackson.version>
-        <wicket.version>6.23.0</wicket.version>
-        <wicket-wiquery.version>6.13.0</wicket-wiquery.version>
+        <wicket.version>7.3.0</wicket.version>
         <spring.version>4.0.6.RELEASE</spring.version>
         
         <!-- Production settings below -->
@@ -247,24 +246,6 @@
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-spring</artifactId>
             <version>${wicket.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.odlabs.wiquery</groupId>
-            <artifactId>wiquery-core</artifactId>
-            <version>${wicket-wiquery.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        
-        <dependency>
-            <groupId>org.odlabs.wiquery</groupId>
-            <artifactId>wiquery-jquery-ui</artifactId>
-            <version>${wicket-wiquery.version}</version>
         </dependency>
         
         <dependency>

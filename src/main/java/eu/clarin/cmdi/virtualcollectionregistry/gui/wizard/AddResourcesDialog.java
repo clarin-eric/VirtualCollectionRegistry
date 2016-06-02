@@ -17,11 +17,11 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.Validatable;
 import org.apache.wicket.validation.ValidationError;
-import org.apache.wicket.validation.validator.AbstractValidator;
-
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ModalDialogBase;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.service.impl.ReferenceValidator;
+import org.apache.wicket.core.request.handler.IPartialPageRequestHandler;
+import org.apache.wicket.validation.IValidator;
 
 @SuppressWarnings("serial")
 public abstract class AddResourcesDialog extends ModalDialogBase {
@@ -62,7 +62,7 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
             final AbstractTextComponent<String[]> referencesArea =
                 new AbstractTextComponent<String[]>("references") {
                     @Override
-                    protected void convertInput() {
+                    public void convertInput() {
                         final String input = getRawInput();
                         if (input != null) {
                             final String[] refs = input.split("[,;\\s]+");
@@ -73,9 +73,9 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
                     }
                 };
             referencesArea.setRequired(true);
-            referencesArea.add(new AbstractValidator<String[]>() {
+            referencesArea.add(new IValidator<String[]>() {
                 @Override
-                protected void onValidate(IValidatable<String[]> input) {
+                public void validate(IValidatable<String[]> input) {
                     String[] refs = input.getValue();
                     if (refs != null) {
                         ReferenceValidator v = new ReferenceValidator();
@@ -175,7 +175,7 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
     }
 
     @Override
-    public void show(AjaxRequestTarget target) {
+    public void show(IPartialPageRequestHandler target) {
         contentPanel.getForm().setModelObject(new Data());
         super.show(target);
     }

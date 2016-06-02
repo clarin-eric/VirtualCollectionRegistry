@@ -84,6 +84,16 @@ public class AdminPage extends BasePage {
                     return user.getName();
                 }
             }
+
+            @Override
+            public User getObject(String id, IModel<? extends List<? extends User>> choices) {
+                for(User user : choices.getObject()) {
+                    if(user.getName().equals(id)) {
+                        return user;
+                    }
+                }
+                throw new IllegalStateException("User ["+id+"] not found in list of choices.");
+            }
         };
         final DropDownChoice<User> spacesDropDown = new DropDownChoice<>(id, userModel, usersModel, choiceRenderer);
         spacesDropDown.setNullValid(true);

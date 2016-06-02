@@ -2,7 +2,6 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.wizard;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.TooltipBehavior;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ConfirmationDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.ReferenceLinkPanel;
@@ -46,7 +45,6 @@ import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
-import org.apache.wicket.markup.html.internal.HtmlHeaderContainer;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.OddEvenListItem;
@@ -71,14 +69,16 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
     private final static ResourceReference TOOLTIP_JAVASCRIPT_REFERENCE = 
             new PackageResourceReference(CreateVirtualCollectionWizard.class, "wizardhelp.js");
 
+    public CreateVirtualCollectionWizard() {
+        super(null);
+        this.vc = null;
+    }
+
+    
     @Override
-    public void renderHead(HtmlHeaderContainer container) {
-        super.renderHead(container);
-        // Javascript dependencies for this page (jQuery tooltips)
-        IHeaderResponse response = container.getHeaderResponse();
-        //TODO: Fix WiiQuery
-        //response.render(JavaScriptHeaderItem.forReference(CoreJavaScriptResourceReference.get()));
-        response.render(JavaScriptHeaderItem.forReference(TooltipBehavior.QTIP_JAVASCRIPT_RESOURCE));
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        // Javascript dependencies for this page (tooltips)
         response.render(JavaScriptHeaderItem.forReference(TOOLTIP_JAVASCRIPT_REFERENCE));
     }
     
@@ -100,7 +100,10 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
             public void show(AjaxRequestTarget target, String keyword) {
                 this.keyword = keyword;
-                super.show(target, new StringResourceModel("keywords.deleteconfirm", null, new Object[]{keyword}));
+                //StringResourceModelMigration.of("keywords.deleteconfirm", null, new Object[]{keyword});
+                IModel message = new StringResourceModel(
+                        "keywords.deleteconfirm", null, new Model<>(keyword));
+                super.show(target, message);
             }
         } // class CreateVirtualCollectionWizard.GeneralStep.DeleteKeywordDialog
 
@@ -159,7 +162,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                             Arrays.asList(VirtualCollection.Type.values()),
                             new EnumChoiceRenderer<VirtualCollection.Type>(this));
             typeChoice.setRequired(true);
-            typeChoice.add(new TooltipBehavior(new StringResourceModel("type.tooltip", CreateVirtualCollectionWizard.this, null)));
+            //typeChoice.add(new TooltipBehavior(new StringResourceModel("type.tooltip", CreateVirtualCollectionWizard.this, null)));
             add(typeChoice);
             
             add(new TextArea<String>("description"));

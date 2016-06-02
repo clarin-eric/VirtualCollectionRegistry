@@ -12,13 +12,10 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.ResourceModel;
-import org.odlabs.wiquery.core.javascript.JsStatement;
-
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
-import org.odlabs.wiquery.core.IWiQueryPlugin;
 
 @SuppressWarnings("serial")
 final class ColumnName extends AbstractColumn<VirtualCollection, String> {
@@ -26,7 +23,7 @@ final class ColumnName extends AbstractColumn<VirtualCollection, String> {
         new PackageResourceReference(ColumnName.class, "ColumnName.js");
     private final VirtualCollectionTable table;
 
-    private final class ItemCell extends Panel implements IWiQueryPlugin {
+    private final class ItemCell extends Panel {
         private final WebMarkupContainer nameColumn;
 
         public ItemCell(String id, IModel<VirtualCollection> model) {
@@ -72,10 +69,12 @@ final class ColumnName extends AbstractColumn<VirtualCollection, String> {
         }
         */
         
+        /*
         @Override
         public JsStatement statement() {
             return new JsStatement().$(nameColumn).append(".detailsToggle()");
         }
+        */
 
     } // class ColumnName.ItemCell
 

@@ -26,7 +26,7 @@ public class MenuItem<T extends WebPage> extends Panel {
         link.add(new Label("title", title).setRenderBodyOnly(true));
         add(link);
 
-        add(new AttributeModifier("class", true, new AbstractReadOnlyModel<String>() {
+        add(new AttributeModifier("class", new AbstractReadOnlyModel<String>() {
             @Override
             public String getObject() {
                 if (pageClass.equals(getPage().getClass())) {

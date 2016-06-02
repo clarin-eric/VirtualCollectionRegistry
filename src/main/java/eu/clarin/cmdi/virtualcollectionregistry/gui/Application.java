@@ -123,17 +123,5 @@ public class Application extends AuthenticatedWebApplication { //implements IWiQ
     public static Application get() {
         return (Application) WebApplication.get();
     }
-//TODO: WiQuery
-/*
-    @Override
-    public WiQuerySettings getWiQuerySettings() {
-        final WiQuerySettings settings = new WiQuerySettings();
-        // WiQuery should not import the jQuery library because it is already
-        // provided in the template as a dependency of Bootstrap
-        settings.setAutoImportJQueryResource(false);
-        settings.setAutoImportJQueryUIJavaScriptResource(false);
-        settings.setAutoImportJQueryUIStyleSheetResource(false);
-        return settings;
-    }
-*/
+
 } // class Application

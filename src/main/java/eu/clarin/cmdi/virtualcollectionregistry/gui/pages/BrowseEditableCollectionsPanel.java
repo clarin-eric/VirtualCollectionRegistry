@@ -10,6 +10,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ConfirmationDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.PublishConfirmationDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.menu.AjaxLinkMenuItem;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.menu.AjaxPopupMenu;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.menu.AjaxPopupMenu2;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.CollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
@@ -26,6 +27,7 @@ import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.migrate.StringResourceModelMigration;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
@@ -74,8 +76,8 @@ public class BrowseEditableCollectionsPanel extends Panel {
             super(id, model);
             setRenderBodyOnly(true);
 
-            final AjaxPopupMenu menu
-                    = new AjaxPopupMenu("menu", new Model<String>("[actions]"));
+            final AjaxPopupMenu2 menu
+                    = new AjaxPopupMenu2("menu", new Model<String>("[actions]"));
 
             final AjaxLinkMenuItem<VirtualCollection> publishItem
                     = new AjaxLinkMenuItem<VirtualCollection>(
@@ -279,8 +281,14 @@ public class BrowseEditableCollectionsPanel extends Panel {
             for (String warning : warnings) {
                 sb.append(" -").append(warning).append("\n");
             }
-            super.show(target,
-                    new StringResourceModel("collections.publishwarningsconfirm", vc, new Object[]{sb}));
+            //super.show(target,
+            //        new StringResourceModel("collections.publishwarningsconfirm", vc, new Object[]{sb}));
+            
+            super.show(target, 
+                StringResourceModelMigration.of(
+                    "collections.publishwarningsconfirm", 
+                    vc, 
+                    new Object[]{sb}));
         }
 
         @Override

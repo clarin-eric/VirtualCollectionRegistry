@@ -3,6 +3,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.dialog;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.core.request.handler.IPartialPageRequestHandler;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -109,11 +110,11 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
     }
 
     @Override
-    public final void show(AjaxRequestTarget target) {
+    public final void show(IPartialPageRequestHandler target) {
         this.show(target, null);
     }
     
-    public final void show(AjaxRequestTarget target, IModel<T> model) {
+    public final void show(IPartialPageRequestHandler target, IModel<T> model) {
         if (model == null) {
             model = newInstanceModel();
             addButton.setVisible(true);

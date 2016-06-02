@@ -9,13 +9,12 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
-import org.odlabs.wiquery.core.IWiQueryPlugin;
-import org.odlabs.wiquery.core.javascript.JsStatement;
 
 @SuppressWarnings("serial")
-public class AjaxToggleBorder extends Border implements IWiQueryPlugin {
+public class AjaxToggleBorder extends Border {
     private static final ResourceReference JAVASCRIPT_RESOURCE =
         new PackageResourceReference(AjaxToggleBorder.class, "AjaxToggleBorder.js");
+    
     private final WebMarkupContainer border;
 
     public AjaxToggleBorder(String id, IModel<String> title,
@@ -56,16 +55,10 @@ public class AjaxToggleBorder extends Border implements IWiQueryPlugin {
         this(id, title, true, null);
     }
 
-    //TODO:WiQuery
     /*
-    @Override
-    public void contribute(WiQueryResourceManager manager) {
-        manager.addJavaScriptResource(JAVASCRIPT_RESOURCE);
-    }
-    */
     @Override
     public JsStatement statement() {
         return new JsStatement().$(border).append(".ajaxToggleBorder()");
     }
-
+    */
 } // class AjaxToggleBorder
