@@ -9,7 +9,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ConfirmationDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.PublishConfirmationDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.menu.AjaxLinkMenuItem;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.menu.AjaxPopupMenu;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.menu.AjaxPopupMenu2;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.CollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;

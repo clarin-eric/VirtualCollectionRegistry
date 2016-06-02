@@ -40,10 +40,10 @@ import org.apache.wicket.request.resource.ResourceReference;
 public class AjaxPopupMenu2 extends Panel implements Serializable {
     
     private static final ResourceReference CSS_RESOURCE =
-        new CssResourceReference(AjaxPopupMenu.class, "AjaxPopupMenu.css");
+        new CssResourceReference(AjaxPopupMenu2.class, "AjaxPopupMenu.css");
     
     private static final ResourceReference JAVASCRIPT_RESOURCE =
-        new PackageResourceReference(AjaxPopupMenu.class, "AjaxPopupMenu2.js");
+        new PackageResourceReference(AjaxPopupMenu2.class, "AjaxPopupMenu2.js");
     
     private final List<MenuItem> items = new ArrayList<>();
 
