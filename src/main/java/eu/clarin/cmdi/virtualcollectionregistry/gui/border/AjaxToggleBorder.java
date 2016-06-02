@@ -2,6 +2,8 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.border;
 
 
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.border.Border;
@@ -36,14 +38,11 @@ public class AjaxToggleBorder extends Border {
         addToBorder(border);
         
         if (!expanded) {
-            header.add(new AttributeAppender("class",
-                    new Model<String>("collapsed"), " "));
-            content.add(new AttributeAppender("style",
-                    new Model<String>("display:none"), ";"));
+            header.add(new AttributeAppender("class", new Model<>("collapsed"), " "));
+            content.add(new AttributeAppender("style", new Model<>("display:none"), ";"));
         }
         if (cssClass != null) {
-            content.add(new AttributeAppender("class",
-                    new Model<String>(cssClass), " "));
+            content.add(new AttributeAppender("class", new Model<>(cssClass), " "));
         }
     }
 
@@ -55,10 +54,9 @@ public class AjaxToggleBorder extends Border {
         this(id, title, true, null);
     }
 
-    /*
     @Override
-    public JsStatement statement() {
-        return new JsStatement().$(border).append(".ajaxToggleBorder()");
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        response.render(JavaScriptHeaderItem.forReference(JAVASCRIPT_RESOURCE));
     }
-    */
 } // class AjaxToggleBorder
