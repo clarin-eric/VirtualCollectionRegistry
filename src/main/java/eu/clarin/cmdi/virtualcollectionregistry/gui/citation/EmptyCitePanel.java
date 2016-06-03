@@ -18,6 +18,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.citation;
 
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.Model;
 
 /**
  *
@@ -26,6 +27,6 @@ import org.apache.wicket.markup.html.panel.Panel;
 public class EmptyCitePanel extends Panel {
     public EmptyCitePanel(String id) {
         super(id);
-        add(new Label("lbl"));
+        add(new Label("lbl", new Model<>("")));
     }
 }
