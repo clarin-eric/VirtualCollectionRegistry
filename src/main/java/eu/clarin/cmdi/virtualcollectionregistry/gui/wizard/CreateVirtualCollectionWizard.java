@@ -34,6 +34,7 @@ import org.apache.wicket.extensions.wizard.dynamic.DynamicWizardModel;
 import org.apache.wicket.extensions.wizard.dynamic.DynamicWizardStep;
 import org.apache.wicket.extensions.wizard.dynamic.IDynamicWizardStep;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -57,6 +58,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.UrlValidator;
@@ -66,21 +68,26 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
     @SpringBean
     private CreatorProvider creatorProvider;
-    
-    private final static ResourceReference TOOLTIP_JAVASCRIPT_REFERENCE = 
-            new PackageResourceReference(CreateVirtualCollectionWizard.class, "wizardhelp.js");
 
+    private final static ResourceReference TOOLTIP_ACTIVATE_JAVASCRIPT_REFERENCE = 
+            new PackageResourceReference(CreateVirtualCollectionWizard.class, "wizardhelp.js");
+    private final static ResourceReference TOOLTIP_JAVASCRIPT_REFERENCE = 
+            new PackageResourceReference(CreateVirtualCollectionWizard.class, "jquery.qtip.min.js");
+    private final static ResourceReference TOOLTIP_STYLE_REFERENCE = 
+            new CssResourceReference(CreateVirtualCollectionWizard.class, "jquery.qtip.min.css");
+    
     public CreateVirtualCollectionWizard() {
         super(null);
         this.vc = null;
     }
-
     
     @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
         // Javascript dependencies for this page (tooltips)
+        response.render(JavaScriptHeaderItem.forReference(TOOLTIP_ACTIVATE_JAVASCRIPT_REFERENCE));
         response.render(JavaScriptHeaderItem.forReference(TOOLTIP_JAVASCRIPT_REFERENCE));
+        response.render(CssHeaderItem.forReference(TOOLTIP_STYLE_REFERENCE));
     }
     
     private final class GeneralStep extends DynamicWizardStep {
