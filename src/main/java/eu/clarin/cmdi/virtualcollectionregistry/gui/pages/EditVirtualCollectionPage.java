@@ -23,18 +23,16 @@ public class EditVirtualCollectionPage extends CreateVirtualCollectionPage {
 
     private final static Logger logger = LoggerFactory.getLogger(EditVirtualCollectionPage.class);
 
+    public EditVirtualCollectionPage(VirtualCollection vc, Page page) {
+        super(vc, page);
+    }
+    
     public EditVirtualCollectionPage(PageParameters params) throws VirtualCollectionRegistryException {
-        super();
+        super(params);
         final Long id = params.get("id").toLong();
         final VirtualCollection vc = vcr.retrieveVirtualCollection(id);
-        //if (id == null) {
-        //    vc = new VirtualCollection();
-        //} else {
-            //vc = vcr.retrieveVirtualCollection(id);
-            checkAccess(vc);
-        //}
-        final CreateVirtualCollectionWizard wizard = createWizard(vc, null);
-        add(wizard);
+        checkAccess(vc);
+        super.updateWizardModelWithCollection(vc); 
     }
 
     private void checkAccess(final VirtualCollection vc) throws VirtualCollectionRegistryPermissionException {
@@ -50,7 +48,5 @@ public class EditVirtualCollectionPage extends CreateVirtualCollectionPage {
         }
     }
 
-    EditVirtualCollectionPage(VirtualCollection vc, Page page) {
-        super(vc, page);
-    }
+    
 }

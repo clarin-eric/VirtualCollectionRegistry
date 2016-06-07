@@ -28,10 +28,15 @@ public class CreateVirtualCollectionPage extends BasePage {
     @SpringBean
     private CreatorProvider creatorProvider;
 
+    private CreateVirtualCollectionWizard wizard;
+    private IModel wizardModel;
+     
     /**
      * Used by extenstions.
      */
-    public CreateVirtualCollectionPage() {}
+    public CreateVirtualCollectionPage() {
+        this(null, null);
+    }
 
     /**
      * used when page constructed by framework
@@ -39,7 +44,8 @@ public class CreateVirtualCollectionPage extends BasePage {
      */
     public CreateVirtualCollectionPage(PageParameters params) {
         this(null, null);
-    }   
+    } 
+   
     
     /**
      * 
@@ -59,12 +65,19 @@ public class CreateVirtualCollectionPage extends BasePage {
             }
             vc = defaultVc;
         }
-        final CreateVirtualCollectionWizard wizard = createWizard(vc, previousPage);
+        wizard = createWizard(vc, previousPage);
         add(wizard);
     }
+    
+    public void updateWizardModelWithCollection(VirtualCollection vc) {
+        if(wizard != null) {
+            wizardModel.setObject(vc);
+        }
+    } 
 
     protected final CreateVirtualCollectionWizard createWizard(VirtualCollection vc, final Page previousPage) {
-        return new CreateVirtualCollectionWizard("wizard", new VolatileEntityModel(vc)) {
+        wizardModel = new VolatileEntityModel(vc);
+        return new CreateVirtualCollectionWizard("wizard", wizardModel) {
 
             @Override
             protected void onCancelWizard() {
