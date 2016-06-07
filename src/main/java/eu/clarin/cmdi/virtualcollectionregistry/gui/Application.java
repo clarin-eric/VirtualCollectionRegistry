@@ -27,7 +27,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
 @Component
-public class Application extends AuthenticatedWebApplication { //implements IWiQuerySettings {
+public class Application extends AuthenticatedWebApplication {
 
     private final static Logger logger = LoggerFactory.getLogger(Application.class);
 
@@ -63,14 +63,7 @@ public class Application extends AuthenticatedWebApplication { //implements IWiQ
         mountPage("/about", AboutPage.class);
         mountPage("/help", HelpPage.class);
         mountPage("/admin", AdminPage.class);
-
-        // details of an existing collection by ID, e.g. /details/123
-        //mountPage(new MixedParamHybridUrlCodingStrategy("/details",
-        //        VirtualCollectionDetailsPage.class, new String[]{VirtualCollectionDetailsPage.PARAM_VC_ID}));
         mountPage("/details/${id}", VirtualCollectionDetailsPage.class);
-        // editing an existing collection by ID, e.g. /edit/123
-        //mountPage(new MixedParamHybridUrlCodingStrategy("/edit",
-                //EditVirtualCollectionPage.class, new String[]{"id"}));
         mountPage("/edit/${id}", EditVirtualCollectionPage.class);
     }
 
