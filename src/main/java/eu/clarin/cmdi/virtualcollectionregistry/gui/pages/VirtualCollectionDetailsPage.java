@@ -17,6 +17,7 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import org.apache.wicket.Component;
+import org.apache.wicket.Page;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
 import org.apache.wicket.authorization.UnauthorizedActionException;
@@ -52,9 +53,9 @@ import org.apache.wicket.util.string.Strings;
 public class VirtualCollectionDetailsPage extends BasePage {
 
     public static final String PARAM_VC_ID = "id";
-    public static final String PARAM_BACK_PAGE_ID = "backPage";
-    public static final String PARAM_BACK_PAGE_VERSION = "backPageVersion";
-    public static final String PARAM_BACK_PAGE_PAGEMAP_NAME = "backPageMapName";
+    public static final String PARAM_BACK_PAGE = "backPage";
+    //public static final String PARAM_BACK_PAGE_VERSION = "backPageVersion";
+    //public static final String PARAM_BACK_PAGE_PAGEMAP_NAME = "backPageMapName";
     private static final String CSS_CLASS = "collectionDetails";
     private static final IConverter convDate = new DateConverter();
     private final HideIfEmptyBehavior hideIfEmpty = new HideIfEmptyBehavior();
@@ -139,10 +140,10 @@ public class VirtualCollectionDetailsPage extends BasePage {
     } // class VirtualCollectionDetailsPage.TypeLabel
 
     public VirtualCollectionDetailsPage(PageParameters params) {
-        this(getVirtualCollectionModel(params), getPageReference(params));
+        this(getVirtualCollectionModel(params), params);
     }
 
-    public VirtualCollectionDetailsPage(final IModel<VirtualCollection> model, final PageReference previousPage) {
+    public VirtualCollectionDetailsPage(final IModel<VirtualCollection> model, final PageParameters params) {
         super(new CompoundPropertyModel<VirtualCollection>(model));
         if (model == null) {
             setResponsePage(Application.get().getHomePage());
@@ -153,11 +154,15 @@ public class VirtualCollectionDetailsPage extends BasePage {
         final Link<Void> backLink = new Link<Void>("back") {
             @Override
             public void onClick() {
-                if (previousPage == null) {
-                    setResponsePage(getApplication().getHomePage());
-                } else {
-                    setResponsePage(previousPage.getPage());
-                }
+                final PageReference previousPage =
+                    getPreviousPageReferenceFromSession();
+                setResponsePage(getBackPageFromReference(previousPage, params));
+                //if (previousPage == null) {
+                    //TODO: back to public page or details
+                //    setResponsePage(getApplication().getHomePage()); 
+                //} else {
+                //    setResponsePage(previousPage.getPage());
+                //}
             }
         };
         add(backLink);
@@ -322,42 +327,38 @@ public class VirtualCollectionDetailsPage extends BasePage {
         return new DetachableVirtualCollectionModel(collectionId);
     }
 
-    private static PageReference getPageReference(PageParameters params) {
-        final Integer pageId = params.get(PARAM_BACK_PAGE_ID).toInt();
-        //final Integer pageVersion = params.get(PARAM_BACK_PAGE_VERSION).toInt();
-        
-        
-        //final String pageMap = params.get(PARAM_BACK_PAGE_PAGEMAP_NAME).toString();
-        
-        //TODO: fix in wicket 1.5
-        /*
-        if (pageId != null && pageVersion != null) {
-            for (IPageMap map : Session.get().getPageMaps()) {
-                if (pageMap == null && map.getName() == null || pageMap != null && pageMap.equals(map.getName())) {
-                    final Page page = map.get(pageId, pageVersion);
-                    if (page != null) {
-                        return page.getPageReference();
-                    }
+    private Class getBackPageFromReference(PageReference reference, PageParameters params) {
+        if(reference != null) {
+            return reference.getPage().getPageClass();
+        } else {
+           if(params.get(VirtualCollectionDetailsPage.PARAM_BACK_PAGE) != null) {
+                switch(BackPage.fromInt(params.get(VirtualCollectionDetailsPage.PARAM_BACK_PAGE).toInt())) {
+                    case PUBLIC_LISTING: return BrowsePublicCollectionsPage.class;
+                    case PRIVATE_LISTING: return BrowsePrivateCollectionsPage.class;
+                    case ADMIN_LISTING: return AdminPage.class;
                 }
+           }
+        }
+        return getApplication().getHomePage();
+    }
+    
+    private static PageReference getPreviousPageReferenceFromSession() {
+        if(Session.exists()) {
+            Object pageReference = Session.get().getAttribute("reference");
+            if(pageReference != null) {
+                return (PageReference)pageReference;
             }
         }
-        */
         return null;
+        
     }
 
-    public static PageParameters createPageParameters(VirtualCollection vc, PageReference pageReference) {
+    public static PageParameters createPageParameters(VirtualCollection vc, PageReference pageReference, BackPage backPage) {
         final PageParameters params = new PageParameters();
         params.set(VirtualCollectionDetailsPage.PARAM_VC_ID, vc.getId());
-
+        params.set(VirtualCollectionDetailsPage.PARAM_BACK_PAGE, backPage.intValue());
         if (pageReference != null) {
-            params.set(VirtualCollectionDetailsPage.PARAM_BACK_PAGE_ID, pageReference.getPageId());
-            //TODO: fix in wicket 1.5
-            /*
-            params.set(VirtualCollectionDetailsPage.PARAM_BACK_PAGE_VERSION, pageReference.getPage().getVersion());
-            if (pageReference.getPageMapName() != null) {
-                params.set(VirtualCollectionDetailsPage.PARAM_BACK_PAGE_PAGEMAP_NAME, pageReference.getPageMapName());
-            }
-            */
+            Session.get().setAttribute("reference", pageReference);
         }
         return params;
     }
@@ -381,6 +382,31 @@ public class VirtualCollectionDetailsPage extends BasePage {
     protected void onBeforeRender() {
         super.onBeforeRender();
         hideIfEmpty.hideEmptyComponents();
+    }
+    
+    public static enum BackPage {
+        PUBLIC_LISTING(0), PRIVATE_LISTING(1), ADMIN_LISTING(2);
+        
+        private final int value;
+        
+        private BackPage(int value) {
+            this.value = value;
+        }
+        
+        public int intValue() {
+            return this.value;
+        }
+        
+        public static BackPage fromInt(int value) {
+            switch(value) {
+                case 0: return BackPage.PUBLIC_LISTING;
+                case 1: return BackPage.PRIVATE_LISTING;
+                case 2: return BackPage.ADMIN_LISTING;
+                default:
+                    return BackPage.PUBLIC_LISTING;
+            }
+        }
+       
     }
 
 } // class VirtualCollectionDetailsPage

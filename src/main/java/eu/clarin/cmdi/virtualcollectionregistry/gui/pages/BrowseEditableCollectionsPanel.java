@@ -430,9 +430,11 @@ public class BrowseEditableCollectionsPanel extends Panel {
     }
 
     private void doDetails(AjaxRequestTarget target, IModel<VirtualCollection> vc) {
+        //TODO: handle admin page
         setResponsePage(VirtualCollectionDetailsPage.class,
             VirtualCollectionDetailsPage.createPageParameters(
-                vc.getObject(), getPage().getPageReference()));
+                vc.getObject(), getPage().getPageReference(),
+                VirtualCollectionDetailsPage.BackPage.PRIVATE_LISTING));
     }
 
     private Principal getUser() {

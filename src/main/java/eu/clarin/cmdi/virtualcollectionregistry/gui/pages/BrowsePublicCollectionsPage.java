@@ -48,7 +48,12 @@ public class BrowsePublicCollectionsPage extends BasePage {
     }
 
     private void doDetails(AjaxRequestTarget target, IModel<VirtualCollection> vc) {
-        setResponsePage(VirtualCollectionDetailsPage.class, VirtualCollectionDetailsPage.createPageParameters(vc.getObject(), getPageReference()));
+        setResponsePage(
+            VirtualCollectionDetailsPage.class, 
+            VirtualCollectionDetailsPage.createPageParameters(
+                vc.getObject(), 
+                getPageReference(), 
+                VirtualCollectionDetailsPage.BackPage.PUBLIC_LISTING));
     }
 
 } // class BrowsePublicCollectionsPage

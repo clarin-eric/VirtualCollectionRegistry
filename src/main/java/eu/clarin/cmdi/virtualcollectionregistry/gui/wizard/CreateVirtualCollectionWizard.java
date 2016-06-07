@@ -19,6 +19,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
@@ -184,10 +185,12 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                     = new KeywordsList("keywordsList",
                             new PropertyModel<List<String>>(vc, "keywords"));
             add(keywordList);
-            add(new AjaxLink<String>("keywordsAdd") {
+            add(new AjaxFallbackLink<String>("keywordsAdd") {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
-                    addKeywordDialog.show(target);
+                    if(target != null) {
+                        addKeywordDialog.show(target);
+                    }
                 }
             });
 
