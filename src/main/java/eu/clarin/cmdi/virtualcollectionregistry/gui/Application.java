@@ -49,12 +49,7 @@ public class Application extends AuthenticatedWebApplication { //implements IWiQ
 
         getMarkupSettings().setDefaultMarkupEncoding("utf-8");
         getRequestCycleSettings().setResponseRequestEncoding("utf-8");
-        //TODO: fix migration to wicket 1.5
-        /*
-        getSessionSettings().setMaxPageMaps(3);
-        getSessionSettings().setPageMapEvictionStrategy(
-                new LeastRecentlyAccessedEvictionStrategy(3));
-        */
+
         if (!DEPLOYMENT.equals(getConfigurationType())) {
             logger.warn("Web application configured for development");
             getMarkupSettings().setStripWicketTags(true);
