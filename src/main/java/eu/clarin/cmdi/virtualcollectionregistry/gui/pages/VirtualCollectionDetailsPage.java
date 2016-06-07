@@ -154,15 +154,8 @@ public class VirtualCollectionDetailsPage extends BasePage {
         final Link<Void> backLink = new Link<Void>("back") {
             @Override
             public void onClick() {
-                final PageReference previousPage =
-                    getPreviousPageReferenceFromSession();
+                final PageReference previousPage = getPreviousPageReferenceFromSession();
                 setResponsePage(getBackPageFromReference(previousPage, params));
-                //if (previousPage == null) {
-                    //TODO: back to public page or details
-                //    setResponsePage(getApplication().getHomePage()); 
-                //} else {
-                //    setResponsePage(previousPage.getPage());
-                //}
             }
         };
         add(backLink);
