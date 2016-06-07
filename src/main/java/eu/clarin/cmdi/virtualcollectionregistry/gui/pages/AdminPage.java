@@ -29,6 +29,8 @@ public class AdminPage extends BasePage {
     @SpringBean
     private VirtualCollectionRegistry vc;
 
+    public final static User PUBLIC_USER = new User("___PUBLIC___",  "Published collections");
+    
     public AdminPage() {
         super();
 
@@ -52,10 +54,8 @@ public class AdminPage extends BasePage {
             @Override
             protected List<User> load() {
                 final List<User> users = vc.getUsers();
-
-                // merge with a 'null' entry to represent the public space
                 final List<User> spaces = new ArrayList<>(users.size() + 1);
-                spaces.add(null);
+                spaces.add(PUBLIC_USER);
                 spaces.addAll(users);
                 return spaces;
             }
@@ -64,25 +64,17 @@ public class AdminPage extends BasePage {
 
             @Override
             public Object getDisplayValue(User user) {
-                if (user == null) {
-                    return "Published collections";
+                final String displayName = user.getDisplayName();
+                if (displayName == null) {
+                    return user.getName();
                 } else {
-                    final String displayName = user.getDisplayName();
-                    if (displayName == null) {
-                        return user.getName();
-                    } else {
-                        return displayName;
-                    }
+                    return displayName;
                 }
             }
 
             @Override
             public String getIdValue(User user, int index) {
-                if (user == null) {
-                    return "___PUBLIC___";
-                } else {
-                    return user.getName();
-                }
+                return user.getName();
             }
 
             @Override
@@ -94,10 +86,11 @@ public class AdminPage extends BasePage {
                 }
                 throw new IllegalStateException("User ["+id+"] not found in list of choices.");
             }
+
         };
-        final DropDownChoice<User> spacesDropDown = new DropDownChoice<>(id, userModel, usersModel, choiceRenderer);
-        spacesDropDown.setNullValid(true);
-        return spacesDropDown;
+        //final DropDownChoice<User> spacesDropDown = new DropDownChoice<>(id, userModel, usersModel, choiceRenderer);
+        //spacesDropDown.setNullValid(true);
+        return new DropDownChoice<>(id, userModel, usersModel, choiceRenderer);
     }
 
 } // class AdminPage
