@@ -24,15 +24,15 @@ public class EditVirtualCollectionPage extends CreateVirtualCollectionPage {
     private final static Logger logger = LoggerFactory.getLogger(EditVirtualCollectionPage.class);
 
     public EditVirtualCollectionPage(PageParameters params) throws VirtualCollectionRegistryException {
-        super(params);
+        super();
         final Long id = params.get("id").toLong();
-        final VirtualCollection vc;
-        if (id == null) {
-            vc = new VirtualCollection();
-        } else {
-            vc = vcr.retrieveVirtualCollection(id);
+        final VirtualCollection vc = vcr.retrieveVirtualCollection(id);
+        //if (id == null) {
+        //    vc = new VirtualCollection();
+        //} else {
+            //vc = vcr.retrieveVirtualCollection(id);
             checkAccess(vc);
-        }
+        //}
         final CreateVirtualCollectionWizard wizard = createWizard(vc, null);
         add(wizard);
     }

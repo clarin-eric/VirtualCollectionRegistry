@@ -28,16 +28,24 @@ public class CreateVirtualCollectionPage extends BasePage {
     @SpringBean
     private CreatorProvider creatorProvider;
 
-    // only for extensions
-    //protected CreateVirtualCollectionPage() {
-    //}
+    /**
+     * Used by extenstions.
+     */
+    public CreateVirtualCollectionPage() {}
 
-    // used when page constructed by framework
+    /**
+     * used when page constructed by framework
+     * @param params
+     */
     public CreateVirtualCollectionPage(PageParameters params) {
-        //ignore any params
         this(null, null);
-    }
-
+    }   
+    
+    /**
+     * 
+     * @param vc
+     * @param previousPage 
+     */
     public CreateVirtualCollectionPage(VirtualCollection vc, final Page previousPage) {
         if(vc == null) {
             VirtualCollection defaultVc = new VirtualCollection();
