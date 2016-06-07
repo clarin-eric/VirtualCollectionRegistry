@@ -163,10 +163,7 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
 
     @Override
     protected Panel createContent(String id) {
-        contentPanel = new Content(id);
-        //TODO: wicket 1.5 upgrade, is this removed? See https://issues.apache.org/jira/browse/WICKET-2213
-        //contentPanel.getForm().removePersistentFormComponentValues(true);
-        return contentPanel;
+        return new Content(id);
     }
 
     @Override

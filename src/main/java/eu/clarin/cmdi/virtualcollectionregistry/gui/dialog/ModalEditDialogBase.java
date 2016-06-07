@@ -98,8 +98,6 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
                         }
                     }
                 }, " "));
-        //TODO: fix wicket 1.5 migration
-        //contentPanel.getForm().removePersistentFormComponentValues(true);
         contentPanel.getFeedbackPanel().setOutputMarkupId(true);
         return contentPanel;
     }
