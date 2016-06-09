@@ -2,7 +2,6 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.authorization.IAuthorizationStrategy;
-import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeAction;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -10,25 +9,24 @@ import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.util.lang.Classes;
-
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeAction;
 
 @SuppressWarnings("serial")
 public class MenuItem<T extends WebPage> extends Panel {
 
     private static final String ENABLE = "ENABLE";
-    private final String pageClassName;
-
+    private final Class<T> pageClass;
+    
     public MenuItem(final IModel<String> title, final Class<T> pageClass) {
         super("menuitem");
-        this.pageClassName = pageClass.getName();
+        this.pageClass = pageClass;
         final Link<T> link = new BookmarkablePageLink<T>("link", pageClass)
                 .setAutoEnable(false);
         link.add(new Label("title", title).setRenderBodyOnly(true));
         add(link);
 
-        add(new AttributeModifier("class", true, new AbstractReadOnlyModel<String>() {
+        add(new AttributeModifier("class", new AbstractReadOnlyModel<String>() {
             @Override
             public String getObject() {
                 if (pageClass.equals(getPage().getClass())) {
@@ -45,8 +43,7 @@ public class MenuItem<T extends WebPage> extends Panel {
         final IAuthorizationStrategy strategy
                 = getApplication().getSecuritySettings()
                 .getAuthorizationStrategy();
-        final Class<T> pageClass = getPageClass();
-        if (!strategy.isInstantiationAuthorized(pageClass)) {
+        if (!strategy.isInstantiationAuthorized(this.pageClass)) {
             boolean visible = true;
             AuthorizeAction action
                     = pageClass.getAnnotation(AuthorizeAction.class);
@@ -61,10 +58,6 @@ public class MenuItem<T extends WebPage> extends Panel {
             setVisible(visible);
         }
         super.onBeforeRender();
-    }
-
-    private Class<T> getPageClass() {
-        return Classes.resolveClass(pageClassName);
     }
 
 } // class MenuItem

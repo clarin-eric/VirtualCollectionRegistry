@@ -1,7 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.wizard;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.TooltipBehavior;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ConfirmationDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.ReferenceLinkPanel;
@@ -9,15 +9,17 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.service.CreatorProvider;
+import java.util.ArrayList;
 
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.ResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
@@ -32,6 +34,9 @@ import org.apache.wicket.extensions.wizard.dynamic.DynamicWizardModel;
 import org.apache.wicket.extensions.wizard.dynamic.DynamicWizardStep;
 import org.apache.wicket.extensions.wizard.dynamic.IDynamicWizardStep;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.head.CssHeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -42,12 +47,10 @@ import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.form.validation.AbstractFormValidator;
-import org.apache.wicket.markup.html.internal.HtmlHeaderContainer;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.OddEvenListItem;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.markup.html.resources.JavascriptResourceReference;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.CompoundPropertyModel;
@@ -55,27 +58,36 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.resource.CssResourceReference;
+import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.validation.validator.StringValidator;
 import org.apache.wicket.validation.validator.UrlValidator;
-import org.odlabs.wiquery.core.commons.CoreJavaScriptResourceReference;
 
 @SuppressWarnings("serial")
 public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
     @SpringBean
     private CreatorProvider creatorProvider;
-    
-    private final static ResourceReference TOOLTIP_JAVASCRIPT_REFERENCE = 
-            new JavascriptResourceReference(CreateVirtualCollectionWizard.class, "wizardhelp.js");
 
+    private final static ResourceReference TOOLTIP_ACTIVATE_JAVASCRIPT_REFERENCE = 
+            new PackageResourceReference(CreateVirtualCollectionWizard.class, "wizardhelp.js");
+    private final static ResourceReference TOOLTIP_JAVASCRIPT_REFERENCE = 
+            new PackageResourceReference(CreateVirtualCollectionWizard.class, "jquery.qtip.min.js");
+    private final static ResourceReference TOOLTIP_STYLE_REFERENCE = 
+            new CssResourceReference(CreateVirtualCollectionWizard.class, "jquery.qtip.min.css");
+    
+    public CreateVirtualCollectionWizard() {
+        super(null);
+        this.vc = null;
+    }
+    
     @Override
-    public void renderHead(HtmlHeaderContainer container) {
-        super.renderHead(container);
-        // Javascript dependencies for this page (jQuery tooltips)
-        container.getHeaderResponse().renderJavascriptReference(CoreJavaScriptResourceReference.get());
-        container.getHeaderResponse().renderJavascriptReference(TooltipBehavior.QTIP_JAVASCRIPT_RESOURCE);
-        container.getHeaderResponse().renderJavascriptReference(TOOLTIP_JAVASCRIPT_REFERENCE);
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        // Javascript dependencies for this page (tooltips)
+        response.render(JavaScriptHeaderItem.forReference(TOOLTIP_ACTIVATE_JAVASCRIPT_REFERENCE));
+        response.render(JavaScriptHeaderItem.forReference(TOOLTIP_JAVASCRIPT_REFERENCE));
+        response.render(CssHeaderItem.forReference(TOOLTIP_STYLE_REFERENCE));
     }
     
     private final class GeneralStep extends DynamicWizardStep {
@@ -96,7 +108,10 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
             public void show(AjaxRequestTarget target, String keyword) {
                 this.keyword = keyword;
-                super.show(target, new StringResourceModel("keywords.deleteconfirm", null, new Object[]{keyword}));
+                //StringResourceModelMigration.of("keywords.deleteconfirm", null, new Object[]{keyword});
+                IModel message = new StringResourceModel(
+                        "keywords.deleteconfirm", null, new Model<>(keyword));
+                super.show(target, message);
             }
         } // class CreateVirtualCollectionWizard.GeneralStep.DeleteKeywordDialog
 
@@ -123,9 +138,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                     }
 
                     @Override
-                    protected ListItem<String> newItem(int index) {
-                        final IModel<String> model
-                                = getListItemModel(getModel(), index);
+                    protected ListItem<String> newItem(int index, IModel<String> model) {
                         return new OddEvenListItem<String>(index, model) {
                             @Override
                             protected void onComponentTag(ComponentTag tag) {
@@ -146,43 +159,45 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
         public GeneralStep() {
             super(null, "General", null, vc);
-            setDefaultModel(new CompoundPropertyModel<VirtualCollection>(vc));
+            setDefaultModel(new CompoundPropertyModel<>(vc));
             final TextField<String> nameField
-                    = new RequiredTextField<String>("name");
-            nameField.add(new StringValidator.MaximumLengthValidator(255));
+                    = new RequiredTextField<>("name");
+            nameField.add(Application.MAX_LENGTH_VALIDATOR);
             add(nameField);
             
             final DropDownChoice<VirtualCollection.Type> typeChoice
-                    = new DropDownChoice<VirtualCollection.Type>("type",
+                    = new DropDownChoice<>("type",
                             Arrays.asList(VirtualCollection.Type.values()),
                             new EnumChoiceRenderer<VirtualCollection.Type>(this));
             typeChoice.setRequired(true);
-            typeChoice.add(new TooltipBehavior(new StringResourceModel("type.tooltip", CreateVirtualCollectionWizard.this, null)));
+            //typeChoice.add(new TooltipBehavior(new StringResourceModel("type.tooltip", CreateVirtualCollectionWizard.this, null)));
             add(typeChoice);
             
             add(new TextArea<String>("description"));
             final DropDownChoice<VirtualCollection.Purpose> purposeChoice
-                    = new DropDownChoice<VirtualCollection.Purpose>("purpose",
+                    = new DropDownChoice<>("purpose",
                             Arrays.asList(VirtualCollection.Purpose.values()),
                             new EnumChoiceRenderer<VirtualCollection.Purpose>(this));
             add(purposeChoice);
             final DropDownChoice<VirtualCollection.Reproducibility> reproducibilityChoice
-                    = new DropDownChoice<VirtualCollection.Reproducibility>("reproducibility",
+                    = new DropDownChoice<>("reproducibility",
                             Arrays.asList(VirtualCollection.Reproducibility.values()),
                             new EnumChoiceRenderer<VirtualCollection.Reproducibility>(this));
             add(reproducibilityChoice);
             final TextArea<String> reproducibilityNoticeArea
-                    = new TextArea<String>("reproducibilityNotice");
+                    = new TextArea<>("reproducibilityNotice");
             add(reproducibilityNoticeArea);
 
             final KeywordsList keywordList
                     = new KeywordsList("keywordsList",
                             new PropertyModel<List<String>>(vc, "keywords"));
             add(keywordList);
-            add(new AjaxLink<String>("keywordsAdd") {
+            add(new AjaxFallbackLink<String>("keywordsAdd") {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
-                    addKeywordDialog.show(target);
+                    if(target != null) {
+                        addKeywordDialog.show(target);
+                    }
                 }
             });
 
@@ -193,7 +208,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                     if (!keywords.contains(keyword)) {
                         keywords.add(keyword);
                     }
-                    target.addComponent(keywordList);
+                    target.add(keywordList);
                 }
             };
             add(addKeywordDialog);
@@ -283,14 +298,14 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
         public CreatorsStep(IDynamicWizardStep previousStep) {
             super(previousStep, "Creators", null, vc);
-            final DataTable<Creator> creatorsTable
-                    = new AjaxFallbackDefaultDataTable<Creator>("creatorsTable",
+            final DataTable<Creator, String> creatorsTable
+                    = new AjaxFallbackDefaultDataTable<>("creatorsTable",
                             createColumns(),
-                            new SortableDataProvider<Creator>() {
+                            new SortableDataProvider<Creator, String>() {
                                 @Override
                                 public Iterator<? extends Creator>
-                                iterator(int first, int count) {
-                                    return vc.getObject().getCreators().listIterator(first);
+                                iterator(long first, long count) {
+                                    return vc.getObject().getCreators().listIterator((int)first);
                                 }
 
                                 @Override
@@ -299,7 +314,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                                 }
 
                                 @Override
-                                public int size() {
+                                public long size() {
                                     return vc.getObject().getCreators().size();
                                 }
                             },
@@ -321,7 +336,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                         // new entry, add
                         creators.add(creator);
                     }
-                    target.addComponent(creatorsTable);
+                    target.add(creatorsTable);
                 }
             };
             add(editCreatorDialog);
@@ -346,7 +361,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                         setResponsePage(getPage());
                     } else {
                         vc.getObject().getCreators().add(creator);
-                        target.addComponent(creatorsTable);
+                        target.add(creatorsTable);
                     }
                 }
             });
@@ -370,15 +385,20 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
         }
 
         @SuppressWarnings("unchecked")
-        private IColumn<Creator>[] createColumns() {
-            final IColumn<?>[] columns = new IColumn<?>[]{
-                new PropertyColumn<Creator>(new Model<String>("Person"),
-                "person"),
-                new PropertyColumn<Creator>(new Model<String>("EMail"),
-                "email"),
-                new PropertyColumn<Creator>(new Model<String>(
-                "Organisation"), "organisation"),
-                new HeaderlessColumn<Creator>() {
+        //private IColumn<Creator>[] createColumns() {
+        private List<IColumn<Creator, String>> createColumns() {
+            List<IColumn<Creator, String>> columns = new ArrayList<>();
+            columns.add(
+                new PropertyColumn<Creator, String>(new Model<>("Person"),
+                "person"));
+            columns.add(
+                new PropertyColumn<Creator, String>(new Model<>("EMail"),
+                "email"));
+            columns.add(
+                new PropertyColumn<Creator, String>(new Model<>(
+                "Organisation"), "organisation"));
+            columns.add(
+                new HeaderlessColumn<Creator, String>() {
                     @Override
                     public void populateItem(Item<ICellPopulator<Creator>> item, String compontentId, IModel<Creator> model) {
                         item.add(new ActionsPanel(compontentId, model));
@@ -389,8 +409,8 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                         return "action";
                     }
                 }
-            };
-            return (IColumn<Creator>[]) columns;
+            );
+            return columns;
         }
     } // class CreateVirtualCollectionWizard.CreatorsStep
 
@@ -446,7 +466,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                             @Override
                             public void onClick(AjaxRequestTarget target) {
                                 movingResource.setObject(model.getObject());
-                                target.addComponent(resourcesContainer);
+                                target.add(resourcesContainer);
                             }
 
                             @Override
@@ -464,7 +484,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                             @Override
                             public void onClick(AjaxRequestTarget target) {
                                 movingResource.setObject(null);
-                                target.addComponent(resourcesContainer);
+                                target.add(resourcesContainer);
                             }
 
                             @Override
@@ -496,7 +516,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
                                 } finally {
                                     movingResource.setObject(null);
-                                    target.addComponent(resourcesContainer);
+                                    target.add(resourcesContainer);
                                 }
                             }
 
@@ -550,14 +570,14 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
             resourcesContainer = new WebMarkupContainer("resourcesContainer");
             resourcesContainer.setOutputMarkupId(true);
             add(resourcesContainer);
-            final DataTable<Resource> resourcesTable
-                    = new AjaxFallbackDefaultDataTable<Resource>("resourcesTable",
+            final DataTable<Resource, String> resourcesTable
+                    = new AjaxFallbackDefaultDataTable<Resource, String>("resourcesTable",
                             createColumns(),
-                            new SortableDataProvider<Resource>() {
+                            new SortableDataProvider<Resource, String>() {
                                 @Override
                                 public Iterator<? extends Resource>
-                                iterator(int first, int count) {
-                                    return vc.getObject().getResources().listIterator(first);
+                                iterator(long first, long count) {
+                                    return vc.getObject().getResources().listIterator((int)first);
                                 }
 
                                 @Override
@@ -566,7 +586,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                                 }
 
                                 @Override
-                                public int size() {
+                                public long size() {
                                     return vc.getObject().getResources().size();
                                 }
                             },
@@ -618,7 +638,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                         // new entry, add
                         resources.add(resource);
                     }
-                    target.addComponent(resourcesTable);
+                    target.add(resourcesTable);
                 }
             };
             add(editResourceDialog);
@@ -637,7 +657,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                                     vc.getObject().getResources().add(resource);
                                 }
                             }
-                            target.addComponent(resourcesTable);
+                            target.add(resourcesTable);
                         }
 
                     };
@@ -684,9 +704,10 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
         }
 
         @SuppressWarnings("unchecked")
-        private IColumn<Resource>[] createColumns() {
-            final IColumn<?>[] columns = new IColumn<?>[]{
-                new AbstractColumn<Resource>(new Model<String>("Type")) {
+        private List<IColumn<Resource, String>>createColumns() {
+            final List<IColumn<Resource, String>>columns = new ArrayList<>();
+            columns.add(
+                new AbstractColumn<Resource, String>(new Model<String>("Type")) {
                     @Override
                     public void populateItem(
                             Item<ICellPopulator<Resource>> item,
@@ -705,17 +726,18 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                     public String getCssClass() {
                         return "type";
                     }
-                },
-                new PropertyColumn<Resource>(
+                });
+            columns.add(
+                new PropertyColumn<Resource, String>(
                 new Model<String>("Reference"), "ref") {
-
                     @Override
                     public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> rowModel) {
                         item.add(new ReferenceLinkPanel(componentId, rowModel));
                     }
 
-                },
-                new HeaderlessColumn<Resource>() {
+                });
+            columns.add(
+                new HeaderlessColumn<Resource, String>() {
                     @Override
                     public void populateItem(
                             Item<ICellPopulator<Resource>> item,
@@ -727,9 +749,9 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                     public String getCssClass() {
                         return "action";
                     }
-                },
-                new HeaderlessColumn<Resource>() {
-
+                });
+            columns.add(
+                new HeaderlessColumn<Resource, String>() {
                     @Override
                     public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> model) {
                         item.add(new MoveItemPanel(componentId, model));
@@ -739,10 +761,8 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                     public String getCssClass() {
                         return "move";
                     }
-
-                }
-            };
-            return (IColumn<Resource>[]) columns;
+                });
+            return columns;
         }
     } // class CreateVirtualCollectionWizard.ResourcesStep
 
@@ -757,7 +777,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
             add(descriptionArea);
             final TextField<String> uriField
                     = new TextField<String>("generatedBy.uri");
-            uriField.add(new StringValidator.MaximumLengthValidator(255));
+            uriField.add(Application.MAX_LENGTH_VALIDATOR);
             uriField.add(new UrlValidator(UrlValidator.NO_FRAGMENTS));
             add(uriField);
             final TextField<String> queryProfileField
@@ -818,7 +838,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
             throw new IllegalArgumentException("vc == null");
         }
         this.vc = vc;
-        setDefaultModel(new CompoundPropertyModel<VirtualCollection>(this));
+        setDefaultModel(new CompoundPropertyModel<>(vc));//this));
         init(new DynamicWizardModel(new GeneralStep()));
     }
 

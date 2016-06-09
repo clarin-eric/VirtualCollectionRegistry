@@ -8,9 +8,9 @@ import javax.servlet.http.HttpServletResponse;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.WebPage;
-
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
+import org.apache.wicket.request.cycle.RequestCycle;
 
 public class LoginPage extends WebPage {
 
@@ -22,20 +22,21 @@ public class LoginPage extends WebPage {
 
     @Override
     protected void onBeforeRender() {
-        final HttpServletRequest request =
-            getWebRequestCycle().getWebRequest().getHttpServletRequest();
-        final HttpServletResponse response =
-            getWebRequestCycle().getWebResponse().getHttpServletResponse();
+        final RequestCycle cycle =  RequestCycle.get();
+        final HttpServletRequest request = 
+            (HttpServletRequest)cycle.getRequest().getContainerRequest();
+        final HttpServletResponse response = 
+            (HttpServletResponse)cycle.getResponse().getContainerResponse();
         if (request.getAuthType() == null) {
             response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
         } else {
             final Principal principal = request.getUserPrincipal();
             ApplicationSession session = (ApplicationSession) getSession();
             if (session.signIn(principal)) {
-                if (!continueToOriginalDestination()) {
-                    throw new RestartResponseAtInterceptPageException(
-                            Application.get().getHomePage());
-                }
+                continueToOriginalDestination();
+                // if we reach this line there was no intercept page, so go to home page
+                throw new RestartResponseAtInterceptPageException(
+                    Application.get().getHomePage());
             } else {
                 throw new RestartResponseException(
                         Application.get().getApplicationSettings()

@@ -1,10 +1,11 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.dialog;
 
-import eu.clarin.cmdi.virtualcollectionregistry.gui.citation.CitationDialog;
-import org.apache.wicket.ResourceReference;
+
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.resource.CssResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 
 @SuppressWarnings("serial")
 public abstract class ModalDialogBase extends ModalWindow {
@@ -39,7 +40,7 @@ public abstract class ModalDialogBase extends ModalWindow {
     
     @Override
     protected ResourceReference newCssResource() {
-        return new ResourceReference(ModalDialogBase.class, "custom_modal.css");
+        return new CssResourceReference(ModalDialogBase.class, "custom_modal.css");
     }
 
     protected abstract Panel createButtonBar(String id);

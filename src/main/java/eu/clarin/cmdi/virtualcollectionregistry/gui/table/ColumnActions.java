@@ -8,7 +8,7 @@ import org.apache.wicket.model.IModel;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
 @SuppressWarnings("serial")
-final class ColumnActions extends HeaderlessColumn<VirtualCollection> {
+final class ColumnActions extends HeaderlessColumn<VirtualCollection, String> {
     private final VirtualCollectionTable table;
 
     public ColumnActions(VirtualCollectionTable table) {

@@ -3,6 +3,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryReferenceCheckImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
@@ -18,17 +19,19 @@ import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidat
 import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.Session;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.migrate.StringResourceModelMigration;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -242,11 +245,14 @@ public class BrowseEditableCollectionsPanel extends Panel {
 
     private void doPublish(long vcId, boolean frozen) throws VirtualCollectionRegistryException {
         logger.info("Publishing, frozen = {}", frozen);
+
+        //Publish if resources are valid
         VirtualCollection.State newState = VirtualCollection.State.PUBLIC_PENDING;
         if(frozen) {
             newState = VirtualCollection.State.PUBLIC_FROZEN_PENDING;
         }        
         vcr.setVirtualCollectionState(getUser(), vcId, newState);
+
     }
     
     private final class ConfirmPublishCollectionDialog extends ConfirmationDialog {
@@ -264,6 +270,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
         @Override
         public void onConfirm(AjaxRequestTarget target) {
             try {
+                
                 doPublish(vcId, frozen);
             } catch (VirtualCollectionRegistryException ex) {
                 logger.error("Could not publish collection with id {}", vcId, ex);
@@ -278,8 +285,12 @@ public class BrowseEditableCollectionsPanel extends Panel {
             for (String warning : warnings) {
                 sb.append(" -").append(warning).append("\n");
             }
-            super.show(target,
-                    new StringResourceModel("collections.publishwarningsconfirm", vc, new Object[]{sb}));
+            
+            super.show(target, 
+                StringResourceModelMigration.of(
+                    "collections.publishwarningsconfirm", 
+                    vc, 
+                    new Object[]{sb}));
         }
 
         @Override
@@ -328,7 +339,10 @@ public class BrowseEditableCollectionsPanel extends Panel {
 
         @Override
         public void onConfirm(AjaxRequestTarget target) {
-            setResponsePage(EditVirtualCollectionPage.class, new PageParameters(Collections.singletonMap("id", vcId)));
+            PageParameters params = new PageParameters();
+            
+            setResponsePage(EditVirtualCollectionPage.class, 
+                buildParamsFromMap(Collections.singletonMap("id", vcId)));
         }
 
         public void showDialogue(AjaxRequestTarget target, VirtualCollection vc, String key) {
@@ -402,13 +416,17 @@ public class BrowseEditableCollectionsPanel extends Panel {
                 // todo: custom message for editing of frozen collections
                 editPublishedDialog.showDialogue(target, vc, "collections.editpublishedfrozenconfirm");
             } else {
-                setResponsePage(EditVirtualCollectionPage.class, new PageParameters(Collections.singletonMap("id", vc.getId())));
+                setResponsePage(EditVirtualCollectionPage.class, 
+                        buildParamsFromMap(Collections.singletonMap("id", vc.getId())));
             }
         }
     }
 
     private void doPublish(AjaxRequestTarget target,
             IModel<VirtualCollection> vc) {
+        
+        
+        
         publishDialog.showDialogue(target, vc);
     }
 
@@ -418,7 +436,11 @@ public class BrowseEditableCollectionsPanel extends Panel {
     }
 
     private void doDetails(AjaxRequestTarget target, IModel<VirtualCollection> vc) {
-        setResponsePage(VirtualCollectionDetailsPage.class, VirtualCollectionDetailsPage.createPageParameters(vc.getObject(), getPage().getPageReference()));
+        //TODO: handle admin page
+        setResponsePage(VirtualCollectionDetailsPage.class,
+            VirtualCollectionDetailsPage.createPageParameters(
+                vc.getObject(), getPage().getPageReference(),
+                VirtualCollectionDetailsPage.BackPage.PRIVATE_LISTING));
     }
 
     private Principal getUser() {
@@ -429,5 +451,13 @@ public class BrowseEditableCollectionsPanel extends Panel {
         final String userName = getUser().getName();
         final boolean admin = userName != null && adminUsersService.isAdmin(userName);
         return admin;
+    }
+    
+    protected PageParameters buildParamsFromMap(Map<String, Long> map) {
+        PageParameters params = new PageParameters();
+        for(String key : map.keySet()) {
+            params.add(key, map.get(key));
+        }
+        return params;
     }
 }

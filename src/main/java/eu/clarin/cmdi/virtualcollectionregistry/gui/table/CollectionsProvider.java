@@ -10,6 +10,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.IFilterStateLocator;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
@@ -17,13 +18,13 @@ import org.apache.wicket.model.IModel;
 
 @SuppressWarnings("serial")
 public abstract class CollectionsProvider extends
-        SortableDataProvider<VirtualCollection> implements
+        SortableDataProvider<VirtualCollection, String> implements
         IFilterStateLocator<FilterState> {
 
     private FilterState filterstate = new FilterState();
 
     public CollectionsProvider() {
-        setSort("created", false);
+        setSort("created", SortOrder.DESCENDING);
     }
 
     @Override
@@ -42,7 +43,7 @@ public abstract class CollectionsProvider extends
     }
 
     @Override
-    public int size() {
+    public long size() {
         try {
             final VirtualCollectionRegistry vcr
                     = Application.get().getRegistry();
@@ -53,13 +54,13 @@ public abstract class CollectionsProvider extends
     }
 
     @Override
-    public Iterator<? extends VirtualCollection> iterator(int first,
-            int count) {
+    public Iterator<? extends VirtualCollection> iterator(long first,
+            long count) {
         try {
             final VirtualCollectionRegistry vcr
                     = Application.get().getRegistry();
             final List<VirtualCollection> results
-                    = vcr.getVirtualCollections(first, count, getFilter());
+                    = vcr.getVirtualCollections((int)first, (int)count, getFilter());
             return results.iterator();
         } catch (VirtualCollectionRegistryException e) {
             throw new WicketRuntimeException(e);
@@ -100,7 +101,7 @@ public abstract class CollectionsProvider extends
         }
         options.setFilter(filter);
 
-        final SortParam s = getSort();
+        final SortParam<String> s = getSort();
         if (s != null) {
             final String p = s.getProperty();
             Property property = null;

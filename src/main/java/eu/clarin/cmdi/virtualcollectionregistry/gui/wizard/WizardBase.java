@@ -26,7 +26,7 @@ public class WizardBase extends Wizard {
             add(new FinishButton("finish", wizard)
                     // add an onclick confirmation event in the case a public
                     // collection is being edited
-                    .add(new AttributeModifier("onclick", true, new AbstractReadOnlyModel<String>() {
+                    .add(new AttributeModifier("onclick", new AbstractReadOnlyModel<String>() {
 
                         @Override
                         public String getObject() {
