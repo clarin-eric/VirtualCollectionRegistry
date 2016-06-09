@@ -38,6 +38,7 @@ public class ReferenceValidator implements IValidator<String> {
     private static final Pattern HANDLE_PATTERN = Pattern.compile("^(hdl|doi):" + HANDLE_SPECIFIC_PART_PATTERN);
     private static final Pattern HANDLE_RESOLVER_PATTERN = Pattern.compile("^http://(hdl\\.handle\\.net|dx\\.doi\\.org|)/" + HANDLE_SPECIFIC_PART_PATTERN);
     private final IValidator<String> urlValidator = new UrlValidator(UrlValidator.NO_FRAGMENTS);
+    private final IValidator httpResponseValidator = new HttpResponseValidator();
     
     public boolean validate(String value) {
         final Validatable<String> validatable = new Validatable<>(value);
@@ -63,10 +64,12 @@ public class ReferenceValidator implements IValidator<String> {
         // first check if it is a valid handle
         if (!HANDLE_PATTERN.matcher(validatable.getValue()).matches()) {
             // check if it is a valid URL
-            urlValidator.validate(validatable);
+            urlValidator.validate(validatable);            
             if (!validatable.isValid()) {
                 validatable.error(new ValidationError().setMessage(String.format("'%s' is not a valid handle", validatable.getValue())));
             }
+            
+            httpResponseValidator.validate(validatable);
         }
     }
 

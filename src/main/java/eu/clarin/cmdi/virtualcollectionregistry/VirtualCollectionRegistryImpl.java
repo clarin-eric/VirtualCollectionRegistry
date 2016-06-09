@@ -46,6 +46,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
     private AdminUsersService adminUsersService;
     @Autowired
     private VirtualCollectionRegistryMaintenanceImpl maintenance;
+    @Autowired
+    private VirtualCollectionRegistryReferenceCheckImpl referenceCheck;
     
     private static final Logger logger
             = LoggerFactory.getLogger(VirtualCollectionRegistryImpl.class);
@@ -78,6 +80,13 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                     maintenance.perform(new Date().getTime());
                 }
             }, 60, 60, TimeUnit.SECONDS);
+            maintenanceExecutor.scheduleWithFixedDelay(new Runnable() {
+                @Override
+                public void run() {
+                    logger.info("Running reference check");
+                    referenceCheck.perform(new Date().getTime());
+                }
+            }, 1, 1, TimeUnit.DAYS);
             this.intialized.set(true);
             logger.info("virtual collection registry successfully intialized");
         } catch (RuntimeException e) {

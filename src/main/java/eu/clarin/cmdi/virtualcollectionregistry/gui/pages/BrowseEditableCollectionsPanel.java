@@ -3,6 +3,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryReferenceCheckImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
@@ -244,11 +245,14 @@ public class BrowseEditableCollectionsPanel extends Panel {
 
     private void doPublish(long vcId, boolean frozen) throws VirtualCollectionRegistryException {
         logger.info("Publishing, frozen = {}", frozen);
+
+        //Publish if resources are valid
         VirtualCollection.State newState = VirtualCollection.State.PUBLIC_PENDING;
         if(frozen) {
             newState = VirtualCollection.State.PUBLIC_FROZEN_PENDING;
         }        
         vcr.setVirtualCollectionState(getUser(), vcId, newState);
+
     }
     
     private final class ConfirmPublishCollectionDialog extends ConfirmationDialog {
@@ -266,6 +270,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
         @Override
         public void onConfirm(AjaxRequestTarget target) {
             try {
+                
                 doPublish(vcId, frozen);
             } catch (VirtualCollectionRegistryException ex) {
                 logger.error("Could not publish collection with id {}", vcId, ex);
@@ -280,8 +285,6 @@ public class BrowseEditableCollectionsPanel extends Panel {
             for (String warning : warnings) {
                 sb.append(" -").append(warning).append("\n");
             }
-            //super.show(target,
-            //        new StringResourceModel("collections.publishwarningsconfirm", vc, new Object[]{sb}));
             
             super.show(target, 
                 StringResourceModelMigration.of(
@@ -421,6 +424,9 @@ public class BrowseEditableCollectionsPanel extends Panel {
 
     private void doPublish(AjaxRequestTarget target,
             IModel<VirtualCollection> vc) {
+        
+        
+        
         publishDialog.showDialogue(target, vc);
     }
 

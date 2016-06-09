@@ -21,6 +21,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ModalDialogBase;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.service.impl.ReferenceValidator;
 import org.apache.wicket.core.request.handler.IPartialPageRequestHandler;
+import org.apache.wicket.validation.IValidationError;
 import org.apache.wicket.validation.IValidator;
 
 @SuppressWarnings("serial")
@@ -91,10 +92,13 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
                                 new Validatable<String>(ref);
                             v.validate(w);
                             if (!w.isValid()) {
-                                ValidationError ve = new ValidationError();
-                                ve.setMessage("'" + ref +
-                                        "' is not valid uri");
-                                input.error(ve);
+                            //    ValidationError ve = new ValidationError();
+                            //    ve.setMessage("'" + ref +
+                            //            "' is not valid uri");
+                            //    input.error(ve);
+                                for(IValidationError error :  w.getErrors()) {
+                                    input.error(error);
+                                }
                             }
                         }
                     }
@@ -163,7 +167,8 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
 
     @Override
     protected Panel createContent(String id) {
-        return new Content(id);
+        contentPanel = new Content(id);
+        return contentPanel;
     }
 
     @Override
