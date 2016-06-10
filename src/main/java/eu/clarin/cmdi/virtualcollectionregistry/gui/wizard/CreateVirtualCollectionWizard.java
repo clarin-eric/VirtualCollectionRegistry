@@ -76,6 +76,8 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
     private final static ResourceReference TOOLTIP_STYLE_REFERENCE = 
             new CssResourceReference(CreateVirtualCollectionWizard.class, "jquery.qtip.min.css");
     
+    private AjaxLink addMeLink;
+    
     public CreateVirtualCollectionWizard() {
         super(null);
         this.vc = null;
@@ -282,6 +284,9 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
             public void onConfirm(AjaxRequestTarget target) {
                 if (creator != null) {
                     vc.getObject().getCreators().remove(creator.getObject());
+                    final Creator _creator = creatorProvider.getCreator(ApplicationSession.get().getPrincipal());
+                    addMeLink.setVisible(!vc.getObject().hasCreator(_creator));  
+                    target.add(addMeLink);
                 }
             }
 
@@ -351,8 +356,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                     editCreatorDialog.show(target);
                 }
             });
-            add(new AjaxLink<Object>("addme") {
-
+            addMeLink = new AjaxLink<Object>("addme") {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
                     final Creator creator = creatorProvider.getCreator(ApplicationSession.get().getPrincipal());
@@ -360,11 +364,21 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                         Session.get().error("Could not retrieve required user information");
                         setResponsePage(getPage());
                     } else {
-                        vc.getObject().getCreators().add(creator);
-                        target.add(creatorsTable);
+                        if(!vc.getObject().hasCreator(creator)) {
+                            vc.getObject().getCreators().add(creator);
+                            addMeLink.setVisible(false);      
+                            target.add(creatorsTable);
+                            target.add(addMeLink);
+                        }
                     }
                 }
-            });
+            };
+            addMeLink.setOutputMarkupId(true);
+            addMeLink.setOutputMarkupPlaceholderTag(true);
+            //Hide the "add me" link if the current user already exist as a creator
+            final Creator creator = creatorProvider.getCreator(ApplicationSession.get().getPrincipal());
+            addMeLink.setVisible(!vc.getObject().hasCreator(creator));                
+            add(addMeLink);
         }
 
         @Override
