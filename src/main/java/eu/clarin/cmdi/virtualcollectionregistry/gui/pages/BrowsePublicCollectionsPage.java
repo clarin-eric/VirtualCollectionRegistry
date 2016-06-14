@@ -7,6 +7,9 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.apache.wicket.request.Url;
+import org.apache.wicket.request.cycle.RequestCycle;
 
 @SuppressWarnings("serial")
 public class BrowsePublicCollectionsPage extends BasePage {
@@ -56,4 +59,10 @@ public class BrowsePublicCollectionsPage extends BasePage {
                 VirtualCollectionDetailsPage.BackPage.PUBLIC_LISTING));
     }
 
+    @Override
+    public IModel<String> getCanonicalUrlModel() {
+        final CharSequence url = RequestCycle.get().urlFor(getClass(), null);
+        final String absoluteUrl = RequestCycle.get().getUrlRenderer().renderFullUrl(Url.parse(url));
+        return new Model(absoluteUrl);
+    }
 } // class BrowsePublicCollectionsPage

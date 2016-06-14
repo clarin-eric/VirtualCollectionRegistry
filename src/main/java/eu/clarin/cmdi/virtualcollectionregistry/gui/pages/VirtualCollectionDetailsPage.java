@@ -44,6 +44,9 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.request.Url;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.mapper.parameter.INamedParameters.NamedPair;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.string.Strings;
@@ -57,6 +60,8 @@ public class VirtualCollectionDetailsPage extends BasePage {
     private static final IConverter convDate = new DateConverter();
     private final HideIfEmptyBehavior hideIfEmpty = new HideIfEmptyBehavior();
 
+    private final PageParameters params;
+    
     private static final IConverter convEnum = new IConverter() {
         @Override
         public String convertToString(Object o, Locale locale) {
@@ -129,13 +134,15 @@ public class VirtualCollectionDetailsPage extends BasePage {
             return super.getConverter(type);
         }
     } // class VirtualCollectionDetailsPage.TypeLabel
-
+    
     public VirtualCollectionDetailsPage(PageParameters params) {
         this(getVirtualCollectionModel(params), params);
     }
 
     public VirtualCollectionDetailsPage(final IModel<VirtualCollection> model, final PageParameters params) {
         super(new CompoundPropertyModel<VirtualCollection>(model));
+        this.params = params;
+        
         if (model == null) {
             setResponsePage(Application.get().getHomePage());
         } else {
@@ -393,4 +400,19 @@ public class VirtualCollectionDetailsPage extends BasePage {
        
     }
 
+    @Override
+    public IModel<String> getCanonicalUrlModel() {
+        //Ignore non canonical parameters
+        final PageParameters _params = new PageParameters();
+        for(NamedPair pair : params.getAllNamed()) {
+            if(!pair.getKey().equalsIgnoreCase(VirtualCollectionDetailsPage.PARAM_BACK_PAGE)) {
+                _params.add(pair.getKey(), pair.getValue());
+            }
+         }
+        //Build absolute url
+        final CharSequence url = RequestCycle.get().urlFor(getClass(), _params);
+        final String absoluteUrl = RequestCycle.get().getUrlRenderer().renderFullUrl(Url.parse(url));
+        return new Model(absoluteUrl);
+    }
+    
 } // class VirtualCollectionDetailsPage
