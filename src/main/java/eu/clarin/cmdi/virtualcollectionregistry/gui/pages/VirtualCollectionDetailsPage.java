@@ -17,7 +17,6 @@ import java.util.LinkedList;
 import java.util.List;
 import java.util.Locale;
 import org.apache.wicket.Component;
-import org.apache.wicket.Page;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
 import org.apache.wicket.authorization.UnauthorizedActionException;
@@ -54,8 +53,6 @@ public class VirtualCollectionDetailsPage extends BasePage {
 
     public static final String PARAM_VC_ID = "id";
     public static final String PARAM_BACK_PAGE = "backPage";
-    //public static final String PARAM_BACK_PAGE_VERSION = "backPageVersion";
-    //public static final String PARAM_BACK_PAGE_PAGEMAP_NAME = "backPageMapName";
     private static final String CSS_CLASS = "collectionDetails";
     private static final IConverter convDate = new DateConverter();
     private final HideIfEmptyBehavior hideIfEmpty = new HideIfEmptyBehavior();
@@ -110,12 +107,6 @@ public class VirtualCollectionDetailsPage extends BasePage {
             
         }
 
-        
-       // @Override
-        //public void cleanup() {
-        //    super.cleanup();
-        //    components.clear();
-        //}
     } // class VirtualCollectionDetailsPage.HideIfEmptyBehavior
 
     private static class CustomLabel<C> extends Label {
