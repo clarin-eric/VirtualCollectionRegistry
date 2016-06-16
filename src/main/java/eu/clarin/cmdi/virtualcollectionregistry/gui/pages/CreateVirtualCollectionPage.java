@@ -15,9 +15,6 @@ import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.request.Url;
-import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
@@ -63,7 +60,7 @@ public class CreateVirtualCollectionPage extends BasePage {
             defaultVc.setReproducibility(VirtualCollection.Reproducibility.INTENDED);
             
             final Creator creator = creatorProvider.getCreator(ApplicationSession.get().getPrincipal());
-            if (creator.getPerson() != null) {
+            if (creator != null && creator.getPerson() != null) {
                 defaultVc.getCreators().add(creator);
             }
             vc = defaultVc;
