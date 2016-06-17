@@ -3,7 +3,6 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryReferenceCheckImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
@@ -14,6 +13,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.menu.AjaxPopupMenu;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.CollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.State;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidator;
 
 import java.security.Principal;
@@ -26,13 +26,12 @@ import org.apache.wicket.Session;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.migrate.StringResourceModelMigration;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
-import org.apache.wicket.request.Url;
-import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
@@ -69,6 +68,15 @@ public class BrowseEditableCollectionsPanel extends Panel {
                 throw new WicketRuntimeException("principal == null");
             }
             return principal;
+        }
+    }
+    
+    private class EmptyPanel extends PanelWithUserInformation {
+
+        public EmptyPanel(String id, IModel<VirtualCollection> model) {
+            super(id, model);
+            setRenderBodyOnly(true);
+            add(new Label("lbl", new Model<>("")));
         }
     }
     
@@ -145,7 +153,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
             }
         }
     }
-
+    
     private class ActionsPanel extends PanelWithUserInformation {
 
         public ActionsPanel(String id, IModel<VirtualCollection> model) {
@@ -232,6 +240,8 @@ public class BrowseEditableCollectionsPanel extends Panel {
                 logger.error("Could not publish collection {}, id {}", vcModel.getObject().getName(), vcModel.getObject().getId(), ex);
                 Session.get().error(ex.getMessage());
             }
+            
+            target.add(this);
         }
 
         public void showDialogue(AjaxRequestTarget target, IModel<VirtualCollection> vc) {
@@ -272,12 +282,12 @@ public class BrowseEditableCollectionsPanel extends Panel {
         @Override
         public void onConfirm(AjaxRequestTarget target) {
             try {
-                
                 doPublish(vcId, frozen);
             } catch (VirtualCollectionRegistryException ex) {
                 logger.error("Could not publish collection with id {}", vcId, ex);
                 Session.get().error(ex.getMessage());
             }
+            target.add(this);
         }
 
         public void showDialogue(AjaxRequestTarget target, IModel<VirtualCollection> vc, List<String> warnings, boolean frozen) {
@@ -317,8 +327,10 @@ public class BrowseEditableCollectionsPanel extends Panel {
             try {
                 vcr.deleteVirtualCollection(getUser(), vcId);
             } catch (VirtualCollectionRegistryException e) {
-                e.printStackTrace();
+                logger.error("Failed to delete virtual collection", e);
+                //e.printStackTrace();
             }
+            target.add(this);
         }
 
         public void show(AjaxRequestTarget target, VirtualCollection vc) {
@@ -345,6 +357,8 @@ public class BrowseEditableCollectionsPanel extends Panel {
             
             setResponsePage(EditVirtualCollectionPage.class, 
                 buildParamsFromMap(Collections.singletonMap("id", vcId)));
+            
+            target.add(this);
         }
 
         public void showDialogue(AjaxRequestTarget target, VirtualCollection vc, String key) {
@@ -379,18 +393,29 @@ public class BrowseEditableCollectionsPanel extends Panel {
      */
     public BrowseEditableCollectionsPanel(String id, CollectionsProvider provider, final boolean isAdmin) {
         super(id);
+        this.setOutputMarkupId(true);
         final VirtualCollectionTable table
                 = new VirtualCollectionTable("collectionsTable", provider, true, isAdmin) {
                     @Override
                     protected Panel createActionColumn(String componentId,
                             IModel<VirtualCollection> model) {
-                        return new ActionsColumn(componentId, model);
+                        State state = model.getObject().getState();
+                        if(state == State.PUBLIC_FROZEN || state == State.PUBLIC || state == State.PRIVATE || isAdmin) {
+                            return new ActionsColumn(componentId, model);
+                        } else {
+                            return new EmptyPanel(componentId, model);
+                        }
                     }
 
                     @Override
                     protected Panel createActionPanel(String componentId,
                             IModel<VirtualCollection> model) {
-                        return new ActionsPanel(componentId, model);
+                        State state = model.getObject().getState();
+                        if(state == State.PUBLIC_FROZEN || state == State.PUBLIC || state == State.PRIVATE || isAdmin) {
+                            return new ActionsPanel(componentId, model);
+                        } else {
+                            return new EmptyPanel(componentId, model);
+                        }
                     }
                 };
         add(table);
