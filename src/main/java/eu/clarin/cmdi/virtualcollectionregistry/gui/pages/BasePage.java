@@ -49,7 +49,7 @@ public class BasePage extends WebPage {
         menu.addMenuItem(new MenuItem<>(Model.of("My Virtual Collections"),
                 BrowsePrivateCollectionsPage.class));
         menu.addMenuItem(new MenuItem<>(Model.of("Create Virtual Collection"),
-                CreateVirtualCollectionPage.class));
+                CreateVirtualCollectionPageSimple.class));
         menu.addMenuItem(new MenuItem<>(Model.of("Help"),
                 HelpPage.class));        
         menu.addMenuItem(new MenuItem<>(Model.of("Admin Page"),

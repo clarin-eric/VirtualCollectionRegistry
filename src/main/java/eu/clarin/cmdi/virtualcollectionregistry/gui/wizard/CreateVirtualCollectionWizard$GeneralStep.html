@@ -5,9 +5,13 @@
 <head />
     <body>
         <wicket:panel>
+            <!--
             <div style="display: none" wicket:id="addKeywordDialog"></div>
+            -->
             <div style="display: none" wicket:id="deleteKeywordDialog"></div>
+            <!--
             <fieldset>
+            -->
                 <div class="extrainfo">
                     <a href="#" class="extrainfotoggle"><span>[info]</span></a>
                     <div class="notes">
@@ -23,116 +27,133 @@
                     </div>
                 </div>
                 <div class="required">
-                    <label id="namelabel" class="tooltipparent" for="gen_vc_name">Name
-                        <span class="tooltipcontent">
-                            A short but descriptive name of the virtual collection for listings and views
-                        </span>
-                    </label>
-                    <input wicket:id="name" id="gen_vc_name" type="text" maxlength="255" />
-                    <span class="hint">A short but descriptive name of the virtual collection for listings and views</span>                    
+                    <label id="namelabel" for="gen_vc_name">Name</label>
+                    <span class="hint-container half-width">
+                        <input wicket:id="name" id="gen_vc_name" type="text" maxlength="255" />
+                    </span>
+                    <span class="hint">
+                        A short but descriptive name of the virtual collection for listings and views
+                        <b class="border-notch notch"></b>
+                        <b class="notch"></b>
+                    </span>                    
                 </div>
                 <div class="required">
-                    <label id="typelabel" class="tooltipparent" for="gen_vc_type">Type
-                        <span class="tooltipcontent">
-                            Type of Virtual Collection, either intensional or extensional<br /><br /> 
-                            <b>Extensional</b>: Type of virtual collection that explicitly enumerates the references to resources or metadata documents that make up the collection<br /><br /> 
-                            <b>Intensional</b>: Type of virtual collection that defines a query by which the items of the collection can be retrieved ad-hoc from a secondary service <em>(experimental, use at own risk!)</em>
-                        </span>
-                    </label>
-                    <select wicket:id="type" id="gen_vc_type"></select>
+                    <label id="typelabel" for="gen_vc_type">Type</label>
+                    <span class="hint-container half-width">
+                        <select wicket:id="type" id="gen_vc_type"></select>
+                    </span>
                     <span class="hint">
                         Type of Virtual Collection, either intensional or extensional<br /><br /> 
                         <b>Extensional</b>: Type of virtual collection that explicitly enumerates the references to resources or metadata documents that make up the collection<br /><br /> 
                         <b>Intensional</b>: Type of virtual collection that defines a query by which the items of the collection can be retrieved ad-hoc from a secondary service <em>(experimental, use at own risk!)</em>
+                        <b class="border-notch notch"></b>
+                        <b class="notch"></b>
                     </span>
                 </div>
 
                 <div class="optional">
-                    <label id="descriptionlabel" class="tooltipparent" for="gen_vc_desc">Description
-                        <span class="tooltipcontent">
-                            A prose description of this virtual collection
-                        </span>
-                    </label>
-                    <textarea wicket:id="description"
+                    <label id="descriptionlabel" for="gen_vc_desc">Description</label>
+                    <span class="hint-container half-width">
+                        <textarea wicket:id="description"
                               id="gen_vc_desc" rows="8"></textarea>
+                    </span>
                     <span class="hint">
                         A prose description of this virtual collection
+                        <b class="border-notch notch"></b>
+                        <b class="notch"></b>
                     </span>
                 </div>
                 <div class="optional">
-                    <label id="purposelabel" class="tooltipparent" for="gen_vc_purpose">Purpose
-                        <span class="tooltipcontent">
-                            An indication of the intended usage of the present virtual collection<br /><br /> 
-                            <b>Research</b>: The virtual collection bundles resources that are relevant to a specific research (question).<br /><br /> 
-                            <b>Reference</b>: The virtual collection bundles resources, that are to be cited in a publication.<br /><br /> 
-                            <b>Sample</b>: This virtual collection bundles is intended to serve as an sample for research data<br /><br /> 
-                            <b>Future-use</b>: The purpose of this virtual collection is not specified yet. Used in published collection is advised against.
-                        </span>
-                    </label>
-                    <select wicket:id="purpose" id="gen_vc_purpose"></select>
+                    <label id="purposelabel" for="gen_vc_purpose">Purpose</label>
+                    <span class="hint-container half-width">
+                        <select wicket:id="purpose" id="gen_vc_purpose"></select>
+                    </span>
                     <span class="hint">
-                            An indication of the intended usage of the present virtual collection<br /><br /> 
-                            <b>Research</b>: The virtual collection bundles resources that are relevant to a specific research (question).<br /><br /> 
-                            <b>Reference</b>: The virtual collection bundles resources, that are to be cited in a publication.<br /><br /> 
-                            <b>Sample</b>: This virtual collection bundles is intended to serve as an sample for research data<br /><br /> 
-                            <b>Future-use</b>: The purpose of this virtual collection is not specified yet. Used in published collection is advised against.
-                        </span>
+                        An indication of the intended usage of the present virtual collection<br /><br /> 
+                        <b>Research</b>: The virtual collection bundles resources that are relevant to a specific research (question).<br /><br /> 
+                        <b>Reference</b>: The virtual collection bundles resources, that are to be cited in a publication.<br /><br /> 
+                        <b>Sample</b>: This virtual collection bundles is intended to serve as an sample for research data<br /><br /> 
+                        <b>Future-use</b>: The purpose of this virtual collection is not specified yet. Used in published collection is advised against.
+                        <b class="border-notch notch"></b>
+                        <b class="notch"></b>
+                    </span>
                 </div>
                 <div class="optional">
-                    <label id="reproducibilitylabel" class="tooltipparent" for="gen_vc_reproducibility">Reproducibility
-                        <!--
-                        <span class="tooltipcontent">
-                            An indication of the degree to which results obtained from processing of the present collection can be expected to be stable<br /><br />
-                            <b>Intended</b>: Processing results can be expected to remain stable<br /><br />
-                            <b>Fluctuating</b>: Processing results may vary<br /><br />
-                            <b>Untended</b>: No claims with respect to the stability of the processing results are made
-                        </span>
-                        -->
-                    </label>
-                    <select wicket:id="reproducibility" id="gen_vc_reproducibility"></select>
+                    <label id="reproducibilitylabel" for="gen_vc_reproducibility">Reproducibility</label>
+                    <span class="hint-container half-width">
+                        <select wicket:id="reproducibility" id="gen_vc_reproducibility"></select>
+                    </span>
                     <span class="hint">
                         An indication of the degree to which results obtained from processing of the present collection can be expected to be stable<br /><br />
                         <b>Intended</b>: Processing results can be expected to remain stable<br /><br />
                         <b>Fluctuating</b>: Processing results may vary<br /><br />
                         <b>Untended</b>: No claims with respect to the stability of the processing results are made
+                        <b class="border-notch notch"></b>
+                        <b class="notch"></b>
                     </span>        
                 </div>
                 <div class="optional">
-                    <label id="repronotelabel" class="tooltipparent" for="gen_vc_reproducibility_notice">Reproducibility Notice
-                        <!--
-                        <span class="tooltipcontent">
-                            Optional note describing the expected reproducibility of processing results in more detail
-                        </span>
-                        -->
-                    </label>
-                    <textarea wicket:id="reproducibilityNotice"
+                    <label id="repronotelabel" for="gen_vc_reproducibility_notice">Reproducibility Notice</label>
+                    <span class="hint-container half-width">
+                        <textarea wicket:id="reproducibilityNotice"
                               id="gen_vc_reproducibility_notice" cols="80" rows="5"></textarea>
+                    </span>
                     <span class="hint">
                         Optional note describing the expected reproducibility of processing results in more detail
+                        <b class="border-notch notch"></b>
+                        <b class="notch"></b>
                     </span>
                 </div>
+                <!--
                 <div class="optional">
-                    <label id="keywordslabel" class="tooltipparent" >
-                        Keywords<br /><a href="#"wicket:id="keywordsAdd" class="add"><span>[add]</span></a>
-                        <!--
-                        <span class="tooltipcontent">
-                            A set of words or short phrases, each signifying a salient facet of the present virtual collection
-                        </span>
-                        -->
-                    </label>
-                    <div wicket:id="keywordsList" class="keywordsList">
-                        <ul>
-                            <li wicket:id="keywords">
-                                <span wicket:id="itemText">item text</span>
-                                <a wicket:id="itemRemove" href="#"><span class="delete">[delete]</span></a>
-                            </li>
-                        </ul>
-                        <span class="hint">
-                            A set of words or short phrases, each signifying a salient facet of the present virtual collection
-                        </span>
-                    </div>
+                    <label id="keywordslabel">Keywords</label>
+                    <span class="hint-container half-width">
+                        <a href="#"wicket:id="keywordsAdd" class="add"><span>[add]</span></a>
+                        <div wicket:id="keywordsList" class="keywordsList">
+                            <ul>
+                                <li wicket:id="keywords">
+                                    <span wicket:id="itemText">item text</span>
+                                    <a wicket:id="itemRemove" href="#"><span class="delete">[delete]</span></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </span>
+                    <span class="hint">
+                        A set of words or short phrases, each signifying a salient facet of the present virtual collection
+                        <b class="border-notch notch"></b>
+                        <b class="notch"></b>
+                    </span>
                 </div>
+                -->
+                <div class="optional">
+                    <label id="keywordslabel">Keywords</label>
+                    <span class="hint-container half-width">
+                        
+                        <!--
+                        <form wicket:id="add_keyword_form">
+                           <input wicket:id="add_keyword" type="text" maxlength="255" />
+                            <input type="submit" value="Add" />
+                        </form>
+                        -->
+                        <input wicket:id="add_keyword" type="text" maxlength="255" />
+                        <div wicket:id="keywordsList" class="keywordsList">
+                            <ul>
+                                <li wicket:id="keywords">
+                                    <span wicket:id="itemText">item text</span>
+                                    <a wicket:id="itemRemove" href="#"><span class="delete">[delete]</span></a>
+                                </li>
+                            </ul>
+                        </div>
+                    </span>
+                    <span class="hint">
+                        A set of words or short phrases, each signifying a salient facet of the present virtual collection
+                        <b class="border-notch notch"></b>
+                        <b class="notch"></b>
+                    </span>
+                </div>
+                <!--
             </fieldset>
+                -->
         </wicket:panel>
     </body>
 </html>

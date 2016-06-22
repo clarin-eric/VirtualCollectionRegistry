@@ -14,7 +14,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ModalEditDialogBase;
 @SuppressWarnings("serial")
 public abstract class AddKeywordDialog extends ModalEditDialogBase<String> {
 
-
     private final class Content extends
             ModalEditDialogBase<String>.ContentPanel {
 
@@ -34,9 +33,33 @@ public abstract class AddKeywordDialog extends ModalEditDialogBase<String> {
             });
             keywordField.add(Application.MAX_LENGTH_VALIDATOR);
             form.add(keywordField);
+            /*
+            WebMarkupContainer tooltip = new WebMarkupContainer("tooltip");
+            final Label tooltipText  = new Label("tooltip-text", new Model<String>("Tooltip message"));
+            tooltipText.setOutputMarkupId(true);
+            tooltipText.setOutputMarkupPlaceholderTag(true);
+            final AjaxLink<Creator> toggleLink
+                = new AjaxLink<Creator>("show-tooltip") {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        tooltipText.setVisible(!tooltipText.isVisible());
+                        target.add(tooltipText);
+                    }
+                };
+            
+            
+            tooltipText.setVisible(false);
+            
+            tooltip.add(tooltipText);  
+            tooltip.add(toggleLink);
+            form.add(tooltip);
+            */
+            
             feedbackPanel = new FeedbackPanel("feedback");
             form.add(feedbackPanel);
             add(form);
+            
+            
         }
 
         @Override

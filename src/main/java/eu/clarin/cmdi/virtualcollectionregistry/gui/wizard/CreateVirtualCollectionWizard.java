@@ -14,14 +14,20 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Iterator;
 import java.util.List;
+import org.apache.wicket.AttributeModifier;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.Session;
+import org.apache.wicket.ajax.AjaxEventBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
+import org.apache.wicket.ajax.attributes.AjaxCallListener;
+import org.apache.wicket.ajax.attributes.AjaxRequestAttributes;
+import org.apache.wicket.ajax.attributes.IAjaxCallListener;
+import org.apache.wicket.ajax.form.OnChangeAjaxBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
@@ -62,10 +68,14 @@ import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.validation.validator.UrlValidator;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("serial")
 public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
+    private final Logger logger = LoggerFactory.getLogger(CreateVirtualCollectionWizard.class);
+    
     @SpringBean
     private CreatorProvider creatorProvider;
 
@@ -92,6 +102,18 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
         response.render(CssHeaderItem.forReference(TOOLTIP_STYLE_REFERENCE));
     }
     
+    private class PreventSubmitOnEnterBehavior extends Behavior {
+        private static final long serialVersionUID = 1496517082650792177L;
+
+        public PreventSubmitOnEnterBehavior(){}
+
+        @Override
+        public void bind( Component component ) {
+            super.bind( component );
+            component.add( AttributeModifier.replace( "onkeydown", Model.of( "if(event.keyCode == 13) {event.preventDefault();}" ) ) );
+        }
+    }
+    
     private final class GeneralStep extends DynamicWizardStep {
 
         private final class DeleteKeywordDialog extends ConfirmationDialog {
@@ -110,7 +132,6 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
 
             public void show(AjaxRequestTarget target, String keyword) {
                 this.keyword = keyword;
-                //StringResourceModelMigration.of("keywords.deleteconfirm", null, new Object[]{keyword});
                 IModel message = new StringResourceModel(
                         "keywords.deleteconfirm", null, new Model<>(keyword));
                 super.show(target, message);
@@ -156,7 +177,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
             }
         } // class CreateVirtualCollectionWizard.GeneralStep.KeywordsList
 
-        private final AddKeywordDialog addKeywordDialog;
+        //private final AddKeywordDialog addKeywordDialog;
         private final DeleteKeywordDialog deleteKeywordDialog;
 
         public GeneralStep() {
@@ -165,6 +186,7 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
             final TextField<String> nameField
                     = new RequiredTextField<>("name");
             nameField.add(Application.MAX_LENGTH_VALIDATOR);
+            nameField.add(new PreventSubmitOnEnterBehavior());
             add(nameField);
             
             final DropDownChoice<VirtualCollection.Type> typeChoice
@@ -172,7 +194,6 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                             Arrays.asList(VirtualCollection.Type.values()),
                             new EnumChoiceRenderer<VirtualCollection.Type>(this));
             typeChoice.setRequired(true);
-            //typeChoice.add(new TooltipBehavior(new StringResourceModel("type.tooltip", CreateVirtualCollectionWizard.this, null)));
             add(typeChoice);
             
             add(new TextArea<String>("description"));
@@ -190,10 +211,77 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                     = new TextArea<>("reproducibilityNotice");
             add(reproducibilityNoticeArea);
 
+            /*
+            StatelessForm form = new StatelessForm("add_keyword_form") {
+                @Override
+                public void onSubmit() {
+                    logger.info("Add keyword form submitted");
+                }
+            };
+            */
+
+            final TextField<String> addKeywordField
+                    = new TextField<>("add_keyword", new Model<>("keyword"));
+            
+            /*
+            addKeywordField.add(new OnChangeAjaxBehavior() {
+                private static final long serialVersionUID = 2462233190993745889L;
+
+                
+                @Override
+                protected void onUpdate(final AjaxRequestTarget target){
+                    // Maybe you want to update some components here?
+                    // Access the updated model object:
+                    final Object value = getComponent().getDefaultModelObject();
+                    // or:
+                    final String valueAsString =
+                        ((TextField<String>) getComponent()).getModelObject();
+                    
+                    logger.info("Keyword value: {}", valueAsString);
+                    
+                }
+            });
+            */
+            /*
+            addKeywordField.add(new AjaxFormComponentUpdatingBehavior("change") {
+                @Override
+                protected void onUpdate(AjaxRequestTarget target) {
+                    logger.info("Textfield submit!");
+                }
+                
+            });
+            */
+            //addKeywordField.add(new PreventSubmitOnEnterBehavior());
+            addKeywordField.add(onChangeBehavior());
+            addKeywordField.add(onKeyDownBehavior());
+            //form.add(addKeywordField);
+            add(addKeywordField);
+            /*
+            form.add(new AjaxFormComponentUpdatingBehavior("change") {
+                @Override
+                protected void onUpdate(AjaxRequestTarget target) {
+                    logger.info("Textfield submit!");
+                }
+                
+            });
+            */
+            /*
+            form.add(new AjaxEventBehavior("onsubmit") {
+                @Override
+                protected void onEvent(AjaxRequestTarget target) {
+                    logger.info("Textfield submit!");
+                }
+                
+            });
+            */
+            //add(form);
+            
             final KeywordsList keywordList
                     = new KeywordsList("keywordsList",
                             new PropertyModel<List<String>>(vc, "keywords"));
             add(keywordList);
+            
+            /*
             add(new AjaxFallbackLink<String>("keywordsAdd") {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
@@ -202,7 +290,9 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                     }
                 }
             });
+            */
 
+            /*
             addKeywordDialog = new AddKeywordDialog("addKeywordDialog") {
                 @Override
                 public void onSubmit(AjaxRequestTarget target, String keyword) {
@@ -214,10 +304,59 @@ public abstract class CreateVirtualCollectionWizard extends WizardBase {
                 }
             };
             add(addKeywordDialog);
-
+            */
             deleteKeywordDialog
                     = new DeleteKeywordDialog("deleteKeywordDialog", keywordList);
             add(deleteKeywordDialog);
+        }
+        
+        private OnChangeAjaxBehavior onChangeBehavior() {
+        return new OnChangeAjaxBehavior() {
+            @Override
+            protected void onUpdate(AjaxRequestTarget ajaxRequestTarget) {
+                logger.info("{}", ((TextField<String>) getComponent()).getModelObject());
+            }
+        };
+    }
+        
+         private AjaxEventBehavior onKeyDownBehavior() {
+            return new AjaxEventBehavior("keydown") {
+                @Override
+                protected void updateAjaxAttributes(AjaxRequestAttributes attributes) {
+                    super.updateAjaxAttributes(attributes);
+
+                    IAjaxCallListener listener = new AjaxCallListener() {
+                        @Override
+                        public CharSequence getPrecondition(Component component) {
+                            //this javascript code evaluates whether an Ajax call is necessary.
+                            //Here only by keyocdes for enter (13)
+                            return "var keycode = Wicket.Event.keyCode(attrs.event);" +
+                                    "if (keycode == 13)" +
+                                    "    return true;" +
+                                    "else" +
+                                    "    return false;";
+                        }
+                    };
+
+                    attributes.getAjaxCallListeners().add(listener);
+                    attributes.getDynamicExtraParameters()
+                            .add("var eventKeycode = Wicket.Event.keyCode(attrs.event);" +
+                                    "return {keycode: eventKeycode};");
+
+                    //without setting, no keyboard events will reach any inputfield
+                    attributes.setPreventDefault(true);
+                }
+
+                @Override
+                protected void onEvent(AjaxRequestTarget target) {
+                    /*
+                    final String queryTerm = searchBox.getDefaultModelObjectAsString();
+                    searchForMovies(queryTerm);
+                    youTubeMovieListView.setList(movieList);
+                    target.add(searchResultWrapper);
+                    */
+                }
+            };
         }
 
         @Override
