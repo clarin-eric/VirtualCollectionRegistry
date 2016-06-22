@@ -13,22 +13,26 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.menu.AjaxPopupMenu;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.CollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.State;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidator;
 
 import java.security.Principal;
 import java.util.Collections;
 import java.util.List;
+import java.util.Map;
 
 import org.apache.wicket.Component;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.Session;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.migrate.StringResourceModelMigration;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -64,6 +68,15 @@ public class BrowseEditableCollectionsPanel extends Panel {
                 throw new WicketRuntimeException("principal == null");
             }
             return principal;
+        }
+    }
+    
+    private class EmptyPanel extends PanelWithUserInformation {
+
+        public EmptyPanel(String id, IModel<VirtualCollection> model) {
+            super(id, model);
+            setRenderBodyOnly(true);
+            add(new Label("lbl", new Model<>("")));
         }
     }
     
@@ -140,7 +153,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
             }
         }
     }
-
+    
     private class ActionsPanel extends PanelWithUserInformation {
 
         public ActionsPanel(String id, IModel<VirtualCollection> model) {
@@ -227,6 +240,8 @@ public class BrowseEditableCollectionsPanel extends Panel {
                 logger.error("Could not publish collection {}, id {}", vcModel.getObject().getName(), vcModel.getObject().getId(), ex);
                 Session.get().error(ex.getMessage());
             }
+            
+            target.add(this);
         }
 
         public void showDialogue(AjaxRequestTarget target, IModel<VirtualCollection> vc) {
@@ -242,11 +257,14 @@ public class BrowseEditableCollectionsPanel extends Panel {
 
     private void doPublish(long vcId, boolean frozen) throws VirtualCollectionRegistryException {
         logger.info("Publishing, frozen = {}", frozen);
+
+        //Publish if resources are valid
         VirtualCollection.State newState = VirtualCollection.State.PUBLIC_PENDING;
         if(frozen) {
             newState = VirtualCollection.State.PUBLIC_FROZEN_PENDING;
         }        
         vcr.setVirtualCollectionState(getUser(), vcId, newState);
+
     }
     
     private final class ConfirmPublishCollectionDialog extends ConfirmationDialog {
@@ -269,6 +287,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
                 logger.error("Could not publish collection with id {}", vcId, ex);
                 Session.get().error(ex.getMessage());
             }
+            target.add(this);
         }
 
         public void showDialogue(AjaxRequestTarget target, IModel<VirtualCollection> vc, List<String> warnings, boolean frozen) {
@@ -278,8 +297,12 @@ public class BrowseEditableCollectionsPanel extends Panel {
             for (String warning : warnings) {
                 sb.append(" -").append(warning).append("\n");
             }
-            super.show(target,
-                    new StringResourceModel("collections.publishwarningsconfirm", vc, new Object[]{sb}));
+            
+            super.show(target, 
+                StringResourceModelMigration.of(
+                    "collections.publishwarningsconfirm", 
+                    vc, 
+                    new Object[]{sb}));
         }
 
         @Override
@@ -304,8 +327,10 @@ public class BrowseEditableCollectionsPanel extends Panel {
             try {
                 vcr.deleteVirtualCollection(getUser(), vcId);
             } catch (VirtualCollectionRegistryException e) {
-                e.printStackTrace();
+                logger.error("Failed to delete virtual collection", e);
+                //e.printStackTrace();
             }
+            target.add(this);
         }
 
         public void show(AjaxRequestTarget target, VirtualCollection vc) {
@@ -328,7 +353,12 @@ public class BrowseEditableCollectionsPanel extends Panel {
 
         @Override
         public void onConfirm(AjaxRequestTarget target) {
-            setResponsePage(EditVirtualCollectionPage.class, new PageParameters(Collections.singletonMap("id", vcId)));
+            PageParameters params = new PageParameters();
+            
+            setResponsePage(EditVirtualCollectionPage.class, 
+                buildParamsFromMap(Collections.singletonMap("id", vcId)));
+            
+            target.add(this);
         }
 
         public void showDialogue(AjaxRequestTarget target, VirtualCollection vc, String key) {
@@ -363,18 +393,29 @@ public class BrowseEditableCollectionsPanel extends Panel {
      */
     public BrowseEditableCollectionsPanel(String id, CollectionsProvider provider, final boolean isAdmin) {
         super(id);
+        this.setOutputMarkupId(true);
         final VirtualCollectionTable table
                 = new VirtualCollectionTable("collectionsTable", provider, true, isAdmin) {
                     @Override
                     protected Panel createActionColumn(String componentId,
                             IModel<VirtualCollection> model) {
-                        return new ActionsColumn(componentId, model);
+                        State state = model.getObject().getState();
+                        if(state == State.PUBLIC_FROZEN || state == State.PUBLIC || state == State.PRIVATE || isAdmin) {
+                            return new ActionsColumn(componentId, model);
+                        } else {
+                            return new EmptyPanel(componentId, model);
+                        }
                     }
 
                     @Override
                     protected Panel createActionPanel(String componentId,
                             IModel<VirtualCollection> model) {
-                        return new ActionsPanel(componentId, model);
+                        State state = model.getObject().getState();
+                        if(state == State.PUBLIC_FROZEN || state == State.PUBLIC || state == State.PRIVATE || isAdmin) {
+                            return new ActionsPanel(componentId, model);
+                        } else {
+                            return new EmptyPanel(componentId, model);
+                        }
                     }
                 };
         add(table);
@@ -402,13 +443,17 @@ public class BrowseEditableCollectionsPanel extends Panel {
                 // todo: custom message for editing of frozen collections
                 editPublishedDialog.showDialogue(target, vc, "collections.editpublishedfrozenconfirm");
             } else {
-                setResponsePage(EditVirtualCollectionPage.class, new PageParameters(Collections.singletonMap("id", vc.getId())));
+                setResponsePage(EditVirtualCollectionPage.class, 
+                        buildParamsFromMap(Collections.singletonMap("id", vc.getId())));
             }
         }
     }
 
     private void doPublish(AjaxRequestTarget target,
             IModel<VirtualCollection> vc) {
+        
+        
+        
         publishDialog.showDialogue(target, vc);
     }
 
@@ -418,7 +463,11 @@ public class BrowseEditableCollectionsPanel extends Panel {
     }
 
     private void doDetails(AjaxRequestTarget target, IModel<VirtualCollection> vc) {
-        setResponsePage(VirtualCollectionDetailsPage.class, VirtualCollectionDetailsPage.createPageParameters(vc.getObject(), getPage().getPageReference()));
+        //TODO: handle admin page
+        setResponsePage(VirtualCollectionDetailsPage.class,
+            VirtualCollectionDetailsPage.createPageParameters(
+                vc.getObject(), getPage().getPageReference(),
+                VirtualCollectionDetailsPage.BackPage.PRIVATE_LISTING));
     }
 
     private Principal getUser() {
@@ -429,5 +478,13 @@ public class BrowseEditableCollectionsPanel extends Panel {
         final String userName = getUser().getName();
         final boolean admin = userName != null && adminUsersService.isAdmin(userName);
         return admin;
+    }
+    
+    protected PageParameters buildParamsFromMap(Map<String, Long> map) {
+        PageParameters params = new PageParameters();
+        for(String key : map.keySet()) {
+            params.add(key, map.get(key));
+        }
+        return params;
     }
 }

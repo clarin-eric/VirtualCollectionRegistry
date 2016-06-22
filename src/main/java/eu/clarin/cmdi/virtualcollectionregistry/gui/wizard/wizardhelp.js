@@ -19,10 +19,14 @@
  * <http://craigsworks.com/projects/qtip/docs/>
  */
 
-$(document).ready(function() {
+$(document).ready(function() {    
+    console.log("activating tooltips");
+    $('[title!=""]').qtip();
+    
     activeTooltips();
 
     /* toggle extra help information*/
+    
     $(".extrainfotoggle").click(function(event) {
         event.preventDefault();
         $(this).parent(".extrainfo").children(".notes").slideToggle();
@@ -35,11 +39,13 @@ $(document).ready(function() {
         style: {
             background: '#ffffe1'
         }
+
     });
+    
 });
 
 function activeTooltips() {
-    /* activate tooltip on annotated labels */
+    
     $(".tooltipparent").each(function() {
         var tooltip = '#' + $(this).attr('id') + ' .tooltipcontent';
         $(this).qtip({
@@ -57,4 +63,5 @@ function activeTooltips() {
         });
         $(".tooltipcontent", this).hide();
     });
+    
 }

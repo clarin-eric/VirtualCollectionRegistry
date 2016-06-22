@@ -530,5 +530,14 @@ public class VirtualCollection implements Serializable, IdentifiedEntity {
             .append(this.getGeneratedBy())
             .toHashCode();
     }
+    
+    public boolean hasCreator(Creator creator) {
+        for(Creator c: this.creators) {
+            if(c.getPerson().equalsIgnoreCase(creator.getPerson())) {
+                return true;
+            }
+        }
+        return false;
+    }
 
 } // class VirtualCollection

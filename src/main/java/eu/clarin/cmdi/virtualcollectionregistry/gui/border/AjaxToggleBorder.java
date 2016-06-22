@@ -1,20 +1,22 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.border;
 
-import org.apache.wicket.ResourceReference;
+
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.border.Border;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.odlabs.wiquery.core.commons.IWiQueryPlugin;
-import org.odlabs.wiquery.core.commons.WiQueryResourceManager;
-import org.odlabs.wiquery.core.javascript.JsStatement;
+import org.apache.wicket.request.resource.PackageResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 
 @SuppressWarnings("serial")
-public class AjaxToggleBorder extends Border implements IWiQueryPlugin {
+public class AjaxToggleBorder extends Border {
     private static final ResourceReference JAVASCRIPT_RESOURCE =
-        new ResourceReference(AjaxToggleBorder.class, "AjaxToggleBorder.js");
+        new PackageResourceReference(AjaxToggleBorder.class, "AjaxToggleBorder.js");
+    
     private final WebMarkupContainer border;
 
     public AjaxToggleBorder(String id, IModel<String> title,
@@ -33,17 +35,14 @@ public class AjaxToggleBorder extends Border implements IWiQueryPlugin {
         content.setOutputMarkupId(true);
         content.add(getBodyContainer());
         border.add(content);
-        add(border);
-
+        addToBorder(border);
+        
         if (!expanded) {
-            header.add(new AttributeAppender("class",
-                    new Model<String>("collapsed"), " "));
-            content.add(new AttributeAppender("style",
-                    new Model<String>("display:none"), ";"));
+            header.add(new AttributeAppender("class", new Model<>("collapsed"), " "));
+            content.add(new AttributeAppender("style", new Model<>("display:none"), ";"));
         }
         if (cssClass != null) {
-            content.add(new AttributeAppender("class",
-                    new Model<String>(cssClass), " "));
+            content.add(new AttributeAppender("class", new Model<>(cssClass), " "));
         }
     }
 
@@ -56,13 +55,8 @@ public class AjaxToggleBorder extends Border implements IWiQueryPlugin {
     }
 
     @Override
-    public void contribute(WiQueryResourceManager manager) {
-        manager.addJavaScriptResource(JAVASCRIPT_RESOURCE);
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        response.render(JavaScriptHeaderItem.forReference(JAVASCRIPT_RESOURCE));
     }
-
-    @Override
-    public JsStatement statement() {
-        return new JsStatement().$(border).append(".ajaxToggleBorder()");
-    }
-
 } // class AjaxToggleBorder

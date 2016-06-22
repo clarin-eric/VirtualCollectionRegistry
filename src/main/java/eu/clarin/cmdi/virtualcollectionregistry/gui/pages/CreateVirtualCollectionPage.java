@@ -11,11 +11,11 @@ import eu.clarin.cmdi.virtualcollectionregistry.service.CreatorProvider;
 import java.security.Principal;
 import java.util.Date;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.WicketRuntimeException;
-import org.apache.wicket.authorization.strategies.role.Roles;
-import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.authroles.authorization.strategies.role.Roles;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 
 @AuthorizeInstantiation(Roles.USER)
@@ -28,16 +28,30 @@ public class CreateVirtualCollectionPage extends BasePage {
     @SpringBean
     private CreatorProvider creatorProvider;
 
-    // only for extensions
-    protected CreateVirtualCollectionPage() {
-    }
-
-    // used when page constructed by framework
-    public CreateVirtualCollectionPage(PageParameters params) {
-        //ignore any params
+    private CreateVirtualCollectionWizard wizard;
+    private IModel wizardModel;
+     
+    /**
+     * Used by extenstions.
+     */
+    public CreateVirtualCollectionPage() {
         this(null, null);
     }
 
+    /**
+     * used when page constructed by framework
+     * @param params
+     */
+    public CreateVirtualCollectionPage(PageParameters params) {
+        this(null, null);
+    } 
+   
+    
+    /**
+     * 
+     * @param vc
+     * @param previousPage 
+     */
     public CreateVirtualCollectionPage(VirtualCollection vc, final Page previousPage) {
         if(vc == null) {
             VirtualCollection defaultVc = new VirtualCollection();
@@ -46,17 +60,24 @@ public class CreateVirtualCollectionPage extends BasePage {
             defaultVc.setReproducibility(VirtualCollection.Reproducibility.INTENDED);
             
             final Creator creator = creatorProvider.getCreator(ApplicationSession.get().getPrincipal());
-            if (creator.getPerson() != null) {
+            if (creator != null && creator.getPerson() != null) {
                 defaultVc.getCreators().add(creator);
             }
             vc = defaultVc;
         }
-        final CreateVirtualCollectionWizard wizard = createWizard(vc, previousPage);
+        wizard = createWizard(vc, previousPage);
         add(wizard);
     }
+    
+    public void updateWizardModelWithCollection(VirtualCollection vc) {
+        if(wizard != null) {
+            wizardModel.setObject(vc);
+        }
+    } 
 
     protected final CreateVirtualCollectionWizard createWizard(VirtualCollection vc, final Page previousPage) {
-        return new CreateVirtualCollectionWizard("wizard", new VolatileEntityModel(vc)) {
+        wizardModel = new VolatileEntityModel(vc);
+        return new CreateVirtualCollectionWizard("wizard", wizardModel) {
 
             @Override
             protected void onCancelWizard() {
@@ -100,5 +121,4 @@ public class CreateVirtualCollectionPage extends BasePage {
             }
         };
     }
-
 } // class CreateVirtualCollecionPage

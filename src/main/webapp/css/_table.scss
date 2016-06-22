@@ -139,8 +139,7 @@ table.collectionsTable {
 
         div.details {
             margin-left: 16px;
-            margin-right: -248px;
-            width: 964px;
+            margin-right: -20em; /* extend div beyond right border */
         }
 
         div.desc {

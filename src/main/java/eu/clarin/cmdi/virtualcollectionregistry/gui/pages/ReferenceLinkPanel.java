@@ -28,7 +28,7 @@ public class ReferenceLinkPanel extends Panel {
         // Wrapper for link model that detects handles
         final HandleLinkModel linkModel = new HandleLinkModel(refModel);
         final ExternalLink link = new ExternalLink("reference", linkModel);
-        link.add(new AttributeModifier("title", true, refModel));
+        link.add(new AttributeModifier("title", refModel));
 
         // Set label on link
         final ReferenceLabelModel labelModel = new ReferenceLabelModel(model);

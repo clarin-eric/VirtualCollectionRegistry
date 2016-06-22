@@ -17,11 +17,12 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.Validatable;
 import org.apache.wicket.validation.ValidationError;
-import org.apache.wicket.validation.validator.AbstractValidator;
-
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ModalDialogBase;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.service.impl.ReferenceValidator;
+import org.apache.wicket.core.request.handler.IPartialPageRequestHandler;
+import org.apache.wicket.validation.IValidationError;
+import org.apache.wicket.validation.IValidator;
 
 @SuppressWarnings("serial")
 public abstract class AddResourcesDialog extends ModalDialogBase {
@@ -52,7 +53,7 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
             add(new AttributeAppender("class",
                     new Model<String>("editDialog addResourcesDialog"), " "));
             form = new Form<Data>("addResourcesForm",
-                    new CompoundPropertyModel<Data>(null));
+                    new CompoundPropertyModel<>((Data)null));
             final DropDownChoice<Resource.Type> typeChoice =
                 new DropDownChoice<Resource.Type>("type",
                         Arrays.asList(Resource.Type.values()),
@@ -62,7 +63,7 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
             final AbstractTextComponent<String[]> referencesArea =
                 new AbstractTextComponent<String[]>("references") {
                     @Override
-                    protected void convertInput() {
+                    public void convertInput() {
                         final String input = getRawInput();
                         if (input != null) {
                             final String[] refs = input.split("[,;\\s]+");
@@ -73,9 +74,9 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
                     }
                 };
             referencesArea.setRequired(true);
-            referencesArea.add(new AbstractValidator<String[]>() {
+            referencesArea.add(new IValidator<String[]>() {
                 @Override
-                protected void onValidate(IValidatable<String[]> input) {
+                public void validate(IValidatable<String[]> input) {
                     String[] refs = input.getValue();
                     if (refs != null) {
                         ReferenceValidator v = new ReferenceValidator();
@@ -91,10 +92,13 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
                                 new Validatable<String>(ref);
                             v.validate(w);
                             if (!w.isValid()) {
-                                ValidationError ve = new ValidationError();
-                                ve.setMessage("'" + ref +
-                                        "' is not valid uri");
-                                input.error(ve);
+                            //    ValidationError ve = new ValidationError();
+                            //    ve.setMessage("'" + ref +
+                            //            "' is not valid uri");
+                            //    input.error(ve);
+                                for(IValidationError error :  w.getErrors()) {
+                                    input.error(error);
+                                }
                             }
                         }
                     }
@@ -123,7 +127,7 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
                     new Model<String>("Add"), form) {
                 @Override
                 protected void onError(AjaxRequestTarget target, Form<?> form) {
-                    target.addComponent(contentPanel.getFeedbackPanel());
+                    target.add(contentPanel.getFeedbackPanel());
                     super.onError(target, form);
                 }
 
@@ -164,7 +168,6 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
     @Override
     protected Panel createContent(String id) {
         contentPanel = new Content(id);
-        contentPanel.getForm().removePersistentFormComponentValues(true);
         return contentPanel;
     }
 
@@ -174,7 +177,7 @@ public abstract class AddResourcesDialog extends ModalDialogBase {
     }
 
     @Override
-    public void show(AjaxRequestTarget target) {
+    public void show(IPartialPageRequestHandler target) {
         contentPanel.getForm().setModelObject(new Data());
         super.show(target);
     }

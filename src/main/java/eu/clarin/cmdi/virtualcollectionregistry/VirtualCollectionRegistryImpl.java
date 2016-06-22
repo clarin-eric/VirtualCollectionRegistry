@@ -46,6 +46,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
     private AdminUsersService adminUsersService;
     @Autowired
     private VirtualCollectionRegistryMaintenanceImpl maintenance;
+    @Autowired
+    private VirtualCollectionRegistryReferenceCheckImpl referenceCheck;
     
     private static final Logger logger
             = LoggerFactory.getLogger(VirtualCollectionRegistryImpl.class);
@@ -78,6 +80,13 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                     maintenance.perform(new Date().getTime());
                 }
             }, 60, 60, TimeUnit.SECONDS);
+            maintenanceExecutor.scheduleWithFixedDelay(new Runnable() {
+                @Override
+                public void run() {
+                    logger.info("Running reference check");
+                    referenceCheck.perform(new Date().getTime());
+                }
+            }, 1, 1, TimeUnit.DAYS);
             this.intialized.set(true);
             logger.info("virtual collection registry successfully intialized");
         } catch (RuntimeException e) {
@@ -124,8 +133,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         logger.debug("creating virtual collection");
 
         validator.validate(vc);
-        try {
-            EntityManager em = datastore.getEntityManager();
+        EntityManager em = datastore.getEntityManager();
+        try {            
             em.getTransaction().begin();
 
             // fetch user, if user does not exist create new
@@ -146,6 +155,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             logger.debug("virtual collection created (id={})", vc.getId());
             return vc.getId();
         } catch (Exception e) {
+            em.getTransaction().rollback();
             logger.error("error while creating virtual collection", e);
             throw new VirtualCollectionRegistryException(
                     "error while creating virtual collection", e);
@@ -169,8 +179,9 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
 
         validator.validate(vc);
 
+        EntityManager em = datastore.getEntityManager();
         try {
-            EntityManager em = datastore.getEntityManager();
+            
             em.getTransaction().begin();
             VirtualCollection c = em.find(VirtualCollection.class,
                     Long.valueOf(id), LockModeType.PESSIMISTIC_WRITE);
@@ -197,10 +208,12 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             logger.debug("updated virtual collection (id={})", vc.getId());
             return c.getId();
         } catch (VirtualCollectionRegistryException e) {
+            em.getTransaction().rollback();
             logger.warn("failed updating virtual collecion (id={}): {}", id,
                     e.getMessage());
             throw e;
         } catch (Exception e) {
+            em.getTransaction().rollback();
             logger.error("error while updating virtual collection", e);
             throw new VirtualCollectionRegistryException(
                     "error while updating virtual collection", e);
@@ -219,8 +232,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
 
         logger.debug("deleting virtual collection (id={})", id);
 
-        try {
-            EntityManager em = datastore.getEntityManager();
+        EntityManager em = datastore.getEntityManager();
+        try {            
             em.getTransaction().begin();
             VirtualCollection vc = em.find(VirtualCollection.class,
                     Long.valueOf(id), LockModeType.PESSIMISTIC_WRITE);
@@ -235,7 +248,9 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                         "permission denied for user \""
                         + principal.getName() + "\"");
             }
-            if (!vc.isPrivate() && vc.getState() != VirtualCollection.State.ERROR) {
+            //Non private collections or collections in error state cannot be 
+            //deleted by non-admin users
+            if (!vc.isPrivate() && vc.getState() == VirtualCollection.State.ERROR) {
                 logger.debug("virtual collection (id={}) cannot be "
                         + "deleted (invalid state)", id);
                 throw new VirtualCollectionRegistryPermissionException(
@@ -245,10 +260,12 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             em.getTransaction().commit();
             return vc.getId();
         } catch (VirtualCollectionRegistryException e) {
+            em.getTransaction().rollback();
             logger.debug("failed deleting virtual collecion (id={}): {}", id,
-                    e.getMessage());
+                    e.getMessage());            
             throw e;
         } catch (Exception e) {
+            em.getTransaction().rollback();
             logger.error("error while deleting virtual collection", e);
             throw new VirtualCollectionRegistryException(
                     "error while deleting virtual collection", e);
@@ -264,8 +281,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
 
         logger.debug("retrieve virtual collection state (id={})", id);
 
-        try {
-            EntityManager em = datastore.getEntityManager();
+        EntityManager em = datastore.getEntityManager();
+        try {            
             em.getTransaction().begin();
             VirtualCollection vc
                     = em.find(VirtualCollection.class, Long.valueOf(id));
@@ -276,8 +293,10 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             }
             return vc.getState();
         } catch (VirtualCollectionRegistryException e) {
+            em.getTransaction().rollback();
             throw e;
         } catch (Exception e) {
+            em.getTransaction().rollback();
             logger.error(
                     "error while retrieving state of virtual collection", e);
             throw new VirtualCollectionRegistryException(
@@ -308,8 +327,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         logger.debug("setting state virtual collection state (id={}) to '{}'",
                 id, state);
 
-        try {
-            EntityManager em = datastore.getEntityManager();
+        EntityManager em = datastore.getEntityManager();
+        try {            
             em.getTransaction().begin();
             VirtualCollection vc = em.find(VirtualCollection.class,
                     Long.valueOf(id), LockModeType.PESSIMISTIC_WRITE);
@@ -349,8 +368,10 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             }
             em.getTransaction().commit();
         } catch (VirtualCollectionRegistryException e) {
+            em.getTransaction().rollback();
             throw e;
         } catch (Exception e) {
+            em.getTransaction().rollback();
             logger.error(
                     "error while setting state of virtual collection", e);
             throw new VirtualCollectionRegistryException(
@@ -374,8 +395,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
 
         logger.debug("retrieve virtual collection (id={})", id);
 
-        try {
-            EntityManager em = datastore.getEntityManager();
+        EntityManager em = datastore.getEntityManager();
+        try {            
             em.getTransaction().begin();
             VirtualCollection vc
                     = em.find(VirtualCollection.class, Long.valueOf(id));
@@ -387,8 +408,10 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             logger.debug("virtual collection retrieved (id={})", id);
             return vc;
         } catch (VirtualCollectionRegistryException e) {
+            em.getTransaction().rollback();
             throw e;
         } catch (Exception e) {
+            em.getTransaction().rollback();
             logger.error("error while retrieving virtual collection", e);
             throw new VirtualCollectionRegistryException(
                     "error while retrieving virtual collection", e);

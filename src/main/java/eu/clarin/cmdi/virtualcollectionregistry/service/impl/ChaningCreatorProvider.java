@@ -20,6 +20,10 @@ public class ChaningCreatorProvider implements CreatorProvider {
 
     @Override
     public Creator getCreator(Principal principal) {
+        if(principal == null) {
+            return null;
+        }
+        
         final List<Creator> creators = new ArrayList<>(providerChain.size());
         for (CreatorProvider provider : providerChain) {
             creators.add(provider.getCreator(principal));

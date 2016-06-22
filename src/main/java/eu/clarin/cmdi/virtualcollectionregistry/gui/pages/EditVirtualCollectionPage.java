@@ -3,14 +3,13 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermissionException;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.wizard.CreateVirtualCollectionWizard;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.State;
 import org.apache.wicket.Page;
-import org.apache.wicket.PageParameters;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
-import org.apache.wicket.authorization.strategies.role.Roles;
-import org.apache.wicket.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.authroles.authorization.strategies.role.Roles;
+import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,17 +22,16 @@ public class EditVirtualCollectionPage extends CreateVirtualCollectionPage {
 
     private final static Logger logger = LoggerFactory.getLogger(EditVirtualCollectionPage.class);
 
+    public EditVirtualCollectionPage(VirtualCollection vc, Page page) {
+        super(vc, page);
+    }
+    
     public EditVirtualCollectionPage(PageParameters params) throws VirtualCollectionRegistryException {
-        final Long id = params.getAsLong("id");
-        final VirtualCollection vc;
-        if (id == null) {
-            vc = new VirtualCollection();
-        } else {
-            vc = vcr.retrieveVirtualCollection(id);
-            checkAccess(vc);
-        }
-        final CreateVirtualCollectionWizard wizard = createWizard(vc, null);
-        add(wizard);
+        super(params);
+        final Long id = params.get("id").toLong();
+        final VirtualCollection vc = vcr.retrieveVirtualCollection(id);
+        checkAccess(vc);
+        super.updateWizardModelWithCollection(vc); 
     }
 
     private void checkAccess(final VirtualCollection vc) throws VirtualCollectionRegistryPermissionException {
@@ -49,7 +47,5 @@ public class EditVirtualCollectionPage extends CreateVirtualCollectionPage {
         }
     }
 
-    EditVirtualCollectionPage(VirtualCollection vc, Page page) {
-        super(vc, page);
-    }
+    
 }

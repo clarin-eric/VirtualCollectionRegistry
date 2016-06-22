@@ -92,3 +92,67 @@ div.betabadge {
     max-height: 6em;
     margin: 1em;
 }
+
+.hide {
+    display: none;
+}
+
+.show {
+    display: block;
+}
+
+.hint {
+    position: absolute;
+    z-index: 999;
+    /*right: -10px;
+    width: 200px;*/
+    margin-top: -4px;
+    margin-left: 10px;
+    border: 1px solid #c93;
+    padding: 10px 12px;
+    background-color: #ffc;
+    display: none;
+}
+
+.hint::before {
+    content: "\25C0"; /* left point triangle in escaped unicode */
+    color:#d45252;
+    position: absolute;
+    margin-top:1px;
+    margin-left:-6px;
+}
+
+.arrow_box {
+	position: relative;
+	background: #88b7d5;
+	border: 4px solid #c2e1f5;
+}
+
+.arrow_box:after, .arrow_box:before {
+	right: 100%;
+	top: 50%;
+	border: solid transparent;
+	content: " ";
+	height: 0;
+	width: 0;
+	position: absolute;
+	pointer-events: none;
+}
+
+.arrow_box:after {
+	border-color: rgba(136, 183, 213, 0);
+	border-right-color: #88b7d5;
+	border-width: 30px;
+	margin-top: -30px;
+}
+.arrow_box:before {
+	border-color: rgba(194, 225, 245, 0);
+	border-right-color: #c2e1f5;
+	border-width: 36px;
+	margin-top: -36px;
+}
+
+input:focus + .hint {display: inline;}
+textarea:focus + .hint {display: inline;}
+select:focus + .hint {display: inline;}
+ul:focus + .hint {display: inline;}

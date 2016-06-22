@@ -1,5 +1,5 @@
 div.popupTrigger {
-	cursor: pointer;
+    cursor: pointer;
 }
 
 div.popupMenu {
@@ -18,7 +18,7 @@ div.popupMenu ul {
 }
 
 div.popupMenu li {
-	list-style: none;
+    list-style: none;
     padding: 0px;
     margin: 0px;
 }

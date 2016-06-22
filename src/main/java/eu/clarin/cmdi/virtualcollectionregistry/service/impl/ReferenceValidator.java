@@ -22,7 +22,6 @@ import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.Validatable;
 import org.apache.wicket.validation.ValidationError;
-import org.apache.wicket.validation.validator.AbstractValidator;
 import org.apache.wicket.validation.validator.UrlValidator;
 
 /**
@@ -33,31 +32,20 @@ import org.apache.wicket.validation.validator.UrlValidator;
  * @author twagoo
  */
 @SuppressWarnings("serial")
-public class ReferenceValidator extends AbstractValidator<String> {
+public class ReferenceValidator implements IValidator<String> {
 
     private static final String HANDLE_SPECIFIC_PART_PATTERN = "[0-9\\.]+\\/.+$";
     private static final Pattern HANDLE_PATTERN = Pattern.compile("^(hdl|doi):" + HANDLE_SPECIFIC_PART_PATTERN);
     private static final Pattern HANDLE_RESOLVER_PATTERN = Pattern.compile("^http://(hdl\\.handle\\.net|dx\\.doi\\.org|)/" + HANDLE_SPECIFIC_PART_PATTERN);
     private final IValidator<String> urlValidator = new UrlValidator(UrlValidator.NO_FRAGMENTS);
-
-    @Override
-    protected void onValidate(IValidatable<String> validatable) {
-        // first check if it is a valid handle
-        if (!HANDLE_PATTERN.matcher(validatable.getValue()).matches()) {
-            // check if it is a valid URL
-            urlValidator.validate(validatable);
-            if (!validatable.isValid()) {
-                validatable.error(new ValidationError().setMessage(String.format("'%s' is not a valid handle", validatable.getValue())));
-            }
-        }
-    }
-
+    private final IValidator httpResponseValidator = new HttpResponseValidator();
+    
     public boolean validate(String value) {
         final Validatable<String> validatable = new Validatable<>(value);
         validate(validatable);
         return validatable.isValid();
     }
-
+    
     /**
      *
      * @param uri
@@ -69,6 +57,20 @@ public class ReferenceValidator extends AbstractValidator<String> {
     public static boolean isPid(CharSequence uri) {
         return HANDLE_PATTERN.matcher(uri).matches()
                 || HANDLE_RESOLVER_PATTERN.matcher(uri).matches();
+    }
+
+    @Override
+    public void validate(IValidatable<String> validatable) {
+        // first check if it is a valid handle
+        if (!HANDLE_PATTERN.matcher(validatable.getValue()).matches()) {
+            // check if it is a valid URL
+            urlValidator.validate(validatable);            
+            if (!validatable.isValid()) {
+                validatable.error(new ValidationError().setMessage(String.format("'%s' is not a valid handle", validatable.getValue())));
+            }
+            
+            httpResponseValidator.validate(validatable);
+        }
     }
 
 }

@@ -20,7 +20,7 @@ public class SAMLCreatorProvider implements CreatorProvider {
     public static final String[] MAIL_ATTRIBUTE = new String[]{"mail"};
 
     @Override
-    public Creator getCreator(Principal userPrincipal) {
+    public Creator getCreator(Principal userPrincipal) {        
         final Creator creator = new Creator();
         if (userPrincipal instanceof AuthPrincipal) {
             final AuthPrincipal principal = (AuthPrincipal) userPrincipal;

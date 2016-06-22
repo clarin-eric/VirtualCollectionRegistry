@@ -16,8 +16,7 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.gui.table;
 
-import eu.clarin.cmdi.virtualcollectionregistry.gui.citation.CitationPanel;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.citation.EmptyCitePanel;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.citation.CitationPanelFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.HeaderlessColumn;
@@ -28,7 +27,7 @@ import org.apache.wicket.model.IModel;
  *
  * @author wilelb
  */
-public class ColumnCitation extends HeaderlessColumn<VirtualCollection> {
+public class ColumnCitation extends HeaderlessColumn<VirtualCollection, String> {
     ColumnCitation(VirtualCollectionTable table) {
         super();
     }
@@ -36,11 +35,7 @@ public class ColumnCitation extends HeaderlessColumn<VirtualCollection> {
     @Override
     public void populateItem(Item<ICellPopulator<VirtualCollection>> item,
             String componentId, final IModel<VirtualCollection> model) {
-        if(model.getObject().hasPersistentIdentifier()) {
-            item.add(new CitationPanel(componentId, model));
-        } else {
-            item.add(new EmptyCitePanel(componentId));
-        }
+        item.add(CitationPanelFactory.getCitationPanel(componentId, model));
     }
 
     @Override

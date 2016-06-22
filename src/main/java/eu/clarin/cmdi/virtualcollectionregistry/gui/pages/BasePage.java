@@ -6,6 +6,7 @@ import java.security.Principal;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
@@ -13,6 +14,9 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
+import org.apache.wicket.request.Url;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -69,8 +73,9 @@ public class BasePage extends WebPage {
     protected void onBeforeRender() {
         // skip lazy auto-auth for login page
         if (!this.getClass().isInstance(LoginPage.class)) {
-            final HttpServletRequest request
-                    = getWebRequestCycle().getWebRequest().getHttpServletRequest();
+            final RequestCycle cycle =  RequestCycle.get();
+            final HttpServletRequest request = 
+                ((ServletWebRequest)cycle.getRequest()).getContainerRequest();
             final ApplicationSession session
                     = (ApplicationSession) getSession();
             if (!session.isSignedIn()) {
@@ -97,6 +102,21 @@ public class BasePage extends WebPage {
         }
         super.onBeforeRender();
     }
+    
+    @Override
+    protected void onInitialize() {
+        super.onInitialize();
+        add(new WebComponent("canonicalUrl") {
+            @Override
+            protected void onRender() {
+                final IModel<String> canonicalUrlModel = getCanonicalUrlModel();
+                if (canonicalUrlModel != null) {
+                    getResponse().write("<link rel=\"canonical\" href=\"" + canonicalUrlModel.getObject() + "\"/>");
+                }
+            }
+
+        });
+    }
 
     protected Principal getUser() {
         ApplicationSession session = (ApplicationSession) getSession();
@@ -120,6 +140,18 @@ public class BasePage extends WebPage {
     @Override
     public ApplicationSession getSession() {
         return (ApplicationSession) super.getSession();
+    }
+    
+    /**
+     *
+     * @return URL to include as a canonical HREF in the page header.
+     */
+    public IModel<String> getCanonicalUrlModel() {
+        //return null;
+        final CharSequence url = RequestCycle.get().urlFor(getClass(), null);
+        final String absoluteUrl = RequestCycle.get().getUrlRenderer().renderFullUrl(Url.parse(url));
+        return new Model(absoluteUrl);
+    
     }
 
 } // class BasePage

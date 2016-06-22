@@ -168,4 +168,6 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
         }
         em.getTransaction().commit();
     }
+    
+    
 }

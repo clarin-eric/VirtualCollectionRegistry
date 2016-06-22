@@ -22,6 +22,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.core.request.handler.IPartialPageRequestHandler;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.link.ExternalLink;
@@ -94,7 +95,7 @@ public class CitationDialog extends ModalDialogBase {
     }
     
     @Override
-    public void show(AjaxRequestTarget target) {
+    public void show(IPartialPageRequestHandler target) {
         super.show(target);
     }
 }

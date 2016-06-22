@@ -3,6 +3,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.dialog;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.core.request.handler.IPartialPageRequestHandler;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -30,7 +31,7 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
                     new Model<String>("Add"), form) {
                 @Override
                 protected void onError(AjaxRequestTarget target, Form<?> form) {
-                    target.addComponent(contentPanel.getFeedbackPanel());
+                    target.add(contentPanel.getFeedbackPanel());
                     super.onError(target, form);
                 }
 
@@ -45,7 +46,7 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
                     new Model<String>("Modify"), form) {
                 @Override
                 protected void onError(AjaxRequestTarget target, Form<?> form) {
-                    target.addComponent(contentPanel.getFeedbackPanel());
+                    target.add(contentPanel.getFeedbackPanel());
                     super.onError(target, form);
                 }
 
@@ -97,7 +98,6 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
                         }
                     }
                 }, " "));
-        contentPanel.getForm().removePersistentFormComponentValues(true);
         contentPanel.getFeedbackPanel().setOutputMarkupId(true);
         return contentPanel;
     }
@@ -108,11 +108,11 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
     }
 
     @Override
-    public final void show(AjaxRequestTarget target) {
+    public final void show(IPartialPageRequestHandler target) {
         this.show(target, null);
     }
     
-    public final void show(AjaxRequestTarget target, IModel<T> model) {
+    public final void show(IPartialPageRequestHandler target, IModel<T> model) {
         if (model == null) {
             model = newInstanceModel();
             addButton.setVisible(true);
@@ -122,7 +122,6 @@ public abstract class ModalEditDialogBase<T> extends ModalDialogBase {
             modifyButton.setVisible(true);
         }
         contentPanel.getForm().setModel(new CompoundPropertyModel<T>(model));
-        target.appendJavascript("activeTooltips()");
         super.show(target);
     }
 

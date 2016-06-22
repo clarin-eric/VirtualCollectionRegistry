@@ -16,8 +16,7 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
-import eu.clarin.cmdi.virtualcollectionregistry.gui.citation.CitationPanel;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.citation.EmptyCitePanel;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.citation.CitationPanelFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -32,10 +31,6 @@ public class HeaderPanel extends Panel {
     public HeaderPanel(String id, final IModel<VirtualCollection> model) {
         super(id, new CompoundPropertyModel<VirtualCollection>(model));
         add(new Label("name"));
-        if(model.getObject().hasPersistentIdentifier()) {
-            add(new CitationPanel("citation", model));
-        } else {
-            add(new EmptyCitePanel("citation"));
-        }
+        add(CitationPanelFactory.getCitationPanel("citation", model));
     }
 }
