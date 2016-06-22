@@ -20,7 +20,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 public class CreateVirtualCollectionPageSimple extends BasePage {
 
     private final static ResourceReference TOOLTIP_ACTIVATE_JAVASCRIPT_REFERENCE = 
-            new PackageResourceReference(CreateVirtualCollectionWizard.class, "wizardhelp.js");
+            new PackageResourceReference(CreateVirtualCollectionPageSimple.class, "wizardhelp.js");
     
     @SpringBean
     private VirtualCollectionRegistry vcr;
@@ -50,15 +50,14 @@ public class CreateVirtualCollectionPageSimple extends BasePage {
      * @param previousPage 
      */
     public CreateVirtualCollectionPageSimple(VirtualCollection vc, final Page previousPage) {
-        String hint = "A short but descriptive name of the virtual collection for listings and views" +
-                        "<b class=\"border-notch notch\"></b>" +
-                        "<b class=\"notch\"></b>";
-       add(new CustomFormComponent("text_name", "Name", "", hint));
+        String hint = "A short but descriptive name of the virtual collection for listings and views";
+        add(new CustomFormTextComponent("text_name", "Name", "", hint));
     }
     
      @Override
     public void renderHead(IHeaderResponse response) {
         super.renderHead(response);
+        response.render(JavaScriptHeaderItem.forReference(getApplication().getJavaScriptLibrarySettings().getJQueryReference()));  
         response.render(JavaScriptHeaderItem.forReference(TOOLTIP_ACTIVATE_JAVASCRIPT_REFERENCE));
     }
     

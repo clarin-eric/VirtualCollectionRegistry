@@ -1,5 +1,5 @@
-/*  
- * Copyright (C) 2014 CLARIN
+/*
+ * Copyright (C) 2016 CLARIN
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,21 +14,12 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
-/* For tooltips, the qtip jQuery plugin is used. For more info, see
- * <http://craigsworks.com/projects/qtip/docs/>
+/**
+ *
+ * @author wilelb
  */
-
-$(document).ready(function() {    
-    /* activate form hints */
-    $(".hint-container").each(function() {
-        $(this).children().focus(function() {
-            var parent = $(this).parent();
-            parent.next().show(0).css('display', 'inline-block');
-        });
-        $(this).children().focusout(function() {
-            var parent = $(this).parent();
-            parent.next().hide(0);
-        });
-    });
-});
+public class CustomFormTextareaComponent {
+    
+}

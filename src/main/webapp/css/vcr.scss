@@ -140,6 +140,10 @@ div.betabadge {
     display: inline-block;
 }
 
+.hint-container > input[type=text],textarea {
+    width: 100%
+}
+
 .half-width {
     width: 50%;
 }

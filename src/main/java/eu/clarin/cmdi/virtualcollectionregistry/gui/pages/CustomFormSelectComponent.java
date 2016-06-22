@@ -16,21 +16,10 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.FormComponentPanel;
-import org.apache.wicket.markup.html.form.TextField;
-import org.apache.wicket.model.Model;
-
 /**
  *
  * @author wilelb
  */
-public class CustomFormComponent extends FormComponentPanel {
-
-    public CustomFormComponent(String id, String label, String value, String hint) {
-        super(id);
-        add(new Label("label", new Model<>(label)));
-        add(new TextField("value", new Model<>(value)));
-        add(new Label("hint", new Model<>(hint)));
-    }
+public class CustomFormSelectComponent {
+    
 }
