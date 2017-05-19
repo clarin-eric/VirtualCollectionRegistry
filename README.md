@@ -5,6 +5,8 @@
 ## Documentation
 This application is currently documented on the [CLARIN trac](https://trac.clarin.eu/wiki/VirtualCollectionRegistry).
 
+Information regarding development and deployment as well as licencing information can be found in the [documentation directory](doc).
+
 ## Development
 
 ### MySQL
@@ -25,6 +27,7 @@ docker run -d \
 ```
 
 Update the tomcat `context.xml` with the information provided for the MYSQL_* environment variables and the ip address of the docker host.
+The application uses the database according to the configuration in [persistence.xml](src/main/resources/META-INF/persistence.xml) (Java Persistence API).
 
 ## History
 
