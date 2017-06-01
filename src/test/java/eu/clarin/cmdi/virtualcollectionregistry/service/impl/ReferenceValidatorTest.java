@@ -40,6 +40,7 @@ public class ReferenceValidatorTest {
      */
     @Test
     public void testOnValidateUrl() {
+        //TODO: mock http request/response
         IValidatable<String> validatable = new Validatable<>("http://www.clarin.eu");
         instance.validate(validatable);
         assertTrue(validatable.isValid());
