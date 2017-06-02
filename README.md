@@ -9,6 +9,13 @@ Information regarding development and deployment as well as licencing informatio
 
 ## Development
 
+### Servlet Container
+
+#### Tomcat
+
+Apache tomcat 8+ is the prefered servlet container. The mysl jdbc driver
+must be provided in the tomcat libs directory.
+
 ### MySQL
 
 A running MySQL server is required. By using docker this is trivial to run for development purposes.

@@ -1,0 +1,28 @@
+version: '2'
+services:
+    vcr:
+        image: registry.gitlab.com/clarin-eric/docker-tomcat8-dev:1.0.0
+        ports:
+            - 8080:8080
+            - 8443:8443
+        volumes:
+            - /Users/wilelb/Code/work/clarin/git/VirtualCollectionRegistry/target:/var/lib/tomcat8/webapps  
+        networks:
+            - vcr
+      
+    vcr_mysql:
+        image: mysql:5.7.18
+        environment:
+            MYSQL_ROOT_PASSWORD: vcr-root
+            MYSQL_DATABASE: vcr
+            MYSQL_USER: vcr-user
+            MYSQL_PASSWORD: vcr-password
+        networks:
+            - vcr 
+    
+networks:
+  vcr:
+    external: false
+            
+
+
