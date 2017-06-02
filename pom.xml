@@ -397,7 +397,6 @@
             </exclusions>
         </dependency>
         
-        <!--
         <dependency>
             <groupId>de.agilecoders.wicket</groupId>
             <artifactId>wicket-bootstrap-core</artifactId>
@@ -413,7 +412,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        -->
+        
     </dependencies>
 
     <build>
