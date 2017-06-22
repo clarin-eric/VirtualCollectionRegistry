@@ -10,6 +10,7 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.WebApplication;
@@ -54,6 +55,8 @@ public class BasePage extends WebPage {
         menu.addMenuItem(new MenuItem<>(Model.of("Admin Page"),
                 AdminPage.class));
         add(menu);
+
+        add(new FeedbackPanel("feedback"));
 
         add(new BookmarkablePageLink("homelink", getApplication().getHomePage())
                 .setAutoEnable(false));
