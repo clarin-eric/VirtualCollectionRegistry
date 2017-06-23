@@ -15,7 +15,6 @@ import org.apache.wicket.model.IModel;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
 
@@ -48,23 +47,15 @@ public abstract class VirtualCollectionTable extends Panel {
                 new AbstractReadOnlyModel<String>() {
                     @Override
                     public String getObject() {
-                        return showState ? "private" : "public";
+                        return showState ? "private table" : "public table";
                     }
                 }, " "));
         table.addBottomToolbar(new AjaxNavigationToolbar(table));
 
-        // setup filter
-        /*
-        final AjaxToggleBorder border =
-            new AjaxToggleBorder("border", new Model<String>("Filter"));
-            */
         final FilterForm form =
             new FilterForm("filterForm", provider, table, showState, isAdmin);
-        //border.add(form);
-        //add(border);
         add(form);
         add(table);
-        add(new Label("title", "Virtual Collections"));
     }
 
     @Override
