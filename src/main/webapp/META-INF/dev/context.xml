@@ -17,7 +17,7 @@
 
     <Parameter
                name="eu.clarin.cmdi.virtualcollectionregistry.admindb"
-               value="/var/lib/tomcat8/webapps/VirtualCollectionRegistry-1.1-SNAPSHOT/META-INF/vcr-admin.conf" />
+               value="./vcr/META-INF/vcr-admin.conf" />
 
     <Parameter
                name="eu.clarin.cmdi.virtualcollectionregistry.collectiondisplayname"

@@ -1,5 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
+import de.agilecoders.wicket.core.Bootstrap;
+import de.agilecoders.wicket.core.settings.BootstrapSettings;
 import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.DataStore;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
@@ -45,6 +47,13 @@ public class Application extends AuthenticatedWebApplication {
     @Override
     protected void init() {
         super.init();
+        
+        BootstrapSettings settings = new BootstrapSettings();
+        //settings.minify(true); // use minimized version of all bootstrap references
+
+        Bootstrap.install(this, settings);
+   
+    
         logger.info("Initialising VCR web application");
         getComponentInstantiationListeners().add(new SpringComponentInjector(this));
 

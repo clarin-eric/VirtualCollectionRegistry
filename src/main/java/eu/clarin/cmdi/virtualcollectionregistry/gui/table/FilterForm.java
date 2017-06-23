@@ -23,6 +23,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.QueryOptions;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.util.ArrayList;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.ListMultipleChoice;
 
 @SuppressWarnings("serial")
@@ -124,6 +125,7 @@ public class FilterForm extends Panel {
         };
         form.add(clearButton);
         add(form);
+        add(new Label("title", "Filter form"));
     }
 
 } // class FilterForm

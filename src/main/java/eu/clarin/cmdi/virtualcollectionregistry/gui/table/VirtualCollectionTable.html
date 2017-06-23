@@ -5,10 +5,19 @@
 <head />
 <body>
 <wicket:panel>
-  <div wicket:id="border">
+  <!--<div wicket:id="border">-->
     <div wicket:id="filterForm"></div>
+  <!--</div>-->
+  
+  <div class="panel panel-default">
+        <div class="panel-heading"><span wicket:id="title">Virtual Collections</span></div>
+        <div id="collapse-filter1" class="panel-collapse">
+            <div class="panel-body">
+                <table wicket:id="table" class="collectionsTable display"></table>
+            </div>
+        </div>
   </div>
-  <table wicket:id="table" class="collectionsTable display"></table>
+  
 </wicket:panel>
 </body>
 </html>

@@ -1,15 +1,27 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.INavbarComponent;
+import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.ImmutableNavbarComponent;
+import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.Navbar;
+import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.Navbar.ComponentPosition;
+import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.NavbarButton;
+import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.NavbarExternalLink;
 import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
+import eu.clarin.cmdi.virtualcollectionregistry.config.PiwikConfigImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.List;
 import javax.servlet.http.HttpServletRequest;
+import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
-import org.apache.wicket.markup.html.link.BookmarkablePageLink;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -28,47 +40,93 @@ public class BasePage extends WebPage {
     @SpringBean
     private AdminUsersService adminUsersService;
 
+    @SpringBean
+    private PiwikConfigImpl piwikConfig;
+    
     public static final String BETA_MODE = "eu.clarin.cmdi.virtualcollectionregistry.beta_mode";
     
     protected BasePage(IModel<?> model) {
         super(model);
-        
-        final boolean beta_mode = Boolean.valueOf(WebApplication.get().getServletContext().getInitParameter(BETA_MODE));
-        
-        WebMarkupContainer betaBadge = new WebMarkupContainer ("betabadge");
-        betaBadge.setVisible(beta_mode);
-        add(betaBadge);
-        
-        // authentication state
-        add(new AuthenticationStatePanel("authstate"));
-
-        // main navigation menu
-        final Menu menu = new Menu("menu");
-        menu.addMenuItem(new MenuItem<>(Model.of("Virtual Collections"),
-                BrowsePublicCollectionsPage.class));
-        menu.addMenuItem(new MenuItem<>(Model.of("My Virtual Collections"),
-                BrowsePrivateCollectionsPage.class));
-        menu.addMenuItem(new MenuItem<>(Model.of("Create Virtual Collection"),
-                CreateVirtualCollectionPageSimple.class));
-        menu.addMenuItem(new MenuItem<>(Model.of("Help"),
-                HelpPage.class));        
-        menu.addMenuItem(new MenuItem<>(Model.of("Admin Page"),
-                AdminPage.class));
-        add(menu);
-
-        add(new FeedbackPanel("feedback"));
-
-        add(new BookmarkablePageLink("homelink", getApplication().getHomePage())
-                .setAutoEnable(false));
-        add(new BookmarkablePageLink("aboutlink", AboutPage.class)
-                .setAutoEnable(false));
-
+        addComponents();
     }
-
+    
     protected BasePage() {
-        this(null);
+        addComponents();
     }
 
+    private void addComponents() {
+        final boolean beta_mode = Boolean.valueOf(WebApplication.get().getServletContext().getInitParameter(BETA_MODE));
+
+        // add Navbar
+        add(new WebMarkupContainer("header")
+                .add(createHeaderMenu("menu"))); // navbar in header
+
+        // Add feedback panel to show information and error messages
+        add(new FeedbackPanel("feedback"));
+        
+        // add Piwik tracker (if enabled)
+        if (piwikConfig.isEnabled()) {
+            add(new PiwikTracker("piwik", piwikConfig.getSiteId(), piwikConfig.getPiwikHost(), piwikConfig.getDomains()));
+        } else {
+            add(new WebMarkupContainer("piwik")); //empty placeholder
+        }
+    }
+    
+    private Component createHeaderMenu(String id) {
+        final Navbar navbar = new Navbar(id) {
+            @Override
+            protected Label newBrandLabel(String markupId) {
+                //set label to not escape model strings to allow HTML
+                return (Label) super.newBrandLabel(markupId).setEscapeModelStrings(false);
+            }
+
+        };
+        //navbar.add(new AttributeModifier("class", "hidden-overflow"));
+        navbar.setBrandName(Model.of("<i class=\"glyphicon glyphicon-book\" aria-hidden=\"true\"></i> Virtual Collection Registry"));
+        
+        final List<INavbarComponent> menuItems = new ArrayList<>();
+        //Default menu items
+        menuItems.add(new ImmutableNavbarComponent(new NavbarButton(BrowsePublicCollectionsPage.class, Model.of("Browse")), ComponentPosition.LEFT));
+        menuItems.add(new ImmutableNavbarComponent(new NavbarButton(BrowsePrivateCollectionsPage.class, Model.of("My Collections")), ComponentPosition.LEFT));
+        menuItems.add(new ImmutableNavbarComponent(new NavbarButton(CreateVirtualCollectionPage.class, Model.of("Create")), ComponentPosition.LEFT));
+        menuItems.add(new ImmutableNavbarComponent(new NavbarButton(HelpPage.class, Model.of("Help")), ComponentPosition.LEFT));
+        
+        if (isUserAdmin()) {
+            menuItems.add(new ImmutableNavbarComponent(new NavbarButton(AdminPage.class, Model.of("Admin")), ComponentPosition.LEFT));
+        }
+        
+        //Add login or user profile + logout buttons based on authentication state
+        if(isSignedIn()) {
+            final Component userLink = new NavbarButton(LoginPage.class, Model.of(getUser().getName()))
+                    .add(new AttributeModifier("class", "glyphicon glyphicon-user"));
+            final Component logoutLink = new NavbarButton(LoginPage.class, Model.of("Logout "))
+                .add(new AttributeModifier("class", "glyphicon glyphicon-log-out"));
+        
+            
+            menuItems.add(new ImmutableNavbarComponent(userLink, ComponentPosition.RIGHT));
+            menuItems.add(new ImmutableNavbarComponent(logoutLink, ComponentPosition.RIGHT));
+        } else {
+            final Component loginLink = new NavbarButton(LoginPage.class, Model.of("Login"))
+                .add(new AttributeModifier("class", "glyphicon glyphicon-log-in"));
+            menuItems.add(new ImmutableNavbarComponent(loginLink, ComponentPosition.RIGHT));
+        }
+        // link to CLARIN website
+        final Component clarinLink = new NavbarExternalLink(Model.of("http://www.clarin.eu/")) {
+            @Override
+            protected Component newLabel(String markupId) {
+                return super.newLabel(markupId).setEscapeModelStrings(false);
+            }
+
+        }
+            .setLabel(Model.of("<span>CLARIN</span>"))
+            .add(new AttributeModifier("class", "clarin-logo hidden-xs"));
+        menuItems.add(new ImmutableNavbarComponent(clarinLink, ComponentPosition.RIGHT));
+
+        navbar.addComponents(menuItems);
+        return navbar;
+    }
+
+    
     @Override
     protected void onBeforeRender() {
         // skip lazy auto-auth for login page
@@ -76,8 +134,7 @@ public class BasePage extends WebPage {
             final RequestCycle cycle =  RequestCycle.get();
             final HttpServletRequest request = 
                 ((ServletWebRequest)cycle.getRequest()).getContainerRequest();
-            final ApplicationSession session
-                    = (ApplicationSession) getSession();
+            final ApplicationSession session = getSession();
             if (!session.isSignedIn()) {
                 if (request.getAuthType() != null) {
                     // FIXME: better logging
@@ -118,9 +175,12 @@ public class BasePage extends WebPage {
         });
     }
 
+    protected boolean isSignedIn() {
+        return ((AuthenticatedWebSession) getSession()).isSignedIn();
+    }
+    
     protected Principal getUser() {
-        ApplicationSession session = (ApplicationSession) getSession();
-        Principal principal = session.getPrincipal();
+        Principal principal = getSession().getPrincipal();
         if (principal == null) {
             throw new WicketRuntimeException("principal == null");
         }

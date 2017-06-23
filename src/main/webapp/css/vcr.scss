@@ -12,8 +12,13 @@ $iconsize: 12px;
 @import 'filterform';
 @import 'popup';
 
+html {
+    height: 100%
+}
+
 body {
     font-size: 130%;
+    height: 100%;
 }
 
 noscript {
@@ -40,6 +45,20 @@ noscript {
     z-index: 101;
 }
 
+div.navbar div.container {
+    overflow: hidden; /* Fixes issue with 1px causing vertical scrollbar to show in navbar */
+}
+
+#content {
+    min-height: 100%;
+    margin-bottom: -211px;
+    padding-bottom: 221px; /* compensate margin and add an extra 10px */
+}
+
+.hidden-overflow {
+    overflow: hidden;
+}
+
 .tooltipparent .tooltipcontent {
     display: none;
 }
@@ -50,6 +69,7 @@ noscript {
 
 a.navbar-brand {
     line-height: 20px;
+    font-size: 18px;
 }
 
 ul#CLARIN_header_right li.authenticated {

@@ -8,110 +8,66 @@
         <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
         <meta name="viewport" content="width=device-width, initial-scale=1.0" />
         <link wicket:id="canonicalUrl" rel="canonical" />
-        
-        <!-- CLARIN + VCR style compiled from SASS -->
         <link rel="stylesheet" type="text/css" href="css/vcr.css" />
-
-        <!-- Bootstrap styles required for CLARIN style to work properly -->
-        <!--
-        <link rel="stylesheet" type="text/css" href="//infra.clarin.eu/content/libs/bootstrap-3.2.0-dist/css/bootstrap.min.css" />
-        -->
-        <!-- Bootstrap required for CLARIN style to work properly -->
-        <!--
-        <script charset="utf8" type="text/javascript" src="//infra.clarin.eu/content/libs/bootstrap-3.2.0-dist/js/bootstrap.min.js"></script>
-        -->
+        <link rel="stylesheet" type="text/css" href="http://beta-vlo.clarin.eu/css/vlo.css" />       
+        <link href="https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,700,700i&amp;subset=latin-ext,vietnamese" rel="stylesheet" />
+        <link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css" />
     </head>
     <body>
         <noscript>
             <div id="noscript-warning">Virtual Collection Registry requires JavaScript to be enabled!</div>
         </noscript>
 
-
-        <div id="body">
-            <div class="navbar navbar-default navbar-static-top" role="navigation">
-                               
-                <div wicket:id="betabadge" class="betabadge">
-                    <span>BETA</span>
-                </div>
-                
-                <div class="container">
-                    <div class="navbar-header">
-                        <button type="button" class="navbar-toggle" data-toggle="collapse" data-target=".navbar-collapse">
-                            <span class="sr-only">Toggle navigation</span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                            <span class="icon-bar"></span>
-                        </button>
-                        <a class="navbar-brand" wicket:id="homelink"><header>Virtual Collection Registry</header></a>
-                    </div>
-
-                    <div class="navbar-collapse collapse">
-                        <wicket:container wicket:id="menu"></wicket:container>
-                        <ul id="CLARIN_header_right" class="nav navbar-nav navbar-right">
-                            <li wicket:id="authstate">[auth]</li>
-                        </ul>
-                    </div>
-                </div>
+        <header wicket:id="header" id="header" role="banner">
+            <div class="clarin-top visible-xs">
+                <a class="logo center-block" href="http://www.clarin.eu"></a>
             </div>
-            <!--
-            <div class="panel panel-default">
-                <div class="panel-heading">
-                    <a data-toggle="collapse" href="#collapse1">Collapsible panel</a>
-                </div>
-                <div id="collapse1" class="panel-collapse collapse">
-                    <div class="panel-body">
-                        Panel content
-                    </div>
-                    <div class="panel-footer">
-                        Panel Footer
-                    </div>
-                </div>
-            </div>   
-            -->
-            <div id="push"></div>
-            <div class="container">
+            <span class="qualifier snapshot">TESTING</span>
+            <span class="qualifier beta">BETA</span>
+            <!--<span wicket:id="authstate">[auth]</span>-->
+            <div wicket:id="menu" class="navbar-static-top"  role="banner">[Navigation]</div>            
+        </header>
+
+        <div class="container" id="content">
                 <div id="feedback" wicket:id="feedback">[Feedback]</div>
                 <wicket:child />
-            </div>
         </div>
-
-        <div id="footer">
+        
+        <footer id="footer">
             <div class="container">
-                <div id="CLARIN_footer_left">
-                    <a title="about" wicket:id="aboutlink">
-                        <span class="glyphicon glyphicon-info-sign"></span>
-                        <span>VERSION ${pom.version} </span>
-                    </a>
-                </div>
-                <div id="CLARIN_footer_middle">
-                    <a title="CLARIN ERIC" href="https://www.clarin.eu/"><img src="images/clarin-logo.png" alt="CLARIN ERIC logo"/></a>
-                </div>
-                <div id="CLARIN_footer_right">
-                    <a title="contact" href="mailto:vcr@clarin.eu">
-                        <span class="glyphicon glyphicon-envelope"></span>
-                        <span> CONTACT</span>
-                    </a>
+                <div class="row">
+                    <div class="col-sm-6 col-sm-push-3 col-xs-12">
+                        <!-- CLARIN logo and copyright (center column on larger screens) -->
+                        <div class="text-center">
+                            <span class="footer-fineprint">
+                                Service provided by <a href="https://www.clarin.eu">CLARIN</a>
+                            </span>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 col-sm-pull-6 col-xs-12">
+                        <div class="hidden-xs">
+                            <!-- On smaller screen, show about link with contact link -->
+                            <wicket:link><a href="AboutPage.html">About</a></wicket:link>
+                        </div>
+                        <div class="version-info text-center-xs">
+                            <!-- Center version on mobile -->
+                            v${pom.version}
+                        </div>
+                    </div>
+                    <div class="col-sm-3 hidden-xs text-right">
+                        <!-- Contact link in right column on larger screens -->
+                        <a href="mailto:vcr@clarin.eu">Contact</a>
+                    </div>
+                    <div class="visible-xs-block text-center">
+                        <!-- Both links in centered div on mobile -->
+                        <wicket:link><a href="AboutPage.html">About</a></wicket:link>
+                        &nbsp;<a href="mailto:vcr@clarin.eu">Contact</a>
+                    </div>
                 </div>
             </div>
-        </div>
-        <!-- Piwik -->
-        <script type="text/javascript">
-            var _paq = _paq || [];
-            _paq.push(['trackPageView']);
-            _paq.push(['enableLinkTracking']);
-            (function () {
-                var u = "https://stats.clarin.eu/";
-                _paq.push(['setTrackerUrl', u + 'piwik.php']);
-                _paq.push(['setSiteId', 6]);
-                var d = document, g = d.createElement('script'), s = d.getElementsByTagName('script')[0];
-                g.type = 'text/javascript';
-                g.async = true;
-                g.defer = true;
-                g.src = u + 'piwik.js';
-                s.parentNode.insertBefore(g, s);
-            })();
-        </script>
-        <noscript><p><img src="//stats.clarin.eu/piwik.php?idsite=6" style="border:0;" alt="" /></p></noscript>
-        <!-- End Piwik Code -->
+        </footer>
+        
+        <wicket:container wicket:id="piwik"><!-- piwik tracker --></wicket:container>
+        
     </body>
 </html>

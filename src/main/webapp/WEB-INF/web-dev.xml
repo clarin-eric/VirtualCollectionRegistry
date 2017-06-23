@@ -143,13 +143,9 @@
             <http-method>GET</http-method>
         </web-resource-collection>
         <auth-constraint>
-            <role-name>dev</role-name>
+            <role-name>*</role-name>
         </auth-constraint>
     </security-constraint>
-
-    <security-role>
-        <role-name>vcr</role-name>
-    </security-role>
     
     <login-config>
         <auth-method>BASIC</auth-method>

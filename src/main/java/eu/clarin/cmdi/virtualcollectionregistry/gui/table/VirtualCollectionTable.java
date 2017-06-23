@@ -11,12 +11,11 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 
-import eu.clarin.cmdi.virtualcollectionregistry.gui.border.AjaxToggleBorder;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
 
@@ -55,13 +54,17 @@ public abstract class VirtualCollectionTable extends Panel {
         table.addBottomToolbar(new AjaxNavigationToolbar(table));
 
         // setup filter
+        /*
         final AjaxToggleBorder border =
             new AjaxToggleBorder("border", new Model<String>("Filter"));
+            */
         final FilterForm form =
             new FilterForm("filterForm", provider, table, showState, isAdmin);
-        border.add(form);
-        add(border);
+        //border.add(form);
+        //add(border);
+        add(form);
         add(table);
+        add(new Label("title", "Virtual Collections"));
     }
 
     @Override
