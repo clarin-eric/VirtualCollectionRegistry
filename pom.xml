@@ -412,11 +412,13 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        
+       
     </dependencies>
 
     <build>
-        <resources>
+        <finalName>vcr</finalName>
+        
+          <resources>
             <resource>
                 <filtering>true</filtering>
                 <directory>src/main/resources</directory>
@@ -565,6 +567,7 @@
                             <directory>doc</directory>
                         </resource>
                     </webResources>
+                    <outputDirectory>bin</outputDirectory>
                 </configuration>
             </plugin>
             
