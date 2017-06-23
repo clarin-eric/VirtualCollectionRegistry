@@ -14,6 +14,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.CreateVirtualCollectio
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.EditVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.HelpPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.LoginPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.LogoutPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.VirtualCollectionDetailsPage;
 import org.apache.wicket.Page;
 import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
@@ -67,6 +68,7 @@ public class Application extends AuthenticatedWebApplication {
         }
 
         mountPage("/login", LoginPage.class);
+        mountPage("/logout", LogoutPage.class);
         mountPage("/public", BrowsePublicCollectionsPage.class);
         mountPage("/private", BrowsePrivateCollectionsPage.class);
         mountPage("/create", CreateVirtualCollectionPageSimple.class);

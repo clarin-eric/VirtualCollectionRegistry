@@ -87,7 +87,7 @@ public class BasePage extends WebPage {
         final List<INavbarComponent> menuItems = new ArrayList<>();
         //Default menu items
         menuItems.add(new ImmutableNavbarComponent(new NavbarButton(BrowsePublicCollectionsPage.class, Model.of("Browse")), ComponentPosition.LEFT));
-        menuItems.add(new ImmutableNavbarComponent(new NavbarButton(BrowsePrivateCollectionsPage.class, Model.of("My Collections")), ComponentPosition.LEFT));
+        //menuItems.add(new ImmutableNavbarComponent(new NavbarButton(BrowsePrivateCollectionsPage.class, Model.of("My Collections")), ComponentPosition.LEFT));
         menuItems.add(new ImmutableNavbarComponent(new NavbarButton(CreateVirtualCollectionPage.class, Model.of("Create")), ComponentPosition.LEFT));
         menuItems.add(new ImmutableNavbarComponent(new NavbarButton(HelpPage.class, Model.of("Help")), ComponentPosition.LEFT));
         
@@ -97,9 +97,9 @@ public class BasePage extends WebPage {
         
         //Add login or user profile + logout buttons based on authentication state
         if(isSignedIn()) {
-            final Component userLink = new NavbarButton(LoginPage.class, Model.of(getUser().getName()))
+            final Component userLink = new NavbarButton(BrowsePrivateCollectionsPage.class, Model.of(getUser().getName()))
                     .add(new AttributeModifier("class", "glyphicon glyphicon-user"));
-            final Component logoutLink = new NavbarButton(LoginPage.class, Model.of("Logout "))
+            final Component logoutLink = new NavbarButton(LogoutPage.class, Model.of("Logout"))
                 .add(new AttributeModifier("class", "glyphicon glyphicon-log-out"));
         
             
