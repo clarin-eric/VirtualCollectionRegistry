@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @AuthorizeInstantiation(Roles.USER)
-public class EditVirtualCollectionPage extends CreateVirtualCollectionPageSimple_1 {
+public class EditVirtualCollectionPage extends CreateVirtualCollectionPageSimple {
 
     @SpringBean
     private VirtualCollectionRegistry vcr;

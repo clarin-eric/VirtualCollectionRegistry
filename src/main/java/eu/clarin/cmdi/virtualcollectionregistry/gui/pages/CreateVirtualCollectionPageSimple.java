@@ -50,14 +50,15 @@ import org.slf4j.LoggerFactory;
  */
 @AuthorizeInstantiation(Roles.USER)
 @SuppressWarnings("serial")
-public class CreateVirtualCollectionPageSimple_1 extends BasePage {
+public class CreateVirtualCollectionPageSimple extends BasePage {
 
-    private static Logger logger = LoggerFactory.getLogger(CreateVirtualCollectionPageSimple_1.class);
+    private static Logger logger = LoggerFactory.getLogger(CreateVirtualCollectionPageSimple.class);
     
     protected final String DEFAULT_TOOLTIP_DATA_PLACEMENT = "right";
     
     protected VirtualCollection vc;
     protected boolean renderStateValid = false;
+    protected boolean editMode = false;
     
     @SpringBean
     private VirtualCollectionRegistry vcr;
@@ -68,7 +69,7 @@ public class CreateVirtualCollectionPageSimple_1 extends BasePage {
     /**
      * Used by extenstions.
      */
-    public CreateVirtualCollectionPageSimple_1() {
+    public CreateVirtualCollectionPageSimple() {
         this(null, null);
     }
 
@@ -76,7 +77,7 @@ public class CreateVirtualCollectionPageSimple_1 extends BasePage {
      * used when page constructed by framework
      * @param params
      */
-    public CreateVirtualCollectionPageSimple_1(PageParameters params) {
+    public CreateVirtualCollectionPageSimple(PageParameters params) {
         this(null, null);
     } 
    
@@ -85,8 +86,11 @@ public class CreateVirtualCollectionPageSimple_1 extends BasePage {
      * @param vc
      * @param previousPage 
      */
-    public CreateVirtualCollectionPageSimple_1(VirtualCollection vc, final Page previousPage) {
+    public CreateVirtualCollectionPageSimple(VirtualCollection vc, final Page previousPage) {
         this.vc = vc;
+        if(this.vc != null) {
+            this.editMode = true;
+        }
     }
     
     protected void addComponents() {
@@ -138,7 +142,7 @@ public class CreateVirtualCollectionPageSimple_1 extends BasePage {
                 List<Creator> creators = authorsModel.getObject();
                 List<Resource> resources = resourceModel.getObject();
                 
-                VirtualCollection vc = new VirtualCollection();
+                final VirtualCollection vc = new VirtualCollection();
                 vc.setName(name);
                 vc.setType(type);
                 vc.setDescription(description);                
@@ -148,19 +152,7 @@ public class CreateVirtualCollectionPageSimple_1 extends BasePage {
                 vc.getKeywords().addAll(keywords);
                 vc.getCreators().addAll(creators);
                 vc.getResources().addAll(resources);
-                /*
-                logger.info("Create new virtual collection:");
-                logger.info("\tname: "+name);
-                logger.info("\ttype: "+type);
-                logger.info("\tdescription: "+description);
-                logger.info("\tpurpose: "+purpose);
-                logger.info("\treproducibility: "+reproducibility);
-                logger.info("\trepoducibilityNotice: "+repoducibilityNotice);
-                logger.info("\tkeywords: "+keywords.size());
-                logger.info("\tcreators: "+creators.size());
-                logger.info("\tresources: "+resources.size());
-                */
-                //final VirtualCollection vc = vcModel.getObject();
+                
                 try {
                     ApplicationSession session
                             = (ApplicationSession) getSession();
@@ -228,6 +220,9 @@ public class CreateVirtualCollectionPageSimple_1 extends BasePage {
         form.add(new AjaxPreventSubmitBehavior());
         
         Button submitButton = new Button("submit", Model.of("Create virtual collection"));
+        if(this.editMode) {
+            submitButton = new Button("submit", Model.of("Save virtual collection"));
+        }
         form.add(submitButton);
         form.setDefaultButton(submitButton);
         
@@ -270,9 +265,12 @@ public class CreateVirtualCollectionPageSimple_1 extends BasePage {
     }
     
     public void updateWithCollection(VirtualCollection vc) {
+        if(this.vc != null) {
             this.vc = vc;
+            this.editMode = true;
             this.renderStateValid = false;
-            //TODO: can we remove components previously added?
+            this.removeAll();
+        }
     } 
     
 } // class CreateVirtualCollecionPage

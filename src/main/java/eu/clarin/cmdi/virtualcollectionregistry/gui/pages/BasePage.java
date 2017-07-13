@@ -101,7 +101,7 @@ public class BasePage extends WebPage {
         //Default menu items
         menuItems.add(new ImmutableNavbarComponent(new NavbarButton(BrowsePublicCollectionsPage.class, Model.of("Browse")), ComponentPosition.LEFT));
         //menuItems.add(new ImmutableNavbarComponent(new NavbarButton(BrowsePrivateCollectionsPage.class, Model.of("My Collections")), ComponentPosition.LEFT));
-        menuItems.add(new ImmutableNavbarComponent(new NavbarButton(CreateVirtualCollectionPageSimple_1.class, Model.of("Create")), ComponentPosition.LEFT));
+        menuItems.add(new ImmutableNavbarComponent(new NavbarButton(CreateVirtualCollectionPageSimple.class, Model.of("Create")), ComponentPosition.LEFT));
         menuItems.add(new ImmutableNavbarComponent(new NavbarButton(HelpPage.class, Model.of("Help")), ComponentPosition.LEFT));
         
         if (isSignedIn() && isUserAdmin()) {
