@@ -2,9 +2,11 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermissionException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.AuthorsInput;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.CheckboxInput;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.CheckboxInputModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.KeywordInput;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.ResourceInput;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
@@ -23,6 +25,7 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxPreventSubmitBehavior;
+import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -50,9 +53,9 @@ import org.slf4j.LoggerFactory;
  */
 @AuthorizeInstantiation(Roles.USER)
 @SuppressWarnings("serial")
-public class CreateVirtualCollectionPageSimple extends BasePage {
+public class CreateAndEditVirtualCollectionPage extends BasePage {
 
-    private static Logger logger = LoggerFactory.getLogger(CreateVirtualCollectionPageSimple.class);
+    private static Logger logger = LoggerFactory.getLogger(CreateAndEditVirtualCollectionPage.class);
     
     protected final String DEFAULT_TOOLTIP_DATA_PLACEMENT = "right";
     
@@ -68,37 +71,48 @@ public class CreateVirtualCollectionPageSimple extends BasePage {
     
     /**
      * Used by extenstions.
+     * @throws eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermissionException
      */
-    public CreateVirtualCollectionPageSimple() {
+    public CreateAndEditVirtualCollectionPage() throws VirtualCollectionRegistryPermissionException {
         this(null, null);
     }
 
     /**
      * used when page constructed by framework
      * @param params
+     * @throws eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException
      */
-    public CreateVirtualCollectionPageSimple(PageParameters params) {
-        this(null, null);
+    public CreateAndEditVirtualCollectionPage(PageParameters params) throws VirtualCollectionRegistryException {
+        final Long id = params.get("id").toLong();
+        initializeWithCollection(vcr.retrieveVirtualCollection(id));        
     } 
    
     /**
      * 
      * @param vc
      * @param previousPage 
+     * @throws eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermissionException 
      */
-    public CreateVirtualCollectionPageSimple(VirtualCollection vc, final Page previousPage) {
-        this.vc = vc;
-        if(this.vc != null) {
+    public CreateAndEditVirtualCollectionPage(VirtualCollection vc, final Page previousPage) throws VirtualCollectionRegistryPermissionException {
+        initializeWithCollection(vc);
+    }
+    
+    private void initializeWithCollection(VirtualCollection vc) throws VirtualCollectionRegistryPermissionException {
+        if(vc != null) {
+            checkAccess(vc);
+            this.vc = vc;        
             this.editMode = true;
+        } else {
+            this.editMode = false;
         }
     }
     
     protected void addComponents() {
         final IModel<String> nameModel = vc == null || vc.getName().isEmpty() ? Model.of("") : Model.of(vc.getName());
-        final IModel<Type> typeModel = new Model(Type.INTENSIONAL);        
+        final IModel<CheckboxInputModel<Type>> typeModel = new Model(new CheckboxInputModel<>(Type.INTENSIONAL));
         final IModel<String> descriptionModel = Model.of("x");
-        final IModel<Purpose> purposeModel = new Model(Purpose.REFERENCE);
-        final IModel<Reproducibility> reproducibilityModel = new Model(Reproducibility.INTENDED);        
+        final IModel<CheckboxInputModel<Purpose>> purposeModel = new Model(new CheckboxInputModel(Purpose.REFERENCE));
+        final IModel<CheckboxInputModel<Reproducibility>> reproducibilityModel = new Model(new CheckboxInputModel(Reproducibility.INTENDED));
         final Model<String> reproducibilityNoticeModel = Model.of("");
         final IModel<List<String>> keywordsModel = new ListModel<>(new ArrayList<>());
         final IModel<List<Creator>> authorsModel = new ListModel<>(new ArrayList<>());
@@ -132,11 +146,21 @@ public class CreateVirtualCollectionPageSimple extends BasePage {
             protected void onSubmit() {
                 super.onSubmit();
                 logger.info("Form successfully submitted!");
-                String name = nameModel.getObject();                       
-                Type type = typeModel.getObject();
+                String name = nameModel.getObject();
+                Type type = null;
+                if( typeModel.getObject() != null) {
+                    type = typeModel.getObject().getObject();
+                }                
                 String description = descriptionModel.getObject();
-                Purpose purpose = purposeModel.getObject();
-                Reproducibility reproducibility = reproducibilityModel.getObject();              
+                
+                Purpose purpose = null;
+                if(purposeModel.getObject() != null) {
+                    purpose = purposeModel.getObject().getObject();
+                }
+                Reproducibility reproducibility = null;
+                if(reproducibilityModel.getObject() != null) {
+                    reproducibility = reproducibilityModel.getObject().getObject();
+                }
                 String repoducibilityNotice = reproducibilityNoticeModel.getObject();
                 List<String> keywords = keywordsModel.getObject();
                 List<Creator> creators = authorsModel.getObject();
@@ -149,8 +173,13 @@ public class CreateVirtualCollectionPageSimple extends BasePage {
                 vc.setPurpose(purpose);
                 vc.setReproducibility(reproducibility);
                 vc.setReproducibilityNotice(repoducibilityNotice);
-                vc.getKeywords().addAll(keywords);
-                vc.getCreators().addAll(creators);
+                if(editMode) {
+                    vc.getKeywords().clear();
+                    vc.getCreators().clear();
+                    vc.getResources().clear();
+                }
+                vc.getKeywords().addAll(keywords);                
+                vc.getCreators().addAll(creators);                
                 vc.getResources().addAll(resources);
                 
                 try {
@@ -185,19 +214,33 @@ public class CreateVirtualCollectionPageSimple extends BasePage {
         
         addTextinput(form, nameModel, "name", "Name", nameTooltip, true, false);
 
+        final List<CheckboxInputModel<Type>> typeList = new ArrayList<>();
+        for(Type t : Type.values()) {
+            typeList.add(new CheckboxInputModel(t));
+        }
         form.add(
-            new CheckboxInput<>("type", typeModel, Arrays.asList(Type.values()), "Type", typeTooltip)
+            new CheckboxInput<>("type", typeModel, typeList, "Type", typeTooltip)
             .setRequired(true)            
         );
        
         addTextinput(form, descriptionModel, "description", "Description", descriptionTooltip, false, true);
+        
+        final List<CheckboxInputModel<Purpose>> purposeList = new ArrayList<>();
+        for(Purpose t : Purpose.values()) {
+            purposeList.add(new CheckboxInputModel(t));
+        }
         form.add(
-            new CheckboxInput<>("purpose", purposeModel, Arrays.asList(Purpose.values()), "Purpose", purposeTooltip)
+            new CheckboxInput<>("purpose", purposeModel, purposeList, "Purpose", purposeTooltip)
             .setRequired(false)
 
         );
+        
+        final List<CheckboxInputModel<Reproducibility>> reproducibilityeList = new ArrayList<>();
+        for(Reproducibility t : Reproducibility.values()) {
+            reproducibilityeList.add(new CheckboxInputModel(t));
+        }
         form.add(
-            new CheckboxInput<>("reproducibility", reproducibilityModel, Arrays.asList(Reproducibility.values()), "Reproducibility", reproducibilityTooltip)
+            new CheckboxInput<CheckboxInputModel<Reproducibility>>("reproducibility", reproducibilityModel, reproducibilityeList, "Reproducibility", reproducibilityTooltip)
             .setRequired(false)
         );
         addTextinput(form, reproducibilityNoticeModel, "reproducibility_notice", "Reproducibility Notice", reproducibilityNoticeTooltip, false, true);
@@ -265,7 +308,7 @@ public class CreateVirtualCollectionPageSimple extends BasePage {
     }
     
     public void updateWithCollection(VirtualCollection vc) {
-        if(this.vc != null) {
+        if(vc != null) {
             this.vc = vc;
             this.editMode = true;
             this.renderStateValid = false;
@@ -273,4 +316,16 @@ public class CreateVirtualCollectionPageSimple extends BasePage {
         }
     } 
     
+    private void checkAccess(final VirtualCollection vc) throws VirtualCollectionRegistryPermissionException {
+        // do not allow editing of VC's that are non-private or owned
+        // by someone else! (except for admin)
+        if (!isUserAdmin()
+                && ( //only allow editing of private & public
+                !(vc.getState() == VirtualCollection.State.PRIVATE || vc.getState() == VirtualCollection.State.PUBLIC)
+                // only allow editing by the owner
+                || !vc.getOwner().equalsPrincipal(getUser()))) {
+            logger.warn("User {} attempts to edit virtual collection {} with state {} owned by {}", new Object[]{getUser().getName(), vc.getId(), vc.getState(), vc.getOwner().getName()});
+            throw new UnauthorizedInstantiationException(CreateAndEditVirtualCollectionPage.class);
+        }
+    }    
 } // class CreateVirtualCollecionPage

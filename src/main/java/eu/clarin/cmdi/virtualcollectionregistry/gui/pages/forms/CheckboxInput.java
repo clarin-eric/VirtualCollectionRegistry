@@ -43,7 +43,7 @@ import org.slf4j.LoggerFactory;
  * @param <T>
  */
 @SuppressWarnings("serial")
-public class CheckboxInput<T extends Serializable> extends FormComponentPanel<T> {
+public class CheckboxInput<T extends CheckboxInputModel> extends FormComponentPanel<T> {
     
     private static Logger logger = LoggerFactory.getLogger(CheckboxInput.class);
     

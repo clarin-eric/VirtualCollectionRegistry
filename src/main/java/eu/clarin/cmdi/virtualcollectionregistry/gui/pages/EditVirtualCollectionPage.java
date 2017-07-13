@@ -15,14 +15,14 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @AuthorizeInstantiation(Roles.USER)
-public class EditVirtualCollectionPage extends CreateVirtualCollectionPageSimple {
+public class EditVirtualCollectionPage extends CreateAndEditVirtualCollectionPage {
 
     @SpringBean
     private VirtualCollectionRegistry vcr;
 
     private final static Logger logger = LoggerFactory.getLogger(EditVirtualCollectionPage.class);
 
-    public EditVirtualCollectionPage(VirtualCollection vc, Page page) {
+    public EditVirtualCollectionPage(VirtualCollection vc, Page page) throws VirtualCollectionRegistryPermissionException {
         super(vc, page);
     }
     
@@ -45,7 +45,5 @@ public class EditVirtualCollectionPage extends CreateVirtualCollectionPageSimple
             logger.warn("User {} attempts to edit virtual collection {} with state {} owned by {}", new Object[]{getUser().getName(), vc.getId(), vc.getState(), vc.getOwner().getName()});
             throw new UnauthorizedInstantiationException(EditVirtualCollectionPage.class);
         }
-    }
-
-    
+    }    
 }

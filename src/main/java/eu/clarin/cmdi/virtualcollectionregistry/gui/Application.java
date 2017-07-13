@@ -9,7 +9,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AboutPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AdminPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePrivateCollectionsPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePublicCollectionsPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.CreateVirtualCollectionPageSimple;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.CreateAndEditVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.EditVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.HelpPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.LoginPage;
@@ -70,12 +70,12 @@ public class Application extends AuthenticatedWebApplication {
         mountPage("/logout", LogoutPage.class);
         mountPage("/public", BrowsePublicCollectionsPage.class);
         mountPage("/private", BrowsePrivateCollectionsPage.class);
-        mountPage("/create", CreateVirtualCollectionPageSimple.class);
+        mountPage("/create", CreateAndEditVirtualCollectionPage.class);
         mountPage("/about", AboutPage.class);
         mountPage("/help", HelpPage.class);
         mountPage("/admin", AdminPage.class);
         mountPage("/details/${id}", VirtualCollectionDetailsPage.class);
-        mountPage("/edit/${id}", EditVirtualCollectionPage.class);
+        mountPage("/edit/${id}", CreateAndEditVirtualCollectionPage.class);
     }
 
     @Override

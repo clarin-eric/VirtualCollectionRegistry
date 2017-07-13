@@ -18,13 +18,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource.Type;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
-import java.util.EnumMap;
-import java.util.EnumSet;
-import java.util.Iterator;
 import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -35,8 +29,6 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
-import org.apache.wicket.markup.html.form.Radio;
-import org.apache.wicket.markup.html.form.RadioGroup;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -44,7 +36,6 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
-import org.apache.wicket.validation.validator.UrlValidator;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -57,7 +48,7 @@ public class ResourceInput extends FormComponentPanel<List<Resource>> {
     
     private static Logger logger = LoggerFactory.getLogger(ResourceInput.class);
     
-    final private IModel<TypeModel<Type>> typeModel = new Model(TypeModel.of(Type.RESOURCE));
+    final private IModel<CheckboxInputModel<Type>> typeModel = new Model(new CheckboxInputModel<>(Type.RESOURCE));
     final private IModel<String> labelModel = Model.of("");
     final private IModel<String> referencesModel = Model.of("");
     final private IModel<String> descriptionModel = Model.of("");
@@ -81,7 +72,11 @@ public class ResourceInput extends FormComponentPanel<List<Resource>> {
             @Override
             protected void onSubmit() {
                 super.onSubmit();
-                Type type = typeModel.getObject().getType();
+                
+                Type type = null;
+                if(typeModel.getObject() != null) {
+                    type = typeModel.getObject().getObject();
+                }                
                 String reference = referencesModel.getObject();
                 String label = labelModel.getObject();
                 String description = descriptionModel.getObject();
@@ -105,7 +100,7 @@ public class ResourceInput extends FormComponentPanel<List<Resource>> {
                     }
                     
                     listModel.getObject().add(r);
-                    typeModel.setObject(TypeModel.of(Type.RESOURCE));
+                    typeModel.setObject(new CheckboxInputModel<>(Type.RESOURCE));
                     referencesModel.setObject(null);
                     labelModel.setObject(null);
                     descriptionModel.setObject(null);
@@ -123,17 +118,15 @@ public class ResourceInput extends FormComponentPanel<List<Resource>> {
         
         
             
-        final List<TypeModel<Type>> list = new ArrayList<>();
+        final List<CheckboxInputModel<Type>> list = new ArrayList<>();
         for(Type t : Type.values()) {
-            list.add(new TypeModel(t));
+            list.add(new CheckboxInputModel(t));
         }
                 
         form.add(
             new CheckboxInput<>("input_type", typeModel, list)
-            .setRequired(false)
         );
         TextField<String> inputReference = new TextField("input_reference", referencesModel);
-        //inputReference.setRequired(true);
         TextField<String> inputLabel = new TextField("input_label", labelModel);        
         //inputReference.add(new UrlValidator(new String[]{"http://", "https://", "hdl://"}));
         TextArea<String> inputDescription = new TextArea("input_description", descriptionModel);
@@ -186,7 +179,7 @@ public class ResourceInput extends FormComponentPanel<List<Resource>> {
     protected void onBeforeRender() {
         super.onBeforeRender();
     }    
-    
+    /*
     public static class TypeModel<T> implements Serializable {
         private final T type;       
         
@@ -216,4 +209,5 @@ public class ResourceInput extends FormComponentPanel<List<Resource>> {
             return this.type.toString();
         }
     }
+*/
 }

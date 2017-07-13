@@ -355,7 +355,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
         public void onConfirm(AjaxRequestTarget target) {
             PageParameters params = new PageParameters();
             
-            setResponsePage(EditVirtualCollectionPage.class, 
+            setResponsePage(CreateAndEditVirtualCollectionPage.class, 
                 buildParamsFromMap(Collections.singletonMap("id", vcId)));
             
             target.add(this);
@@ -444,7 +444,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
                 // todo: custom message for editing of frozen collections
                 editPublishedDialog.showDialogue(target, vc, "collections.editpublishedfrozenconfirm");
             } else {
-                setResponsePage(EditVirtualCollectionPage.class, 
+                setResponsePage(CreateAndEditVirtualCollectionPage.class, 
                         buildParamsFromMap(Collections.singletonMap("id", vc.getId())));
             }
         }
