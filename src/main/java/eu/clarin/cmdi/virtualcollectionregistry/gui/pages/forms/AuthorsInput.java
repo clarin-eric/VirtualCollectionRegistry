@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.clarin.cmdi.virtualcollectionregistry.gui.forms;
+package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import java.util.ArrayList;
@@ -72,26 +72,21 @@ public class AuthorsInput extends FormComponentPanel<List<Creator>> {
                 String email = emailModel.getObject();
                 String organisation = organisationModel.getObject();
 
+                logger.info("person: ["+person+"], email: ["+email+"], org: ["+organisation+"]");
                 List<String> errors = new ArrayList<>();
                 if (person == null || person.isEmpty()) {
                     errors.add("Person is a required field.");
                 }
-                /*
-                if (email == null || email.isEmpty()) {
 
-                }
-                if (organisation == null || organisation.isEmpty()) {
-
-                }
-                */
                 if (errors.isEmpty()) {
                     Creator creator = new Creator(person);
-                    if (email == null || email.isEmpty()) {
+                    if (email != null && !email.isEmpty()) {
                         creator.setEMail(email);
                     }
-                    if (organisation == null || organisation.isEmpty()) {
+                    if (organisation != null && !organisation.isEmpty()) {
                         creator.setOrganisation(organisation);
                     }
+                    
                     listModel.getObject().add(creator);
                     personModel.setObject(null);
                     emailModel.setObject(null);

@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.clarin.cmdi.virtualcollectionregistry.gui.forms;
+package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms;
 
 import java.io.Serializable;
 import java.util.List;

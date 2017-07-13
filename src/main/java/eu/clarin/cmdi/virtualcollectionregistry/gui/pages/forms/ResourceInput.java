@@ -14,7 +14,7 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.clarin.cmdi.virtualcollectionregistry.gui.forms;
+package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource.Type;
@@ -97,10 +97,10 @@ public class ResourceInput extends FormComponentPanel<List<Resource>> {
                 if (errors.isEmpty()) {
                     logger.info("Selected type: " + type);
                     Resource r = new Resource(type, reference);
-                    if (label == null || label.isEmpty()) {
+                    if (label != null && !label.isEmpty()) {
                         r.setLabel(label);
                     }
-                    if (description == null || description.isEmpty()) {
+                    if (description != null && !description.isEmpty()) {
                         r.setDescription(description);
                     }
                     
