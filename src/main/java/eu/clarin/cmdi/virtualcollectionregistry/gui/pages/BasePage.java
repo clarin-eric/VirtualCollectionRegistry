@@ -18,6 +18,9 @@ import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
+import org.apache.wicket.markup.head.IHeaderResponse;
+import org.apache.wicket.markup.head.JavaScriptHeaderItem;
+import org.apache.wicket.markup.head.JavaScriptReferenceHeaderItem;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
@@ -29,6 +32,7 @@ import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -45,6 +49,8 @@ public class BasePage extends WebPage {
     
     public static final String BETA_MODE = "eu.clarin.cmdi.virtualcollectionregistry.beta_mode";
     
+    private final static JavaScriptResourceReference INIT_JAVASCRIPT_REFERENCE = new JavaScriptResourceReference(BasePage.class, "BasePage.js");
+    
     protected BasePage(IModel<?> model) {
         super(model);
         addComponents();
@@ -54,6 +60,14 @@ public class BasePage extends WebPage {
         addComponents();
     }
 
+     @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        //TODO: check if https://ci.apache.org/projects/wicket/apidocs/6.x/org/apache/wicket/markup/head/OnLoadHeaderItem.html is a better alternative
+        response.render(JavaScriptHeaderItem.forReference(getApplication().getJavaScriptLibrarySettings().getJQueryReference()));  //Ensure jquery is loaded before custom script
+        response.render(JavaScriptReferenceHeaderItem.forReference(INIT_JAVASCRIPT_REFERENCE));
+    }
+    
     private void addComponents() {
         final boolean beta_mode = Boolean.valueOf(WebApplication.get().getServletContext().getInitParameter(BETA_MODE));
 
@@ -81,17 +95,16 @@ public class BasePage extends WebPage {
             }
 
         };
-        //navbar.add(new AttributeModifier("class", "hidden-overflow"));
         navbar.setBrandName(Model.of("<i class=\"glyphicon glyphicon-book\" aria-hidden=\"true\"></i> Virtual Collection Registry"));
         
         final List<INavbarComponent> menuItems = new ArrayList<>();
         //Default menu items
         menuItems.add(new ImmutableNavbarComponent(new NavbarButton(BrowsePublicCollectionsPage.class, Model.of("Browse")), ComponentPosition.LEFT));
         //menuItems.add(new ImmutableNavbarComponent(new NavbarButton(BrowsePrivateCollectionsPage.class, Model.of("My Collections")), ComponentPosition.LEFT));
-        menuItems.add(new ImmutableNavbarComponent(new NavbarButton(CreateVirtualCollectionPage.class, Model.of("Create")), ComponentPosition.LEFT));
+        menuItems.add(new ImmutableNavbarComponent(new NavbarButton(CreateVirtualCollectionPageSimple_1.class, Model.of("Create")), ComponentPosition.LEFT));
         menuItems.add(new ImmutableNavbarComponent(new NavbarButton(HelpPage.class, Model.of("Help")), ComponentPosition.LEFT));
         
-        if (isUserAdmin()) {
+        if (isSignedIn() && isUserAdmin()) {
             menuItems.add(new ImmutableNavbarComponent(new NavbarButton(AdminPage.class, Model.of("Admin")), ComponentPosition.LEFT));
         }
         
@@ -176,7 +189,7 @@ public class BasePage extends WebPage {
     }
 
     protected boolean isSignedIn() {
-        return ((AuthenticatedWebSession) getSession()).isSignedIn();
+        return ((AuthenticatedWebSession) getSession()).isSignedIn() && getSession().getPrincipal() != null;
     }
     
     protected Principal getUser() {

@@ -69,7 +69,7 @@ public class CreateVirtualCollectionPage extends BasePage {
         add(wizard);
     }
     
-    public void updateWizardModelWithCollection(VirtualCollection vc) {
+    public void updateWithCollection(VirtualCollection vc) {
         if(wizard != null) {
             wizardModel.setObject(vc);
         }

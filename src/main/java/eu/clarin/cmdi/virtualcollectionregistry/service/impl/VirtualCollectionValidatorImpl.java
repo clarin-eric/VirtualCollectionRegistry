@@ -47,48 +47,52 @@ public class VirtualCollectionValidatorImpl implements VirtualCollectionValidato
             uniqueCreators.add(creator);
         }
 
-        switch (vc.getType()) {
-            case EXTENSIONAL:
-                if (vc.getResources().isEmpty()) {
-                    throw new VirtualCollectionRegistryUsageException(
-                            "extensional collection must contain on or "
-                            + "more resources");
-                }
-                if (vc.getGeneratedBy() != null) {
-                    throw new VirtualCollectionRegistryUsageException(
-                            "extensional collection must not contain GeneratedBy");
-                }
-                final List<String> invalidRefs = getInvalidReferences(vc);
-                if (!invalidRefs.isEmpty()) {
-                    throw new VirtualCollectionRegistryUsageException(
-                            String.format(
-                                    "one or more references are not valid: %s",
-                                    invalidRefs));
-                }
-                break;
-            case INTENSIONAL:
-                final GeneratedBy generatedBy = vc.getGeneratedBy();
-                if (generatedBy == null) {
-                    throw new VirtualCollectionRegistryUsageException(
-                            "intensional collections needs GeneratedBy");
-                }
-                if (generatedBy.getDescription() == null) {
-                    throw new VirtualCollectionRegistryUsageException(
-                            "GeneratedBy has empty description");
-                }
-                final GeneratedByQuery query = generatedBy.getQuery();
-                if (query != null) {
-                    if (query.getProfile() == null) {
+        if(vc.getType() == null) {
+            throw new VirtualCollectionRegistryUsageException("collection has no type");
+        } else {
+            switch (vc.getType()) {
+                case EXTENSIONAL:
+                    if (vc.getResources().isEmpty()) {
                         throw new VirtualCollectionRegistryUsageException(
-                                "profile of GeneratedBy.Query is empty");
+                                "extensional collection must contain on or "
+                                + "more resources");
                     }
-                    if (query.getValue() == null) {
+                    if (vc.getGeneratedBy() != null) {
                         throw new VirtualCollectionRegistryUsageException(
-                                "query of GeneratedBy.Query is empty");
+                                "extensional collection must not contain GeneratedBy");
                     }
-                }
+                    final List<String> invalidRefs = getInvalidReferences(vc);
+                    if (!invalidRefs.isEmpty()) {
+                        throw new VirtualCollectionRegistryUsageException(
+                                String.format(
+                                        "one or more references are not valid: %s",
+                                        invalidRefs));
+                    }
+                    break;
+                case INTENSIONAL:
+                    final GeneratedBy generatedBy = vc.getGeneratedBy();
+                    if (generatedBy == null) {
+                        throw new VirtualCollectionRegistryUsageException(
+                                "intensional collections needs GeneratedBy");
+                    }
+                    if (generatedBy.getDescription() == null) {
+                        throw new VirtualCollectionRegistryUsageException(
+                                "GeneratedBy has empty description");
+                    }
+                    final GeneratedByQuery query = generatedBy.getQuery();
+                    if (query != null) {
+                        if (query.getProfile() == null) {
+                            throw new VirtualCollectionRegistryUsageException(
+                                    "profile of GeneratedBy.Query is empty");
+                        }
+                        if (query.getValue() == null) {
+                            throw new VirtualCollectionRegistryUsageException(
+                                    "query of GeneratedBy.Query is empty");
+                        }
+                    }
+            }
         }
-
+        
         if ((vc.getReproducibilityNotice() != null)
                 && (vc.getReproducibility() == null)) {
             throw new VirtualCollectionRegistryUsageException(

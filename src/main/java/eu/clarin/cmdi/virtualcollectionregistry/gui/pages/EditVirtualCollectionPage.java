@@ -15,7 +15,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @AuthorizeInstantiation(Roles.USER)
-public class EditVirtualCollectionPage extends CreateVirtualCollectionPage {
+public class EditVirtualCollectionPage extends CreateVirtualCollectionPageSimple_1 {
 
     @SpringBean
     private VirtualCollectionRegistry vcr;
@@ -31,7 +31,7 @@ public class EditVirtualCollectionPage extends CreateVirtualCollectionPage {
         final Long id = params.get("id").toLong();
         final VirtualCollection vc = vcr.retrieveVirtualCollection(id);
         checkAccess(vc);
-        super.updateWizardModelWithCollection(vc); 
+        super.updateWithCollection(vc); 
     }
 
     private void checkAccess(final VirtualCollection vc) throws VirtualCollectionRegistryPermissionException {

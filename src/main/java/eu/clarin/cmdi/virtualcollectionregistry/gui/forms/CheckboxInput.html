@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+<head />
+<body>
+    <wicket:panel>
+        
+        <div class="row" wicket:id="row">
+             <div class="col-xs-2">
+                <label wicket:id="label">[Name]</label>    
+             </div>
+            <div class="col-xs-8" wicket:id="tooltipwrapper">
+                
+                    <div class="btn-group col-xs-2" data-toggle="buttons">
+                
+                        <span wicket:id="group">                    
+                            <wicket:container wicket:id="list">
+                                <!--<label wicket:id="input_wrapper" class="btn btn-primary">-->
+                                    <!--<input wicket:id="input" type="radio" autocomplete="off"><span wicket:id="input_label">[Checkbox]</span></input>                                    -->
+                                    <!--<span wicket:id="input_label">[Checkbox]</span>-->
+                                    <input wicket:id="input" type="radio" autocomplete="off" /><span wicket:id="input_label">[Checkbox]</span><br/>
+                                <!--</label>          -->
+                            </wicket:container>
+                        </span>
+                        
+                    </div>
+                            
+            </div>
+        </div>
+        
+    </wicket:panel>
+</body>
+</html>

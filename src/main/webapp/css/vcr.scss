@@ -5,26 +5,57 @@ $iconsize: 12px;
 
 @import 'mixins';
 @import 'toggleborder';
-@import 'table';
+/*@import 'table';*/
 @import 'collectiondetails';
-@import 'wizard';
+/*@import 'wizard';*/
 @import 'feedback';
 @import 'filterform';
-@import 'popup';
+/*@import 'popup';*/
 
-html {
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: local("Roboto Regular"), local("Roboto-Regular"), url("Roboto_with_European_character_sets.woff") format("woff");
+}
+
+html, body {
     height: 100%
 }
 
 body {
-    font-size: 130%;
-    height: 100%;
+    /*font-size: 130%;*/
+    font-family: "Roboto", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #222222;
+    font-size: 100%;
+    word-wrap: break-word;
+}
+
+.cb {
+    margin: 1px;
+}
+
+.required {
+    font-weight: bold;
+}
+
+.row-spacing {
+    margin-top: 2px;
+    margin-bottom: 2px;
 }
 
 noscript {
     margin: 0 auto;
     padding: 0;
     width: 1024px;
+}
+
+.tooltip-inner {
+    max-width: 300px;
+    width: 300px;
+    text-align: justify;
 }
 
 #noscript-warning {

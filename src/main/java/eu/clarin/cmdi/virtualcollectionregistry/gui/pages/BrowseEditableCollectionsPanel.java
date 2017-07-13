@@ -401,7 +401,8 @@ public class BrowseEditableCollectionsPanel extends Panel {
                             IModel<VirtualCollection> model) {
                         State state = model.getObject().getState();
                         if(state == State.PUBLIC_FROZEN || state == State.PUBLIC || state == State.PRIVATE || isAdmin) {
-                            return new ActionsColumn(componentId, model);
+                            //return new ActionsColumn(componentId, model);
+                            return new ActionsPanel(componentId, model);
                         } else {
                             return new EmptyPanel(componentId, model);
                         }

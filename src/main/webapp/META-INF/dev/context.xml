@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context path="/VirtualCollectionRegistry">
+<Context path="/vcr">
 <!-- *******
      * VCR *
      ******* -->
@@ -13,11 +13,15 @@
                     validationQuery="SELECT 1"
                     username="vcr-user"
                     password="vcr-password"
-                    url="jdbc:mysql://vcr_mysql:3306/vcr" />
-
+                    url="jdbc:mysql://localhost:3306/vcr" />
+    <!--
+    <Parameter
+               name="eu.clarin.cmdi.virtualcollectionregistry.admindb.basedir"
+               value="/Users/wilelb" />
+    -->
     <Parameter
                name="eu.clarin.cmdi.virtualcollectionregistry.admindb"
-               value="./vcr/META-INF/vcr-admin.conf" />
+               value="vcr-admin.conf" />
 
     <Parameter
                name="eu.clarin.cmdi.virtualcollectionregistry.collectiondisplayname"

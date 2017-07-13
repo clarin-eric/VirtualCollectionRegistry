@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
 import java.io.BufferedReader;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -25,6 +26,9 @@ public class AdminUsersServiceImpl implements AdminUsersService {
     @Value("${eu.clarin.cmdi.virtualcollectionregistry.admindb:}")
     private String adminDb;
 
+    @Value("${eu.clarin.cmdi.virtualcollectionregistry.admindb.basedir:}")
+    private String adminDbBaseDir;
+            
     @Override
     public final boolean isAdmin(String user) {
         logger.debug("Checking admin rights of {}", user);
@@ -50,8 +54,26 @@ public class AdminUsersServiceImpl implements AdminUsersService {
 
     private void loadAdminDatabase(String filename) throws IOException {
         adminUsers.clear();
+     
+        if(adminDbBaseDir == null || adminDbBaseDir.isEmpty()) {
+            adminDbBaseDir = System.getProperty("user.home");
+            logger.debug("eu.clarin.cmdi.virtualcollectionregistry.admindb.basedir not set, using home directory: "+adminDbBaseDir);
+        }
+        
+        String filenameWithPath = filename;
+        if(adminDbBaseDir.endsWith("/") && filename.startsWith("/")) {
+            filenameWithPath = adminDbBaseDir + filename.substring(1);
+        } else if(!adminDbBaseDir.endsWith("/") && !filename.startsWith("/")) {
+            filenameWithPath = adminDbBaseDir + "/" + filename;
+        } else {
+            filenameWithPath = adminDbBaseDir + filename;
+        }
+               
+        
+        logger.info("filenameWithPath: "+filenameWithPath);
+        
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-                new FileInputStream(filename)))) {
+                new FileInputStream(filenameWithPath)))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
