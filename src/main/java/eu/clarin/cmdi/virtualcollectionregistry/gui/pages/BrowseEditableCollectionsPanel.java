@@ -6,10 +6,9 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryExcepti
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.citation.CitationDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ConfirmationDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.PublishConfirmationDialog;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.menu.AjaxLinkMenuItem;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.menu.AjaxPopupMenu;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.CollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
@@ -79,7 +78,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
             add(new Label("lbl", new Model<>("")));
         }
     }
-    
+    /*
     private class ActionsColumn extends PanelWithUserInformation {
 
         public ActionsColumn(String id, IModel<VirtualCollection> model) {
@@ -130,7 +129,8 @@ public class BrowseEditableCollectionsPanel extends Panel {
                                         IModel<VirtualCollection> model) {
                                     doDetails(target, model);
                                 }
-                            };
+                            };            
+            
             menu.add(detailsItem);
             add(menu);
 
@@ -153,7 +153,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
             }
         }
     }
-    
+    */
     private class ActionsPanel extends PanelWithUserInformation {
 
         public ActionsPanel(String id, IModel<VirtualCollection> model) {
@@ -167,6 +167,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
                             doPublish(target, getModel());
                         }
                     };
+            UIUtils.addTooltip(publishLink, "Publish this collection");
             add(publishLink);
 
             final AjaxLink<VirtualCollection> editLink
@@ -176,6 +177,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
                             doEdit(target, getModelObject());
                         }
                     };
+            UIUtils.addTooltip(editLink, "Edit this collection");
             add(editLink);
 
             final AjaxLink<VirtualCollection> deleteLink
@@ -185,6 +187,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
                             doDelete(target, getModelObject());
                         }
                     };
+            UIUtils.addTooltip(deleteLink, "Delete this collection");
             add(deleteLink);
 
             final AjaxLink<VirtualCollection> detailsLink
@@ -194,7 +197,22 @@ public class BrowseEditableCollectionsPanel extends Panel {
                             doDetails(target, getModel());
                         }
                     };
+            UIUtils.addTooltip(detailsLink, "View collection details");
             add(detailsLink);
+            
+            final CitationDialog citationDialog = new CitationDialog("citationDialog", model);
+            add(citationDialog);
+            
+            final AjaxLink<VirtualCollection> citeLink
+                    = new AjaxLink<VirtualCollection>("cite", model) {
+                        @Override
+                        public void onClick(AjaxRequestTarget target) {
+                            citationDialog.show(target);
+                        }
+                    };
+            UIUtils.addTooltip(citeLink, "Cite this collection");
+            citeLink.setEnabled(model.getObject().isCiteable());
+            add(citeLink);
 
             final VirtualCollection vc = model.getObject();
             if (vc.isDeleted()) {

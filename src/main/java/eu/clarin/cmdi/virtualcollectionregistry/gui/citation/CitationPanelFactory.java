@@ -17,7 +17,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.citation;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.State;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
@@ -37,9 +36,7 @@ public class CitationPanelFactory {
      * @return 
      */
     public static Panel getCitationPanel(final String componentId, final IModel<VirtualCollection> model) {
-        VirtualCollection collection = model.getObject();
-        if(collection.hasPersistentIdentifier() && 
-           (collection.getState() == State.PUBLIC || collection.getState() == State.PUBLIC_FROZEN)) {
+        if(model.getObject().isCiteable()) {
             return (new CitationPanel(componentId, model));
         } else {
             return (new EmptyCitePanel(componentId));

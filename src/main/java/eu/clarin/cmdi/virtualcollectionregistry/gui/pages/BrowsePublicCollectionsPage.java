@@ -1,10 +1,13 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.citation.CitationDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.PublishedCollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -20,6 +23,20 @@ public class BrowsePublicCollectionsPage extends BasePage {
             super(id, model);
             setRenderBodyOnly(true);
 
+            final CitationDialog citationDialog = new CitationDialog("citationDialog", model);
+            add(citationDialog);
+            
+            final AjaxLink<VirtualCollection> citeLink
+                    = new AjaxLink<VirtualCollection>("cite", model) {
+                        @Override
+                        public void onClick(AjaxRequestTarget target) {
+                            citationDialog.show(target);
+                        }
+                    };
+            UIUtils.addTooltip(citeLink, "Cite this collection");
+            citeLink.setEnabled(model.getObject().isCiteable());
+            add(citeLink);
+            
             final AjaxLink<VirtualCollection> detailsLink
                     = new AjaxLink<VirtualCollection>("details", model) {
                         @Override
@@ -27,7 +44,10 @@ public class BrowsePublicCollectionsPage extends BasePage {
                             doDetails(target, getModel());
                         }
                     };
+            UIUtils.addTooltip(detailsLink, "View collection details");
             add(detailsLink);
+            
+            
         }
     } // class BrowsePublicCollectionsPage.ActionsPanel
 

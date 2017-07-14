@@ -16,11 +16,10 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.gui.citation;
 
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.CreateAndEditVirtualCollectionPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.UIUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -43,11 +42,7 @@ public class CitationPanel extends Panel {
                 citationDialog.show(target);
             } 
         };
-        citeButton.add(new AttributeAppender("data-toggle", Model.of("tooltip")));
-        citeButton.add(new AttributeAppender("data-placement", Model.of(CreateAndEditVirtualCollectionPage.DEFAULT_TOOLTIP_DATA_PLACEMENT)));
-        citeButton.add(new AttributeAppender("data-html", Model.of("true")));
-        citeButton.add(new AttributeAppender("data-trigger", Model.of("hover")));
-        citeButton.add(new AttributeAppender("title", Model.of("Cite this collection")));
+        UIUtils.addTooltip(citeButton, "Cite this collection");
         
         add(citeButton);
         citationDialog = new CitationDialog("citationDialog", model);

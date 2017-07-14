@@ -36,7 +36,7 @@ public abstract class VirtualCollectionTable extends Panel {
         }
         columns.add(new ColumnType(this));
         columns.add(new ColumnCreated(this));
-        columns.add(new ColumnCitation(this));
+        //columns.add(new ColumnCitation(this));
         columns.add(new ColumnActions(this));
 
         // setup table
