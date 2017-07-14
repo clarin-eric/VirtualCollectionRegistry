@@ -17,27 +17,15 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
-import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.BooleanRadioGroup;
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.BootstrapRadioGroup;
+import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.AjaxBootstrapRadioGroup;
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.EnumRadioChoiceRenderer;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Type;
-import java.io.Serializable;
-import java.util.Arrays;
 import java.util.List;
-import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormChoiceComponentUpdatingBehavior;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.FormComponentPanel;
-import org.apache.wicket.markup.html.form.Radio;
-import org.apache.wicket.markup.html.form.RadioGroup;
-import org.apache.wicket.markup.html.list.ListItem;
-import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,11 +64,8 @@ public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
      */
     public CheckboxInput(String id, IModel<T> model, List<T> values, String label, String tooltipText) {
         super(id, model);
-        
-         //private final IModel<CheckboxInputModel<Type>> type
-        
-        this.model = model;//new Model<>(Type.EXTENSIONAL);
-        this.values = values;//Arrays.asList(Type.values());
+        this.model = model;
+        this.values = values;
         this.labelText = label;
         this.tooltipText = tooltipText;
     }
@@ -89,33 +74,10 @@ public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
     protected void onInitialize() {
         super.onInitialize();        
         
-        //EnumRadioChoiceRenderer renderer = new EnumRadioChoiceRenderer(Buttons.Type.Default);
-        
         group = new BootstrapRadioGroup<>("group", model, values, new EnumRadioChoiceRenderer(Buttons.Type.Primary));
+//        group = new AjaxBootstrapRadioGroup<>("group", model, values, new EnumRadioChoiceRenderer(Buttons.Type.Primary) {      
+//        });
         
-        /*
-        ListView<T> listView = new ListView<T>("list", this.values) {
-            @Override
-            protected void populateItem(ListItem<T> item) {
-         
-                item.add(
-                    new Radio("input", item.getModel())
-                    .add(new AttributeModifier("class", "btn btn-primary btn-xs")));
-                item.add(
-                    new Label("input_label", item.getModel()));
-            }
-        };
-        
-        this.group = new RadioGroup<>("group", new Model<>(this.model.getObject()));
-        group.add( new AjaxFormChoiceComponentUpdatingBehavior() { 
-            @Override
-            protected void onUpdate(AjaxRequestTarget target) {                                        
-                model.setObject(group.getModelObject());
-                convertInput();
-            }
-        });                
-        group.add(listView);
-        */
         
         WebMarkupContainer tooltip = new WebMarkupContainer("tooltipwrapper");
         tooltip.add(group);
@@ -136,13 +98,13 @@ public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
 
     @Override
     public void convertInput() {        
-        logger.trace("Model object: "+model.getObject()+", list model object: "+group.getModelObject());
+        //logger.trace("Model object: "+model.getObject()+", list model object: "+group.getModelObject());
         setConvertedInput(group.getModelObject());
     }
 
     @Override
     protected void onBeforeRender() {
         super.onBeforeRender();
-        logger.trace("Model object: "+model.getObject()+", list model object: "+group.getModelObject());
+        //logger.trace("Model object: "+model.getObject()+", list model object: "+group.getModelObject());
     }        
 }

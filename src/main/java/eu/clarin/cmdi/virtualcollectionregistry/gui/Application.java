@@ -10,7 +10,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AdminPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePrivateCollectionsPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePublicCollectionsPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.CreateAndEditVirtualCollectionPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.EditVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.HelpPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.LoginPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.LogoutPage;

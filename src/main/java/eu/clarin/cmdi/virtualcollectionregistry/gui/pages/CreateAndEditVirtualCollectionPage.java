@@ -57,7 +57,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
 
     private static Logger logger = LoggerFactory.getLogger(CreateAndEditVirtualCollectionPage.class);
     
-    protected final String DEFAULT_TOOLTIP_DATA_PLACEMENT = "right";
+    public final static String DEFAULT_TOOLTIP_DATA_PLACEMENT = "bottom";//right";
     
     String nameTooltip = "A short but descriptive name of the virtual collection for listings and views";
         String descriptionTooltip = "A prose description of this virtual collection";
