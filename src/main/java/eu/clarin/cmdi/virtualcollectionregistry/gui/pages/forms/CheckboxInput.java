@@ -16,7 +16,14 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
+import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.BooleanRadioGroup;
+import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.BootstrapRadioGroup;
+import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.EnumRadioChoiceRenderer;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Type;
 import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -43,7 +50,7 @@ import org.slf4j.LoggerFactory;
  * @param <T>
  */
 @SuppressWarnings("serial")
-public class CheckboxInput<T extends CheckboxInputModel> extends FormComponentPanel<T> {
+public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
     
     private static Logger logger = LoggerFactory.getLogger(CheckboxInput.class);
     
@@ -52,7 +59,8 @@ public class CheckboxInput<T extends CheckboxInputModel> extends FormComponentPa
     private final String labelText;         //Tekst for the display label
     private final String tooltipText;       //Tekst for the tooltip
     
-    private RadioGroup<T> group;
+    //private RadioGroup<T> group;
+    private BootstrapRadioGroup<T> group;
     
     public CheckboxInput(String id, IModel<T> model, List<T> values) {
         this(id, model, values, null, null);
@@ -68,8 +76,11 @@ public class CheckboxInput<T extends CheckboxInputModel> extends FormComponentPa
      */
     public CheckboxInput(String id, IModel<T> model, List<T> values, String label, String tooltipText) {
         super(id, model);
-        this.model = model;
-        this.values = values;
+        
+         //private final IModel<CheckboxInputModel<Type>> type
+        
+        this.model = model;//new Model<>(Type.EXTENSIONAL);
+        this.values = values;//Arrays.asList(Type.values());
         this.labelText = label;
         this.tooltipText = tooltipText;
     }
@@ -78,18 +89,15 @@ public class CheckboxInput<T extends CheckboxInputModel> extends FormComponentPa
     protected void onInitialize() {
         super.onInitialize();        
         
+        //EnumRadioChoiceRenderer renderer = new EnumRadioChoiceRenderer(Buttons.Type.Default);
+        
+        group = new BootstrapRadioGroup<>("group", model, values, new EnumRadioChoiceRenderer(Buttons.Type.Primary));
+        
+        /*
         ListView<T> listView = new ListView<T>("list", this.values) {
             @Override
             protected void populateItem(ListItem<T> item) {
-                /*
-                WebMarkupContainer wrapper = new WebMarkupContainer("input_wrapper");
-                wrapper.setOutputMarkupId(true);
-                if (item.getModelObject().equals(model.getObject())) {
-                    wrapper.add(new AttributeModifier("class", "btn btn-primary btn-xs active"));        
-                } else {
-                    wrapper.add(new AttributeModifier("class", "btn btn-primary btn-xs"));
-                }
-                */
+         
                 item.add(
                     new Radio("input", item.getModel())
                     .add(new AttributeModifier("class", "btn btn-primary btn-xs")));
@@ -107,6 +115,7 @@ public class CheckboxInput<T extends CheckboxInputModel> extends FormComponentPa
             }
         });                
         group.add(listView);
+        */
         
         WebMarkupContainer tooltip = new WebMarkupContainer("tooltipwrapper");
         tooltip.add(group);

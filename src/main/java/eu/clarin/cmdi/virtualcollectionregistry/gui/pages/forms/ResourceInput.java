@@ -16,9 +16,13 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
+import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.BootstrapRadioGroup;
+import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.EnumRadioChoiceRenderer;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource.Type;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -48,7 +52,7 @@ public class ResourceInput extends FormComponentPanel<List<Resource>> {
     
     private static Logger logger = LoggerFactory.getLogger(ResourceInput.class);
     
-    final private IModel<CheckboxInputModel<Type>> typeModel = new Model(new CheckboxInputModel<>(Type.RESOURCE));
+    final private IModel<Type> typeModel = new Model(Type.RESOURCE);
     final private IModel<String> labelModel = Model.of("");
     final private IModel<String> referencesModel = Model.of("");
     final private IModel<String> descriptionModel = Model.of("");
@@ -75,7 +79,7 @@ public class ResourceInput extends FormComponentPanel<List<Resource>> {
                 
                 Type type = null;
                 if(typeModel.getObject() != null) {
-                    type = typeModel.getObject().getObject();
+                    type = typeModel.getObject();
                 }                
                 String reference = referencesModel.getObject();
                 String label = labelModel.getObject();
@@ -100,7 +104,7 @@ public class ResourceInput extends FormComponentPanel<List<Resource>> {
                     }
                     
                     listModel.getObject().add(r);
-                    typeModel.setObject(new CheckboxInputModel<>(Type.RESOURCE));
+                    typeModel.setObject(Type.RESOURCE);
                     referencesModel.setObject(null);
                     labelModel.setObject(null);
                     descriptionModel.setObject(null);
@@ -114,18 +118,9 @@ public class ResourceInput extends FormComponentPanel<List<Resource>> {
         };
         form.setOutputMarkupId(true);
 
-        Label lbl = new Label("label", "Resource(s)");	
+        Label lbl = new Label("label", "Resource(s)");	                
+        form.add(new BootstrapRadioGroup<>("input_type", typeModel, Arrays.asList(Type.values()), new EnumRadioChoiceRenderer(Buttons.Type.Primary)));
         
-        
-            
-        final List<CheckboxInputModel<Type>> list = new ArrayList<>();
-        for(Type t : Type.values()) {
-            list.add(new CheckboxInputModel(t));
-        }
-                
-        form.add(
-            new CheckboxInput<>("input_type", typeModel, list)
-        );
         TextField<String> inputReference = new TextField("input_reference", referencesModel);
         TextField<String> inputLabel = new TextField("input_label", labelModel);        
         //inputReference.add(new UrlValidator(new String[]{"http://", "https://", "hdl://"}));
@@ -179,35 +174,4 @@ public class ResourceInput extends FormComponentPanel<List<Resource>> {
     protected void onBeforeRender() {
         super.onBeforeRender();
     }    
-    /*
-    public static class TypeModel<T> implements Serializable {
-        private final T type;       
-        
-        public static TypeModel of(Type t) {
-            return new TypeModel(t);
-        }
-        
-        public TypeModel(T type) {
-            this.type = type;
-        }
-        
-        public T getType() {
-            return type;
-        }
-        
-        @Override
-        public boolean equals(Object o) {
-            boolean result = false;            
-            if (o instanceof TypeModel) {
-                result = type.toString().equalsIgnoreCase(((TypeModel)o).toString());
-            }
-            return result;
-        }
-        
-        @Override
-        public String toString() {
-            return this.type.toString();
-        }
-    }
-*/
 }

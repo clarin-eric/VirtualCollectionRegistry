@@ -7,10 +7,9 @@ $iconsize: 12px;
 @import 'toggleborder';
 /*@import 'table';*/
 @import 'collectiondetails';
-/*@import 'wizard';*/
 @import 'feedback';
 @import 'filterform';
-/*@import 'popup';*/
+@import 'vcr_footer';
 
 @font-face {
   font-family: 'Roboto';
@@ -19,17 +18,18 @@ $iconsize: 12px;
   src: local("Roboto Regular"), local("Roboto-Regular"), url("Roboto_with_European_character_sets.woff") format("woff");
 }
 
+$font-size-base: 14px;
+
 html, body {
     height: 100%
 }
 
 body {
-    /*font-size: 130%;*/
+    font-size: $font-size-base;
     font-family: "Roboto", sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     color: #222222;
-    font-size: 100%;
     word-wrap: break-word;
 }
 

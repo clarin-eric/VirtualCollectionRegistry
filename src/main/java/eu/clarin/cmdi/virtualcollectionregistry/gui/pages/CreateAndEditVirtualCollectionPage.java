@@ -59,6 +59,38 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
     
     protected final String DEFAULT_TOOLTIP_DATA_PLACEMENT = "right";
     
+    String nameTooltip = "A short but descriptive name of the virtual collection for listings and views";
+        String descriptionTooltip = "A prose description of this virtual collection";
+        String typeTooltip = 
+            "Type of Virtual Collection, either intensional or extensional<br /><br /> \n" +
+            "<b>Extensional</b>: Type of virtual collection that explicitly enumerates the references to resources or metadata documents that make up the collection<br /><br /> \n" +
+            "<b>Intensional</b>: Type of virtual collection that defines a query by which the items of the collection can be retrieved ad-hoc from a secondary service <em>(experimental, use at own risk!)</em>";
+        String purposeTooltip = 
+            "An indication of the intended usage of the present virtual collection<br /><br /> \n" +
+            "<b>Research</b>: The virtual collection bundles resources that are relevant to a specific research (question).<br /><br /> \n" +
+            "<b>Reference</b>: The virtual collection bundles resources, that are to be cited in a publication.<br /><br /> \n" +
+            "<b>Sample</b>: This virtual collection bundles is intended to serve as an sample for research data<br /><br /> \n" +
+            "<b>Future-use</b>: The purpose of this virtual collection is not specified yet. Used in published collection is advised against.";
+        String reproducibilityTooltip = 
+                "An indication of the degree to which results obtained from processing of the present collection can be expected to be stable<br /><br />\n" +
+                "<b>Intended</b>: Processing results can be expected to remain stable<br /><br />\n" +
+                "<b>Fluctuating</b>: Processing results may vary<br /><br />\n" +
+                "<b>Untended</b>: No claims with respect to the stability of the processing results are made";
+        String reproducibilityNoticeTooltip = "Optional note describing the expected reproducibility of processing results in more detail";
+        String keywordsTooltip = "A set of words or short phrases, each signifying a salient facet of the present virtual collection";
+        String authorsTooltip = "Add a new creator";
+        String resourcesTooltip = "Add a single new resource or metadata reference with an optional label and/or description";
+        
+    private final IModel<String> nameModel = Model.of("");
+    private final IModel<Type> typeModel = new Model(Type.INTENSIONAL);
+    private final IModel<String> descriptionModel = Model.of("x");
+    private final IModel<Purpose> purposeModel = new Model(Purpose.REFERENCE);
+    private final IModel<Reproducibility> reproducibilityModel = new Model(Reproducibility.INTENDED);      
+    private final Model<String> reproducibilityNoticeModel = Model.of("");
+    private final IModel<List<String>> keywordsModel = new ListModel<>(new ArrayList<>());
+    private final IModel<List<Creator>> authorsModel = new ListModel<>(new ArrayList<>());
+    private final IModel<List<Resource>> resourceModel = new ListModel<>(new ArrayList<>()); 
+    
     protected VirtualCollection vc;
     protected boolean renderStateValid = false;
     protected boolean editMode = false;
@@ -107,101 +139,26 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         }
     }
     
-    protected void addComponents() {
-        final IModel<String> nameModel = vc == null || vc.getName().isEmpty() ? Model.of("") : Model.of(vc.getName());
-        final IModel<CheckboxInputModel<Type>> typeModel = new Model(new CheckboxInputModel<>(Type.INTENSIONAL));
-        final IModel<String> descriptionModel = Model.of("x");
-        final IModel<CheckboxInputModel<Purpose>> purposeModel = new Model(new CheckboxInputModel(Purpose.REFERENCE));
-        final IModel<CheckboxInputModel<Reproducibility>> reproducibilityModel = new Model(new CheckboxInputModel(Reproducibility.INTENDED));
-        final Model<String> reproducibilityNoticeModel = Model.of("");
-        final IModel<List<String>> keywordsModel = new ListModel<>(new ArrayList<>());
-        final IModel<List<Creator>> authorsModel = new ListModel<>(new ArrayList<>());
-        final IModel<List<Resource>> resourceModel = new ListModel<>(new ArrayList<>());
-        
-        String nameTooltip = "A short but descriptive name of the virtual collection for listings and views";
-        String descriptionTooltip = "A prose description of this virtual collection";
-        String typeTooltip = 
-            "Type of Virtual Collection, either intensional or extensional<br /><br /> \n" +
-            "<b>Extensional</b>: Type of virtual collection that explicitly enumerates the references to resources or metadata documents that make up the collection<br /><br /> \n" +
-            "<b>Intensional</b>: Type of virtual collection that defines a query by which the items of the collection can be retrieved ad-hoc from a secondary service <em>(experimental, use at own risk!)</em>";
-        String purposeTooltip = 
-            "An indication of the intended usage of the present virtual collection<br /><br /> \n" +
-            "<b>Research</b>: The virtual collection bundles resources that are relevant to a specific research (question).<br /><br /> \n" +
-            "<b>Reference</b>: The virtual collection bundles resources, that are to be cited in a publication.<br /><br /> \n" +
-            "<b>Sample</b>: This virtual collection bundles is intended to serve as an sample for research data<br /><br /> \n" +
-            "<b>Future-use</b>: The purpose of this virtual collection is not specified yet. Used in published collection is advised against.";
-        String reproducibilityTooltip = 
-                "An indication of the degree to which results obtained from processing of the present collection can be expected to be stable<br /><br />\n" +
-                "<b>Intended</b>: Processing results can be expected to remain stable<br /><br />\n" +
-                "<b>Fluctuating</b>: Processing results may vary<br /><br />\n" +
-                "<b>Untended</b>: No claims with respect to the stability of the processing results are made";
-        String reproducibilityNoticeTooltip = "Optional note describing the expected reproducibility of processing results in more detail";
-        String keywordsTooltip = "A set of words or short phrases, each signifying a salient facet of the present virtual collection";
-        String authorsTooltip = "Add a new creator";
-        String resourcesTooltip = "Add a single new resource or metadata reference with an optional label and/or description";
-        
+    protected void addComponents() {       
+        //Add existing values to models if we are editing an existing collection
+        if(vc != null && !vc.getName().isEmpty()) {
+            nameModel.setObject(vc.getName());
+            typeModel.setObject(vc.getType());
+            descriptionModel.setObject(vc.getDescription());
+            purposeModel.setObject(vc.getPurpose());
+            reproducibilityModel.setObject(vc.getReproducibility());
+            reproducibilityNoticeModel.setObject(vc.getReproducibilityNotice());
+            keywordsModel.setObject(vc.getKeywords());
+            authorsModel.setObject(vc.getCreators());
+            resourceModel.setObject(vc.getResources());
+        }
         
         Form form = new Form("form") {    
             @Override
             protected void onSubmit() {
                 super.onSubmit();
                 logger.info("Form successfully submitted!");
-                String name = nameModel.getObject();
-                Type type = null;
-                if( typeModel.getObject() != null) {
-                    type = typeModel.getObject().getObject();
-                }                
-                String description = descriptionModel.getObject();
-                
-                Purpose purpose = null;
-                if(purposeModel.getObject() != null) {
-                    purpose = purposeModel.getObject().getObject();
-                }
-                Reproducibility reproducibility = null;
-                if(reproducibilityModel.getObject() != null) {
-                    reproducibility = reproducibilityModel.getObject().getObject();
-                }
-                String repoducibilityNotice = reproducibilityNoticeModel.getObject();
-                List<String> keywords = keywordsModel.getObject();
-                List<Creator> creators = authorsModel.getObject();
-                List<Resource> resources = resourceModel.getObject();
-                
-                final VirtualCollection vc = new VirtualCollection();
-                vc.setName(name);
-                vc.setType(type);
-                vc.setDescription(description);                
-                vc.setPurpose(purpose);
-                vc.setReproducibility(reproducibility);
-                vc.setReproducibilityNotice(repoducibilityNotice);
-                if(editMode) {
-                    vc.getKeywords().clear();
-                    vc.getCreators().clear();
-                    vc.getResources().clear();
-                }
-                vc.getKeywords().addAll(keywords);                
-                vc.getCreators().addAll(creators);                
-                vc.getResources().addAll(resources);
-                
-                try {
-                    ApplicationSession session
-                            = (ApplicationSession) getSession();
-                    Principal principal = session.getPrincipal();
-                    if (principal == null) {
-                        // XXX: security issue?
-                        throw new WicketRuntimeException("principal == null");
-
-                    }
-                    // FIXME: get date from GUI?
-                    if (vc.getId() == null) {
-                        vc.setCreationDate(new Date());
-                        vcr.createVirtualCollection(principal, vc);
-                    } else {
-                        vcr.updateVirtualCollection(principal, vc.getId(), vc);
-                    }
-                } catch (VirtualCollectionRegistryException e) {
-                    getSession().error(e.getMessage());
-                }
-                
+                persist();                
             }
             
             @Override
@@ -209,38 +166,19 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
                 logger.info("Form failed to validate!");
             }
         };
-
         form.setOutputMarkupId(true);
         
         addTextinput(form, nameModel, "name", "Name", nameTooltip, true, false);
-
-        final List<CheckboxInputModel<Type>> typeList = new ArrayList<>();
-        for(Type t : Type.values()) {
-            typeList.add(new CheckboxInputModel(t));
-        }
         form.add(
-            new CheckboxInput<>("type", typeModel, typeList, "Type", typeTooltip)
-            .setRequired(true)            
-        );
+            new CheckboxInput<>("type", typeModel, Arrays.asList(Type.values()), "Type", typeTooltip));
        
         addTextinput(form, descriptionModel, "description", "Description", descriptionTooltip, false, true);
         
-        final List<CheckboxInputModel<Purpose>> purposeList = new ArrayList<>();
-        for(Purpose t : Purpose.values()) {
-            purposeList.add(new CheckboxInputModel(t));
-        }
         form.add(
-            new CheckboxInput<>("purpose", purposeModel, purposeList, "Purpose", purposeTooltip)
-            .setRequired(false)
-
-        );
+            new CheckboxInput<>("purpose", purposeModel, Arrays.asList(Purpose.values()), "Purpose", purposeTooltip));
         
-        final List<CheckboxInputModel<Reproducibility>> reproducibilityeList = new ArrayList<>();
-        for(Reproducibility t : Reproducibility.values()) {
-            reproducibilityeList.add(new CheckboxInputModel(t));
-        }
         form.add(
-            new CheckboxInput<CheckboxInputModel<Reproducibility>>("reproducibility", reproducibilityModel, reproducibilityeList, "Reproducibility", reproducibilityTooltip)
+            new CheckboxInput<>("reproducibility", reproducibilityModel, Arrays.asList(Reproducibility.values()), "Reproducibility", reproducibilityTooltip)
             .setRequired(false)
         );
         addTextinput(form, reproducibilityNoticeModel, "reproducibility_notice", "Reproducibility Notice", reproducibilityNoticeTooltip, false, true);
@@ -270,6 +208,68 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         form.setDefaultButton(submitButton);
         
         add(form);
+    }
+    
+    private void persist() {
+        String name = nameModel.getObject();
+        Type type = null;
+        if( typeModel.getObject() != null) {
+            type = typeModel.getObject();
+        }                
+        String description = descriptionModel.getObject();
+
+        Purpose purpose = null;
+        if(purposeModel.getObject() != null) {
+            purpose = purposeModel.getObject();
+        }
+        Reproducibility reproducibility = null;
+        if(reproducibilityModel.getObject() != null) {
+            reproducibility = reproducibilityModel.getObject();
+        }
+        String repoducibilityNotice = reproducibilityNoticeModel.getObject();
+        List<String> keywords = keywordsModel.getObject();
+        List<Creator> creators = authorsModel.getObject();
+        List<Resource> resources = resourceModel.getObject();
+
+
+        VirtualCollection new_vc = new VirtualCollection();
+        if(this.vc != null) {
+            new_vc = this.vc;
+        }
+        new_vc.setName(name);
+        new_vc.setType(type);
+        new_vc.setDescription(description);                
+        new_vc.setPurpose(purpose);
+        new_vc.setReproducibility(reproducibility);
+        new_vc.setReproducibilityNotice(repoducibilityNotice);
+        if(editMode) {
+            new_vc.getKeywords().clear();
+            new_vc.getCreators().clear();
+            new_vc.getResources().clear();
+        }
+        new_vc.getKeywords().addAll(keywords);                
+        new_vc.getCreators().addAll(creators);                
+        new_vc.getResources().addAll(resources);
+
+        try {
+            ApplicationSession session
+                    = (ApplicationSession) getSession();
+            Principal principal = session.getPrincipal();
+            if (principal == null) {
+                // XXX: security issue?
+                throw new WicketRuntimeException("principal == null");
+
+            }
+            // FIXME: get date from GUI?
+            if (new_vc.getId() == null) {
+                new_vc.setCreationDate(new Date());
+                vcr.createVirtualCollection(principal, new_vc);
+            } else {
+                vcr.updateVirtualCollection(principal, new_vc.getId(), new_vc);
+            }
+        } catch (VirtualCollectionRegistryException e) {
+            getSession().error(e.getMessage());
+        }
     }
     
     private Label getLabel(String id, String label, boolean required) {
