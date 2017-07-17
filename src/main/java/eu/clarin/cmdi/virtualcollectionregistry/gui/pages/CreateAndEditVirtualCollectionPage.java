@@ -6,7 +6,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermiss
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.AuthorsInput;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.CheckboxInput;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.CheckboxInputModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.KeywordInput;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.ResourceInput;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
@@ -28,7 +27,6 @@ import org.apache.wicket.ajax.AjaxPreventSubmitBehavior;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
-import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -83,7 +81,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         
     private final IModel<String> nameModel = Model.of("");
     private final IModel<Type> typeModel = new Model(Type.INTENSIONAL);
-    private final IModel<String> descriptionModel = Model.of("x");
+    private final IModel<String> descriptionModel = Model.of("");
     private final IModel<Purpose> purposeModel = new Model(Purpose.REFERENCE);
     private final IModel<Reproducibility> reproducibilityModel = new Model(Reproducibility.INTENDED);      
     private final Model<String> reproducibilityNoticeModel = Model.of("");
@@ -280,11 +278,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
     
     private void addTextinput(Form form, IModel model, String name, String label, String tooltipText, boolean required, boolean multiline) {
         final WebMarkupContainer tooltipComponent = new WebMarkupContainer("tt_"+name);
-        tooltipComponent.add(new AttributeAppender("data-toggle", Model.of("tooltip")));
-        tooltipComponent.add(new AttributeAppender("data-placement", Model.of(DEFAULT_TOOLTIP_DATA_PLACEMENT)));
-        tooltipComponent.add(new AttributeAppender("data-html", Model.of("true")));
-        tooltipComponent.add(new AttributeAppender("data-trigger", Model.of("focus")));
-        tooltipComponent.add(new AttributeAppender("title", Model.of(tooltipText)));
+        UIUtils.addTooltip(tooltipComponent, tooltipText);       
         if( multiline ) {
             tooltipComponent.add(new TextArea(name, model).add(StringValidator.minimumLength(1)));
         } else if (!multiline && required ) {           

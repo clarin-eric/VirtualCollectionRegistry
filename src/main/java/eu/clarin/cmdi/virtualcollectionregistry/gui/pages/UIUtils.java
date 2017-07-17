@@ -25,12 +25,13 @@ import org.apache.wicket.model.Model;
  * @author wilelb
  */
 public class UIUtils {
-    public static void addTooltip(Component comp, String tooltipText) {
+    public static Component addTooltip(Component comp, String tooltipText) {
         comp.add(new AttributeAppender("data-toggle", Model.of("tooltip")));
         comp.add(new AttributeAppender("data-placement", Model.of(CreateAndEditVirtualCollectionPage.DEFAULT_TOOLTIP_DATA_PLACEMENT)));
         comp.add(new AttributeAppender("data-html", Model.of("true")));
         comp.add(new AttributeAppender("data-trigger", Model.of("hover")));
         comp.add(new AttributeAppender("title", Model.of(tooltipText)));
+        return comp;
     }
     
     

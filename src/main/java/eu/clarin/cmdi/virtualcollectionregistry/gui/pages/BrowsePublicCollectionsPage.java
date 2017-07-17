@@ -4,19 +4,24 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.citation.CitationDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.PublishedCollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import org.apache.wicket.AttributeModifier;
+import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.flow.RedirectToUrlException;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("serial")
 public class BrowsePublicCollectionsPage extends BasePage {
 
+    private static Logger logger = LoggerFactory.getLogger(BrowsePublicCollectionsPage.class);
+    
     private class ActionsPanel extends Panel {
 
         public ActionsPanel(String id, IModel<VirtualCollection> model) {
@@ -37,6 +42,16 @@ public class BrowsePublicCollectionsPage extends BasePage {
             citeLink.setEnabled(model.getObject().isCiteable());
             add(citeLink);
             
+            final AjaxLink<VirtualCollection> lrsLink
+                    = new AjaxLink<VirtualCollection>("lrs", model) {
+                        @Override
+                        public void onClick(AjaxRequestTarget target) {
+                            throw new RedirectToUrlException(getLanguageSwitchboardUrl(model.getObject()));
+                        }
+                    };
+            UIUtils.addTooltip(lrsLink, "Open this collection in the language resurce switchboard");
+            add(lrsLink);
+            
             final AjaxLink<VirtualCollection> detailsLink
                     = new AjaxLink<VirtualCollection>("details", model) {
                         @Override
@@ -49,6 +64,23 @@ public class BrowsePublicCollectionsPage extends BasePage {
             
             
         }
+        
+        private String getLanguageSwitchboardUrl(VirtualCollection vc) {
+            try {
+                //create link for this resource to the language resource switchboard
+                final String href = "http://localhost:8080/vcr/service/virtualcollections/"+vc.getId();
+                final String mimeType =  "application/xml";
+                final String languageCode = "en";
+                return String.format("%s#/vlo/%s/%s/%s",
+                        "http://weblicht.sfs.uni-tuebingen.de/clrs/",
+                        URLEncoder.encode(href, "UTF-8"),
+                        URLEncoder.encode(mimeType, "UTF-8"), languageCode);
+            } catch (UnsupportedEncodingException ex) {
+                logger.error("Error while creating switchboard link", ex);
+                return null;
+            }
+        }
+
     } // class BrowsePublicCollectionsPage.ActionsPanel
 
     public BrowsePublicCollectionsPage() {

@@ -20,6 +20,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.BootstrapRadioGroup;
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.AjaxBootstrapRadioGroup;
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.EnumRadioChoiceRenderer;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.UIUtils;
 import java.util.List;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -80,6 +81,7 @@ public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
         
         
         WebMarkupContainer tooltip = new WebMarkupContainer("tooltipwrapper");
+        UIUtils.addTooltip(tooltip, tooltipText);
         tooltip.add(group);
         
         WebMarkupContainer container = new WebMarkupContainer("row");

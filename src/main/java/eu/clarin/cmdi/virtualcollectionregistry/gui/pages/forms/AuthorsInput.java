@@ -72,7 +72,7 @@ public class AuthorsInput extends FormComponentPanel<List<Creator>> {
                 String email = emailModel.getObject();
                 String organisation = organisationModel.getObject();
 
-                logger.info("person: ["+person+"], email: ["+email+"], org: ["+organisation+"]");
+                //logger.info("person: ["+person+"], email: ["+email+"], org: ["+organisation+"]");
                 List<String> errors = new ArrayList<>();
                 if (person == null || person.isEmpty()) {
                     errors.add("Person is a required field.");
