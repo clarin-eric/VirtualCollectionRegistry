@@ -11,8 +11,8 @@
                     defaultAutoCommit="false"
                     driverClassName="com.mysql.jdbc.Driver"
                     validationQuery="SELECT 1"
-                    username="vcr-user"
-                    password="vcr-password"
+                    username="vcruser"
+                    password="vcrpassword"
                     url="jdbc:mysql://localhost:3306/vcr" />
     <!--
     <Parameter
