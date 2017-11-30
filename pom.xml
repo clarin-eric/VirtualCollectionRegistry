@@ -47,11 +47,14 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <!-- dependency versions -->
         <slf4j.version>1.7.21</slf4j.version>
+        <!--
         <hibernate.version>3.6.10.Final</hibernate.version>
+        -->
+        <hibernate.version>5.2.12.Final</hibernate.version>
         <hibernate.jpaVersion>1.0.0.Final</hibernate.jpaVersion>
         <jersey.version>1.18.1</jersey.version>
         <jackson.version>1.6.1</jackson.version>
-        <wicket.version>7.6.0</wicket.version> <!-- 7.7.0 has issue https://issues.apache.org/jira/browse/WICKET-6374, which will befixed in 7.8.0 -->
+        <wicket.version>7.9.0</wicket.version> <!-- 7.7.0 has issue https://issues.apache.org/jira/browse/WICKET-6374, which will befixed in 7.8.0 -->
         <spring.version>4.0.6.RELEASE</spring.version>
         
         <!-- Production settings below -->
@@ -248,6 +251,21 @@
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-spring</artifactId>
             <version>${wicket.version}</version>
+           
+            <exclusions>
+                <!--
+                <exclusion>
+                    <groupId>cglib</groupId>
+                    <artifactId>cglib</artifactId>
+                </exclusion>
+                -->
+                <!--
+                <exclusion>
+                    <groupId>org.ow2.asm</groupId>
+                    <artifactId>asm-util</artifactId>
+                </exclusion>
+                -->
+            </exclusions>
         </dependency>
         
         <dependency>
