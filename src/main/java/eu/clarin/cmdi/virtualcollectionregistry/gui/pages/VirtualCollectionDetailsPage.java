@@ -273,7 +273,18 @@ public class VirtualCollectionDetailsPage extends BasePage {
                 return "reference";
             }
         });
+        cols.add(new AbstractColumn<Resource, String>(Model.of("Action")) {
+            @Override
+            public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> rowModel) {
+                item.add(new ActionLinkPanel(componentId, rowModel));
+            }
 
+            @Override
+            public String getCssClass() {
+                return "reference";
+            }
+        });
+        
         final SortableDataProvider<Resource, String> resourcesProvider = new SortableDataProvider<Resource, String>() {
             @Override
             public Iterator<? extends Resource> iterator(long first, long count) {

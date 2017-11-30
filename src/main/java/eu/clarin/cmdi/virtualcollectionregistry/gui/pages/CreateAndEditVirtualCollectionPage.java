@@ -9,6 +9,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.CheckboxInput;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.KeywordInput;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.ResourceInput;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
+import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Purpose;
@@ -80,7 +81,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         String resourcesTooltip = "Add a single new resource or metadata reference with an optional label and/or description";
         
     private final IModel<String> nameModel = Model.of("");
-    private final IModel<Type> typeModel = new Model(Type.INTENSIONAL);
+    private final IModel<Type> typeModel = new Model(Type.EXTENSIONAL);
     private final IModel<String> descriptionModel = Model.of("");
     private final IModel<Purpose> purposeModel = new Model(Purpose.REFERENCE);
     private final IModel<Reproducibility> reproducibilityModel = new Model(Reproducibility.INTENDED);      
@@ -236,6 +237,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         }
         new_vc.setName(name);
         new_vc.setType(type);
+        
         new_vc.setDescription(description);                
         new_vc.setPurpose(purpose);
         new_vc.setReproducibility(reproducibility);

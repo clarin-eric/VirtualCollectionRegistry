@@ -42,15 +42,7 @@ public class BrowsePublicCollectionsPage extends BasePage {
             citeLink.setEnabled(model.getObject().isCiteable());
             add(citeLink);
             
-            final AjaxLink<VirtualCollection> lrsLink
-                    = new AjaxLink<VirtualCollection>("lrs", model) {
-                        @Override
-                        public void onClick(AjaxRequestTarget target) {
-                            throw new RedirectToUrlException(getLanguageSwitchboardUrl(model.getObject()));
-                        }
-                    };
-            UIUtils.addTooltip(lrsLink, "Open this collection in the language resurce switchboard");
-            add(lrsLink);
+            add(UIUtils.getLrsRedirectAjaxLink("lrs", model));
             
             final AjaxLink<VirtualCollection> detailsLink
                     = new AjaxLink<VirtualCollection>("details", model) {
