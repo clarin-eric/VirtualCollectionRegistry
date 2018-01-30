@@ -5,21 +5,61 @@ $iconsize: 12px;
 
 @import 'mixins';
 @import 'toggleborder';
-@import 'table';
+/*@import 'table';*/
 @import 'collectiondetails';
-@import 'wizard';
 @import 'feedback';
 @import 'filterform';
-@import 'popup';
+@import 'vcr_footer';
+
+@font-face {
+  font-family: 'Roboto';
+  font-style: normal;
+  font-weight: 400;
+  src: local("Roboto Regular"), local("Roboto-Regular"), url("Roboto_with_European_character_sets.woff") format("woff");
+}
+
+$font-size-base: 14px;
+
+html, body {
+    height: 100%
+}
 
 body {
-    font-size: 130%;
+    font-size: $font-size-base;
+    font-family: "Roboto", sans-serif;
+    -webkit-font-smoothing: antialiased;
+    -moz-osx-font-smoothing: grayscale;
+    color: #222222;
+    word-wrap: break-word;
+}
+
+input.max-width {
+    width: 100%;
+}
+
+.cb {
+    margin: 1px;
+}
+
+.required {
+    font-weight: bold;
+}
+
+.row-spacing {
+    margin-top: 2px;
+    margin-bottom: 2px;
 }
 
 noscript {
     margin: 0 auto;
     padding: 0;
     width: 1024px;
+}
+
+.tooltip-inner {
+    max-width: 300px;
+    width: 300px;
+    text-align: justify;
 }
 
 #noscript-warning {
@@ -40,6 +80,20 @@ noscript {
     z-index: 101;
 }
 
+div.navbar div.container {
+    overflow: hidden; /* Fixes issue with 1px causing vertical scrollbar to show in navbar */
+}
+
+#content {
+    min-height: 100%;
+    margin-bottom: -211px;
+    padding-bottom: 221px; /* compensate margin and add an extra 10px */
+}
+
+.hidden-overflow {
+    overflow: hidden;
+}
+
 .tooltipparent .tooltipcontent {
     display: none;
 }
@@ -50,6 +104,7 @@ noscript {
 
 a.navbar-brand {
     line-height: 20px;
+    font-size: 18px;
 }
 
 ul#CLARIN_header_right li.authenticated {

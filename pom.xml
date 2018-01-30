@@ -7,7 +7,7 @@
     <artifactId>VirtualCollectionRegistry</artifactId>
     <packaging>war</packaging>
     <name>CLARIN Virtual Collection Registry</name>
-    <version>1.1-SNAPSHOT</version>
+    <version>1.1.1-alpha2</version>
 
     <organization>
         <name>CLARIN</name>
@@ -43,20 +43,21 @@
         <!-- project settings -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- plug-in settings -->
-        <maven.compiler.source>1.7</maven.compiler.source>
-        <maven.compiler.target>1.7</maven.compiler.target>
+        <maven.compiler.source>1.8</maven.compiler.source>
+        <maven.compiler.target>1.8</maven.compiler.target>
         <!-- dependency versions -->
         <slf4j.version>1.7.21</slf4j.version>
-        <hibernate.version>3.6.10.Final</hibernate.version>
+        <hibernate.version>5.2.12.Final</hibernate.version>
         <hibernate.jpaVersion>1.0.0.Final</hibernate.jpaVersion>
         <jersey.version>1.18.1</jersey.version>
         <jackson.version>1.6.1</jackson.version>
-        <wicket.version>7.3.0</wicket.version>
+        <wicket.version>7.9.0</wicket.version> <!-- 7.7.0 has issue https://issues.apache.org/jira/browse/WICKET-6374, which will befixed in 7.8.0 -->
         <spring.version>4.0.6.RELEASE</spring.version>
         
         <!-- Production settings below -->
         <log4j.appender>File</log4j.appender>
         <war.webxml>src/main/webapp/WEB-INF/web-shib.xml</war.webxml>
+        <war.contextxml>src/main/webapp/META-INF/prod/context.xml</war.contextxml>
         
         <!-- Tell Netbeans to insert the right license header -->
         <netbeans.hint.license>gpl30</netbeans.hint.license> 
@@ -71,6 +72,7 @@
                 <log4j.appender>Console</log4j.appender>     
                 <!-- Use the user database realm version of web.xml -->           
                 <war.webxml>src/main/webapp/WEB-INF/web-dev.xml</war.webxml>
+                <war.contextxml>src/main/webapp/META-INF/dev/context.xml</war.contextxml>
             </properties>
         </profile>
     </profiles>
@@ -246,6 +248,21 @@
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-spring</artifactId>
             <version>${wicket.version}</version>
+           
+            <exclusions>
+                <!--
+                <exclusion>
+                    <groupId>cglib</groupId>
+                    <artifactId>cglib</artifactId>
+                </exclusion>
+                -->
+                <!--
+                <exclusion>
+                    <groupId>org.ow2.asm</groupId>
+                    <artifactId>asm-util</artifactId>
+                </exclusion>
+                -->
+            </exclusions>
         </dependency>
         
         <dependency>
@@ -394,10 +411,29 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        
+        <dependency>
+            <groupId>de.agilecoders.wicket</groupId>
+            <artifactId>wicket-bootstrap-core</artifactId>
+            <version>0.10.14</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>org.apache.wicket</groupId>
+                    <artifactId>wicket-request</artifactId>
+                </exclusion>
+                <exclusion>
+                    <groupId>org.apache.wicket</groupId>
+                    <artifactId>wicket-util</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+       
     </dependencies>
 
     <build>
-        <resources>
+        <finalName>vcr</finalName>
+        
+          <resources>
             <resource>
                 <filtering>true</filtering>
                 <directory>src/main/resources</directory>
@@ -531,6 +567,7 @@
                 <configuration>
                     <failOnMissingWebXml>true</failOnMissingWebXml>
                     <webXml>${war.webxml}</webXml>
+                    <containerConfigXML>${war.contextxml}</containerConfigXML>
                     <webResources>
                         <!-- additional web resources: also copy schemas to web-app -->
                         <resource>
@@ -545,6 +582,7 @@
                             <directory>doc</directory>
                         </resource>
                     </webResources>
+                    <outputDirectory>bin</outputDirectory>
                 </configuration>
             </plugin>
             

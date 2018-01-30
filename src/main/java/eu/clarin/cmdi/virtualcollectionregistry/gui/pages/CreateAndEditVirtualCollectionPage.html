@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+<head />
+<body>
+    <wicket:extend>
+       
+        <form wicket:id="form">
+            
+            <div class="panel-group" id="accordion">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">
+                            Create a new virtual collection
+                            <!--
+                            <button 
+                                type="button" 
+                                class="btn btn-default" 
+                                data-container="body" 
+                                data-toggle="popover" 
+                                data-placement="right" 
+                                data-content="Use the form to fill in the general information for this virtual collection. Name and type are mandatory. It is highly recommended to write a short description, add one or more keywords and select a purpose and a reproducibility indication.">?</button>
+                            
+                            <a href="#">Simple</a>
+                            <a href="#">Advanced</a>
+                            -->
+                        </h4>
+                    </div>
+                    <div id="collapseOne" class="panel-collapse collapse in">
+                        <div class="panel-body">
+
+                            <!-- Name -->
+                            <div class="row required">
+                                <div class="col-xs-2">
+                                    <label wicket:id="lbl_name">[Name]</label>                            
+                                </div>
+                                <div class="col-xs-8" wicket:id="tt_name">
+                                    <input wicket:id="name" type="text" maxlength="255" class="max-width" />
+                                </div>
+                            </div>
+                            
+                            <!-- Type -->     
+                            <div wicket:id="type">[TYPE]</div>
+                            
+                            <!-- Description -->
+                            <div class="row">
+                                <div class="col-xs-2">
+                                    <label wicket:id="lbl_description">[Name]</label>   
+                                </div>
+                                <div class="col-xs-8" wicket:id="tt_description ">
+                                    <textarea wicket:id="description" type="text" rows="8"></textarea>
+                                </div>
+                            </div>
+                            
+                            <!-- Purpose -->  
+                            <div wicket:id="purpose">[PURPOSE]</div>
+
+                            <!-- Reproducibility -->     
+                            <div wicket:id="reproducibility">[REPRODUCIBILITY]</div>
+
+                             
+                            <!-- Reproducibility notice -->
+                            <div class="row">
+                                <div class="col-xs-2">
+                                    <label wicket:id="lbl_reproducibility_notice">[Name]</label>   
+                                </div>
+                                <div class="col-xs-8" wicket:id="tt_reproducibility_notice ">
+                                    <textarea wicket:id="reproducibility_notice" type="text" rows="8"></textarea>
+                                </div>
+                            </div>
+                              
+                            <!-- Keywords -->
+                            <div wicket:id="keywords">[KEYWORDS]</div>
+                            
+                            <!-- Authors -->
+                            <div wicket:id="authors">[AUTHORS]</div>
+                            
+                            <!-- Resources -->
+                            <div wicket:id="resources">[RESOURCES]</div>
+                           
+                        </div>
+                    </div>
+                </div>
+            </div>
+            
+            <button wicket:id="submit" class="btn btn-default">[SUBMIT]</button>
+        
+        </form>
+        
+    </wicket:extend>
+</body>
+</html>
