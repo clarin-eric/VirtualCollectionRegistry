@@ -1,5 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
+import de.agilecoders.wicket.core.Bootstrap;
+import de.agilecoders.wicket.core.settings.BootstrapSettings;
 import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.DataStore;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
@@ -7,10 +9,10 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AboutPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AdminPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePrivateCollectionsPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePublicCollectionsPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.CreateVirtualCollectionPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.EditVirtualCollectionPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.CreateAndEditVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.HelpPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.LoginPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.LogoutPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.VirtualCollectionDetailsPage;
 import org.apache.wicket.Page;
 import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
@@ -44,6 +46,13 @@ public class Application extends AuthenticatedWebApplication {
     @Override
     protected void init() {
         super.init();
+        
+        BootstrapSettings settings = new BootstrapSettings();
+        //settings.minify(true); // use minimized version of all bootstrap references
+
+        Bootstrap.install(this, settings);
+   
+    
         logger.info("Initialising VCR web application");
         getComponentInstantiationListeners().add(new SpringComponentInjector(this));
 
@@ -57,14 +66,15 @@ public class Application extends AuthenticatedWebApplication {
         }
 
         mountPage("/login", LoginPage.class);
+        mountPage("/logout", LogoutPage.class);
         mountPage("/public", BrowsePublicCollectionsPage.class);
         mountPage("/private", BrowsePrivateCollectionsPage.class);
-        mountPage("/create", CreateVirtualCollectionPage.class);
+        mountPage("/create", CreateAndEditVirtualCollectionPage.class);
         mountPage("/about", AboutPage.class);
         mountPage("/help", HelpPage.class);
         mountPage("/admin", AdminPage.class);
         mountPage("/details/${id}", VirtualCollectionDetailsPage.class);
-        mountPage("/edit/${id}", EditVirtualCollectionPage.class);
+        mountPage("/edit/${id}", CreateAndEditVirtualCollectionPage.class);
     }
 
     @Override

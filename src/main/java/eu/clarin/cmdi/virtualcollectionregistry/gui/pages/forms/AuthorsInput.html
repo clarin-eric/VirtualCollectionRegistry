@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+<head />
+<body>
+    <wicket:panel>
+        <div class="row" wicket:id="wrapper">            
+            
+            <form wicket:id="form">
+                <div class="col-xs-2">
+                   <label wicket:id="label">[Name]</label>    
+                </div>
+                <div class="col-xs-8">
+                   
+                    <table class="table">
+                        <thead>
+                            <tr>
+                                <th>Person</th>
+                                <th>Email</th>
+                                <th>Organisation</th>
+                                <th>&nbsp;</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <wicket:container wicket:id="list">
+                                <tr>
+                                    <td><span wicket:id="person_label"></span></td>
+                                    <td><span wicket:id="email_label"></span></td>
+                                    <td><span wicket:id="organisation_label"></span></td>
+                                    <td><button wicket:id="item_remove" class="btn btn-default btn-xs"><i class="fa fa-trash-o" aria-hidden="true"></i></button></td>
+                                </tr>
+                            </wicket:container>
+                            <tr>
+                                <td><input wicket:id="input_person" type="text" class="max-width"></input></td>
+                                <td><input wicket:id="input_email" type="text" class="max-width"></input></td>
+                                <td><input wicket:id="input_organisation" type="text" class="max-width"></input></td>
+                                <td><button wicket:id="btn_add" class="btn btn-default btn-xs"><i class="fa fa-plus" aria-hidden="true"></i></button></td>
+                           </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </form>
+            
+        </div>
+        
+    </wicket:panel>
+</body>
+</html>

@@ -5,16 +5,16 @@
 
         <authentication>
             <shibheader>
-                <username>oid:eppn</username>
-                <username>mace:eppn</username>
+                <username>oid-eppn</username>
+                <username>mace-eppn</username>
                 <username>eppn</username>
 		
-                <username>oid:eduPersonPrincipalName</username>
-                <username>mace:eduPersonPrincipalName</username>
-                <username>eduPersonPrincipalName</username>
+                <username>oid-edupersonprincipalname</username>
+                <username>mace-edupersonprincipalname</username>
+                <username>edupersonprincipalname</username>
 		
-                <username>oid:eduPersonTargetedID</username>
-                <username>mace:eduPersonTargetedID</username>
+                <username>oid-eduPersonTargetedID</username>
+                <username>mace-eduPersonTargetedID</username>
                 <username>eduPersonTargetedID</username>
 
                 <session>Shib-Session-ID</session>

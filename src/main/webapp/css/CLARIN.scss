@@ -1,5 +1,9 @@
 @charset "UTF-8";
 
+
+
+
+
 $indent: 7px;
 
 // Colors
@@ -284,7 +288,7 @@ div.container {
 // Tables
 
 //@import "compass/utilities/tables";
-
+/*
 table.display {
   border-collapse: collapse !important;
   position: relative !important;
@@ -411,7 +415,7 @@ table:not(.display) {
     border-right: 1px dotted black;
   }
 }
-
+*/
 html body ul#nav ul, html body ul#nav ul li {
   width: 200px;
 }

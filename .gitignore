@@ -1,5 +1,8 @@
+nbactions.xml
+nbactions-development.xml
 nb-configuration.xml
 migrate-svn-to-git.sh
 users.txt
 /target/
+/bin/
 **.DS_Store

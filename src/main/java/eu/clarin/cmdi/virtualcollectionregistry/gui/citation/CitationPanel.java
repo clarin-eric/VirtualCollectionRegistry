@@ -16,6 +16,7 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.gui.citation;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.UIUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -33,12 +34,16 @@ public class CitationPanel extends Panel {
     
     public CitationPanel(String id, final IModel<VirtualCollection> model) {
         super(id);
+        
+        
         AjaxLink citeButton = new AjaxLink( "citeButton", new Model<String>("Cite") ){ 
             @Override
             public void onClick( AjaxRequestTarget target ) {
                 citationDialog.show(target);
             } 
         };
+        UIUtils.addTooltip(citeButton, "Cite this collection");
+        
         add(citeButton);
         citationDialog = new CitationDialog("citationDialog", model);
         add(citationDialog);

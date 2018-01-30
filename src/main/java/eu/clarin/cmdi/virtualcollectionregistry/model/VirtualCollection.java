@@ -539,5 +539,14 @@ public class VirtualCollection implements Serializable, IdentifiedEntity {
         }
         return false;
     }
+    
+    /**
+     * Is this collection citaeable? 
+     * In order to be citeable the collection must be published and have a persistent identifier.
+     * @return 
+     */
+    public boolean isCiteable() {
+        return hasPersistentIdentifier() && (getState() == VirtualCollection.State.PUBLIC || getState() == VirtualCollection.State.PUBLIC_FROZEN);
+    }
 
 } // class VirtualCollection
