@@ -12,10 +12,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
 import org.apache.wicket.markup.head.IHeaderResponse;
@@ -29,7 +27,6 @@ import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.WebApplication;
-import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
@@ -93,7 +90,6 @@ public class BasePage extends WebPage {
                 //set label to not escape model strings to allow HTML
                 return (Label) super.newBrandLabel(markupId).setEscapeModelStrings(false);
             }
-
         };
         navbar.setBrandName(Model.of("<i class=\"glyphicon glyphicon-book\" aria-hidden=\"true\"></i> Virtual Collection Registry"));
         
@@ -114,7 +110,6 @@ public class BasePage extends WebPage {
                     .add(new AttributeModifier("class", "glyphicon glyphicon-user"));
             final Component logoutLink = new NavbarButton(LogoutPage.class, Model.of("Logout"))
                 .add(new AttributeModifier("class", "glyphicon glyphicon-log-out"));
-        
             
             menuItems.add(new ImmutableNavbarComponent(userLink, ComponentPosition.RIGHT));
             menuItems.add(new ImmutableNavbarComponent(logoutLink, ComponentPosition.RIGHT));
@@ -129,7 +124,6 @@ public class BasePage extends WebPage {
             protected Component newLabel(String markupId) {
                 return super.newLabel(markupId).setEscapeModelStrings(false);
             }
-
         }
             .setLabel(Model.of("<span>CLARIN</span>"))
             .add(new AttributeModifier("class", "clarin-logo hidden-xs"));
@@ -144,31 +138,7 @@ public class BasePage extends WebPage {
     protected void onBeforeRender() {
         // skip lazy auto-auth for login page
         if (!this.getClass().isInstance(LoginPage.class)) {
-            final RequestCycle cycle =  RequestCycle.get();
-            final HttpServletRequest request = 
-                ((ServletWebRequest)cycle.getRequest()).getContainerRequest();
-            final ApplicationSession session = getSession();
-            if (!session.isSignedIn()) {
-                if (request.getAuthType() != null) {
-                    // FIXME: better logging
-                    System.err.println("Auth, but no authed session -> login");
-                    final Principal principal = request.getUserPrincipal();
-                    if (!session.signIn(principal)) {
-                        throw new RestartResponseException(getApplication()
-                                .getApplicationSettings()
-                                .getAccessDeniedPage());
-                    }
-                }
-            } else {
-                if (request.getAuthType() == null) {
-                    // FIXME: better logging
-                    System.err.println("Lost Session!");
-                    session.invalidate();
-                    throw new RestartResponseException(getApplication()
-                            .getApplicationSettings()
-                            .getPageExpiredErrorPage());
-                }
-            }
+            AuthenticationHandler.handleAuthentication(getSession());
         }
         super.onBeforeRender();
     }
@@ -184,7 +154,6 @@ public class BasePage extends WebPage {
                     getResponse().write("<link rel=\"canonical\" href=\"" + canonicalUrlModel.getObject() + "\"/>");
                 }
             }
-
         });
     }
 
@@ -224,7 +193,6 @@ public class BasePage extends WebPage {
         final CharSequence url = RequestCycle.get().urlFor(getClass(), null);
         final String absoluteUrl = RequestCycle.get().getUrlRenderer().renderFullUrl(Url.parse(url));
         return new Model(absoluteUrl);
-    
     }
 
 } // class BasePage
