@@ -3,3 +3,6 @@ migrate-svn-to-git.sh
 users.txt
 /target/
 **.DS_Store
+bin/
+nbactions-development.xml
+nbactions.xml
