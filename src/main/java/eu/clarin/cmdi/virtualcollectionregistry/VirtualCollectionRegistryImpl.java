@@ -129,7 +129,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         if (vc == null) {
             throw new NullPointerException("vc == null");
         }
-
+        
         logger.debug("creating virtual collection");
 
         validator.validate(vc);
@@ -149,7 +149,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             vc.setState(VirtualCollection.State.PRIVATE);
 
             // store virtual collection
-            logger.debug("persisting new virtual collection", vc.getId());
+            logger.debug("persisting new virtual collection (id={})", vc.getId());
             em.persist(vc);
             em.getTransaction().commit();
             logger.debug("virtual collection created (id={})", vc.getId());
