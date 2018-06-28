@@ -230,6 +230,15 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         List<Creator> creators = authorsModel.getObject();
         List<Resource> resources = resourceModel.getObject();
 
+        logger.info("Creators:");
+        for(Creator c: creators) {
+            logger.info("  Created ({}): {}", c.getId(), c.getEMail());
+        }
+        
+        logger.info("Resources:");
+        for (Resource r: resources) {
+            logger.info("  Resource ({}): {}", r.getId(), r.getRef());
+        }
 
         VirtualCollection new_vc = new VirtualCollection();
         if(this.vc != null) {
