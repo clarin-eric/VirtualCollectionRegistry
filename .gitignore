@@ -4,6 +4,7 @@ nb-configuration.xml
 migrate-svn-to-git.sh
 users.txt
 /target/
+docker/target
 /bin/
 **.DS_Store
 bin/
