@@ -200,16 +200,19 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             }
 
             // update virtual collection
+            logger.info("Virtual collection:\n{}", vc.toString());
             c.updateFrom(vc);
 
             validator.validate(c);
+            
+            //persist
             em.merge(c);
             em.getTransaction().commit();
             logger.debug("updated virtual collection (id={})", vc.getId());
             return c.getId();
         } catch (VirtualCollectionRegistryException e) {
             em.getTransaction().rollback();
-            logger.warn("failed updating virtual collecion (id={}): {}", id,
+            logger.warn("failed to update virtual collecion (id={}): {}", id,
                     e.getMessage());
             throw e;
         } catch (Exception e) {

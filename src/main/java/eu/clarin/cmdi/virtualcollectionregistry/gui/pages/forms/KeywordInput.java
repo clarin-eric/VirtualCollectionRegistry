@@ -52,6 +52,7 @@ public class KeywordInput extends FormComponentPanel<List<String>> {
 	public KeywordInput(String id, IModel<List<String>> model) {
             super(id, model);	
             this.listModel = model;
+            logger.info("Items in model = {}", model.getObject().size());
 	}
 
 	@Override

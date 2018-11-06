@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 CLARIN
+ * Copyright (C) 2018 CLARIN
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -20,44 +20,35 @@ import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
 /**
- * Configuration for communication with the Piwik instance
- * 
- * @see https://github.com/clarin-eric/VLO/blob/master/vlo-web-app/src/main/java/eu/clarin/cmdi/vlo/config/PiwikConfig.java
- * 
+ *
  * @author wilelb
  */
 @Component
-public class PiwikConfigImpl implements PiwikConfig {
-
-    @Value("${eu.clarin.cmdi.vcr.piwik.enableTracker:true}")
-    private boolean enabled;
+public class VcrConfigImpl implements VcrConfig {
+    @Value("${eu.clarin.cmdi.vcr.lrs.endpoint:https://switchboard.clarin.eu/#/vcr}")
+    private String lrsEndpoint;
     
-    @Value("${eu.clarin.cmdi.vcr.piwik.siteId:6}")
-    private String piwikSiteId;
-
-    @Value("${eu.clarin.cmdi.vcr.piwik.host:https://stats.clarin.eu/}")
-    private String piwikHost;
-
-    @Value("${eu.clarin.cmdi.vcr.piwik.domains:*.vcr.clarin.eu}")
-    private String domains;
+    @Value("${eu.clarin.cmdi.vcr.lrs.enable_for_resources:true}")
+    private boolean lrsEnableResources;
+    
+    @Value("${eu.clarin.cmdi.vcr.lrs.enable_for_collections:false}")
+    private boolean lrsEnableCollections;
     
     @Override
-    public boolean isEnabled() {
-        return enabled;
+    public String getSwitchboardEndpoint() {
+        if (lrsEndpoint.endsWith("/")) {
+            return lrsEndpoint.substring(0, lrsEndpoint.length()-1);
+        }
+        return lrsEndpoint;
     }
-
+    
     @Override
-    public String getSiteId() {
-        return piwikSiteId;
+    public boolean isSwitchboardEnabledForResources() {
+        return lrsEnableResources;
     }
-
+    
     @Override
-    public String getPiwikHost() {
-        return piwikHost;
-    }
-
-    @Override
-    public String getDomains() {
-        return domains;
+    public boolean isSwitchboardEnabledForCollections() {
+        return lrsEnableCollections;
     }
 }
