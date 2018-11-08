@@ -16,9 +16,12 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
+import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 
 /**
  *
@@ -27,7 +30,13 @@ import org.apache.wicket.model.IModel;
 @SuppressWarnings("serial")
 public class ActionLinkPanel extends Panel {
 
+    @SpringBean
+    private VcrConfigImpl vcrConfig;
+    
     public ActionLinkPanel(String id, IModel<Resource> model) { 
         super(id);
+        AjaxLink lrsLink = UIUtils.getLrsRedirectAjaxLinkForResource("lrs", model, vcrConfig.getSwitchboardEndpoint());
+        lrsLink.setVisible(vcrConfig.isSwitchboardEnabledForResources());
+        add(lrsLink);
     }
 }

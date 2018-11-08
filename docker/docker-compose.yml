@@ -8,12 +8,14 @@ services:
             - 8444:8443
             - 8001:8000
         volumes:
-            - ./target:/webapps/
+            - ./vcr:/webapps
+            - ./vcr-admin.conf:/root/vcr-admin.conf
+            - ./server.jks:/cert/server.jks
         networks:
             - vcr
       
     database:
-        image: mysql:5.7.18
+        image: "mariadb:10.3.10-bionic"
         environment:
             MYSQL_ROOT_PASSWORD: vcr-root
             MYSQL_DATABASE: vcr

@@ -106,6 +106,38 @@ referenced file, one username per line.
   <Parameter name="pid_provider.epic.infix"
              value="VCR-"/>
              
+  d) Switchboard integration
+
+    <Parameter name="eu.clarin.cmdi.vcr.lrs.endpoint" 
+               value="https://switchboard.clarin.eu/#/xyz" 
+               override="false"/>
+    
+    <Parameter name="eu.clarin.cmdi.vcr.lrs.enable_for_resources" 
+               value="true" 
+               override="false" />
+    
+    <Parameter name="eu.clarin.cmdi.vcr.lrs.enable_for_collections" 
+               value="false" 
+               override="false" />
+
+  f) Piwik integration
+
+    <Parameter name="eu.clarin.cmdi.vcr.piwik.enableTracker" 
+               value="false" 
+               override="false"/>
+    
+    <Parameter name="eu.clarin.cmdi.vcr.piwik.siteId" 
+               value="1" 
+               override="false" />
+    
+    <Parameter name="eu.clarin.cmdi.vcr.piwik.host" 
+               value="https://stats.clarin.eu/" 
+               override="false" />
+       
+    <Parameter name="eu.clarin.cmdi.vcr.piwik.domains" 
+               value="*.vcr.clarin.eu" 
+               override="false" />
+
 * AUTHENTICATION *
 
 The application has two alternative authentication configuration represented by two

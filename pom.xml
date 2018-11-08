@@ -618,6 +618,33 @@
                     </descriptors>
                 </configuration>
             </plugin>
+             <plugin>
+                <artifactId>exec-maven-plugin</artifactId>
+                <version>1.6.0</version>
+                <groupId>org.codehaus.mojo</groupId>
+                <executions>
+                    <execution><!-- Run our version calculation script -->
+                        <id>clean-webapp-docker</id>
+                        <phase>clean</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${basedir}/scripts/clean.sh</executable>
+                        </configuration>
+                    </execution>
+                    <execution><!-- Run our version calculation script -->
+                        <id>deploy-webapp-docker</id>
+                        <phase>package</phase>
+                        <goals>
+                            <goal>exec</goal>
+                        </goals>
+                        <configuration>
+                            <executable>${basedir}/scripts/deploy.sh</executable>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
 
         <pluginManagement>

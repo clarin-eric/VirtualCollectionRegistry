@@ -28,6 +28,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.flow.RedirectToUrlException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 
 /**
  *
@@ -37,6 +38,8 @@ public class UIUtils {
     
     private static Logger logger = LoggerFactory.getLogger(UIUtils.class);
     
+    private final static String TOOLTIP_TEXT = "Open this collection in the language resurce switchboard";
+    
     public static Component addTooltip(Component comp, String tooltipText) {
         comp.add(new AttributeAppender("data-toggle", Model.of("tooltip")));
         comp.add(new AttributeAppender("data-placement", Model.of(CreateAndEditVirtualCollectionPage.DEFAULT_TOOLTIP_DATA_PLACEMENT)));
@@ -45,36 +48,50 @@ public class UIUtils {
         comp.add(new AttributeAppender("title", Model.of(tooltipText)));
         return comp;
     }
-    
             
-    public static AjaxLink getLrsRedirectAjaxLink(String id, IModel<VirtualCollection> model) {
+    public static AjaxLink getLrsRedirectAjaxLink(String id, IModel<VirtualCollection> model, String endpoint) {
         final AjaxLink<VirtualCollection> lrsLink
             = new AjaxLink<VirtualCollection>(id, model) {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
-                    throw new RedirectToUrlException(UIUtils.getLanguageSwitchboardUrl(model.getObject()));
+                    throw new RedirectToUrlException(UIUtils.getLanguageSwitchboardUrl(model.getObject(), endpoint));
                 }
         };
-        UIUtils.addTooltip(lrsLink, "Open this collection in the language resurce switchboard");
+        UIUtils.addTooltip(lrsLink, TOOLTIP_TEXT);
         return lrsLink;
     }
     
+    public static AjaxLink getLrsRedirectAjaxLinkForResource(String id, IModel<Resource> model, String endpoint) {
+        final AjaxLink<Resource> lrsLink
+            = new AjaxLink<Resource>(id, model) {
+                @Override
+                public void onClick(AjaxRequestTarget target) {
+                    throw new RedirectToUrlException(UIUtils.getLanguageSwitchboardUrlForResource(model.getObject(), endpoint));
+                }
+        };
+        UIUtils.addTooltip(lrsLink, TOOLTIP_TEXT);
+        return lrsLink;
+    }
     
-    public static String getLanguageSwitchboardUrl(VirtualCollection vc) {
+    public static String getLanguageSwitchboardUrl(VirtualCollection vc, String endpoint) {
+        final String href = "http://localhost:8080/vcr/service/virtualcollections/"+vc.getId();
+        return buildSwitchboardUrl(endpoint, href, "application/xml", "en");
+    }
+    
+    public static String getLanguageSwitchboardUrlForResource(Resource r, String endpoint) {
+        return buildSwitchboardUrl(endpoint, r.getRef(), "application/xml", "en");        
+    }
+    
+    public static String buildSwitchboardUrl(String switchboardEndpoint, String href, String mimeType, String languageCode) {
         try {
-            //create link for this resource to the language resource switchboard
-            final String href = "http://localhost:8080/vcr/service/virtualcollections/"+vc.getId();
-            final String mimeType =  "application/xml";
-            final String languageCode = "en";
-            return String.format("%s#/vlo/%s/%s/%s",
-                    "http://weblicht.sfs.uni-tuebingen.de/clrs/",
+            return String.format("%s/%s/%s/%s",
+                    switchboardEndpoint,
                     URLEncoder.encode(href, "UTF-8"),
-                    URLEncoder.encode(mimeType, "UTF-8"), languageCode);
+                    URLEncoder.encode(mimeType, "UTF-8"), 
+                    languageCode);
         } catch (UnsupportedEncodingException ex) {
             logger.error("Error while creating switchboard link", ex);
             return null;
         }
     }
-    
-    
 }

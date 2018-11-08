@@ -112,7 +112,7 @@ public class AuthenticationHandler {
     }
 
     protected static boolean isValidSignedInPrincipal(Principal principal) {
-        if( principal.getName() == null) {
+        if( principal == null || principal.getName() == null) {
             logger.debug("No principal (null)");            
             return false;
         } else if (principal.getName().equalsIgnoreCase("anonymous")) {

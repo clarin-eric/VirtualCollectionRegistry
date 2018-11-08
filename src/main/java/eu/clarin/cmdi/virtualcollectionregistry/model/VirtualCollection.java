@@ -409,7 +409,10 @@ public class VirtualCollection implements Serializable, IdentifiedEntity {
         this.setName(vc.getName());
         this.setDescription(vc.getDescription());
         this.setCreationDate(vc.getCreationDate());
-
+        this.setPurpose(vc.getPurpose());
+        this.setReproducibility(vc.getReproducibility());
+        this.setReproducibilityNotice(vc.getReproducibilityNotice());
+        
         // Creators
         Set<Creator> obsolete_creators =
             new HashSet<Creator>(this.getCreators());
@@ -425,10 +428,6 @@ public class VirtualCollection implements Serializable, IdentifiedEntity {
             }
             obsolete_creators = null;
         }
-
-        this.setPurpose(vc.getPurpose());
-        this.setReproducibility(vc.getReproducibility());
-        this.setReproducibilityNotice(vc.getReproducibilityNotice());
 
         // Keywords
         Set<String> obsolete_keywords =
@@ -547,6 +546,31 @@ public class VirtualCollection implements Serializable, IdentifiedEntity {
      */
     public boolean isCiteable() {
         return hasPersistentIdentifier() && (getState() == VirtualCollection.State.PUBLIC || getState() == VirtualCollection.State.PUBLIC_FROZEN);
+    }
+    
+    @Override
+    public String toString() {
+        String result = "";
+        result += String.format("id             : %s\n", this.getId());
+        result += String.format("pid            : %s\n", this.getPersistentIdentifier());
+        result += String.format("name           : %s\n", this.getName());
+        result += String.format("owner          : %s\n", this.getOwner());
+        result += String.format("purpose        : %s\n", this.getPurpose());
+        result += String.format("reproducibility: %s\n", this.getReproducibility());
+        result += String.format("repro, notice  : %s\n", this.getReproducibilityNotice());
+        result += String.format("creators       :\n");
+        for(Creator c : this.getCreators()) { 
+            result += String.format("  creator      : %s\n", this.getReproducibilityNotice());
+        }
+        result += String.format("keywords       :\n");
+        for(String keyword: this.getKeywords()) {
+            result += String.format("  keyword      : %s\n", this.getReproducibilityNotice());
+        }
+        result += String.format("resources       :\n");
+        for(Resource c : this.getResources()) {
+            result += String.format("  resources    : %s\n", this.getReproducibilityNotice());
+        }
+        return result;
     }
 
 } // class VirtualCollection

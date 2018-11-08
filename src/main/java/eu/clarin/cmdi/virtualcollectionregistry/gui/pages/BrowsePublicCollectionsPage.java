@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
+import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.citation.CitationDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.PublishedCollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
@@ -13,7 +14,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
-import org.apache.wicket.request.flow.RedirectToUrlException;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -21,6 +22,9 @@ import org.slf4j.LoggerFactory;
 public class BrowsePublicCollectionsPage extends BasePage {
 
     private static Logger logger = LoggerFactory.getLogger(BrowsePublicCollectionsPage.class);
+    
+    @SpringBean
+    private VcrConfigImpl vcrConfig;
     
     private class ActionsPanel extends Panel {
 
@@ -42,7 +46,9 @@ public class BrowsePublicCollectionsPage extends BasePage {
             citeLink.setEnabled(model.getObject().isCiteable());
             add(citeLink);
             
-            add(UIUtils.getLrsRedirectAjaxLink("lrs", model));
+            AjaxLink lrsLink = UIUtils.getLrsRedirectAjaxLink("lrs", model, vcrConfig.getSwitchboardEndpoint());
+            lrsLink.setVisible(vcrConfig.isSwitchboardEnabledForCollections());
+            add(lrsLink);
             
             final AjaxLink<VirtualCollection> detailsLink
                     = new AjaxLink<VirtualCollection>("details", model) {
