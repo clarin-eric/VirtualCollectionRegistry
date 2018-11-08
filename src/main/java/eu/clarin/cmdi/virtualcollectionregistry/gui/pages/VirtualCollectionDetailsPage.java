@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
+import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.DateConverter;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.DetachableVirtualCollectionModel;
@@ -48,6 +49,7 @@ import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.INamedParameters.NamedPair;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.string.Strings;
 
@@ -61,6 +63,9 @@ public class VirtualCollectionDetailsPage extends BasePage {
     private final HideIfEmptyBehavior hideIfEmpty = new HideIfEmptyBehavior();
 
     private final PageParameters params;
+    
+    @SpringBean
+    private VcrConfigImpl vcrConfig;
     
     private static final IConverter convEnum = new IConverter() {
         @Override
@@ -273,17 +278,22 @@ public class VirtualCollectionDetailsPage extends BasePage {
                 return "reference";
             }
         });
-        cols.add(new AbstractColumn<Resource, String>(Model.of("Action")) {
-            @Override
-            public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> rowModel) {
-                item.add(new ActionLinkPanel(componentId, rowModel));
-            }
+        
+        //Make sure to check all possible actions. Only add action column if there
+        //is more than one action enabled.
+        if (vcrConfig.isSwitchboardEnabledForResources()) {
+            cols.add(new AbstractColumn<Resource, String>(Model.of("Action")) {
+                @Override
+                public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> rowModel) {
+                    item.add(new ActionLinkPanel(componentId, rowModel));
+                }
 
-            @Override
-            public String getCssClass() {
-                return "reference";
-            }
-        });
+                @Override
+                public String getCssClass() {
+                    return "reference";
+                }
+            });
+        }
         
         final SortableDataProvider<Resource, String> resourcesProvider = new SortableDataProvider<Resource, String>() {
             @Override

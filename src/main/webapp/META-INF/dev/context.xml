@@ -45,14 +45,17 @@
                value="xrl#4xbE"
                override="false"/>
     
+    <!-- Switchboard endpoint -->
     <Parameter name="eu.clarin.cmdi.vcr.lrs.endpoint" 
                value="https://switchboard.clarin.eu/#/xyz" 
                override="false"/>
     
+    <!-- Enable switchboard ingegration for resources -->
     <Parameter name="eu.clarin.cmdi.vcr.lrs.enable_for_resources" 
-               value="true" 
+               value="false" 
                override="false" />
     
+    <!-- Enable switchboard ingegration for collections -->
     <Parameter name="eu.clarin.cmdi.vcr.lrs.enable_for_collections" 
                value="false" 
                override="false" />

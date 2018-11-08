@@ -46,7 +46,9 @@ public class BrowsePublicCollectionsPage extends BasePage {
             citeLink.setEnabled(model.getObject().isCiteable());
             add(citeLink);
             
-            add(UIUtils.getLrsRedirectAjaxLink("lrs", model, vcrConfig.getSwitchboardEndpoint()));
+            AjaxLink lrsLink = UIUtils.getLrsRedirectAjaxLink("lrs", model, vcrConfig.getSwitchboardEndpoint());
+            lrsLink.setVisible(vcrConfig.isSwitchboardEnabledForCollections());
+            add(lrsLink);
             
             final AjaxLink<VirtualCollection> detailsLink
                     = new AjaxLink<VirtualCollection>("details", model) {
