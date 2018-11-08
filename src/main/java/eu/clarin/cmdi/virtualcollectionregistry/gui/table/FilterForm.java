@@ -17,7 +17,6 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.validation.validator.StringValidator;
 
 import eu.clarin.cmdi.virtualcollectionregistry.QueryOptions;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
@@ -125,7 +124,7 @@ public class FilterForm extends Panel {
         };
         form.add(clearButton);
         add(form);
-        add(new Label("title", "Filter form"));
+        add(new Label("title", "Filter"));
     }
 
 } // class FilterForm
