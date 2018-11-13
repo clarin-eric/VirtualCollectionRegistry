@@ -39,6 +39,24 @@ public class AuthenticationHandler {
     
     private static Logger logger = LoggerFactory.getLogger(AuthenticationHandler.class);
     
+    public static void handleLogout(final ApplicationSession session, final WebPage page) {
+        final RequestCycle cycle =  RequestCycle.get();
+        final HttpServletRequest request = 
+            (HttpServletRequest)cycle.getRequest().getContainerRequest();
+
+        final Principal principal = request.getUserPrincipal();
+        if(!isValidSignedInPrincipal(principal)) {
+            logger.info("No logged in principal");
+        } else {
+            logger.info("Logging out principal = "+principal.toString());
+        }
+
+        session.invalidate();
+        //TODO: howto handle shibboleth single logout?
+         logger.debug("Logout finished, redirecting to homepage");
+        throw new RestartResponseAtInterceptPageException(Application.get().getHomePage());
+    }
+    
     public static void handleLogin(final ApplicationSession session, final WebPage page) {
         logger.debug("Handling login");
         

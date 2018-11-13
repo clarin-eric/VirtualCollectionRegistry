@@ -16,7 +16,10 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import org.apache.wicket.markup.html.WebPage;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -24,6 +27,8 @@ import org.apache.wicket.markup.html.WebPage;
  */
 public class LogoutPage extends WebPage {
 
+    private static Logger logger = LoggerFactory.getLogger(LogoutPage.class);
+    
     public LogoutPage() {
         super();
         setStatelessHint(true);
@@ -32,30 +37,7 @@ public class LogoutPage extends WebPage {
 
     @Override
     protected void onBeforeRender() {
-        //TODO: how to implement logout?
-        /*
-        final RequestCycle cycle =  RequestCycle.get();
-        final HttpServletRequest request = 
-            (HttpServletRequest)cycle.getRequest().getContainerRequest();
-        final HttpServletResponse response = 
-            (HttpServletResponse)cycle.getResponse().getContainerResponse();
-        if (request.getAuthType() == null) {
-            response.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-        } else {
-            final Principal principal = request.getUserPrincipal();
-            ApplicationSession session = (ApplicationSession) getSession();
-            if (session.signIn(principal)) {
-                continueToOriginalDestination();
-                // if we reach this line there was no intercept page, so go to home page
-                throw new RestartResponseAtInterceptPageException(
-                    Application.get().getHomePage());
-            } else {
-                throw new RestartResponseException(
-                        Application.get().getApplicationSettings()
-                            .getAccessDeniedPage());
-            }
-        }
-*/
+        AuthenticationHandler.handleLogout((ApplicationSession) getSession(), this);
         super.onBeforeRender();
     }
     
