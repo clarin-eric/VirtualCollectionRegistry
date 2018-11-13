@@ -2,8 +2,11 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
 import de.agilecoders.wicket.core.Bootstrap;
 import de.agilecoders.wicket.core.settings.BootstrapSettings;
+import de.agilecoders.wicket.core.settings.ITheme;
+import de.agilecoders.wicket.core.settings.SingleThemeProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.DataStore;
+import eu.clarin.cmdi.virtualcollectionregistry.JavaScriptResources;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AboutPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AdminPage;
@@ -14,11 +17,15 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.HelpPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.LoginPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.LogoutPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.VirtualCollectionDetailsPage;
+import java.util.Collections;
+import java.util.List;
 import org.apache.wicket.Page;
 import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebApplication;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
+import org.apache.wicket.markup.head.HeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
@@ -43,14 +50,41 @@ public class Application extends AuthenticatedWebApplication {
     @Autowired
     private AdminUsersService adminUsersService;
 
+    private static class ExtremeNoopTheme implements ITheme {
+        
+        @Override
+        public String name() {
+            return "noop-theme";
+        }
+        
+        @Override
+        public List<HeaderItem> getDependencies() {
+            return Collections.emptyList();
+        }
+        
+        @Override
+        public void renderHead(IHeaderResponse response) {
+        }
+        
+        @Override
+        public Iterable<String> getCdnUrls() {
+            return Collections.emptyList();
+        }
+        
+    }
+    
     @Override
     protected void init() {
         super.init();
         
-        BootstrapSettings settings = new BootstrapSettings();
-        //settings.minify(true); // use minimized version of all bootstrap references
-
-        Bootstrap.install(this, settings);
+        //Install bootstrap
+        Bootstrap.install(
+            this, 
+            new BootstrapSettings()
+                //bootstrap CSS is provided via markup (CSS link in HTML head)
+                .setThemeProvider(new SingleThemeProvider(new ExtremeNoopTheme()))
+                .setJsResourceReference(JavaScriptResources.getBootstrapJS())
+        );
    
     
         logger.info("Initialising VCR web application");
