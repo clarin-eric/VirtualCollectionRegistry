@@ -202,3 +202,48 @@ div.betabadge {
 .half-width {
     width: 50%;
 }
+
+
+.detais {
+    font-size: 0.95em;
+}
+
+.state {
+    min-width: 85px;
+    max-width: 85px;
+    font-size: 0.9em;
+}
+
+.type {
+    min-width: 85px;
+    max-width: 85px;
+    font-size: 0.9em;
+}
+
+.created {
+    min-width: 85px;
+    max-width: 85px;
+    font-size: 0.9em;
+}
+
+.action {
+    min-width: 90px;
+    max-width: 90px;
+}
+
+
+
+
+.odd {
+    background-color: rgb(234, 234, 234);;/*#D4DEEF;*/
+}
+
+.even {
+    background-color: #FFFFFF;
+}
+
+
+.btngroup-spacing {
+    margin-top: 2px;
+    margin-bottom: 2px;
+}

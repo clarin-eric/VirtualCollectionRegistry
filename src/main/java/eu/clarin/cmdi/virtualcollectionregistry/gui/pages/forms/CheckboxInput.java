@@ -76,6 +76,7 @@ public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
         super.onInitialize();        
         
         group = new BootstrapRadioGroup<>("group", model, values, new EnumRadioChoiceRenderer(Buttons.Type.Primary));
+        group.add(new AttributeAppender("class", " btngroup-spacing"));
 //        group = new AjaxBootstrapRadioGroup<>("group", model, values, new EnumRadioChoiceRenderer(Buttons.Type.Primary) {      
 //        });
         
