@@ -69,7 +69,7 @@
             <id>development</id>
             <properties>
                 <!-- Log to console -->
-                <log4j.appender>Console</log4j.appender>     
+                <log4j.appender>FILE</log4j.appender>     
                 <!-- Use the user database realm version of web.xml -->           
                 <war.webxml>src/main/webapp/WEB-INF/web-dev.xml</war.webxml>
                 <war.contextxml>src/main/webapp/META-INF/dev/context.xml</war.contextxml>
@@ -275,7 +275,7 @@
         <dependency>
             <groupId>de.mpg.mpgaai</groupId>
             <artifactId>mpgaai-shhaa</artifactId>
-            <version>1.0.6</version>
+            <version>1.0.8-snapshot</version>
             <exclusions>
                 <exclusion>
                     <!-- replaced with jcl-over-slf4j -->
@@ -393,23 +393,6 @@
             <artifactId>jmock-junit4</artifactId>
             <version>2.6.0</version>
             <scope>test</scope>
-        </dependency>
-
-        <!-- JavaMelody for application monitoring -->
-        <dependency>
-            <groupId>net.bull.javamelody</groupId>
-            <artifactId>javamelody-core</artifactId>
-            <version>1.52.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-aop</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-context</artifactId>
-                </exclusion>
-            </exclusions>
         </dependency>
         
         <dependency>
