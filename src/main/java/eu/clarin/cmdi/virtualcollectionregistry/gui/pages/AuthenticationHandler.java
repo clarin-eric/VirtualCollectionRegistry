@@ -17,6 +17,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
+import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.Enumeration;
 import javax.servlet.http.HttpServletRequest;
@@ -107,7 +108,7 @@ public class AuthenticationHandler {
         Enumeration<String> headerNames = request.getHeaderNames();
         String name = null;
         while((name = headerNames.nextElement()) != null) {
-            logger.debug("    "+name+"="+request.getHeader(name));
+            logger.debug("    "+name+"="+decodeHeaderValue(name, request.getHeader(name)));
         }
     }
 
@@ -122,4 +123,18 @@ public class AuthenticationHandler {
             return true;        
         }        
     }
+    
+    private static String decodeHeaderValue(String name, String value) {
+            if(value == null) {
+                return null;
+            }
+            
+            try {
+                return new String(value.getBytes("ISO8859-1"),"UTF-8");
+            } catch(UnsupportedEncodingException ex) {
+                logger.error(String.format("Failed to decode header [%s] value [%s] as UTF-8. Error=%s.", name, value, ex.getMessage()));
+                logger.debug("Stacktrace:", ex);
+            }
+            return value;
+        }
 }
