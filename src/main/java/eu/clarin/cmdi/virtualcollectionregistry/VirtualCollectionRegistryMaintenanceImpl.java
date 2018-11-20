@@ -49,7 +49,8 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
     
     @Override
     public void perform(long now) {
-        logger.debug("Maintenance check");
+        logger.trace("Maintenance check");
+        long t1 = System.nanoTime();
         
         // allocate persistent identifier roughly after 30 seconds
         final Date nowDateAlloc = new Date(now - 30 * 1000);
@@ -68,6 +69,9 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
         } finally {
             datastore.closeEntityManager();
         }
+        
+        long t2 = System.nanoTime();
+        logger.debug(String.format("Maintenance check finished in %.3fms", (t2-t1)/1000000.0));
     }
     
     /*

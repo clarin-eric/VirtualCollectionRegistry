@@ -76,7 +76,6 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             maintenanceExecutor.scheduleWithFixedDelay(new Runnable() {
                 @Override
                 public void run() {
-                    logger.info("Running maintenance");
                     maintenance.perform(new Date().getTime());
                 }
             }, 60, 60, TimeUnit.SECONDS);
