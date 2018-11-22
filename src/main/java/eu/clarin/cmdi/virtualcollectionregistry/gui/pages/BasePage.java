@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
+import eu.clarin.cmdi.wicket.PiwikTracker;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LogoutPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.AuthenticationHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LoginPage;
@@ -10,9 +11,9 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.Navbar.ComponentP
 import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.NavbarButton;
 import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.NavbarExternalLink;
 import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
-import eu.clarin.cmdi.virtualcollectionregistry.config.PiwikConfigImpl;
-import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl;
+import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
+import eu.clarin.cmdi.wicket.PiwikConfig;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
@@ -46,10 +47,10 @@ public class BasePage extends WebPage {
     private AdminUsersService adminUsersService;
 
     @SpringBean
-    private PiwikConfigImpl piwikConfig;
+    private PiwikConfig piwikConfig;
     
     @SpringBean
-    private VcrConfigImpl vcrConfig;
+    private VcrConfig vcrConfig;
     
     public static final String BETA_MODE = "eu.clarin.cmdi.virtualcollectionregistry.beta_mode";
     
