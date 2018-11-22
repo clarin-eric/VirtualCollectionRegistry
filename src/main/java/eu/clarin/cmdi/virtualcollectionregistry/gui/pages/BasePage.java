@@ -17,6 +17,7 @@ import eu.clarin.cmdi.wicket.PiwikConfig;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import javax.servlet.ServletContext;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
@@ -193,6 +194,13 @@ public class BasePage extends WebPage {
     @Override
     public ApplicationSession getSession() {
         return (ApplicationSession) super.getSession();
+    }
+    
+    
+    public String getContextPath() {
+        ServletContext servletContext = WebApplication.get().getServletContext(); 
+        String contextPath = servletContext.getContextPath();
+        return contextPath;
     }
     
     /**
