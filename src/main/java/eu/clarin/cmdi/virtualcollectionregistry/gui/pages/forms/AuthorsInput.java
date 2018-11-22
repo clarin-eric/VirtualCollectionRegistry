@@ -68,6 +68,9 @@ public class AuthorsInput extends FormComponentPanel<List<Creator>> {
             @Override
             protected void onSubmit() {
                 super.onSubmit();
+                
+                logger.info("Authors form successfully submitted!");
+                
                 String person = personModel.getObject();
                 String email = emailModel.getObject();
                 String organisation = organisationModel.getObject();
@@ -96,7 +99,7 @@ public class AuthorsInput extends FormComponentPanel<List<Creator>> {
 
             @Override
             protected void onError() {
-                logger.info("Form keywords failed to validate!");
+                logger.info("Authors form failed to validate!");
             }
         };
         form.setOutputMarkupId(true);

@@ -5,8 +5,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.citation.CitationDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.PublishedCollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -58,27 +56,9 @@ public class BrowsePublicCollectionsPage extends BasePage {
                         }
                     };
             UIUtils.addTooltip(detailsLink, "View collection details");
-            add(detailsLink);
-            
-            
+            add(detailsLink);    
         }
         
-        private String getLanguageSwitchboardUrl(VirtualCollection vc) {
-            try {
-                //create link for this resource to the language resource switchboard
-                final String href = "http://localhost:8080/vcr/service/virtualcollections/"+vc.getId();
-                final String mimeType =  "application/xml";
-                final String languageCode = "en";
-                return String.format("%s#/vlo/%s/%s/%s",
-                        "http://weblicht.sfs.uni-tuebingen.de/clrs/",
-                        URLEncoder.encode(href, "UTF-8"),
-                        URLEncoder.encode(mimeType, "UTF-8"), languageCode);
-            } catch (UnsupportedEncodingException ex) {
-                logger.error("Error while creating switchboard link", ex);
-                return null;
-            }
-        }
-
     } // class BrowsePublicCollectionsPage.ActionsPanel
 
     public BrowsePublicCollectionsPage() {

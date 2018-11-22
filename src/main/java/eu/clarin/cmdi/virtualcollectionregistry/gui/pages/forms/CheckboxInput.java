@@ -17,11 +17,18 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
-import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.BootstrapRadioGroup;
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.AjaxBootstrapRadioGroup;
+import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.BootstrapRadioGroup;
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.EnumRadioChoiceRenderer;
+import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.IRadioChoiceRenderer;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.UIUtils;
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
+import java.util.Spliterator;
+import java.util.function.Consumer;
+import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -45,8 +52,8 @@ public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
     
     private final IModel<T> model;     //current value
     private final List<T> values;      //list of allowed values
-    private final String labelText;         //Tekst for the display label
-    private final String tooltipText;       //Tekst for the tooltip
+    private final String labelText;    //Tekst for the display label
+    private final String tooltipText;  //Tekst for the tooltip
     
     //private RadioGroup<T> group;
     private BootstrapRadioGroup<T> group;
@@ -71,15 +78,42 @@ public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
         this.tooltipText = tooltipText;
     }
 
-   @Override
+    @Override
+    protected void onModelChanged() {
+        super.onModelChanged(); //To change body of generated methods, choose Tools | Templates.
+        logger.info("CheckboxInput model changed: "+this.model.toString());
+    }
+
+    private class EnumRadioGroup<T extends Serializable> extends AjaxBootstrapRadioGroup<T> {
+
+        public EnumRadioGroup(String id, Collection<T> options) {
+            super(id, options);
+        }   
+
+        public EnumRadioGroup(String id, Collection<T> options, IRadioChoiceRenderer<T> choiceRenderer) {
+            super(id, options, choiceRenderer);
+        }
+
+        public EnumRadioGroup(String id, IModel<T> model, Collection<T> options, IRadioChoiceRenderer<T> choiceRenderer) {
+            super(id, model, options, choiceRenderer);
+        }
+    
+        @Override
+        protected void onSelectionChanged(AjaxRequestTarget art, Serializable t) {
+            logger.debug("onSelectionChanged. Model = "+model.toString());
+            //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        }
+        
+    }
+    
+    @Override
     protected void onInitialize() {
         super.onInitialize();        
         
-        group = new BootstrapRadioGroup<>("group", model, values, new EnumRadioChoiceRenderer(Buttons.Type.Primary));
-        group.add(new AttributeAppender("class", " btngroup-spacing"));
-//        group = new AjaxBootstrapRadioGroup<>("group", model, values, new EnumRadioChoiceRenderer(Buttons.Type.Primary) {      
-//        });
+        //group = new BootstrapRadioGroup<>("group", model, values, new EnumRadioChoiceRenderer(Buttons.Type.Primary));
         
+        group = new EnumRadioGroup<>("group", model, values, new EnumRadioChoiceRenderer(Buttons.Type.Primary));
+        group.add(new AttributeAppender("class", " btngroup-spacing"));
         
         WebMarkupContainer tooltip = new WebMarkupContainer("tooltipwrapper");
         UIUtils.addTooltip(tooltip, tooltipText);
@@ -108,6 +142,8 @@ public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
     @Override
     protected void onBeforeRender() {
         super.onBeforeRender();
-        //logger.trace("Model object: "+model.getObject()+", list model object: "+group.getModelObject());
-    }        
+        logger.debug("Model object: "+model.getObject()+", list model object: "+group.getModelObject());
+    }  
+    
+    
 }
