@@ -1,5 +1,8 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LogoutPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.AuthenticationHandler;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LoginPage;
 import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.INavbarComponent;
 import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.ImmutableNavbarComponent;
 import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.Navbar;
@@ -8,6 +11,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.NavbarButton;
 import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.NavbarExternalLink;
 import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.config.PiwikConfigImpl;
+import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -43,6 +47,9 @@ public class BasePage extends WebPage {
 
     @SpringBean
     private PiwikConfigImpl piwikConfig;
+    
+    @SpringBean
+    private VcrConfigImpl vcrConfig;
     
     public static final String BETA_MODE = "eu.clarin.cmdi.virtualcollectionregistry.beta_mode";
     
@@ -105,14 +112,17 @@ public class BasePage extends WebPage {
         }
         
         //Add login or user profile + logout buttons based on authentication state
+        
         if(isSignedIn()) {
             final Component userLink = new NavbarButton(BrowsePrivateCollectionsPage.class, Model.of(getUser().getName()))
                     .add(new AttributeModifier("class", "glyphicon glyphicon-user"));
+            menuItems.add(new ImmutableNavbarComponent(userLink, ComponentPosition.RIGHT));
+            
+            if(vcrConfig.isLogoutEnabled()) {
             final Component logoutLink = new NavbarButton(LogoutPage.class, Model.of("Logout"))
                 .add(new AttributeModifier("class", "glyphicon glyphicon-log-out"));
-            
-            menuItems.add(new ImmutableNavbarComponent(userLink, ComponentPosition.RIGHT));
             menuItems.add(new ImmutableNavbarComponent(logoutLink, ComponentPosition.RIGHT));
+            }            
         } else {
             final Component loginLink = new NavbarButton(LoginPage.class, Model.of("Login"))
                 .add(new AttributeModifier("class", "glyphicon glyphicon-log-in"));
