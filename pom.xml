@@ -275,7 +275,7 @@
         <dependency>
             <groupId>de.mpg.mpgaai</groupId>
             <artifactId>mpgaai-shhaa</artifactId>
-            <version>1.0.8-snapshot</version>
+            <version>1.0.10</version>
             <exclusions>
                 <exclusion>
                     <!-- replaced with jcl-over-slf4j -->
@@ -398,7 +398,7 @@
         <dependency>
             <groupId>de.agilecoders.wicket</groupId>
             <artifactId>wicket-bootstrap-core</artifactId>
-            <version>0.10.14</version>
+            <version>0.10.17</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.wicket</groupId>
@@ -409,8 +409,12 @@
                     <artifactId>wicket-util</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>       
+        <dependency>
+            <groupId>de.agilecoders.wicket.webjars</groupId>
+            <artifactId>wicket-webjars</artifactId>
+            <version>0.5.6</version>
         </dependency>
-       
     </dependencies>
 
     <build>
@@ -623,7 +627,8 @@
                             <goal>exec</goal>
                         </goals>
                         <configuration>
-                            <executable>${basedir}/scripts/deploy.sh</executable>
+                            <!--executable>${basedir}/scripts/deploy.sh</executable-->
+                            <executable>/Users/wilelb/Code/work/clarin/git/infrastructure2/compose/pilot/compose_clarin_proxy/clarin/vcr/deploy.sh</executable>
                         </configuration>
                     </execution>
                 </executions>
