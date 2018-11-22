@@ -33,10 +33,14 @@ final class ColumnName extends AbstractColumn<VirtualCollection, String> {
             super(id);
             setRenderBodyOnly(true);
 
+            
+            
             nameColumn = new WebMarkupContainer("nameColumn");
             nameColumn.setOutputMarkupId(true);
+            
             final VirtualCollection vc = model.getObject();
             nameColumn.add(new Label("name", vc.getName()));
+            
 
             final WebMarkupContainer details =
                 new WebMarkupContainer("details");

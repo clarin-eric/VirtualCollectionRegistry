@@ -43,13 +43,14 @@ public abstract class VirtualCollectionTable extends Panel {
         final DataTable<VirtualCollection, String> table =
             new AjaxFallbackDefaultDataTable<>("table",
                 columns, provider, 30);
+        
         table.add(new AttributeAppender("class",
                 new AbstractReadOnlyModel<String>() {
                     @Override
                     public String getObject() {
                         return showState ? "private table" : "public table";
                     }
-                }, " "));
+                }, " ")) ;
         table.addBottomToolbar(new AjaxNavigationToolbar(table));
 
         final FilterForm form =

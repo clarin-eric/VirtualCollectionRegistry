@@ -15,7 +15,7 @@
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
 (function() {
-	
+	/*
     function elements(selector) {
         return Array.prototype.slice.call(document.querySelectorAll(selector));
     }
@@ -29,10 +29,10 @@
                 var content = e.srcElement.parentNode.querySelector('div.details');
                 if(el.className.indexOf('detailsShown') > 0) {
                     el.className = "name collection";
-                    content.className = "details hide";
+                    content.className = "details hide col-xs-12";
                 } else {
                     el.className = "name collection detailsShown";
-                    content.className = "details show";
+                    content.className = "details show col-xs-12";
                 }
             };
         });
@@ -41,7 +41,35 @@
     document.addEventListener('DOMContentLoaded', function() {
         ajaxToggle();
     }, false);
-	
+    
+    */
+    $( document ).ready(function() {
+        console.log("Registering jquery event handlers on collections table");
+        $( "#collectionsTable" ).on( "click", "div.collection", function() {
+            if( $(this).length <= 0) {
+                return;
+            }
+            var elTitle = $( this )[0];
+            var parent = $(elTitle).parent();
+            var details = $(parent).find('div.details')[0];
+            if (!details || details.length <= 0) {
+                return;
+            }
+            
+            //console.log(details);
+            
+            //var content = details[0];
+            if(elTitle.className.indexOf('detailsShown') > 0) {
+                elTitle.className = "name collection";
+                details.className = "details hide col-xs-12";
+            } else {
+                elTitle.className = "name collection detailsShown";
+                details.className = "details show col-xs-12";
+            }
+        });
+        console.log( "ready!" );
+    });
+
 })();
 
 
