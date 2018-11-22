@@ -14,8 +14,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePrivateCollectio
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePublicCollectionsPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.CreateAndEditVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.HelpPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.LoginPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.LogoutPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LoginPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LogoutPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.VirtualCollectionDetailsPage;
 import java.util.Collections;
 import java.util.List;
