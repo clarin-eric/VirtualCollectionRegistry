@@ -14,16 +14,36 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.clarin.cmdi.virtualcollectionregistry.config;
+package eu.clarin.cmdi.wicket;
+
+import de.agilecoders.wicket.core.settings.ITheme;
+import java.util.Collections;
+import java.util.List;
+import org.apache.wicket.markup.head.HeaderItem;
+import org.apache.wicket.markup.head.IHeaderResponse;
 
 /**
  *
  * @author wilelb
  */
-public interface VcrConfig {
-    public String getSwitchboardEndpoint();    
-    public boolean isSwitchboardEnabledForResources();
-    public boolean isSwitchboardEnabledForCollections();
-    public String getLogoutMode();
-    public boolean isLogoutEnabled();
+public class ExtremeNoopTheme implements ITheme {
+
+    @Override
+    public String name() {
+        return "noop-theme";
+    }
+
+    @Override
+    public List<HeaderItem> getDependencies() {
+        return Collections.emptyList();
+    }
+
+    @Override
+    public void renderHead(IHeaderResponse response) {
+    }
+
+    @Override
+    public Iterable<String> getCdnUrls() {
+        return Collections.emptyList();
+    }
 }

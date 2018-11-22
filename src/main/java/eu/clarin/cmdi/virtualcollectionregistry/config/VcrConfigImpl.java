@@ -34,6 +34,12 @@ public class VcrConfigImpl implements VcrConfig {
     @Value("${eu.clarin.cmdi.vcr.lrs.enable_for_collections:false}")
     private boolean lrsEnableCollections;
     
+    @Value("${eu.clarin.cmdi.vcr.logout_mode:basic}")
+    private String logoutMode;
+    
+    @Value("${eu.clarin.cmdi.vcr.logout_enable:false}")
+    private boolean logoutEnabled;
+    
     @Override
     public String getSwitchboardEndpoint() {
         if (lrsEndpoint.endsWith("/")) {
@@ -50,5 +56,16 @@ public class VcrConfigImpl implements VcrConfig {
     @Override
     public boolean isSwitchboardEnabledForCollections() {
         return lrsEnableCollections;
+    }
+    
+    @Override
+    public boolean isLogoutEnabled() {
+        return logoutEnabled;
+    }
+    
+    
+    @Override
+    public String getLogoutMode() {
+        return logoutMode;
     }
 }

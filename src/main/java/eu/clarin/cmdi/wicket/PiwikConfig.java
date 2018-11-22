@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2018 CLARIN
+ * Copyright (C) 2017 CLARIN
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,16 +14,15 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.clarin.cmdi.virtualcollectionregistry.config;
+package eu.clarin.cmdi.wicket;
 
 /**
  *
  * @author wilelb
  */
-public interface VcrConfig {
-    public String getSwitchboardEndpoint();    
-    public boolean isSwitchboardEnabledForResources();
-    public boolean isSwitchboardEnabledForCollections();
-    public String getLogoutMode();
-    public boolean isLogoutEnabled();
+public interface PiwikConfig {
+    public boolean isEnabled();
+    public String getSiteId();
+    public String getPiwikHost();
+    public String getDomains();
 }
