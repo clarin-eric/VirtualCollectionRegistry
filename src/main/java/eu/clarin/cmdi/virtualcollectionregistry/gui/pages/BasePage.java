@@ -170,7 +170,15 @@ public class BasePage extends WebPage {
     }
 
     protected boolean isSignedIn() {
-        return ((AuthenticatedWebSession) getSession()).isSignedIn() && getSession().getPrincipal() != null;
+        //return ((AuthenticatedWebSession) getSession()).isSignedIn() && getSession().getPrincipal() != null;
+        Principal p = getSession().getPrincipal();
+        if(p == null) {
+            return false;
+        }
+        if(p.getName().equalsIgnoreCase("anonymous")) {
+            return false;
+        }
+        return true;
     }
     
     protected Principal getUser() {
