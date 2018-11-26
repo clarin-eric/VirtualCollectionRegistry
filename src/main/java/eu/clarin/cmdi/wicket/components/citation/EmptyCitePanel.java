@@ -14,33 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.clarin.cmdi.virtualcollectionregistry.gui.citation;
+package eu.clarin.cmdi.wicket.components.citation;
 
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 
 /**
  *
  * @author wilelb
  */
-public class CitationPanelFactory {
-    
-    /**
-     * Get a citation panel or place holder if the virtual collection is not
-     * citable. PUBLIC and PUBLIC_FROZEN collections with a PID are considered
-     * citable.
-     * 
-     * @param componentId
-     * @param model
-     * @return 
-     */
-    public static Panel getCitationPanel(final String componentId, final IModel<VirtualCollection> model) {
-        if(model.getObject().isCiteable()) {
-            return (new CitationPanel(componentId, model));
-        } else {
-            return (new EmptyCitePanel(componentId));
-        }
+public class EmptyCitePanel extends Panel {
+    public EmptyCitePanel(String id) {
+        super(id);
+        add(new Label("lbl", new Model<>("")));
     }
-    
 }

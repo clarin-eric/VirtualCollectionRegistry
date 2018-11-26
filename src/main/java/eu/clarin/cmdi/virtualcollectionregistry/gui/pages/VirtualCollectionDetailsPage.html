@@ -6,7 +6,7 @@
     <head />
     <body>
         <wicket:extend>
-            <span wicket:id="headerPanel">[collection header]</span>
+            <span wicket:id="headerPanel" class="details-header">[collection header]</span>
             <div wicket:id="generalBorder">
                 <div class="property">
                     <label>Name</label>
@@ -47,11 +47,15 @@
                 <wicket:enclosure child="pidLink">
                     <div class="property">
                         <label>Persistent identifier</label>
+                        <!--
                         <div>
                             <a wicket:id="pidLink"><wicket:container wicket:id="persistentIdentifier.URI">1234/5678</wicket:container></a>
                         </div>
-                    </div>
-                </wicket:enclosure>     
+                        -->
+                        <div wicket:id="pidLink"></div> 
+                    </div>                   
+                </wicket:enclosure>   
+                
                 <wicket:enclosure child="keywords">
                     <div class="property">
                         <label>Keywords</label>

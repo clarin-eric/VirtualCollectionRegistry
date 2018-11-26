@@ -16,10 +16,13 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
+import eu.clarin.cmdi.wicket.components.pid.PidType;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import org.apache.wicket.model.IModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * Model that takes a link from an inner model and in case of a handle (any link
@@ -30,17 +33,95 @@ import org.apache.wicket.model.IModel;
 @SuppressWarnings("serial")
 public class HandleLinkModel implements IModel<String> {
 
+    private final static Logger logger = LoggerFactory.getLogger(HandleLinkModel.class);
+    
     private final IModel<String> linkModel;
     public static final Pattern HANDLE_PATTERN = Pattern.compile("^(hdl|doi):(.*)$", Pattern.CASE_INSENSITIVE);
+    public static final Pattern HANDLE_WITH_RESOLVER_PATTERN = Pattern.compile("^(http[s]?://hdl.handle.net/)(.*)(@.*)?$", Pattern.CASE_INSENSITIVE);
+    public static final Pattern DOI_PATTERN = Pattern.compile("^doi:(.*)$", Pattern.CASE_INSENSITIVE);
+    public static final Pattern DOI_WITH_RESOLVER_PATTERN = Pattern.compile("^http[s]?://dx.doi.org/(.*)$", Pattern.CASE_INSENSITIVE);
     public static final String HANDLE_PROXY = "http://hdl.handle.net/";
+    public static final String DOI_PROXY = "http://dx.doi.org/";
     public static final String URN_NBN_PREFIX = "urn:nbn";
     public static final String URN_NBN_RESOLVER_URL = "http://www.nbn-resolving.org/redirect/";
     private static final int HANDLE_ID_GROUP = 2;
+    private static final int DOI_ID_GROUP = 1;
 
     public HandleLinkModel(IModel<String> linkModel) {
         this.linkModel = linkModel;
     }
 
+    public static boolean isHandle(String link) {
+        final Matcher handleMatcher = HANDLE_PATTERN.matcher(link);
+        if(handleMatcher.matches()) {
+            return true;
+        }
+        final Matcher handleWithResolverMatcher = HANDLE_WITH_RESOLVER_PATTERN.matcher(link);
+        if(handleWithResolverMatcher.matches()) {
+            return true;
+        }
+        return false;
+    }
+    
+    public static boolean isDoi(String link) {
+        final Matcher handleMatcher = DOI_PATTERN.matcher(link);
+        if(handleMatcher.matches()) {
+            return true;
+        }
+        final Matcher handleWithResolverMatcher = DOI_WITH_RESOLVER_PATTERN.matcher(link);
+        if(handleWithResolverMatcher.matches()) {
+            return true;
+        }
+        return false;
+    }
+    
+    public static boolean isNbn(String link) {
+        return link.toLowerCase().startsWith(URN_NBN_PREFIX);
+    }
+    
+    public static String getHandleIdentifier(String link) {
+        //logger.info("getHandleIdentifier : link = " + link);
+        
+        final Matcher handleMatcher = HANDLE_PATTERN.matcher(link);
+        if(handleMatcher.matches()) {
+            //logger.info("Return handle id 1:"+handleMatcher.group(HANDLE_ID_GROUP));
+            return handleMatcher.group(HANDLE_ID_GROUP);
+        }
+        final Matcher handleWithResolverMatcher = HANDLE_WITH_RESOLVER_PATTERN.matcher(link);
+        if(handleWithResolverMatcher.matches()) {
+            //logger.info("Return handle id 2:"+handleWithResolverMatcher.group(HANDLE_ID_GROUP));
+            return handleWithResolverMatcher.group(HANDLE_ID_GROUP);
+        }
+        return link;
+    }
+    
+    public static String getDoiIdentifier(String link) {
+        //logger.info("getDoiIdentifier : link = " + link);
+        
+        final Matcher doiMatcher = DOI_PATTERN.matcher(link);
+        if(doiMatcher.matches()) {
+            //logger.info("Return doi id 1:"+doiMatcher.group(DOI_ID_GROUP));
+            return doiMatcher.group(DOI_ID_GROUP);
+        }
+        final Matcher doiWithResolverMatcher = DOI_WITH_RESOLVER_PATTERN.matcher(link);
+        if(doiWithResolverMatcher.matches()) {
+            //logger.info("Return doi id 1:"+doiWithResolverMatcher.group(DOI_ID_GROUP));
+            return doiWithResolverMatcher.group(DOI_ID_GROUP);
+        }
+        return link;
+    }
+    
+    public static PidType getPidType(String link) {
+        if(isHandle(link)) {
+            return PidType.HANDLE;
+        } else if(isDoi(link)) {
+            return PidType.DOI;
+        } else if(isNbn(link)) {
+            return PidType.NBN;
+        }
+        return PidType.UNKOWN;
+    }
+    
     @Override
     public String getObject() {
         final String link = linkModel.getObject();
@@ -49,7 +130,8 @@ public class HandleLinkModel implements IModel<String> {
             if (handleMatcher.matches()) {
                 return HANDLE_PROXY + handleMatcher.group(HANDLE_ID_GROUP);
             }
-            if (link.toLowerCase().startsWith(URN_NBN_PREFIX)) {
+            //if (link.toLowerCase().startsWith(URN_NBN_PREFIX)) {
+            if(isNbn(link)) {
                 return URN_NBN_RESOLVER_URL + link;
             }
         }

@@ -1,7 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.citation.CitationDialog;
+import eu.clarin.cmdi.wicket.components.citation.CitationPanelFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.PublishedCollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
@@ -29,7 +29,7 @@ public class BrowsePublicCollectionsPage extends BasePage {
         public ActionsPanel(String id, IModel<VirtualCollection> model) {
             super(id, model);
             setRenderBodyOnly(true);
-
+            /*
             final CitationDialog citationDialog = new CitationDialog("citationDialog", model);
             add(citationDialog);
             
@@ -43,6 +43,8 @@ public class BrowsePublicCollectionsPage extends BasePage {
             UIUtils.addTooltip(citeLink, "Cite this collection");
             citeLink.setEnabled(model.getObject().isCiteable());
             add(citeLink);
+            */
+            add(CitationPanelFactory.getCitationPanel("cite", model, true));
             
             AjaxLink lrsLink = UIUtils.getLrsRedirectAjaxLink("lrs", model, vcrConfig.getSwitchboardEndpoint());
             lrsLink.setVisible(vcrConfig.isSwitchboardEnabledForCollections());

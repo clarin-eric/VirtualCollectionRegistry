@@ -14,10 +14,10 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.clarin.cmdi.virtualcollectionregistry.gui.citation;
+package eu.clarin.cmdi.wicket.components.citation;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.UIUtils;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -29,22 +29,28 @@ import org.apache.wicket.model.Model;
  * @author wilelb
  */
 public class CitationPanel extends Panel {
+
+    public CitationPanel(String id, final IModel<Citable> model) {
+        this(id,  model, false);
+    }
     
-    private CitationDialog citationDialog;
-    
-    public CitationPanel(String id, final IModel<VirtualCollection> model) {
+    public CitationPanel(String id, final IModel<Citable> model, boolean small) {
         super(id);
-        
+    
+        final CitationDialog citationDialog = new CitationDialog("citationDialog", model);
         AjaxLink citeButton = new AjaxLink( "citeButton", new Model<String>("Cite") ){ 
             @Override
             public void onClick( AjaxRequestTarget target ) {
                 citationDialog.show(target);
             } 
         };
+        
+        citeButton.add(new AttributeModifier("class", small ? "btn btn-primary btn-xs" : "btn btn-primary btn-lg"));
+        
         UIUtils.addTooltip(citeButton, "Cite this collection");
         
+        
         add(citeButton);
-        citationDialog = new CitationDialog("citationDialog", model);
         add(citationDialog);
     }
 }

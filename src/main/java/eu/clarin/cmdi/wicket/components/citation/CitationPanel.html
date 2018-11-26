@@ -6,10 +6,10 @@
     <head />
     <body>
         <wicket:panel>
-            <div class="container-fluid">
-                <div wicket:id="name" class="col-sm-11 details-title">Title</div>
-                <div wicket:id="citation" class="col-sm-1">[citation button]</div>
-            </div>
+            <div style="display: none" wicket:id="citationDialog"></div>
+            <button type="button" class="btn btn-primary navbar-btn" wicket:id="citeButton">
+                <span class="fa fa-quote-right"></span>
+            </button>
         </wicket:panel>
     </body>
 </html>

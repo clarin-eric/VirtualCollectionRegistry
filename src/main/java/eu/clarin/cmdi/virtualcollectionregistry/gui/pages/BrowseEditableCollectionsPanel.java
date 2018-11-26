@@ -6,7 +6,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryExcepti
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.citation.CitationDialog;
+import eu.clarin.cmdi.wicket.components.citation.CitationPanelFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ConfirmationDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.PublishConfirmationDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.CollectionsProvider;
@@ -199,7 +199,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
                     };
             UIUtils.addTooltip(detailsLink, "View collection details");
             add(detailsLink);
-            
+            /*
             final CitationDialog citationDialog = new CitationDialog("citationDialog", model);
             add(citationDialog);
             
@@ -213,7 +213,9 @@ public class BrowseEditableCollectionsPanel extends Panel {
             UIUtils.addTooltip(citeLink, "Cite this collection");
             citeLink.setEnabled(model.getObject().isCiteable());
             add(citeLink);
-
+            */
+            add(CitationPanelFactory.getCitationPanel("cite", model, true));
+            
             final VirtualCollection vc = model.getObject();
             if (vc.isDeleted()) {
                 detailsLink.setVisible(false).setEnabled(false);

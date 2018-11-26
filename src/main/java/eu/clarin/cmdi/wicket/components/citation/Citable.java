@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 CLARIN
+ * Copyright (C) 2018 CLARIN
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,19 +14,19 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.clarin.cmdi.virtualcollectionregistry.gui.citation;
+package eu.clarin.cmdi.wicket.components.citation;
 
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.Model;
+import java.io.Serializable;
+import java.util.List;
 
 /**
  *
  * @author wilelb
  */
-public class EmptyCitePanel extends Panel {
-    public EmptyCitePanel(String id) {
-        super(id);
-        add(new Label("lbl", new Model<>("")));
-    }
+public interface Citable extends Serializable {
+    public List<String> getAuthors();
+    public String getYear();
+    public String getTitle();
+    public String getUri();
+    public String getIdentifier();
 }

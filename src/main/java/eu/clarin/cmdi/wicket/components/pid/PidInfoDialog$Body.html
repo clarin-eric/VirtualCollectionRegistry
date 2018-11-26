@@ -1,0 +1,30 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+    <head />
+    <body>
+        <wicket:panel>
+            <div class="form-group">
+                <p>
+                    The persistent identifier for the <b>selected resource 
+                    (file or service)</b> is:
+                </p>
+                <div class="input-group">
+                    <input class="form-control" type="text" readonly="readonly" aria-descibedby="copy-addon" wicket:id="pid" />
+                    <span class="input-group-btn">
+                        <button class="btn btn-default clipboard" title="Copy to clipboard" type="button">
+                            <span class="glyphicon glyphicon-copy"></span>
+                        </button>
+                    </span>
+                </div>
+                <p>
+                    You can use this <b>handle</b> to reference the selected 
+                    resource (file or service) online and in publications, or 
+                    use it with tools that support handles.
+                </p>
+            </div>
+        </wicket:panel>
+    </body>
+</html>

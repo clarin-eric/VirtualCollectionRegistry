@@ -14,12 +14,9 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.clarin.cmdi.virtualcollectionregistry.gui.citation;
+package eu.clarin.cmdi.wicket.components.citation;
 
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.UIUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -28,23 +25,26 @@ import org.apache.wicket.model.Model;
  *
  * @author wilelb
  */
-public class CitationPanel extends Panel {
+public class CitationPanelFactory {
     
-    private CitationDialog citationDialog;
-    
-    public CitationPanel(String id, final IModel<VirtualCollection> model) {
-        super(id);
-        
-        AjaxLink citeButton = new AjaxLink( "citeButton", new Model<String>("Cite") ){ 
-            @Override
-            public void onClick( AjaxRequestTarget target ) {
-                citationDialog.show(target);
-            } 
-        };
-        UIUtils.addTooltip(citeButton, "Cite this collection");
-        
-        add(citeButton);
-        citationDialog = new CitationDialog("citationDialog", model);
-        add(citationDialog);
+    public static Panel getCitationPanel(final String componentId, final IModel<VirtualCollection> model) {
+        return getCitationPanel(componentId, model, false);
     }
+    /**
+     * Get a citation panel or place holder if the virtual collection is not
+     * citable. PUBLIC and PUBLIC_FROZEN collections with a PID are considered
+     * citable.
+     * 
+     * @param componentId
+     * @param model
+     * @return 
+     */
+    public static Panel getCitationPanel(final String componentId, final IModel<VirtualCollection> model, boolean small) {
+        if(model.getObject().isCiteable()) {
+            return (new eu.clarin.cmdi.wicket.components.citation.CitationPanel(componentId, new Model(model.getObject()), small));
+        } else {
+            return (new EmptyCitePanel(componentId));
+        }
+    }
+    
 }

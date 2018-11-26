@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 CLARIN
+ * Copyright (C) 2018 CLARIN
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,15 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.clarin.cmdi.virtualcollectionregistry.config;
+package eu.clarin.cmdi.wicket.components.pid;
+
+import java.io.Serializable;
 
 /**
  *
  * @author wilelb
  */
-public interface PiwikConfig {
-    public boolean isEnabled();
-    public String getSiteId();
-    public String getPiwikHost();
-    public String getDomains();
+public interface PersistentIdentifieable extends Serializable {
+    public String getIdentifier();
+    public String getPidUri();
+    public PidType getPidType();
+    public String getPidTitle();
+    public boolean hasPersistentIdentifier();
 }

@@ -1,9 +1,15 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
+import eu.clarin.cmdi.wicket.components.citation.Citable;
+import eu.clarin.cmdi.wicket.components.pid.PersistentIdentifieable;
+import eu.clarin.cmdi.wicket.components.pid.PidType;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.Date;
+import java.util.GregorianCalendar;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
@@ -65,9 +71,73 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
                     query = "SELECT c FROM VirtualCollection c " +
                             "WHERE c.state IN :states AND c.dateModified < :date")
 })
-public class VirtualCollection implements Serializable, IdentifiedEntity {
+public class VirtualCollection implements Serializable, IdentifiedEntity, PersistentIdentifieable, Citable {
     private static final long serialVersionUID = 1L;
 
+    @Override
+    public String getIdentifier() {
+        if(!hasPersistentIdentifier()) {
+            return null;
+        }
+        return persistentId.getIdentifier();
+    }
+
+    @Override
+    public String getPidUri() {
+        if(!hasPersistentIdentifier()) {
+            return null;
+        }
+        return persistentId.getActionableURI();
+    }
+
+    @Override
+    public PidType getPidType() {
+        if(!hasPersistentIdentifier()) {
+            return null;
+        }
+        return HandleLinkModel.getPidType(persistentId.getURI());
+    }
+
+    @Override
+    public String getPidTitle() {
+        if(!hasPersistentIdentifier()) {
+            return null;
+        }
+        return getIdentifier();
+    }
+
+    @Override
+    public List<String> getAuthors() {
+        final Set<String> authors = new HashSet<>();
+        authors.add(getOwner().getName());
+        for(Creator c : getCreators()) {
+            authors.add(c.getPerson());
+        }
+        return new ArrayList<>(authors);
+    }
+
+    @Override
+    public String getYear() {
+        Calendar calendar = new GregorianCalendar();
+        calendar.setTime(getCreationDate());
+        int year = calendar.get(Calendar.YEAR);
+        return String.valueOf(year);
+    }
+
+    @Override
+    public String getTitle() {
+        return getName();
+    }
+
+    @Override
+    public String getUri() {
+        //TODO: Handle non PID case? Can this happen?
+        return getPidUri();
+    }
+
+    
+    
+    
     public static enum State {
         PRIVATE,
         PUBLIC_PENDING,
@@ -223,6 +293,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity {
         return persistentId;
     }
     
+    @Override
     public boolean hasPersistentIdentifier() {
         return persistentId != null;
     }

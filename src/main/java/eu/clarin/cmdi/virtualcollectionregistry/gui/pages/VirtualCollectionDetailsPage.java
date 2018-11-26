@@ -4,12 +4,15 @@ import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.DateConverter;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.DetachableVirtualCollectionModel;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.border.AjaxToggleBorder;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Type;
+import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
+import eu.clarin.cmdi.wicket.components.pid.PidPanel;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -44,7 +47,6 @@ import org.apache.wicket.model.ComponentPropertyModel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.INamedParameters.NamedPair;
@@ -52,10 +54,14 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.string.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("serial")
 public class VirtualCollectionDetailsPage extends BasePage {
 
+    private final static Logger logger = LoggerFactory.getLogger(VirtualCollectionDetailsPage.class);
+    
     public static final String PARAM_VC_ID = "id";
     public static final String PARAM_BACK_PAGE = "backPage";
     private static final String CSS_CLASS = "collectionDetails";
@@ -181,11 +187,15 @@ public class VirtualCollectionDetailsPage extends BasePage {
         general.add(new CustomLabel("reproducibility").add(hideIfEmpty));
         general.add(new Label("reproducibilityNotice").add(hideIfEmpty));
 
-        final ExternalLink pidLink = new ExternalLink("pidLink", new PropertyModel<String>(model, "persistentIdentifier.actionableURI"));
-        pidLink.add(new Label("persistentIdentifier.URI"));
-        pidLink.add(hideIfEmpty);
-        general.add(pidLink);
+        //final ExternalLink pidLink = new ExternalLink("pidLink", new PropertyModel<String>(model, "persistentIdentifier.actionableURI"));
+        //pidLink.add(new Label("persistentIdentifier.URI"));
+        //pidLink.add(hideIfEmpty);
+        //general.add(pidLink);
 
+        //final PersistentIdentifier pid = model.getObject().getPersistentIdentifier();
+        final PidPanel lbl = new PidPanel("pidLink",  new Model(model.getObject()));
+        general.add(lbl);
+        
         addKeywords(general);
     }
 
@@ -269,7 +279,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
                 });
         cols.add(new AbstractColumn<Resource, String>(Model.of("Reference")) {
             @Override
-            public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> rowModel) {
+            public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> rowModel) {                
                 item.add(new ReferenceLinkPanel(componentId, rowModel));
             }
 
@@ -290,7 +300,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
 
                 @Override
                 public String getCssClass() {
-                    return "reference";
+                    return "actions";
                 }
             });
         }

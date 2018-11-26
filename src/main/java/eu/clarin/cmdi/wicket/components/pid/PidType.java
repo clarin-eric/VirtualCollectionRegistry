@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2017 CLARIN
+ * Copyright (C) 2018 CLARIN
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,31 +14,31 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
-
-import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
-import org.apache.wicket.markup.html.WebPage;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
+package eu.clarin.cmdi.wicket.components.pid;
 
 /**
  *
  * @author wilelb
  */
-public class LogoutPage extends WebPage {
-
-    private static Logger logger = LoggerFactory.getLogger(LogoutPage.class);
+public enum PidType {
+    DOI("DOI"), HANDLE("HDL"), NBN("NBN"), UNKOWN("UNK");
     
-    public LogoutPage() {
-        super();
-        setStatelessHint(true);
-        setVersioned(false);
+    private final String short_name;
+
+    PidType(String short_name) {
+        this.short_name = short_name;
     }
 
-    @Override
-    protected void onBeforeRender() {
-        AuthenticationHandler.handleLogout((ApplicationSession) getSession(), this);
-        super.onBeforeRender();
+    public String getShort() {
+        return this.short_name;
     }
-    
+
+    public static PidType fromString(String short_name) {
+        for (PidType b : PidType.values()) {
+            if (b.short_name.equalsIgnoreCase(short_name)) {
+                return b;
+            }
+        }
+        return null;
+    }
 }

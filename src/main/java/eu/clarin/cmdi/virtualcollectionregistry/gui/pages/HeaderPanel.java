@@ -16,7 +16,7 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
-import eu.clarin.cmdi.virtualcollectionregistry.gui.citation.CitationPanelFactory;
+import eu.clarin.cmdi.wicket.components.citation.CitationPanelFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;

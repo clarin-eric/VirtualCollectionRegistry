@@ -214,10 +214,19 @@ div.betabadge {
     font-size: 0.9em;
 }
 
-.type {
+td.type {
     min-width: 85px;
     max-width: 85px;
     font-size: 0.9em;
+}
+
+.actions {
+    min-width: 50px;
+    max-width: 50px;
+    width: 50px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
 }
 
 .created {
@@ -246,4 +255,44 @@ div.betabadge {
 .btngroup-spacing {
     margin-top: 2px;
     margin-bottom: 2px;
+}
+
+
+
+
+
+
+a.btn-primary {
+    color: #fff;
+}
+
+
+
+
+
+
+
+.pid-label {
+    border: 1px solid;
+    border-color: #0080aa;
+    border-radius: 4px;
+    white-space: nowrap;
+    margin-right: .3em;
+    background: #0080aa;
+}
+
+.pid-label .pid-label-badge {
+    padding: 0 .5em;
+    background: #0080aa;
+    color: #fff;
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+td.reference div div {
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.details-header {
+    padding: 5px;
 }
