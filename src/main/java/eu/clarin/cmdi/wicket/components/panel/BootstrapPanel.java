@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2016 CLARIN
+ * Copyright (C) 2018 CLARIN
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,23 +14,28 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
+package eu.clarin.cmdi.wicket.components.panel;
 
-import eu.clarin.cmdi.wicket.components.citation.CitationPanelFactory;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.CompoundPropertyModel;
-import org.apache.wicket.model.IModel;
 
 /**
  *
  * @author wilelb
  */
-public class HeaderPanel extends Panel {
-    public HeaderPanel(String id, final IModel<VirtualCollection> model) {
-        super(id, new CompoundPropertyModel<VirtualCollection>(model));
-        add(new Label("name"));
-        add(CitationPanelFactory.getCitationPanel("citation", model));
+public class BootstrapPanel extends AbstractBootstrapPanel {
+    public BootstrapPanel(String id, String title) {
+        super(id);
+        add(new Label("pnl-title", title));
     }
+    
+    public BootstrapPanel setBody(Component body, boolean setPanelBody) {
+        if(setPanelBody) {
+            body.add(new AttributeModifier("class", "panel-body"));
+        }
+        add(body);
+        return this;
+    }
+    
 }

@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+    <head />
+    <body>
+        <wicket:panel>
+  
+                    <ul class="creators">
+                        <li wicket:id="creators">
+                            <div class="property">
+                                <label>Person</label>
+                                <div wicket:id="person"></div>
+                            </div>
+                            <wicket:enclosure child="address">
+                                <div class="property">
+                                    <label>Address</label>
+                                    <div wicket:id="address"></div>
+                                </div>
+                            </wicket:enclosure>
+                            <wicket:enclosure child="email">
+                                <div class="property">
+                                    <label>Email</label>
+                                    <div wicket:id="email"></div>
+                                </div>
+                            </wicket:enclosure>
+                            <wicket:enclosure child="organisation">
+                                <div class="property">
+                                    <label>Organisation</label>
+                                    <div wicket:id="organisation"></div>
+                                </div>
+                            </wicket:enclosure>
+                            <wicket:enclosure child="telephone">
+                                <div class="property">
+                                    <label>Telephone</label>
+                                    <div wicket:id="telephone"></div>
+                                </div>
+                            </wicket:enclosure>
+                            <wicket:enclosure child="website">
+                                <div class="property">
+                                    <label>Website</label>
+                                    <div><a wicket:id="website"></a></div>
+                                </div>
+                            </wicket:enclosure>
+                            <wicket:enclosure child="role">
+                                <div class="property">
+                                    <label>Role</label>
+                                    <div wicket:id="role"></div>
+                                </div>
+                            </wicket:enclosure> 
+                        </li>
+                    </ul>
+                
+        </wicket:panel>
+        
+    </body>
+</html>
