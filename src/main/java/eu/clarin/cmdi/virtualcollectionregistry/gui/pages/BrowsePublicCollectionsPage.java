@@ -29,21 +29,7 @@ public class BrowsePublicCollectionsPage extends BasePage {
         public ActionsPanel(String id, IModel<VirtualCollection> model) {
             super(id, model);
             setRenderBodyOnly(true);
-            /*
-            final CitationDialog citationDialog = new CitationDialog("citationDialog", model);
-            add(citationDialog);
             
-            final AjaxLink<VirtualCollection> citeLink
-                    = new AjaxLink<VirtualCollection>("cite", model) {
-                        @Override
-                        public void onClick(AjaxRequestTarget target) {
-                            citationDialog.show(target);
-                        }
-                    };
-            UIUtils.addTooltip(citeLink, "Cite this collection");
-            citeLink.setEnabled(model.getObject().isCiteable());
-            add(citeLink);
-            */
             add(CitationPanelFactory.getCitationPanel("cite", model, true));
             
             AjaxLink lrsLink = UIUtils.getLrsRedirectAjaxLink("lrs", model, vcrConfig.getSwitchboardEndpoint());
