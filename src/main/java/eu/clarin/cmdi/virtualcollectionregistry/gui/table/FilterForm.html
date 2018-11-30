@@ -7,55 +7,54 @@
      
 <wicket:panel>
    
-    <div class="col-md-8 col-md-offset-2">
-        <div class="panel panel-default">
-            <div class="panel-heading">
-                <a data-toggle="collapse" href="#collapse-filter1"><span wicket:id="title">Filter</span></a>
-            </div>
-            <div id="collapse-filter1" class="panel-collapse collapse">
-                <div class="panel-body">
+    <form wicket:id="form" class="filterForm wizard">
+        <fieldset>
+     
+            <div class="panel panel-default">
+                <div class="panel-heading">
+                    <a data-toggle="collapse" data-target="#collapse-filter1"><span wicket:id="title">Filter</span></a>
+                </div>
+                <div id="collapse-filter1" class="panel-collapse collapse">
+                
+                    <div class="panel-body">
+                        <div class="col-sm-12"><label>Name</label></div>
+                        <div class="col-sm-12"><select wicket:id="nameMode" style="width: 100%"></select></div>
+                        <div class="col-sm-12"><input wicket:id="name" type="text" class="name" size="64" maxlength="255" style="width: 100%" /></div>
 
-                    <form wicket:id="form" class="filterForm wizard">
-                        <fieldset>
-                            <div class="row optional">
-                                <div class="col-md-2"><label>Name</label></div>
-                                <div class="col-md-2"><select wicket:id="nameMode" style="width: 100%"></select></div>
-                                <div class="col-md-8"><input wicket:id="name" type="text" class="name" size="64" maxlength="255" style="width: 100%" /></div>
-                            </div>
-                            <div class="row optional">
-                                <div class="col-md-2"><label>Description</label></div>
-                                <div class="col-md-2"><select wicket:id="descriptionMode" style="width: 100%"></select></div>
-                                <div class="col-md-8"><input wicket:id="description" type="text" class="desc"
-                                       accept=""size="64" maxlength="255" style="width: 100%"/></div>
-                            </div>
+                        <div class="col-sm-12"><label>Description</label></div>
+                        <div class="col-sm-12"><select wicket:id="descriptionMode" style="width: 100%"></select></div>
+                        <div class="col-sm-12"><input wicket:id="description" type="text" class="desc"
+                               accept=""size="64" maxlength="255" style="width: 100%"/></div>
 
-                            <div wicket:id="state" class="row optional">
-                                <div class="col-md-2"><label>State</label></div>
-                                <div class="col-md-2"><select wicket:id="state" style="width: 100%"></select></div>
-                            </div>
+                        <div wicket:id="state">
+                            <div class="col-sm-12"><label>State</label></div>
+                            <div class="col-sm-12"><select wicket:id="state" style="width: 100%"></select></div>
+                        </div>
 
-                            <div class="row optional">
-                                <div class="col-md-2"><label>Type</label></div>
-                                <div class="col-md-2"><select wicket:id="type" style="width: 100%"></select></div>
+                        <div class="col-sm-12"><label>Type</label></div>
+                        <div class="col-sm-12"><select wicket:id="type" style="width: 100%"></select></div>
+
+                        <div class="col-sm-12"><label>Created</label></div>
+                        <div class="col-sm-12"><select wicket:id="createdRelation" style="width: 100%"></select></div>
+                        <div class="col-sm-12"><input wicket:id="created" type="text" size="11" style="width: 100%"/></div>
+                    </div>
+                    <div class="panel-footer">
+                        <div class="row">
+                            <div class="col-sm-6">
+                                <input wicket:id="filter" type="submit" class="btn btn-default filter pull-right" value="filter" />
                             </div>
-                            <div class="row optional">
-                                <div class="col-md-2"><label>Created</label></div>
-                                <div class="col-md-2"><select wicket:id="createdRelation" style="width: 100%"></select></div>
-                                <div class="col-md-8"><input wicket:id="created" type="text" class="created" size="11" maxlength="11" style="width: 100%"/></div>
+                            <div class="col-sm-6">
+                                <input wicket:id="clear" type="submit" class="btn btn-default clear" value="clear" />
                             </div>
-                            <div class="row">
-                                <div class="col-md-12">
-                                    <input wicket:id="filter" type="submit" class="filter" value="filter" />
-                                    <input wicket:id="clear" type="submit" class="clear" value="clear" />
-                                </div>
-                            </div>
-                        </fieldset>
-                    </form>
+                        </div>
+                    </div>
 
                 </div>
-            </div>
-        </div>  
-    </div>
+            </div>  
+
+        </fieldset>
+    </form>
+                
 </wicket:panel>
 </body>
 </html>

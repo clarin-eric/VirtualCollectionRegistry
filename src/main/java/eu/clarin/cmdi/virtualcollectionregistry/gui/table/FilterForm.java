@@ -49,7 +49,7 @@ public class FilterForm extends Panel {
     public FilterForm(String id, IFilterStateLocator<FilterState> locator,
             final DataTable<VirtualCollection, String> table, boolean privateMode, boolean isAdmin) {
         super(id);
-        setRenderBodyOnly(true);
+        //setRenderBodyOnly(true);
 
         List<VirtualCollection.State> states = new ArrayList<>();
         states.addAll(STATE_VALUES);
@@ -74,6 +74,7 @@ public class FilterForm extends Panel {
                 .add(Application.MAX_LENGTH_VALIDATOR));
         
         final WebMarkupContainer state = new WebMarkupContainer("state");
+        state.setRenderBodyOnly(true);
         state.add(new ListMultipleChoice("state", states));
         state.setVisible(privateMode);
         form.add(state);
@@ -124,7 +125,7 @@ public class FilterForm extends Panel {
         };
         form.add(clearButton);
         add(form);
-        add(new Label("title", "Filter"));
+        form.add(new Label("title", "Filter"));
     }
 
 } // class FilterForm
