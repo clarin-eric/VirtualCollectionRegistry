@@ -10,6 +10,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.KeywordInput;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.ResourceInput;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
+import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Purpose;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Reproducibility;
@@ -21,6 +22,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
+import java.util.Set;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
 import org.apache.wicket.WicketRuntimeException;
@@ -130,6 +132,16 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
     }
     
     private void initializeWithCollection(VirtualCollection vc) throws VirtualCollectionRegistryPermissionException {
+        
+        Principal userPrincipal = getUser();        
+        Set<Creator> creators = vcr.getCreatorService().getCreators();
+        
+        logger.info("User principal: "+userPrincipal.getName());
+        logger.info("Creators:");
+        for(Creator c : creators) {
+            logger.info("\t"+c.getEMail());
+        }
+                
         if(vc != null) {
             checkAccess(vc);
             this.vc = vc;        

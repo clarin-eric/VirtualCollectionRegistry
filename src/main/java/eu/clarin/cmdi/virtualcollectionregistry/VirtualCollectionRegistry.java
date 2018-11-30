@@ -59,5 +59,7 @@ public interface VirtualCollectionRegistry {
     List<VirtualCollection> getVirtualCollections(
             int first, int count, QueryOptions options)
             throws VirtualCollectionRegistryException;
+    
+    CreatorService getCreatorService();
 
 } // interface VirtualCollectionRegistry
