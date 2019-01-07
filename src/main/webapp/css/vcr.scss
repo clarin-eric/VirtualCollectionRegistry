@@ -221,13 +221,17 @@ td.type {
     font-size: 0.9em;
 }
 
-.actions {
+td.actions {
     min-width: 80px;
     max-width: 80px;
     width: 80px;
     text-align: center;
     margin-left: auto;
     margin-right: auto;
+}
+
+div.actions {    
+    text-align: left;
 }
 
 .created {
