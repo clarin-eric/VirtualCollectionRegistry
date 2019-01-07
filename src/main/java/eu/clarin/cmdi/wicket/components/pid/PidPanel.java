@@ -42,14 +42,19 @@ public class PidPanel extends Panel {
         final String pid = model.getObject().getIdentifier();
         final String href = model.getObject().getPidUri();
         final String title = model.getObject().getPidTitle();
-        final String type = model.getObject().getPidType().getShort();
+        String type = "N/A";
+        if( model.getObject().hasPersistentIdentifier()) {
+            type = model.getObject().getPidType().getShort();
+        }
        
         final PidInfoDialog dlg = new PidInfoDialog("info_dialog", model);
         AjaxLink citeButton = new AjaxLink( "type", new Model<String>(type) ){ 
             @Override
             public void onClick( AjaxRequestTarget target ) {
-                dlg.setMaskType( ModalWindow.MaskType.SEMI_TRANSPARENT );
-                dlg.show(target);
+                if( model.getObject().hasPersistentIdentifier()) {
+                    dlg.setMaskType( ModalWindow.MaskType.SEMI_TRANSPARENT );
+                    dlg.show(target);
+                }
             } 
         };
         citeButton.add(new Label("type_lbl", new Model<>(type)));
