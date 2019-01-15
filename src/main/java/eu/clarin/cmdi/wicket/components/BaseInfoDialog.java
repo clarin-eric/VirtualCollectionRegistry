@@ -16,6 +16,7 @@
  */
 package eu.clarin.cmdi.wicket.components;
 
+import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -23,10 +24,14 @@ import org.apache.wicket.core.request.handler.IPartialPageRequestHandler;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.AbstractLink;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -34,31 +39,42 @@ import org.apache.wicket.request.resource.ResourceReference;
  */
 public class BaseInfoDialog extends ModalWindow {
             
+    private final static Logger logger = LoggerFactory.getLogger(BaseInfoDialog.class);
+    
+    public static final String CONTENT_ID = "dlg-content-body";
+    
     private final class Content extends Panel {
-        public Content(String id, String title,  Component body) {
+        public Content(String id, String title, Component body, List<DialogButton> buttons) {
             super(id);
-            setOutputMarkupId(true);
-            //add(new Label("lbl", new Model("content")));
-            add(new Label("title", new Model(title)));
-            
+
+            add(new Label("title", new Model(title)));            
             add(new AjaxLink( "closeButtonTop", new Model<String>("X") ){ 
                 @Override
                 public void onClick( AjaxRequestTarget target ) {
                     BaseInfoDialog.this.close(target);
                 } 
             });
-            final AbstractLink btn = new AjaxLink( "closeButtonBottom", new Model<String>("") ){ 
-                @Override
-                public void onClick( AjaxRequestTarget target ) {
-                    BaseInfoDialog.this.close(target);
-                } 
-            };
-            btn.add(new Label("closeButtonBottomLbl", "Close"));
-            add(btn);
+
             add(body);
+            add(new ListView<DialogButton>("buttons", buttons) {
+		@Override
+		protected void populateItem(ListItem<DialogButton> item) {                    
+                    final AbstractLink btn = new AjaxLink( "button", new Model<String>("") ){ 
+                        @Override
+                        public void onClick( AjaxRequestTarget target ) {
+                            item.getModelObject().handleButtonClick(target);
+                        } 
+                    };
+                    btn.add(new Label("btn-label", new Model(item.getModelObject().getLabel())));
+                    item.add(btn);
+                   item.setRenderBodyOnly(true);
+		}			
+            });
             
         }
     } // class ModalDialogBase.Content
+       
+    private Component body;
     
     public BaseInfoDialog(String id, String title) {
         super(id);
@@ -74,10 +90,10 @@ public class BaseInfoDialog extends ModalWindow {
         setMaskType(MaskType.SEMI_TRANSPARENT);
     }
     
-    protected void buildContent(String title,  Component body) {
-        setContent(new Content(this.getContentId(), title, body));
-    }
-    
+    protected void buildContent(String title, Component body, List<DialogButton> buttons) {
+        logger.info("Body markup id = " + body.getMarkupId());
+        setContent(new Content(this.getContentId(), title, body, buttons));
+    }    
     
     @Override
     public void show(IPartialPageRequestHandler target) {
@@ -90,6 +106,6 @@ public class BaseInfoDialog extends ModalWindow {
     }
     
     protected String getContentWicketId() {
-        return "content";
+        return CONTENT_ID;
     }
 }

@@ -14,19 +14,26 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.clarin.cmdi.virtualcollectionregistry;
+package eu.clarin.cmdi.wicket.components;
 
-import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import java.util.List;
-import java.util.Set;
+import java.io.Serializable;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 
 /**
  *
  * @author wilelb
  */
-public interface CreatorService {
-    public void initialize(List<VirtualCollection> collections);
-    public Set<Creator> getCreators(String currentPrincipal);
-    public int getSize();
+public abstract class DialogButton implements Serializable {
+        private final String label;
+        
+        public DialogButton(String label) {
+            this.label = label;
+        }
+        
+        public String getLabel() {
+            return this.label;
+        }
+        
+        public abstract void handleButtonClick(AjaxRequestTarget target);
+    
 }

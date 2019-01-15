@@ -16,11 +16,14 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -46,20 +49,39 @@ public class CreatorServiceImpl implements CreatorService {
     public synchronized void initialize(List<VirtualCollection> collections) {
         if(!initialized) {
             for(VirtualCollection vc : collections) {
-                if(vc.isPublic()) { //TODO: also check for own private collections || vc.isPrivate() && vc.getOwner() == "")
+                if(vc.isPublic()) {
                     for(Creator c: vc.getCreators()) {
                         creators.add(c);
                     }
-                }
-            }            
+                } 
+            }
             initialized = true;
         }
     }
         
     @Override
-    public Set<Creator> getCreators() {
-        return this.creators;
+    public Set<Creator> getCreators(String currentPrincipal) {
+        Set<Creator> results = new HashSet<>(this.creators);
+        String email = reverseClarinUserEmail(currentPrincipal);
+        logger.info("Clarin user email = {}", email);
+        if (email != null) {
+            Creator c = new Creator(email);
+            c.setEMail(email);
+            results.add(c);
+        }
+        return results;
     }    
+    
+    public String reverseClarinUserEmail(String userPrincipal) {
+        Pattern regex = Pattern.compile("(.+)_(.+)\\.(.+)@clarin\\.eu");
+        Matcher m = regex.matcher(userPrincipal);
+        if(m.matches()) {
+            String email = String.format("%s@%s.%s", m.group(1), m.group(2), m.group(3));
+            return email;
+        }
+        logger.info("[{}] did not match CLARIN user format.", userPrincipal);
+        return null;
+    }
  
     @Override
     public int getSize() {

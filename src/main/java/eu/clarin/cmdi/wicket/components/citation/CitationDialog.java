@@ -17,7 +17,10 @@
 package eu.clarin.cmdi.wicket.components.citation;
 
 import eu.clarin.cmdi.wicket.components.BaseInfoDialog;
+import eu.clarin.cmdi.wicket.components.DialogButton;
+import java.util.Arrays;
 import java.util.List;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -39,7 +42,14 @@ public class CitationDialog extends BaseInfoDialog {
     }
     
     private void build() {
-        buildContent(TITLE, new Body(getContentWicketId()));
+        List<DialogButton> buttons = Arrays.asList(
+                new DialogButton("Close") {
+                    @Override
+                    public void handleButtonClick(AjaxRequestTarget target) {
+                        CitationDialog.this.close(target);
+                    }
+                });
+        buildContent(TITLE, new Body(getContentWicketId()), buttons);
     }
     
     private class Body extends Panel {

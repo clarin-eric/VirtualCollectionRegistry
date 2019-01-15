@@ -52,7 +52,7 @@
     
     <!-- Enable switchboard ingegration for resources -->
     <Parameter name="eu.clarin.cmdi.vcr.lrs.enable_for_resources" 
-               value="false" 
+               value="true" 
                override="false" />
     
     <!-- Enable switchboard ingegration for collections -->
@@ -78,4 +78,12 @@
                value="*.vcr.clarin.eu" 
                override="false" />   
     -->
+    
+    <Parameter name="eu.clarin.cmdi.vcr.logout_mode" 
+               value="shibboleth" 
+               override="false" />
+    
+    <Parameter name="eu.clarin.cmdi.vcr.logout_enable" 
+               value="false" 
+               override="false" />
 </Context>

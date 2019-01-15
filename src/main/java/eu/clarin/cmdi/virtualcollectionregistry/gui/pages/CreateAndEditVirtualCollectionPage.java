@@ -10,7 +10,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.KeywordInput;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.ResourceInput;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
-import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Purpose;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Reproducibility;
@@ -23,6 +22,8 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
 import org.apache.wicket.WicketRuntimeException;
@@ -132,14 +133,12 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
     }
     
     private void initializeWithCollection(VirtualCollection vc) throws VirtualCollectionRegistryPermissionException {
-        
         Principal userPrincipal = getUser();        
-        Set<Creator> creators = vcr.getCreatorService().getCreators();
+        Set<Creator> creators = vcr.getCreatorService().getCreators(userPrincipal.getName());
         
-        logger.info("User principal: "+userPrincipal.getName());
         logger.info("Creators:");
         for(Creator c : creators) {
-            logger.info("\t"+c.getEMail());
+            logger.info("\t{}, {}", c.getPerson(), c.getEMail());
         }
                 
         if(vc != null) {
@@ -148,6 +147,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
             this.editMode = true;
         } else {
             this.editMode = false;
+            this.authorsModel.getObject().add(new Creator("test"));
         }
     }
     

@@ -3,12 +3,11 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
 import eu.clarin.cmdi.wicket.components.citation.CitationPanelFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ConfirmationDialog;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.PublishConfirmationDialog;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.Dialogs;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.CollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
@@ -236,7 +235,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
             setVisible(isVisible);
         }
     } // class BrowsePrivateCollectionsPage.ActionsPanel
-
+/*
     private final class PublishCollectionDialog extends PublishConfirmationDialog {
 
         private IModel<VirtualCollection> vcModel;
@@ -270,7 +269,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
                     new StringResourceModel("collections.publishconfirm", vc));
         }
     } // class BrowsePrivateCollectionsPage.PublishCollectionDialog
-
+*/
     private void doPublish(long vcId) throws VirtualCollectionRegistryException {
         doPublish(vcId, false);
     }
@@ -388,7 +387,8 @@ public class BrowseEditableCollectionsPanel extends Panel {
         }
     }
 
-    private final PublishCollectionDialog publishDialog;
+    //private final PublishCollectionDialog publishDialog;
+    private final eu.clarin.cmdi.wicket.components.ConfirmationDialog publishDialog;
     private final DeleteCollectionDialog deleteDialog;
     private final EditPublishedCollectionDialog editPublishedDialog;
     private final ConfirmPublishCollectionDialog confirmPublishCollectionDialog;
@@ -440,8 +440,15 @@ public class BrowseEditableCollectionsPanel extends Panel {
                     }
                 };
         add(table);
-
-        publishDialog = new PublishCollectionDialog("publishCollectionDialog", table);
+/*
+         this.vcId = vc.getObject().getId();
+            this.frozen = frozen;
+            StringBuilder sb = new StringBuilder();
+            for (String warning : warnings) {
+                sb.append(" -").append(warning).append("\n");
+            }
+  */          
+        publishDialog = Dialogs.createConfirmationPublishCollectionDialog("publishCollectionDialog");//, vc);// PublishCollectionDialog("publishCollectionDialog", table);
         add(publishDialog);
 
         deleteDialog = new DeleteCollectionDialog("deleteCollectionDialog", table);
@@ -472,10 +479,8 @@ public class BrowseEditableCollectionsPanel extends Panel {
 
     private void doPublish(AjaxRequestTarget target,
             IModel<VirtualCollection> vc) {
-        
-        
-        
-        publishDialog.showDialogue(target, vc);
+        //publishDialog.showDialogue(target, vc);
+        publishDialog.show(target);
     }
 
     private void doDelete(AjaxRequestTarget target,

@@ -148,7 +148,7 @@ Ensure that a user entry exists in tomcat-users.xml and that it has role "vcr":
 <user password="tomcat" roles="vcr" username="tomcat"/>
 
 Note: in dev environment the role is named "dev" and the available users are: 
-"user1:user1" and "admin1:admin1".
+    "user1:user1" and "admin1:admin1".
 
 To shibbolize this application, the following steps are required:
 

@@ -13,13 +13,15 @@
 
         <div class="row" id="dlg-content">
             <div class="col-sm-12">
-                <div wicket:id="content"></div>
+                <div wicket:id="dlg-content-body"></div>
             </div>
         </div>
-
+        
         <div class="row" id="dlg-footer">
             <div class="col-sm-12 right">
-                <button wicket:id="closeButtonBottom" class="btn btn-primary" type="button"><span wicket:id="closeButtonBottomLbl">[close]</span></button>
+                <div wicket:id="buttons">
+                    <button wicket:id="button" class="btn btn-primary" type="button"><span wicket:id="btn-label">[btn-label]</span></button>
+                </div>
             </div>
         </div>
     </div>

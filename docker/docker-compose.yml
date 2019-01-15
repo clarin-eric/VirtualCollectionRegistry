@@ -2,13 +2,15 @@ version: '2'
 services:
     webapp  :
         #image: registry.gitlab.com/clarin-eric/docker-tomcat8-dev:1.0.0
-        image: docker-tomcat8:2.0.0-alpha1-1-g859185a
+        #image: docker-tomcat8:2.0.0-alpha1-1-g859185a
+        image: registry.gitlab.com/clarin-eric/docker-alpine-supervisor-java-tomcat-base:1.1.0
         ports:
             - 8081:8080
             - 8444:8443
             - 8001:8000
         volumes:
-            - ./vcr:/webapps
+            #- ./vcr:/webapps
+            - ./vcr:/srv/tomcat8/webapps
             - ./vcr-admin.conf:/root/vcr-admin.conf
             - ./server.jks:/cert/server.jks
         networks:

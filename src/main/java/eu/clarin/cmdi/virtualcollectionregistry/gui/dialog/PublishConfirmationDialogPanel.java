@@ -14,19 +14,20 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.clarin.cmdi.virtualcollectionregistry;
+package eu.clarin.cmdi.virtualcollectionregistry.gui.dialog;
 
-import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import java.util.List;
-import java.util.Set;
+import org.apache.wicket.markup.html.basic.MultiLineLabel;
+import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.IModel;
 
 /**
  *
  * @author wilelb
  */
-public interface CreatorService {
-    public void initialize(List<VirtualCollection> collections);
-    public Set<Creator> getCreators(String currentPrincipal);
-    public int getSize();
+public class PublishConfirmationDialogPanel extends Panel {
+    public PublishConfirmationDialogPanel(String id, IModel model) {
+        super(id);
+        MultiLineLabel messageLabel = new MultiLineLabel("message", model);
+        add(messageLabel);
+    }
 }
