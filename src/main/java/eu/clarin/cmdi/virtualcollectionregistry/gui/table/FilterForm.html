@@ -11,37 +11,47 @@
         <fieldset>
      
             <div class="panel panel-default">
-                <div class="panel-heading">
-                    <a data-toggle="collapse" data-target="#collapse-filter1"><span wicket:id="title">Filter</span></a>
-                </div>
-                <div id="collapse-filter1" class="panel-collapse collapse">
+                <a data-toggle="collapse" data-target="#collapse-filter1" class="hover">
+                    <div class="panel-heading">
+                        <span wicket:id="title">Filter</span>
+                    </div>
+                </a>
+                <div id="collapse-filter1" data-toggle="false" class="collapse in">
                 
                     <div class="panel-body">
-                        <div class="col-sm-12"><label>Name</label></div>
-                        <div class="col-sm-12"><select wicket:id="nameMode" style="width: 100%"></select></div>
-                        <div class="col-sm-12"><input wicket:id="name" type="text" class="name" size="64" maxlength="255" style="width: 100%" /></div>
-
-                        <div class="col-sm-12"><label>Description</label></div>
-                        <div class="col-sm-12"><select wicket:id="descriptionMode" style="width: 100%"></select></div>
-                        <div class="col-sm-12"><input wicket:id="description" type="text" class="desc"
-                               accept=""size="64" maxlength="255" style="width: 100%"/></div>
-
-                        <div wicket:id="state">
-                            <div class="col-sm-12"><label>State</label></div>
-                            <div class="col-sm-12"><select wicket:id="state" style="width: 100%"></select></div>
+                        <div class="row">
+                        <div class="col-sm-3"><label class="filter">Name</label></div>
+                        <div class="col-sm-4"><select wicket:id="nameMode" class="filter"></select></div>
+                        <div class="col-sm-5"><input wicket:id="name" type="text" class="name filter" size="64" maxlength="255"/></div>
                         </div>
-
-                        <div class="col-sm-12"><label>Type</label></div>
-                        <div class="col-sm-12"><select wicket:id="type" style="width: 100%"></select></div>
-
-                        <div class="col-sm-12"><label>Created</label></div>
-                        <div class="col-sm-12"><select wicket:id="createdRelation" style="width: 100%"></select></div>
-                        <div class="col-sm-12"><input wicket:id="created" type="text" size="11" style="width: 100%"/></div>
+                        <div class="row">
+                        <div class="col-sm-3"><label class="filter">Description</label></div>
+                        <div class="col-sm-4"><select wicket:id="descriptionMode" class="filter"></select></div>
+                        <div class="col-sm-5"><input wicket:id="description" type="text" class="desc filter"
+                               accept="" size="64" maxlength="255" /></div>
+                        </div>
+                        <div class="row">
+                        <div wicket:id="state">
+                            <div class="col-sm-3"><label class="filter">State</label></div>
+                            <div class="col-sm-4"><select wicket:id="state" class="filter"></select></div>
+                            <div class="col-sm-5">&nbsp;</div>
+                        </div>
+                        </div>
+                        <div class="row">
+                        <div class="col-sm-3"><label class="filter">Type</label></div>
+                        <div class="col-sm-4"><select wicket:id="type" class="filter"></select></div>
+                        <div class="col-sm-5">&nbsp;</div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3"><label class="filter">Created</label></div>
+                            <div class="col-sm-4"><select wicket:id="createdRelation" class="filter"></select></div>
+                            <div class="col-sm-5"><input wicket:id="created" type="text" size="11" class="filter"/></div>
+                        </div>
                     </div>
                     <div class="panel-footer">
                         <div class="row">
                             <div class="col-sm-6">
-                                <input wicket:id="filter" type="submit" class="btn btn-default filter pull-right" value="filter" />
+                                <input wicket:id="filter" type="submit" class="btn btn-default pull-right" value="filter" />
                             </div>
                             <div class="col-sm-6">
                                 <input wicket:id="clear" type="submit" class="btn btn-default clear" value="clear" />

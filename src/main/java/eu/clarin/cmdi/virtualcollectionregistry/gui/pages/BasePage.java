@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import eu.clarin.cmdi.wicket.PiwikTracker;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LogoutPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.AuthenticationHandler;
@@ -21,7 +22,6 @@ import javax.servlet.ServletContext;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
-import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.JavaScriptReferenceHeaderItem;
@@ -116,25 +116,28 @@ public class BasePage extends WebPage {
         //Add login or user profile + logout buttons based on authentication state
         
         if(isSignedIn()) {
-            final Component userLink = new NavbarButton(BrowsePrivateCollectionsPage.class, Model.of(getUser().getName()))
-                    .add(new AttributeModifier("class", "glyphicon glyphicon-user"));
+            final NavbarButton userLink = new NavbarButton(BrowsePrivateCollectionsPage.class, Model.of(getUser().getName()));
+            //        .add(new AttributeModifier("class", "glyphicon glyphicon-user"));
+            userLink.setIconType(GlyphIconType.user);
             menuItems.add(new ImmutableNavbarComponent(userLink, ComponentPosition.RIGHT));
             
             if(vcrConfig.isLogoutEnabled()) {
-            final Component logoutLink = new NavbarButton(LogoutPage.class, Model.of("Logout"))
-                .add(new AttributeModifier("class", "glyphicon glyphicon-log-out"));
+            final NavbarButton logoutLink = new NavbarButton(LogoutPage.class, Model.of("Logout"));
+            //    .add(new AttributeModifier("class", "glyphicon glyphicon-log-out"));
+            logoutLink.setIconType(GlyphIconType.logout);
             menuItems.add(new ImmutableNavbarComponent(logoutLink, ComponentPosition.RIGHT));
             }            
         } else {
-            final Component loginLink = new NavbarButton(LoginPage.class, Model.of("Login"))
-                .add(new AttributeModifier("class", "glyphicon glyphicon-log-in"));
+            final NavbarButton loginLink = new NavbarButton(LoginPage.class, Model.of("Login"));
+                //.add(new AttributeModifier("class", "glyphicon glyphicon-log-in"));
+               loginLink.setIconType(GlyphIconType.login);
             menuItems.add(new ImmutableNavbarComponent(loginLink, ComponentPosition.RIGHT));
         }
         // link to CLARIN website
         final Component clarinLink = new NavbarExternalLink(Model.of("http://www.clarin.eu/")) {
             @Override
             protected Component newLabel(String markupId) {
-                return super.newLabel(markupId).setEscapeModelStrings(false);
+                return super.newLabel(markupId).setEscapeModelStrings(false); 
             }
         }
             .setLabel(Model.of("<span>CLARIN</span>"))
