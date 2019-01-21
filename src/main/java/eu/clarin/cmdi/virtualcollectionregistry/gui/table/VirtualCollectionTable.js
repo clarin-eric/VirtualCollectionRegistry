@@ -60,10 +60,10 @@
             
             //var content = details[0];
             if(elTitle.className.indexOf('detailsShown') > 0) {
-                elTitle.className = "name collection";
+                elTitle.className = "name collection hover";
                 details.className = "details hide col-xs-12";
             } else {
-                elTitle.className = "name collection detailsShown";
+                elTitle.className = "name collection detailsShown hover";
                 details.className = "details show col-xs-12";
             }
         });
