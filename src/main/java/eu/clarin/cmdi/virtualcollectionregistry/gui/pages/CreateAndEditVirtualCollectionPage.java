@@ -22,8 +22,6 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 import java.util.Set;
-import java.util.regex.Matcher;
-import java.util.regex.Pattern;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
 import org.apache.wicket.WicketRuntimeException;
@@ -268,6 +266,8 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
     }
     
     private void persist() {
+        logger.info("Persist");
+        
         String name = nameModel.getObject();
         Type type = null;
         if( typeModel.getObject() != null) {
@@ -284,10 +284,10 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
             reproducibility = reproducibilityModel.getObject();
         }
         String repoducibilityNotice = reproducibilityNoticeModel.getObject();
-        List<String> keywords = keywordsModel.getObject();
-        List<Creator> creators = authorsModel.getObject();
-        List<Resource> resources = resourceModel.getObject();
-
+        List<String> keywords =  (ArrayList)(new ArrayList(keywordsModel.getObject()).clone());
+        List<Creator> creators =  (ArrayList)(new ArrayList(authorsModel.getObject()).clone());
+        List<Resource> resources = (ArrayList)(new ArrayList(resourceModel.getObject()).clone());
+        
         VirtualCollection new_vc = new VirtualCollection();
         if(this.vc != null) {
             new_vc = this.vc;
@@ -299,11 +299,13 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         new_vc.setPurpose(purpose);
         new_vc.setReproducibility(reproducibility);
         new_vc.setReproducibilityNotice(repoducibilityNotice);
+        
         if(editMode) {
             new_vc.getKeywords().clear();
             new_vc.getCreators().clear();
             new_vc.getResources().clear();
         }
+        
         new_vc.getKeywords().addAll(keywords);                
         new_vc.getCreators().addAll(creators);                
         new_vc.getResources().addAll(resources);
@@ -316,11 +318,11 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
             }
             
             if (new_vc.getId() == null) {
-                logger.info("Creating new virtual collection");                
+                logger.debug("Creating new virtual collection");                
                 new_vc.setCreationDate(new Date()); // FIXME: get date from GUI?
                 vcr.createVirtualCollection(principal, new_vc);
             } else {
-                logger.info("Updating existing virtual collection with id: {}", new_vc.getId());
+                logger.debug("Updating existing virtual collection with id: {}", new_vc.getId());
                 vcr.updateVirtualCollection(principal, new_vc.getId(), new_vc);
             }
             

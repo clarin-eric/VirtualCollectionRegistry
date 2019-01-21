@@ -1,7 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
 import eu.clarin.cmdi.oai.provider.impl.OAIProvider;
-import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User_;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
@@ -185,7 +184,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         }
 
         logger.debug("updating virtual collection (id={})", id);
-
+        
         validator.validate(vc);
 
         EntityManager em = datastore.getEntityManager();
