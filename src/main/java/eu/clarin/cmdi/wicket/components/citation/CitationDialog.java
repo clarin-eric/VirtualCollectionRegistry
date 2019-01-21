@@ -69,7 +69,7 @@ public class CitationDialog extends BaseInfoDialog {
             if(author_list.size() >= 1) {
                 authors += author_list.get(0);
                 for(int i = 1; i < author_list.size(); i++) {
-                    authors += ", "+author_list.get(0);
+                    authors += ", "+author_list.get(i);
                 }
             }
             return authors;
