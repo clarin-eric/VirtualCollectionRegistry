@@ -109,7 +109,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     @Override
     public List<String> getAuthors() {
         final Set<String> authors = new HashSet<>();
-        authors.add(getOwner().getName());
+        //authors.add(getOwner().getName());
         for(Creator c : getCreators()) {
             authors.add(c.getPerson());
         }
