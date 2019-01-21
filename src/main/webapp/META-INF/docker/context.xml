@@ -6,19 +6,21 @@
 
     <Resource name="jdbc/VirtualCollectionStore" auth="Container"
                     type="javax.sql.DataSource"
-                    maxActive="8" maxIdle="4" maxWait="10000"
-                    removeAbandoned="true"
+                    maxTotal="8" maxIdle="4" maxWaitMillis="10000"
+                    removeAbandonedOnBorrow="true"
+                    removeAbandonedOnMaintenance="true"
                     defaultAutoCommit="false"
-                    driverClassName="com.mysql.jdbc.Driver"
+                    driverClassName="{{DB_DRIVER}}"
                     validationQuery="SELECT 1"
-                    username="vcruser"
-                    password="vcrpassword"
-                    url="jdbc:mysql://localhost:3306/vcr" />
+                    username="{{DB_USERNAME}}"
+                    password="{{DB_PASSWORD}}"
+                    url="{{JDBC_URL}}" />
+
     <!--
-    <Parameter
-               name="eu.clarin.cmdi.virtualcollectionregistry.admindb.basedir"
-               value="/Users/wilelb" />
+    <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.admindb.basedir"
+               value="{{ADMIN_CONF_DIR}}" />
     -->
+    
     <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.admindb"
                value="vcr-admin.conf" />
 
@@ -26,26 +28,23 @@
                value="CLARIN Virtual Collection Registry" />
 
     <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.base_uri"
-               value="http://localhost:8080/VirtualCollectionRegistry"
+               value="{{VCR_BASE_URI}}"
                override="false"/>
-    
+
     <Parameter name="pid_provider.epic.service_base_url"
-               value="http://pid-vm04.gwdg.de:8080/handles/"
+               value="{{PID_SERVICE_BASE_URI}}"
                override="false"/>
-    
     <Parameter name="pid_provider.epic.handle_prefix"
-               value="11148"
+               value="{{PID_SERVICE_PREFIX}}"
                override="false"/>
-    
     <Parameter name="pid_provider.epic.user"
-               value="clarintest1"
+               value="{{PID_SERVICE_USERNAME}}"
                override="false"/>
-    
     <Parameter name="pid_provider.epic.password"
-               value="xrl#4xbE"
+               value="{{PID_SERVICE_PASSWORD}}"
                override="false"/>
-    
-    <!-- Switchboard endpoint -->
+
+     <!-- Switchboard endpoint -->
     <Parameter name="eu.clarin.cmdi.vcr.lrs.endpoint" 
                value="https://switchboard.clarin.eu/#/xyz" 
                override="false"/>
@@ -59,7 +58,6 @@
     <Parameter name="eu.clarin.cmdi.vcr.lrs.enable_for_collections" 
                value="false" 
                override="false" />
-    
     
     <!--
     <Parameter name="eu.clarin.cmdi.vcr.piwik.enableTracker" 
