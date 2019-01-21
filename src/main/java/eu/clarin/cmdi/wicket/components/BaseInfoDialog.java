@@ -91,7 +91,6 @@ public class BaseInfoDialog extends ModalWindow {
     }
     
     protected void buildContent(String title, Component body, List<DialogButton> buttons) {
-        logger.info("Body markup id = " + body.getMarkupId());
         setContent(new Content(this.getContentId(), title, body, buttons));
     }    
     
