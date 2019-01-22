@@ -82,6 +82,15 @@
                 <war.shhaa>src/main/resources/docker</war.shhaa>
                 <war.contextxml>src/main/webapp/META-INF/docker/context.xml</war.contextxml>
             </properties>
+        </profile>
+        <profile>
+            <id>docker-local</id>
+            <properties>
+                <log4j.appender>FILE</log4j.appender>            
+                <war.webxml>src/main/webapp/WEB-INF/web-shib.xml</war.webxml>
+                <war.shhaa>src/main/resources/docker</war.shhaa>
+                <war.contextxml>src/main/webapp/META-INF/docker/context.xml</war.contextxml>
+            </properties>
             <build>
                 <plugins>
                     <plugin>
