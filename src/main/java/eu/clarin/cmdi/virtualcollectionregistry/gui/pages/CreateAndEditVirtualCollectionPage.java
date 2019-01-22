@@ -6,7 +6,9 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermiss
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.AuthorsInput;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.CheckboxInput;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.CheckboxInputChangeListener;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.KeywordInput;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.QueryInput;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.ResourceInput;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
@@ -26,6 +28,7 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxPreventSubmitBehavior;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
@@ -152,6 +155,9 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
     private class FormBuilder implements Serializable {
         private final Form form;
         
+        private ResourceInput resourceInput;
+        private QueryInput queryInput;
+                
         public FormBuilder(String id) {
             this.form = new Form("form") {    
                 @Override
@@ -180,7 +186,21 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         }
         
         protected FormBuilder addCheckboxInputGroup(String id, IModel model, List values, String label, String tooltip ) {
-            this.form.add(new CheckboxInput<>(id, model, values, label, tooltip));
+            CheckboxInput input = new CheckboxInput<>(id, model, values, label, tooltip);
+            if(id.equalsIgnoreCase("type")) {
+                input.setCheckboxInputChangeListener(new CheckboxInputChangeListener() {
+                    @Override
+                    public void handleEvent(AjaxRequestTarget art, IModel model) {
+                        logger.info("CheckboxInputChanged event: model = "+model.toString());
+                        String val = model.getObject().toString();
+                        resourceInput.setVisible(val.equalsIgnoreCase("extensional"));
+                        queryInput.setVisible(val.equalsIgnoreCase("intensional"));
+                        art.add(resourceInput);
+                        art.add(queryInput);
+                    }
+                }); 
+            }
+            this.form.add(input);
             return this;
         }
         
@@ -218,10 +238,41 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         }
         
         protected FormBuilder addResourceInput(String id, IModel model) {
-            this.form.add(new ResourceInput(id, model));
+            resourceInput = new ResourceInput(id, model);
+            resourceInput.setOutputMarkupId(true);
+            resourceInput.setOutputMarkupPlaceholderTag(true);
+            this.form.add(resourceInput);
+            
+            //queryInput = new QueryInput(id, queryModel);
+            //queryInput.setOutputMarkupId(true);        
+            //queryInput.setOutputMarkupPlaceholderTag(true);
+            //if( resourceModel != null ) {                
+            //    this.form.add(resourceInput);
+            //} else if (queryModel != null) {
+            //    this.form.add(queryInput);
+            //} else {
+            //    throw new IllegalStateException("Model required");
+           // }
             return this;
         }
         
+         protected FormBuilder addQueryInput(String id, IModel model) {
+            queryInput = new QueryInput(id, model);
+            queryInput.setVisible(false); //Todo: sync this type checkbox value
+            queryInput.setOutputMarkupId(true);        
+            queryInput.setOutputMarkupPlaceholderTag(true);
+            this.form.add(queryInput);
+            
+            //if( resourceModel != null ) {                
+            //    this.form.add(resourceInput);
+            //} else if (queryModel != null) {
+            //    this.form.add(queryInput);
+            //} else {
+            //    throw new IllegalStateException("Model required");
+           // }
+            return this;
+        }
+         
         protected Form build() {
             return this.form;
         }
@@ -233,7 +284,8 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         }
     }
     
-    protected void addComponents() {       
+    protected void addComponents() {     
+        IModel queryModel = new Model("Test");
         //Add existing values to models if we are editing an existing collection
         if(vc != null && !vc.getName().isEmpty()) {
             nameModel.setObject(vc.getName());
@@ -259,6 +311,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
                 .addKeywordInput("keywords", keywordsModel)
                 .addAuthorsInput("authors", authorsModel)
                 .addResourceInput("resources", resourceModel)
+                .addQueryInput("query", queryModel)
                 .addSubmitButton("submit", submitModel)
                 .build();
         

@@ -58,6 +58,8 @@ public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
     //private RadioGroup<T> group;
     private BootstrapRadioGroup<T> group;
     
+    private transient CheckboxInputChangeListener listener;
+    
     public CheckboxInput(String id, IModel<T> model, List<T> values) {
         this(id, model, values, null, null);
     }
@@ -77,6 +79,10 @@ public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
         this.labelText = label;
         this.tooltipText = tooltipText;
     }
+    
+    public void setCheckboxInputChangeListener (CheckboxInputChangeListener listener) {
+    this.listener = listener;
+}
 
     @Override
     protected void onModelChanged() {
@@ -100,8 +106,8 @@ public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
     
         @Override
         protected void onSelectionChanged(AjaxRequestTarget art, Serializable t) {
-            logger.debug("onSelectionChanged. Model = "+model.toString());
-            //throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+            if (listener != null) listener.handleEvent(art, model);
+            
         }
         
     }
