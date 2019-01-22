@@ -1,4 +1,4 @@
-# Virtual Collection Registry
+# Virtual Collection Registry [![Build Status](https://travis-ci.org/clarin-eric/VirtualCollectionRegistry.svg?branch=milestone-1.2)](https://travis-ci.org/clarin-eric/VirtualCollectionRegistry)
 
 [Production instance](http://clarin.ids-mannheim.de/vcr/app/public)
 

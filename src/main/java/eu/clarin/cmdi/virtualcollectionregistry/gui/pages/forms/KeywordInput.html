@@ -6,13 +6,14 @@
 <head />
 <body>
     <wicket:panel>
-        <div class="row" wicket:id="wrapper">            
+        <div wicket:id="wrapper">            
             
             <form wicket:id="form">
                 <div class="col-xs-2">
                    <label wicket:id="label">[Name]</label>    
                 </div>
-               <div class="col-xs-8">
+               <div class="col-xs-10">
+                   <div class="col-xs-8">
                    <input wicket:id="editor" type="text"></input>
                    <button wicket:id="btn_add" class="btn btn-default"><i class="fa fa-plus" aria-hidden="true"></i></button>         
                    <div>
@@ -22,6 +23,7 @@
                        </wicket:container>
                    </div>
                </div>
+                </div>
             </form>
             
         </div>
