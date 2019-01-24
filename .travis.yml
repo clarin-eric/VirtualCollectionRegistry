@@ -9,7 +9,7 @@ before_install:
 script:
 - bash -c 'if [ "${TRAVIS_TAG}" ]; then mvn versions:set -DnewVersion=${TRAVIS_TAG} versions:commit; fi'
 - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
-#- mvn test -B
+- mvn test -B
 - mvn clean install -DskipTests=true -Pdocker
 
 deploy:
@@ -17,7 +17,7 @@ deploy:
   prerelease: true
   api_key:
     secure: "${VCR_DEPLOY_TOKEN}"
-  file: "bin/vcr.war"
+  file: "target/vcr-${TRAVIS_TAG}.war"
   skip_cleanup: true
   on:
    tags: true
