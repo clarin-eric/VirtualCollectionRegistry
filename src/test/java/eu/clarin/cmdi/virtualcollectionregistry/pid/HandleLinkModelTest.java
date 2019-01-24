@@ -30,11 +30,11 @@ public class HandleLinkModelTest {
     public void testIsHandle() {
         assertEquals(true, HandleLinkModel.isHandle("hdl:1839/00-0000-0000-0004-2F0A-0"));
         assertEquals(true, HandleLinkModel.isHandle("http://hdl.handle.net/1839/00-0000-0000-0004-2F0A-0"));
-        assertEquals(true, HandleLinkModel.isHandle("http2://hdl.handle.net/1839/00-0000-0000-0004-2F0A-0"));
-        
-        assertEquals(false, HandleLinkModel.isHandle("1839/00-0000-0000-0004-2F0A-0"));
-        assertEquals(false, HandleLinkModel.isHandle("doi:123/456"));
-        assertEquals(false, HandleLinkModel.isHandle("nbn:abc"));
+        assertEquals(true, HandleLinkModel.isHandle("https://hdl.handle.net/1839/00-0000-0000-0004-2F0A-0"));
+        assertEquals(true, HandleLinkModel.isHandle("doi:123/456"));
+
+        assertEquals(false, HandleLinkModel.isHandle("1839/00-0000-0000-0004-2F0A-0")); //missing prefix        
+        assertEquals(false, HandleLinkModel.isHandle("nbn:abc")); //not supported
     }
     
     @Test
