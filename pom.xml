@@ -332,8 +332,8 @@
                     <groupId>commons-logging</groupId>
                 </exclusion>
                 <!-- a library should only depend on SLF4J but not import
-                     a specific logging backend. Therefore, get rid of
-                     those ... -->
+                a specific logging backend. Therefore, get rid of
+                those ... -->
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
                     <groupId>org.slf4j</groupId>
@@ -467,9 +467,9 @@
     </dependencies>
 
     <build>
-        <finalName>vcr</finalName>
+        <finalName>vcr-${project.version}</finalName>
         
-          <resources>
+        <resources>
             <resource>
                 <filtering>true</filtering>
                 <directory>src/main/resources</directory>
