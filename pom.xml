@@ -627,7 +627,7 @@
                             </includes>
                         </resource>
                     </webResources>
-                    <outputDirectory>bin</outputDirectory>
+                    <!--outputDirectory>bin</outputDirectory-->
                 </configuration>
             </plugin>
             
