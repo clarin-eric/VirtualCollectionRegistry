@@ -34,19 +34,26 @@ import org.slf4j.LoggerFactory;
  */
 public class QueryInput extends FormComponentPanel {
     private static Logger logger = LoggerFactory.getLogger(QueryInput.class);
+    
     private final IModel<String> descriptionModel = new Model<>("");
-    private final IModel<String> labelModel = new Model<>("");
+    private final IModel<String> uriModel = new Model<>("");
     private final IModel<String> profileModel = new Model<>("");
     private final IModel<String> valueModel = new Model<>("");
     
+    private final CollectionQuery qry;// = new CollectionQuery();
+    
     public QueryInput(String id) {
         super(id);
-        //this.listModel = new ListModel(new ArrayList<>());
+        qry = new CollectionQuery();
     }
     
     public QueryInput(String id, IModel model) {
         super(id, model);	
-        //this.listModel = model;
+        qry = (CollectionQuery)model.getObject();
+        descriptionModel.setObject(qry.getDescription());
+        uriModel.setObject(qry.getUri());
+        profileModel.setObject(qry.getProfile());
+        valueModel.setObject(qry.getValue());
     }
     
     @Override
@@ -57,10 +64,10 @@ public class QueryInput extends FormComponentPanel {
             @Override
             protected void onSubmit() {
                 super.onSubmit();
-                
-                logger.info("Description: {}, Label: {}, Profile: {}, Value: {}", 
-                        descriptionModel.getObject(), labelModel.getObject(), 
-                        profileModel.getObject(), valueModel.getObject());
+                qry.setDescription(descriptionModel.getObject());
+                qry.setProfile(profileModel.getObject());
+                qry.setUri(uriModel.getObject());
+                qry.setValue(valueModel.getObject());
             }
 
             @Override
@@ -75,7 +82,7 @@ public class QueryInput extends FormComponentPanel {
         form.add(inputDescription);
         
         form.add(new Label("qry_uri_label", "URI"));
-        TextField<String> inputUri = new TextField("qry_uri_input", labelModel);        
+        TextField<String> inputUri = new TextField("qry_uri_input", uriModel);        
         form.add(inputUri);
         
         form.add(new Label("qry_profile_label", "Query profile"));
@@ -100,7 +107,7 @@ public class QueryInput extends FormComponentPanel {
     
     @Override
     public void convertInput() {
-        //setConvertedInput(listModel.getObject());
+        setConvertedInput(qry);
     }
 
     @Override

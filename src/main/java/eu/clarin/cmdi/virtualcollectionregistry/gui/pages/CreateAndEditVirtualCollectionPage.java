@@ -7,10 +7,13 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.AuthorsInput;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.CheckboxInput;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.CheckboxInputChangeListener;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.CollectionQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.KeywordInput;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.QueryInput;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.ResourceInput;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
+import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
+import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedByQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Purpose;
@@ -94,6 +97,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
     private final IModel<List<String>> keywordsModel = new ListModel<>(new ArrayList<>());
     private final IModel<List<Creator>> authorsModel = new ListModel<>(new ArrayList<>());
     private final IModel<List<Resource>> resourceModel = new ListModel<>(new ArrayList<>()); 
+    private final IModel<CollectionQuery> queryModel = new Model<>(new CollectionQuery());
     
     protected VirtualCollection vc;
     protected boolean renderStateValid = false;
@@ -242,17 +246,6 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
             resourceInput.setOutputMarkupId(true);
             resourceInput.setOutputMarkupPlaceholderTag(true);
             this.form.add(resourceInput);
-            
-            //queryInput = new QueryInput(id, queryModel);
-            //queryInput.setOutputMarkupId(true);        
-            //queryInput.setOutputMarkupPlaceholderTag(true);
-            //if( resourceModel != null ) {                
-            //    this.form.add(resourceInput);
-            //} else if (queryModel != null) {
-            //    this.form.add(queryInput);
-            //} else {
-            //    throw new IllegalStateException("Model required");
-           // }
             return this;
         }
         
@@ -262,14 +255,6 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
             queryInput.setOutputMarkupId(true);        
             queryInput.setOutputMarkupPlaceholderTag(true);
             this.form.add(queryInput);
-            
-            //if( resourceModel != null ) {                
-            //    this.form.add(resourceInput);
-            //} else if (queryModel != null) {
-            //    this.form.add(queryInput);
-            //} else {
-            //    throw new IllegalStateException("Model required");
-           // }
             return this;
         }
          
@@ -285,7 +270,6 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
     }
     
     protected void addComponents() {     
-        IModel queryModel = new Model("Test");
         //Add existing values to models if we are editing an existing collection
         if(vc != null && !vc.getName().isEmpty()) {
             nameModel.setObject(vc.getName());
@@ -296,7 +280,12 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
             reproducibilityNoticeModel.setObject(vc.getReproducibilityNotice());
             keywordsModel.setObject(vc.getKeywords());
             authorsModel.setObject(vc.getCreators());
-            resourceModel.setObject(vc.getResources());
+            if(vc.getResources() != null) {
+                resourceModel.setObject(vc.getResources());
+            }
+            if(vc.getGeneratedBy() != null) {
+                queryModel.setObject(CollectionQuery.fromGeneratedBy(vc.getGeneratedBy()));
+            }
         }
         
         Model submitModel = Model.of(this.editMode ? "Save virtual collection" : "Create virtual collection");
@@ -319,13 +308,9 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
     }
     
     private void persist() {
-        logger.info("Persist");
+        logger.debug("Persist");
         
-        String name = nameModel.getObject();
-        Type type = null;
-        if( typeModel.getObject() != null) {
-            type = typeModel.getObject();
-        }                
+        String name = nameModel.getObject();        
         String description = descriptionModel.getObject();
 
         Purpose purpose = null;
@@ -339,15 +324,12 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         String repoducibilityNotice = reproducibilityNoticeModel.getObject();
         List<String> keywords =  (ArrayList)(new ArrayList(keywordsModel.getObject()).clone());
         List<Creator> creators =  (ArrayList)(new ArrayList(authorsModel.getObject()).clone());
-        List<Resource> resources = (ArrayList)(new ArrayList(resourceModel.getObject()).clone());
         
         VirtualCollection new_vc = new VirtualCollection();
         if(this.vc != null) {
             new_vc = this.vc;
         }
         new_vc.setName(name);
-        new_vc.setType(type);
-        
         new_vc.setDescription(description);                
         new_vc.setPurpose(purpose);
         new_vc.setReproducibility(reproducibility);
@@ -361,7 +343,21 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         
         new_vc.getKeywords().addAll(keywords);                
         new_vc.getCreators().addAll(creators);                
-        new_vc.getResources().addAll(resources);
+        
+        Type type = null;
+        if( typeModel.getObject() != null) {
+            type = typeModel.getObject();
+        }                
+        new_vc.setType(type);
+        //Set extensional or intensional values based on collection type
+        if (type == Type.EXTENSIONAL) {
+            List<Resource> resources = (ArrayList)(new ArrayList(resourceModel.getObject()).clone());
+            new_vc.getResources().addAll(resources);
+            new_vc.setGeneratedBy(null);
+        } else if( type == Type.INTENSIONAL) {
+            new_vc.setGeneratedBy(queryModel.getObject().convertToGeneratedBy());
+            //new_vc.getResources().clear(); //TODO: why is this not checked in the validator
+        }
 
         try {
             ApplicationSession session = (ApplicationSession) getSession();
