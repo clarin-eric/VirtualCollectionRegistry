@@ -126,6 +126,14 @@ public class FilterForm extends Panel {
         form.add(clearButton);
         add(form);
         form.add(new Label("title", "Filter"));
+        /*
+        TODO: switch to using BootstrapPanelBuilder:
+        add(BootstrapPanelBuilder
+                .createCollapsiblePanel("general")
+                .setTitle("General")
+                .setBody(new GeneralPanel("body", model))
+                .build());
+        */
     }
 
 } // class FilterForm
