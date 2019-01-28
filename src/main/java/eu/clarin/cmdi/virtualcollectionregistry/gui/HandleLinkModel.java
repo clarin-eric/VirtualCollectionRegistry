@@ -40,8 +40,8 @@ public class HandleLinkModel implements IModel<String> {
     public static final Pattern HANDLE_WITH_RESOLVER_PATTERN = Pattern.compile("^(http[s]?://hdl.handle.net/)(.*)(@.*)?$", Pattern.CASE_INSENSITIVE);
     public static final Pattern DOI_PATTERN = Pattern.compile("^doi:(.*)$", Pattern.CASE_INSENSITIVE);
     public static final Pattern DOI_WITH_RESOLVER_PATTERN = Pattern.compile("^http[s]?://dx.doi.org/(.*)$", Pattern.CASE_INSENSITIVE);
-    public static final String HANDLE_PROXY = "http://hdl.handle.net/";
-    public static final String DOI_PROXY = "http://dx.doi.org/";
+    public static final String HANDLE_PROXY = "https://hdl.handle.net/";
+    public static final String DOI_PROXY = "https://dx.doi.org/";
     public static final String URN_NBN_PREFIX = "urn:nbn";
     public static final String URN_NBN_RESOLVER_URL = "http://www.nbn-resolving.org/redirect/";
     private static final int HANDLE_ID_GROUP = 2;
@@ -59,10 +59,10 @@ public class HandleLinkModel implements IModel<String> {
         String result = pidUri;
         switch(getPidType(pidUri)) {
             case DOI: 
-                result = "https://dx.doi.org/"+pidUri.replaceFirst("doi:", "");
+                result = HANDLE_PROXY+pidUri.replaceFirst("doi:", "");
                 break;
             case HANDLE: 
-                result = "https://hdl.handle.net/"+pidUri.replaceFirst("hdl:", "");
+                result = DOI_PROXY+pidUri.replaceFirst("hdl:", "");
                 break;
             case NBN: 
                 logger.warn("NBN resolution not supported");
