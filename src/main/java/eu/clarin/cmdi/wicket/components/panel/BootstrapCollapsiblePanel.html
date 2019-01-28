@@ -6,9 +6,11 @@
     <head />
     <body>
         <wicket:extend>
-            <div class="panel-heading">
-                <h4><a data-toggle="collapse" wicket:id="pnl-btn-collapse"><span wicket:id="pnl-title"></span></a></h4>
-            </div>
+            <a data-toggle="collapse" wicket:id="pnl-btn-collapse" class="hover">
+                <div class="panel-heading">
+                    <h3 wicket:id="pnl-title" class="pnl-title"></h3>
+                </div>
+                </a>
             <div wicket:id="pnl-target-collapse" class="collapse in">
                 <div wicket:id="body"></div>
             </div>            
