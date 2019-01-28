@@ -76,6 +76,18 @@ public class HandleLinkModel implements IModel<String> {
         
         return result;        
     }
+    
+    public static boolean isActionableSupportedPersistentIdentifier(String link) {
+        if(isSupportedPersistentIdentifier(link)) {
+            return link.startsWith(HANDLE_PROXY) || link.startsWith(DOI_PROXY) || link.startsWith(URN_NBN_RESOLVER_URL);
+        }
+        return false;
+    }
+    
+    public static boolean isSupportedPersistentIdentifier(String link) {
+        return isHandle(link) || isDoi(link) || isNbn(link);        
+    }
+    
     public static boolean isHandle(String link) {
         final Matcher handleMatcher = HANDLE_PATTERN.matcher(link);
         if(handleMatcher.matches()) {

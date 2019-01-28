@@ -16,12 +16,10 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.service.impl;
 
-import java.util.regex.Pattern;
-
+import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.Validatable;
-import org.apache.wicket.validation.ValidationError;
 import org.apache.wicket.validation.validator.UrlValidator;
 
 /**
@@ -33,10 +31,11 @@ import org.apache.wicket.validation.validator.UrlValidator;
  */
 @SuppressWarnings("serial")
 public class ReferenceValidator implements IValidator<String> {
-
+/*
     private static final String HANDLE_SPECIFIC_PART_PATTERN = "[0-9\\.]+\\/.+$";
     private static final Pattern HANDLE_PATTERN = Pattern.compile("^(hdl|doi):" + HANDLE_SPECIFIC_PART_PATTERN);
-    private static final Pattern HANDLE_RESOLVER_PATTERN = Pattern.compile("^http://(hdl\\.handle\\.net|dx\\.doi\\.org|)/" + HANDLE_SPECIFIC_PART_PATTERN);
+    private static final Pattern HANDLE_RESOLVER_PATTERN = Pattern.compile("^http[s]?://(hdl\\.handle\\.net|dx\\.doi\\.org|)/" + HANDLE_SPECIFIC_PART_PATTERN);
+  */
     private final IValidator<String> urlValidator = new UrlValidator(UrlValidator.NO_FRAGMENTS);
     private final IValidator httpResponseValidator = new HttpResponseValidator();
     
@@ -54,13 +53,25 @@ public class ReferenceValidator implements IValidator<String> {
      * the accepted handle resolver base URL's (http://hdl.handle.net or
      * http://dx.doi.org)
      */
+    /*
     public static boolean isPid(CharSequence uri) {
         return HANDLE_PATTERN.matcher(uri).matches()
                 || HANDLE_RESOLVER_PATTERN.matcher(uri).matches();
     }
-
+    */
     @Override
     public void validate(IValidatable<String> validatable) {
+        if(HandleLinkModel.isSupportedPersistentIdentifier(validatable.getValue())) {
+            if(HandleLinkModel.isActionableSupportedPersistentIdentifier(validatable.getValue())) {
+                httpResponseValidator.validate(validatable);
+            }
+        } else {
+            urlValidator.validate(validatable);                       
+            httpResponseValidator.validate(validatable);
+        }
+        
+        
+        /*
         // first check if it is a valid handle
         if (!HANDLE_PATTERN.matcher(validatable.getValue()).matches()) {
             // check if it is a valid URL
@@ -71,6 +82,7 @@ public class ReferenceValidator implements IValidator<String> {
             
             httpResponseValidator.validate(validatable);
         }
+        */
     }
 
 }

@@ -17,6 +17,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.service.impl;
 
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidator;
@@ -79,7 +80,8 @@ public class VirtualCollectionPrePublicationValidator implements VirtualCollecti
     private void validateResources(VirtualCollection vc, List<String> warnings) {
         int nonPidCount = 0;
         for (Resource resource : vc.getResources()) {
-            if (!ReferenceValidator.isPid(resource.getRef())) {
+            if (!HandleLinkModel.isSupportedPersistentIdentifier(resource.getRef())) {
+                warnings.add("The resource URI is not a supported persistent identifer");
                 nonPidCount++;
             }
         }
@@ -96,8 +98,8 @@ public class VirtualCollectionPrePublicationValidator implements VirtualCollecti
 
     private void validateGeneratedBy(VirtualCollection vc, List<String> warnings) {
         final String queryUri = vc.getGeneratedBy().getURI();
-        if (!ReferenceValidator.isPid(queryUri)) {
-            warnings.add("The query URI is not a persistent identifer");
+        if (!HandleLinkModel.isSupportedPersistentIdentifier(queryUri)) {
+            warnings.add("The query URI is not a supported persistent identifer");
         }
     }
 
