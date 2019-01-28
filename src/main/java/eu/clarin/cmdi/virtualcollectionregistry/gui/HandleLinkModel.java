@@ -36,7 +36,7 @@ public class HandleLinkModel implements IModel<String> {
     private final static Logger logger = LoggerFactory.getLogger(HandleLinkModel.class);
     
     private final IModel<String> linkModel;
-    public static final Pattern HANDLE_PATTERN = Pattern.compile("^(hdl|doi):(.*)$", Pattern.CASE_INSENSITIVE);
+    public static final Pattern HANDLE_PATTERN = Pattern.compile("^(hdl):(.*)$", Pattern.CASE_INSENSITIVE);
     public static final Pattern HANDLE_WITH_RESOLVER_PATTERN = Pattern.compile("^(http[s]?://hdl.handle.net/)(.*)(@.*)?$", Pattern.CASE_INSENSITIVE);
     public static final Pattern DOI_PATTERN = Pattern.compile("^doi:(.*)$", Pattern.CASE_INSENSITIVE);
     public static final Pattern DOI_WITH_RESOLVER_PATTERN = Pattern.compile("^http[s]?://dx.doi.org/(.*)$", Pattern.CASE_INSENSITIVE);
@@ -51,6 +51,29 @@ public class HandleLinkModel implements IModel<String> {
         this.linkModel = linkModel;
     }
 
+    public static String getActionableUri(String pidUri) {
+        if(pidUri.startsWith("http") || pidUri.startsWith("https")) {
+            return pidUri; //already actionable
+        }
+        
+        String result = pidUri;
+        switch(getPidType(pidUri)) {
+            case DOI: 
+                result = "https://dx.doi.org/"+pidUri.replaceFirst("doi:", "");
+                break;
+            case HANDLE: 
+                result = "https://hdl.handle.net/"+pidUri.replaceFirst("hdl:", "");
+                break;
+            case NBN: 
+                logger.warn("NBN resolution not supported");
+                break;
+            case UNKOWN:
+            default:
+                logger.warn("Failed to make actionable URI for unkown PID type: "+pidUri);
+        }
+        
+        return result;        
+    }
     public static boolean isHandle(String link) {
         final Matcher handleMatcher = HANDLE_PATTERN.matcher(link);
         if(handleMatcher.matches()) {

@@ -324,6 +324,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         String repoducibilityNotice = reproducibilityNoticeModel.getObject();
         List<String> keywords =  (ArrayList)(new ArrayList(keywordsModel.getObject()).clone());
         List<Creator> creators =  (ArrayList)(new ArrayList(authorsModel.getObject()).clone());
+        List<Resource> resources = (ArrayList)(new ArrayList(resourceModel.getObject()).clone());
         
         VirtualCollection new_vc = new VirtualCollection();
         if(this.vc != null) {
@@ -350,8 +351,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         }                
         new_vc.setType(type);
         //Set extensional or intensional values based on collection type
-        if (type == Type.EXTENSIONAL) {
-            List<Resource> resources = (ArrayList)(new ArrayList(resourceModel.getObject()).clone());
+        if (type == Type.EXTENSIONAL) {            
             new_vc.getResources().addAll(resources);
             new_vc.setGeneratedBy(null);
         } else if( type == Type.INTENSIONAL) {

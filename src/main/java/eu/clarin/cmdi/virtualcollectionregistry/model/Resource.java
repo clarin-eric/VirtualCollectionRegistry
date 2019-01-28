@@ -174,7 +174,8 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
             return null;
         }
         
-        return this.ref;
+        return HandleLinkModel.getActionableUri(this.ref);
+        //return this.ref;
     }
 
     @Override
