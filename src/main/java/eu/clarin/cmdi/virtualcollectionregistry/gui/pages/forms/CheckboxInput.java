@@ -54,6 +54,8 @@ public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
     private final List<T> values;      //list of allowed values
     private final String labelText;    //Tekst for the display label
     private final String tooltipText;  //Tekst for the tooltip
+    private final String tooltipViewport;
+    private final String tooltipPlacement;
     
     //private RadioGroup<T> group;
     private BootstrapRadioGroup<T> group;
@@ -61,7 +63,7 @@ public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
     private transient CheckboxInputChangeListener listener;
     
     public CheckboxInput(String id, IModel<T> model, List<T> values) {
-        this(id, model, values, null, null);
+        this(id, model, values, null, null, null, null);
     }
     
     /**
@@ -72,12 +74,14 @@ public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
      * @param model
      * @param values
      */
-    public CheckboxInput(String id, IModel<T> model, List<T> values, String label, String tooltipText) {
+    public CheckboxInput(String id, IModel<T> model, List<T> values, String label, String tooltipText, String tooltipViewport, String tooltipPlacement) {
         super(id, model);
         this.model = model;
         this.values = values;
         this.labelText = label;
         this.tooltipText = tooltipText;
+        this.tooltipPlacement = tooltipPlacement;
+        this.tooltipViewport = tooltipViewport;
     }
     
     public void setCheckboxInputChangeListener (CheckboxInputChangeListener listener) {
@@ -122,7 +126,7 @@ public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
         group.add(new AttributeAppender("class", " btngroup-spacing"));
         
         WebMarkupContainer tooltip = new WebMarkupContainer("tooltipwrapper");
-        UIUtils.addTooltip(tooltip, tooltipText);
+        UIUtils.addTooltip(tooltip, tooltipText, tooltipViewport, tooltipPlacement);
         tooltip.add(group);
         
         WebMarkupContainer container = new WebMarkupContainer("row");

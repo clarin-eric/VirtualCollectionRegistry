@@ -40,12 +40,27 @@ public class UIUtils {
     
     private final static String TOOLTIP_TEXT = "Open this collection in the language resurce switchboard";
     
+    public final static String DEFAULT_TOOLTIP_DATA_PLACEMENT = "bottom";
+    
     public static Component addTooltip(Component comp, String tooltipText) {
+        return addTooltip(comp, tooltipText, null, DEFAULT_TOOLTIP_DATA_PLACEMENT);
+    }
+    
+    public static Component addTooltip(Component comp, String tooltipText, String viewport, String tooltipPlacement) {
         comp.add(new AttributeAppender("data-toggle", Model.of("tooltip")));
-        comp.add(new AttributeAppender("data-placement", Model.of(CreateAndEditVirtualCollectionPage.DEFAULT_TOOLTIP_DATA_PLACEMENT)));
+        comp.add(new AttributeAppender("data-placement", Model.of(tooltipPlacement)));
         comp.add(new AttributeAppender("data-html", Model.of("true")));
         comp.add(new AttributeAppender("data-trigger", Model.of("hover")));
+        comp.add(new AttributeAppender("data-animation", Model.of("true")));
+        comp.add(new AttributeAppender("data-delay", Model.of("500")));
         comp.add(new AttributeAppender("title", Model.of(tooltipText)));
+        if(viewport != null) {
+            if(!viewport.startsWith("#")) {
+                viewport = "#"+viewport;
+            }
+            comp.add(new AttributeAppender("data-viewport", Model.of(viewport)));
+            comp.add(new AttributeAppender("data-container", Model.of(viewport)));
+        }
         return comp;
     }
             

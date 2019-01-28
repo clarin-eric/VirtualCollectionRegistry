@@ -64,7 +64,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
 
     private static Logger logger = LoggerFactory.getLogger(CreateAndEditVirtualCollectionPage.class);
     
-    public final static String DEFAULT_TOOLTIP_DATA_PLACEMENT = "bottom";//right";
+    public final static String DEFAULT_TOOLTIP_DATA_PLACEMENT = "left";//right";
     
     String nameTooltip = "A short but descriptive name of the virtual collection for listings and views";
     String descriptionTooltip = "A prose description of this virtual collection";
@@ -190,12 +190,12 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         }
         
         protected FormBuilder addCheckboxInputGroup(String id, IModel model, List values, String label, String tooltip ) {
-            CheckboxInput input = new CheckboxInput<>(id, model, values, label, tooltip);
+            CheckboxInput input = new CheckboxInput<>(id, model, values, label, tooltip, "accordion", DEFAULT_TOOLTIP_DATA_PLACEMENT);
             if(id.equalsIgnoreCase("type")) {
                 input.setCheckboxInputChangeListener(new CheckboxInputChangeListener() {
                     @Override
                     public void handleEvent(AjaxRequestTarget art, IModel model) {
-                        logger.info("CheckboxInputChanged event: model = "+model.toString());
+                        //logger.info("CheckboxInputChanged event: model = "+model.toString());
                         String val = model.getObject().toString();
                         resourceInput.setVisible(val.equalsIgnoreCase("extensional"));
                         queryInput.setVisible(val.equalsIgnoreCase("intensional"));
@@ -210,7 +210,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         
         protected FormBuilder addTextinput(IModel model, String name, String label, String tooltipText, boolean required, boolean multiline) {
             final WebMarkupContainer tooltipComponent = new WebMarkupContainer("tt_"+name);
-            UIUtils.addTooltip(tooltipComponent, tooltipText);       
+            UIUtils.addTooltip(tooltipComponent, tooltipText, "accordion", DEFAULT_TOOLTIP_DATA_PLACEMENT);       
             if( multiline ) {
                 tooltipComponent.add(new TextArea(name, model).add(StringValidator.minimumLength(1)));
             } else if (!multiline && required ) {           
