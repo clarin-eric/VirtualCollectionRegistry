@@ -43,6 +43,8 @@ public class HandleLinkModel implements IModel<String> {
     public static final String HANDLE_PROXY = "https://hdl.handle.net/";
     public static final String DOI_PROXY = "https://dx.doi.org/";
     public static final String URN_NBN_PREFIX = "urn:nbn";
+    public static final String HDL_PREFIX = "hdl";
+    public static final String DOI_PREFIX = "doi";
     public static final String URN_NBN_RESOLVER_URL = "http://www.nbn-resolving.org/redirect/";
     private static final int HANDLE_ID_GROUP = 2;
     private static final int DOI_ID_GROUP = 1;
@@ -59,13 +61,13 @@ public class HandleLinkModel implements IModel<String> {
         String result = pidUri;
         switch(getPidType(pidUri)) {
             case DOI: 
-                result = HANDLE_PROXY+pidUri.replaceFirst("doi:", "");
+                result = DOI_PROXY+pidUri.replaceFirst(DOI_PREFIX+":", "");
                 break;
             case HANDLE: 
-                result = DOI_PROXY+pidUri.replaceFirst("hdl:", "");
+                result = HANDLE_PROXY+pidUri.replaceFirst(HDL_PREFIX+":", "");
                 break;
             case NBN: 
-                logger.warn("NBN resolution not supported");
+                result = URN_NBN_RESOLVER_URL+pidUri;
                 break;
             case UNKOWN:
             default:
@@ -147,18 +149,7 @@ public class HandleLinkModel implements IModel<String> {
     
     @Override
     public String getObject() {
-        final String link = linkModel.getObject();
-        if (link != null) {
-            final Matcher handleMatcher = HANDLE_PATTERN.matcher(link);
-            if (handleMatcher.matches()) {
-                return HANDLE_PROXY + handleMatcher.group(HANDLE_ID_GROUP);
-            }
-            //if (link.toLowerCase().startsWith(URN_NBN_PREFIX)) {
-            if(isNbn(link)) {
-                return URN_NBN_RESOLVER_URL + link;
-            }
-        }
-        return link;
+        return getActionableUri( linkModel.getObject());
     }
 
     @Override
