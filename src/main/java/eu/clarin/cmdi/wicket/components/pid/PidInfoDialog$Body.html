@@ -12,19 +12,26 @@
                     (file or service)</b> is:
                 </p>
                 <div class="input-group">
-                    <input class="form-control" type="text" readonly="readonly" aria-descibedby="copy-addon" wicket:id="pid" />
+                    <input class="form-control" type="text" readonly="readonly" aria-descibedby="copy-addon" wicket:id="pid" id="pid-input" />
                     <span class="input-group-btn">
-                        <button class="btn btn-default clipboard" title="Copy to clipboard" type="button">
+                        <button class="btn btn-default clipboard" title="Copy to clipboard" type="button" data-clipboard-target="#pid-input">
                             <span class="glyphicon glyphicon-copy"></span>
                         </button>
                     </span>
                 </div>
                 <p>
-                    You can use this <b>handle</b> to reference the selected 
-                    resource (file or service) online and in publications, or 
-                    use it with tools that support handles.
+                    You can use this <b wicket:id="type">persistent identifier</b> to reference the 
+                    selected  resource (file or service) online and in publications, 
+                    or use it with tools that support handles.
                 </p>
+                <div class="panel panel-default">
+                    <div class="panel-body">
+                        This identifier resolves to:                        
+                        <p wicket:id="hdl-target">HDL target</p>
+                    </div>
+                </div>
             </div>
         </wicket:panel>
     </body>
 </html>
+    
