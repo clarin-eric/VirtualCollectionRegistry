@@ -31,7 +31,7 @@ import org.apache.wicket.validation.validator.UrlValidator;
  */
 @SuppressWarnings("serial")
 public class ReferenceValidator implements IValidator<String> {
-/*
+  /*
     private static final String HANDLE_SPECIFIC_PART_PATTERN = "[0-9\\.]+\\/.+$";
     private static final Pattern HANDLE_PATTERN = Pattern.compile("^(hdl|doi):" + HANDLE_SPECIFIC_PART_PATTERN);
     private static final Pattern HANDLE_RESOLVER_PATTERN = Pattern.compile("^http[s]?://(hdl\\.handle\\.net|dx\\.doi\\.org|)/" + HANDLE_SPECIFIC_PART_PATTERN);

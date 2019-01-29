@@ -36,7 +36,7 @@ public class HandleLinkModel implements IModel<String> {
     private final static Logger logger = LoggerFactory.getLogger(HandleLinkModel.class);
     
     private final IModel<String> linkModel;
-    public static final Pattern HANDLE_PATTERN = Pattern.compile("^(hdl):(.*)$", Pattern.CASE_INSENSITIVE);
+    public static final Pattern HANDLE_PATTERN = Pattern.compile("^(hdl):([0-9\\.]+\\/.+)$", Pattern.CASE_INSENSITIVE);
     public static final Pattern HANDLE_WITH_RESOLVER_PATTERN = Pattern.compile("^(http[s]?://hdl.handle.net/)(.*)(@.*)?$", Pattern.CASE_INSENSITIVE);
     public static final Pattern DOI_PATTERN = Pattern.compile("^doi:(.*)$", Pattern.CASE_INSENSITIVE);
     public static final Pattern DOI_WITH_RESOLVER_PATTERN = Pattern.compile("^http[s]?://dx.doi.org/(.*)$", Pattern.CASE_INSENSITIVE);
