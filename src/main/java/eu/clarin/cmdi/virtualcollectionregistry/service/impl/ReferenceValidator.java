@@ -21,6 +21,7 @@ import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.Validatable;
 import org.apache.wicket.validation.validator.UrlValidator;
+import org.apache.wicket.validation.ValidationError;
 
 /**
  * String validator that checks whether the value is a valid handle with 'hdl'
@@ -66,8 +67,12 @@ public class ReferenceValidator implements IValidator<String> {
                 httpResponseValidator.validate(validatable);
             }
         } else {
-            urlValidator.validate(validatable);                       
-            httpResponseValidator.validate(validatable);
+            urlValidator.validate(validatable);
+            if (!validatable.isValid()) {
+                validatable.error(new ValidationError().setMessage(String.format("'%s' is not a valid PID or URL", validatable.getValue())));
+            } else {
+                httpResponseValidator.validate(validatable);
+            }
         }
         
         

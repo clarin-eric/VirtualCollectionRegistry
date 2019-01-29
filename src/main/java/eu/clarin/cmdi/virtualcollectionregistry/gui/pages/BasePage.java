@@ -22,6 +22,7 @@ import javax.servlet.ServletContext;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.JavaScriptReferenceHeaderItem;
@@ -37,6 +38,7 @@ import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.validation.Validatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -82,7 +84,30 @@ public class BasePage extends WebPage {
                 .add(createHeaderMenu("menu"))); // navbar in header
 
         // Add feedback panel to show information and error messages
-        add(new FeedbackPanel("feedback"));
+        add(new FeedbackPanel("feedback") {
+            @Override
+            protected Component newMessageDisplayComponent(String id, FeedbackMessage message) {
+                if(message.getMessage() instanceof List) {
+                    boolean custom = false;
+                    List messages = (List)message.getMessage();
+                    for(Object m : messages) {
+                        if(m instanceof Validatable){
+                            custom = true;
+                            break;
+                        }
+                    }
+                    
+                    if(custom) {
+                        //Label label = new Label(id, "test");
+                        //label.setEscapeModelStrings(super.getEscapeModelStrings());
+                        return new CustomFeedbackPanel(id);
+                    }
+                    
+                }
+                return super.newMessageDisplayComponent(id, message); 
+                
+            }
+        });
         
         // add Piwik tracker (if enabled)
         if (piwikConfig.isEnabled()) {

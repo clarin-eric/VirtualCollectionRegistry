@@ -11,6 +11,7 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.apache.wicket.validation.Validatable;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -61,12 +62,12 @@ public class VirtualCollectionValidatorImpl implements VirtualCollectionValidato
                         throw new VirtualCollectionRegistryUsageException(
                                 "extensional collection must not contain GeneratedBy");
                     }
-                    final List<String> invalidRefs = getInvalidReferences(vc);
+                    final List<Validatable<String>> invalidRefs = getInvalidReferences(vc);
                     if (!invalidRefs.isEmpty()) {
-                        throw new VirtualCollectionRegistryUsageException(
-                                String.format(
+                        throw new VirtualCollectionRegistryUsageException("One or more references are not valid", invalidRefs, null);
+                                /*String.format(
                                         "one or more references are not valid: %s",
-                                        invalidRefs));
+                                        invalidRefs));*/
                     }
                     break;
                 case INTENSIONAL:
@@ -120,12 +121,15 @@ public class VirtualCollectionValidatorImpl implements VirtualCollectionValidato
         }
     }
 
-    private List<String> getInvalidReferences(VirtualCollection vc) {
+    private List<Validatable<String>> getInvalidReferences(VirtualCollection vc) {
         final ReferenceValidator referenceValidator = new ReferenceValidator();
-        final List<String> invalidRefs = new ArrayList<>();
-        for (Resource resource : vc.getResources()) {
-            if (!referenceValidator.validate(resource.getRef())) {
-                invalidRefs.add(resource.getRef());
+        final List<Validatable<String>> invalidRefs = new ArrayList<>();
+        for (Resource resource : vc.getResources()) {            
+            final Validatable<String> validatable = new Validatable<>(resource.getRef());
+            referenceValidator.validate(validatable);        
+            
+            if (!validatable.isValid()) {
+                invalidRefs.add(validatable);
             }
         }
         return invalidRefs;

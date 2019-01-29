@@ -73,7 +73,7 @@ public class VirtualCollectionPrePublicationValidator implements VirtualCollecti
         }
 
         if (!warnings.isEmpty()) {
-            throw new VirtualCollectionRegistryUsageException("Collection is not fit for publication", warnings);
+            throw new VirtualCollectionRegistryUsageException("Collection is not fit for publication", null, warnings);
         }
     }
 

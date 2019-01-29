@@ -3,6 +3,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermissionException;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.AuthorsInput;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.CheckboxInput;
@@ -377,7 +378,9 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
             
             //TODO: dynamically fetch context path
             throw new RedirectToUrlException("/app/private");
-        } catch (VirtualCollectionRegistryException e) {
+        } catch (VirtualCollectionRegistryUsageException e) {
+            getSession().error(e.getValidationErrors());
+        } catch(VirtualCollectionRegistryException e) {
             getSession().error(e.getMessage());
         }
     }
