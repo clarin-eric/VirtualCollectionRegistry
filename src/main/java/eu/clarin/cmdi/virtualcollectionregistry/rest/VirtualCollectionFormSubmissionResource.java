@@ -30,7 +30,12 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 
 /**
- *
+ * This is a specific endpoint to support creation of virtual connections from 
+ * other applications. This is different from the standard REST endpoint in that
+ * the user-agent is actually sent to this endpoint via a form submit. This will 
+ * trigger authentication (especially relevant in a SAML workflow) and requires
+ * the response to be HTML formatted.
+ * 
  * @author twagoo
  */
 @Path("/submit")
