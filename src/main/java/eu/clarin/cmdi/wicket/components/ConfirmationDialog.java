@@ -20,8 +20,6 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.migrate.StringResourceModelMigration;
-import org.apache.wicket.model.StringResourceModel;
 
 /**
  *
