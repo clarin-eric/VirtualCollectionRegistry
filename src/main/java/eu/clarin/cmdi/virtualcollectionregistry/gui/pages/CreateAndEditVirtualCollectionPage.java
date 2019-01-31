@@ -3,7 +3,14 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermissionException;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionValidationException;
+import eu.clarin.cmdi.virtualcollectionregistry.feedback.CreatorValidationFailedMessage;
+import eu.clarin.cmdi.virtualcollectionregistry.feedback.KeywordValidationFailedMessage;
+import eu.clarin.cmdi.virtualcollectionregistry.feedback.NameValidationFailedMessage;
+import eu.clarin.cmdi.virtualcollectionregistry.feedback.QueryValidationFailedMessage;
+import eu.clarin.cmdi.virtualcollectionregistry.feedback.ReproducibilityNoticeValidationFailedMessage;
+import eu.clarin.cmdi.virtualcollectionregistry.feedback.ResourceValidationFailedMessage;
+import eu.clarin.cmdi.virtualcollectionregistry.feedback.TypeValidationFailedMessage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.AuthorsInput;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.CheckboxInput;
@@ -13,8 +20,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.KeywordInput;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.QueryInput;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.ResourceInput;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
-import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
-import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedByQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Purpose;
@@ -27,7 +32,6 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
-import java.util.Set;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
 import org.apache.wicket.WicketRuntimeException;
@@ -36,6 +40,8 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.feedback.FeedbackMessage;
+import org.apache.wicket.feedback.IFeedbackMessageFilter;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.Button;
@@ -43,6 +49,7 @@ import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
@@ -139,6 +146,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
     }
     
     private void initializeWithCollection(VirtualCollection vc) throws VirtualCollectionRegistryPermissionException {
+        /*
         Principal userPrincipal = getUser();        
         Set<Creator> creators = vcr.getCreatorService().getCreators(userPrincipal.getName());
         
@@ -155,6 +163,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
             this.editMode = false;
             this.authorsModel.getObject().add(new Creator("test"));
         }
+        */
     }
     
     private class FormBuilder implements Serializable {
@@ -191,12 +200,15 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         }
         
         protected FormBuilder addCheckboxInputGroup(String id, IModel model, List values, String label, String tooltip ) {
+            return addCheckboxInputGroup(id, model, values, label, tooltip, null);
+        }
+        
+        protected FormBuilder addCheckboxInputGroup(String id, IModel model, List values, String label, String tooltip, IFeedbackMessageFilter filter) {
             CheckboxInput input = new CheckboxInput<>(id, model, values, label, tooltip, "accordion", DEFAULT_TOOLTIP_DATA_PLACEMENT);
             if(id.equalsIgnoreCase("type")) {
                 input.setCheckboxInputChangeListener(new CheckboxInputChangeListener() {
                     @Override
                     public void handleEvent(AjaxRequestTarget art, IModel model) {
-                        //logger.info("CheckboxInputChanged event: model = "+model.toString());
                         String val = model.getObject().toString();
                         resourceInput.setVisible(val.equalsIgnoreCase("extensional"));
                         queryInput.setVisible(val.equalsIgnoreCase("intensional"));
@@ -206,10 +218,15 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
                 }); 
             }
             this.form.add(input);
+            if(id.equalsIgnoreCase("type")) {
+                FeedbackPanel feedback = new FeedbackPanel("feedback_"+id);
+                feedback.setFilter(filter);
+                this.form.add(feedback);
+            }
             return this;
         }
         
-        protected FormBuilder addTextinput(IModel model, String name, String label, String tooltipText, boolean required, boolean multiline) {
+        protected FormBuilder addTextinput(IModel model, String name, String label, String tooltipText, boolean required, boolean multiline, IFeedbackMessageFilter filter) {
             final WebMarkupContainer tooltipComponent = new WebMarkupContainer("tt_"+name);
             UIUtils.addTooltip(tooltipComponent, tooltipText, "accordion", DEFAULT_TOOLTIP_DATA_PLACEMENT);       
             if( multiline ) {
@@ -222,6 +239,11 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         
             this.form.add(getLabel("lbl_"+name, label, required));
             this.form.add(tooltipComponent);
+            
+            FeedbackPanel feedback = new FeedbackPanel("feedback_"+name);
+            feedback.setFilter(filter);
+            this.form.add(feedback);
+            
             return this;
         }
         
@@ -234,11 +256,17 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         
         protected FormBuilder addKeywordInput(String id, IModel model) {
             this.form.add(new KeywordInput(id, model));
+            FeedbackPanel feedback = new FeedbackPanel("feedback_"+id);
+            feedback.setFilter((FeedbackMessage fm) -> fm.getMessage() instanceof KeywordValidationFailedMessage);
+            this.form.add(feedback);
             return this;
         }
         
         protected FormBuilder addAuthorsInput(String id, IModel model) {
             this.form.add(new AuthorsInput(id, model));
+            FeedbackPanel feedback = new FeedbackPanel("feedback_"+id);
+            feedback.setFilter((FeedbackMessage fm) -> fm.getMessage() instanceof CreatorValidationFailedMessage);
+            this.form.add(feedback);
             return this;
         }
         
@@ -247,6 +275,9 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
             resourceInput.setOutputMarkupId(true);
             resourceInput.setOutputMarkupPlaceholderTag(true);
             this.form.add(resourceInput);
+            FeedbackPanel feedback = new FeedbackPanel("feedback_"+id);
+            feedback.setFilter((FeedbackMessage fm) -> fm.getMessage() instanceof ResourceValidationFailedMessage);
+            this.form.add(feedback);
             return this;
         }
         
@@ -256,6 +287,9 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
             queryInput.setOutputMarkupId(true);        
             queryInput.setOutputMarkupPlaceholderTag(true);
             this.form.add(queryInput);
+            FeedbackPanel feedback = new FeedbackPanel("feedback_"+id);
+            feedback.setFilter((FeedbackMessage fm) -> fm.getMessage() instanceof QueryValidationFailedMessage);
+            this.form.add(feedback);
             return this;
         }
          
@@ -292,12 +326,12 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         Model submitModel = Model.of(this.editMode ? "Save virtual collection" : "Create virtual collection");
         Form form = 
             new FormBuilder("form")
-                .addTextinput(nameModel, "name", "Name", nameTooltip, true, false)
-                .addCheckboxInputGroup("type", typeModel, Arrays.asList(Type.values()), "Type", typeTooltip)
-                .addTextinput(descriptionModel, "description", "Description", descriptionTooltip, false, true)
+                .addTextinput(nameModel, "name", "Name", nameTooltip, true, false, (FeedbackMessage fm) -> fm.getMessage() instanceof NameValidationFailedMessage)
+                .addCheckboxInputGroup("type", typeModel, Arrays.asList(Type.values()), "Type", typeTooltip, (FeedbackMessage fm) -> fm.getMessage() instanceof TypeValidationFailedMessage)
+                .addTextinput(descriptionModel, "description", "Description", descriptionTooltip, true, true, (FeedbackMessage fm) -> false)
                 .addCheckboxInputGroup("purpose", purposeModel, Arrays.asList(Purpose.values()), "Purpose", purposeTooltip)
                 .addCheckboxInputGroup("reproducibility", reproducibilityModel, Arrays.asList(Reproducibility.values()), "Reproducibility", reproducibilityTooltip)
-                .addTextinput(reproducibilityNoticeModel, "reproducibility_notice", "Reproducibility Notice", reproducibilityNoticeTooltip, false, true)
+                .addTextinput(reproducibilityNoticeModel, "reproducibility_notice", "Reproducibility Notice", reproducibilityNoticeTooltip, false, true, (FeedbackMessage fm) -> fm.getMessage() instanceof ReproducibilityNoticeValidationFailedMessage)
                 .addKeywordInput("keywords", keywordsModel)
                 .addAuthorsInput("authors", authorsModel)
                 .addResourceInput("resources", resourceModel)
@@ -378,8 +412,8 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
             
             //TODO: dynamically fetch context path
             throw new RedirectToUrlException("/app/private");
-        } catch (VirtualCollectionRegistryUsageException e) {
-            getSession().error(e.getValidationErrors());
+        } catch (VirtualCollectionValidationException e) {
+            e.addAllErrorsToSession(getSession());
         } catch(VirtualCollectionRegistryException e) {
             getSession().error(e.getMessage());
         }

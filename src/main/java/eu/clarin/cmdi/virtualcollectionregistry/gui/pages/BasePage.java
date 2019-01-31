@@ -13,6 +13,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.NavbarButton;
 import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.NavbarExternalLink;
 import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
+import eu.clarin.cmdi.virtualcollectionregistry.feedback.IValidationFailedMessage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.wicket.PiwikConfig;
 import java.security.Principal;
@@ -38,7 +39,6 @@ import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.validation.Validatable;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -83,32 +83,10 @@ public class BasePage extends WebPage {
         add(new WebMarkupContainer("header")
                 .add(createHeaderMenu("menu"))); // navbar in header
 
-        // Add feedback panel to show information and error messages
-        add(new FeedbackPanel("feedback") {
-            @Override
-            protected Component newMessageDisplayComponent(String id, FeedbackMessage message) {
-                if(message.getMessage() instanceof List) {
-                    boolean custom = false;
-                    List messages = (List)message.getMessage();
-                    for(Object m : messages) {
-                        if(m instanceof Validatable){
-                            custom = true;
-                            break;
-                        }
-                    }
-                    
-                    if(custom) {
-                        //Label label = new Label(id, "test");
-                        //label.setEscapeModelStrings(super.getEscapeModelStrings());
-                        return new CustomFeedbackPanel(id);
-                    }
-                    
-                }
-                return super.newMessageDisplayComponent(id, message); 
-                
-            }
-        });
-        
+        FeedbackPanel feedback = new FeedbackPanel("feedback");
+        feedback.setFilter((FeedbackMessage fm) -> !(fm.getMessage() instanceof IValidationFailedMessage));
+        add(feedback);
+
         // add Piwik tracker (if enabled)
         if (piwikConfig.isEnabled()) {
             add(new PiwikTracker("piwik", piwikConfig.getSiteId(), piwikConfig.getPiwikHost(), piwikConfig.getDomains()));
@@ -130,7 +108,6 @@ public class BasePage extends WebPage {
         final List<INavbarComponent> menuItems = new ArrayList<>();
         //Default menu items
         menuItems.add(new ImmutableNavbarComponent(new NavbarButton(BrowsePublicCollectionsPage.class, Model.of("Browse")), ComponentPosition.LEFT));
-        //menuItems.add(new ImmutableNavbarComponent(new NavbarButton(BrowsePrivateCollectionsPage.class, Model.of("My Collections")), ComponentPosition.LEFT));
         menuItems.add(new ImmutableNavbarComponent(new NavbarButton(CreateAndEditVirtualCollectionPage.class, Model.of("Create")), ComponentPosition.LEFT));
         menuItems.add(new ImmutableNavbarComponent(new NavbarButton(HelpPage.class, Model.of("Help")), ComponentPosition.LEFT));
         
@@ -139,22 +116,18 @@ public class BasePage extends WebPage {
         }
         
         //Add login or user profile + logout buttons based on authentication state
-        
         if(isSignedIn()) {
             final NavbarButton userLink = new NavbarButton(BrowsePrivateCollectionsPage.class, Model.of(getUser().getName()));
-            //        .add(new AttributeModifier("class", "glyphicon glyphicon-user"));
             userLink.setIconType(GlyphIconType.user);
             menuItems.add(new ImmutableNavbarComponent(userLink, ComponentPosition.RIGHT));
             
             if(vcrConfig.isLogoutEnabled()) {
             final NavbarButton logoutLink = new NavbarButton(LogoutPage.class, Model.of("Logout"));
-            //    .add(new AttributeModifier("class", "glyphicon glyphicon-log-out"));
             logoutLink.setIconType(GlyphIconType.logout);
             menuItems.add(new ImmutableNavbarComponent(logoutLink, ComponentPosition.RIGHT));
             }            
         } else {
             final NavbarButton loginLink = new NavbarButton(LoginPage.class, Model.of("Login"));
-                //.add(new AttributeModifier("class", "glyphicon glyphicon-log-in"));
                loginLink.setIconType(GlyphIconType.login);
             menuItems.add(new ImmutableNavbarComponent(loginLink, ComponentPosition.RIGHT));
         }
@@ -198,15 +171,13 @@ public class BasePage extends WebPage {
     }
 
     protected boolean isSignedIn() {
-        //return ((AuthenticatedWebSession) getSession()).isSignedIn() && getSession().getPrincipal() != null;
-        Principal p = getSession().getPrincipal();
-        if(p == null) {
-            return false;
-        }
-        if(p.getName().equalsIgnoreCase("anonymous")) {
-            return false;
-        }
-        return true;
+        try {
+            if(!getUser().getName().equalsIgnoreCase("anonymous")) {
+                return true;
+            }
+        } catch(WicketRuntimeException ex) {}
+        
+        return false;
     }
     
     protected Principal getUser() {
@@ -231,7 +202,6 @@ public class BasePage extends WebPage {
     public ApplicationSession getSession() {
         return (ApplicationSession) super.getSession();
     }
-    
     
     public String getContextPath() {
         ServletContext servletContext = WebApplication.get().getServletContext(); 

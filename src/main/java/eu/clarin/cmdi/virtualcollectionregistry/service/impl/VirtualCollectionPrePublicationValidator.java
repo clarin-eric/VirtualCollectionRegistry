@@ -16,13 +16,14 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.service.impl;
 
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionValidationException;
+import eu.clarin.cmdi.virtualcollectionregistry.feedback.GenericValidationFailedMessage;
+import eu.clarin.cmdi.virtualcollectionregistry.feedback.QueryValidationFailedMessage;
+import eu.clarin.cmdi.virtualcollectionregistry.feedback.ResourceValidationFailedMessage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidator;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.wicket.util.string.Strings;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
@@ -40,48 +41,48 @@ import org.springframework.stereotype.Service;
 public class VirtualCollectionPrePublicationValidator implements VirtualCollectionValidator {
 
     @Override
-    public void validate(VirtualCollection vc) throws VirtualCollectionRegistryUsageException {
-        final List<String> warnings = new ArrayList<>();
+    public void validate(VirtualCollection vc) throws VirtualCollectionValidationException {
+        VirtualCollectionValidationException exception = new VirtualCollectionValidationException();
 
         switch (vc.getType()) {
             case EXTENSIONAL:
-                validateResources(vc, warnings);
+                validateResources(vc, exception);
                 break;
             case INTENSIONAL:
-                validateGeneratedBy(vc, warnings);
+                validateGeneratedBy(vc, exception);
                 break;
         }
 
         if (Strings.isEmpty(vc.getDescription())) {
-            warnings.add("The collection has no description");
+            exception.addErrorMessage(new GenericValidationFailedMessage("The collection has no description"));
         }
 
         if (vc.getPurpose() == null) {
-            warnings.add("The purpose has not been specified");
+            exception.addErrorMessage(new GenericValidationFailedMessage("The purpose has not been specified"));
         }
 
         if (vc.getPurpose() == VirtualCollection.Purpose.FUTURE_USE) {
-            warnings.add("The reproducibility of the collection has been marked 'future use'");
+            exception.addErrorMessage(new GenericValidationFailedMessage("The reproducibility of the collection has been marked 'future use'"));
         }
 
         if (vc.getReproducibility() == null) {
-            warnings.add("The degree of reproducibility has not been specified");
+            exception.addErrorMessage(new GenericValidationFailedMessage("The degree of reproducibility has not been specified"));
         }
 
         if (vc.getCreators().isEmpty()) {
-            warnings.add("No creators have been specified for the collection");
+            exception.addErrorMessage(new GenericValidationFailedMessage("No creators have been specified for the collection"));
         }
 
-        if (!warnings.isEmpty()) {
-            throw new VirtualCollectionRegistryUsageException("Collection is not fit for publication", null, warnings);
-        }
+        exception.throwIfNeeded();
     }
 
-    private void validateResources(VirtualCollection vc, List<String> warnings) {
+    private void validateResources(VirtualCollection vc, VirtualCollectionValidationException exception) {
         int nonPidCount = 0;
         for (Resource resource : vc.getResources()) {
             if (!HandleLinkModel.isSupportedPersistentIdentifier(resource.getRef())) {
-                warnings.add("The resource URI is not a supported persistent identifer");
+                exception.addErrorMessage(
+                    new ResourceValidationFailedMessage(
+                        resource.getRef(), "The resource URI is not a supported persistent identifer"));
                 nonPidCount++;
             }
         }
@@ -90,16 +91,16 @@ public class VirtualCollectionPrePublicationValidator implements VirtualCollecti
         }
 
         if (nonPidCount == 1) {
-            warnings.add(String.format("One resource is not referenced through a persistent identifier", nonPidCount));
+            exception.addErrorMessage(new ResourceValidationFailedMessage(null, String.format("One resource is not referenced through a persistent identifier", nonPidCount)));
         } else {
-            warnings.add(String.format("%d resources are not referenced through a persistent identifier", nonPidCount));
+            exception.addErrorMessage(new ResourceValidationFailedMessage(null, String.format("%d resources are not referenced through a persistent identifier", nonPidCount)));
         }
     }
 
-    private void validateGeneratedBy(VirtualCollection vc, List<String> warnings) {
+    private void validateGeneratedBy(VirtualCollection vc, VirtualCollectionValidationException exception) {
         final String queryUri = vc.getGeneratedBy().getURI();
         if (!HandleLinkModel.isSupportedPersistentIdentifier(queryUri)) {
-            warnings.add("The query URI is not a supported persistent identifer");
+            exception.addErrorMessage(new QueryValidationFailedMessage("The query URI is not a supported persistent identifer"));
         }
     }
 

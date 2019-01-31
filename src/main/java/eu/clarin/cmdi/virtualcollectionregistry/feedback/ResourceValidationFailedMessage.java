@@ -14,18 +14,29 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
-
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.panel.Panel;
+package eu.clarin.cmdi.virtualcollectionregistry.feedback;
 
 /**
  *
  * @author wilelb
  */
-public class CustomFeedbackPanel extends Panel {
-    public CustomFeedbackPanel(String id/*, final IModel<VirtualCollection> model*/) {
-        super(id);
-        add(new Label("lbl", "Test"));
+public class ResourceValidationFailedMessage extends AbstractValidationFailedMessage {
+    private final String ref;
+    
+    public ResourceValidationFailedMessage(String ref, String message) {
+        super(message);
+        this.ref = ref;
+    }
+    
+    public String getRef() {
+        return this.ref;
+    }
+    
+    @Override
+    public String toString() {
+        if(this.ref != null) {
+            return this.ref+": "+this.message;
+        } 
+        return this.message;
     }
 }

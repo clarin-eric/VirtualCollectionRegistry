@@ -17,7 +17,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.service.impl;
 
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionValidationException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidator;
@@ -40,7 +40,7 @@ public class VirtualCollectionValidatorImplTest {
         instance = new VirtualCollectionValidatorImpl();
     }
 
-    @Test(expected = VirtualCollectionRegistryUsageException.class)
+    @Test(expected = VirtualCollectionValidationException.class)
     public void testValidateExtensionalEmptyResources() throws Exception {
         vc.setName("Name");
         vc.setType(VirtualCollection.Type.EXTENSIONAL);
@@ -61,7 +61,7 @@ public class VirtualCollectionValidatorImplTest {
         }
     }
 
-    @Test(expected = VirtualCollectionRegistryUsageException.class)
+    @Test(expected = VirtualCollectionValidationException.class)
     public void testValidateExtensionalIllegalResources() throws Exception {
         vc.setName("Name");
         vc.setType(VirtualCollection.Type.EXTENSIONAL);

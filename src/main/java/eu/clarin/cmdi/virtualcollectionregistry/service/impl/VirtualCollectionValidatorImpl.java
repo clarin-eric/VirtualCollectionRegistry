@@ -1,7 +1,14 @@
 package eu.clarin.cmdi.virtualcollectionregistry.service.impl;
 
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidator;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionValidationException;
+import eu.clarin.cmdi.virtualcollectionregistry.feedback.CreatorValidationFailedMessage;
+import eu.clarin.cmdi.virtualcollectionregistry.feedback.KeywordValidationFailedMessage;
+import eu.clarin.cmdi.virtualcollectionregistry.feedback.NameValidationFailedMessage;
+import eu.clarin.cmdi.virtualcollectionregistry.feedback.QueryValidationFailedMessage;
+import eu.clarin.cmdi.virtualcollectionregistry.feedback.ReproducibilityNoticeValidationFailedMessage;
+import eu.clarin.cmdi.virtualcollectionregistry.feedback.ResourceValidationFailedMessage;
+import eu.clarin.cmdi.virtualcollectionregistry.feedback.TypeValidationFailedMessage;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
 import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedByQuery;
@@ -11,7 +18,9 @@ import java.util.ArrayList;
 import java.util.HashSet;
 import java.util.List;
 import java.util.Set;
+import org.apache.wicket.validation.IValidationError;
 import org.apache.wicket.validation.Validatable;
+import org.apache.wicket.validation.ValidationError;
 import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Service;
 
@@ -26,69 +35,75 @@ public class VirtualCollectionValidatorImpl implements VirtualCollectionValidato
 
     @Override
     public void validate(VirtualCollection vc)
-            throws VirtualCollectionRegistryUsageException {
+            throws VirtualCollectionValidationException {
         if (vc == null) {
             throw new NullPointerException("vc == null");
         }
 
-        final Set<Creator> uniqueCreators = new HashSet<Creator>(16);
-        final Set<String> uniqueResourceRefs = new HashSet<String>(512);
+        VirtualCollectionValidationException exception = 
+            new VirtualCollectionValidationException();
+        
+        final Set<Creator> uniqueCreators = new HashSet<>(16);
+        final Set<String> uniqueResourceRefs = new HashSet<>(512);
 
         // proceed to validate ...
         if ((vc.getName() == null) || vc.getName().trim().isEmpty()) {
-            throw new VirtualCollectionRegistryUsageException(
-                    "collection has an empty name");
+            exception.addErrorMessage(new NameValidationFailedMessage("collection has an empty name"));
         }
 
+        if(vc.getCreators().isEmpty()) {
+            exception.addErrorMessage(new CreatorValidationFailedMessage(0, null, "collection contains no authors. At least one author is required"));
+        }
+        
         for (Creator creator : vc.getCreators()) {
             if (uniqueCreators.contains(creator)) {
-                throw new VirtualCollectionRegistryUsageException(
-                        "collection contains non unique creators");
+                exception.addErrorMessage(new CreatorValidationFailedMessage(creator.getId(), creator.getPerson(), "collection contains non unique authors"));
             }
             uniqueCreators.add(creator);
         }
 
         if(vc.getType() == null) {
-            throw new VirtualCollectionRegistryUsageException("collection has no type");
+            exception.addErrorMessage(new TypeValidationFailedMessage("collection has no type"));
         } else {
             switch (vc.getType()) {
                 case EXTENSIONAL:
                     if (vc.getResources().isEmpty()) {
-                        throw new VirtualCollectionRegistryUsageException(
-                                "extensional collection must contain on or "
-                                + "more resources");
+                        exception.addErrorMessage(new TypeValidationFailedMessage("extensional collections must contain on or more resources"));
                     }
                     if (vc.getGeneratedBy() != null) {
-                        throw new VirtualCollectionRegistryUsageException(
-                                "extensional collection must not contain GeneratedBy");
+                        exception.addErrorMessage(new TypeValidationFailedMessage("extensional collections must not contain GeneratedBy"));
                     }
                     final List<Validatable<String>> invalidRefs = getInvalidReferences(vc);
                     if (!invalidRefs.isEmpty()) {
-                        throw new VirtualCollectionRegistryUsageException("One or more references are not valid", invalidRefs, null);
-                                /*String.format(
-                                        "one or more references are not valid: %s",
-                                        invalidRefs));*/
+                        for(Validatable<String> invalidRef : invalidRefs) {
+                            for(IValidationError err: invalidRef.getErrors()) {    
+                                if(err instanceof ValidationError) {
+                                    ValidationError validationError = (ValidationError)err;
+                                    if(validationError.getMessage() != null) {
+                                        exception.addErrorMessage(new ResourceValidationFailedMessage(invalidRef.getValue(), validationError.getMessage()));
+                                    }
+                                } else if (err != null) {
+                                    exception.addErrorMessage(new ResourceValidationFailedMessage(invalidRef.getValue(), err.toString()));
+                                }
+                            }
+                        }
                     }
                     break;
                 case INTENSIONAL:
                     final GeneratedBy generatedBy = vc.getGeneratedBy();
                     if (generatedBy == null) {
-                        throw new VirtualCollectionRegistryUsageException(
-                                "intensional collections needs GeneratedBy");
+                        exception.addErrorMessage(new TypeValidationFailedMessage("intensional collections must contains GeneratedBy"));
                     }
                     if (generatedBy.getDescription() == null) {
-                        throw new VirtualCollectionRegistryUsageException(
-                                "GeneratedBy has empty description");
+                        exception.addErrorMessage(new TypeValidationFailedMessage("GeneratedBy has empty description"));
                     }
                     final GeneratedByQuery query = generatedBy.getQuery();
                     if (query != null) {
                         if (query.getProfile() == null) {
-                            throw new VirtualCollectionRegistryUsageException(
-                                    "profile of GeneratedBy.Query is empty");
+                            exception.addErrorMessage(new QueryValidationFailedMessage("profile of GeneratedBy.Query is empty"));
                         }
                         if (query.getValue() == null) {
-                            throw new VirtualCollectionRegistryUsageException(
-                                    "query of GeneratedBy.Query is empty");
+                            exception.addErrorMessage(new QueryValidationFailedMessage("query of GeneratedBy.Query is empty"));
                         }
                     }
             }
@@ -96,29 +111,26 @@ public class VirtualCollectionValidatorImpl implements VirtualCollectionValidato
         
         if ((vc.getReproducibilityNotice() != null)
                 && (vc.getReproducibility() == null)) {
-            throw new VirtualCollectionRegistryUsageException(
-                    "reproducibility notice without reproducubility");
+            exception.addErrorMessage(new ReproducibilityNoticeValidationFailedMessage("reproducibility notice without reproducubility"));
         }
 
         for (String keyword : vc.getKeywords()) {
             if ((keyword == null) || (keyword.trim().isEmpty())) {
-                throw new VirtualCollectionRegistryUsageException(
-                        "keyword is empty");
+                exception.addErrorMessage(new KeywordValidationFailedMessage("keyword is empty"));
             }
         }
 
         for (Resource resource : vc.getResources()) {
             String ref = resource.getRef();
             if (ref == null) {
-                throw new VirtualCollectionRegistryUsageException(
-                        "collection contains resource with empty ResourceRef");
-            }
-            if (uniqueResourceRefs.contains(ref)) {
-                throw new VirtualCollectionRegistryUsageException(
-                        "collection contains non-unique ResourceRefs");
+                exception.addErrorMessage(new ResourceValidationFailedMessage(null, "collection contains resource with empty ResourceRef"));
+            } else if (uniqueResourceRefs.contains(ref)) {
+                exception.addErrorMessage(new ResourceValidationFailedMessage(null, "collection contains non-unique ResourceRefs"));
             }
             uniqueResourceRefs.add(ref);
         }
+        
+        exception.throwIfNeeded();
     }
 
     private List<Validatable<String>> getInvalidReferences(VirtualCollection vc) {
