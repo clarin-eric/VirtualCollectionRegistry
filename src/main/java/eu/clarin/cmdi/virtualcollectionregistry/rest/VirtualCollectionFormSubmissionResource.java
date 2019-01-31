@@ -5,6 +5,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionValidationException;
+import eu.clarin.cmdi.virtualcollectionregistry.feedback.IValidationFailedMessage;
 import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
 import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedByQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
@@ -86,10 +87,22 @@ public class VirtualCollectionFormSubmissionResource {
                     .path("../app/edit/{arg1}")
                     .build(id);
             return Response.seeOther(uri).build();
+        } catch (VirtualCollectionValidationException ex) {
+            //TODO: wrap in friendly HTML page
+            final Response.Status response = Response.Status.BAD_REQUEST;
+            
+            String errorList = "";
+            if(ex.hasErrorMessages()) {
+                for(IValidationFailedMessage errorMessage : ex.getErrorMessages()) {
+                    errorList += errorMessage.toString()+"<br />";
+                }
+            }
+            final String error = String.format("<html>\n<body>\n<h1>%d %s</h1>\nCould not create virtual collection. Error(s):<br/>%s\n</body>\n</html>\n", response.getStatusCode(), response.toString(), errorList);
+            return Response.status(response).entity(error).build();
         } catch (VirtualCollectionRegistryException ex) {
             //TODO: wrap in friendly HTML page
             final Response.Status response = Response.Status.BAD_REQUEST;
-            final String error = String.format("<html>\n<body>\n<h1>%d %s</h1>\nCould not create virtual collection. Reason: %s\n</body>\n</html>\n", response.getStatusCode(), response.toString(), ex.getMessage());
+            final String error = String.format("<html>\n<body>\n<h1>%d %s</h1>\nCould not create virtual collection. Error(s):<br/>%s\n</body>\n</html>\n", response.getStatusCode(), response.toString(), ex.getMessage());
             return Response.status(response).entity(error).build();
         }
     }
