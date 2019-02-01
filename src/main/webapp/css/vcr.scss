@@ -247,8 +247,21 @@ div.actions {
     max-width: 90px;
 }
 
+table.collectionsTable {
+    max-width: 100%;
+    margin-bottom: 20px;
+}
 
+table.collectionsTable td.name {
+    width: 100%;
+    min-width: 200px;
+}
 
+.collapsing {
+    -webkit-transition: none;
+    transition: none;
+    display: none;
+}
 
 .odd {
     background-color: rgb(234, 234, 234);;/*#D4DEEF;*/

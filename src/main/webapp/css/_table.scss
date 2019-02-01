@@ -75,7 +75,7 @@ table.creatorsTable {
 
 table.collectionsTable {
 
-    width: 100%;
+    /*width: 100%;*/
     table-layout: fixed;
     position: static !important;
 
@@ -106,7 +106,7 @@ table.collectionsTable {
 
     td.name {
 
-        width: auto;
+        width: 100%;
         
         div.name {
             padding-left: 16px;
