@@ -125,7 +125,7 @@ public class FilterForm extends Panel {
         };
         form.add(clearButton);
         add(form);
-        form.add(new Label("title", "Filter"));
+        //form.add(new Label("title", "Filter"));
         /*
         TODO: switch to using BootstrapPanelBuilder:
         add(BootstrapPanelBuilder
