@@ -20,6 +20,7 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.wicket.Component;
+import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -401,8 +402,8 @@ public class BrowseEditableCollectionsPanel extends Panel {
      * @param id panel id
      * @param provider provider for collections that should be shown
      */
-    public BrowseEditableCollectionsPanel(String id, CollectionsProvider provider) {
-        this(id, provider, false);
+    public BrowseEditableCollectionsPanel(String id, CollectionsProvider provider, final PageReference reference) {
+        this(id, provider, false, reference);
     }
     
     /**
@@ -411,9 +412,9 @@ public class BrowseEditableCollectionsPanel extends Panel {
      * @param provider provider for collections that should be shown.
      * @param isAdmin enable (true) or disable (false) the admin options.
      */
-    public BrowseEditableCollectionsPanel(String id, CollectionsProvider provider, final boolean isAdmin) {
+    public BrowseEditableCollectionsPanel(String id, CollectionsProvider provider, final boolean isAdmin, final PageReference reference) {
         super(id);
-        this.setOutputMarkupId(true);
+        this.setOutputMarkupId(true);       
         final VirtualCollectionTable table
                 = new VirtualCollectionTable("collectionsTable", provider, true, isAdmin) {
                     @Override
@@ -437,6 +438,11 @@ public class BrowseEditableCollectionsPanel extends Panel {
                         } else {
                             return new EmptyPanel(componentId, model);
                         }
+                    }
+                    
+                    @Override
+                    protected PageReference getPageReference() {
+                        return reference;
                     }
                 };
         add(table);

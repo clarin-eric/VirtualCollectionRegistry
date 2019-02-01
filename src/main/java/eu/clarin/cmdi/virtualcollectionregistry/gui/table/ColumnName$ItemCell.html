@@ -6,12 +6,12 @@
 <body>
 <wicket:panel>
   <div wicket:id="nameColumn" class="col-xs-12">
-    <div wicket:id="name" class="name collection hover"></div>
-    <div wicket:id="details" class="details hide col-xs-12">
-      <div wicket:id="desc" class="desc"></div>
-      <div class="actions">
-        <div wicket:id="actionsPanel"></div>
+      <div class="name collection">
+          <a data-toggle="collapse" data-target="#xyz">toggle</a>
+          <a wicket:id="name"><span wicket:id="label">name</span></a>
       </div>
+    <div wicket:id="details" class="details col-xs-12 collapse" id="xyz">
+      <div wicket:id="desc" class="desc"></div>
     </div>
   </div>
 </wicket:panel>

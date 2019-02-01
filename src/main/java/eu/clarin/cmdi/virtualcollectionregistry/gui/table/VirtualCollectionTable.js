@@ -43,6 +43,8 @@
     }, false);
     
     */
+   
+   /*
     $( document ).ready(function() {
         console.log("Registering jquery event handlers on collections table");
         $( "#collectionsTable" ).on( "click", "div.collection", function() {
@@ -69,7 +71,7 @@
         });
         console.log( "ready!" );
     });
-
+    */
 })();
 
 

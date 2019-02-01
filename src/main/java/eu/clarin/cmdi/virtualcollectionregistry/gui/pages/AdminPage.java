@@ -45,7 +45,7 @@ public class AdminPage extends BasePage {
 
         // create table showing the collections in the space
         final AdminCollectionsProvider provider = new AdminCollectionsProvider(userModel);
-        add(new BrowseEditableCollectionsPanel("collections", provider, true));
+        add(new BrowseEditableCollectionsPanel("collections", provider, true, getPageReference()));
     }
 
     private DropDownChoice<User> createSpacesDropDown(String id, final IModel<User> userModel) {
