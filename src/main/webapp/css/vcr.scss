@@ -27,7 +27,6 @@ html, body {
 
 body {
     font-size: $font-size-base;
-    /*font-family: "Roboto", sans-serif;*/
     font-family: "Source Sans Pro", Calibri, Arial, Helvetica sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
@@ -208,20 +207,20 @@ div.betabadge {
 }
 
 
-.detais {
-    font-size: 0.95em;
+.details {
+    font-size: 1em;
 }
 
 .state {
     min-width: 85px;
     max-width: 85px;
-    font-size: 0.9em;
+    font-size: 1em;
 }
 
 td.type {
     min-width: 85px;
     max-width: 85px;
-    font-size: 0.9em;
+    font-size: 1em;
 }
 
 td.actions {
@@ -240,7 +239,7 @@ div.actions {
 .created {
     min-width: 85px;
     max-width: 85px;
-    font-size: 0.9em;
+    font-size: 1em;
 }
 
 .action {
@@ -356,6 +355,10 @@ td.reference div div {
     content:"\e080";
 }
 
+.title {
+    font-size: 1.25em;
+    font-weight: normal;
+}
 
 
 .desc p {
@@ -383,17 +386,17 @@ a.collapsed>.panel-heading:after {
 }
 
 label.filter {
-    font-size: 0.9em;
+    font-size: 1em;
 }
 
 select.filter {
     width: 100%;
-    font-size: 0.9em;
+    font-size: 1em;
 }
 
 input.filter {
     width: 100%;
-    font-size: 0.9em;
+    font-size: 1em;
 }
 
 .hover:hover {
