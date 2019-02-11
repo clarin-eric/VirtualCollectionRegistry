@@ -5,6 +5,7 @@ import eu.clarin.cmdi.wicket.components.citation.CitationPanelFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.PublishedCollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -35,7 +36,7 @@ public class BrowsePublicCollectionsPage extends BasePage {
             AjaxLink lrsLink = UIUtils.getLrsRedirectAjaxLink("lrs", model, vcrConfig.getSwitchboardEndpoint());
             lrsLink.setVisible(vcrConfig.isSwitchboardEnabledForCollections());
             add(lrsLink);
-            
+            /*
             final AjaxLink<VirtualCollection> detailsLink
                     = new AjaxLink<VirtualCollection>("details", model) {
                         @Override
@@ -45,12 +46,14 @@ public class BrowsePublicCollectionsPage extends BasePage {
                     };
             UIUtils.addTooltip(detailsLink, "View collection details");
             add(detailsLink);    
+            */
         }
         
     } // class BrowsePublicCollectionsPage.ActionsPanel
 
     public BrowsePublicCollectionsPage() {
         super();
+        final PageReference reference = getPageReference();
         final VirtualCollectionTable table
                 = new VirtualCollectionTable("collectionsTable", new PublishedCollectionsProvider(), false, false) {
                     @Override
@@ -63,6 +66,11 @@ public class BrowsePublicCollectionsPage extends BasePage {
                     protected Panel createActionPanel(String componentId,
                             IModel<VirtualCollection> model) {
                         return new ActionsPanel(componentId, model);
+                    }
+                    
+                    @Override
+                    protected PageReference getPageReference() {
+                        return reference;
                     }
                 };
         add(table);

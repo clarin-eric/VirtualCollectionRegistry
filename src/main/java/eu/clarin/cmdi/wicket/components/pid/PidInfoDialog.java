@@ -112,7 +112,7 @@ public class PidInfoDialog extends BaseInfoDialog {
         
         public Future<String> resolve() {        
             return executor.submit(() -> {
-                Thread.sleep(5000);
+                //Thread.sleep(5000);
                 try {
                     String hdlTarget = resolvePid(ref);
                     return hdlTarget;

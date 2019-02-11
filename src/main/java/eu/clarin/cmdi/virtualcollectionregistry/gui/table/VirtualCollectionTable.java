@@ -13,6 +13,7 @@ import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import org.apache.wicket.PageReference;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.request.resource.PackageResourceReference;
@@ -70,4 +71,5 @@ public abstract class VirtualCollectionTable extends Panel {
     protected abstract Panel createActionPanel(String componentId,
             IModel<VirtualCollection> model);
 
+    protected abstract PageReference getPageReference();
 } // class VirtualCollectionTable

@@ -1,17 +1,21 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.table;
 
-import org.apache.wicket.Component;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.VirtualCollectionDetailsPage;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import org.apache.wicket.behavior.Behavior;
+import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.AbstractLink;
+import org.apache.wicket.model.Model;
 
 @SuppressWarnings("serial")
 final class ColumnName extends AbstractColumn<VirtualCollection, String> {
@@ -26,36 +30,40 @@ final class ColumnName extends AbstractColumn<VirtualCollection, String> {
             super(id);
             setRenderBodyOnly(true);
 
-            
-            
             nameColumn = new WebMarkupContainer("nameColumn");
             nameColumn.setOutputMarkupId(true);
             
             final VirtualCollection vc = model.getObject();
-            nameColumn.add(new Label("name", vc.getName()));
             
-
-            final WebMarkupContainer details =
-                new WebMarkupContainer("details");
+            final WebMarkupContainer details = new WebMarkupContainer("details");
+            details.setOutputMarkupId(true);
+            
             final String desc = vc.getDescription();
             final MultiLineLabel descLabel = new MultiLineLabel("desc", desc);
             if (desc == null) {
                 descLabel.setVisible(false);
             }
             details.add(descLabel);
-            final Panel actionsPanel =
-                table.createActionPanel("actionsPanel", model);
-            details.add(actionsPanel);
-            details.add(new Behavior() {
-
-                @Override
-                public void bind(Component component) {
-                    component.setVisible(actionsPanel.isVisible());
-                }
-            });
-
-            // move to css?
-            //details.add(new AttributeAppender("style", new Model<String>("display:none"), ";"));
+            
+            AbstractLink toggleLink = new AbstractLink("toggle-link") {};            
+            toggleLink.add(new AttributeModifier("data-toggle", new Model<>("collapse")));
+            toggleLink.add(new AttributeModifier("data-target", new Model<>("#"+details.getMarkupId())));
+            
+            AjaxLink citeButton = new AjaxLink( "name", new Model<String>("") ){ 
+            @Override
+            public void onClick( AjaxRequestTarget target ) {
+                    setResponsePage(
+                        VirtualCollectionDetailsPage.class, 
+                        VirtualCollectionDetailsPage.createPageParameters(
+                            vc, 
+                            table.getPageReference(), 
+                            VirtualCollectionDetailsPage.BackPage.PUBLIC_LISTING));
+                } 
+            };
+            citeButton.add(new Label("label", vc.getName()));
+            
+            nameColumn.add(toggleLink);
+            nameColumn.add(citeButton);            
             nameColumn.add(details);
             add(nameColumn);
         }
