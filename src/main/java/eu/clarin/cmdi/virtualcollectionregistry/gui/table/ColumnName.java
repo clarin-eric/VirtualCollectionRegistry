@@ -10,10 +10,11 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import org.apache.wicket.PageReference;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.model.Model;
 
 @SuppressWarnings("serial")
@@ -33,44 +34,36 @@ final class ColumnName extends AbstractColumn<VirtualCollection, String> {
             nameColumn.setOutputMarkupId(true);
             
             final VirtualCollection vc = model.getObject();
-            //nameColumn.add(new Label("name", vc.getName()));
             
-            AjaxLink citeButton = new AjaxLink( "name", new Model<String>("") ){ 
-            @Override
-            public void onClick( AjaxRequestTarget target ) {
-                //citationDialog.show(target);
-                setResponsePage(
-                    VirtualCollectionDetailsPage.class, 
-                    VirtualCollectionDetailsPage.createPageParameters(
-                        vc, 
-                        table.getPageReference(), 
-                        VirtualCollectionDetailsPage.BackPage.PUBLIC_LISTING));
-            } 
-        };
-            citeButton.add(new Label("label", vc.getName()));
-            nameColumn.add(citeButton);
+            final WebMarkupContainer details = new WebMarkupContainer("details");
+            details.setOutputMarkupId(true);
             
-            final WebMarkupContainer details =
-                new WebMarkupContainer("details");
             final String desc = vc.getDescription();
             final MultiLineLabel descLabel = new MultiLineLabel("desc", desc);
             if (desc == null) {
                 descLabel.setVisible(false);
             }
             details.add(descLabel);
-           /* final Panel actionsPanel =
-                table.createActionPanel("actionsPanel", model);
-            details.add(actionsPanel);
-            details.add(new Behavior() {
-
-                @Override
-                public void bind(Component component) {
-                    component.setVisible(actionsPanel.isVisible());
-                }
-            });
-        */
-            // move to css?
-            //details.add(new AttributeAppender("style", new Model<String>("display:none"), ";"));
+            
+            AbstractLink toggleLink = new AbstractLink("toggle-link") {};            
+            toggleLink.add(new AttributeModifier("data-toggle", new Model<>("collapse")));
+            toggleLink.add(new AttributeModifier("data-target", new Model<>("#"+details.getMarkupId())));
+            
+            AjaxLink citeButton = new AjaxLink( "name", new Model<String>("") ){ 
+            @Override
+            public void onClick( AjaxRequestTarget target ) {
+                    setResponsePage(
+                        VirtualCollectionDetailsPage.class, 
+                        VirtualCollectionDetailsPage.createPageParameters(
+                            vc, 
+                            table.getPageReference(), 
+                            VirtualCollectionDetailsPage.BackPage.PUBLIC_LISTING));
+                } 
+            };
+            citeButton.add(new Label("label", vc.getName()));
+            
+            nameColumn.add(toggleLink);
+            nameColumn.add(citeButton);            
             nameColumn.add(details);
             add(nameColumn);
         }

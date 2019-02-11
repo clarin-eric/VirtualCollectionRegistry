@@ -342,10 +342,28 @@ td.reference div div {
     cursor: pointer;
 }
 
+.toggle {
+    margin-right: 10px;
+}
+
+.toggle-details a span.toggle:after {
+    font-family:'Glyphicons Halflings';
+    content:"\e114";
+    color: #0080aa;
+}
+
+.toggle-details a.collapsed span.toggle:after {
+    content:"\e080";
+}
 
 
 
-
+.desc p {
+    margin-top: 5px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+}
 
 
 
