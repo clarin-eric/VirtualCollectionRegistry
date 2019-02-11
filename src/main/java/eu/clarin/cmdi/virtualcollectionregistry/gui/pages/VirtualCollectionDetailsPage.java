@@ -52,6 +52,7 @@ import org.apache.wicket.request.mapper.parameter.INamedParameters.NamedPair;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.convert.IConverter;
+import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.string.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -153,11 +154,15 @@ public class VirtualCollectionDetailsPage extends BasePage {
         super(new CompoundPropertyModel<VirtualCollection>(model));
         this.params = params;
         
+        //Redirect to homepage if the model is not set
         if (model == null) {
             setResponsePage(Application.get().getHomePage());
-        } else {
-            checkAccess(model.getObject());
+            return;
         }
+        
+        //Will throw and exception and abort flow if authorization fails
+        checkAccess(model.getObject());
+        
 
         final Link<Void> backLink = new Link<Void>("back") {
             @Override
@@ -381,11 +386,25 @@ public class VirtualCollectionDetailsPage extends BasePage {
     }
     
     private static IModel<VirtualCollection> getVirtualCollectionModel(PageParameters params) {
-        final Long collectionId = params.get(PARAM_VC_ID).toLong();
-        if (collectionId == null) {
+        Long collectionId = null;
+        
+        StringValue id = params.get(PARAM_VC_ID);
+        if (id == null) {
             Session.get().error("Collection could not be retrieved, id not provided");
             return null;
         }
+        try {
+            collectionId = id.toLong();
+        } catch(Exception ex) {
+            Session.get().error("Collection could not be retrieved, id ("+id+") not a valid number.");
+            return null;
+        }
+        /*
+        if (collectionId == null) {
+            Session.get().error("Collection could not be retrieved, id ("+id+") is invalid");
+            return null;
+        }
+        */
         return new DetachableVirtualCollectionModel(collectionId);
     }
 
