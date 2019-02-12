@@ -16,6 +16,7 @@
  */
 package eu.clarin.cmdi.wicket.components.pid;
 
+import eu.clarin.cmdi.wicket.components.panel.EmptyPanel;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
@@ -36,9 +37,49 @@ public class PidPanel extends Panel {
     
     private final static Logger logger = LoggerFactory.getLogger(PidPanel.class);
        
+    private class PidPanelContent extends Panel {
+        public PidPanelContent(String id, IModel<PersistentIdentifieable> model) {
+            super(id);
+
+            final String pid = model.getObject().getIdentifier();
+            final String href = model.getObject().getPidUri();
+            final String title = model.getObject().getPidTitle();
+            String type = "N/A";
+            if( model.getObject().hasPersistentIdentifier()) {
+                type = model.getObject().getPidType().getShort();
+            }
+
+            final PidInfoDialog dlg = new PidInfoDialog("info_dialog", model);
+            AjaxLink citeButton = new AjaxLink( "type", new Model<String>(type) ){ 
+                @Override
+                public void onClick( AjaxRequestTarget target ) {
+                    if( model.getObject().hasPersistentIdentifier()) {
+                        dlg.setMaskType( ModalWindow.MaskType.SEMI_TRANSPARENT );
+                        dlg.show(target);
+                    }
+                } 
+            };
+            citeButton.add(new Label("type_lbl", new Model<>(type)));
+            final ExternalLink link = new ExternalLink("link", href);
+            link.add(new Label("label", pid));
+            link.add(new AttributeModifier("title", title));
+
+            this.setOutputMarkupId(true);
+            this.add(link);
+            this.add(dlg);
+            this.add(citeButton);
+        }
+    }
+    
     public PidPanel(String id, IModel<PersistentIdentifieable> model) {
         super(id);
         
+        if(!model.getObject().hasPersistentIdentifier()) {
+            add(new EmptyPanel("content"));
+        } else {
+            add(new PidPanelContent("content", model));
+        }
+        /*
         final String pid = model.getObject().getIdentifier();
         final String href = model.getObject().getPidUri();
         final String title = model.getObject().getPidTitle();
@@ -66,5 +107,6 @@ public class PidPanel extends Panel {
         this.add(link);
         this.add(dlg);
         this.add(citeButton);
+        */
     }
 }
