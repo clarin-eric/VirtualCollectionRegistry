@@ -3,16 +3,13 @@ package eu.clarin.cmdi.virtualcollectionregistry.rest;
 import com.sun.jersey.api.core.InjectParam;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionValidationException;
 import eu.clarin.cmdi.virtualcollectionregistry.feedback.IValidationFailedMessage;
-import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
-import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedByQuery;
-import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Purpose;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Reproducibility;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Type;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder;
 import java.net.URI;
 import java.security.Principal;
 import java.util.Date;
@@ -36,6 +33,33 @@ import javax.ws.rs.core.UriInfo;
  * trigger authentication (especially relevant in a SAML workflow) and requires
  * the response to be HTML formatted.
  * 
+ * Example curl call (assuming the webapp is deployed at http://localhost:8080/vcr): 
+ * 
+   curl -v \
+       -u user1:user1 \
+       -d 'type=EXTENSIONAL&name=test&metadataUri=http://www.clarin.eu&resourceUri=http://www.clarin.eu/&&description=test-collection&keyword=&purpose=&reproducibility=&creationDate=&queryDescription=&queryUri=&queryProfile=&queryValue=' \
+       http://localhost:8080/vcr/service/submit
+ * 
+ * form-multipart not supported. Example: 
+ * 
+   curl -v \
+       -u user1:user1 \
+       -F 'type=EXTENSIONAL' \
+       -F 'name=test' \
+       -F 'metadataUri=http://www.clarin.eu/metadata/1' \
+       -F 'resourceUri=http://www.clarin.eu/resource/1' \
+       -F 'description=test collection' \
+       -F 'keyword=' \
+       -F 'purpose=' \
+       -F 'reproducibility=' \
+       -F 'creationDate=' \
+       -F 'queryDescription=' \
+       -F 'queryUri=' \
+       -F 'queryProfile=' \
+       -F 'queryValue=' \
+       http://localhost:8080/vcr/service/submit
+ * 
+ * 
  * @author twagoo
  */
 @Path("/submit")
@@ -48,6 +72,17 @@ public class VirtualCollectionFormSubmissionResource {
     @Context
     private UriInfo uriInfo;
 
+    public VirtualCollectionFormSubmissionResource() {}
+    
+    // for testing
+    protected VirtualCollectionFormSubmissionResource(VirtualCollectionRegistry registry, SecurityContext security, UriInfo uriInfo) {
+        this.registry = registry;        
+        this.security = security;        
+        this.uriInfo = uriInfo;        
+    }
+    
+    //TODO: this doesn't seem to work very well for intensional collections since
+    //these cannot contain resources.
     @POST
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
     @Produces({MediaType.TEXT_HTML})
@@ -58,7 +93,7 @@ public class VirtualCollectionFormSubmissionResource {
             @FormParam("resourceUri") List<String> resourceUris,
             @FormParam("description") String description,
             //optional params
-            @FormParam("keyword") List<String> keyword,
+            @FormParam("keyword") List<String> keywords,
             @FormParam("purpose") Purpose purpose,
             @FormParam("reproducibility") Reproducibility reproducibility,
             @FormParam("reproducibilityNotice") String reproducibilityNotice,
@@ -67,6 +102,35 @@ public class VirtualCollectionFormSubmissionResource {
             @FormParam("queryUri") String intensionalUri,
             @FormParam("queryProfile") String intensionalQueryProfile,
             @FormParam("queryValue") String intensionalQueryValue
+    ) {
+        switch(type) {
+            case EXTENSIONAL:
+                return submitNewExtensionalVc(name, metadataUris, resourceUris, description, keywords, purpose, reproducibility, reproducibilityNotice, creationDate);
+            case INTENSIONAL:
+                return submitNewIntensionalVc(name, description, keywords, purpose, reproducibility, reproducibilityNotice, creationDate, intensionalDescription, intensionalUri, intensionalQueryProfile, intensionalQueryValue);            
+        }
+        
+        //Return error if type was not handled
+        final Response.Status response = Response.Status.BAD_REQUEST;
+        final String error = String.format("<html>\n<body>\nCould not create virtual collection with unkown type: %s.</body>\n</html>\n", type.toString());
+        return Response.status(response).entity(error).build();
+    }
+    
+    @POST
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
+    @Produces({MediaType.TEXT_HTML})
+    @Path("/extenstional")
+    public Response submitNewExtensionalVc(            
+            @FormParam("name") String name,
+            @FormParam("metadataUri") List<String> metadataUris,
+            @FormParam("resourceUri") List<String> resourceUris,
+            @FormParam("description") String description,
+            //optional params
+            @FormParam("keyword") List<String> keywords,
+            @FormParam("purpose") Purpose purpose,
+            @FormParam("reproducibility") Reproducibility reproducibility,
+            @FormParam("reproducibilityNotice") String reproducibilityNotice,
+            @FormParam("creationDate") Date creationDate
     ) {
         final Principal principal = security.getUserPrincipal();
         if (principal == null) {
@@ -79,11 +143,20 @@ public class VirtualCollectionFormSubmissionResource {
 
         try {
             // construct a proto-VC from the form parameters
-            final VirtualCollection vc = constructVirtualCollection(type, name,
-                    metadataUris, resourceUris, description, keyword, purpose,
-                    reproducibility, reproducibilityNotice, creationDate,
-                    intensionalDescription, intensionalUri, intensionalQueryProfile, intensionalQueryValue);
-
+            final VirtualCollection vc = new VirtualCollectionBuilder()
+                .setName(name)
+                .setType(VirtualCollection.Type.EXTENSIONAL)
+                .addCreator(principal)
+                .addMetadataResources(metadataUris)
+                .addResourceResources(resourceUris)
+                .addKeywords(keywords)
+                .setDescription(description)
+                .setPurpose(purpose)
+                .setReproducibility(reproducibility)
+                .setReproducibilityNotice(reproducibilityNotice)
+                .setCreationDate(creationDate)                
+                .build();
+            
             // create the VC in the registry (persist)
             long id = registry.createVirtualCollection(principal, vc);
 
@@ -111,66 +184,74 @@ public class VirtualCollectionFormSubmissionResource {
             return Response.status(response).entity(error).build();
         }
     }
-
-    private VirtualCollection constructVirtualCollection(Type type, String name,
-            List<String> metadataUris, List<String> resourceUris, String description,
-            List<String> keywords, Purpose purpose, Reproducibility reproducibility,
-            String reproducibilityNotice, Date creationDate, String intensionalDescription,
-            String intensionalUri, String intensionalQueryProfile, String intensionalQueryValue) throws VirtualCollectionRegistryException {
-        final VirtualCollection vc = new VirtualCollection();
-
-        if (type == null) {
-            throw new VirtualCollectionRegistryUsageException("No type specified for collection");
+    
+    @POST
+    @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
+    @Produces({MediaType.TEXT_HTML})
+    @Path("/intensional")
+    public Response submitNewIntensionalVc(
+            @FormParam("name") String name,            
+            @FormParam("description") String description,
+            //optional params
+            @FormParam("keyword") List<String> keywords,
+            @FormParam("purpose") Purpose purpose,
+            @FormParam("reproducibility") Reproducibility reproducibility,
+            @FormParam("reproducibilityNotice") String reproducibilityNotice,
+            @FormParam("creationDate") Date creationDate,
+            @FormParam("queryDescription") String intensionalDescription,
+            @FormParam("queryUri") String intensionalUri,
+            @FormParam("queryProfile") String intensionalQueryProfile,
+            @FormParam("queryValue") String intensionalQueryValue
+    ) {
+        final Principal principal = security.getUserPrincipal();
+        if (principal == null) {
+            /*
+             * should never happen, because servlet container should supply a
+             * valid principal
+             */
+            throw new AssertionError("principal == null");
         }
-        if (name == null) {
-            throw new VirtualCollectionRegistryUsageException("No name specified for collection");
 
-        }
+        try {
+            // construct a proto-VC from the form parameters
+            final VirtualCollection vc = new VirtualCollectionBuilder()
+                .setName(name)
+                .setType(VirtualCollection.Type.INTENSIONAL)
+                .addCreator(principal)
+                .addKeywords(keywords)
+                .setDescription(description)
+                .setPurpose(purpose)
+                .setReproducibility(reproducibility)
+                .setReproducibilityNotice(reproducibilityNotice)
+                .setCreationDate(creationDate)
+                .setIntenstionalQuery(intensionalDescription, intensionalUri, intensionalQueryProfile, intensionalQueryValue)
+                .build();
+            
+            // create the VC in the registry (persist)
+            long id = registry.createVirtualCollection(principal, vc);
 
-        vc.setType(type);
-        vc.setName(name);
-
-        // add resources: type metadata
-        for (String uri : metadataUris) {
-            vc.getResources().add(new Resource(Resource.Type.METADATA, uri));
-        }
-        // add resources: type resource
-        for (String uri : resourceUris) {
-            vc.getResources().add(new Resource(Resource.Type.RESOURCE, uri));
-        }
-        // set optional values
-        for (String keyword : keywords) {
-            final String trimmed = keyword.trim();
-            if (!trimmed.isEmpty()) {
-                vc.getKeywords().add(keyword);
+            // respond with redirect to editor
+            final URI uri = uriInfo.getBaseUriBuilder()
+                    .path("../app/edit/{arg1}")
+                    .build(id);
+            return Response.seeOther(uri).build();
+        } catch (VirtualCollectionValidationException ex) {
+            //TODO: wrap in friendly HTML page
+            final Response.Status response = Response.Status.BAD_REQUEST;
+            
+            String errorList = "";
+            if(ex.hasErrorMessages()) {
+                for(IValidationFailedMessage errorMessage : ex.getErrorMessages()) {
+                    errorList += errorMessage.toString()+"<br />";
+                }
             }
+            final String error = String.format("<html>\n<body>\n<h1>%d %s</h1>\nCould not create virtual collection. Error(s):<br/>%s\n</body>\n</html>\n", response.getStatusCode(), response.toString(), errorList);
+            return Response.status(response).entity(error).build();
+        } catch (VirtualCollectionRegistryException ex) {
+            //TODO: wrap in friendly HTML page
+            final Response.Status response = Response.Status.BAD_REQUEST;
+            final String error = String.format("<html>\n<body>\n<h1>%d %s</h1>\nCould not create virtual collection. Error(s):<br/>%s\n</body>\n</html>\n", response.getStatusCode(), response.toString(), ex.getMessage());
+            return Response.status(response).entity(error).build();
         }
-        if (description != null) {
-            vc.setDescription(description);
-        }
-        if (purpose != null) {
-            vc.setPurpose(purpose);
-        }
-        if (reproducibility != null) {
-            vc.setReproducibility(reproducibility);
-        }
-        if (reproducibilityNotice != null) {
-            vc.setReproducibilityNotice(reproducibilityNotice);
-        }
-        if (creationDate == null) {
-            vc.setCreationDate(new Date());
-        } else {
-            vc.setCreationDate(creationDate);
-        }
-
-        if (intensionalDescription != null || intensionalQueryProfile != null || intensionalQueryValue != null || intensionalUri != null) {
-            final GeneratedBy generatedBy = new GeneratedBy();
-            generatedBy.setDescription(intensionalDescription);
-            generatedBy.setQuery(new GeneratedByQuery(intensionalQueryProfile, intensionalQueryValue));
-            generatedBy.setURI(intensionalUri);
-            vc.setGeneratedBy(generatedBy);
-        }
-        return vc;
     }
-
 }
