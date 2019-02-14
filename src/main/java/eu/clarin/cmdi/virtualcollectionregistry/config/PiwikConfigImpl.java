@@ -42,6 +42,12 @@ public class PiwikConfigImpl implements PiwikConfig {
     @Value("${eu.clarin.cmdi.vcr.piwik.domains:*.vcr.clarin.eu}")
     private String domains;
     
+    @Value("${eu.clarin.cmdi.vcr.snippet.survey:survey.html}")
+    private String snippetSurvey;
+ 
+    @Value("${eu.clarin.cmdi.vcr.snippet.credits:credits.html}")
+    private String snippetCredits;
+    
     @Override
     public boolean isEnabled() {
         return enabled;
@@ -60,5 +66,15 @@ public class PiwikConfigImpl implements PiwikConfig {
     @Override
     public String getDomains() {
         return domains;
+    }
+
+    @Override
+    public String getSnippetSurvey() {
+        return snippetSurvey;
+    }
+
+    @Override
+    public String getSnippetCredits() {
+        return snippetCredits;
     }
 }

@@ -25,4 +25,6 @@ public interface PiwikConfig {
     public String getSiteId();
     public String getPiwikHost();
     public String getDomains();
+    public String getSnippetSurvey();
+    public String getSnippetCredits();
 }

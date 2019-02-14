@@ -84,4 +84,12 @@
     <Parameter name="eu.clarin.cmdi.vcr.logout_enable" 
                value="false" 
                override="false" />
+    
+     <Parameter name="eu.clarin.cmdi.vcr.snippet.survey" 
+               value="survey.html" 
+               override="false" />
+    
+    <Parameter name="eu.clarin.cmdi.vcr.snippet.credits" 
+               value="credits.html" 
+               override="false" />
 </Context>

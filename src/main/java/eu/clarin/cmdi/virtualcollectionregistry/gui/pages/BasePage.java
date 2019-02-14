@@ -31,6 +31,7 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.include.Include;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -39,6 +40,7 @@ import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.util.string.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -92,6 +94,20 @@ public class BasePage extends WebPage {
             add(new PiwikTracker("piwik", piwikConfig.getSiteId(), piwikConfig.getPiwikHost(), piwikConfig.getDomains()));
         } else {
             add(new WebMarkupContainer("piwik")); //empty placeholder
+        }
+        
+        //Include survey if configured (typically mopinion user satisfaction
+        if (Strings.isEmpty(piwikConfig.getSnippetSurvey())) {
+            add(new WebMarkupContainer("surveySnippet"));
+        } else {
+            add(new Include("surveySnippet", piwikConfig.getSnippetSurvey()));
+        }
+         
+        //Include extra credits if configured
+        if (Strings.isEmpty(piwikConfig.getSnippetCredits())) {
+            add(new WebMarkupContainer("creditsSnippet"));
+        } else {
+            add(new Include("creditsSnippet", piwikConfig.getSnippetCredits()));
         }
     }
     
