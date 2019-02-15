@@ -72,7 +72,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
 
     private static Logger logger = LoggerFactory.getLogger(CreateAndEditVirtualCollectionPage.class);
     
-    public final static String DEFAULT_TOOLTIP_DATA_PLACEMENT = "left";//right";
+    public final static String DEFAULT_TOOLTIP_DATA_PLACEMENT = "bottom";
     
     String nameTooltip = "A short but descriptive name of the virtual collection for listings and views";
     String descriptionTooltip = "A prose description of this virtual collection";
@@ -326,12 +326,12 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         Model submitModel = Model.of(this.editMode ? "Save virtual collection" : "Create virtual collection");
         Form form = 
             new FormBuilder("form")
-                .addTextinput(nameModel, "name", "Name", nameTooltip, true, false, (FeedbackMessage fm) -> fm.getMessage() instanceof NameValidationFailedMessage)
-                .addCheckboxInputGroup("type", typeModel, Arrays.asList(Type.values()), "Type", typeTooltip, (FeedbackMessage fm) -> fm.getMessage() instanceof TypeValidationFailedMessage)
-                .addTextinput(descriptionModel, "description", "Description", descriptionTooltip, true, true, (FeedbackMessage fm) -> false)
-                .addCheckboxInputGroup("purpose", purposeModel, Arrays.asList(Purpose.values()), "Purpose", purposeTooltip)
-                .addCheckboxInputGroup("reproducibility", reproducibilityModel, Arrays.asList(Reproducibility.values()), "Reproducibility", reproducibilityTooltip)
-                .addTextinput(reproducibilityNoticeModel, "reproducibility_notice", "Reproducibility Notice", reproducibilityNoticeTooltip, false, true, (FeedbackMessage fm) -> fm.getMessage() instanceof ReproducibilityNoticeValidationFailedMessage)
+                .addTextinput(nameModel, "name", "Name:", nameTooltip, true, false, (FeedbackMessage fm) -> fm.getMessage() instanceof NameValidationFailedMessage)
+                .addCheckboxInputGroup("type", typeModel, Arrays.asList(Type.values()), "Type:", typeTooltip, (FeedbackMessage fm) -> fm.getMessage() instanceof TypeValidationFailedMessage)
+                .addTextinput(descriptionModel, "description", "Description:", descriptionTooltip, true, true, (FeedbackMessage fm) -> false)
+                .addCheckboxInputGroup("purpose", purposeModel, Arrays.asList(Purpose.values()), "Purpose:", purposeTooltip)
+                .addCheckboxInputGroup("reproducibility", reproducibilityModel, Arrays.asList(Reproducibility.values()), "Reproducibility:", reproducibilityTooltip)
+                .addTextinput(reproducibilityNoticeModel, "reproducibility_notice", "Reproducibility Notice:", reproducibilityNoticeTooltip, false, true, (FeedbackMessage fm) -> fm.getMessage() instanceof ReproducibilityNoticeValidationFailedMessage)
                 .addKeywordInput("keywords", keywordsModel)
                 .addAuthorsInput("authors", authorsModel)
                 .addResourceInput("resources", resourceModel)

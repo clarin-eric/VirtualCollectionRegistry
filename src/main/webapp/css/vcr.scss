@@ -34,6 +34,25 @@ body {
     word-wrap: break-word;
 }
 
+.vcr-badge {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 80px;
+    height: 80px;
+    z-index: 2000;
+}
+
+.beta {
+    background-image: url('../images/clarin_blue_corner_ribbon_beta_small.png');
+    background-size: contain;
+}
+
+.alpha {
+    background-image: url('../images/clarin_blue_corner_ribbon_alpha_small.png');
+    background-size: contain;
+}
+
 input.max-width {
     width: 100%;
 }
