@@ -21,6 +21,12 @@ $iconsize: 12px;
 
 $font-size-base: 14px;
 
+.checkbox-group-wrapper {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+}
+
 html, body {
     height: 100%
 }

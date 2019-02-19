@@ -19,6 +19,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.BootstrapRadioGroup;
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.EnumRadioChoiceRenderer;
+import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource.Type;
 import java.util.ArrayList;
@@ -27,6 +28,7 @@ import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -72,7 +74,7 @@ public class ResourceInput extends FormComponentPanel<List<Resource>> {
     protected void onInitialize() {
         super.onInitialize();
 
-        Form form = new Form("form") {
+        Form form = new Form("form");/* {
             @Override
             protected void onSubmit() {
                 super.onSubmit();
@@ -115,7 +117,7 @@ public class ResourceInput extends FormComponentPanel<List<Resource>> {
             protected void onError() {
                 logger.info("Form keywords failed to validate!");
             }
-        };
+        };*/
         form.setOutputMarkupId(true);
 
         Label lbl = new Label("label", "Resource(s)");	                
@@ -125,7 +127,50 @@ public class ResourceInput extends FormComponentPanel<List<Resource>> {
         TextField<String> inputLabel = new TextField("input_label", labelModel);        
         //inputReference.add(new UrlValidator(new String[]{"http://", "https://", "hdl://"}));
         TextArea<String> inputDescription = new TextArea("input_description", descriptionModel);
-        Button btnAdd = new Button("btn_add", Model.of("Add"));
+        //Button btnAdd = new Button("btn_add", Model.of("Add"));
+        AjaxSubmitLink btnAdd = new AjaxSubmitLink("btn_add", form) {//Model.of("Add"))  {                
+                @Override
+                protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    
+                    logger.info("Ajax submit");
+                    
+                   Type type = null;
+                    if(typeModel.getObject() != null) {
+                        type = typeModel.getObject();
+                    }                
+                    String reference = referencesModel.getObject();
+                    String label = labelModel.getObject();
+                    String description = descriptionModel.getObject();
+
+                    List<String> errors = new ArrayList<>();
+                    if (type == null) {
+                        errors.add("Type is a required field.");
+                    }
+                    if (reference == null || reference.isEmpty()) {
+                        errors.add("Reference is a required field.");
+                    }
+
+                    if (errors.isEmpty()) {
+                        logger.info("Selected type: " + type);
+                        Resource r = new Resource(type, reference);
+                        if (label != null && !label.isEmpty()) {
+                            r.setLabel(label);
+                        }
+                        if (description != null && !description.isEmpty()) {
+                            r.setDescription(description);
+                        }
+
+                        listModel.getObject().add(r);
+                        typeModel.setObject(Type.RESOURCE);
+                        referencesModel.setObject(null);
+                        labelModel.setObject(null);
+                        descriptionModel.setObject(null);
+                    }
+                
+                    target.add(form);
+                    super.onSubmit(target, form);
+                }
+            };
         btnAdd.add(new AttributeModifier("class", "btn btn-default btn-xs"));
         
         ListView<Resource> listview = new ListView<Resource>("list", listModel) {

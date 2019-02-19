@@ -25,9 +25,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.UIUtils;
 import java.io.Serializable;
 import java.util.Collection;
 import java.util.List;
-import java.util.Spliterator;
-import java.util.function.Consumer;
-import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -73,6 +70,8 @@ public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
      * @param tooltipText   Optional, can be null
      * @param model
      * @param values
+     * @param tooltipViewport
+     * @param tooltipPlacement
      */
     public CheckboxInput(String id, IModel<T> model, List<T> values, String label, String tooltipText, String tooltipViewport, String tooltipPlacement) {
         super(id, model);
@@ -111,7 +110,6 @@ public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
         @Override
         protected void onSelectionChanged(AjaxRequestTarget art, Serializable t) {
             if (listener != null) listener.handleEvent(art, model);
-            
         }
         
     }
@@ -124,10 +122,12 @@ public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
         
         group = new EnumRadioGroup<>("group", model, values, new EnumRadioChoiceRenderer(Buttons.Type.Primary));
         group.add(new AttributeAppender("class", " btngroup-spacing"));
+        group.setOutputMarkupPlaceholderTag(true);
         
-        WebMarkupContainer tooltip = new WebMarkupContainer("tooltipwrapper");
-        UIUtils.addTooltip(tooltip, tooltipText, tooltipViewport, tooltipPlacement);
-        tooltip.add(group);
+        UIUtils.addTooltip(group, tooltipText, tooltipViewport, "right");//tooltipPlacement);
+        //WebMarkupContainer tooltip = new WebMarkupContainer("tooltipwrapper");
+        //UIUtils.addTooltip(tooltip, tooltipText, tooltipViewport, tooltipPlacement);
+        //tooltip.add(group);
         
         WebMarkupContainer container = new WebMarkupContainer("row");
         if(isRequired()) {
@@ -139,7 +139,7 @@ public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
             
             container.add(new Label("label", this.labelText).setVisible(false));
         }
-        container.add(tooltip);
+        container.add(group);
         add(container);
     }
 

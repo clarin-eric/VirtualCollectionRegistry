@@ -154,16 +154,16 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         for(Creator c : creators) {
             logger.info("\t{}, {}", c.getPerson(), c.getEMail());
         }
-                
+        */        
         if(vc != null) {
             checkAccess(vc);
             this.vc = vc;        
             this.editMode = true;
         } else {
             this.editMode = false;
-            this.authorsModel.getObject().add(new Creator("test"));
+            //this.authorsModel.getObject().add(new Creator("test"));
         }
-        */
+        
     }
     
     private class FormBuilder implements Serializable {
@@ -255,7 +255,8 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         }
         
         protected FormBuilder addKeywordInput(String id, IModel model) {
-            this.form.add(new KeywordInput(id, model));
+            KeywordInput input = new KeywordInput(id, model);
+            this.form.add(input);
             FeedbackPanel feedback = new FeedbackPanel("feedback_"+id);
             feedback.setFilter((FeedbackMessage fm) -> fm.getMessage() instanceof KeywordValidationFailedMessage);
             this.form.add(feedback);

@@ -208,14 +208,11 @@
             <version>${jersey.version}</version>
         </dependency>
 
-        <!--
         <dependency>
-            <groupId>org.glassfish.jersey.ext</groupId>
-            <artifactId>jersey-spring4</artifactId>
-            <version>2.28</version>
+            <groupId>com.sun.jersey.contribs</groupId>
+            <artifactId>jersey-spring</artifactId>
+            <version>${jersey.version}</version>
         </dependency>
-        <dependency>
-        -->
 
         <dependency>
             <groupId>com.sun.jersey</groupId>
