@@ -21,6 +21,12 @@ $iconsize: 12px;
 
 $font-size-base: 14px;
 
+.checkbox-group-wrapper {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+}
+
 html, body {
     height: 100%
 }
@@ -32,6 +38,25 @@ body {
     -moz-osx-font-smoothing: grayscale;
     color: #222222;
     word-wrap: break-word;
+}
+
+.vcr-badge {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 80px;
+    height: 80px;
+    z-index: 2000;
+}
+
+.beta {
+    background-image: url('../images/clarin_blue_corner_ribbon_beta_small.png');
+    background-size: contain;
+}
+
+.alpha {
+    background-image: url('../images/clarin_blue_corner_ribbon_alpha_small.png');
+    background-size: contain;
 }
 
 input.max-width {

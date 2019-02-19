@@ -18,7 +18,11 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms;
 
 import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.ajax.form.AjaxFormSubmitBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxButton;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -59,29 +63,37 @@ public class KeywordInput extends FormComponentPanel<List<String>> {
 	protected void onInitialize() {
             super.onInitialize();
 
-            Form form = new Form("form") {
+            Form form = new Form("form");
+            form.setOutputMarkupId(true);
+            form.add(new AjaxFormSubmitBehavior("submit") {
                 @Override
-                protected void onSubmit() {
-                    super.onSubmit();
+                protected void onSubmit(AjaxRequestTarget target) {
+                    logger.info("On Submit Behavior");
+                    super.onSubmit(target); // Breakpoint on this line
+                    
+                }
+            });
+
+            Label lbl = new Label("label", "Keywords");		
+            TextField<String> editor = new TextField("editor", editorModel);
+            
+            AjaxButton btnAdd = new AjaxButton("btn_add", form) {//Model.of("Add"))  {                
+                @Override
+                protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    
+                    logger.info("Ajax submit");
+                    
                     String keyword = editorModel.getObject();
                     if(keyword != null && !keyword.isEmpty()) {
                         logger.debug("Keyword = " + keyword + ", #Keywods = " + listModel.getObject().size());                        
                         listModel.getObject().add(keyword);
                         editorModel.setObject("");
                     }
-                }
-
-                @Override
-                protected void onError() {
-                    logger.info("Form keywords failed to validate!");
+                    
+                    target.add(form);
+                    super.onSubmit(target, form);
                 }
             };
-            form.setOutputMarkupId(true);
-
-            Label lbl = new Label("label", "Keywords");		
-            TextField<String> editor = new TextField("editor", editorModel);
-            //editor.setRequired(true);
-            Button btnAdd = new Button("btn_add", Model.of("Add"));
             btnAdd.add(new AttributeAppender("class", "btn btn-default btn-xs"));
 
             ListView<String> listview = new ListView<String>("list", listModel) {

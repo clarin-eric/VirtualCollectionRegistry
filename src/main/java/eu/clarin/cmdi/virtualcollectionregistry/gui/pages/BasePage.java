@@ -109,6 +109,16 @@ public class BasePage extends WebPage {
         } else {
             add(new Include("creditsSnippet", piwikConfig.getSnippetCredits()));
         }
+        
+        String mode = piwikConfig.getMode();
+        WebMarkupContainer badge = new WebMarkupContainer("badge");
+        badge.setVisible(mode.equalsIgnoreCase("beta") || mode.equalsIgnoreCase("alpha"));
+        if (mode.equalsIgnoreCase("beta")) {
+            badge.add(new AttributeModifier("class", "vcr-badge beta"));
+        } else if(mode.equalsIgnoreCase("alpha")) {
+            badge.add(new AttributeModifier("class", "vcr-badge alpha"));
+        }
+        add(badge);
     }
     
     private Component createHeaderMenu(String id) {
