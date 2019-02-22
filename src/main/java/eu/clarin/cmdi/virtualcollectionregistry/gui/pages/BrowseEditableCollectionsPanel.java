@@ -178,6 +178,8 @@ public class BrowseEditableCollectionsPanel extends Panel {
     @SpringBean(name = "publication-soft")
     private VirtualCollectionValidator prePublicationValidator;
 
+    final VirtualCollectionTable table;
+    
     /**
      * 
      * @param id panel id
@@ -196,8 +198,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
     public BrowseEditableCollectionsPanel(String id, CollectionsProvider provider, final boolean isAdmin, final PageReference reference) {
         super(id);
         this.setOutputMarkupId(true);       
-        final VirtualCollectionTable table
-                = new VirtualCollectionTable("collectionsTable", provider, true, isAdmin) {
+        table = new VirtualCollectionTable("collectionsTable", provider, true, isAdmin) {
                     @Override
                     protected Panel createActionColumn(String componentId,
                             IModel<VirtualCollection> model) {
@@ -310,6 +311,10 @@ public class BrowseEditableCollectionsPanel extends Panel {
             @Override
             public void handle(AjaxRequestTarget target) {
                 if(model.getObject() != null) {
+                    //Ensure dialog is closed
+                    editPublishedDialog.close(target);
+                    target.add(table);
+                    //Forward to edit page
                     setResponsePage(CreateAndEditVirtualCollectionPage.class, 
                         buildParamsFromMap(Collections.singletonMap("id", model.getObject().getId())));
                 }
@@ -331,6 +336,9 @@ public class BrowseEditableCollectionsPanel extends Panel {
                 } catch (VirtualCollectionRegistryException e) {
                     logger.error("Failed to delete virtual collection", e);
                 }
+                
+                deleteDialog.close(target);
+                target.add(table);
             }            
 
             @Override
@@ -448,6 +456,8 @@ public class BrowseEditableCollectionsPanel extends Panel {
         if(confirmPublishCollectionWithWarningsDialog.isVisible()) {
             confirmPublishCollectionWithWarningsDialog.close(target);
         }
+        
+        target.add(table);
     }
     
     private Principal getUser() {
