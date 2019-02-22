@@ -185,17 +185,21 @@ public class PidInfoDialog extends BaseInfoDialog {
         try {         
             HttpResponse response = client.execute(new HttpGet(uri), ctx);
             StatusLine status = response.getStatusLine();
-            if(status.getStatusCode() != 302) {
+            if(status.getStatusCode() != 302 && status.getStatusCode() != 301) {
                 result = "Unexpected HTTP response code: "+status.getStatusCode();
             } else {
                 Header[] headers = response.getHeaders("Location");
                 for(Header h : headers) {            
                     result = h.getValue();
+                    break;
                 }
             }
         } finally {
             client.getConnectionManager().shutdown();
         }
+        
+        //TODO: follow all aliases? Handles pointing to other handles
+        
         return result;
     }
 }
