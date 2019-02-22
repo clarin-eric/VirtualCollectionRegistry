@@ -209,7 +209,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
         }
     
     }
-    
+    /*
     private class GeneralPanelTest extends Panel {
         public GeneralPanelTest(String id, final IModel<VirtualCollection> model) {
             super(id);
@@ -231,7 +231,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
             add(keywords);
         }
     }
-    
+    */
     private class GeneralPanel extends Panel {
         public GeneralPanel(String id, final IModel<VirtualCollection> model) {
             super(id);
@@ -242,7 +242,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
             add(new CustomLabel("purpose").add(hideIfEmpty));
             add(new CustomLabel("reproducibility").add(hideIfEmpty));
             add(new Label("reproducibilityNotice").add(hideIfEmpty));
-            add(new PidPanel("pidLink",  new Model(model.getObject())));
+            add(new PidPanel("pidLink",  new Model(model.getObject()), "collection"));
             final ListView<String> keywords = new ListView<String>("keywords") {
                 @Override
                 protected void populateItem(ListItem<String> item) {
