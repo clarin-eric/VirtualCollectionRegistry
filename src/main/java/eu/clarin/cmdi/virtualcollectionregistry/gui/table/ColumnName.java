@@ -52,13 +52,15 @@ final class ColumnName extends AbstractColumn<VirtualCollection, String> {
             AjaxLink citeButton = new AjaxLink( "name", new Model<String>("") ){ 
             @Override
             public void onClick( AjaxRequestTarget target ) {
+                if(vc.getState() != VirtualCollection.State.DELETED) {
                     setResponsePage(
                         VirtualCollectionDetailsPage.class, 
                         VirtualCollectionDetailsPage.createPageParameters(
                             vc, 
                             table.getPageReference(), 
                             VirtualCollectionDetailsPage.BackPage.PUBLIC_LISTING));
-                } 
+                    } 
+                }
             };
             citeButton.add(new Label("label", vc.getName()));
             
