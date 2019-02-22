@@ -124,10 +124,11 @@ public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
         group.add(new AttributeAppender("class", " btngroup-spacing"));
         group.setOutputMarkupPlaceholderTag(true);
         
-        UIUtils.addTooltip(group, tooltipText, tooltipViewport, "right");//tooltipPlacement);
+        WebMarkupContainer tooltip = new WebMarkupContainer("tooltip");
+        UIUtils.addTooltip(tooltip, tooltipText, tooltipViewport, "right");//tooltipPlacement);
         //WebMarkupContainer tooltip = new WebMarkupContainer("tooltipwrapper");
         //UIUtils.addTooltip(tooltip, tooltipText, tooltipViewport, tooltipPlacement);
-        //tooltip.add(group);
+        tooltip.add(group);
         
         WebMarkupContainer container = new WebMarkupContainer("row");
         if(isRequired()) {
@@ -139,7 +140,7 @@ public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
             
             container.add(new Label("label", this.labelText).setVisible(false));
         }
-        container.add(group);
+        container.add(tooltip);
         add(container);
     }
 
