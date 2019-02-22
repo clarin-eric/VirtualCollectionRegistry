@@ -38,7 +38,7 @@ public class PidPanel extends Panel {
     private final static Logger logger = LoggerFactory.getLogger(PidPanel.class);
        
     private class PidPanelContent extends Panel {
-        public PidPanelContent(String id, IModel<PersistentIdentifieable> model) {
+        public PidPanelContent(String id, IModel<PersistentIdentifieable> model, String context) {
             super(id);
 
             final String pid = model.getObject().getIdentifier();
@@ -49,7 +49,7 @@ public class PidPanel extends Panel {
                 type = model.getObject().getPidType().getShort();
             }
 
-            final PidInfoDialog dlg = new PidInfoDialog("info_dialog", model);
+            final PidInfoDialog dlg = new PidInfoDialog("info_dialog", model, context);
             AjaxLink citeButton = new AjaxLink( "type", new Model<String>(type) ){ 
                 @Override
                 public void onClick( AjaxRequestTarget target ) {
@@ -71,13 +71,13 @@ public class PidPanel extends Panel {
         }
     }
     
-    public PidPanel(String id, IModel<PersistentIdentifieable> model) {
+    public PidPanel(String id, IModel<PersistentIdentifieable> model, String context) {
         super(id);
         
         if(!model.getObject().hasPersistentIdentifier()) {
             add(new EmptyPanel("content"));
         } else {
-            add(new PidPanelContent("content", model));
+            add(new PidPanelContent("content", model, context));
         }
         /*
         final String pid = model.getObject().getIdentifier();

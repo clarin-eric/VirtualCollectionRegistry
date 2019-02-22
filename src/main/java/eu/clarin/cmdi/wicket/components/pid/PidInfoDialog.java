@@ -16,7 +16,6 @@
  */
 package eu.clarin.cmdi.wicket.components.pid;
 
-import com.sun.net.httpserver.Headers;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.wicket.components.BaseInfoDialog;
 import eu.clarin.cmdi.wicket.components.DialogButton;
@@ -28,7 +27,6 @@ import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
 import org.apache.http.Header;
-import org.apache.http.HeaderIterator;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.HttpGet;
@@ -124,13 +122,13 @@ public class PidInfoDialog extends BaseInfoDialog {
 
     }
     
-    public PidInfoDialog(String id, final IModel<PersistentIdentifieable> model) {
+    public PidInfoDialog(String id, final IModel<PersistentIdentifieable> model, String context) {
         super(id, TITLE);
         this.model = model;
-        this.build();
+        this.build(context);
     }
     
-    private void build() {
+    private void build(String context) {
          List<DialogButton> buttons = Arrays.asList(
                 new DialogButton("Close") {
                     @Override
@@ -138,11 +136,11 @@ public class PidInfoDialog extends BaseInfoDialog {
                         PidInfoDialog.this.close(target);
                     }
                 });
-        buildContent(TITLE, new Body(getContentWicketId()), buttons);
+        buildContent(TITLE, new Body(getContentWicketId(), context), buttons);
     }
     
     private class Body extends Panel {
-        public Body(String id) {
+        public Body(String id, String context) {
             super(id);
             String actionableUri = HandleLinkModel.getActionableUri(model.getObject().getPidUri());            
             TextField<String> input = new TextField("pid", new Model(actionableUri));           
@@ -160,6 +158,9 @@ public class PidInfoDialog extends BaseInfoDialog {
                 default:
                     add(new Label("type", "Unkown")); break;            
             }
+            
+            add(new Label("context1", new Model(context)));
+            add(new Label("context2", new Model(context)));
             
             Label handleResolutionLabel = new Label("hdl-target", new PidResolutionModel(model.getObject().getPidUri()));
             AjaxSelfUpdatingTimerBehavior timer = new AjaxSelfUpdatingTimerBehavior(Duration.milliseconds(500));
