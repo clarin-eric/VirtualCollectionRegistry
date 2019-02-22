@@ -16,10 +16,14 @@
  */
 package eu.clarin.cmdi.wicket.components;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.model.IModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -27,14 +31,23 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
  */
 public class ConfirmationDialog extends BaseInfoDialog {    
     
+    private final static Logger logger = LoggerFactory.getLogger(ConfirmationDialog.class);
+    
     private final  List<DialogButton> buttons;
     
     private Component body;
     private final String title;
+    private final Handler confirmHandler;
     
-    public ConfirmationDialog(String id, final String title) {
+    public static interface Handler<T> extends Serializable {
+        public void handle(AjaxRequestTarget target);
+        public void setObject(IModel<T> object);
+    }
+    
+    public ConfirmationDialog(String id, final String title, Handler confirmHandler) {
         super(id, title);
         this.title = title;
+        this.confirmHandler = confirmHandler;
         this.buttons = new ArrayList<>();
     }
     
@@ -60,4 +73,38 @@ public class ConfirmationDialog extends BaseInfoDialog {
     public void addButton(DialogButton button) {
         buttons.add(button);
     }
+
+   
+    public void confirm(AjaxRequestTarget target) {
+        /*
+        try {
+            try {
+                prePublicationValidator.validate(vcModel.getObject());                    
+                doPublish(vcModel.getObject().getId(), isFrozen());
+            } catch (VirtualCollectionRegistryUsageException ex) {
+                List<String> errors = new ArrayList<>();
+                for(Validatable<String> error : ex.getValidationErrors()) {
+                    errors.add(error.getValue());
+                }
+                confirmPublishCollectionDialog.showDialogue(target, vcModel, errors, isFrozen());
+            }
+        } catch (VirtualCollectionRegistryException ex) {
+            logger.error("Could not publish collection {}, id {}", vcModel.getObject().getName(), vcModel.getObject().getId(), ex);
+            Session.get().error(ex.getMessage());
+        }
+        */
+        if(confirmHandler != null) {
+            try {
+                confirmHandler.handle(target);
+            } catch(RuntimeException ex) {
+                 ConfirmationDialog.this.close(target);
+            }
+        } else {
+            logger.info("No confirmation handler set");
+            target.add(this);
+        }
+    }
+    
+    public void onCancel(AjaxRequestTarget target) {}  
+
 }

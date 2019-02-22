@@ -16,14 +16,10 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.gui.dialog;
 
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.wicket.components.BaseInfoDialog;
 import eu.clarin.cmdi.wicket.components.DialogButton;
-import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.migrate.StringResourceModelMigration;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.StringResourceModel;
 
 /**
  *
@@ -31,28 +27,52 @@ import org.apache.wicket.model.StringResourceModel;
  */
 public class Dialogs {
     
-    public static eu.clarin.cmdi.wicket.components.ConfirmationDialog createConfirmationPublishCollectionDialog(String id) {//, IModel<VirtualCollection> vc, List<String> warnings) {
-        eu.clarin.cmdi.wicket.components.ConfirmationDialog dlg = new eu.clarin.cmdi.wicket.components.ConfirmationDialog(id, "Publish virtual collection");
-        
-        dlg.addButton(new DialogButton("Close") {
+    private static void addDefaultConfirmButtons(eu.clarin.cmdi.wicket.components.ConfirmationDialog dlg) {
+        dlg.addButton(new DialogButton("Yes") {
+            @Override
+            public void handleButtonClick(AjaxRequestTarget target) {
+                dlg.confirm(target);
+            }
+        });      
+        dlg.addButton(new DialogButton("No") {
             @Override
             public void handleButtonClick(AjaxRequestTarget target) {
                 dlg.close(target);
             }
-        });
-        /*
-        StringBuilder sb = new StringBuilder();
-        for (String warning : warnings) {
-            sb.append(" -").append(warning).append("\n");
-        }
-*/
-        StringResourceModel model = new StringResourceModel("collections.publishwarningsconfirm");
-            //StringResourceModelMigration.of("collections.publishwarningsconfirm", vc, new Object[]{sb});
-        
-        
+        });    
+    }
+    
+    private static eu.clarin.cmdi.wicket.components.ConfirmationDialog createDialog(String title, String id, IModel<String> model, eu.clarin.cmdi.wicket.components.ConfirmationDialog.Handler confirmHandler) {
+        eu.clarin.cmdi.wicket.components.ConfirmationDialog dlg = new eu.clarin.cmdi.wicket.components.ConfirmationDialog(id, title, confirmHandler);
+        addDefaultConfirmButtons(dlg);        
         dlg.setContentPanel(new PublishConfirmationDialogPanel(BaseInfoDialog.CONTENT_ID, model));
         dlg.build();
         return dlg;
     }
+    
+    public static eu.clarin.cmdi.wicket.components.ConfirmationDialog createConfirmPublishCollectionDialog(String id, IModel<String> model, eu.clarin.cmdi.wicket.components.ConfirmationDialog.Handler confirmHandler, eu.clarin.cmdi.wicket.components.ConfirmationDialog.Handler confirmFrozenHandler) {        
+        eu.clarin.cmdi.wicket.components.ConfirmationDialog dlg = new eu.clarin.cmdi.wicket.components.ConfirmationDialog(id, "Publish virtual collection", confirmHandler);
+        dlg.addButton(new DialogButton("Publish Frozen") {
+            @Override
+            public void handleButtonClick(AjaxRequestTarget target) {
+                dlg.confirm(target);
+            }
+        });  
+        addDefaultConfirmButtons(dlg);        
+        dlg.setContentPanel(new PublishConfirmationDialogPanel(BaseInfoDialog.CONTENT_ID, model));
+        dlg.build();
+        return dlg;
+    }
+    
+    public static eu.clarin.cmdi.wicket.components.ConfirmationDialog createConfirmPublishCollectionWithWarningsDialog(String id, IModel<String> model, eu.clarin.cmdi.wicket.components.ConfirmationDialog.Handler confirmHandler) {
+        return createDialog("Publish virtual collection with warnings", id, model, confirmHandler);
+    }
 
+    public static eu.clarin.cmdi.wicket.components.ConfirmationDialog createConfirmEditCollectionDialog(String id, IModel<String> model, eu.clarin.cmdi.wicket.components.ConfirmationDialog.Handler confirmHandler) {
+        return createDialog("Edit virtual collection", id, model, confirmHandler);
+    }
+    
+    public static eu.clarin.cmdi.wicket.components.ConfirmationDialog createDeleteEditCollectionDialog(String id, IModel<String> model, eu.clarin.cmdi.wicket.components.ConfirmationDialog.Handler confirmHandler) {
+        return createDialog("Delete virtual collection", id, model, confirmHandler);
+    }
 }

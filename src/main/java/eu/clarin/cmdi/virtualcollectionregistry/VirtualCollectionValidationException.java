@@ -32,6 +32,14 @@ public class VirtualCollectionValidationException extends
         this.messages.forEach((m) -> {session.error(m);});
     }
     
+    public List<String> getAllErrorsAsList() {
+        final List<String> errors = new ArrayList<>();
+        this.messages.forEach((error) -> {
+            errors.add(error.toString());
+        });      
+        return errors;
+    }
+    
     public void throwIfNeeded() throws VirtualCollectionValidationException {
         if(this.hasErrorMessages()) {
             throw this;
