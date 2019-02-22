@@ -16,10 +16,12 @@
  */
 package eu.clarin.cmdi.wicket.components;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.model.IModel;
 
 /**
  *
@@ -27,14 +29,29 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
  */
 public class ConfirmationDialog extends BaseInfoDialog {    
     
+//    private final static Logger logger = LoggerFactory.getLogger(ConfirmationDialog.class);
+    
     private final  List<DialogButton> buttons;
     
     private Component body;
     private final String title;
+    private final Handler confirmHandler;
     
-    public ConfirmationDialog(String id, final String title) {
+    public static interface Handler<T> extends Serializable {
+        public void handle(AjaxRequestTarget target);
+        public void setObject(IModel<T> object);
+    }
+    
+     public static interface PublishHandler<T> extends Handler<T>, Serializable {
+        //public void handle(AjaxRequestTarget target);
+        //public void setObject(IModel<T> object);
+        public void setFrozen(boolean frozen);
+    }
+    
+    public ConfirmationDialog(String id, final String title, Handler confirmHandler) {
         super(id, title);
         this.title = title;
+        this.confirmHandler = confirmHandler;
         this.buttons = new ArrayList<>();
     }
     
@@ -60,4 +77,21 @@ public class ConfirmationDialog extends BaseInfoDialog {
     public void addButton(DialogButton button) {
         buttons.add(button);
     }
+
+   /*
+    public void confirm(AjaxRequestTarget target) {
+        if(confirmHandler != null) {
+            try {
+                confirmHandler.handle(target);
+            } catch(RuntimeException ex) {
+                 ConfirmationDialog.this.close(target);
+            }
+        } else {
+            logger.info("No confirmation handler set");
+            target.add(this);
+        }
+    }
+    
+    public void onCancel(AjaxRequestTarget target) {}  
+*/
 }
