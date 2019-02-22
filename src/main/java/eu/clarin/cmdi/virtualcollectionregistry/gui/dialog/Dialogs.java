@@ -27,11 +27,15 @@ import org.apache.wicket.model.IModel;
  */
 public class Dialogs {
     
-    private static void addDefaultConfirmButtons(eu.clarin.cmdi.wicket.components.ConfirmationDialog dlg) {
+    private static void addDefaultConfirmButtons(eu.clarin.cmdi.wicket.components.ConfirmationDialog dlg, eu.clarin.cmdi.wicket.components.ConfirmationDialog.Handler confirmHandler) {
         dlg.addButton(new DialogButton("Yes") {
             @Override
             public void handleButtonClick(AjaxRequestTarget target) {
-                dlg.confirm(target);
+                try {
+                    confirmHandler.handle(target);
+                } catch(RuntimeException ex) {
+                    dlg.close(target);
+                }
             }
         });      
         dlg.addButton(new DialogButton("No") {
@@ -44,7 +48,7 @@ public class Dialogs {
     
     private static eu.clarin.cmdi.wicket.components.ConfirmationDialog createDialog(String title, String id, IModel<String> model, eu.clarin.cmdi.wicket.components.ConfirmationDialog.Handler confirmHandler) {
         eu.clarin.cmdi.wicket.components.ConfirmationDialog dlg = new eu.clarin.cmdi.wicket.components.ConfirmationDialog(id, title, confirmHandler);
-        addDefaultConfirmButtons(dlg);        
+        addDefaultConfirmButtons(dlg, confirmHandler);        
         dlg.setContentPanel(new PublishConfirmationDialogPanel(BaseInfoDialog.CONTENT_ID, model));
         dlg.build();
         return dlg;
@@ -55,10 +59,14 @@ public class Dialogs {
         dlg.addButton(new DialogButton("Publish Frozen") {
             @Override
             public void handleButtonClick(AjaxRequestTarget target) {
-                dlg.confirm(target);
+                try {
+                    confirmFrozenHandler.handle(target);
+                } catch(RuntimeException ex) {
+                    dlg.close(target);
+                }
             }
         });  
-        addDefaultConfirmButtons(dlg);        
+        addDefaultConfirmButtons(dlg, confirmHandler);        
         dlg.setContentPanel(new PublishConfirmationDialogPanel(BaseInfoDialog.CONTENT_ID, model));
         dlg.build();
         return dlg;

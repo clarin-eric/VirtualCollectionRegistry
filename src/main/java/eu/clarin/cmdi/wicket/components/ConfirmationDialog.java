@@ -22,8 +22,6 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.model.IModel;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -31,7 +29,7 @@ import org.slf4j.LoggerFactory;
  */
 public class ConfirmationDialog extends BaseInfoDialog {    
     
-    private final static Logger logger = LoggerFactory.getLogger(ConfirmationDialog.class);
+//    private final static Logger logger = LoggerFactory.getLogger(ConfirmationDialog.class);
     
     private final  List<DialogButton> buttons;
     
@@ -42,6 +40,12 @@ public class ConfirmationDialog extends BaseInfoDialog {
     public static interface Handler<T> extends Serializable {
         public void handle(AjaxRequestTarget target);
         public void setObject(IModel<T> object);
+    }
+    
+     public static interface PublishHandler<T> extends Handler<T>, Serializable {
+        //public void handle(AjaxRequestTarget target);
+        //public void setObject(IModel<T> object);
+        public void setFrozen(boolean frozen);
     }
     
     public ConfirmationDialog(String id, final String title, Handler confirmHandler) {
@@ -74,25 +78,8 @@ public class ConfirmationDialog extends BaseInfoDialog {
         buttons.add(button);
     }
 
-   
+   /*
     public void confirm(AjaxRequestTarget target) {
-        /*
-        try {
-            try {
-                prePublicationValidator.validate(vcModel.getObject());                    
-                doPublish(vcModel.getObject().getId(), isFrozen());
-            } catch (VirtualCollectionRegistryUsageException ex) {
-                List<String> errors = new ArrayList<>();
-                for(Validatable<String> error : ex.getValidationErrors()) {
-                    errors.add(error.getValue());
-                }
-                confirmPublishCollectionDialog.showDialogue(target, vcModel, errors, isFrozen());
-            }
-        } catch (VirtualCollectionRegistryException ex) {
-            logger.error("Could not publish collection {}, id {}", vcModel.getObject().getName(), vcModel.getObject().getId(), ex);
-            Session.get().error(ex.getMessage());
-        }
-        */
         if(confirmHandler != null) {
             try {
                 confirmHandler.handle(target);
@@ -106,5 +93,5 @@ public class ConfirmationDialog extends BaseInfoDialog {
     }
     
     public void onCancel(AjaxRequestTarget target) {}  
-
+*/
 }

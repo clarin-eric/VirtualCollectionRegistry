@@ -173,7 +173,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
     
     private IModel<String> publishCollectionModel = new Model<>("");
     private final eu.clarin.cmdi.wicket.components.ConfirmationDialog confirmPublishCollectionWithWarningsDialog;
-    private final eu.clarin.cmdi.wicket.components.ConfirmationDialog.Handler<VirtualCollection> confirmPublishCollectionWithWarningsHandler;
+    private final eu.clarin.cmdi.wicket.components.ConfirmationDialog.PublishHandler<VirtualCollection> confirmPublishCollectionWithWarningsHandler;
     
     @SpringBean(name = "publication-soft")
     private VirtualCollectionValidator prePublicationValidator;
@@ -233,6 +233,8 @@ public class BrowseEditableCollectionsPanel extends Panel {
             
             @Override
             public void handle(AjaxRequestTarget target) {
+                prePublishCheck(target, this.model, false);
+                /*
                 VirtualCollection vc = this.model.getObject();
                 if (vc != null) {
                     try {
@@ -252,6 +254,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
                     logger.info("Failed to validate null virtual collection");
                     throw new RuntimeException();
                 }
+                */
             }            
 
             @Override
@@ -264,7 +267,9 @@ public class BrowseEditableCollectionsPanel extends Panel {
             private IModel<VirtualCollection> model;
             
             @Override
-            public void handle(AjaxRequestTarget target) {}            
+            public void handle(AjaxRequestTarget target) {
+                prePublishCheck(target, this.model, true);
+            }            
 
             @Override
             public void setObject(IModel<VirtualCollection> model) {
@@ -272,14 +277,15 @@ public class BrowseEditableCollectionsPanel extends Panel {
             }
         };
         
-        confirmPublishCollectionWithWarningsHandler = new eu.clarin.cmdi.wicket.components.ConfirmationDialog.Handler<VirtualCollection>() {
+        confirmPublishCollectionWithWarningsHandler = new eu.clarin.cmdi.wicket.components.ConfirmationDialog.PublishHandler<VirtualCollection>() {
             private IModel<VirtualCollection> model;
+            private boolean frozen;
             
             @Override
             public void handle(AjaxRequestTarget target) {
                VirtualCollection vc = this.model.getObject();
                 try {
-                    doPublish(vc.getId(), false, target);
+                    doPublish(vc.getId(), this.frozen, target);
                  } catch (VirtualCollectionRegistryException ex) {
                     logger.error("Could not publish collection {}, id {}", vc.getName(), vc.getId(), ex);
                     Session.get().error(ex.getMessage());
@@ -290,6 +296,11 @@ public class BrowseEditableCollectionsPanel extends Panel {
             @Override
             public void setObject(IModel<VirtualCollection> model) {
                 this.model = model;
+            }
+            
+            @Override
+            public void setFrozen(boolean frozen) {
+                this.frozen = frozen;
             }
         };
         
@@ -340,6 +351,28 @@ public class BrowseEditableCollectionsPanel extends Panel {
         editPublishedDialog = Dialogs.createConfirmEditCollectionDialog("editPublishedCollectionDialog", confirmEditCollectionModel, confirmEditHandler);
         add(editPublishedDialog);
     }
+
+    private void prePublishCheck(AjaxRequestTarget target, IModel<VirtualCollection> model, boolean frozen) {
+        VirtualCollection vc = model.getObject();
+        if (vc != null) {
+            try {
+                try {
+                    prePublicationValidator.validate(vc);                    
+                    doPublish(vc.getId(), frozen, target); 
+                } catch (VirtualCollectionValidationException ex) {
+                    logger.info("Confirm publishing of collection with errors");                           
+                    confirmPublishWithWarnings(target, model, ex.getAllErrorsAsList(), frozen);
+                }
+            } catch (VirtualCollectionRegistryException ex) {
+                logger.error("Could not publish collection {}, id {}", vc.getName(), vc.getId(), ex);
+                Session.get().error(ex.getMessage());
+                throw new RuntimeException();
+            }
+        } else {
+            logger.info("Failed to validate null virtual collection");
+            throw new RuntimeException();
+        }
+    }
     
     private void doEdit(AjaxRequestTarget target, VirtualCollection vc) {
         if(!vc.isPublicFrozen() || isUserAdmin()) {
@@ -368,21 +401,19 @@ public class BrowseEditableCollectionsPanel extends Panel {
         publishDialog.show(target);
     }
 
-    private void confirmPublishWithWarnings(AjaxRequestTarget target, IModel<VirtualCollection> model, List<String> errors) {
+    private void confirmPublishWithWarnings(AjaxRequestTarget target, IModel<VirtualCollection> model, List<String> errors, boolean frozen) {
         StringBuilder sb = new StringBuilder();
         for (String warning : errors) {
             sb.append(" -").append(warning).append("\n");
         }
-        //TODO: take into account frozen state
-        State state = model.getObject().getState();
-        boolean frozen = (state == State.PUBLIC_FROZEN || state == State.PUBLIC_FROZEN_PENDING);
-        
+
         StringResourceModel stringResourceModel = 
             StringResourceModelMigration.of("collections.publishwarningsconfirm", model, new Object[]{sb});
                             
         publishDialog.close(target);
         confirmPublishCollectionModel.setObject(stringResourceModel.getObject());
         confirmPublishCollectionWithWarningsHandler.setObject(model);
+        confirmPublishCollectionWithWarningsHandler.setFrozen(frozen);
         confirmPublishCollectionWithWarningsDialog.show(target);
     }
     
