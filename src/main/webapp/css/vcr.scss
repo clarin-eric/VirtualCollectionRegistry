@@ -34,9 +34,11 @@ html, body {
 body {
     font-size: $font-size-base;
     font-family: "Source Sans Pro", Calibri, Arial, Helvetica sans-serif;
+    /*
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
-    color: #222222;
+    */
+    color: #333;
     word-wrap: break-word;
 }
 
