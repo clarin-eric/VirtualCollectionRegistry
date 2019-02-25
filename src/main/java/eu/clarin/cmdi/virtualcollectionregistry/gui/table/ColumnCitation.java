@@ -16,7 +16,7 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.gui.table;
 
-import eu.clarin.cmdi.virtualcollectionregistry.gui.citation.CitationPanelFactory;
+import eu.clarin.cmdi.wicket.components.citation.CitationPanelFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.HeaderlessColumn;

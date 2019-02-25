@@ -12,6 +12,10 @@
     </cmd:Header>
     <cmd:Resources>
         <cmd:ResourceProxyList>
+             <cmd:ResourceProxy>
+                <cmd:ResourceType>LandingPage</cmd:ResourceType>
+                <cmd:ResourceRef>http://hdl.handle.net/9999/1234-5678</cmd:ResourceRef>
+            </cmd:ResourceProxy>
             <cmd:ResourceProxy id="r1">
                 <cmd:ResourceType>Metadata</cmd:ResourceType>
                 <cmd:ResourceRef>http://my/metadata.cmdi</cmd:ResourceRef>

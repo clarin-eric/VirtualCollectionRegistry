@@ -7,7 +7,7 @@
     <artifactId>VirtualCollectionRegistry</artifactId>
     <packaging>war</packaging>
     <name>CLARIN Virtual Collection Registry</name>
-    <version>1.1.1-alpha2</version>
+    <version>1.2.0</version>
 
     <organization>
         <name>CLARIN</name>
@@ -57,6 +57,7 @@
         <!-- Production settings below -->
         <log4j.appender>File</log4j.appender>
         <war.webxml>src/main/webapp/WEB-INF/web-shib.xml</war.webxml>
+        <war.shhaa>src/main/resources/normal</war.shhaa>
         <war.contextxml>src/main/webapp/META-INF/prod/context.xml</war.contextxml>
         
         <!-- Tell Netbeans to insert the right license header -->
@@ -65,15 +66,63 @@
     
     <profiles>
         <profile>
-            <!-- Development profile -->
             <id>development</id>
             <properties>
-                <!-- Log to console -->
-                <log4j.appender>Console</log4j.appender>     
-                <!-- Use the user database realm version of web.xml -->           
-                <war.webxml>src/main/webapp/WEB-INF/web-dev.xml</war.webxml>
+                <log4j.appender>FILE</log4j.appender>               
+                <war.webxml>src/main/webapp/WEB-INF/web-basic-local.xml</war.webxml>
+                <war.shhaa>src/main/resources/dev</war.shhaa>
                 <war.contextxml>src/main/webapp/META-INF/dev/context.xml</war.contextxml>
             </properties>
+        </profile>
+        <profile>
+            <id>docker</id>
+            <properties>
+                <log4j.appender>FILE</log4j.appender>            
+                <war.webxml>src/main/webapp/WEB-INF/web-shib.xml</war.webxml>
+                <war.shhaa>src/main/resources/docker</war.shhaa>
+                <war.contextxml>src/main/webapp/META-INF/docker/context.xml</war.contextxml>
+            </properties>
+        </profile>
+        <profile>
+            <id>docker-local</id>
+            <properties>
+                <log4j.appender>FILE</log4j.appender>            
+                <war.webxml>src/main/webapp/WEB-INF/web-shib.xml</war.webxml>
+                <war.shhaa>src/main/resources/docker</war.shhaa>
+                <war.contextxml>src/main/webapp/META-INF/docker/context.xml</war.contextxml>
+            </properties>
+            <build>
+                <plugins>
+                    <plugin>
+                        <artifactId>exec-maven-plugin</artifactId>
+                        <version>1.6.0</version>
+                        <groupId>org.codehaus.mojo</groupId>
+                        <executions>
+                            <execution><!-- Run our version calculation script -->
+                                <id>clean-webapp-docker</id>
+                                <phase>clean</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <executable>${basedir}/scripts/clean.sh</executable>
+                                </configuration>
+                            </execution>
+                            <execution><!-- Run our version calculation script -->
+                                <id>deploy-webapp-docker</id>
+                                <phase>package</phase>
+                                <goals>
+                                    <goal>exec</goal>
+                                </goals>
+                                <configuration>
+                                    <!--executable>${basedir}/scripts/deploy.sh</executable-->
+                                    <executable>/Users/wilelb/Code/work/clarin/git/infrastructure2/compose/pilot/compose_clarin_proxy/clarin/vcr/deploy.sh</executable>
+                                </configuration>
+                            </execution>
+                        </executions>
+                    </plugin>
+                </plugins>
+            </build>
         </profile>
     </profiles>
 
@@ -156,6 +205,12 @@
         <dependency>
             <groupId>com.sun.jersey</groupId>
             <artifactId>jersey-servlet</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>com.sun.jersey.contribs</groupId>
+            <artifactId>jersey-spring</artifactId>
             <version>${jersey.version}</version>
         </dependency>
 
@@ -275,7 +330,7 @@
         <dependency>
             <groupId>de.mpg.mpgaai</groupId>
             <artifactId>mpgaai-shhaa</artifactId>
-            <version>1.0.6</version>
+            <version>1.0.10</version>
             <exclusions>
                 <exclusion>
                     <!-- replaced with jcl-over-slf4j -->
@@ -283,8 +338,8 @@
                     <groupId>commons-logging</groupId>
                 </exclusion>
                 <!-- a library should only depend on SLF4J but not import
-                     a specific logging backend. Therefore, get rid of
-                     those ... -->
+                a specific logging backend. Therefore, get rid of
+                those ... -->
                 <exclusion>
                     <artifactId>slf4j-log4j12</artifactId>
                     <groupId>org.slf4j</groupId>
@@ -394,28 +449,11 @@
             <version>2.6.0</version>
             <scope>test</scope>
         </dependency>
-
-        <!-- JavaMelody for application monitoring -->
-        <dependency>
-            <groupId>net.bull.javamelody</groupId>
-            <artifactId>javamelody-core</artifactId>
-            <version>1.52.0</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-aop</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>org.springframework</groupId>
-                    <artifactId>spring-context</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
         
         <dependency>
             <groupId>de.agilecoders.wicket</groupId>
             <artifactId>wicket-bootstrap-core</artifactId>
-            <version>0.10.14</version>
+            <version>0.10.17</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.wicket</groupId>
@@ -426,14 +464,18 @@
                     <artifactId>wicket-util</artifactId>
                 </exclusion>
             </exclusions>
+        </dependency>       
+        <dependency>
+            <groupId>de.agilecoders.wicket.webjars</groupId>
+            <artifactId>wicket-webjars</artifactId>
+            <version>0.5.6</version>
         </dependency>
-       
     </dependencies>
 
     <build>
-        <finalName>vcr</finalName>
+        <finalName>vcr-${project.version}</finalName>
         
-          <resources>
+        <resources>
             <resource>
                 <filtering>true</filtering>
                 <directory>src/main/resources</directory>
@@ -578,11 +620,20 @@
                             </includes>
                         </resource>
                         <!-- Make documentation available -->
+                        <!--
                         <resource>
                             <directory>doc</directory>
                         </resource>
+                        -->
+                        <resource>
+                            <directory>${war.shhaa}</directory>
+                            <targetPath>WEB-INF</targetPath>
+                            <includes>
+                                <include>**/*</include>
+                            </includes>
+                        </resource>
                     </webResources>
-                    <outputDirectory>bin</outputDirectory>
+                    <!--outputDirectory>bin</outputDirectory-->
                 </configuration>
             </plugin>
             
@@ -618,6 +669,7 @@
                     </descriptors>
                 </configuration>
             </plugin>
+             
         </plugins>
 
         <pluginManagement>

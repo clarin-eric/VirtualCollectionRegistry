@@ -7,6 +7,7 @@ $iconsize: 12px;
 @import 'toggleborder';
 /*@import 'table';*/
 @import 'collectiondetails';
+@import 'details';
 @import 'feedback';
 @import 'filterform';
 @import 'vcr_footer';
@@ -20,17 +21,42 @@ $iconsize: 12px;
 
 $font-size-base: 14px;
 
+.checkbox-group-wrapper {
+    position: relative;
+    display: inline-block;
+    vertical-align: middle;
+}
+
 html, body {
     height: 100%
 }
 
 body {
     font-size: $font-size-base;
-    font-family: "Roboto", sans-serif;
+    font-family: "Source Sans Pro", Calibri, Arial, Helvetica sans-serif;
     -webkit-font-smoothing: antialiased;
     -moz-osx-font-smoothing: grayscale;
     color: #222222;
     word-wrap: break-word;
+}
+
+.vcr-badge {
+    position: fixed;
+    top: 0px;
+    left: 0px;
+    width: 80px;
+    height: 80px;
+    z-index: 2000;
+}
+
+.beta {
+    background-image: url('../images/clarin_blue_corner_ribbon_beta_small.png');
+    background-size: contain;
+}
+
+.alpha {
+    background-image: url('../images/clarin_blue_corner_ribbon_alpha_small.png');
+    background-size: contain;
 }
 
 input.max-width {
@@ -57,8 +83,8 @@ noscript {
 }
 
 .tooltip-inner {
-    max-width: 300px;
-    width: 300px;
+    /*max-width: 300px;
+    width: 300px;*/
     text-align: justify;
 }
 
@@ -86,8 +112,10 @@ div.navbar div.container {
 
 #content {
     min-height: 100%;
-    margin-bottom: -211px;
-    padding-bottom: 221px; /* compensate margin and add an extra 10px */
+    margin-bottom: -139px;
+    padding-bottom: 160px; 
+    margin-top: -72px;
+    padding-top: 72px;
 }
 
 .hidden-overflow {
@@ -201,4 +229,213 @@ div.betabadge {
 
 .half-width {
     width: 50%;
+}
+
+
+.details {
+    font-size: 1em;
+}
+
+.state {
+    min-width: 100px;
+    max-width: 100px;
+    font-size: 1em;
+}
+
+td.type {
+    min-width: 100px;
+    max-width: 100px;
+    font-size: 1em;
+}
+
+td.actions {
+    min-width: 80px;
+    max-width: 80px;
+    width: 80px;
+    text-align: center;
+    margin-left: auto;
+    margin-right: auto;
+}
+
+div.actions {    
+    text-align: left;
+}
+
+.created {
+    min-width: 85px;
+    max-width: 85px;
+    font-size: 1em;
+}
+
+.action {
+    min-width: 120px;
+    max-width: 120px;
+}
+
+table.collectionsTable {
+    max-width: 100%;
+    margin-bottom: 20px;
+}
+
+table.collectionsTable td.name {
+    width: 100%;
+    min-width: 200px;
+}
+
+.collapsing {
+    -webkit-transition: none;
+    transition: none;
+    display: none;
+}
+
+.odd {
+    background-color: rgb(234, 234, 234);;/*#D4DEEF;*/
+}
+
+.even {
+    background-color: #FFFFFF;
+}
+
+
+.btngroup-spacing {
+    margin-top: 2px;
+    margin-bottom: 2px;
+}
+
+
+
+
+
+
+a.btn-primary {
+    color: #fff;
+}
+
+
+
+
+
+
+
+.pid-label {
+    border: 1px solid;
+    border-color: #0080aa;
+    border-radius: 4px;
+    white-space: nowrap;
+    margin-right: .3em;
+    background: #0080aa;
+}
+
+.pid-label .pid-label-badge {
+    padding: 0 .5em;
+    background: #0080aa;
+    color: #fff;
+    font-family: 'Source Sans Pro', sans-serif;
+}
+
+td.reference div div {
+    padding-top: 3px;
+    padding-bottom: 3px;
+}
+
+.details-header {
+    padding: 5px;
+}
+
+
+
+
+
+.normal-font {
+    
+}
+
+
+
+.panel-heading a:after {
+    font-family:'Glyphicons Halflings';
+    content:"\e114";
+    float: right;
+    color: grey;
+}
+.panel-heading a.collapsed:after {
+    content:"\e080";
+}
+
+.hover {
+    cursor: pointer;
+}
+
+.toggle {
+    margin-right: 10px;
+}
+
+.toggle-details a span.toggle:after {
+    font-family:'Glyphicons Halflings';
+    content:"\e114";
+    color: #0080aa;
+}
+
+.toggle-details a.collapsed span.toggle:after {
+    content:"\e080";
+}
+
+.title {
+    font-size: 1.25em;
+    font-weight: normal;
+}
+
+
+.desc p {
+    margin-top: 5px;
+    margin-left: 0px;
+    margin-right: 0px;
+    margin-bottom: 0px;
+}
+
+
+
+a>.panel-heading:after {
+    font-family:'Glyphicons Halflings';
+    content:"\e114";
+    float: right;
+    color: grey;
+}
+a.collapsed>.panel-heading:after {
+    content:"\e080";
+}
+.panel-default>a>.panel-heading {
+    color: #333;
+    background-color: #f5f5f5;
+    border-color: #ddd;
+}
+
+label.filter {
+    font-size: 1em;
+}
+
+select.filter {
+    width: 100%;
+    font-size: 1em;
+}
+
+input.filter {
+    width: 100%;
+    font-size: 1em;
+}
+
+.hover:hover {
+    text-decoration: underline; 
+} 
+
+h4.pnl-title {
+    display: inline
+}
+
+h3.pnl-title {
+    display: inline
+}
+
+.full-width {
+    width: 100%;
 }

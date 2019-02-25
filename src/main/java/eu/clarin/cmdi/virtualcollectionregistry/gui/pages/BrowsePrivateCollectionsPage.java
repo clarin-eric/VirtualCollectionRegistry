@@ -8,7 +8,7 @@ import org.apache.wicket.authroles.authorization.strategies.role.annotations.Aut
 public class BrowsePrivateCollectionsPage extends BasePage {
 
     public BrowsePrivateCollectionsPage() {
-        add(new BrowseEditableCollectionsPanel("collections", new PrivateCollectionsProvider()));
+        add(new BrowseEditableCollectionsPanel("collections", new PrivateCollectionsProvider(), getPageReference()));
     }
     
 }

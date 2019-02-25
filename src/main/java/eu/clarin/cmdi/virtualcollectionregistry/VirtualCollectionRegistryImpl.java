@@ -48,6 +48,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
     private VirtualCollectionRegistryMaintenanceImpl maintenance;
     @Autowired
     private VirtualCollectionRegistryReferenceCheckImpl referenceCheck;
+    @Autowired
+    private CreatorService creatorService;
     
     private static final Logger logger
             = LoggerFactory.getLogger(VirtualCollectionRegistryImpl.class);
@@ -73,10 +75,16 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         }
         logger.info("Initializing virtual collection registry ...");
         try {
+            long t1 = System.nanoTime();
+            VirtualCollectionList collections = getAllVirtualCollections();
+            creatorService.initialize(collections.getItems());
+            long t2 = System.nanoTime();
+            double tDelta = (t2-t1)/1000000.0;
+            logger.debug(String.format("Initialized CreatorService in %.2fms; loaded %d creators.", tDelta, creatorService.getSize()));
+            
             maintenanceExecutor.scheduleWithFixedDelay(new Runnable() {
                 @Override
                 public void run() {
-                    logger.info("Running maintenance");
                     maintenance.perform(new Date().getTime());
                 }
             }, 60, 60, TimeUnit.SECONDS);
@@ -129,7 +137,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         if (vc == null) {
             throw new NullPointerException("vc == null");
         }
-
+        
         logger.debug("creating virtual collection");
 
         validator.validate(vc);
@@ -149,7 +157,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             vc.setState(VirtualCollection.State.PRIVATE);
 
             // store virtual collection
-            logger.debug("persisting new virtual collection", vc.getId());
+            logger.debug("persisting new virtual collection (id={})", vc.getId());
             em.persist(vc);
             em.getTransaction().commit();
             logger.debug("virtual collection created (id={})", vc.getId());
@@ -176,7 +184,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         }
 
         logger.debug("updating virtual collection (id={})", id);
-
+        
         validator.validate(vc);
 
         EntityManager em = datastore.getEntityManager();
@@ -200,16 +208,19 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             }
 
             // update virtual collection
+            logger.info("Virtual collection:\n{}", vc.toString());
             c.updateFrom(vc);
 
             validator.validate(c);
+            
+            //persist
             em.merge(c);
             em.getTransaction().commit();
             logger.debug("updated virtual collection (id={})", vc.getId());
             return c.getId();
         } catch (VirtualCollectionRegistryException e) {
             em.getTransaction().rollback();
-            logger.warn("failed updating virtual collecion (id={}): {}", id,
+            logger.warn("failed to update virtual collecion (id={}): {}", id,
                     e.getMessage());
             throw e;
         } catch (Exception e) {
@@ -304,6 +315,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         }
     }
 
+    
     @Override
     public void setVirtualCollectionState(Principal principal, long id,
             VirtualCollection.State state)
@@ -421,6 +433,9 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
     @Override
     public VirtualCollectionList getVirtualCollections(String query,
             int offset, int count) throws VirtualCollectionRegistryException {
+        
+        logger.info("getVirtualCollections()");
+        
         EntityManager em = datastore.getEntityManager();
         try {
             em.getTransaction().begin();
@@ -461,6 +476,14 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                 }
                 results = q.getResultList();
             }
+            
+            for(VirtualCollection vc : results) {
+                logger.info("Authors for "+vc.getName());
+                for(String a : vc.getAuthors()) {
+                    logger.info("\tAuthor: "+a);
+                }
+            }
+            
             return new VirtualCollectionList(results, offset, (int) totalCount);
         } catch (Exception e) {
             logger.error("error while enumerating virtual collections", e);
@@ -478,6 +501,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
     public VirtualCollectionList getVirtualCollections(Principal principal,
             String query, int offset, int count)
             throws VirtualCollectionRegistryException {
+        logger.info("getVirtualCollections() with principal = "+principal.getName());
         if (principal == null) {
             throw new NullPointerException("principal == null");
         }
@@ -532,6 +556,14 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                     results = q.getResultList();
                 }
             }
+            
+            for(VirtualCollection vc : results) {
+                logger.info("Authors for "+vc.getName());
+                for(String a : vc.getAuthors()) {
+                    logger.info("\tAuthor: "+a);
+                }
+            }
+            
             return new VirtualCollectionList(results, offset, (int) totalCount);
         } catch (Exception e) {
             logger.error("error while enumerating virtual collections", e);
@@ -545,6 +577,42 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         }
     }
 
+    
+    
+    
+    public VirtualCollectionList getAllVirtualCollections()
+            throws VirtualCollectionRegistryException {
+        logger.info("getAllVirtualCollections()");
+        
+        EntityManager em = datastore.getEntityManager();
+        try {
+            em.getTransaction().begin();
+                    
+            CriteriaBuilder cb = em.getCriteriaBuilder();
+            CriteriaQuery<VirtualCollection> cq = cb.createQuery(VirtualCollection.class);
+            Root<VirtualCollection> rootEntry = cq.from(VirtualCollection.class);
+            CriteriaQuery<VirtualCollection> all = cq.select(rootEntry);
+            TypedQuery<VirtualCollection> allQuery = em.createQuery(all);
+            List<VirtualCollection> collections = allQuery.getResultList();
+            
+            return new VirtualCollectionList(collections, 0, collections.size());
+        } catch (Exception e) {
+            logger.error("error while enumerating virtual collections", e);
+            throw new VirtualCollectionRegistryException(
+                    "error while enumerating virtual collections", e);
+        } finally {
+            EntityTransaction tx = em.getTransaction();
+            if ((tx != null) && !tx.getRollbackOnly()) {
+                tx.commit();
+            }
+        }
+    }
+    
+    
+    
+    
+    
+    
     @Override
     public int getVirtualCollectionCount(QueryOptions options)
             throws VirtualCollectionRegistryException {
@@ -688,6 +756,10 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         // admin and owner are allowed to modify collections
         return adminUsersService.isAdmin(principal.getName())
                 || c.getOwner().equalsPrincipal(principal);
+    }
+    
+    public CreatorService getCreatorService() {
+        return this.creatorService;
     }
 
 } // class VirtualCollectionRegistry

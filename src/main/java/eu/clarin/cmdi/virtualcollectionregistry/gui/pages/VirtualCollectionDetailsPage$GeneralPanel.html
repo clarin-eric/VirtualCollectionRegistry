@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+    <head />
+    <body>
+        <wicket:panel>
+ 
+            <div class="property">
+                <label>Name</label>
+                <div wicket:id="name"></div>
+            </div>
+            <div class="property">
+                <label>Type</label>
+                <div wicket:id="type"></div>
+            </div>
+            <div class="property">
+                <label>Creation Date</label>
+                <div wicket:id="creationDate"></div>
+            </div>
+            <wicket:enclosure child="description">
+                <div class="property">
+                    <label>Description</label>
+                    <div wicket:id="description"></div>
+                </div>
+            </wicket:enclosure>
+            <wicket:enclosure child="purpose">
+                <div class="property">
+                    <label>Purpose</label>
+                    <div wicket:id="purpose"></div>
+                </div>
+            </wicket:enclosure>
+            <wicket:enclosure child="reproducibility">
+                <div class="property">
+                    <label>Reproducibility</label>
+                    <div wicket:id="reproducibility"></div>
+                </div>
+            </wicket:enclosure>
+            <wicket:enclosure child="reproducibilityNotice">
+                <div class="property">
+                    <label>Reproducibility Notice</label>
+                    <div wicket:id="reproducibilityNotice"></div>
+                </div>
+            </wicket:enclosure>
+            <wicket:enclosure child="pidLink">
+                <div class="property">
+                    <label>Persistent identifier</label>
+                    <div wicket:id="pidLink"></div> 
+                </div>                   
+            </wicket:enclosure>   
+
+            <wicket:enclosure child="keywords">
+                <div class="property">
+                    <label>Keywords</label>
+                    <div>
+                        <ul class="keywords"><li wicket:id="keywords"><span wicket:id="keyword"></span></li></ul>
+                    </div>
+                </div>
+            </wicket:enclosure>
+            
+         </wicket:panel>        
+    </body>
+</html>

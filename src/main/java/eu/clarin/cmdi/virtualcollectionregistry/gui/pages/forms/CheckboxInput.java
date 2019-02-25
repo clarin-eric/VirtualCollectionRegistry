@@ -17,11 +17,15 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
-import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.BootstrapRadioGroup;
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.AjaxBootstrapRadioGroup;
+import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.BootstrapRadioGroup;
 import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.EnumRadioChoiceRenderer;
+import de.agilecoders.wicket.core.markup.html.bootstrap.form.radio.IRadioChoiceRenderer;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.UIUtils;
+import java.io.Serializable;
+import java.util.Collection;
 import java.util.List;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -45,14 +49,18 @@ public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
     
     private final IModel<T> model;     //current value
     private final List<T> values;      //list of allowed values
-    private final String labelText;         //Tekst for the display label
-    private final String tooltipText;       //Tekst for the tooltip
+    private final String labelText;    //Tekst for the display label
+    private final String tooltipText;  //Tekst for the tooltip
+    private final String tooltipViewport;
+    private final String tooltipPlacement;
     
     //private RadioGroup<T> group;
     private BootstrapRadioGroup<T> group;
     
+    private transient CheckboxInputChangeListener listener;
+    
     public CheckboxInput(String id, IModel<T> model, List<T> values) {
-        this(id, model, values, null, null);
+        this(id, model, values, null, null, null, null);
     }
     
     /**
@@ -62,26 +70,64 @@ public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
      * @param tooltipText   Optional, can be null
      * @param model
      * @param values
+     * @param tooltipViewport
+     * @param tooltipPlacement
      */
-    public CheckboxInput(String id, IModel<T> model, List<T> values, String label, String tooltipText) {
+    public CheckboxInput(String id, IModel<T> model, List<T> values, String label, String tooltipText, String tooltipViewport, String tooltipPlacement) {
         super(id, model);
         this.model = model;
         this.values = values;
         this.labelText = label;
         this.tooltipText = tooltipText;
+        this.tooltipPlacement = tooltipPlacement;
+        this.tooltipViewport = tooltipViewport;
+    }
+    
+    public void setCheckboxInputChangeListener (CheckboxInputChangeListener listener) {
+    this.listener = listener;
+}
+
+    @Override
+    protected void onModelChanged() {
+        super.onModelChanged(); //To change body of generated methods, choose Tools | Templates.
+        logger.info("CheckboxInput model changed: "+this.model.toString());
     }
 
-   @Override
+    private class EnumRadioGroup<T extends Serializable> extends AjaxBootstrapRadioGroup<T> {
+
+        public EnumRadioGroup(String id, Collection<T> options) {
+            super(id, options);
+        }   
+
+        public EnumRadioGroup(String id, Collection<T> options, IRadioChoiceRenderer<T> choiceRenderer) {
+            super(id, options, choiceRenderer);
+        }
+
+        public EnumRadioGroup(String id, IModel<T> model, Collection<T> options, IRadioChoiceRenderer<T> choiceRenderer) {
+            super(id, model, options, choiceRenderer);
+        }
+    
+        @Override
+        protected void onSelectionChanged(AjaxRequestTarget art, Serializable t) {
+            if (listener != null) listener.handleEvent(art, model);
+        }
+        
+    }
+    
+    @Override
     protected void onInitialize() {
         super.onInitialize();        
         
-        group = new BootstrapRadioGroup<>("group", model, values, new EnumRadioChoiceRenderer(Buttons.Type.Primary));
-//        group = new AjaxBootstrapRadioGroup<>("group", model, values, new EnumRadioChoiceRenderer(Buttons.Type.Primary) {      
-//        });
+        //group = new BootstrapRadioGroup<>("group", model, values, new EnumRadioChoiceRenderer(Buttons.Type.Primary));
         
+        group = new EnumRadioGroup<>("group", model, values, new EnumRadioChoiceRenderer(Buttons.Type.Primary));
+        group.add(new AttributeAppender("class", " btngroup-spacing"));
+        group.setOutputMarkupPlaceholderTag(true);
         
-        WebMarkupContainer tooltip = new WebMarkupContainer("tooltipwrapper");
-        UIUtils.addTooltip(tooltip, tooltipText);
+        WebMarkupContainer tooltip = new WebMarkupContainer("tooltip");
+        UIUtils.addTooltip(tooltip, tooltipText, tooltipViewport, "right");//tooltipPlacement);
+        //WebMarkupContainer tooltip = new WebMarkupContainer("tooltipwrapper");
+        //UIUtils.addTooltip(tooltip, tooltipText, tooltipViewport, tooltipPlacement);
         tooltip.add(group);
         
         WebMarkupContainer container = new WebMarkupContainer("row");
@@ -107,6 +153,8 @@ public class CheckboxInput<T extends Enum<T>> extends FormComponentPanel<T> {
     @Override
     protected void onBeforeRender() {
         super.onBeforeRender();
-        //logger.trace("Model object: "+model.getObject()+", list model object: "+group.getModelObject());
-    }        
+        logger.debug("Model object: "+model.getObject()+", list model object: "+group.getModelObject());
+    }  
+    
+    
 }

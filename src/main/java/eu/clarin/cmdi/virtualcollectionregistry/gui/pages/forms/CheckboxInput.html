@@ -7,12 +7,14 @@
 <body>
     <wicket:panel>
         
-        <div class="row" wicket:id="row">
-             <div class="col-xs-2">
-                <label wicket:id="label">[Name]</label>    
-             </div>
-            <div class="col-xs-8" wicket:id="tooltipwrapper">
-                    <div wicket:id="group"></div>       
+        <div wicket:id="row">
+            <div class="col-xs-12">
+                <label wicket:id="label" class="required">[Name]</label>    
+            </div>
+            <div class="col-xs-12">
+                <div class="checkbox-group-wrapper" wicket:id="tooltip">
+                    <div wicket:id="group"></div>
+                </div>
             </div>
         </div>
         

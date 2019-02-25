@@ -7,15 +7,15 @@
 <body>
     <wicket:panel>
         
-        <div class="row" wicket:id="wrapper">            
+        <div wicket:id="wrapper">            
             
             <form wicket:id="form">            
-                <div class="col-xs-2">
-                   <label wicket:id="label">[Name]</label>    
+                <div class="col-xs-12">
+                   <label wicket:id="label" class="required">[Name]</label>    
                 </div>
-                <div class="col-xs-9">
+                <div class="col-xs-12">
                    
-                    <table class="table">
+                    <table class="table full-width">
                         <thead>
                             <tr>
                                 <th>Type</th>
@@ -48,6 +48,9 @@
             </form>
         
         </div>
+        <!--div class="col-xs-1">
+                    <span>&nbsp;</span>
+                </div-->
         
     </wicket:panel>
 </body>

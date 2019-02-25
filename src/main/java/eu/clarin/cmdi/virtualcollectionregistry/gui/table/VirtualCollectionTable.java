@@ -13,6 +13,7 @@ import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import org.apache.wicket.PageReference;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.request.resource.PackageResourceReference;
@@ -36,20 +37,20 @@ public abstract class VirtualCollectionTable extends Panel {
         }
         columns.add(new ColumnType(this));
         columns.add(new ColumnCreated(this));
-        //columns.add(new ColumnCitation(this));
         columns.add(new ColumnActions(this));
 
         // setup table
         final DataTable<VirtualCollection, String> table =
             new AjaxFallbackDefaultDataTable<>("table",
                 columns, provider, 30);
+        
         table.add(new AttributeAppender("class",
                 new AbstractReadOnlyModel<String>() {
                     @Override
                     public String getObject() {
                         return showState ? "private table" : "public table";
                     }
-                }, " "));
+                }, " ")) ;
         table.addBottomToolbar(new AjaxNavigationToolbar(table));
 
         final FilterForm form =
@@ -70,4 +71,5 @@ public abstract class VirtualCollectionTable extends Panel {
     protected abstract Panel createActionPanel(String componentId,
             IModel<VirtualCollection> model);
 
+    protected abstract PageReference getPageReference();
 } // class VirtualCollectionTable
