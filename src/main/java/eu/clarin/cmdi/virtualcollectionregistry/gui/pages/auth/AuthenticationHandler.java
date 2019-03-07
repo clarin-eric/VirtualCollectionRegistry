@@ -17,9 +17,11 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmitVirtualCollectionPage;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.Enumeration;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.wicket.Application;
@@ -29,6 +31,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.flow.RedirectToUrlException;
+import org.apache.wicket.request.http.WebRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -93,9 +96,20 @@ public class AuthenticationHandler {
                 logger.debug("Signed in");
                 page.continueToOriginalDestination();
                 logger.debug("No original destination, redirecting to homepage");
+                
                 // if we reach this line there was no intercept page, so go to home page
-                throw new RestartResponseAtInterceptPageException(
-                    Application.get().getHomePage());
+                Cookie cookie = ((WebRequest)cycle.getRequest()).getCookie("return");
+                if(cookie != null) {
+                    //if(cookie.getValue().equalsIgnoreCase("extensional")) {
+                        throw new RestartResponseAtInterceptPageException(SubmitVirtualCollectionPage.class);
+                    //} else if (cookie.getValue().equalsIgnoreCase("intensional")) {
+                    //    throw new RestartResponseAtInterceptPageException(SubmitVirtualCollectionPage.class);
+                   // } else {
+                   //     logger.warn("Found return cookie with unexpected return type: "+cookie.getValue());
+                    //    throw new RestartResponseAtInterceptPageException(Application.get().getHomePage());
+                   // }
+                }
+                throw new RestartResponseAtInterceptPageException(Application.get().getHomePage());
             } else {
                 logger.debug("Access denied");
                 throw new RestartResponseException(
