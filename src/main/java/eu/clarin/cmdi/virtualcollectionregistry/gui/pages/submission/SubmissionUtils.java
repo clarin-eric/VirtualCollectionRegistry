@@ -22,11 +22,14 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder;
 import java.security.Principal;
 import java.util.ArrayList;
+import java.util.Base64;
 import java.util.Date;
+import java.util.Enumeration;
 import java.util.List;
 import javax.servlet.http.Cookie;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.request.IRequestParameters;
-import org.apache.wicket.request.Request;
+import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.util.string.StringValue;
 import org.slf4j.Logger;
@@ -43,53 +46,86 @@ public class SubmissionUtils {
     private final static String COLLECTION_ATTRIBUTE_NAME="submitted_collection";
     private final static String RETURN_ATTRIBUTE_NAME="return";
     
+    private static void debugHttpHeaders(WebRequest request) {
+         HttpServletRequest r = (HttpServletRequest)request.getContainerRequest();
+        Enumeration e = r.getHeaderNames();
+        while(e.hasMoreElements()) {
+            String name = e.nextElement().toString();
+            logger.info("Header: {}={}", name, r.getHeader(name));
+        }
+    }
+    
+    private static String getUserAuthWorkaround(WebRequest request) {       
+        String username = null;
+        String authz = request.getHeader("authorization");
+        String[] p = authz.split(" ");
+        if(p[0].equalsIgnoreCase("basic")) {
+            byte[] decodedBytes = Base64.getDecoder().decode(p[1]);
+            String decodedString = new String(decodedBytes);
+            String[] p2 = decodedString.split(":");
+            username = p2[0];
+        }
+        
+        return username;
+    }
+    
     /**
      * Supported input
      * //required params
      * 
-     * @FormParam("name") String name,            
-     * @FormParam("description") String description,            
+     * FormParam("name") String name,            
+     * FormParam("description") String description,            
      * 
      * //optional params
-     * @FormParam("keyword") List<String> keywords,
-     * @FormParam("purpose") Purpose purpose,
-     * @FormParam("reproducibility") Reproducibility reproducibility,
-     * @FormParam("reproducibilityNotice") String reproducibilityNotice,
+     * FormParam("keyword") List<String> keywords,
+     * FormParam("purpose") Purpose purpose,
+     * FormParam("reproducibility") Reproducibility reproducibility,
+     * FormParam("reproducibilityNotice") String reproducibilityNotice,
      * 
      * //required Extensional params
-     * @FormParam("metadataUri") List<String> metadataUris,
-     * @FormParam("resourceUri") List<String> resourceUris,
+     * FormParam("metadataUri") List<String> metadataUris,
+     * FormParam("resourceUri") List<String> resourceUris,
      * 
      * //required Intensional params
-     * @FormParam("queryDescription") String intensionalDescription,
-     * @FormParam("queryUri") String intensionalUri,
-     * @FormParam("queryProfile") String intensionalQueryProfile,
-     * @FormParam("queryValue") String intensionalQueryValue
+     * FormParam("queryDescription") String intensionalDescription,
+     * FormParam("queryUri") String intensionalUri,
+     * FormParam("queryProfile") String intensionalQueryProfile,
+     * FormParam("queryValue") String intensionalQueryValue
      * 
      * @param request
+     * @param response
+     * @param session
      * @param type
      * @return 
      */
-    public static VirtualCollection checkSubmission(Request request, WebResponse response, ApplicationSession session, VirtualCollection.Type type) {
-        VirtualCollection vc = null;
-        
-        IRequestParameters params = request.getPostParameters();
+    public static VirtualCollection checkSubmission(WebRequest request, WebResponse response, ApplicationSession session, VirtualCollection.Type type) {          
+        debugHttpHeaders(request);
+        final String username = getUserAuthWorkaround(request);
 
+        //Get user principal from the server context. If this is null, try the username
+        //fallback to workaround the issue where the principal is available in the 
+        //filter chain yet
+        Principal principal = session.getPrincipal();
+        if(principal == null && username != null) {
+            principal = new Principal() {
+                @Override
+                public String getName() {
+                    return username;
+                }        
+            };
+        }
+        
+        if(principal == null) {
+            //Not authenticated
+            logger.warn("Not authenticated");
+            return null;
+        }
+ 
+        IRequestParameters params = request.getPostParameters();
+        
         String name = params.getParameterValue("name").toString();
         String description = params.getParameterValue("description").toString();
-        String reproducibilityNotice = params.getParameterValue("reproducibilityNotice").toString();                   
-        Principal principal = session.getPrincipal();
-        Principal anonymous = new Principal() {
-            @Override
-            public String getName() {
-                return "anonymous";
-            }
-        
-        };
-        if( principal == null) {
-            principal = anonymous;
-        }
-        String user_name = principal.getName();
+        String reproducibilityNotice = params.getParameterValue("reproducibilityNotice").toString();       
         
         String val = params.getParameterValue("reproducibility").toString();
         VirtualCollection.Reproducibility reproducibility = null;
@@ -104,14 +140,14 @@ public class SubmissionUtils {
         }
         
         
-        
+       VirtualCollection vc = null; 
         try {
             
             switch(type) {
                 case EXTENSIONAL:                 
                     vc = new VirtualCollectionBuilder()
                         .setName(name)
-                        .setOwner(user_name) 
+                        .setOwner(principal.getName()) 
                         .setType(VirtualCollection.Type.EXTENSIONAL)
                         .addCreator(principal)
                         .addMetadataResources(getAsStringList(params.getParameterValues("metadataUri")))
@@ -131,7 +167,7 @@ public class SubmissionUtils {
                     params.getParameterValue("queryValue");
                      vc = new VirtualCollectionBuilder()
                         .setName(name)
-                        .setOwner(user_name) 
+                        .setOwner(principal.getName()) 
                         .setType(VirtualCollection.Type.EXTENSIONAL)
                         .addCreator(principal)                    
                         .addKeywords(getAsStringList(params.getParameterValues("keyword")))

@@ -26,6 +26,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.request.http.WebResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -61,7 +62,7 @@ public class SubmitVirtualCollectionPage extends BasePage {
         //Set proper content panel based on 
         Panel pnl = new EmptyPanel("panel");
         if (type != null) {
-            SubmissionUtils.checkSubmission( RequestCycle.get().getRequest(), (WebResponse)RequestCycle.get().getResponse(), getSession(), type);     
+            SubmissionUtils.checkSubmission( (WebRequest)RequestCycle.get().getRequest(), (WebResponse)RequestCycle.get().getResponse(), getSession(), type);     
             if(!isSignedIn()) {
                 pnl = new LoginPanel("panel");
             }
