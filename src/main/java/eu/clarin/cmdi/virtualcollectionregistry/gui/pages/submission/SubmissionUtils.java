@@ -228,6 +228,13 @@ public class SubmissionUtils {
         return result;
     }
     
+    public static void clearCollectionFromSession(ApplicationSession session) {
+        if(session.getAttribute(COLLECTION_ATTRIBUTE_NAME) != null) {
+            logger.debug("Clearing virtual collection from session");
+            session.setAttribute(COLLECTION_ATTRIBUTE_NAME, null); 
+        }
+    }
+    
     protected static void storeCollection(ApplicationSession session, VirtualCollection vc) {
         session.setAttribute(COLLECTION_ATTRIBUTE_NAME, vc); 
         //storeCollectionInCookie

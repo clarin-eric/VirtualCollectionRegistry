@@ -419,6 +419,8 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
                 vcr.updateVirtualCollection(principal, new_vc.getId(), new_vc);
             }
             
+            SubmissionUtils.clearCollectionFromSession(session);
+            
             //TODO: dynamically fetch context path
             throw new RedirectToUrlException("/app/private");
         } catch (VirtualCollectionValidationException e) {
