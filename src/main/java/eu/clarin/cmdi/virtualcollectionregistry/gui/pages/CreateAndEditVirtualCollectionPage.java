@@ -19,6 +19,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.CollectionQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.KeywordInput;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.QueryInput;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.ResourceInput;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmissionUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
@@ -26,6 +27,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Purpose;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Reproducibility;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Type;
 import eu.clarin.cmdi.virtualcollectionregistry.service.CreatorProvider;
+import eu.clarin.cmdi.wicket.components.panel.EmptyPanel;
 import java.io.Serializable;
 import java.security.Principal;
 import java.util.ArrayList;
@@ -34,9 +36,11 @@ import java.util.Date;
 import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Page;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.WicketRuntimeException;
 import org.apache.wicket.ajax.AjaxPreventSubmitBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
@@ -50,6 +54,7 @@ import org.apache.wicket.markup.html.form.RequiredTextField;
 import org.apache.wicket.markup.html.form.TextArea;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
@@ -110,6 +115,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
     protected VirtualCollection vc;
     protected boolean renderStateValid = false;
     protected boolean editMode = false;
+    protected boolean submissionMode = false;
     
     @SpringBean
     private VirtualCollectionRegistry vcr;
@@ -142,6 +148,14 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
      * @throws eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermissionException 
      */
     public CreateAndEditVirtualCollectionPage(VirtualCollection vc, final Page previousPage) throws VirtualCollectionRegistryPermissionException {
+        if(vc == null) {
+            VirtualCollection submitted_vc = SubmissionUtils.retrieveCollection(getSession());
+            if(submitted_vc != null) {
+                logger.info("Processing submitted collection");
+                vc = submitted_vc;
+                this.submissionMode = true;
+            }
+        }
         initializeWithCollection(vc);
     }
     
@@ -305,7 +319,44 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         }
     }
     
+    private class SubmissionPanel extends Panel {
+        private final ApplicationSession session;
+        private boolean initialized = false;
+        
+        public SubmissionPanel(String id, ApplicationSession session) {
+            super(id);
+            this.session = session;
+        }
+        
+        @Override
+        public void onBeforeRender() {  
+            if(!initialized) {
+                add(new Label("label", "This collection has been submitted by an external application."));
+                /*
+                AjaxLink link = new AjaxLink<String>("btn_clear", new Model("Clear collection")) {
+                    @Override
+                    public void onClick(AjaxRequestTarget target) {
+                        logger.info("Clearing collection");                    
+                        SubmissionUtils.clearCollectionFromSession(session);
+                        throw new RestartResponseException(BrowsePublicCollectionsPage.class);
+                    }
+                };
+                link.add(new Label("btn_clear_label", "X"));//Clear collection"));
+                add(link);
+                */
+                initialized = true;
+            }
+            super.onBeforeRender();
+        }
+    }
+    
     protected void addComponents() {     
+        if(this.submissionMode) {
+            add(new SubmissionPanel("pnl_submission", getSession()));
+        } else {
+            add(new EmptyPanel("pnl_submission"));
+        }
+        
         //Add existing values to models if we are editing an existing collection
         if(vc != null && !vc.getName().isEmpty()) {
             nameModel.setObject(vc.getName());
@@ -339,6 +390,18 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
                 .addQueryInput("query", queryModel)
                 .addSubmitButton("submit", submitModel)
                 .build();
+        
+        final ApplicationSession session = getSession();
+        AjaxLink cancel = new AjaxLink<String>("cancel", new Model("Cancel")) {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                SubmissionUtils.clearCollectionFromSession(session);
+                throw new RestartResponseException(BrowsePublicCollectionsPage.class);
+            }
+        };
+        cancel.add(new Label("cancel_label", "Cancel"));
+        cancel.setVisible(submissionMode); //Only show in submission 
+        form.add(cancel);
         
         add(form);
     }
@@ -411,6 +474,8 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
                 vcr.updateVirtualCollection(principal, new_vc.getId(), new_vc);
             }
             
+            SubmissionUtils.clearCollectionFromSession(session);
+            
             //TODO: dynamically fetch context path
             throw new RedirectToUrlException("/app/private");
         } catch (VirtualCollectionValidationException e) {
@@ -445,7 +510,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
                 && ( //only allow editing of private & public
                 !(vc.getState() == VirtualCollection.State.PRIVATE || vc.getState() == VirtualCollection.State.PUBLIC)
                 // only allow editing by the owner
-                || !vc.getOwner().equalsPrincipal(getUser()))) {
+                || !(vc.getOwner().equalsPrincipal(getUser()) || vc.getOwner().getName().equalsIgnoreCase("anonymous")) )) {
             logger.warn("User {} attempts to edit virtual collection {} with state {} owned by {}", new Object[]{getUser().getName(), vc.getId(), vc.getState(), vc.getOwner().getName()});
             throw new UnauthorizedInstantiationException(CreateAndEditVirtualCollectionPage.class);
         }
