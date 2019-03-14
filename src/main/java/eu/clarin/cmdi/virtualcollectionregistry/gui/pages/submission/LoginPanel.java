@@ -18,6 +18,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LoginPage;
 import org.apache.wicket.RestartResponseException;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
@@ -27,16 +28,22 @@ import org.apache.wicket.model.Model;
  * @author wilelb
  */
 public class LoginPanel extends Panel {
-    
+
     public LoginPanel(String id) {
-        super(id);
-         Link submitButton = new Link("btn-login", new Model("Login now to continue")) {
+        super(id);       
+    }
+    
+    @Override
+    public void onBeforeRender() {
+         add(new Label("label", "Not logged in"));
+        Link submitButton = new Link("btn-login", new Model("Login now to continue")) {
             @Override
             public void onClick() {
                 throw new RestartResponseException(LoginPage.class);
-            }             
-         };      
-        
-         add(submitButton);
+            }
+        };
+        submitButton.add(new Label("btn_label", "Click here to login"));
+        add(submitButton);
+        super.onBeforeRender();
     }
 }
