@@ -6,7 +6,8 @@
 <head />
 <body>
     <wicket:extend>
-       
+        <div wicket:id="pnl_submission"></div>
+        
         <form wicket:id="form">
             
             <div class="panel-group" id="accordion">
@@ -73,7 +74,7 @@
             </div>
             
             <button wicket:id="submit" class="btn btn-default">[SUBMIT]</button>
-        
+            <button wicket:id="cancel" class="btn btn-default"><span wicket:id="cancel_label">[CANCEL]</span></button>
         </form>
         
     </wicket:extend>
