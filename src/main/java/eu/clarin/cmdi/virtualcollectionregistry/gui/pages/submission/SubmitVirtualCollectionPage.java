@@ -58,18 +58,21 @@ public class SubmitVirtualCollectionPage extends BasePage {
             logger.error("Invalid collection type: {}",type_string);
         }
         
-        //Set proper content panel based on 
-        Panel pnl = new EmptyPanel("panel");
+           
         if (type != null) {
             SubmissionUtils.checkSubmission( (WebRequest)RequestCycle.get().getRequest(), (WebResponse)RequestCycle.get().getResponse(), getSession(), type);     
             if(!isSignedIn()) {
-                pnl = new LoginPanel("panel");
+                //Set proper content panel based on      
+                add(new Label("type", new Model(type.toString())));
+                add(new LoginPanel("panel"));
+            } else {
+                //Already loging, so redirect to creation page
+                //TODO: show choice to add to an existing collection or create a new collection
+                throw new RestartResponseException(CreateAndEditVirtualCollectionPage.class);
             }
         }
-        
-        //Add componenets
-        add(new Label("type", new Model(type == null ? "Unkown" : type.toString())));
-        add(pnl);
+
+        //TODO: show error for invalid type?
         
         /** cascades the call to its children */
         super.onBeforeRender();
