@@ -55,18 +55,44 @@ public class SubmissionUtils {
         }
     }
     
+    /**
+     * Try to obtain a meaningful username from the headers sent by the client in
+     * case of basic or shibboleth based authentication.
+     * 
+     * @param request
+     * @return 
+     */
     private static String getUserAuthWorkaround(WebRequest request) {       
-        String username = null;
+        //Basic authentication
         String authz = request.getHeader("authorization");
-        String[] p = authz.split(" ");
-        if(p[0].equalsIgnoreCase("basic")) {
-            byte[] decodedBytes = Base64.getDecoder().decode(p[1]);
-            String decodedString = new String(decodedBytes);
-            String[] p2 = decodedString.split(":");
-            username = p2[0];
+        if(authz != null) {
+            String[] p = authz.split(" ");
+            if(p[0].equalsIgnoreCase("basic")) {
+                byte[] decodedBytes = Base64.getDecoder().decode(p[1]);
+                String decodedString = new String(decodedBytes);
+                String[] p2 = decodedString.split(":");
+                return p2[0];
+            }
         }
         
-        return username;
+        //SAML authentication        
+        authz = request.getHeader("auth_type");
+        if(authz != null && authz.equalsIgnoreCase("shibboleth")) {
+            String username = request.getHeader("oid-edupersonprincipalname");
+            if(username != null) {
+                return username;
+            }
+            username = request.getHeader("mace-edupersonprincipalname");
+            if(username != null) {
+                return username;
+            }
+            username = request.getHeader("edupersontargetedid");
+            if(username != null) {
+                return username;
+            }
+        }
+        
+        return null;
     }
     
     /**
@@ -99,7 +125,7 @@ public class SubmissionUtils {
      * @return 
      */
     public static VirtualCollection checkSubmission(WebRequest request, WebResponse response, ApplicationSession session, VirtualCollection.Type type) {          
-        debugHttpHeaders(request);
+        //debugHttpHeaders(request);
         final String username = getUserAuthWorkaround(request);
 
         //Get user principal from the server context. If this is null, try the username
@@ -113,6 +139,8 @@ public class SubmissionUtils {
                     return username;
                 }        
             };
+        } else if (principal != null) {
+            logger.info("Using username={} from principal", principal.getName());
         }
         
         if(principal == null) {
@@ -128,17 +156,16 @@ public class SubmissionUtils {
         String reproducibilityNotice = params.getParameterValue("reproducibilityNotice").toString();       
         
         String val = params.getParameterValue("reproducibility").toString();
-        VirtualCollection.Reproducibility reproducibility = null;
+        VirtualCollection.Reproducibility reproducibility = VirtualCollection.Reproducibility.INTENDED;
         if(val != null && !val.isEmpty()) {
             reproducibility = VirtualCollection.Reproducibility.valueOf(val);
         }
         
         val = params.getParameterValue("purpose").toString();
-        VirtualCollection.Purpose purpose = null;
+        VirtualCollection.Purpose purpose = VirtualCollection.Purpose.REFERENCE;
         if(val != null && !val.isEmpty()) {
             purpose = VirtualCollection.Purpose.valueOf(val);
         }
-        
         
        VirtualCollection vc = null; 
         try {
