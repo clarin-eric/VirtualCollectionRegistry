@@ -1,8 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
-import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
-import eu.clarin.cmdi.wicket.components.pid.PersistentIdentifieable;
 import eu.clarin.cmdi.wicket.components.pid.PidPanel;
 
 import org.apache.wicket.AttributeModifier;

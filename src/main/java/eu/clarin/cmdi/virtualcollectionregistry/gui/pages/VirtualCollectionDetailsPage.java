@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
+import com.google.common.collect.Lists;
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.DateConverter;
@@ -11,12 +12,16 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Type;
 import eu.clarin.cmdi.wicket.components.citation.CitationPanelFactory;
+import eu.clarin.cmdi.wicket.components.panel.BootstrapDropdown;
+import eu.clarin.cmdi.wicket.components.panel.BootstrapDropdown.DropdownMenuItem;
 import eu.clarin.cmdi.wicket.components.panel.BootstrapPanelBuilder;
 import eu.clarin.cmdi.wicket.components.pid.PersistentIdentifieable;
 import eu.clarin.cmdi.wicket.components.pid.PidPanel;
+import java.io.Serializable;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
+import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -24,6 +29,7 @@ import java.util.Locale;
 import org.apache.wicket.Component;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authorization.UnauthorizedActionException;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
@@ -36,6 +42,7 @@ import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvid
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
+import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.link.PopupSettings;
@@ -47,6 +54,7 @@ import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.INamedParameters.NamedPair;
@@ -319,11 +327,11 @@ public class VirtualCollectionDetailsPage extends BasePage {
     private class ResourcesPanel extends Panel {
         public ResourcesPanel(String id, final IModel<VirtualCollection> model) {
             super(id);            
-            add(buildResourceTabele("resourcesTable", model));
+            add(buildResourcesTable("resourcesTable", model));
         }
     }
     
-    private DataTable<Resource, String> buildResourceTabele(String id, final IModel<VirtualCollection> model) {
+    private DataTable<Resource, String> buildResourcesTable(String id, final IModel<VirtualCollection> model) {
         @SuppressWarnings("rawtypes")
             final List<IColumn<Resource, String>> cols = new ArrayList<>();
             cols.add(new PropertyColumn<Resource, String>(
@@ -355,11 +363,11 @@ public class VirtualCollectionDetailsPage extends BasePage {
 
             //Make sure to check all possible actions. Only add action column if there
             //is more than one action enabled.
-            if (vcrConfig.isSwitchboardEnabledForResources()) {
+            if (vcrConfig.isSwitchboardEnabledForResources()) {     
                 cols.add(new AbstractColumn<Resource, String>(Model.of("Action")) {
                     @Override
                     public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> rowModel) {
-                        item.add(new ActionLinkPanel(componentId, rowModel));
+                        item.add(getDropdown(componentId, rowModel));
                     }
 
                     @Override
@@ -377,7 +385,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
 
                 @Override
                 public IModel<Resource> model(Resource resource) {
-                    return new VolatileEntityModel<Resource>(resource);
+                    return new VolatileEntityModel<>(resource);
                 }
 
                 @Override
@@ -392,14 +400,44 @@ public class VirtualCollectionDetailsPage extends BasePage {
             return resourcesTable;
     }
     
+    private BootstrapDropdown getDropdown(String id, IModel<Resource> model) {
+         List options = 
+            Lists.newArrayList(new DropdownMenuItem("Process with Language Resource Switchboard", "glyphicon glyphicon-open-file") {
+                @Override
+                protected AbstractLink getLink(String id) {
+                    AbstractLink link = UIUtils.getLrsRedirectAjaxLinkForResource(id, model, vcrConfig.getSwitchboardEndpoint());
+                    return link;
+                }
+            });                
+         
+        BootstrapDropdown dropDown = new BootstrapDropdown(id, new ListModel(options)) {
+            @Override
+            protected Serializable getButtonClass() {
+                return null; //render as link, not button
+            }
+
+            @Override
+            protected Serializable getButtonIconClass() {
+                return "glyphicon glyphicon-option-horizontal";
+            }
+
+            @Override
+            protected boolean showCaret() {
+                return false;
+            }
+        };
+                
+        return dropDown;
+    }
+    
     private class GeneratedByPanel extends Panel {
         public GeneratedByPanel(String id, final IModel<VirtualCollection> model) {
             super(id);
             GeneratedBy gb = model.getObject().getGeneratedBy();
-            add(new BasicTextPanel("description", "Name", new Model(gb.getDescription())));
-            add(new BasicTextPanel("uri", "URI", new Model(gb.getURI())));
-            add(new BasicTextPanel("query.profile", "Query profile", new Model(gb.getQuery().getProfile())));
-            add(new BasicTextPanel("query.value", "Query value", new Model(gb.getQuery().getValue())));
+            add(new BasicTextPanel("description", "Name", new Model(gb == null ? "" : gb.getDescription())));
+            add(new BasicTextPanel("uri", "URI", new Model(gb == null ? "" : gb.getURI())));
+            add(new BasicTextPanel("query.profile", "Query profile", new Model(gb == null ? "" : gb.getQuery().getProfile())));
+            add(new BasicTextPanel("query.value", "Query value", new Model(gb == null ? "" : gb.getQuery().getValue())));
         }
     }
     
