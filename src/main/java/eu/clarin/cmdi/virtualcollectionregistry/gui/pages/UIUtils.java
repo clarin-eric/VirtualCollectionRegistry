@@ -73,7 +73,7 @@ public class UIUtils {
                     throw new RedirectToUrlException(UIUtils.getLanguageSwitchboardUrl(model.getObject(), endpoint));
                 }
         };
-        UIUtils.addTooltip(lrsLink, TOOLTIP_COLLECTION_TEXT);
+        //UIUtils.addTooltip(lrsLink, TOOLTIP_COLLECTION_TEXT);
         return lrsLink;
     }
     
@@ -85,7 +85,7 @@ public class UIUtils {
                     throw new RedirectToUrlException(UIUtils.getLanguageSwitchboardUrlForResource(model.getObject(), endpoint));
                 }
         };
-        UIUtils.addTooltip(lrsLink, TOOLTIP_RESOURCE_TEXT);
+        //UIUtils.addTooltip(lrsLink, TOOLTIP_RESOURCE_TEXT);
         return lrsLink;
     }
     

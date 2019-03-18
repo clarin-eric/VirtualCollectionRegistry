@@ -364,7 +364,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
             //Make sure to check all possible actions. Only add action column if there
             //is more than one action enabled.
             if (vcrConfig.isSwitchboardEnabledForResources()) {     
-                cols.add(new AbstractColumn<Resource, String>(Model.of("Action")) {
+                cols.add(new AbstractColumn<Resource, String>(Model.of("Actions")) {
                     @Override
                     public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> rowModel) {
                         item.add(getDropdown(componentId, rowModel));
