@@ -6,10 +6,8 @@
     <head />
     <body>
         <wicket:panel>
-            <div wicket:id="description">[DESCRIPTION]</div>
-            <div wicket:id="uri">[URI]</div>
-            <div wicket:id="query.profile">[QUERY PROFILE]</div>
-            <div wicket:id="query.value">[QUERY VALUE]</div>
+            <div class="col-lg-2 col-md-12"><label wicket:id="label" class="lbl">[NAME]</label>:</div>
+            <div class="col-lg-10 col-md-12"><ul class="value"><li wicket:id="values"><span wicket:id="value"></span></li></ul></div>
         </wicket:panel>        
     </body>
 </html>

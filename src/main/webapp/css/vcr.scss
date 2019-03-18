@@ -173,6 +173,29 @@ div.betabadge {
     }
 }
 
+label {
+    display: inline;
+    text-align: right;
+}
+
+.lbl {
+    font-weight: bold;
+}
+
+.value {
+    margin-left: 10px;
+}
+
+/* 
+    hack to properly render empty bootstrap cell 
+    Reference:
+        https://stackoverflow.com/questions/37079564/empty-content-in-bootstrap-grid-cell-causes-cell-to-not-render
+*/
+.empty::after {
+  content: ".";
+  visibility:hidden;
+}
+
 #aboutlogos img {
     max-height: 6em;
     margin: 1em;

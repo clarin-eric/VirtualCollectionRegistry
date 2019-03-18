@@ -16,6 +16,7 @@
  */
 package eu.clarin.cmdi.wicket.components.panel;
 
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 
 /**
@@ -25,5 +26,6 @@ import org.apache.wicket.markup.html.panel.Panel;
 public class EmptyPanel extends Panel {
     public EmptyPanel(String id) {
         super(id);
+        add(new Label("content", " "));
     }
 }

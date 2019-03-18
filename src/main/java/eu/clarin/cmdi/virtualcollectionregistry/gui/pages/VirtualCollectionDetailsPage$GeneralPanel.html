@@ -6,59 +6,15 @@
     <head />
     <body>
         <wicket:panel>
- 
-            <div class="property">
-                <label>Name</label>
-                <div wicket:id="name"></div>
-            </div>
-            <div class="property">
-                <label>Type</label>
-                <div wicket:id="type"></div>
-            </div>
-            <div class="property">
-                <label>Creation Date</label>
-                <div wicket:id="creationDate"></div>
-            </div>
-            <wicket:enclosure child="description">
-                <div class="property">
-                    <label>Description</label>
-                    <div wicket:id="description"></div>
-                </div>
-            </wicket:enclosure>
-            <wicket:enclosure child="purpose">
-                <div class="property">
-                    <label>Purpose</label>
-                    <div wicket:id="purpose"></div>
-                </div>
-            </wicket:enclosure>
-            <wicket:enclosure child="reproducibility">
-                <div class="property">
-                    <label>Reproducibility</label>
-                    <div wicket:id="reproducibility"></div>
-                </div>
-            </wicket:enclosure>
-            <wicket:enclosure child="reproducibilityNotice">
-                <div class="property">
-                    <label>Reproducibility Notice</label>
-                    <div wicket:id="reproducibilityNotice"></div>
-                </div>
-            </wicket:enclosure>
-            <wicket:enclosure child="pidLink">
-                <div class="property">
-                    <label>Persistent identifier</label>
-                    <div wicket:id="pidLink" style="margin: 0px"></div> 
-                </div>                   
-            </wicket:enclosure>   
-
-            <wicket:enclosure child="keywords">
-                <div class="property">
-                    <label>Keywords</label>
-                    <div>
-                        <ul class="keywords"><li wicket:id="keywords"><span wicket:id="keyword"></span></li></ul>
-                    </div>
-                </div>
-            </wicket:enclosure>
-            
+            <div wicket:id="name">[NAME]</div>
+            <div wicket:id="type">[TYPE]</div>
+            <div wicket:id="creationDate">[CREATION DATE]</div>
+            <div wicket:id="description">[DESCRIPTION]</div>
+            <div wicket:id="purpose">[PURPOSE]</div>
+            <div wicket:id="reproducibility">[REPRODUCIBILITY]</div>
+            <div wicket:id="reproducibilityNotice">[REPRODUCIBILITY NOTICE]</div>
+            <div wicket:id="pid">[PID]</div>
+            <div wicket:id="keywords">[KEYWORDS]</div>
          </wicket:panel>        
     </body>
 </html>
