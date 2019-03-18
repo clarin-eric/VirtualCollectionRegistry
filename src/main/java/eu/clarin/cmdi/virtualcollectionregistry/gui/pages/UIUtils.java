@@ -38,8 +38,8 @@ public class UIUtils {
     
     private static Logger logger = LoggerFactory.getLogger(UIUtils.class);
     
-    private final static String TOOLTIP_COLLECTION_TEXT = "Open this collection in the language resource switchboard";
-    private final static String TOOLTIP_RESOURCE_TEXT = "Open this resource in the language resource switchboard";
+    private final static String TOOLTIP_COLLECTION_TEXT = "Process this collection with the language resource switchboard";
+    private final static String TOOLTIP_RESOURCE_TEXT = "Process this resource with the language resource switchboard";
     
     public final static String DEFAULT_TOOLTIP_DATA_PLACEMENT = "bottom";
     
