@@ -38,7 +38,8 @@ public class UIUtils {
     
     private static Logger logger = LoggerFactory.getLogger(UIUtils.class);
     
-    private final static String TOOLTIP_TEXT = "Open this collection in the language resurce switchboard";
+    private final static String TOOLTIP_COLLECTION_TEXT = "Open this collection in the language resource switchboard";
+    private final static String TOOLTIP_RESOURCE_TEXT = "Open this resource in the language resource switchboard";
     
     public final static String DEFAULT_TOOLTIP_DATA_PLACEMENT = "bottom";
     
@@ -72,7 +73,7 @@ public class UIUtils {
                     throw new RedirectToUrlException(UIUtils.getLanguageSwitchboardUrl(model.getObject(), endpoint));
                 }
         };
-        UIUtils.addTooltip(lrsLink, TOOLTIP_TEXT);
+        UIUtils.addTooltip(lrsLink, TOOLTIP_COLLECTION_TEXT);
         return lrsLink;
     }
     
@@ -84,7 +85,7 @@ public class UIUtils {
                     throw new RedirectToUrlException(UIUtils.getLanguageSwitchboardUrlForResource(model.getObject(), endpoint));
                 }
         };
-        UIUtils.addTooltip(lrsLink, TOOLTIP_TEXT);
+        UIUtils.addTooltip(lrsLink, TOOLTIP_RESOURCE_TEXT);
         return lrsLink;
     }
     
