@@ -121,6 +121,7 @@ public class VirtualCollectionCMDICreatorImpl implements VirtualCollectionCMDICr
         final ResourceProxy landingPageResourceProxy = new ResourceProxy();
         final ResourceType landingPageResourceProxyType = new ResourceType();
         landingPageResourceProxyType.setValue(ResourcetypeSimple.LANDING_PAGE);
+        landingPageResourceProxy.setId("LANDINGPAGE-"+vc.getId());
         landingPageResourceProxy.setResourceType(landingPageResourceProxyType);
         landingPageResourceProxy.setResourceRef(vc.getUri()); 
         proxyList.add(landingPageResourceProxy);
