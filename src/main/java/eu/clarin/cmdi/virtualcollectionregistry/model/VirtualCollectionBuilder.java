@@ -38,6 +38,14 @@ public class VirtualCollectionBuilder {
         return this.vc;
     }
 
+    public VirtualCollectionBuilder setOwner(String owner) throws VirtualCollectionRegistryUsageException {
+        if (owner == null) {
+            throw new VirtualCollectionRegistryUsageException("No owner specified for collection");
+        }
+        this.vc.setOwner(new User(owner));
+        return this;
+    }
+    
     public VirtualCollectionBuilder setName(String name) throws VirtualCollectionRegistryUsageException {
         if (name == null) {
             throw new VirtualCollectionRegistryUsageException("No name specified for collection");

@@ -4,11 +4,6 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
          id="WebApp_ID" version="2.5">
     <display-name>CLARIN Virtual Collection Registry</display-name>
-
-    <context-param>
-        <param-name>configuration</param-name>
-        <param-value>deployment</param-value>
-    </context-param>
         
     <!-- Shibboleth -->
     <context-param>
@@ -73,13 +68,6 @@
         <init-param>
             <param-name>applicationFactoryClassName</param-name>
             <param-value>org.apache.wicket.spring.SpringWebApplicationFactory</param-value>
-        </init-param>
-        <init-param>
-            <param-name>configuration</param-name>
-            <!-- 
-           <param-value>deployment</param-value>
-            -->
-            <param-value>development</param-value>
         </init-param>
     </filter>
 
