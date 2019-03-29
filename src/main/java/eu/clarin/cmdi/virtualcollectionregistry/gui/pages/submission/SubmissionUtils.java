@@ -222,8 +222,10 @@ public class SubmissionUtils {
     
     private static List<String> getAsStringList(List<StringValue> input) {
         List<String> result = new ArrayList<>();
-        for(StringValue p : input) {
-            result.add(p.toString());
+        if(input != null) {
+            for(StringValue p : input) {
+                result.add(p.toString());
+            }
         }
         return result;
     }
