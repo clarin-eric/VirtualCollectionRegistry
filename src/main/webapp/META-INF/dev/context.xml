@@ -47,7 +47,7 @@
     
     <!-- Switchboard endpoint -->
     <Parameter name="eu.clarin.cmdi.vcr.lrs.endpoint" 
-               value="https://switchboard.clarin.eu/#/xyz" 
+               value="https://switchboard.clarin.eu/#/vcr" 
                override="false"/>
     
     <!-- Enable switchboard ingegration for resources -->
