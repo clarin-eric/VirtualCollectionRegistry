@@ -81,7 +81,7 @@ public class UIUtils {
         final AjaxLink<Resource> lrsLink
             = new AjaxLink<Resource>(id, model) {
                 @Override
-                public void onClick(AjaxRequestTarget target) {
+                public void onClick(AjaxRequestTarget target) {                    
                     throw new RedirectToUrlException(UIUtils.getLanguageSwitchboardUrlForResource(model.getObject(), endpoint));
                 }
         };
@@ -95,7 +95,12 @@ public class UIUtils {
     }
     
     public static String getLanguageSwitchboardUrlForResource(Resource r, String endpoint) {
-        return buildSwitchboardUrl(endpoint, r.getRef(), "application/xml", "en");        
+        String ref = r.getRef();
+        if (r.hasPersistentIdentifier()) {
+            ref = r.getPidUri();
+        }
+        String url = buildSwitchboardUrl(endpoint, r.getRef(), "application/xml", "en");        
+        return url;
     }
     
     public static String buildSwitchboardUrl(String switchboardEndpoint, String href, String mimeType, String languageCode) {
