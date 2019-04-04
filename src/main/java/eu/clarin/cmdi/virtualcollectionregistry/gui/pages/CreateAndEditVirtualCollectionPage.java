@@ -155,12 +155,13 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
                 logger.info("Processing submitted collection");
                 vc = submitted_vc;
                 //Check if any of the properties require updating
-                if(vc.getOwner() == null) {
-                    Principal p = getUser();
-                    vc.setOwner(new User(p.getName()));
+                Principal p = getUser();
+                if(vc.getOwner() == null) {                    
+                    vc.setOwner(new User(p.getName()));                    
+                }
+                if(vc.getCreators().isEmpty()) {
                     vc.getCreators().add(new Creator(p.getName()));
                 }
-                
                 this.submissionMode = true;
             }
         }
