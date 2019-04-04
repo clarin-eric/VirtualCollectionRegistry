@@ -99,7 +99,7 @@ public class UIUtils {
         if (r.hasPersistentIdentifier()) {
             ref = r.getPidUri();
         }
-        String url = buildSwitchboardUrl(endpoint, r.getRef(), "application/xml", "en");        
+        String url = buildSwitchboardUrl(endpoint, ref, "application/xml", "en");        
         return url;
     }
     

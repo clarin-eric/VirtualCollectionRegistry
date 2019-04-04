@@ -44,7 +44,7 @@ public class SubmissionUtils {
     private static Logger logger = LoggerFactory.getLogger(SubmissionUtils.class);
     
     private final static String COLLECTION_ATTRIBUTE_NAME="submitted_collection";
-    private final static String RETURN_ATTRIBUTE_NAME="return";
+    //private final static String RETURN_ATTRIBUTE_NAME="return";
     
     private static void debugHttpHeaders(WebRequest request) {
          HttpServletRequest r = (HttpServletRequest)request.getContainerRequest();
@@ -125,7 +125,6 @@ public class SubmissionUtils {
      * @return 
      */
     public static VirtualCollection checkSubmission(WebRequest request, WebResponse response, ApplicationSession session, VirtualCollection.Type type) {          
-        //debugHttpHeaders(request);
         final String username = getUserAuthWorkaround(request);
 
         //Get user principal from the server context. If this is null, try the username
@@ -143,12 +142,6 @@ public class SubmissionUtils {
             logger.info("Using username={} from principal", principal.getName());
         }
         
-        if(principal == null) {
-            //Not authenticated
-            logger.warn("Not authenticated");
-            return null;
-        }
- 
         IRequestParameters params = request.getPostParameters();
         
         String name = params.getParameterValue("name").toString();
@@ -167,14 +160,14 @@ public class SubmissionUtils {
             purpose = VirtualCollection.Purpose.valueOf(val);
         }
         
-       VirtualCollection vc = null; 
+        VirtualCollection vc = null; 
         try {
             
             switch(type) {
                 case EXTENSIONAL:                 
                     vc = new VirtualCollectionBuilder()
                         .setName(name)
-                        .setOwner(principal.getName()) 
+                        .setOwner(principal) 
                         .setType(VirtualCollection.Type.EXTENSIONAL)
                         .addCreator(principal)
                         .addMetadataResources(getAsStringList(params.getParameterValues("metadataUri")))
@@ -194,7 +187,7 @@ public class SubmissionUtils {
                     params.getParameterValue("queryValue");
                      vc = new VirtualCollectionBuilder()
                         .setName(name)
-                        .setOwner(principal.getName()) 
+                        .setOwner(principal) 
                         .setType(VirtualCollection.Type.EXTENSIONAL)
                         .addCreator(principal)                    
                         .addKeywords(getAsStringList(params.getParameterValues("keyword")))
@@ -207,14 +200,16 @@ public class SubmissionUtils {
                     break;
             }
             
-            storeCollection(session, vc);      //Serialize the collection to the current session
-            Cookie cookie2 = new Cookie(RETURN_ATTRIBUTE_NAME, type.toString().toLowerCase()); //TODO: how to make this dynamic
-            cookie2.setPath("/vcr");
-            response.addCookie(cookie2);
-            
+            storeCollection(session, vc);      //Serialize the collection to the current session           
             logger.info("Build virtual collection");
         } catch(VirtualCollectionRegistryUsageException ex) {
             logger.error("Failed to build virtual collection", ex);
+        }
+        
+        if(principal == null) {
+            //Not authenticated
+            logger.warn("Not authenticated");
+            return null;
         }
         
         return vc;
@@ -238,11 +233,13 @@ public class SubmissionUtils {
     }
     
     protected static void storeCollection(ApplicationSession session, VirtualCollection vc) {
+        logger.info("Storing collection into session: "+session.getId());
         session.setAttribute(COLLECTION_ATTRIBUTE_NAME, vc); 
         //storeCollectionInCookie
     }
     
     public static VirtualCollection retrieveCollection(ApplicationSession session) {
+        logger.info("Loading collection from session: "+session.getId());
         VirtualCollection vc = (VirtualCollection)session.getAttribute(COLLECTION_ATTRIBUTE_NAME);        
         //VirtualCollection vc = readCollectionFromCookie();
         return vc;

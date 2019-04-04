@@ -19,10 +19,8 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BasePage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.CreateAndEditVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import eu.clarin.cmdi.wicket.components.panel.EmptyPanel;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebRequest;
@@ -44,6 +42,7 @@ public class SubmitVirtualCollectionPage extends BasePage {
     protected void onBeforeRender() {     
         VirtualCollection vc = SubmissionUtils.retrieveCollection(getSession());
         if(vc != null) {        
+            logger.info("Redirect start");
             throw new RestartResponseException(CreateAndEditVirtualCollectionPage.class);
         }
         
@@ -66,8 +65,9 @@ public class SubmitVirtualCollectionPage extends BasePage {
                 add(new Label("type", new Model(type.toString())));
                 add(new LoginPanel("panel"));
             } else {
-                //Already loging, so redirect to creation page
+                //Already logged in, so redirect to creation page
                 //TODO: show choice to add to an existing collection or create a new collection
+                logger.info("Redirect logged in");
                 throw new RestartResponseException(CreateAndEditVirtualCollectionPage.class);
             }
         }

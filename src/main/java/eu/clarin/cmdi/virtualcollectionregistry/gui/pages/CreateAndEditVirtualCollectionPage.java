@@ -22,6 +22,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.ResourceInput;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmissionUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
+import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Purpose;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Reproducibility;
@@ -153,6 +154,13 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
             if(submitted_vc != null) {
                 logger.info("Processing submitted collection");
                 vc = submitted_vc;
+                //Check if any of the properties require updating
+                if(vc.getOwner() == null) {
+                    Principal p = getUser();
+                    vc.setOwner(new User(p.getName()));
+                    vc.getCreators().add(new Creator(p.getName()));
+                }
+                
                 this.submissionMode = true;
             }
         }
@@ -510,7 +518,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
                 && ( //only allow editing of private & public
                 !(vc.getState() == VirtualCollection.State.PRIVATE || vc.getState() == VirtualCollection.State.PUBLIC)
                 // only allow editing by the owner
-                || !(vc.getOwner().equalsPrincipal(getUser()) || vc.getOwner().getName().equalsIgnoreCase("anonymous")) )) {
+                || vc.getOwner() == null || !(vc.getOwner().equalsPrincipal(getUser()) || vc.getOwner().getName().equalsIgnoreCase("anonymous")) )) {
             logger.warn("User {} attempts to edit virtual collection {} with state {} owned by {}", new Object[]{getUser().getName(), vc.getId(), vc.getState(), vc.getOwner().getName()});
             throw new UnauthorizedInstantiationException(CreateAndEditVirtualCollectionPage.class);
         }

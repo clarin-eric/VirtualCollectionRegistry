@@ -34,15 +34,18 @@ public class VirtualCollectionBuilder {
         this.vc.setCreationDate(new Date());
     }
 
+    public VirtualCollectionBuilder(VirtualCollection vc) {
+        this.vc = vc;
+    }
+    
     public VirtualCollection build() {
         return this.vc;
     }
 
-    public VirtualCollectionBuilder setOwner(String owner) throws VirtualCollectionRegistryUsageException {
-        if (owner == null) {
-            throw new VirtualCollectionRegistryUsageException("No owner specified for collection");
+    public VirtualCollectionBuilder setOwner(Principal p) throws VirtualCollectionRegistryUsageException {
+        if (p != null && p.getName() != null) {
+            this.vc.setOwner(new User(p.getName()));
         }
-        this.vc.setOwner(new User(owner));
         return this;
     }
     
@@ -108,11 +111,10 @@ public class VirtualCollectionBuilder {
     }
     
     public VirtualCollectionBuilder addCreator(Principal p) throws VirtualCollectionRegistryUsageException {
-        if(p == null || p.getName() == null) {
-            throw new VirtualCollectionRegistryUsageException("Cannot set creator from empty principal");
+        if(p != null && p.getName() != null) {
+            Creator c = new Creator(p.getName());
+            this.vc.getCreators().add(c);
         }
-        Creator c = new Creator(p.getName());
-        this.vc.getCreators().add(c);
         return this;
     }
     
