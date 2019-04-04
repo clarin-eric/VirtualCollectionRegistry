@@ -111,7 +111,7 @@ public class VirtualCollectionBuilder {
     }
     
     public VirtualCollectionBuilder addCreator(Principal p) throws VirtualCollectionRegistryUsageException {
-        if(p != null && p.getName() != null) {
+            if(p != null && p.getName() != null && !p.getName().equalsIgnoreCase("anonymous")) {
             Creator c = new Creator(p.getName());
             this.vc.getCreators().add(c);
         }
