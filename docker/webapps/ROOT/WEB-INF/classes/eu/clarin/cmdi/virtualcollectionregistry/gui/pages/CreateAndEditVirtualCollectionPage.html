@@ -1,0 +1,82 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+<head />
+<body>
+    <wicket:extend>
+        <div wicket:id="pnl_submission"></div>
+        
+        <form wicket:id="form">
+            
+            <div class="panel-group" id="accordion">
+                <div class="panel panel-default">
+                    <div class="panel-heading">
+                        <h4 class="panel-title">Create a new virtual collection</h4>
+                    </div>
+
+                    <div class="panel-body container-fluid">
+                        <!-- Name -->                            
+                        <div class="col-xs-12">
+                            <label wicket:id="lbl_name">[Name]</label>                            
+                        </div>
+                        <div class="col-xs-12" wicket:id="tt_name">
+                            <input wicket:id="name" type="text" maxlength="255" class="max-width" />
+                        </div>
+                        <div class="col-xs-12" id="feedback" wicket:id="feedback_name">[Feedback]</div>
+
+                        <!-- Description -->                            
+                        <div class="col-xs-12">
+                            <label wicket:id="lbl_description">[Name]</label>   
+                        </div>
+                        <div class="col-xs-12" wicket:id="tt_description ">
+                            <textarea wicket:id="description" type="text" rows="8"></textarea>
+                        </div>
+                        <div class="col-xs-12" id="feedback" wicket:id="feedback_description">[Feedback]</div>
+
+                        <!-- Purpose -->  
+                        <div wicket:id="purpose">[PURPOSE]</div>
+
+                        <!-- Reproducibility -->     
+                        <div wicket:id="reproducibility">[REPRODUCIBILITY]</div>
+
+                        <!-- Reproducibility notice -->
+                        <div class="col-xs-12">
+                            <label wicket:id="lbl_reproducibility_notice">[Name]</label>   
+                        </div>
+                        <div class="col-xs-12" wicket:id="tt_reproducibility_notice ">
+                            <textarea wicket:id="reproducibility_notice" type="text" rows="8"></textarea>
+                        </div>
+                        <div class="col-xs-12" id="feedback" wicket:id="feedback_reproducibility_notice">[Feedback]</div>
+
+                        <!-- Keywords -->
+                        <div wicket:id="keywords">[KEYWORDS]</div>
+                        <div class="col-xs-12" id="feedback" wicket:id="feedback_keywords">[Feedback]</div>
+                         
+                        <!-- Authors -->
+                        <div wicket:id="authors">[AUTHORS]</div>
+                        <div class="col-xs-12 col-xs-offset-0" id="feedback" wicket:id="feedback_authors">[Feedback]</div>
+                        
+                        <!-- Type -->     
+                        <div wicket:id="type">[TYPE]</div>
+                        <div class="col-xs-12 col-xs-offset-0" id="feedback" wicket:id="feedback_type">[Feedback]</div>
+                        
+                        <!-- Resources -->
+                        <div wicket:id="resources">[RESOURCES]</div>
+                        <div class="col-xs-12 col-xs-offset-0" id="feedback" wicket:id="feedback_resources">[Feedback]</div>
+
+                        <!--  Query -->
+                        <div wicket:id="query">[QUERY]</div>
+                        <div class="col-xs-12 col-xs-offset-0" id="feedback" wicket:id="feedback_query">[Feedback]</div>
+                    </div>
+                </div>
+            </div>
+            
+            <button wicket:id="submit" class="btn btn-default">[SUBMIT]</button>
+            <button wicket:id="cancel" class="btn btn-default"><span wicket:id="cancel_label">[CANCEL]</span></button>
+        </form>
+        
+    </wicket:extend>
+</body>
+</html>

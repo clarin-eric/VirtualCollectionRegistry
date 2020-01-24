@@ -21,7 +21,6 @@ import java.io.Serializable;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
-import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,7 +28,6 @@ import java.util.Locale;
 import org.apache.wicket.Component;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authorization.UnauthorizedActionException;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
@@ -165,6 +163,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
 
     public VirtualCollectionDetailsPage(final IModel<VirtualCollection> model, final PageParameters params) {
         super(new CompoundPropertyModel<VirtualCollection>(model));
+        //setPageStateless(true);
         this.params = params;
         
         //Redirect to homepage if the model is not set
@@ -212,7 +211,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
                 .setVisible(model.getObject().getType() == Type.INTENSIONAL)
                 .build());
     }
-
+    
     private  class HeaderPanel extends Panel {
         public HeaderPanel(String id, final IModel<VirtualCollection> model) {
             super(id, new CompoundPropertyModel<VirtualCollection>(model));

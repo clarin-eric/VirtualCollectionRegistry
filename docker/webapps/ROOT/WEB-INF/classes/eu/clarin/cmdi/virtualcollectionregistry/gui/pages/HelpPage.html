@@ -1,0 +1,128 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+    <head />
+    <body>
+        <wicket:extend>
+            <div id="help">
+                <h1>Glossary</h1>
+                <h2>Collection types</h2>
+                <dl>
+                    <dt>extensional</dt>
+                    <dd>
+                        Type of virtual collection that explicitly enumerates the references to resources or metadata documents that make up the collection
+                        <dl>
+                            <dt>resources</dt>
+                            <dd>
+                                The members that make up an extensional virtual collection by means of a persistent reference.
+                                These members may be of type <em>metadata</em> for referencing metadata, or <em>resource</em> for directly referencing a resource.
+                            </dd>
+                        </dl>
+                    </dd>
+
+                    <dt>intensional</dt>
+                    <dd>
+                        Type of virtual collection that defines a query by which the items of the collection can be retrieved ad-hoc from a secondary service <em>(experimental, use at own risk!)</em>
+                        <dl>
+                            <dt>query description</dt>
+                            <dd>
+                                A prose description of the procedure by which the collection items can be retrieved from the external service.
+                            </dd>
+                            <dt>query URI</dt>
+                            <dd>
+                                The location of the service from which the items should be retrieved. This value may be a persistent identifier, but could also be a plain URI although this is advised against for published collections.
+                            </dd>
+                            <dt>query profile</dt>
+                            <dd>
+                                Identifier of the mechanism, i.e. the protocol to be used, by which the members of the virtual collection should be retrieved. A application exploiting the query can use this to use a proper driver to talk to the service. Example: In case of CLARIN-FCS access the endpoint by FCS-compatible means.
+                            </dd>
+                            <dt>query value</dt>
+                            <dd>
+                                The query that should be passed on to the service by which it can look up the items that are part of this collection. This value should be in the query language supported by the service. Example: In case of CLARIN-FCS, this value is the CQL query to be send to the endpoint.
+                            </dd>
+                        </dl>
+                    </dd>
+                </dl>
+
+                <h2>General collection properties</h2>
+                <dl>                    
+                    <dt>purpose</dt>
+                    <dd>
+                        An indication of the intended usage of the present virtual collection:
+                        <dl>
+                            <dt>research</dt>
+                            <dd>
+                                The virtual collection bundles resources that are relevant to a specific research (question).
+                            </dd>
+                            <dt>reference</dt>
+                            <dd>
+                                The virtual collection bundles resources, that are to be cited in a publication.
+                            </dd>
+                            <dt>sample</dt>
+                            <dd>
+                                This virtual collection bundles is intended to serve as an sample for research data
+                            </dd>
+                            <dt>future-use</dt>
+                            <dd>
+                                The purpose of this virtual collection is not specified yet. Used in published collection is advised against.
+                            </dd>
+                        </dl>
+                    </dd>
+
+                    <dt>reproducibility</dt>
+                    <dd>
+                        An indication of the degree to which results obtained from processing of the present collection can be expected to be stable:
+                        <dl>
+                            <dt>intended reproducibility</dt>
+                            <dd>
+                                Processing results can be expected to remain stable
+                            </dd>
+                            <dt>fluctuating reproducibility</dt>
+                            <dd>
+                                Processing results may vary
+                            </dd>
+                            <dt>untended reproducibility</dt>
+                            <dd>
+                                No claims with respect to the stability of the processing results are made
+                            </dd>
+                            <dt>reproducibility note</dt>
+                            <dd>
+                                Optional notes describing the expected reproducibility of processing results in more detail
+                            </dd>
+                        </dl>
+                    </dd>
+
+                    <dt>keyword</dt>
+                    <dd>
+                        A word or short phrase signifying a salient facet of the present virtual collection
+                    </dd>
+
+                    <dt>creators</dt>
+                    <dd>
+                        One or more persons, who created this virtual collection. 
+                    </dd>
+                </dl>
+
+                <h2>REST service</h2>
+                <p>
+                    The Virtual Collection Registry REST service is accessible
+                    at <a wicket:id="restLink"><wicket:container wicket:id="restUrl">[url]</wicket:container></a> (base URL).
+                </p>
+                <p>
+                    Documentation can be found <a href="Protocol.txt">here</a>.
+                    You can also consult the <a wicket:id="wadlLink">WADL</a> file.
+                </p>
+                
+                <h2>OAI provider</h2>
+                <p>
+                    The Virtual Collection Registry OAI provider offers all
+                    published collections as CMDI or Dublin Core metadata
+                    over the OAI/PMH protocol. It is accessible at
+                     <a wicket:id="oaiLink"><wicket:container wicket:id="oaiUrl">[url]</wicket:container></a>.
+                </p>
+            </div>
+        </wicket:extend>
+    </body>
+</html>
