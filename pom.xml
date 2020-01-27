@@ -549,6 +549,8 @@
         </testResources>
 
         <plugins>
+           <!-- plugin is not thread safe -->
+            <!--
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>javacc-maven-plugin</artifactId>
@@ -563,7 +565,7 @@
                     </execution>
                 </executions>
             </plugin>
-
+            -->
             <plugin>
                 <groupId>org.bsc.maven</groupId>
                 <artifactId>maven-processor-plugin</artifactId>
@@ -813,6 +815,7 @@
     </reporting>
 
     <repositories>
+        <!--
         <repository>
             <id>jboss</id>
             <name>JBoss Public Maven Repository Group</name>
@@ -826,7 +829,7 @@
             <url>http://download.java.net/maven/2/</url>
             <layout>default</layout>
         </repository>
-
+        -->
         <repository>
             <id>wiquery</id>
             <name>wiQuery repository</name>
@@ -835,13 +838,22 @@
         </repository>
 
         <repository>
+                <id>CLARIN central proxy</id>
+                <name>CLARIN Repository</name>
+                <url>https://nexus.clarin.eu/repository/central/</url>
+                <snapshots>
+                    <enabled>false</enabled>
+                </snapshots>
+        </repository>
+                
+        <repository>
             <id>clarin</id>
             <name>CLARIN Repository</name>
             <url>https://nexus.clarin.eu/repository/Clarin/</url>
             <layout>default</layout>
         </repository>        
     </repositories>
-
+<!--
     <pluginRepositories>
         <pluginRepository>
             <id>jboss</id>
@@ -850,5 +862,5 @@
             <layout>default</layout>
         </pluginRepository>
     </pluginRepositories>
-
+-->
 </project>
