@@ -550,7 +550,6 @@
 
         <plugins>
            <!-- plugin is not thread safe -->
-            <!--
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>javacc-maven-plugin</artifactId>
@@ -565,7 +564,6 @@
                     </execution>
                 </executions>
             </plugin>
-            -->
             <plugin>
                 <groupId>org.bsc.maven</groupId>
                 <artifactId>maven-processor-plugin</artifactId>
@@ -786,9 +784,11 @@
                         </lifecycleMappingMetadata>
                     </configuration>
                 </plugin>
-                <!-- JAX-B If we e.g. execute on JDK 1.7, we should compile for
-                                Java 7 to get the same (or higher) JAXB API version as
-                used during the xjc execution. -->
+                <!-- 
+                    JAX-B If we e.g. execute on JDK 1.7, we should compile for
+                    Java 7 to get the same (or higher) JAXB API version as
+                    used during the xjc execution. 
+                -->
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
