@@ -16,36 +16,22 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
-import com.sun.jersey.core.header.InBoundHeaders;
-import com.sun.jersey.server.impl.application.WebApplicationContext;
-import com.sun.jersey.server.impl.application.WebApplicationImpl;
-import com.sun.jersey.spi.container.ContainerRequest;
-import com.sun.jersey.spi.container.WebApplication;
+
 import de.mpg.aai.security.auth.model.BasePrincipal;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
-import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
-import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
-import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedByQuery;
-import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder;
-import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
-import java.io.ByteArrayInputStream;
 import java.io.IOException;
-import java.io.InputStream;
 import java.net.URI;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
+import org.glassfish.jersey.uri.internal.JerseyUriBuilder;
 import org.jmock.Expectations;
 import static org.jmock.Expectations.returnValue;
 import org.jmock.Mockery;
@@ -68,6 +54,7 @@ public class VirtualCollectionFormSubmissionResourceTest {
     private VirtualCollectionRegistry registry;
 
     private UriInfo uriInfo;
+    
     private SecurityContext security;
     
     @Before
@@ -77,8 +64,6 @@ public class VirtualCollectionFormSubmissionResourceTest {
         security = context.mock(SecurityContext.class);
         instance = new VirtualCollectionFormSubmissionResource(registry, security, uriInfo);
     }
-    
-    
     
     @Test
     public void testCreateVirtualCollection() throws IOException, VirtualCollectionRegistryException {
@@ -114,13 +99,13 @@ public class VirtualCollectionFormSubmissionResourceTest {
         final String intensionalQueryProfile = null;
         final String intensionalQueryValue = null;       
        
-
+        
         context.checking(new Expectations() {
             {                
                 allowing(security).getUserPrincipal();
                 will(returnValue(principal));                
                 oneOf(uriInfo).getBaseUriBuilder();
-                will(returnValue(createUriInfo().getBaseUriBuilder()));
+                will(returnValue(new JerseyUriBuilder().uri(URI.create("/mycontextpath"))));
                 oneOf(registry).createVirtualCollection(with(equal(principal)), with(any(VirtualCollection.class)));
                 will(returnValue(ID));
             }
@@ -135,25 +120,5 @@ public class VirtualCollectionFormSubmissionResourceTest {
         assertEquals(true, result.getMetadata().containsKey("Location"));
         assertEquals(false, result.getMetadata().get("Location").isEmpty());
         assertEquals(URI.create("/mycontextpath/../app/edit/123"), result.getMetadata().get("Location").get(0));    
-    }
-    
-    private UriInfo createUriInfo() {
-        final WebApplicationImpl wai = new WebApplicationImpl();
-        final ContainerRequest r = new TestHttpRequestContext(wai,
-            "GET", null,
-            "/mycontextpath/rest/data", "/mycontextpath/");
-        final UriInfo _uriInfo = new WebApplicationContext(wai, r, null);
-        return _uriInfo;
-    }
-    
-    private static class TestHttpRequestContext extends ContainerRequest {
-        public TestHttpRequestContext(
-                WebApplication wa,
-                String method,
-                InputStream entity,
-                String completeUri,
-                String baseUri) {
-            super(wa, method, URI.create(baseUri), URI.create(completeUri), new InBoundHeaders(), entity);
-        }
     }
 }

@@ -49,11 +49,11 @@
         <slf4j.version>1.7.21</slf4j.version>
         <hibernate.version>5.4.8.Final</hibernate.version>
         <hibernate.jpaVersion>1.0.0.Final</hibernate.jpaVersion>
-        <jersey.version>1.18.1</jersey.version>
+        <jersey.version>2.29.1</jersey.version>
         <jackson.version>2.10.1</jackson.version>
         <wicket.version>7.12.0</wicket.version> <!-- 7.7.0 has issue https://issues.apache.org/jira/browse/WICKET-6374, which will befixed in 7.8.0 -->
         <wicket-bootstrap.version>2.0.8</wicket-bootstrap.version>
-        <spring.version>4.3.25.RELEASE</spring.version>
+        <!--<spring.version>4.3.25.RELEASE</spring.version>-->
         <!--<spring.version>5.2.1.RELEASE</spring.version>-->
         
         <!-- Production settings below -->
@@ -179,40 +179,68 @@
             <version>1.1.1</version>
             <type>jar</type>
         </dependency>
-
+        
         <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-servlet</artifactId>
+            <groupId>org.glassfish.jersey.containers</groupId>            
+            <artifactId>jersey-container-servlet</artifactId>
             <version>${jersey.version}</version>
         </dependency>
-
         <dependency>
-            <groupId>com.sun.jersey.contribs</groupId>
-            <artifactId>jersey-spring</artifactId>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
             <version>${jersey.version}</version>
         </dependency>
-
         <dependency>
-            <groupId>com.sun.jersey</groupId>
-            <artifactId>jersey-json</artifactId>
+            <groupId>org.glassfish.jersey.ext</groupId>
+            <artifactId>jersey-spring4</artifactId>
             <version>${jersey.version}</version>
-            <exclusions>
-                <!-- StaX is part of JRE 1.5 and newer -->
-                <exclusion>
-                    <groupId>stax</groupId>
-                    <artifactId>stax-api</artifactId>
-                </exclusion>
-                <exclusion>
-                    <groupId>com.sun.xml.bind</groupId>
-                    <artifactId>jaxb-impl</artifactId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>jackson-mapper-asl</artifactId>
-                    <groupId>org.codehaus.jackson</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
-
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-server</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+        
+       
+        
+        <!--
+                <dependency>
+                    <groupId>com.sun.jersey</groupId>            
+                    <artifactId>jersey-servlet</artifactId>
+                    <version>${jersey.version}</version>
+                </dependency>
+                <dependency>
+                    <groupId>com.sun.jersey.contribs</groupId>
+                    <artifactId>jersey-spring</artifactId>
+                    <version>${jersey.version}</version>
+                    <exclusions>
+                        <exclusion>
+                            <groupId>org.springframework</groupId>
+                            <artifactId>spring-asm</artifactId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+                <dependency>
+                    <groupId>com.sun.jersey</groupId>
+                    <artifactId>jersey-json</artifactId>
+                    <version>${jersey.version}</version>
+                    <exclusions>
+        
+                        <exclusion>
+                            <groupId>stax</groupId>
+                            <artifactId>stax-api</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <groupId>com.sun.xml.bind</groupId>
+                            <artifactId>jaxb-impl</artifactId>
+                        </exclusion>
+                        <exclusion>
+                            <artifactId>jackson-mapper-asl</artifactId>
+                            <groupId>org.codehaus.jackson</groupId>
+                        </exclusion>
+                    </exclusions>
+                </dependency>
+        -->
         <dependency>
             <groupId>org.codehaus.jettison</groupId>
             <artifactId>jettison</artifactId>
@@ -237,7 +265,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-<!--
+        <!--
         <dependency>
             <groupId>de.uni_leipzig.asv</groupId>
             <artifactId>clarin.webservices.pidservices2</artifactId>
@@ -324,7 +352,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
-
+        <!--
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-web</artifactId>
@@ -332,12 +360,13 @@
             <type>jar</type>
             <exclusions>
                 <exclusion>
-                    <!-- replaced with jcl-over-slf4j -->
+                     replaced with jcl-over-slf4j
                     <artifactId>commons-logging</artifactId>
                     <groupId>commons-logging</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
+        -->
         <!--
                 <dependency>
                     <groupId>com.sun.jersey.contribs</groupId>
@@ -471,10 +500,23 @@
         <!-- 
         Test dependencies
         -->
+         <dependency>
+            <groupId>org.glassfish.jersey.test-framework</groupId>
+            <artifactId>jersey-test-framework-core</artifactId>
+            <version>${jersey.version}</version>
+            <scope>test</scope>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.test-framework.providers</groupId>
+            <artifactId>jersey-test-framework-provider-grizzly2</artifactId>
+            <version>${jersey.version}</version>
+            <scope>test</scope>
+        </dependency>
+        
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.11</version>
+            <version>4.12</version>
             <type>jar</type>
             <scope>test</scope>
         </dependency>
@@ -482,7 +524,7 @@
         <dependency>
             <groupId>org.hsqldb</groupId>
             <artifactId>hsqldb</artifactId>
-            <version>2.3.2</version>
+            <version>2.5.0</version>
             <type>jar</type>
             <scope>test</scope>
         </dependency>
@@ -490,7 +532,7 @@
         <dependency>
             <groupId>xmlunit</groupId>
             <artifactId>xmlunit</artifactId>
-            <version>1.5</version>
+            <version>1.6</version>
             <scope>test</scope>
             <type>jar</type>
         </dependency>
@@ -498,21 +540,24 @@
         <dependency>
             <groupId>org.jmock</groupId>
             <artifactId>jmock-junit4</artifactId>
-            <version>2.6.0</version>
+            <version>2.12.0</version>
             <scope>test</scope>
         </dependency>
+        
+        
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
-            <version>4.4.10</version>
+            <version>4.4.12</version>
             <type>jar</type>
         </dependency>
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.6</version>
+            <version>4.5.10</version>
             <type>jar</type>
         </dependency>
+        
     </dependencies>
 
     <build>
@@ -549,7 +594,7 @@
         </testResources>
 
         <plugins>
-           <!-- plugin is not thread safe -->
+            <!-- plugin is not thread safe -->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>javacc-maven-plugin</artifactId>
@@ -679,7 +724,7 @@
                     <!--outputDirectory>bin</outputDirectory-->
                 </configuration>
             </plugin>
-             <!--<groupId>org.jasig.maven</groupId>-->
+            <!--<groupId>org.jasig.maven</groupId>-->
                
            
             <plugin>
@@ -838,12 +883,12 @@
         </repository>
 
         <repository>
-                <id>CLARIN central proxy</id>
-                <name>CLARIN Repository</name>
-                <url>https://nexus.clarin.eu/repository/central/</url>
-                <snapshots>
-                    <enabled>false</enabled>
-                </snapshots>
+            <id>CLARIN central proxy</id>
+            <name>CLARIN Repository</name>
+            <url>https://nexus.clarin.eu/repository/central/</url>
+            <snapshots>
+                <enabled>false</enabled>
+            </snapshots>
         </repository>
                 
         <repository>
@@ -853,14 +898,14 @@
             <layout>default</layout>
         </repository>        
     </repositories>
-<!--
-    <pluginRepositories>
-        <pluginRepository>
-            <id>jboss</id>
-            <name>JBoss Public Maven Repository Group</name>
-            <url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
-            <layout>default</layout>
-        </pluginRepository>
-    </pluginRepositories>
--->
+    <!--
+        <pluginRepositories>
+            <pluginRepository>
+                <id>jboss</id>
+                <name>JBoss Public Maven Repository Group</name>
+                <url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
+                <layout>default</layout>
+            </pluginRepository>
+        </pluginRepositories>
+    -->
 </project>

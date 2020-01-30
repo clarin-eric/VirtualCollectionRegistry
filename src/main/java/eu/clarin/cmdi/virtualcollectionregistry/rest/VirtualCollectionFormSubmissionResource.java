@@ -1,6 +1,5 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
-import com.sun.jersey.api.core.InjectParam;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionValidationException;
@@ -27,6 +26,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This is a specific endpoint to support creation of virtual connections from 
@@ -67,8 +67,9 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 @Path("/submit")
 public class VirtualCollectionFormSubmissionResource {
 
-    @InjectParam
+    @Autowired
     private VirtualCollectionRegistry registry;
+    
     @Context
     private SecurityContext security;
     @Context

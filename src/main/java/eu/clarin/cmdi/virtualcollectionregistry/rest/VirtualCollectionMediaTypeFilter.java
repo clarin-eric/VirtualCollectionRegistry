@@ -1,6 +1,5 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
-import com.sun.jersey.api.container.filter.UriConnegFilter;
 import java.util.HashMap;
 import java.util.Map;
 import javax.ws.rs.core.MediaType;
@@ -15,7 +14,7 @@ import javax.ws.rs.core.MediaType;
  * Based on description at {@link http://stackoverflow.com/a/8765749}
  * @author twagoo
  */
-public class VirtualCollectionMediaTypeFilter extends UriConnegFilter {
+public class VirtualCollectionMediaTypeFilter extends CustomUriConnegFilter {
 
     private static final Map<String, MediaType> mediaTypes = new HashMap<>();
 
@@ -27,7 +26,8 @@ public class VirtualCollectionMediaTypeFilter extends UriConnegFilter {
     }
 
     public VirtualCollectionMediaTypeFilter() {
-        super(mediaTypes);
+        super(mediaTypes, null);
     }
-
 }
+    
+
