@@ -29,7 +29,6 @@ import org.apache.commons.httpclient.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
@@ -45,8 +44,8 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
     @Autowired
     private DataStore datastore; //TODO: replace with Spring managed EM?
     
-    @Autowired()
-    @Qualifier("EPICPersistentIdentifierProvider")
+    @Autowired
+   // @Qualifier("EPICPersistentIdentifierProvider")
     private PersistentIdentifierProvider pid_provider;
     
     @Override

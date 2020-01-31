@@ -6,6 +6,7 @@ import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidWriter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.beans.factory.config.PropertyPlaceholderConfigurer;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 //import org.springframework.context.annotation.Profile;
 
 /**
@@ -26,7 +27,7 @@ import org.springframework.context.annotation.Bean;
  * @see Configuration#Configuration(java.lang.String, java.lang.String,
  * java.lang.String, java.lang.String)
  */
-//@Profile("vcr.pid.epic")
+@Profile("vcr.pid.epic")
 @org.springframework.context.annotation.Configuration
 public class EPICPersistentIdentifierConfiguration {
 

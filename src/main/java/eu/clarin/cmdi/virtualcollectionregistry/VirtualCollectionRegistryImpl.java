@@ -40,7 +40,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
     @Autowired
     private DataStore datastore; //TODO: replace with Spring managed EM?
     @Autowired
-    @Qualifier("creation")
+    //@Qualifier("creation")
     private VirtualCollectionValidator validator;
     @Autowired
     private AdminUsersService adminUsersService;
