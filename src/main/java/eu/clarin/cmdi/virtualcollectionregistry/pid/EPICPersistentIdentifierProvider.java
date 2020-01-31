@@ -26,7 +26,7 @@ import org.springframework.stereotype.Service;
  * @see http://epic.gwdg.de/wiki/index.php/EPIC:API
  * @see ​https://github.com/CatchPlus/EPIC-API-v2/
  */
-@Service
+@Service("EPICPersistentIdentifierProvider")
 @Profile("vcr.pid.epic")
 public class EPICPersistentIdentifierProvider implements PersistentIdentifierProvider {
 
