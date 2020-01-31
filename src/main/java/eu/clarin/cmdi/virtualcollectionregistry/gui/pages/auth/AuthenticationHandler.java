@@ -17,9 +17,13 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmissionUtils;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmitVirtualCollectionPage;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.Enumeration;
+import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
 import javax.servlet.http.HttpServletResponse;
 import org.apache.wicket.Application;
@@ -29,6 +33,7 @@ import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.servlet.ServletWebRequest;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.flow.RedirectToUrlException;
+import org.apache.wicket.request.http.WebRequest;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -76,7 +81,7 @@ public class AuthenticationHandler {
     }
     
     public static void handleLogin(final ApplicationSession session, final WebPage page) {
-        logger.debug("Handling login");
+        logger.trace("Handling login");
         
         final RequestCycle cycle =  RequestCycle.get();
         final HttpServletRequest request = 
@@ -88,14 +93,18 @@ public class AuthenticationHandler {
         
         final Principal principal = request.getUserPrincipal();            
         if( isValidSignedInPrincipal(principal)) {
-            logger.debug("Principal: "+principal.getName());
+            logger.trace("Principal: "+principal.getName());
             if (session.signIn(principal)) {
-                logger.debug("Signed in");
+                logger.trace("Signed in");
                 page.continueToOriginalDestination();
-                logger.debug("No original destination, redirecting to homepage");
+                logger.trace("No original destination, redirecting to homepage");
+                
                 // if we reach this line there was no intercept page, so go to home page
-                throw new RestartResponseAtInterceptPageException(
-                    Application.get().getHomePage());
+                VirtualCollection collectionFromSession = SubmissionUtils.retrieveCollection(session);               
+                if(collectionFromSession != null) {
+                    throw new RestartResponseAtInterceptPageException(SubmitVirtualCollectionPage.class);                    
+                }
+                throw new RestartResponseAtInterceptPageException(Application.get().getHomePage());
             } else {
                 logger.debug("Access denied");
                 throw new RestartResponseException(
@@ -106,7 +115,7 @@ public class AuthenticationHandler {
     }
     
     public static void handleAuthentication(final ApplicationSession session) {              
-        logger.debug("Checking authentication");
+        logger.trace("Checking authentication");
         final RequestCycle cycle =  RequestCycle.get();
         final HttpServletRequest request = 
             ((ServletWebRequest)cycle.getRequest()).getContainerRequest();
@@ -140,11 +149,11 @@ public class AuthenticationHandler {
     }
     
     protected static void dumpHeaders(HttpServletRequest request) {
-        logger.debug("Headers:");
+        logger.trace("Headers:");
         Enumeration<String> headerNames = request.getHeaderNames();
         String name = null;
         while((name = headerNames.nextElement()) != null) {
-            logger.debug("    "+name+"="+decodeHeaderValue(name, request.getHeader(name)));
+            logger.trace("    "+name+"="+decodeHeaderValue(name, request.getHeader(name)));
         }
     }
 
@@ -161,16 +170,16 @@ public class AuthenticationHandler {
     }
     
     private static String decodeHeaderValue(String name, String value) {
-            if(value == null) {
-                return null;
-            }
-            
-            try {
-                return new String(value.getBytes("ISO8859-1"),"UTF-8");
-            } catch(UnsupportedEncodingException ex) {
-                logger.error(String.format("Failed to decode header [%s] value [%s] as UTF-8. Error=%s.", name, value, ex.getMessage()));
-                logger.debug("Stacktrace:", ex);
-            }
-            return value;
+        if(value == null) {
+            return null;
         }
+
+        try {
+            return new String(value.getBytes("ISO8859-1"),"UTF-8");
+        } catch(UnsupportedEncodingException ex) {
+            logger.error(String.format("Failed to decode header [%s] value [%s] as UTF-8. Error=%s.", name, value, ex.getMessage()));
+            logger.debug("Stacktrace:", ex);
+        }
+        return value;
+    }
 }

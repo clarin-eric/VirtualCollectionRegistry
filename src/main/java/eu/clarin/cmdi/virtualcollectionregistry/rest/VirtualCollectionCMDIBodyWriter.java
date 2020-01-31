@@ -1,6 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
-import com.sun.jersey.api.core.InjectParam;
+//import com.sun.jersey.api.core.InjectParam;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
 import java.io.IOException;
@@ -15,6 +15,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.Response.Status;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Body writer that outputs a CMDI representation of a virtual collection
@@ -25,7 +26,7 @@ import javax.ws.rs.ext.Provider;
 @Produces(VirtualCollectionResource.MediaTypes.CMDI)
 public class VirtualCollectionCMDIBodyWriter implements MessageBodyWriter<VirtualCollection> {
 
-    @InjectParam
+    @Autowired
     private VirtualCollectionMarshaller marshaller;
 
     @Override

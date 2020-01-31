@@ -16,7 +16,6 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry;
 
-import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.util.HashSet;

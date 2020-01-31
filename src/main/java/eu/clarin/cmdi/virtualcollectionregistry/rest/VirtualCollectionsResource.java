@@ -1,7 +1,5 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
-import com.sun.jersey.api.core.InjectParam;
-import com.sun.jersey.api.core.ResourceContext;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
@@ -22,6 +20,7 @@ import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.QueryParam;
 import javax.ws.rs.WebApplicationException;
+import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.HttpHeaders;
 import javax.ws.rs.core.MediaType;
@@ -29,6 +28,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * REST resource representing the collection of virtual collections
@@ -40,9 +40,9 @@ public class VirtualCollectionsResource {
 
     @Context
     private ResourceContext resourceContext;
-    @InjectParam
+    @Autowired
     private VirtualCollectionRegistry registry;
-    @InjectParam
+    @Autowired
     private VirtualCollectionMarshaller marshaller;
     @Context
     private SecurityContext security;

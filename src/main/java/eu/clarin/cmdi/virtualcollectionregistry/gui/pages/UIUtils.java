@@ -38,7 +38,8 @@ public class UIUtils {
     
     private static Logger logger = LoggerFactory.getLogger(UIUtils.class);
     
-    private final static String TOOLTIP_TEXT = "Open this collection in the language resurce switchboard";
+    private final static String TOOLTIP_COLLECTION_TEXT = "Process this collection with the language resource switchboard";
+    private final static String TOOLTIP_RESOURCE_TEXT = "Process this resource with the language resource switchboard";
     
     public final static String DEFAULT_TOOLTIP_DATA_PLACEMENT = "bottom";
     
@@ -72,7 +73,7 @@ public class UIUtils {
                     throw new RedirectToUrlException(UIUtils.getLanguageSwitchboardUrl(model.getObject(), endpoint));
                 }
         };
-        UIUtils.addTooltip(lrsLink, TOOLTIP_TEXT);
+        //UIUtils.addTooltip(lrsLink, TOOLTIP_COLLECTION_TEXT);
         return lrsLink;
     }
     
@@ -80,11 +81,11 @@ public class UIUtils {
         final AjaxLink<Resource> lrsLink
             = new AjaxLink<Resource>(id, model) {
                 @Override
-                public void onClick(AjaxRequestTarget target) {
+                public void onClick(AjaxRequestTarget target) {                    
                     throw new RedirectToUrlException(UIUtils.getLanguageSwitchboardUrlForResource(model.getObject(), endpoint));
                 }
         };
-        UIUtils.addTooltip(lrsLink, TOOLTIP_TEXT);
+        //UIUtils.addTooltip(lrsLink, TOOLTIP_RESOURCE_TEXT);
         return lrsLink;
     }
     
@@ -94,7 +95,12 @@ public class UIUtils {
     }
     
     public static String getLanguageSwitchboardUrlForResource(Resource r, String endpoint) {
-        return buildSwitchboardUrl(endpoint, r.getRef(), "application/xml", "en");        
+        String ref = r.getRef();
+        if (r.hasPersistentIdentifier()) {
+            ref = r.getPidUri();
+        }
+        String url = buildSwitchboardUrl(endpoint, ref, "application/xml", "en");        
+        return url;
     }
     
     public static String buildSwitchboardUrl(String switchboardEndpoint, String href, String mimeType, String languageCode) {

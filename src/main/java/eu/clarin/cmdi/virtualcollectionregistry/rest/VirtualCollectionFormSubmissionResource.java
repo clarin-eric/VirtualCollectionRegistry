@@ -1,6 +1,5 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
-import com.sun.jersey.api.core.InjectParam;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionValidationException;
@@ -27,6 +26,7 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriInfo;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * This is a specific endpoint to support creation of virtual connections from 
@@ -67,8 +67,9 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 @Path("/submit")
 public class VirtualCollectionFormSubmissionResource {
 
-    @InjectParam
+    @Autowired
     private VirtualCollectionRegistry registry;
+    
     @Context
     private SecurityContext security;
     @Context
@@ -113,7 +114,7 @@ public class VirtualCollectionFormSubmissionResource {
             case EXTENSIONAL:
                 return submitNewExtensionalVc(name, metadataUris, resourceUris, description, keywords, purpose, reproducibility, reproducibilityNotice, creationDate);
             case INTENSIONAL:
-                return submitNewIntensionalVc(name, description, keywords, purpose, reproducibility, reproducibilityNotice, creationDate, intensionalDescription, intensionalUri, intensionalQueryProfile, intensionalQueryValue);            
+                return submitNewIntensionalVc(name, description, intensionalDescription, intensionalUri, intensionalQueryProfile, intensionalQueryValue, keywords, purpose, reproducibility, reproducibilityNotice, creationDate);            
         }
         
         //Return error if type was not handled
@@ -125,7 +126,7 @@ public class VirtualCollectionFormSubmissionResource {
     @POST
     @Consumes({MediaType.APPLICATION_FORM_URLENCODED})
     @Produces({MediaType.TEXT_HTML})
-    @Path("/extenstional")
+    @Path("/extensional")
     public Response submitNewExtensionalVc(            
             @FormParam("name") String name,
             @FormParam("metadataUri") List<String> metadataUris,
@@ -198,16 +199,16 @@ public class VirtualCollectionFormSubmissionResource {
     public Response submitNewIntensionalVc(
             @FormParam("name") String name,            
             @FormParam("description") String description,
+            @FormParam("queryDescription") String intensionalDescription,
+            @FormParam("queryUri") String intensionalUri,
+            @FormParam("queryProfile") String intensionalQueryProfile,
+            @FormParam("queryValue") String intensionalQueryValue,
             //optional params
             @FormParam("keyword") List<String> keywords,
             @FormParam("purpose") Purpose purpose,
             @FormParam("reproducibility") Reproducibility reproducibility,
             @FormParam("reproducibilityNotice") String reproducibilityNotice,
-            @FormParam("creationDate") Date creationDate,
-            @FormParam("queryDescription") String intensionalDescription,
-            @FormParam("queryUri") String intensionalUri,
-            @FormParam("queryProfile") String intensionalQueryProfile,
-            @FormParam("queryValue") String intensionalQueryValue
+            @FormParam("creationDate") Date creationDate            
     ) {
         final Principal principal = security.getUserPrincipal();
         if (principal == null) {
