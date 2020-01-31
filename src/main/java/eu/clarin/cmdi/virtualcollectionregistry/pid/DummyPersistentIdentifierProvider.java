@@ -6,7 +6,7 @@ import java.net.URI;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-//@Service("DummyPersistentIdentifierProvider")
+@Service
 @Profile("vcr.pid.dummy")
 public class DummyPersistentIdentifierProvider implements
         PersistentIdentifierProvider {

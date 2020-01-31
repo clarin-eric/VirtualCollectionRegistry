@@ -36,7 +36,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
-//@Service("GWDGPersistentIdentifierProvider")
+@Service
 @Profile("vcr.pid.gwdg")
 public class GWDGPersistentIdentifierProvider implements
         PersistentIdentifierProvider {
