@@ -16,6 +16,7 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.config;
 
+import eu.clarin.cmdi.wicket.PiwikConfig;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -29,17 +30,26 @@ import org.springframework.stereotype.Component;
 @Component
 public class PiwikConfigImpl implements PiwikConfig {
 
-    @Value("${eu.clarin.cmdi.vlo.piwik.enableTracker:true}")
+    @Value("${eu.clarin.cmdi.vcr.piwik.enableTracker:true}")
     private boolean enabled;
     
-    @Value("${eu.clarin.cmdi.vlo.piwik.siteId:6}")
+    @Value("${eu.clarin.cmdi.vcr.piwik.siteId:6}")
     private String piwikSiteId;
 
-    @Value("${eu.clarin.cmdi.vlo.piwik.host:https://stats.clarin.eu/}")
+    @Value("${eu.clarin.cmdi.vcr.piwik.host:https://stats.clarin.eu/}")
     private String piwikHost;
 
-    @Value("${eu.clarin.cmdi.vlo.piwik.domains:*.vcr.clarin.eu}")
+    @Value("${eu.clarin.cmdi.vcr.piwik.domains:*.vcr.clarin.eu}")
     private String domains;
+    
+    @Value("${eu.clarin.cmdi.vcr.snippet.survey:survey.html}")
+    private String snippetSurvey;
+ 
+    @Value("${eu.clarin.cmdi.vcr.snippet.credits:credits.html}")
+    private String snippetCredits;
+    
+    @Value("${eu.clarin.cmdi.vcr.mode:alpha}")
+    private String mode;
     
     @Override
     public boolean isEnabled() {
@@ -59,5 +69,20 @@ public class PiwikConfigImpl implements PiwikConfig {
     @Override
     public String getDomains() {
         return domains;
+    }
+
+    @Override
+    public String getSnippetSurvey() {
+        return snippetSurvey;
+    }
+
+    @Override
+    public String getSnippetCredits() {
+        return snippetCredits;
+    }
+
+    @Override
+    public String getMode() {
+        return mode;
     }
 }

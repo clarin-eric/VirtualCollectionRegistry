@@ -16,7 +16,7 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.service.impl;
 
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionValidationException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
@@ -57,12 +57,12 @@ public class VirtualCollectionPrePublicationValidatorTest {
         vc.getResources().add(new Resource(Resource.Type.METADATA, "http://dx.doi.org/1.2.3/456"));
         try {
             instance.validate(vc);
-        } catch (VirtualCollectionRegistryUsageException ex) {
+        } catch (VirtualCollectionValidationException ex) {
             fail("Validation should not fail");
         }
     }
     
-    @Test(expected = VirtualCollectionRegistryUsageException.class)
+    @Test(expected = VirtualCollectionValidationException.class)
     public void testValidateResourcesNonPid() throws Exception {
         // Non-PIDs should not be allowed as references
         vc.getResources().add(new Resource(Resource.Type.METADATA, "hdl:1234/5678"));
@@ -71,7 +71,7 @@ public class VirtualCollectionPrePublicationValidatorTest {
         instance.validate(vc);
     }
     
-    @Test(expected = VirtualCollectionRegistryUsageException.class)
+    @Test(expected = VirtualCollectionValidationException.class)
     public void testValidateQueryUriNonPid() throws Exception {
         // Non-PIDs should not be allowed as query URI
         vc.setType(VirtualCollection.Type.INTENSIONAL);
@@ -81,35 +81,35 @@ public class VirtualCollectionPrePublicationValidatorTest {
         instance.validate(vc);
     }
     
-    @Test(expected = VirtualCollectionRegistryUsageException.class)
+    @Test(expected = VirtualCollectionValidationException.class)
     public void testValidateNoDescription() throws Exception {
         // Description should not be allowed to be null
         vc.setDescription(null);
         instance.validate(vc);
     }
     
-    @Test(expected = VirtualCollectionRegistryUsageException.class)
+    @Test(expected = VirtualCollectionValidationException.class)
     public void testValidateNoCreators() throws Exception {
         // Description should not be allowed to be null
         vc.getCreators().clear();
         instance.validate(vc);
     }
     
-    @Test(expected = VirtualCollectionRegistryUsageException.class)
+    @Test(expected = VirtualCollectionValidationException.class)
     public void testValidatePurposeFutureUse() throws Exception {
         // Description should not be allowed to be null
         vc.setPurpose(VirtualCollection.Purpose.FUTURE_USE);
         instance.validate(vc);
     }
     
-    @Test(expected = VirtualCollectionRegistryUsageException.class)
+    @Test(expected = VirtualCollectionValidationException.class)
     public void testValidateNoPurpose() throws Exception {
         // Description should not be allowed to be null
         vc.setPurpose(null);
         instance.validate(vc);
     }
     
-    @Test(expected = VirtualCollectionRegistryUsageException.class)
+    @Test(expected = VirtualCollectionValidationException.class)
     public void testValidateNoReproducibility() throws Exception {
         // Description should not be allowed to be null
         vc.setReproducibility(null);

@@ -79,6 +79,7 @@ public class VirtualCollectionCMDIWriterImplTest extends XMLTestCase {
 
     private VirtualCollection createTestVC() throws ParseException {
         final VirtualCollection vc = new VirtualCollection();
+        vc.setId(1L);
         vc.setName("Virtual Collection Name");
         vc.setDescription("Test collection description");
         vc.setType(VirtualCollection.Type.EXTENSIONAL);

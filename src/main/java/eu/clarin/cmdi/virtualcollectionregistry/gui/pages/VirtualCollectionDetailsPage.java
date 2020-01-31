@@ -1,14 +1,23 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
+import com.google.common.collect.Lists;
+import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.DateConverter;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.DetachableVirtualCollectionModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.border.AjaxToggleBorder;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
+import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Type;
+import eu.clarin.cmdi.wicket.components.citation.CitationPanelFactory;
+import eu.clarin.cmdi.wicket.components.panel.BootstrapDropdown;
+import eu.clarin.cmdi.wicket.components.panel.BootstrapDropdown.DropdownMenuItem;
+import eu.clarin.cmdi.wicket.components.panel.BootstrapPanelBuilder;
+import eu.clarin.cmdi.wicket.components.pid.PersistentIdentifieable;
+import eu.clarin.cmdi.wicket.components.pid.PidPanel;
+import java.io.Serializable;
 import java.sql.Date;
 import java.util.ArrayList;
 import java.util.Collection;
@@ -31,36 +40,45 @@ import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvid
 import org.apache.wicket.markup.ComponentTag;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
-import org.apache.wicket.markup.html.border.Border;
+import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.link.PopupSettings;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.list.OddEvenListItem;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
-import org.apache.wicket.model.ComponentPropertyModel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
+import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.mapper.parameter.INamedParameters.NamedPair;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.convert.IConverter;
+import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.string.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("serial")
 public class VirtualCollectionDetailsPage extends BasePage {
 
+    private final static Logger logger = LoggerFactory.getLogger(VirtualCollectionDetailsPage.class);
+    
     public static final String PARAM_VC_ID = "id";
     public static final String PARAM_BACK_PAGE = "backPage";
-    private static final String CSS_CLASS = "collectionDetails";
+    //private static final String CSS_CLASS = "collectionDetails";
     private static final IConverter convDate = new DateConverter();
     private final HideIfEmptyBehavior hideIfEmpty = new HideIfEmptyBehavior();
 
     private final PageParameters params;
+    
+    @SpringBean
+    private VcrConfigImpl vcrConfig;
     
     private static final IConverter convEnum = new IConverter() {
         @Override
@@ -120,6 +138,10 @@ public class VirtualCollectionDetailsPage extends BasePage {
             super(id);
         }
 
+        public CustomLabel(String id, IModel model) {
+            super(id, model);
+        }
+        
         @SuppressWarnings("unchecked")
         @Override
         public <C> IConverter<C> getConverter(Class<C> type) {
@@ -141,13 +163,17 @@ public class VirtualCollectionDetailsPage extends BasePage {
 
     public VirtualCollectionDetailsPage(final IModel<VirtualCollection> model, final PageParameters params) {
         super(new CompoundPropertyModel<VirtualCollection>(model));
+        //setPageStateless(true);
         this.params = params;
         
+        //Redirect to homepage if the model is not set
         if (model == null) {
             setResponsePage(Application.get().getHomePage());
-        } else {
-            checkAccess(model.getObject());
+            return;
         }
+        
+        //Will throw and exception and abort flow if authorization fails
+        checkAccess(model.getObject());
 
         final Link<Void> backLink = new Link<Void>("back") {
             @Override
@@ -156,176 +182,284 @@ public class VirtualCollectionDetailsPage extends BasePage {
                 setResponsePage(getBackPageFromReference(previousPage, params));
             }
         };
+        
         add(backLink);
-        add(new HeaderPanel("headerPanel", model));
-        addGeneralProperties(model);
-        addCreators();
-        addResources(model);
-        addGeneratedBy(model);
+        add(new HeaderPanel("vc_header", model));
+        add(BootstrapPanelBuilder
+                .createCollapsiblePanel("general")
+                .setTitle("General")
+                .setBody(new GeneralPanel("body", model))
+                .build());
+        
+        add(BootstrapPanelBuilder
+                .createCollapsiblePanel("creators")
+                .setTitle("Creators")
+                .setBody(new CreatorsPanel("body", model))
+                .build());
+
+        add(BootstrapPanelBuilder
+                .createCollapsiblePanel("resources")
+                .setTitle("Resources")
+                .setBody(new ResourcesPanel("body", model), false)
+                .setVisible(model.getObject().getType() == Type.EXTENSIONAL)
+                .build());
+        
+        add(BootstrapPanelBuilder
+                .createCollapsiblePanel("generatedBy")
+                .setTitle("Generated By")
+                .setBody(new GeneratedByPanel("body", model))
+                .setVisible(model.getObject().getType() == Type.INTENSIONAL)
+                .build());
+    }
+    
+    private  class HeaderPanel extends Panel {
+        public HeaderPanel(String id, final IModel<VirtualCollection> model) {
+            super(id, new CompoundPropertyModel<VirtualCollection>(model));
+            add(new Label("name"));
+            add(CitationPanelFactory.getCitationPanel("citation", model));
+        }    
+    }
+    
+    private class BasicTextPanel extends Panel {
+        public BasicTextPanel(String id, String label, IModel value) {
+            this(id, label, value, false);
+        }
+        
+        public BasicTextPanel(String id, String label, IModel value, boolean multiline) {
+            super(id);            
+            add(new Label("label", label));
+            if(!multiline) {
+                add(new CustomLabel("value", value));
+            } else {
+                add(new MultiLineLabel("value", value));
+            }
+        }
+    }
+    
+    private class BasicListPanel extends Panel {
+        public BasicListPanel(String id, String label, List listOfValues) {
+            super(id);
+            add(new Label("label", label));
+            final ListView<String> list = new ListView<String>("values", listOfValues) {
+                @Override
+                protected void populateItem(ListItem<String> item) {
+                    item.add(new Label("value", item.getModelObject()));
+                }
+            };
+            add(list);
+        }        
+    }
+    
+    private class BasicPidPanel extends Panel {
+        public BasicPidPanel(String id, String label, IModel<PersistentIdentifieable> model) {
+            super(id);
+            add(new Label("label", label));
+            add(new PidPanel("value",  model, "collection"));
+        }
+    }
+    
+    private class BasicLinkPanel extends Panel {
+        public BasicLinkPanel(String id, String label, IModel<String> model) {
+            super(id);
+            add(new Label("label", label));
+            add(new ExternalLink("value",  model, model)
+                    .setPopupSettings(new PopupSettings())
+                    .add(hideIfEmpty));            
+        }
+    }
+    
+    private class GeneralPanel extends Panel {
+        public GeneralPanel(String id, final IModel<VirtualCollection> model) {
+            super(id);
+            add(new BasicTextPanel("name", "Name", new Model(model.getObject().getName())));
+            add(new BasicTextPanel("type", "Type", new Model(model.getObject().getType())));            
+            add(new BasicTextPanel("creationDate", "Creation date", new Model(model.getObject().getCreationDate())));
+            add(new BasicTextPanel("description", "Description", new Model(model.getObject().getDescription())).add(hideIfEmpty));
+            add(new BasicTextPanel("purpose", "Purpose", new Model(model.getObject().getPurpose())).add(hideIfEmpty));
+            add(new BasicTextPanel("reproducibility", "Reproducibility", new Model(model.getObject().getReproducibility())).add(hideIfEmpty));
+            add(new BasicTextPanel("reproducibilityNotice", "Reproducibility notice", new Model(model.getObject().getReproducibilityNotice())).add(hideIfEmpty));
+            add(new BasicPidPanel("pid", "Persistent identifier", new Model(model.getObject())));
+            add(new BasicListPanel("keywords", "Keywords", model.getObject().getKeywords()).add(hideIfEmpty));
+        }
     }
 
-    private void addGeneralProperties(final IModel<VirtualCollection> model) {
-        final Border general = new AjaxToggleBorder("generalBorder",
-                new Model<String>("General"), CSS_CLASS);
-        add(general);
-        general.add(new Label("name"));
-        general.add(new CustomLabel("type"));
-        general.add(new CustomLabel("creationDate"));
-        general.add(new MultiLineLabel("description").add(hideIfEmpty));
-        general.add(new CustomLabel("purpose").add(hideIfEmpty));
-        general.add(new CustomLabel("reproducibility").add(hideIfEmpty));
-        general.add(new Label("reproducibilityNotice").add(hideIfEmpty));
+    private class CreatorsPanel extends Panel {
+        public CreatorsPanel(String id, final IModel<VirtualCollection> model) {
+            super(id);
+            add(new ListView<Creator>("creators") {
+                @Override
+                protected void populateItem(ListItem<Creator> item) {
+                    Creator creator = item.getModel().getObject();
+                    item.add(new BasicTextPanel("person", "Person", new Model(creator.getPerson())));
+                    item.add(new BasicTextPanel("address", "Address", new Model(creator.getAddress())).add(hideIfEmpty)); 
+                    item.add(new BasicTextPanel("organisation", "Organisation", new Model(creator.getOrganisation())).add(hideIfEmpty)); 
+                    item.add(new BasicTextPanel("email", "Email", new Model(creator.getEMail())).add(hideIfEmpty));
+                    item.add(new BasicTextPanel("telephone", "Telephone", new Model(creator.getTelephone())).add(hideIfEmpty));
+                    item.add(new BasicTextPanel("website", "Website", new Model(creator.getWebsite())).add(hideIfEmpty));
+                    item.add(new BasicTextPanel("role", "Role", new Model(creator.getRole())).add(hideIfEmpty));
+                }
 
-        final ExternalLink pidLink = new ExternalLink("pidLink", new PropertyModel<String>(model, "persistentIdentifier.actionableURI"));
-        pidLink.add(new Label("persistentIdentifier.URI"));
-        pidLink.add(hideIfEmpty);
-        general.add(pidLink);
+                @Override
+                protected IModel<Creator> getListItemModel(
+                        IModel<? extends List<Creator>> listViewModel, int index) {
+                    final List<Creator> creators = listViewModel.getObject();
+                    return new CompoundPropertyModel<Creator>(
+                            new VolatileEntityModel<>(creators.get(index)));
+                }
 
-        addKeywords(general);
-    }
-
-    private void addKeywords(final Border general) {
-        final ListView<String> keywords = new ListView<String>("keywords") {
-            @Override
-            protected void populateItem(ListItem<String> item) {
-                item.add(new Label("keyword", item.getModelObject()));
-            }
-        };
-        keywords.add(hideIfEmpty);
-        general.add(keywords);
-    }
-
-    private void addCreators() {
-        final Border creators = new AjaxToggleBorder("creatorsBorder",
-                new Model<String>("Creators"), CSS_CLASS);
-        add(creators);
-        creators.add(new ListView<Creator>("creators") {
-            @Override
-            protected void populateItem(ListItem<Creator> item) {
-                item.add(new Label("person"));
-                item.add(new MultiLineLabel("address").add(hideIfEmpty));
-                item.add(new Label("organisation").add(hideIfEmpty));
-                item.add(new Label("email").add(hideIfEmpty));
-                item.add(new Label("telephone").add(hideIfEmpty));
-                final IModel<String> siteModel
-                        = new ComponentPropertyModel<String>("website");
-                item.add(new ExternalLink("website", siteModel, siteModel)
-                        .setPopupSettings(new PopupSettings())
-                        .add(hideIfEmpty));
-                item.add(new Label("role").add(hideIfEmpty));
-            }
-
-            @Override
-            protected IModel<Creator> getListItemModel(
-                    IModel<? extends List<Creator>> listViewModel, int index) {
-                final List<Creator> creators = listViewModel.getObject();
-                return new CompoundPropertyModel<Creator>(
-                        new VolatileEntityModel<>(creators.get(index)));
-            }
-
-            @Override
-            protected ListItem<Creator> newItem(int index,  IModel<Creator> model) {
-                //final IModel<Creator> model
-                //        = getListItemModel(getModel(), index);
-                return new OddEvenListItem<Creator>(index, model) {
-                    @Override
-                    protected void onComponentTag(ComponentTag tag) {
-                        super.onComponentTag(tag);
-                        if (getIndex() == 0) {
-                            tag.append("class", "first", " ");
+                @Override
+                protected ListItem<Creator> newItem(int index,  IModel<Creator> model) {
+                    return new OddEvenListItem<Creator>(index, model) {
+                        @Override
+                        protected void onComponentTag(ComponentTag tag) {
+                            super.onComponentTag(tag);
+                            if (getIndex() == 0) {
+                                tag.append("class", "first", " ");
+                            }
                         }
-                    }
-                };
-            }
-        });
+                    };
+                }
+            });
+        }
     }
 
-    private void addResources(final IModel<VirtualCollection> model) {
-        final Border resources = new AjaxToggleBorder("resourcesBorder",
-                new Model<String>("Resources"), CSS_CLASS + " resources");
-        add(resources);
-
+    private class ResourcesPanel extends Panel {
+        public ResourcesPanel(String id, final IModel<VirtualCollection> model) {
+            super(id);            
+            add(buildResourcesTable("resourcesTable", model));
+        }
+    }
+    
+    private DataTable<Resource, String> buildResourcesTable(String id, final IModel<VirtualCollection> model) {
         @SuppressWarnings("rawtypes")
-        final List<IColumn<Resource, String>> cols = new ArrayList<>();
-        cols.add(new PropertyColumn<Resource, String>(
-                Model.of("Type"), "type") {
+            final List<IColumn<Resource, String>> cols = new ArrayList<>();
+            cols.add(new PropertyColumn<Resource, String>(
+                    Model.of("Type"), "type") {
+                        @Override
+                        public void populateItem(Item<ICellPopulator<Resource>> item,
+                                String componentId, IModel<Resource> model) {
+                            final Resource.Type type = model.getObject().getType();
+                            item.add(new Label(componentId,
+                                            convEnum.convertToString(type, getLocale())));
+                        }
+
+                        @Override
+                        public String getCssClass() {
+                            return "type";
+                        }
+                    });
+            cols.add(new AbstractColumn<Resource, String>(Model.of("Reference")) {
+                @Override
+                public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> rowModel) {                
+                    item.add(new ReferenceLinkPanel(componentId, rowModel));
+                }
+
+                @Override
+                public String getCssClass() {
+                    return "reference";
+                }
+            });
+
+            //Make sure to check all possible actions. Only add action column if there
+            //is more than one action enabled.
+            if (vcrConfig.isSwitchboardEnabledForResources()) {     
+                cols.add(new AbstractColumn<Resource, String>(Model.of("Actions")) {
                     @Override
-                    public void populateItem(Item<ICellPopulator<Resource>> item,
-                            String componentId, IModel<Resource> model) {
-                        final Resource.Type type = model.getObject().getType();
-                        item.add(new Label(componentId,
-                                        convEnum.convertToString(type, getLocale())));
+                    public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> rowModel) {
+                        item.add(getDropdown(componentId, rowModel));
                     }
 
                     @Override
                     public String getCssClass() {
-                        return "type";
+                        return "actions";
                     }
                 });
-        cols.add(new AbstractColumn<Resource, String>(Model.of("Reference")) {
+            }
+
+            final SortableDataProvider<Resource, String> resourcesProvider = new SortableDataProvider<Resource, String>() {
+                @Override
+                public Iterator<? extends Resource> iterator(long first, long count) {
+                    return model.getObject().getResources().listIterator((int)first);
+                }
+
+                @Override
+                public IModel<Resource> model(Resource resource) {
+                    return new VolatileEntityModel<>(resource);
+                }
+
+                @Override
+                public long size() {
+                    return model.getObject().getResources().size();
+                }
+            };
+
+            final DataTable<Resource, String> resourcesTable
+                    = new AjaxFallbackDefaultDataTable<>(id,
+                            cols, resourcesProvider, 64);
+            return resourcesTable;
+    }
+    
+    private BootstrapDropdown getDropdown(String id, IModel<Resource> model) {
+         List options = 
+            Lists.newArrayList(new DropdownMenuItem("Process with Language Resource Switchboard", "glyphicon glyphicon-open-file") {
+                @Override
+                protected AbstractLink getLink(String id) {
+                    AbstractLink link = UIUtils.getLrsRedirectAjaxLinkForResource(id, model, vcrConfig.getSwitchboardEndpoint());
+                    return link;
+                }
+            });                
+         
+        BootstrapDropdown dropDown = new BootstrapDropdown(id, new ListModel(options)) {
             @Override
-            public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> rowModel) {
-                item.add(new ReferenceLinkPanel(componentId, rowModel));
+            protected Serializable getButtonClass() {
+                return null; //render as link, not button
             }
 
             @Override
-            public String getCssClass() {
-                return "reference";
-            }
-        });
-        cols.add(new AbstractColumn<Resource, String>(Model.of("Action")) {
-            @Override
-            public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> rowModel) {
-                item.add(new ActionLinkPanel(componentId, rowModel));
+            protected Serializable getButtonIconClass() {
+                return "glyphicon glyphicon-option-horizontal";
             }
 
             @Override
-            public String getCssClass() {
-                return "reference";
-            }
-        });
-        
-        final SortableDataProvider<Resource, String> resourcesProvider = new SortableDataProvider<Resource, String>() {
-            @Override
-            public Iterator<? extends Resource> iterator(long first, long count) {
-                return model.getObject().getResources().listIterator((int)first);
-            }
-
-            @Override
-            public IModel<Resource> model(Resource resource) {
-                return new VolatileEntityModel<Resource>(resource);
-            }
-
-            @Override
-            public long size() {
-                return model.getObject().getResources().size();
+            protected boolean showCaret() {
+                return false;
             }
         };
-
-        final DataTable<Resource, String> resourcesTable
-                = new AjaxFallbackDefaultDataTable<>("resourcesTable",
-                        cols, resourcesProvider, 64);
-        resources.add(resourcesTable);
-        resources.setVisible(model.getObject().getType() == Type.EXTENSIONAL);
+                
+        return dropDown;
     }
-
-    private void addGeneratedBy(final IModel<VirtualCollection> model) {
-        final Border generated = new AjaxToggleBorder("generatedByBorder",
-                new Model<String>("Intensional Collection Query"), CSS_CLASS);
-        add(generated);
-        generated.add(new Label("generatedBy.description"));
-        generated.add(new Label("generatedBy.uri").add(hideIfEmpty));
-        generated.add(new Label("generatedBy.query.profile").add(hideIfEmpty));
-        generated.add(new Label("generatedBy.query.value").add(hideIfEmpty));
-        generated.setVisible(model.getObject().getType() == Type.INTENSIONAL);
+    
+    private class GeneratedByPanel extends Panel {
+        public GeneratedByPanel(String id, final IModel<VirtualCollection> model) {
+            super(id);
+            GeneratedBy gb = model.getObject().getGeneratedBy();
+            add(new BasicTextPanel("description", "Name", new Model(gb == null ? "" : gb.getDescription())));
+            add(new BasicTextPanel("uri", "URI", new Model(gb == null ? "" : gb.getURI())));
+            add(new BasicTextPanel("query.profile", "Query profile", new Model(gb == null ? "" : gb.getQuery().getProfile())));
+            add(new BasicTextPanel("query.value", "Query value", new Model(gb == null ? "" : gb.getQuery().getValue())));
+        }
     }
-
+    
     private static IModel<VirtualCollection> getVirtualCollectionModel(PageParameters params) {
-        final Long collectionId = params.get(PARAM_VC_ID).toLong();
-        if (collectionId == null) {
+        Long collectionId = null;
+        
+        StringValue id = params.get(PARAM_VC_ID);
+        if (id == null) {
             Session.get().error("Collection could not be retrieved, id not provided");
             return null;
         }
+        try {
+            collectionId = id.toLong();
+        } catch(Exception ex) {
+            Session.get().error("Collection could not be retrieved, id ("+id+") not a valid number.");
+            return null;
+        }
+        /*
+        if (collectionId == null) {
+            Session.get().error("Collection could not be retrieved, id ("+id+") is invalid");
+            return null;
+        }
+        */
         return new DetachableVirtualCollectionModel(collectionId);
     }
 
@@ -408,7 +542,6 @@ public class VirtualCollectionDetailsPage extends BasePage {
                     return BackPage.PUBLIC_LISTING;
             }
         }
-       
     }
 
     @Override

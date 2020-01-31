@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+                      "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+<head />
+<body>
+    <wicket:panel>
+        
+        <div wicket:id="wrapper">            
+            
+            <form wicket:id="form">            
+                <div class="col-xs-12">
+                   <label wicket:id="label" class="required">[Name]</label>    
+                </div>
+                <div class="alert alert-warning col-xs-12" role="alert">Intensional virtual collections are very experimental. Use at own risk!</div>
+                <div class="col-xs-12 col-xs-offset-0">      
+                    <table class="table full-width">
+                        <tbody>
+                            <tr>
+                                <td><span wicket:id="qry_desc_label"></span></td>
+                                <td><textarea wicket:id="qry_desc_input" class="max-width"></textarea></td>
+                            </tr>
+                            <tr>
+                                <td><span wicket:id="qry_uri_label"></span></td>
+                                <td><input wicket:id="qry_uri_input" type="text" class="max-width"></input></td>
+                            </tr>
+                            <tr>
+                                <td><span wicket:id="qry_profile_label"></span></td>
+                                <td><input wicket:id="qry_profile_input" type="text" class="max-width"></input></td>
+                            </tr>
+                            <tr>
+                                <td><span wicket:id="qry_value_label"></span></td>
+                                <td><textarea wicket:id="qry_value_input" class="max-width"></textarea></td>
+                           </tr>
+                        </tbody>
+                    </table>
+                </div>
+            </form>
+
+        </div>
+        <!--div class="col-xs-1">
+                    <span>&nbsp;</span>
+                </div-->
+        
+    </wicket:panel>
+</body>
+</html>

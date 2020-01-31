@@ -16,6 +16,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionNotFoundExcepti
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermissionException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionValidationException;
 
 @Provider
 public class VirtualCollectionRegistryExceptionMapper implements

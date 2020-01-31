@@ -2,8 +2,10 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
 import de.agilecoders.wicket.core.Bootstrap;
 import de.agilecoders.wicket.core.settings.BootstrapSettings;
+import de.agilecoders.wicket.core.settings.SingleThemeProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.DataStore;
+import eu.clarin.cmdi.virtualcollectionregistry.JavaScriptResources;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AboutPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AdminPage;
@@ -11,9 +13,11 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePrivateCollectio
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePublicCollectionsPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.CreateAndEditVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.HelpPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.LoginPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.LogoutPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmitVirtualCollectionPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LoginPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LogoutPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.VirtualCollectionDetailsPage;
+import eu.clarin.cmdi.wicket.ExtremeNoopTheme;
 import org.apache.wicket.Page;
 import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebApplication;
@@ -47,10 +51,14 @@ public class Application extends AuthenticatedWebApplication {
     protected void init() {
         super.init();
         
-        BootstrapSettings settings = new BootstrapSettings();
-        //settings.minify(true); // use minimized version of all bootstrap references
-
-        Bootstrap.install(this, settings);
+        //Install bootstrap
+        Bootstrap.install(
+            this, 
+            new BootstrapSettings()
+                //bootstrap CSS is provided via markup (CSS link in HTML head)
+                .setThemeProvider(new SingleThemeProvider(new ExtremeNoopTheme()))
+                .setJsResourceReference(JavaScriptResources.getBootstrapJS())
+        );
    
     
         logger.info("Initialising VCR web application");
@@ -75,6 +83,7 @@ public class Application extends AuthenticatedWebApplication {
         mountPage("/admin", AdminPage.class);
         mountPage("/details/${id}", VirtualCollectionDetailsPage.class);
         mountPage("/edit/${id}", CreateAndEditVirtualCollectionPage.class);
+        mountPage("/submit/${type}", SubmitVirtualCollectionPage.class);
     }
 
     @Override
