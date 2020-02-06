@@ -173,7 +173,7 @@ public class VirtualCollectionResourceTest {
         assertEquals(303, response.getStatus());
         final List<Object> location = response.getMetadata().get("Location");
         assertFalse(location.isEmpty());
-        assertEquals(URI.create("http://server/vcr/../app/details/" + ID), location.get(0));
+        assertEquals(URI.create("http://server/vcr/../details/" + ID), location.get(0));
     }
 
     /**
