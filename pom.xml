@@ -7,7 +7,7 @@
     <artifactId>VirtualCollectionRegistry</artifactId>
     <packaging>war</packaging>
     <name>CLARIN Virtual Collection Registry</name>
-    <version>1.4.0-SNAPSHOT</version>
+    <version>1.4.1-SNAPSHOT</version>
 
     <organization>
         <name>CLARIN</name>
@@ -581,6 +581,7 @@
                 <includes>
                     <include>**/*.html</include>
                     <include>**/*.css</include>
+                    <include>**/*.ico</include>
                     <include>**/*.js</include>
                     <include>**/*.properties</include>
                 </includes>
