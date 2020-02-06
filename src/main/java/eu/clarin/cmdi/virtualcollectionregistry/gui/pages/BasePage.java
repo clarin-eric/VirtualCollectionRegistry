@@ -1,5 +1,10 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
+import eu.clarin.cmdi.wicket.PiwikTracker;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LogoutPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.AuthenticationHandler;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LoginPage;
 import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.INavbarComponent;
 import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.ImmutableNavbarComponent;
 import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.Navbar;
@@ -7,15 +12,18 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.Navbar.ComponentP
 import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.NavbarButton;
 import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.NavbarExternalLink;
 import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
-import eu.clarin.cmdi.virtualcollectionregistry.config.PiwikConfigImpl;
+import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
+import eu.clarin.cmdi.virtualcollectionregistry.feedback.IValidationFailedMessage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
+import eu.clarin.cmdi.wicket.PiwikConfig;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
+import javax.servlet.ServletContext;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
-import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
+import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.JavaScriptReferenceHeaderItem;
@@ -23,6 +31,7 @@ import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.include.Include;
 import org.apache.wicket.markup.html.panel.FeedbackPanel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -31,6 +40,7 @@ import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.util.string.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -42,7 +52,10 @@ public class BasePage extends WebPage {
     private AdminUsersService adminUsersService;
 
     @SpringBean
-    private PiwikConfigImpl piwikConfig;
+    private PiwikConfig piwikConfig;
+    
+    @SpringBean
+    private VcrConfig vcrConfig;
     
     public static final String BETA_MODE = "eu.clarin.cmdi.virtualcollectionregistry.beta_mode";
     
@@ -72,15 +85,40 @@ public class BasePage extends WebPage {
         add(new WebMarkupContainer("header")
                 .add(createHeaderMenu("menu"))); // navbar in header
 
-        // Add feedback panel to show information and error messages
-        add(new FeedbackPanel("feedback"));
-        
+        FeedbackPanel feedback = new FeedbackPanel("feedback");
+        feedback.setFilter((FeedbackMessage fm) -> !(fm.getMessage() instanceof IValidationFailedMessage));
+        add(feedback);
+
         // add Piwik tracker (if enabled)
         if (piwikConfig.isEnabled()) {
             add(new PiwikTracker("piwik", piwikConfig.getSiteId(), piwikConfig.getPiwikHost(), piwikConfig.getDomains()));
         } else {
             add(new WebMarkupContainer("piwik")); //empty placeholder
         }
+        
+        //Include survey if configured (typically mopinion user satisfaction
+        if (Strings.isEmpty(piwikConfig.getSnippetSurvey())) {
+            add(new WebMarkupContainer("surveySnippet"));
+        } else {
+            add(new Include("surveySnippet", piwikConfig.getSnippetSurvey()));
+        }
+         
+        //Include extra credits if configured
+        if (Strings.isEmpty(piwikConfig.getSnippetCredits())) {
+            add(new WebMarkupContainer("creditsSnippet"));
+        } else {
+            add(new Include("creditsSnippet", piwikConfig.getSnippetCredits()));
+        }
+        
+        String mode = piwikConfig.getMode();
+        WebMarkupContainer badge = new WebMarkupContainer("badge");
+        badge.setVisible(mode.equalsIgnoreCase("beta") || mode.equalsIgnoreCase("alpha"));
+        if (mode.equalsIgnoreCase("beta")) {
+            badge.add(new AttributeModifier("class", "vcr-badge beta"));
+        } else if(mode.equalsIgnoreCase("alpha")) {
+            badge.add(new AttributeModifier("class", "vcr-badge alpha"));
+        }
+        add(badge);
     }
     
     private Component createHeaderMenu(String id) {
@@ -91,12 +129,11 @@ public class BasePage extends WebPage {
                 return (Label) super.newBrandLabel(markupId).setEscapeModelStrings(false);
             }
         };
-        navbar.setBrandName(Model.of("<i class=\"glyphicon glyphicon-book\" aria-hidden=\"true\"></i> Virtual Collection Registry"));
+        navbar.setBrandName(Model.of("<i class=\"glyphicon glyphicon-book\" aria-hidden=\"true\"></i> Virtual Collections"));
         
         final List<INavbarComponent> menuItems = new ArrayList<>();
         //Default menu items
         menuItems.add(new ImmutableNavbarComponent(new NavbarButton(BrowsePublicCollectionsPage.class, Model.of("Browse")), ComponentPosition.LEFT));
-        //menuItems.add(new ImmutableNavbarComponent(new NavbarButton(BrowsePrivateCollectionsPage.class, Model.of("My Collections")), ComponentPosition.LEFT));
         menuItems.add(new ImmutableNavbarComponent(new NavbarButton(CreateAndEditVirtualCollectionPage.class, Model.of("Create")), ComponentPosition.LEFT));
         menuItems.add(new ImmutableNavbarComponent(new NavbarButton(HelpPage.class, Model.of("Help")), ComponentPosition.LEFT));
         
@@ -106,23 +143,25 @@ public class BasePage extends WebPage {
         
         //Add login or user profile + logout buttons based on authentication state
         if(isSignedIn()) {
-            final Component userLink = new NavbarButton(BrowsePrivateCollectionsPage.class, Model.of(getUser().getName()))
-                    .add(new AttributeModifier("class", "glyphicon glyphicon-user"));
-            final Component logoutLink = new NavbarButton(LogoutPage.class, Model.of("Logout"))
-                .add(new AttributeModifier("class", "glyphicon glyphicon-log-out"));
-            
+            final NavbarButton userLink = new NavbarButton(BrowsePrivateCollectionsPage.class, Model.of(getUser().getName()));
+            userLink.setIconType(GlyphIconType.user);
             menuItems.add(new ImmutableNavbarComponent(userLink, ComponentPosition.RIGHT));
+            
+            if(vcrConfig.isLogoutEnabled()) {
+            final NavbarButton logoutLink = new NavbarButton(LogoutPage.class, Model.of("Logout"));
+            logoutLink.setIconType(GlyphIconType.logout);
             menuItems.add(new ImmutableNavbarComponent(logoutLink, ComponentPosition.RIGHT));
+            }            
         } else {
-            final Component loginLink = new NavbarButton(LoginPage.class, Model.of("Login"))
-                .add(new AttributeModifier("class", "glyphicon glyphicon-log-in"));
+            final NavbarButton loginLink = new NavbarButton(LoginPage.class, Model.of("Login"));
+               loginLink.setIconType(GlyphIconType.login);
             menuItems.add(new ImmutableNavbarComponent(loginLink, ComponentPosition.RIGHT));
         }
         // link to CLARIN website
         final Component clarinLink = new NavbarExternalLink(Model.of("http://www.clarin.eu/")) {
             @Override
             protected Component newLabel(String markupId) {
-                return super.newLabel(markupId).setEscapeModelStrings(false);
+                return super.newLabel(markupId).setEscapeModelStrings(false); 
             }
         }
             .setLabel(Model.of("<span>CLARIN</span>"))
@@ -158,7 +197,13 @@ public class BasePage extends WebPage {
     }
 
     protected boolean isSignedIn() {
-        return ((AuthenticatedWebSession) getSession()).isSignedIn() && getSession().getPrincipal() != null;
+        try {
+            if(!getUser().getName().equalsIgnoreCase("anonymous")) {
+                return true;
+            }
+        } catch(WicketRuntimeException ex) {}
+        
+        return false;
     }
     
     protected Principal getUser() {
@@ -182,6 +227,12 @@ public class BasePage extends WebPage {
     @Override
     public ApplicationSession getSession() {
         return (ApplicationSession) super.getSession();
+    }
+    
+    public String getContextPath() {
+        ServletContext servletContext = WebApplication.get().getServletContext(); 
+        String contextPath = servletContext.getContextPath();
+        return contextPath;
     }
     
     /**

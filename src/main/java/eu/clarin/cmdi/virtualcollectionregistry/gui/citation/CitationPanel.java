@@ -35,7 +35,6 @@ public class CitationPanel extends Panel {
     public CitationPanel(String id, final IModel<VirtualCollection> model) {
         super(id);
         
-        
         AjaxLink citeButton = new AjaxLink( "citeButton", new Model<String>("Cite") ){ 
             @Override
             public void onClick( AjaxRequestTarget target ) {

@@ -48,14 +48,14 @@ public class HandleLinkModelTest {
 
         // handle
         model.setObject("hdl:1234/5678-abCD");
-        assertEquals("http://hdl.handle.net/1234/5678-abCD", instance.getObject());
+        assertEquals("https://hdl.handle.net/1234/5678-abCD", instance.getObject());
     }
 
     @Test
     public void testGetObjectDOI() {
         // doi
         model.setObject("doi:10.1000/182-Xyz");
-        assertEquals("http://hdl.handle.net/10.1000/182-Xyz", instance.getObject());
+        assertEquals("https://dx.doi.org/10.1000/182-Xyz", instance.getObject());
     }
 
     @Test

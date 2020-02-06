@@ -16,13 +16,12 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.service.impl;
 
-import java.util.regex.Pattern;
-
+import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.Validatable;
-import org.apache.wicket.validation.ValidationError;
 import org.apache.wicket.validation.validator.UrlValidator;
+import org.apache.wicket.validation.ValidationError;
 
 /**
  * String validator that checks whether the value is a valid handle with 'hdl'
@@ -33,10 +32,6 @@ import org.apache.wicket.validation.validator.UrlValidator;
  */
 @SuppressWarnings("serial")
 public class ReferenceValidator implements IValidator<String> {
-
-    private static final String HANDLE_SPECIFIC_PART_PATTERN = "[0-9\\.]+\\/.+$";
-    private static final Pattern HANDLE_PATTERN = Pattern.compile("^(hdl|doi):" + HANDLE_SPECIFIC_PART_PATTERN);
-    private static final Pattern HANDLE_RESOLVER_PATTERN = Pattern.compile("^http://(hdl\\.handle\\.net|dx\\.doi\\.org|)/" + HANDLE_SPECIFIC_PART_PATTERN);
     private final IValidator<String> urlValidator = new UrlValidator(UrlValidator.NO_FRAGMENTS);
     private final IValidator httpResponseValidator = new HttpResponseValidator();
     
@@ -46,31 +41,24 @@ public class ReferenceValidator implements IValidator<String> {
         return validatable.isValid();
     }
     
-    /**
-     *
-     * @param uri
-     * @return true IFF the expression is a URI consisting of a valid handle
-     * pattern preceded by a handle scheme expression (hdl: or doi:) OR one of
-     * the accepted handle resolver base URL's (http://hdl.handle.net or
-     * http://dx.doi.org)
-     */
-    public static boolean isPid(CharSequence uri) {
-        return HANDLE_PATTERN.matcher(uri).matches()
-                || HANDLE_RESOLVER_PATTERN.matcher(uri).matches();
-    }
-
     @Override
-    public void validate(IValidatable<String> validatable) {
-        // first check if it is a valid handle
-        if (!HANDLE_PATTERN.matcher(validatable.getValue()).matches()) {
-            // check if it is a valid URL
-            urlValidator.validate(validatable);            
-            if (!validatable.isValid()) {
-                validatable.error(new ValidationError().setMessage(String.format("'%s' is not a valid handle", validatable.getValue())));
+    public void validate(IValidatable<String> ivalidatable) {
+        if(HandleLinkModel.isSupportedPersistentIdentifier(ivalidatable.getValue())) {
+            if(HandleLinkModel.isActionableSupportedPersistentIdentifier(ivalidatable.getValue())) {
+                httpResponseValidator.validate(ivalidatable);
             }
-            
-            httpResponseValidator.validate(validatable);
+        } else {
+            urlValidator.validate(ivalidatable);
+            if (!ivalidatable.isValid()) {
+                String val = ivalidatable.toString();
+                if(!val.startsWith("http") || val.startsWith("https") || val.startsWith("hdl") || val.startsWith("doi") || val.startsWith("urn:nbn")) {
+                    ivalidatable.error(new ValidationError().setMessage(String.format("is not a valid PID or URL. Incorrect scheme (not http:, https:, hdl:, doi: or urn:nbn:)", val)));
+                } else {
+                    ivalidatable.error(new ValidationError().setMessage(String.format("is not a valid PID or URL", val)));
+                }
+            } else {
+                httpResponseValidator.validate(ivalidatable);
+            }
         }
     }
-
 }

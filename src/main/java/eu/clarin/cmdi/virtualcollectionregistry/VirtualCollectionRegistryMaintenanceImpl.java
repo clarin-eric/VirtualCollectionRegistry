@@ -45,11 +45,13 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
     private DataStore datastore; //TODO: replace with Spring managed EM?
     
     @Autowired
+   // @Qualifier("EPICPersistentIdentifierProvider")
     private PersistentIdentifierProvider pid_provider;
     
     @Override
     public void perform(long now) {
-        logger.debug("Maintenance check");
+        logger.trace("Maintenance check");
+        long t1 = System.nanoTime();
         
         // allocate persistent identifier roughly after 30 seconds
         final Date nowDateAlloc = new Date(now - 30 * 1000);
@@ -68,6 +70,9 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
         } finally {
             datastore.closeEntityManager();
         }
+        
+        long t2 = System.nanoTime();
+        logger.debug(String.format("Maintenance check finished in %.3fms", (t2-t1)/1000000.0));
     }
     
     /*

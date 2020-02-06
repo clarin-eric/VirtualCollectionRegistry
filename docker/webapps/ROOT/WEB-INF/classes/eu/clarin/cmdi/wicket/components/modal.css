@@ -1,0 +1,128 @@
+/*
+Copyright (C) 2018 CLARIN
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+/* 
+    Created on : Nov 23, 2018, 3:41:36 PM
+    Author     : wilelb
+*/
+
+div.wicket-modal {
+    width: 600px;
+    margin: 30px auto;
+}
+
+.content {
+    width: 100%;
+    border: 0px solid #000;
+}
+
+.bibtex {
+    margin-top: 15px;
+}
+
+#dlg-header {
+    border-bottom: solid 1px gray;
+    padding: 2px;
+    text-align: left;
+}
+
+#dlg-content {
+    border: none;
+    padding: 5px 2px 5px 2px; 
+}
+
+#dlg-footer {
+    border-top: solid 1px gray;
+    padding: 5px 2px 2px 2px;
+}
+
+.center {
+    text-align: center;
+}
+
+.right {
+    text-align: right;
+}
+
+h4.dlg-title {
+    color: #0080aa;
+    text-align: left;
+}
+.w_caption {
+    display: none;   
+    height: 0px;
+}
+
+/* Overriding default styles */
+
+div.wicket-modal div.w_top_1 {	
+    width: 100%;	
+    overflow: hidden;
+}
+
+div.wicket-modal div.w_top {
+    height: 11px; 
+    background-position: 0px -16px; 
+    overflow: hidden;
+    cursor:n-resize;
+    padding: 0px; margin: 0px;		
+}
+
+div.wicket-modal .w_topLeft {
+    width: 14px; 
+    height: 11px;	
+    float: left;
+    background-position: 0px 0px; 
+    overflow: hidden; 
+    cursor: nw-resize;
+}
+
+div.wicket-modal div.w_topRight {
+    width: 14px; 
+    height: 11px;	
+    float: right; 
+    background-position: -16px 0px;
+    overflow: hidden; 
+    cursor: ne-resize;
+}
+
+div.wicket-modal div.w_left {
+    background-position: 0px 0px; 
+    background-repeat: repeat-y;
+    cursor: w-resize; 
+    width: 100%;
+}
+
+div.wicket-modal div.w_right_1 {
+    margin-left:10px;	
+}
+
+div.wicket-modal div.w_right {
+    background-position: right;
+    background-repeat: repeat-y; 
+    cursor:e-resize; 
+    width: 100%;	
+}
+
+div.wicket-modal div.w_content_1 {
+    padding: 5px;
+    cursor: auto;	
+    border: solid 1px #000000;
+    background-color: white;
+
+    border-radius: 0px;        
+    box-shadow: 2px 2px 5px 1px rgba(0,0,0,0.4);
+}

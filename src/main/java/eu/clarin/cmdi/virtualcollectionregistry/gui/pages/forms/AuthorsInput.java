@@ -22,6 +22,7 @@ import java.util.List;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxSubmitLink;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -64,10 +65,13 @@ public class AuthorsInput extends FormComponentPanel<List<Creator>> {
     protected void onInitialize() {
         super.onInitialize();
 
-        Form form = new Form("form") {
+        Form form = new Form("form");/* {
             @Override
             protected void onSubmit() {
                 super.onSubmit();
+                
+                logger.info("Authors form successfully submitted!");
+                
                 String person = personModel.getObject();
                 String email = emailModel.getObject();
                 String organisation = organisationModel.getObject();
@@ -96,9 +100,9 @@ public class AuthorsInput extends FormComponentPanel<List<Creator>> {
 
             @Override
             protected void onError() {
-                logger.info("Form keywords failed to validate!");
+                logger.info("Authors form failed to validate!");
             }
-        };
+        };*/
         form.setOutputMarkupId(true);
 
         Label lbl = new Label("label", "Author(s)");		
@@ -108,7 +112,44 @@ public class AuthorsInput extends FormComponentPanel<List<Creator>> {
         //inputEmail.setRequired(true);
         inputEmail.add(EmailAddressValidator.getInstance());
         TextField<String> inputOrganisation = new TextField("input_organisation", organisationModel);
-        Button btnAdd = new Button("btn_add", Model.of("Add"));
+        //Button btnAdd = new Button("btn_add", Model.of("Add"));
+        AjaxSubmitLink btnAdd = new AjaxSubmitLink("btn_add", form) {//Model.of("Add"))  {                
+                @Override
+                protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                    
+                    logger.info("Ajax submit");
+                    
+                   logger.info("Authors form successfully submitted!");
+                
+                    String person = personModel.getObject();
+                    String email = emailModel.getObject();
+                    String organisation = organisationModel.getObject();
+
+                    //logger.info("person: ["+person+"], email: ["+email+"], org: ["+organisation+"]");
+                    List<String> errors = new ArrayList<>();
+                    if (person == null || person.isEmpty()) {
+                        errors.add("Person is a required field.");
+                    }
+
+                    if (errors.isEmpty()) {
+                        Creator creator = new Creator(person);
+                        if (email != null && !email.isEmpty()) {
+                            creator.setEMail(email);
+                        }
+                        if (organisation != null && !organisation.isEmpty()) {
+                            creator.setOrganisation(organisation);
+                        }
+
+                        listModel.getObject().add(creator);
+                        personModel.setObject(null);
+                        emailModel.setObject(null);
+                        organisationModel.setObject(null);
+                    }
+                    
+                    target.add(form);
+                    super.onSubmit(target, form);
+                }
+            };
         btnAdd.add(new AttributeModifier("class", "btn btn-default btn-xs"));
         
         ListView<Creator> listview = new ListView<Creator>("list", listModel) {

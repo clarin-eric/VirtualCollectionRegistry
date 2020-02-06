@@ -1,6 +1,5 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
-import com.sun.jersey.api.core.InjectParam;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
 import java.io.IOException;
@@ -14,6 +13,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.MultivaluedMap;
 import javax.ws.rs.ext.MessageBodyWriter;
 import javax.ws.rs.ext.Provider;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Body writer that outputs an XML representation of a virtual collection in the
@@ -27,7 +27,7 @@ import javax.ws.rs.ext.Provider;
     MediaType.APPLICATION_JSON})
 public class VirtualCollectionXMLBodyWriter implements MessageBodyWriter<VirtualCollection> {
 
-    @InjectParam
+    @Autowired
     private VirtualCollectionMarshaller marshaller;
 
     @Override

@@ -17,7 +17,8 @@
 package eu.clarin.cmdi.virtualcollectionregistry.service.impl;
 
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionValidationException;
+import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidator;
@@ -40,7 +41,7 @@ public class VirtualCollectionValidatorImplTest {
         instance = new VirtualCollectionValidatorImpl();
     }
 
-    @Test(expected = VirtualCollectionRegistryUsageException.class)
+    @Test(expected = VirtualCollectionValidationException.class)
     public void testValidateExtensionalEmptyResources() throws Exception {
         vc.setName("Name");
         vc.setType(VirtualCollection.Type.EXTENSIONAL);
@@ -51,17 +52,18 @@ public class VirtualCollectionValidatorImplTest {
     public void testValidateExtensionalLegalResources() throws Exception {
         vc.setName("Name");
         vc.setType(VirtualCollection.Type.EXTENSIONAL);
+        vc.getCreators().add(new Creator());
         vc.getResources().add(new Resource(Resource.Type.METADATA, "http://clarin.eu"));
         vc.getResources().add(new Resource(Resource.Type.METADATA, "hdl:1234/5678"));
         vc.getResources().add(new Resource(Resource.Type.METADATA, "doi:10.1000/182"));
         try {
             instance.validate(vc);
-        } catch (VirtualCollectionRegistryException ex) {
+        } catch (VirtualCollectionValidationException ex) {
             fail("Validation of valid collection failed: " + ex.getMessage());
         }
     }
 
-    @Test(expected = VirtualCollectionRegistryUsageException.class)
+    @Test(expected = VirtualCollectionValidationException.class)
     public void testValidateExtensionalIllegalResources() throws Exception {
         vc.setName("Name");
         vc.setType(VirtualCollection.Type.EXTENSIONAL);

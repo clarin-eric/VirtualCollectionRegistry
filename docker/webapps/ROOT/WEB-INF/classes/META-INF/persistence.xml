@@ -1,0 +1,22 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+  <persistence-unit name="VirtualCollectionStore" transaction-type="RESOURCE_LOCAL">
+    <!--<provider>org.hibernate.ejb.HibernatePersistence</provider>-->
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <jta-data-source>java:comp/env/jdbc/VirtualCollectionStore</jta-data-source>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.User</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.Creator</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.Resource</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier</class>
+    <validation-mode>NONE</validation-mode>
+    <properties>
+      <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5InnoDBDialect"/>
+      <property name="hibernate.max_fetch_depth" value="3"/>
+      <!--<property name="hibernate.hbm2ddl.auto" value="update"/>-->
+      <property name="hibernate.show_sql" value="false"/>
+      <property name="hibernate.format_sql" value="false"/>
+      <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false" />
+    </properties>
+  </persistence-unit>
+</persistence>

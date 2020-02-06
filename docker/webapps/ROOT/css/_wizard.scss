@@ -1,0 +1,337 @@
+/*
+Copyright (C) 2014 CLARIN
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+*/
+
+div.wizard {
+
+    .wicketExtensionsWizardHeaderTitle {
+        padding: 0px 10px;
+        font-size: 16px;
+        font-weight: bold;
+    }
+
+    .wicketExtensionsWizardHeaderSummary {
+        padding: 5px 10px 0 10px;
+        font-style: italics;
+    }
+
+    .wizardHeader {
+        border-bottom: 1px solid #000000;
+        margin: 0 0 10px 0;
+        padding: 0 0 10px 0;
+    }
+
+    .wizardFeedback {
+        // redundant because of global feedback, suppress 
+        display: none !important;
+    }
+
+}
+
+form.wizard div.wizardView {
+    
+    label {
+        width: 15%;
+        min-width: 10em;
+    }
+    
+    input[type=text], textarea {
+        width: 100%;
+    }
+    
+    
+    
+}
+
+form.wizard {
+    margin: 5px 4px;
+    padding: 0;
+    font-size: 100%;
+    width: 100%;
+}
+
+form.wizard fieldset,
+div.wizard div.fieldset {
+    clear: both;
+    font-size: 100%;
+    border: none;
+    padding: 0 10px 0 10px;
+    margin: 0 0 0 0;
+}
+
+form.wizard div,
+div.editDialog div {
+    clear: left;
+    display: block;
+    /*  width: 354px;
+      zoom: 1;
+      margin: 5px 0 0 0;
+      padding: 1px 3px;
+    */
+}
+
+form.wizard .extrainfo {
+    margin-left: 50px;
+}
+
+$help-icon-size: 16px;
+
+form.wizard .extrainfo a.extrainfotoggle {
+    display: inline-block;
+    float: right;
+    vertical-align: top;
+    width: $help-icon-size;
+    height: $help-icon-size;
+    /* icon from GLYPHICONS.com */
+    background-image: url(../icons/glyphicons_194_circle_question_mark.png);
+    background-size: $help-icon-size;
+    background-repeat: no-repeat;
+}
+
+form.wizard {
+
+    .extrainfo a.extrainfotoggle span {
+        display: none;
+    }
+
+    div.notes, div.sidenotes {
+        display: inline-block;
+        height: auto;
+        padding: 5px;
+        border: 1px solid #666666;
+        background-color: #ffffe1;
+        color: #666666;
+
+        h4 {
+            text-align: center;
+            padding: 3px 0 3px 0;
+            margin: 0 0 3px 0;
+            border-width: 0 0 1px 0;
+            border-style: solid;
+            border-color: #666666;
+            color: #666666;
+            font-size: 100%;
+        }
+
+        p, ul {
+            margin: 0em 0em 0.5em 0em;
+            color: #666666;
+            font-size: 80%;
+        }
+
+        p.last {
+            margin: 0em;
+        }
+    } //div.notes, div.sidenotes
+
+    div.notes {
+        width: 80%;
+        margin: 0 0 10px 70px;
+    }
+
+    div.sidenotes {
+        float: right;
+        width: 198px;
+        margin: 0 0 10px 10px;    
+    }
+
+    div label {
+        display: block;
+        float: left;
+        width: 15%;
+        min-width: 7em;
+        padding: 3px 10px;
+        margin: 0 0 5px 0;
+        text-align: right;
+        font-weight: normal;
+    }
+
+    div input {
+        box-sizing:border-box;
+        -moz-box-sizing:border-box;
+    }
+
+
+    textarea {
+        font-family: Verdana, sans-serif;
+        font-size: 100%;
+        width: 570px;
+        overflow: auto;
+        margin-bottom: 5px;
+    }
+
+    .wizardButtons {
+        border-top: 1px solid #000000;
+        margin: 10px 0 0 0;
+        clear: both;
+    }
+
+    .buttonbar {
+        margin: 10px 220px 0 0;
+        padding: 0 10px 0 0;
+        text-align: right; 
+    }
+} //form.wizard
+
+
+form.wizard .buttonbar, div.modalDialog div.modalDialogButtons {
+
+    input.button:hover {
+        color: #AE0000;
+        background-color: #E9EEF7;
+    }
+
+    input.button[disabled],input.button[disabled]:hover {
+        color: #AFAFAF;
+        border-color: #EFEFEF;
+    }
+}
+
+div.required label,
+label.required {
+    font-weight: bold !important;
+}
+
+/*
+ * modal dialog
+ */
+div.modalDialog {
+    margin: 0;
+    padding: 0;
+
+    div.modalDialogContent {
+        margin: 10px;
+
+        p {
+            margin: 1em;
+        }
+    }
+
+    div.modalDialogButtons {
+        border-top: 1px solid #BBBBBB;
+        margin: 0 5px 5px 5px;
+        padding: 5px 0 0 0;
+        text-align: center;
+    }
+}
+
+
+div.confirmationDialog {
+    text-align: center;
+}
+
+div.longConfirmationDialog {
+    text-align: left;
+}
+
+div.editDialog fieldset {
+    border: none;
+    margin: 0;
+    padding: 0;
+}
+
+div.editDialog fieldset label {
+    display: block;
+    float: left;
+    /* width: 100px; */
+    padding: 3px 5px 3px 0;
+    margin: 0 0 5px 0;
+    text-align: right;
+}
+
+/*
+ * dialog customizations
+ */
+div.editCreatorDialog fieldset {
+
+    label {
+        width: 7em;
+    }
+
+    input, textarea {
+        width: 17em;
+    }
+}
+
+div.editResourceDialog fieldset {
+
+    label {
+        width: 6em;
+    }
+
+    input, textarea {
+        width: 30em;
+    }
+}
+
+div.addResourcesDialog fieldset {
+
+    label {
+        width: 6em;
+    }
+
+    input, textarea {
+        width: 30em;
+    }
+}
+
+div.addKeywordDialog fieldset input {
+    width: 20em;
+}
+
+/*
+ * create virtual collection wizard
+ */
+div.wizard a {
+    font-weight: normal;
+}
+
+div.keywordsList {
+    clear: none !important;
+    width: 602px;
+    margin-left: 160px;
+    padding: 3px 0;
+
+
+    div {
+        clear: none;
+    }
+
+    ul {
+        list-style-type: square;
+        margin: 0;
+        padding: 0 0 0 16px;
+
+        li {
+            margin-top: 2px;
+        }
+
+        li.first {
+            margin-top: 0;
+        }
+    }
+}
+
+
+input.button {
+    padding: 1px 4px;
+    margin: 0 2px;
+    color: #000000;
+    background-color: #E9EEF7;
+    border: 2px solid #D4DEEF;
+    border-radius: 4px;
+    -moz-border-radius: 4px;
+}

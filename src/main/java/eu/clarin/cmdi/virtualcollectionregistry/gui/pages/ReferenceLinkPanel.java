@@ -1,7 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
-import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
+import eu.clarin.cmdi.wicket.components.pid.PidPanel;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.basic.Label;
@@ -9,8 +9,11 @@ import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.util.string.Strings;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -19,34 +22,40 @@ import org.apache.wicket.util.string.Strings;
 @SuppressWarnings("serial")
 public class ReferenceLinkPanel extends Panel {
 
+    private final static Logger logger = LoggerFactory.getLogger(ReferenceLinkPanel.class);
+    
+    private class LinkPanel extends Panel {
+        public LinkPanel(String id, IModel<String> model, ReferenceLabelModel labelModel) {
+            super(id);
+            
+            final ExternalLink link = new ExternalLink("reference", model);
+            link.add(new Label("referenceLabel", labelModel));
+            link.add(new AttributeModifier("title", model));
+
+            this.setOutputMarkupId(true);
+            this.add(link);
+        }
+    }
+    
     public ReferenceLinkPanel(String id, IModel<Resource> model) {
         super(id, model);
-
-        // Shared rerence model
-        final PropertyModel<String> refModel = new PropertyModel<>(model, "ref");
-
-        // Wrapper for link model that detects handles
-        final HandleLinkModel linkModel = new HandleLinkModel(refModel);
-        final ExternalLink link = new ExternalLink("reference", linkModel);
-        link.add(new AttributeModifier("title", refModel));
-
-        // Set label on link
-        final ReferenceLabelModel labelModel = new ReferenceLabelModel(model);
-        link.add(new Label("referenceLabel", labelModel));
-
-        add(link);
+        
+        if(model.getObject().hasPersistentIdentifier()) {
+            add(new PidPanel("link", new Model<>(model.getObject()), "resource (file or service)"));
+        } else {
+            // Shared rerence model
+            final PropertyModel<String> refModel = new PropertyModel<>(model, "ref");     
+            add(new LinkPanel("link", refModel,  new ReferenceLabelModel(model)));
+        }
 
         final PropertyModel<String> descriptionModel = new PropertyModel<>(model, "description");
         add(new Label("description", descriptionModel) {
-
             @Override
             protected void onConfigure() {
                 super.onConfigure();
                 setVisible(descriptionModel.getObject() != null);
             }
-
         });
-
     }
 
     /**

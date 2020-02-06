@@ -1,5 +1,8 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
+import eu.clarin.cmdi.wicket.components.pid.PersistentIdentifieable;
+import eu.clarin.cmdi.wicket.components.pid.PidType;
 import java.io.Serializable;
 
 import javax.persistence.Column;
@@ -14,15 +17,17 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Entity
 @Table(name = "resource")
-public class Resource implements Serializable, IdentifiedEntity {
+public class Resource implements Serializable, IdentifiedEntity, PersistentIdentifieable {
     
+    private final static Logger logger = LoggerFactory.getLogger(Resource.class);
     private static final long serialVersionUID = 1L;
     
     public static enum Type {
-        
         METADATA,
         RESOURCE;
     } // enum Resource.Type
@@ -146,4 +151,58 @@ public class Resource implements Serializable, IdentifiedEntity {
         return copy;
     }
     
+    
+    
+    
+    @Override
+    public String getIdentifier() {
+        if(!hasPersistentIdentifier()) {
+            return null;
+        }
+        
+        String pid = null;
+        switch(getPidType()) {
+            case HANDLE: pid = HandleLinkModel.getHandleIdentifier(this.ref); break;
+            case DOI: pid = HandleLinkModel.getDoiIdentifier(this.ref); break;
+        }
+        return pid;
+    }
+
+    @Override
+    public String getPidUri() {
+        if(!hasPersistentIdentifier()) {
+            return null;
+        }
+        
+        return HandleLinkModel.getActionableUri(this.ref);
+        //return this.ref;
+    }
+
+    @Override
+    public PidType getPidType() {
+        if(!hasPersistentIdentifier()) {
+            return null;
+        }       
+        
+        return HandleLinkModel.getPidType(this.ref);
+    }
+
+    @Override
+    public String getPidTitle() {
+        if(!hasPersistentIdentifier()) {
+            return null;
+        }
+        
+        return this.ref;
+    }
+
+    @Override
+    public boolean hasPersistentIdentifier() {
+        if(this.ref == null) {
+            return false;
+        }
+        return  HandleLinkModel.isHandle(this.ref) || 
+                HandleLinkModel.isDoi(this.ref) || 
+                HandleLinkModel.isNbn(this.ref);
+    }
 } // class Resource

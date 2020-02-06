@@ -17,7 +17,6 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
-import org.apache.wicket.validation.validator.StringValidator;
 
 import eu.clarin.cmdi.virtualcollectionregistry.QueryOptions;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
@@ -50,7 +49,7 @@ public class FilterForm extends Panel {
     public FilterForm(String id, IFilterStateLocator<FilterState> locator,
             final DataTable<VirtualCollection, String> table, boolean privateMode, boolean isAdmin) {
         super(id);
-        setRenderBodyOnly(true);
+        //setRenderBodyOnly(true);
 
         List<VirtualCollection.State> states = new ArrayList<>();
         states.addAll(STATE_VALUES);
@@ -75,6 +74,7 @@ public class FilterForm extends Panel {
                 .add(Application.MAX_LENGTH_VALIDATOR));
         
         final WebMarkupContainer state = new WebMarkupContainer("state");
+        state.setRenderBodyOnly(true);
         state.add(new ListMultipleChoice("state", states));
         state.setVisible(privateMode);
         form.add(state);
@@ -125,7 +125,15 @@ public class FilterForm extends Panel {
         };
         form.add(clearButton);
         add(form);
-        add(new Label("title", "Filter form"));
+        //form.add(new Label("title", "Filter"));
+        /*
+        TODO: switch to using BootstrapPanelBuilder:
+        add(BootstrapPanelBuilder
+                .createCollapsiblePanel("general")
+                .setTitle("General")
+                .setBody(new GeneralPanel("body", model))
+                .build());
+        */
     }
 
 } // class FilterForm

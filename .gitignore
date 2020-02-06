@@ -1,3 +1,5 @@
+*.iml
+.idea
 nbactions.xml
 nbactions-development.xml
 nb-configuration.xml
@@ -10,3 +12,7 @@ docker/target
 bin/
 nbactions-development.xml
 nbactions.xml
+docker/server.jks
+docker/vcr-admin.conf
+docker/vcr/
+tmp

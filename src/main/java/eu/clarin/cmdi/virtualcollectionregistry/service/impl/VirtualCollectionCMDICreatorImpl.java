@@ -102,6 +102,7 @@ public class VirtualCollectionCMDICreatorImpl implements VirtualCollectionCMDICr
         header.setMdProfile(VIRTUAL_COLLECTION_PROFILE_ID);
         header.getMdCreator().add(vc.getOwner().getName());
         header.setMdSelfLink(vc.getPersistentIdentifier().getURI());
+        
         if (collectionDisplayName != null) {
             header.setMdCollectionDisplayName(collectionDisplayName);
         }
@@ -113,8 +114,19 @@ public class VirtualCollectionCMDICreatorImpl implements VirtualCollectionCMDICr
 
         final CMD.Resources.ResourceProxyList resourceProxyList = new CMD.Resources.ResourceProxyList();
         resources.setResourceProxyList(resourceProxyList);
+        
         final List<ResourceProxy> proxyList = resourceProxyList.getResourceProxy();
 
+        //Add landing page 
+        final ResourceProxy landingPageResourceProxy = new ResourceProxy();
+        final ResourceType landingPageResourceProxyType = new ResourceType();
+        landingPageResourceProxyType.setValue(ResourcetypeSimple.LANDING_PAGE);
+        landingPageResourceProxy.setId("LANDINGPAGE-"+vc.getId());
+        landingPageResourceProxy.setResourceType(landingPageResourceProxyType);
+        landingPageResourceProxy.setResourceRef(vc.getUri()); 
+        proxyList.add(landingPageResourceProxy);
+        
+        //Add all resources
         for (Resource resource : vc.getResources()) {
             final ResourceProxy resourceProxy = new ResourceProxy();
             if (resource.getId() == null) {
