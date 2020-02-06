@@ -30,7 +30,7 @@
     
     <filter-mapping>
         <filter-name>PersistenceFilter</filter-name>
-        <url-pattern>/app/*</url-pattern>
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
     
     <filter>
@@ -40,7 +40,7 @@
     
     <filter-mapping>
         <filter-name>CharacterEncodingFilter</filter-name>
-        <url-pattern>/app/*</url-pattern>
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
     
     <filter>
@@ -54,7 +54,7 @@
     
     <filter-mapping>
         <filter-name>VirtualCollectionRegistryApplication</filter-name>
-        <url-pattern>/app/*</url-pattern>
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
     
     <servlet>
@@ -132,7 +132,7 @@
         <web-resource-collection>
             <web-resource-name>VirtualCollectionRegistryApplication</web-resource-name>
             <description></description>
-            <url-pattern>/app/login</url-pattern>
+            <url-pattern>/login</url-pattern>
             <http-method>GET</http-method>
         </web-resource-collection>
         <auth-constraint>

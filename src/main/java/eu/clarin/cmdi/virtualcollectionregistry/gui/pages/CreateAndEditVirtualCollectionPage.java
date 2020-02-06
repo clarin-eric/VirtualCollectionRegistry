@@ -485,7 +485,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
             SubmissionUtils.clearCollectionFromSession(session);
             
             //TODO: dynamically fetch context path
-            throw new RedirectToUrlException("/app/private");
+            throw new RedirectToUrlException("/private");
         } catch (VirtualCollectionValidationException e) {
             e.addAllErrorsToSession(getSession());
         } catch(VirtualCollectionRegistryException e) {
