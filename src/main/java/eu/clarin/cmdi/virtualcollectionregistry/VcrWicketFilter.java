@@ -35,11 +35,15 @@ public class VcrWicketFilter extends WicketFilter {
     @Override
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
-
         HttpServletRequest httpRequest = (HttpServletRequest)request;
-        
-        logger.info("Local addr={}, request uri={}", request.getLocalAddr(), httpRequest.getRequestURI());
-        super.doFilter(request, response, chain);
- 
+        String uri = httpRequest.getRequestURI();
+        if (uri.startsWith("/service") || uri.startsWith("/oai")) {
+            //Skip WicketFilter
+            logger.debug("Skipping WicjetFilter for {}", uri);
+            chain.doFilter(request, response);  // invokes next filter in the chain
+        } else {
+            //Delegate to WicketFilter
+            super.doFilter(request, response, chain);
+        }
     }
 }
