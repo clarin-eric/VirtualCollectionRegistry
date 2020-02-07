@@ -21,6 +21,7 @@ import javax.servlet.FilterChain;
 import javax.servlet.ServletException;
 import javax.servlet.ServletRequest;
 import javax.servlet.ServletResponse;
+import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.protocol.http.WicketFilter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -35,7 +36,9 @@ public class VcrWicketFilter extends WicketFilter {
     public void doFilter(ServletRequest request, ServletResponse response, FilterChain chain)
             throws IOException, ServletException {
 
-        logger.info("Local addr={}", request.getLocalAddr());
+        HttpServletRequest httpRequest = (HttpServletRequest)request;
+        
+        logger.info("Local addr={}, request uri={}", request.getLocalAddr(), httpRequest.getRequestURI());
         super.doFilter(request, response, chain);
  
     }
