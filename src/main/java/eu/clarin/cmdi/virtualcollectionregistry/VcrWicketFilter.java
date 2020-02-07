@@ -39,7 +39,7 @@ public class VcrWicketFilter extends WicketFilter {
         String uri = httpRequest.getRequestURI();
         if (uri.startsWith("/service") || uri.startsWith("/oai")) {
             //Skip WicketFilter
-            logger.debug("Skipping WicjetFilter for {}", uri);
+            logger.debug("Skipping WicketFilter for {}", uri);
             chain.doFilter(request, response);  // invokes next filter in the chain
         } else {
             //Delegate to WicketFilter
