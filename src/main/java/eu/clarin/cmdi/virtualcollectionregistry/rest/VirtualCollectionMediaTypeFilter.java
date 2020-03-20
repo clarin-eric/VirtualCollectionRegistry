@@ -15,7 +15,7 @@ import javax.ws.rs.ext.Provider;
  * Based on description at {@link http://stackoverflow.com/a/8765749}
  * @author twagoo
  */
-@Provider
+@Provider //Allow auto discovery, see: https://stackoverflow.com/questions/17300218/jersey-containerrequestfilter-not-triggered
 public class VirtualCollectionMediaTypeFilter extends CustomUriConnegFilter {
 
     private static final Map<String, MediaType> mediaTypes = new HashMap<>();

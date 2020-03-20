@@ -1,7 +1,7 @@
 version: '2'
 services:
     webapp  :
-        image: registry.gitlab.com/clarin-eric/docker-alpine-supervisor-java-tomcat-base:1.3.2
+        image: registry.gitlab.com/clarin-eric/docker-alpine-supervisor-java-tomcat-base:1.3.5
         environment:
             - "CATALINA_OPTS=-Djava.security.egd=file:/dev/urandom"
         ports:
@@ -9,10 +9,11 @@ services:
             - 8444:8443
             - 8001:8000
         volumes:
-            - ./webapps:/srv/tomcat8/webapps:delegated
+            - ./webapps:/srv/tomcat8/webapps
             - ./conf/server.jks:/cert/server.jks
             - ./conf/vcr-admin.conf:/root/vcr-admin.conf
             - ./conf/fluentd/vcr.conf:/etc/fluentd/conf.d/vcr.conf
+            - ./conf/tomcat-users.xml:/srv/tomcat8/conf/tomcat-users.xml
         networks:
             - vcr
       
