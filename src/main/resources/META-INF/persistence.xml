@@ -14,11 +14,10 @@
       <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5InnoDBDialect"/>
       <property name="hibernate.max_fetch_depth" value="3"/>
       <!--https://docs.jboss.org/hibernate/orm/5.2/userguide/html_single/Hibernate_User_Guide.html#configurations-hbmddl-->
-      <property name="hibernate.hbm2ddl.auto" value="update"/>
+      <property name="hibernate.hbm2ddl.auto" value="none"/>
       <property name="hibernate.show_sql" value="false"/>
       <property name="hibernate.format_sql" value="false"/>
       <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
-      <property name="javax.persistence.schema-generation.database.action" value="drop-and-create"/>
     </properties>
   </persistence-unit>
 </persistence>
