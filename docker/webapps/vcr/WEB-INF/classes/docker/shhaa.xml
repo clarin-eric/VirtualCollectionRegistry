@@ -49,7 +49,7 @@
         </composition>
 
         <authorization>
-	    <location  target="/app/login" />
+	    <location  target="/login" />
 	    <location  target="/service/submit" />
             <location target="/service/virtualcollections" methods="post"/>
             <location target="/service/virtualcollections/*" methods="post put delete"/>

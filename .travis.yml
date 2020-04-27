@@ -15,8 +15,7 @@ script:
 deploy:
   provider: releases
   prerelease: true
-  api_key:
-    secure: "${VCR_DEPLOY_TOKEN}"
+  api_key: "${VCR_DEPLOY_TOKEN}"
   file: "target/vcr-${TRAVIS_TAG}.war"
   skip_cleanup: true
   on:
