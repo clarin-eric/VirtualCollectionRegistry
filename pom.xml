@@ -344,25 +344,7 @@
         <dependency>
             <groupId>de.mpg.mpgaai</groupId>
             <artifactId>mpgaai-shhaa</artifactId>
-            <version>1.0.10</version>
-            <exclusions>
-                <exclusion>
-                    <!-- replaced with jcl-over-slf4j -->
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-                <!-- a library should only depend on SLF4J but not import
-                a specific logging backend. Therefore, get rid of
-                those ... -->
-                <exclusion>
-                    <artifactId>slf4j-log4j12</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-            </exclusions>
+            <version>1.0.12</version>
         </dependency>
         <!--
         <dependency>
