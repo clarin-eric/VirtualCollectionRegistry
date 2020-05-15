@@ -194,11 +194,14 @@ public class VirtualCollectionBuilder {
      }
      
      private void addResource(Resource.Type type, String uri) {
+         logger.debug("Resource input: "+uri);
          try {
                 ResourceInput input = mapper.readValue(uri, ResourceInput.class);
+                logger.debug("Parsed JSON input: uri="+input.getUri()+", label="+input.getLabel()+", description="+input.getDescription());
                 Resource r = new Resource(type, input.getUri());
                 r.setDescription(input.getDescription());
                 r.setLabel(input.label);
+                
                 this.vc.getResources().add(r);
             } catch(IOException ex) {
                 logger.debug("Failed to unmarshal resource json: "+ex.getMessage()+", falling back to add as plain url with value="+uri);
