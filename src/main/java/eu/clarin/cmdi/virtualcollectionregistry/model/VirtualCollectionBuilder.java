@@ -145,7 +145,7 @@ public class VirtualCollectionBuilder {
      
     /* Extensional values */
     
-     public class ResourceInput {
+     public  static class ResourceInput {
          private String uri;
          private String description;
          private String label;
