@@ -147,7 +147,7 @@ public class VirtualCollectionBuilder {
     
      public class ResourceInput {
          private String uri;
-         private String Description;
+         private String description;
          private String label;
 
         /**
@@ -168,14 +168,14 @@ public class VirtualCollectionBuilder {
          * @return the Description
          */
         public String getDescription() {
-            return Description;
+            return description;
         }
 
         /**
          * @param Description the Description to set
          */
-        public void setDescription(String Description) {
-            this.Description = Description;
+        public void setDescription(String description) {
+            this.description = description;
         }
 
         /**
@@ -196,9 +196,9 @@ public class VirtualCollectionBuilder {
      private void addResource(Resource.Type type, String uri) {
          try {
                 ResourceInput input = mapper.readValue(uri, ResourceInput.class);
-                Resource r = new Resource(type, uri);
-                r.setDescription(uri);
-                r.setLabel(uri);
+                Resource r = new Resource(type, input.getUri());
+                r.setDescription(input.getDescription());
+                r.setLabel(input.label);
                 this.vc.getResources().add(r);
             } catch(IOException ex) {
                 logger.debug("Failed to unmarshal resource json: "+ex.getMessage()+", falling back to add as plain url with value="+uri);

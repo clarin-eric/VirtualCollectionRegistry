@@ -188,7 +188,7 @@ public class SubmissionUtils {
                      vc = new VirtualCollectionBuilder()
                         .setName(name)
                         .setOwner(principal) 
-                        .setType(VirtualCollection.Type.EXTENSIONAL)
+                        .setType(VirtualCollection.Type.INTENSIONAL)
                         .addCreator(principal)                    
                         .addKeywords(getAsStringList(params.getParameterValues("keyword")))
                         .setDescription(description)
