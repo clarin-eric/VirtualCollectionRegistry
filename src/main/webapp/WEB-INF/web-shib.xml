@@ -5,6 +5,7 @@
          id="WebApp_ID" version="2.5">
     <display-name>CLARIN Virtual Collection Registry</display-name>
        
+    
     <!-- Shibboleth -->
     <context-param>
         <param-name>ShhaaConfigLocation</param-name>
