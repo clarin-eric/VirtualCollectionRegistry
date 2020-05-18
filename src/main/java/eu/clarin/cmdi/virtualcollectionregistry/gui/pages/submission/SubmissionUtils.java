@@ -142,6 +142,7 @@ public class SubmissionUtils {
             logger.info("Using username={} from principal", principal.getName());
         }
         
+        logger.info("Request charset="+request.getCharset());
         IRequestParameters params = request.getPostParameters();
         
         String name = params.getParameterValue("name").toString();
