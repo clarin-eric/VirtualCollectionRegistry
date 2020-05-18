@@ -23,6 +23,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -144,6 +145,20 @@ public class SubmissionUtils {
         
         logger.info("Request charset="+request.getCharset());
         logger.info("Container request="+request.getContainerRequest().getClass());
+        HttpServletRequest req = (HttpServletRequest)request.getContainerRequest();
+        Enumeration e = req.getHeaderNames();
+        
+        for(Object name : Collections.list(req.getHeaderNames())) {
+            String values = "";
+            for(Object value : Collections.list(req.getHeaders(name.toString()))) {
+                if(!values.isEmpty()) {
+                    values += "; ";
+                }
+                values += value.toString();
+            }
+            logger.info("Header, name="+name.toString()+", values="+values);
+        }
+        
         IRequestParameters params = request.getPostParameters();
         for(String name : params.getParameterNames()) {
             String values = "";
