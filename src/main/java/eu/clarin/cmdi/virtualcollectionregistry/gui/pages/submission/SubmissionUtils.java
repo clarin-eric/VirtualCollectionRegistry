@@ -143,7 +143,18 @@ public class SubmissionUtils {
         }
         
         logger.info("Request charset="+request.getCharset());
+        logger.info("Container request="+request.getContainerRequest().getClass());
         IRequestParameters params = request.getPostParameters();
+        for(String name : params.getParameterNames()) {
+            String values = "";
+            for(StringValue value : params.getParameterValues(name)) {
+                if(!values.isEmpty()) {
+                    values += "; ";
+                }
+                values += value.toString();
+            }
+            logger.info("param name="+name+", value(s)="+values);
+        }
         
         String name = params.getParameterValue("name").toString();
         String description = params.getParameterValue("description").toString();
