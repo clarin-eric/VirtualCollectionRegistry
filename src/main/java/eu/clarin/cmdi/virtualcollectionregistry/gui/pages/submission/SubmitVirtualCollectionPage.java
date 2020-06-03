@@ -42,9 +42,11 @@ public class SubmitVirtualCollectionPage extends BasePage {
     protected void onBeforeRender() {     
         VirtualCollection vc = SubmissionUtils.retrieveCollection(getSession());
         if(vc != null) {        
-            logger.info("Redirect start");
+            logger.info("Collection stored in session, redirect to edit page");
             throw new RestartResponseException(CreateAndEditVirtualCollectionPage.class);
         }
+        
+        logger.debug("No collection stored in session");
         
         //Derivate type from page parameter
         String type_string = getPageParameters().get("type").toString();

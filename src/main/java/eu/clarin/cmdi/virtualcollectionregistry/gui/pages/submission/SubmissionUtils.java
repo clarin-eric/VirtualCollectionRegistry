@@ -227,7 +227,7 @@ public class SubmissionUtils {
                     break;
             }
             
-            storeCollection(session, vc);      //Serialize the collection to the current session           
+                storeCollection(session, vc);      //Serialize the collection to the current session           
             logger.info("Build virtual collection");
         } catch(VirtualCollectionRegistryUsageException ex) {
             logger.error("Failed to build virtual collection", ex);
