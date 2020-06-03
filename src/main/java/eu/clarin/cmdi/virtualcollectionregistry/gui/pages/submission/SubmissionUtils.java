@@ -148,6 +148,7 @@ public class SubmissionUtils {
         HttpServletRequest req = (HttpServletRequest)request.getContainerRequest();
         Enumeration e = req.getHeaderNames();
         
+        logger.info("HttpServletRequest:");
         for(Object name : Collections.list(req.getHeaderNames())) {
             String values = "";
             for(Object value : Collections.list(req.getHeaders(name.toString()))) {
@@ -156,9 +157,21 @@ public class SubmissionUtils {
                 }
                 values += value.toString();
             }
-            logger.info("Header, name="+name.toString()+", values="+values);
+            logger.info("\tHeader, name="+name.toString()+", values="+values);
         }
         
+        for(Object name : Collections.list(req.getParameterNames())) {
+            String values = "";
+            for(Object value : req.getParameterValues(name.toString())) {
+                if(!values.isEmpty()) {
+                    values += "; ";
+                }
+                values += value.toString();
+            }
+            logger.info("\tParam, name="+name.toString()+", values="+values);
+        }
+        
+        logger.info("Wicket WebRequest:");
         IRequestParameters params = request.getPostParameters();
         for(String name : params.getParameterNames()) {
             String values = "";
@@ -168,7 +181,7 @@ public class SubmissionUtils {
                 }
                 values += value.toString();
             }
-            logger.info("param name="+name+", value(s)="+values);
+            logger.info("\tParam name="+name+", value(s)="+values);
         }
         
         String name = params.getParameterValue("name").toString();
