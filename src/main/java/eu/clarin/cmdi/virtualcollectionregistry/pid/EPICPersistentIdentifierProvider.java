@@ -85,7 +85,11 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
     }
 
     private String makeCollectionURI(VirtualCollection vc) {
-        return String.format("%s/service/virtualcollections/%d", baseUri, vc.getId());
+        String base = baseUri;
+        if(base.endsWith("/")) {
+            base = base.substring(0, base.length()-1);
+        }
+        return String.format("%s/service/virtualcollections/%d", base, vc.getId());
     }
 
     protected void setBaseUri(String baseUri) {
