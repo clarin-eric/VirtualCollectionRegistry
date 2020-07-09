@@ -16,17 +16,25 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.model;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmissionUtils;
+import java.io.IOException;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author wilelb
  */
 public class VirtualCollectionBuilder {
-
+    private static Logger logger = LoggerFactory.getLogger(VirtualCollectionBuilder.class);
+    
+    private final ObjectMapper mapper = new ObjectMapper();
+    
     private final VirtualCollection vc;
 
     public VirtualCollectionBuilder() {
@@ -137,26 +145,90 @@ public class VirtualCollectionBuilder {
      
     /* Extensional values */
     
+     public  static class ResourceInput {
+         private String uri;
+         private String description;
+         private String label;
+
+        /**
+         * @return the uri
+         */
+        public String getUri() {
+            return uri;
+        }
+
+        /**
+         * @param uri the uri to set
+         */
+        public void setUri(String uri) {
+            this.uri = uri;
+        }
+
+        /**
+         * @return the Description
+         */
+        public String getDescription() {
+            return description;
+        }
+
+        /**
+         * @param Description the Description to set
+         */
+        public void setDescription(String description) {
+            this.description = description;
+        }
+
+        /**
+         * @return the label
+         */
+        public String getLabel() {
+            return label;
+        }
+
+        /**
+         * @param label the label to set
+         */
+        public void setLabel(String label) {
+            this.label = label;
+        }
+     }
+     
+     private void addResource(Resource.Type type, String uri) {
+         logger.debug("Resource input: "+uri);
+         try {
+                ResourceInput input = mapper.readValue(uri, ResourceInput.class);
+                logger.debug("Parsed JSON input: uri="+input.getUri()+", label="+input.getLabel()+", description="+input.getDescription());
+                Resource r = new Resource(type, input.getUri());
+                r.setDescription(input.getDescription());
+                r.setLabel(input.label);
+                
+                this.vc.getResources().add(r);
+            } catch(IOException ex) {
+                logger.debug("Failed to unmarshal resource json: "+ex.getMessage()+", falling back to add as plain url with value="+uri);
+                this.vc.getResources().add(new Resource(type, uri));
+            }
+     }
+     
     public VirtualCollectionBuilder addMetadataResource(String uri) {
-        this.vc.getResources().add(new Resource(Resource.Type.METADATA, uri));
+        this.addResource(Resource.Type.METADATA, uri);
         return this;
     }
     
     public VirtualCollectionBuilder addMetadataResources(List<String> metadataUris) {
         for(String uri : metadataUris) {
-            this.vc.getResources().add(new Resource(Resource.Type.METADATA, uri));
+            addMetadataResource(uri);
         }
         return this;
     }
     
     public VirtualCollectionBuilder addResourceResource(String uri) {
-        this.vc.getResources().add(new Resource(Resource.Type.RESOURCE, uri));
+        this.addResource(Resource.Type.RESOURCE, uri);
         return this;
     }
 
     public VirtualCollectionBuilder addResourceResources(List<String> resourceUris) {
         for(String uri : resourceUris) {
-            this.vc.getResources().add(new Resource(Resource.Type.RESOURCE, uri));
+            this.addResourceResource(uri);
         }
         return this;
     }

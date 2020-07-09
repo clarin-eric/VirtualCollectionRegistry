@@ -1,0 +1,7 @@
+{
+"version": 3,
+"mappings": "AAKA,OAAQ;EACJ,UAAU,EAAE,IAAI;EAChB,WAAW,EAAE,IAAI;EACjB,UAAU,EAAE,iBAAgC;EAC5C,gBAAgB,EARA,OAAkB;EASlC,KAAK,EAPc,OAAkB;;AASrC,qBAAc;EACV,KAAK,EAAE,OAAmC;;AAI1C,sDAAO;EACH,KAAK,EAfM,OAAkB",
+"sources": ["../../../src/main/sass/vcr_footer.scss"],
+"names": [],
+"file": "vcr_footer.css"
+}

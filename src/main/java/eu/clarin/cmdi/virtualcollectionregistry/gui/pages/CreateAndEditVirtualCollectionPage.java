@@ -139,6 +139,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
      */
     public CreateAndEditVirtualCollectionPage(PageParameters params) throws VirtualCollectionRegistryException {
         final Long id = params.get("id").toLong();
+        logger.debug("CreateAndEditVirtualCollectionPage, page param id="+id);
         initializeWithCollection(vcr.retrieveVirtualCollection(id));        
     } 
    
@@ -152,7 +153,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         if(vc == null) {
             VirtualCollection submitted_vc = SubmissionUtils.retrieveCollection(getSession());
             if(submitted_vc != null) {
-                logger.info("Processing submitted collection");
+                logger.info("Processing submitted collection. id="+submitted_vc.getId());
                 vc = submitted_vc;
                 //Check if any of the properties require updating
                 if(vc.getOwner() == null) {
@@ -485,7 +486,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
             SubmissionUtils.clearCollectionFromSession(session);
             
             //TODO: dynamically fetch context path
-            throw new RedirectToUrlException("/app/private");
+            throw new RedirectToUrlException("/private");
         } catch (VirtualCollectionValidationException e) {
             e.addAllErrorsToSession(getSession());
         } catch(VirtualCollectionRegistryException e) {

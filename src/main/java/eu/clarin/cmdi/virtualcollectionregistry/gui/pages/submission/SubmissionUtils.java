@@ -23,6 +23,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Base64;
+import java.util.Collections;
 import java.util.Date;
 import java.util.Enumeration;
 import java.util.List;
@@ -142,7 +143,46 @@ public class SubmissionUtils {
             logger.info("Using username={} from principal", principal.getName());
         }
         
+        logger.info("Request charset="+request.getCharset());
+        logger.info("Container request="+request.getContainerRequest().getClass());
+        HttpServletRequest req = (HttpServletRequest)request.getContainerRequest();
+        Enumeration e = req.getHeaderNames();
+        
+        logger.info("HttpServletRequest:");
+        for(Object name : Collections.list(req.getHeaderNames())) {
+            String values = "";
+            for(Object value : Collections.list(req.getHeaders(name.toString()))) {
+                if(!values.isEmpty()) {
+                    values += "; ";
+                }
+                values += value.toString();
+            }
+            logger.info("\tHeader, name="+name.toString()+", values="+values);
+        }
+        
+        for(Object name : Collections.list(req.getParameterNames())) {
+            String values = "";
+            for(Object value : req.getParameterValues(name.toString())) {
+                if(!values.isEmpty()) {
+                    values += "; ";
+                }
+                values += value.toString();
+            }
+            logger.info("\tParam, name="+name.toString()+", values="+values);
+        }
+        
+        logger.info("Wicket WebRequest:");
         IRequestParameters params = request.getPostParameters();
+        for(String name : params.getParameterNames()) {
+            String values = "";
+            for(StringValue value : params.getParameterValues(name)) {
+                if(!values.isEmpty()) {
+                    values += "; ";
+                }
+                values += value.toString();
+            }
+            logger.info("\tParam name="+name+", value(s)="+values);
+        }
         
         String name = params.getParameterValue("name").toString();
         String description = params.getParameterValue("description").toString();
@@ -188,7 +228,7 @@ public class SubmissionUtils {
                      vc = new VirtualCollectionBuilder()
                         .setName(name)
                         .setOwner(principal) 
-                        .setType(VirtualCollection.Type.EXTENSIONAL)
+                        .setType(VirtualCollection.Type.INTENSIONAL)
                         .addCreator(principal)                    
                         .addKeywords(getAsStringList(params.getParameterValues("keyword")))
                         .setDescription(description)
@@ -200,7 +240,7 @@ public class SubmissionUtils {
                     break;
             }
             
-            storeCollection(session, vc);      //Serialize the collection to the current session           
+                storeCollection(session, vc);      //Serialize the collection to the current session           
             logger.info("Build virtual collection");
         } catch(VirtualCollectionRegistryUsageException ex) {
             logger.error("Failed to build virtual collection", ex);

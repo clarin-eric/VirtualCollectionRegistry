@@ -3,6 +3,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.rest;
 import java.util.HashMap;
 import java.util.Map;
 import javax.ws.rs.core.MediaType;
+import javax.ws.rs.ext.Provider;
 
 /**
  * Extension of the Jersey filter that allows "content negotation" by means of
@@ -14,6 +15,7 @@ import javax.ws.rs.core.MediaType;
  * Based on description at {@link http://stackoverflow.com/a/8765749}
  * @author twagoo
  */
+@Provider //Allow auto discovery, see: https://stackoverflow.com/questions/17300218/jersey-containerrequestfilter-not-triggered
 public class VirtualCollectionMediaTypeFilter extends CustomUriConnegFilter {
 
     private static final Map<String, MediaType> mediaTypes = new HashMap<>();

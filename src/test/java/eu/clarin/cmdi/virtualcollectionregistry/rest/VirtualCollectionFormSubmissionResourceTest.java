@@ -119,6 +119,6 @@ public class VirtualCollectionFormSubmissionResourceTest {
         assertEquals(303, result.getStatus());
         assertEquals(true, result.getMetadata().containsKey("Location"));
         assertEquals(false, result.getMetadata().get("Location").isEmpty());
-        assertEquals(URI.create("/mycontextpath/../app/edit/123"), result.getMetadata().get("Location").get(0));    
+        assertEquals(URI.create("/mycontextpath/../edit/123"), result.getMetadata().get("Location").get(0));    
     }
 }

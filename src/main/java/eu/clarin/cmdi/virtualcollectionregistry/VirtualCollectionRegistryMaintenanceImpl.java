@@ -112,8 +112,8 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
             try {
                 PersistentIdentifier pid = pid_provider.createIdentifier(vc);
                 vc.setPersistentIdentifier(pid);
-            } catch (VirtualCollectionRegistryException ex) {
-                logger.error("Failed to mint PID, setting vc to error state");
+            } catch (VirtualCollectionRegistryException ex) {                
+                logger.error("Failed to mint PID, setting vc to error state", ex);
                 vc.setState(VirtualCollection.State.ERROR);
                 if(ex.getCause() instanceof HttpException) {                                                  
                     vc.setProblem(VirtualCollection.Problem.PID_MINTING_UNKOWN);

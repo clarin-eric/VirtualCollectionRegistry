@@ -7,6 +7,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidator;
+import java.nio.charset.Charset;
 import java.security.Principal;
 import java.util.Date;
 import java.util.List;
@@ -53,6 +54,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
     
     private static final Logger logger
             = LoggerFactory.getLogger(VirtualCollectionRegistryImpl.class);
+    
     private final AtomicBoolean intialized = new AtomicBoolean(false);
     
     /**
@@ -74,6 +76,11 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             throw new VirtualCollectionRegistryException("already initialized");
         }
         logger.info("Initializing virtual collection registry ...");
+        logger.info("Checking encoding settings:");
+        logger.info("\tDefault Charset=" + Charset.defaultCharset());
+        logger.info("\tfile.encoding=" + System.getProperty("file.encoding"));
+        logger.info("\tSpecial character: [\u65E5]");
+        
         try {
             long t1 = System.nanoTime();
             VirtualCollectionList collections = getAllVirtualCollections();

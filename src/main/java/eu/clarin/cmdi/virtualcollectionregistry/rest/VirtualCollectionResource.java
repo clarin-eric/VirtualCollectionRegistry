@@ -138,7 +138,7 @@ public final class VirtualCollectionResource {
     @Produces({MediaType.TEXT_HTML})
     public Response getVirtualCollectionDetailsRedirect()
             throws VirtualCollectionRegistryException {
-        final UriBuilder pathBuilder = uriInfo.getBaseUriBuilder().path("../app/details/{arg1}");
+        final UriBuilder pathBuilder = uriInfo.getBaseUriBuilder().path("../details/{arg1}");
         final URI detailsUri = pathBuilder.build(id);
         return Response.seeOther(detailsUri).build();
     }

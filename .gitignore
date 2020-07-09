@@ -15,4 +15,5 @@ nbactions.xml
 docker/server.jks
 docker/vcr-admin.conf
 docker/vcr/
+docker/webapps
 tmp

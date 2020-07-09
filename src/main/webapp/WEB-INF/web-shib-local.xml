@@ -5,6 +5,11 @@
          id="WebApp_ID" version="2.5">
     <display-name>CLARIN Virtual Collection Registry</display-name>
         
+        <context-param>
+    <param-name>contextConfigLocation</param-name>
+    <param-value></param-value>
+</context-param> 
+
     <!-- Shibboleth -->
     <context-param>
         <param-name>ShhaaConfigLocation</param-name>
@@ -49,7 +54,7 @@
     
     <filter-mapping>
         <filter-name>PersistenceFilter</filter-name>
-        <url-pattern>/app/*</url-pattern>
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
 
     <filter>
@@ -59,12 +64,12 @@
 
     <filter-mapping>
         <filter-name>CharacterEncodingFilter</filter-name>
-        <url-pattern>/app/*</url-pattern>
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
 
     <filter>
         <filter-name>VirtualCollectionRegistryApplication</filter-name>
-        <filter-class>org.apache.wicket.protocol.http.WicketFilter</filter-class>
+        <filter-class>eu.clarin.cmdi.virtualcollectionregistry.VcrWicketFilter</filter-class>
         <init-param>
             <param-name>applicationFactoryClassName</param-name>
             <param-value>org.apache.wicket.spring.SpringWebApplicationFactory</param-value>
@@ -73,7 +78,7 @@
 
     <filter-mapping>
         <filter-name>VirtualCollectionRegistryApplication</filter-name>
-        <url-pattern>/app/*</url-pattern>
+        <url-pattern>/*</url-pattern>
     </filter-mapping>
 
     <servlet>

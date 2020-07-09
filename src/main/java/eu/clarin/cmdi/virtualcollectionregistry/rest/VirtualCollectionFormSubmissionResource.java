@@ -169,7 +169,7 @@ public class VirtualCollectionFormSubmissionResource {
 
             // respond with redirect to editor
             final URI uri = uriInfo.getBaseUriBuilder()
-                    .path("../app/edit/{arg1}")
+                    .path("../edit/{arg1}")
                     .build(id);
             return Response.seeOther(uri).build();
 //        } catch (VirtualCollectionValidationException ex) {
@@ -239,7 +239,7 @@ public class VirtualCollectionFormSubmissionResource {
 
             // respond with redirect to editor
             final URI uri = uriInfo.getBaseUriBuilder()
-                    .path("../app/edit/{arg1}")
+                    .path("../edit/{arg1}")
                     .build(id);
             return Response.seeOther(uri).build();
         } catch (Exception ex) {
@@ -259,7 +259,7 @@ public class VirtualCollectionFormSubmissionResource {
             html += "<title>CLARIN Virtual Collection Registry</title>";
             html += "<meta http-equiv=\"Content-Type\" content=\"text/html; charset=utf-8\" />";
             html += "<meta name=\"viewport\" content=\"width=device-width, initial-scale=1.0\" />";
-            html += "<link rel=\"canonical\" href=\"http://localhost:8080/vcr/app/public\"/>";
+            html += "<link rel=\"canonical\" href=\"http://localhost:8080/vcr/public\"/>";
             html += "<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/vlo.css\"/>";
             html += "<link rel=\"stylesheet\" type=\"text/css\" href=\"../css/vcr.css\"/>";
             html += "<link href=\"https://fonts.googleapis.com/css?family=Source+Sans+Pro:400,400i,700,700i&amp;subset=latin-ext,vietnamese\" rel=\"stylesheet\" />";        

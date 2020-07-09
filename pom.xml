@@ -7,7 +7,7 @@
     <artifactId>VirtualCollectionRegistry</artifactId>
     <packaging>war</packaging>
     <name>CLARIN Virtual Collection Registry</name>
-    <version>1.4.0-SNAPSHOT</version>
+    <version>1.4.0-SNAPSHOT4</version>
 
     <organization>
         <name>CLARIN</name>
@@ -89,7 +89,8 @@
             <id>docker-local</id>
             <properties>
                 <log4j.appender>FILE</log4j.appender>            
-                <war.webxml>src/main/webapp/WEB-INF/web-shib.xml</war.webxml>
+                <!--war.webxml>src/main/webapp/WEB-INF/web-shib.xml</war.webxml-->
+                <war.webxml>src/main/webapp/WEB-INF/web-basic-local.xml</war.webxml>
                 <war.shhaa>src/main/resources/docker</war.shhaa>
                 <war.contextxml>src/main/webapp/META-INF/docker/context.xml</war.contextxml>
             </properties>
@@ -172,14 +173,14 @@
             <artifactId>hibernate-jpa-2.1-api</artifactId>
             <version>${hibernate.jpaVersion}</version>
         </dependency>
-
+<!--
         <dependency>
             <groupId>javax.ws.rs</groupId>
             <artifactId>jsr311-api</artifactId>
             <version>1.1.1</version>
             <type>jar</type>
         </dependency>
-        
+        -->
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>            
             <artifactId>jersey-container-servlet</artifactId>
@@ -256,13 +257,13 @@
         <dependency>
             <groupId>de.uni_leipzig.asv</groupId>
             <artifactId>clarin.webservices.pidservices2</artifactId>
-            <version>3.1</version>
+            <version>4.1</version>
             <exclusions>
                 <exclusion>
                     <!-- replaced with jcl-over-slf4j -->
                     <artifactId>commons-logging</artifactId>
                     <groupId>commons-logging</groupId>
-                </exclusion>
+                </exclusion>               
             </exclusions>
         </dependency>
         <!--
@@ -332,25 +333,7 @@
         <dependency>
             <groupId>de.mpg.mpgaai</groupId>
             <artifactId>mpgaai-shhaa</artifactId>
-            <version>1.0.10</version>
-            <exclusions>
-                <exclusion>
-                    <!-- replaced with jcl-over-slf4j -->
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-                <!-- a library should only depend on SLF4J but not import
-                a specific logging backend. Therefore, get rid of
-                those ... -->
-                <exclusion>
-                    <artifactId>slf4j-log4j12</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-                <exclusion>
-                    <artifactId>log4j</artifactId>
-                    <groupId>log4j</groupId>
-                </exclusion>
-            </exclusions>
+            <version>1.0.13</version>
         </dependency>
         <!--
         <dependency>
@@ -558,6 +541,31 @@
             <type>jar</type>
         </dependency>
         
+         <dependency>
+      <groupId>javax.transaction</groupId>
+      <artifactId>jta</artifactId>
+      <version>1.1</version>
+  </dependency>
+  
+  <dependency>
+    <groupId>javax.xml.bind</groupId>
+    <artifactId>jaxb-api</artifactId>
+    <version>2.4.0-b180830.0359</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/javax.activation/activation -->
+<dependency>
+    <groupId>javax.activation</groupId>
+    <artifactId>activation</artifactId>
+    <version>1.1.1</version>
+</dependency>
+
+<!-- https://mvnrepository.com/artifact/org.glassfish.jaxb/jaxb-runtime -->
+<dependency>
+    <groupId>org.glassfish.jaxb</groupId>
+    <artifactId>jaxb-runtime</artifactId>
+    <version>2.4.0-b180830.0438</version>
+</dependency>
     </dependencies>
 
     <build>
@@ -581,6 +589,7 @@
                 <includes>
                     <include>**/*.html</include>
                     <include>**/*.css</include>
+                    <include>**/*.ico</include>
                     <include>**/*.js</include>
                     <include>**/*.properties</include>
                 </includes>

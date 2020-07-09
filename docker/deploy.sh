@@ -1,32 +1,11 @@
 #!/bin/bash
 
-set -e
+WAR_FILE=$(find target -name "*.war" | head -n 1)
 
-SCRIPT_DIR=$( cd "$( dirname "${BASH_SOURCE[0]}" )" >/dev/null 2>&1 && pwd )
-echo "SCRIPT_DIR=${SCRIPT_DIR}"
+if [ "${WAR_FILE}" == "" ]; then
+    echo "No war file found"
+    exit 1
+fi
 
-DIR="${SCRIPT_DIR}/webapps/ROOT"
-
-undeploy() {
-    echo "Undeploying ${DIR}"
-    rm -rf "${DIR}"
-    sleep 15
-}
-
-deploy() {
-    echo "Deploying ${DIR}"
-    mkdir -p "${DIR}"
-    (
-        cd "${DIR}" 
-        ARCHIVE=$(find "../../../target" -name "*.war")
-        unzip -q ${ARCHIVE}
-    )
-}
-
-main() {
-    undeploy
-    deploy
-}
-
-main
-
+echo "Deploying: ${WAR_FILE}"
+curl --upload-file "${WAR_FILE}" --user "script:script" "http://localhost:8081/manager/text/deploy?path=/vcr&update=true"
