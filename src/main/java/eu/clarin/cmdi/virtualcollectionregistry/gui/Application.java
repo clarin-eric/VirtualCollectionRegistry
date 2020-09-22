@@ -13,18 +13,28 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePrivateCollectio
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePublicCollectionsPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.CreateAndEditVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.HelpPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmitVirtualCollectionPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmitVirtualCollectionErrorPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LoginPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LogoutPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.VirtualCollectionDetailsPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmitVirtualCollectionException;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmitVirtualCollectionPage;
 import eu.clarin.cmdi.wicket.ExtremeNoopTheme;
+import org.apache.wicket.IWicketInternalException;
 import org.apache.wicket.Page;
 import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
+import org.apache.wicket.Session;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebApplication;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
+import org.apache.wicket.core.request.handler.PageProvider;
+import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
+import org.apache.wicket.core.request.handler.RenderPageRequestHandler.RedirectPolicy;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.request.IRequestHandler;
+import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
+import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.apache.wicket.validation.validator.StringValidator;
 import org.slf4j.Logger;
@@ -83,7 +93,28 @@ public class Application extends AuthenticatedWebApplication {
         mountPage("/admin", AdminPage.class);
         mountPage("/details/${id}", VirtualCollectionDetailsPage.class);
         mountPage("/edit/${id}", CreateAndEditVirtualCollectionPage.class);
-        mountPage("/submit/${type}", SubmitVirtualCollectionPage.class);
+        mountPage("/submit", SubmitVirtualCollectionPage.class);
+        mountPage("/submit/${api_version}/${type}", SubmitVirtualCollectionPage.class);
+        
+        getRequestCycleListeners().add(new AbstractRequestCycleListener() {
+            @Override
+            public IRequestHandler onException(RequestCycle cycle, Exception ex) {
+                //Page page = (Page) PageRequestHandlerTracker.getFirstHandler(cycle).getPage();
+                if(ex instanceof SubmitVirtualCollectionException) {
+                    //Prevent PageExpiredException as mentioned here: 
+                    //http://apache-wicket.1842946.n4.nabble.com/Cannot-get-to-desired-error-page-on-handling-RuntimeException-in-AbstractRequestCycleListener-onExce-td4662078.html
+                    Session.get().bind() ; 
+                    //Return custom error page
+                    return new RenderPageRequestHandler(
+                        new PageProvider(
+                            new SubmitVirtualCollectionErrorPage((SubmitVirtualCollectionException)ex)));
+                } else {
+                    logger.info("Unhandled client exception, type={}, message={}", ex.getClass().toString(), ex.getMessage());
+                }  
+                return null;
+            }
+        });
+        
     }
 
     @Override
@@ -130,5 +161,33 @@ public class Application extends AuthenticatedWebApplication {
     public static Application get() {
         return (Application) WebApplication.get();
     }
+/*
+    @Override
+    public IProvider<IExceptionMapper> getExceptionMapperProvider() {
+        return new CustomExceptionMapperProvider();
+    }
+    
+    private static class CustomExceptionMapperProvider implements IProvider<IExceptionMapper> {
+        @Override
+        public IExceptionMapper get() {
+                return new CustomExceptionMapper();
+        }
+    }
+    
+    private static class CustomExceptionMapper extends DefaultExceptionMapper {
+        @Override
+        protected IRequestHandler mapExpectedExceptions(Exception e, final org.apache.wicket.Application application) {
+            IRequestHandler handler = super.mapExpectedExceptions(e, application);
+            if(handler == null) {
+                //map our exceptions
+                if(e instanceof SubmitVirtualCollectionException) {
+                    logger.info("Creating new error page handler");
+                    handler = createPageRequestHandler(new PageProvider(new SubmitVirtualCollectionErrorPage((SubmitVirtualCollectionException)e)));
+                }
+            }
+            return handler;
+        }
 
+    }
+*/
 } // class Application

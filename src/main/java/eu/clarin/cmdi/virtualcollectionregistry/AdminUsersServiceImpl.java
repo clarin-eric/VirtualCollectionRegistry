@@ -69,7 +69,6 @@ public class AdminUsersServiceImpl implements AdminUsersService {
             filenameWithPath = adminDbBaseDir + filename;
         }
                
-        
         logger.info("filenameWithPath: "+filenameWithPath);
         
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(

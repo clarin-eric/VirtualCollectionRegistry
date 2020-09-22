@@ -3,13 +3,13 @@
     <display-name>CLARIN Virtual Collection Registry</display-name>
 
     <!-- Spring -->
-    
+    <!--
     <listener>
         <listener-class>
             org.springframework.web.context.ContextLoaderListener
         </listener-class>
     </listener>
- 
+    -->
     <context-param>
         <param-name>spring.profiles.active</param-name>
         <param-value>vcr.pid.dummy</param-value>

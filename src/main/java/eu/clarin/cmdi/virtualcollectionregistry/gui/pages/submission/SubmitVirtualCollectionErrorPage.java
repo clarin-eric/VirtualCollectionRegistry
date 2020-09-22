@@ -17,14 +17,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BasePage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.CreateAndEditVirtualCollectionPage;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.model.Model;
-import org.apache.wicket.request.cycle.RequestCycle;
-import org.apache.wicket.request.http.WebRequest;
-import org.apache.wicket.request.http.WebResponse;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -32,56 +25,21 @@ import org.slf4j.LoggerFactory;
  *
  * @author wilelb
  */
-public class SubmitVirtualCollectionPage extends BasePage {
+//public class SubmitVirtualCollectionErrorPage extends AbstractErrorPage {
+public class SubmitVirtualCollectionErrorPage extends BasePage { 
     
-    private static final Logger logger = LoggerFactory.getLogger(SubmitVirtualCollectionPage.class);
+    private static final long serialVersionUID = 1L;
     
-    public SubmitVirtualCollectionPage() {}
+    private static final Logger logger = LoggerFactory.getLogger(SubmitVirtualCollectionErrorPage.class);
     
-    @Override
-    protected void onBeforeRender() {     
-        VirtualCollection vc = SubmissionUtils.retrieveCollection(getSession());
-        if(vc != null) {        
-            logger.info("Collection stored in session, redirect to edit page");
-            throw new RestartResponseException(CreateAndEditVirtualCollectionPage.class);
-        }
-        
-        logger.debug("No collection stored in session");
-        
-        //Derivate type from page parameter
-        String type_string = getPageParameters().get("type").toString();
-        VirtualCollection.Type type = null;
-        try {        
-            type = VirtualCollection.Type.valueOf(type_string.toUpperCase());
-        } catch(IllegalArgumentException ex) {
-            //Invalid collection type
-            //TODO: handle error
-            logger.error("Invalid collection type: {}",type_string);
-        }
-        
-           
-        if (type != null) {
-            SubmissionUtils.checkSubmission( (WebRequest)RequestCycle.get().getRequest(), (WebResponse)RequestCycle.get().getResponse(), getSession(), type);     
-            if(!isSignedIn()) {
-                //Set proper content panel based on      
-                add(new Label("type", new Model(type.toString())));
-                add(new LoginPanel("panel"));
-            } else {
-                //Already logged in, so redirect to creation page
-                //TODO: show choice to add to an existing collection or create a new collection
-                logger.info("Redirect logged in");
-                throw new RestartResponseException(CreateAndEditVirtualCollectionPage.class);
-            }
-        }
-
-        //TODO: show error for invalid type?
-        
-        /** cascades the call to its children */
-        super.onBeforeRender();
+    public SubmitVirtualCollectionErrorPage() {
+        this(null);
     }
     
-  
-  
-
-   
+    public SubmitVirtualCollectionErrorPage(Throwable e) {  
+        super();  
+        logger.info("Created new SubmitVirtualCollectionErrorPage. {}", e == null ? "No exception available" : "Exception: "+e.getMessage());
+        add(new Label("error", e == null ? "No exception available" : e.getMessage()));
+    }
+    
 }

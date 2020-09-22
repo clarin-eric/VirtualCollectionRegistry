@@ -20,6 +20,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BasePage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.CreateAndEditVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.RestartResponseException;
@@ -38,7 +39,7 @@ import org.slf4j.LoggerFactory;
  */
 public class SubmitVirtualCollectionPage extends BasePage {
     
-    private static final Logger logger = LoggerFactory.getLogger(SubmitVirtualCollectionErrorPage.class);
+    private static final Logger logger = LoggerFactory.getLogger(SubmitVirtualCollectionPage.class);
     
     private final List<Handler> handlers = new ArrayList<>();
     
@@ -97,7 +98,7 @@ public class SubmitVirtualCollectionPage extends BasePage {
         super.onBeforeRender();
     }
     
-    private interface Handler {
+    private interface Handler extends Serializable {
         public boolean checkVersion(String received_api_version);
         public void handle(WebRequest request, WebResponse response, ApplicationSession session, PageParameters params , VirtualCollection.Type type);
         public void postProcess(VirtualCollection.Type type);

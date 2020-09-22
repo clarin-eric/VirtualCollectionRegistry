@@ -18,7 +18,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.model;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmissionUtils;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmitVirtualCollectionException;
 import java.io.IOException;
 import java.security.Principal;
 import java.util.Date;
@@ -57,17 +57,17 @@ public class VirtualCollectionBuilder {
         return this;
     }
     
-    public VirtualCollectionBuilder setName(String name) throws VirtualCollectionRegistryUsageException {
+    public VirtualCollectionBuilder setName(String name) throws SubmitVirtualCollectionException {
         if (name == null) {
-            throw new VirtualCollectionRegistryUsageException("No name specified for collection");
+            throw new SubmitVirtualCollectionException("No name specified for collection");
         }
         this.vc.setName(name);
         return this;
     }
 
-    public VirtualCollectionBuilder setType(VirtualCollection.Type type) throws VirtualCollectionRegistryUsageException {
+    public VirtualCollectionBuilder setType(VirtualCollection.Type type) throws SubmitVirtualCollectionException {
         if (type == null) {
-            throw new VirtualCollectionRegistryUsageException("No type specified for collection");
+            throw new SubmitVirtualCollectionException("No type specified for collection");
         }
         this.vc.setType(type);
         return this;

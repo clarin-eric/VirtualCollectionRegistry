@@ -11,13 +11,16 @@
     <class>eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier</class>
     <validation-mode>NONE</validation-mode>
     <properties>
-      <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5InnoDBDialect"/>
-      <property name="hibernate.max_fetch_depth" value="3"/>
-      <!--https://docs.jboss.org/hibernate/orm/5.2/userguide/html_single/Hibernate_User_Guide.html#configurations-hbmddl-->
-      <property name="hibernate.hbm2ddl.auto" value="none"/>
-      <property name="hibernate.show_sql" value="false"/>
-      <property name="hibernate.format_sql" value="false"/>
-      <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
+        <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5InnoDBDialect"/>
+        <property name="hibernate.max_fetch_depth" value="3"/>
+        <!--https://docs.jboss.org/hibernate/orm/5.2/userguide/html_single/Hibernate_User_Guide.html#configurations-hbmddl-->
+        <property name="hibernate.hbm2ddl.auto" value="none"/>
+        <property name="hibernate.show_sql" value="false"/>
+        <property name="hibernate.format_sql" value="false"/>
+        <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
+        <property name="hibernate.connection.CharSet" value="utf8" />
+        <property name="hibernate.connection.characterEncoding" value="utf8" />
+        <property name="hibernate.connection.useUnicode" value="utf8" />
     </properties>
   </persistence-unit>
 </persistence>
