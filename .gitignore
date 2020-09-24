@@ -16,4 +16,5 @@ docker/server.jks
 docker/vcr-admin.conf
 docker/vcr/
 docker/webapps
+docker/vcr_mysql_dump.sql
 tmp

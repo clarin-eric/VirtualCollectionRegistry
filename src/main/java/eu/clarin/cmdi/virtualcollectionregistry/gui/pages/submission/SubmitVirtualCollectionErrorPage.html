@@ -6,7 +6,154 @@
     <head />
     <body>
         <wicket:extend>
-            Error page: <span wicket:id="error"></span>
+            <div class="container">
+                <h2>Error</h2>
+                An error occurred when submitting a collection.<br>
+                <b>Error message</b>: <span wicket:id="error"></span>
+                <br /><br /><br />
+                <h2>Usage</h2>
+                <p>Send a POST requeST to the following endpoint:<br />
+                    https://collections.clarin.eu/submit/<span class="api-parameter">{api version}</span>/<span class="api-parameter">{type}</span>
+                </p>
+                <p>
+                    Where:
+                    <ul>
+                        <li>
+                            <span class="api-parameter">{api version}</span> is the number of any of the currently supported versions:
+                            <ul>
+                                <li>1.0</li>
+                                <li>1.1 (latest)</li>
+                            </ul>
+                        </li>
+                        <li>
+                            <span class="api-parameter">{type}</span> is:
+                            <ul>
+                                <li>extensional, to submit an extensional collection.</li>
+                                <li>intensional, to submit an intensional1 collection.</li>
+                            </ul>
+                            More information about the collection types can be found on the help page.
+                        </li>
+                    </ul>
+                </p>
+                <p>
+                    <h3>Supported parameters:</h3>
+                    Parameters must be form url encoded (application/x-www-form-urlencoded), more info on <a href="https://developer.mozilla.org/en-US/docs/Web/HTTP/Methods/POST">MDN Webdocs</a>.<br/>
+                    <table class="api-doc-table">
+                        <thead>
+                            <tr>
+                                <th>Name</th>
+                                <th>Type</th>
+                                <th>Required</th>
+                                <th>Endpoint support</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            <tr>
+                                <td>name</td>
+                                <td>String</td>
+                                <td>Required</td>
+                                <td>Extensional + Intensional</td>
+                            </tr>
+                            <tr>
+                                <td>description</td>
+                                <td>String</td>
+                                <td>Required</td>
+                                <td>Extensional + Intensional</td>
+                            </tr>
+                            <tr>
+                                <td>keyword</td>
+                                <td>List(String)</td>
+                                <td>Required</td>
+                                <td>Extensional + Intensional</td>
+                            </tr>
+                            <tr>
+                                <td>purpose</td>
+                                <td>Controlled Vocabulary</td>
+                                <td>Optional</td>
+                                <td>Extensional + Intensional</td>
+                            </tr>
+                            <tr>
+                                <td>reproducibility</td>
+                                <td>Controlled Vocabulary</td>
+                                <td>Optional</td>
+                                <td>Extensional + Intensional</td>
+                            </tr>
+                            <tr>
+                                <td>reproducibilityNotice</td>
+                                <td>String</td>
+                                <td>Optional</td>
+                                <td>Extensional + Intensional</td>
+                            </tr>
+                            <tr>
+                                <td>metadataUri</td>
+                                <td>List(String) or List(JSON)</td>
+                                <td>Required</td>
+                                <td>Extensional</td>
+                            </tr>
+                            <tr>
+                                <td>resourceUri</td>
+                                <td>List(String) or List(JSON)</td>
+                                <td>Required</td>
+                                <td>Extensional</td>
+                            </tr>
+                            <tr>
+                                <td>queryDescription</td>
+                                <td>String</td>
+                                <td>Required</td>
+                                <td>Intensional</td>
+                            </tr>
+                            <tr>
+                                <td>queryUri</td>
+                                <td>String</td>
+                                <td>Required</td>
+                                <td>Intensional</td>
+                            </tr>
+                            <tr>
+                                <td>queryProfile</td>
+                                <td>String</td>
+                                <td>Required</td>
+                                <td>Intensional</td>
+                            </tr>
+                            <tr>
+                                <td>queryValue</td>
+                                <td>String</td>
+                                <td>Required</td>
+                                <td>Intensional</td>
+                            </tr>
+                        </tbody>
+                    </table>
+                    
+                    <h3>Example</h3>
+                    Basic example:
+                    <pre>
+curl -v \
+    -d 'name=test&
+        metadataUri=http://www.clarin.eu/1&
+        metadataUri=http://www.clarin.eu/2&
+        resourceUri=http://www.clarin.eu/&&
+        description=test-collection&
+        keyword=test&
+        purpose=&
+        reproducibility=none' \
+    http://localhost:8080/vcr/service/submit/extensional
+                    </pre>
+                    Supply metadata for references:
+                    <pre>
+curl -v \
+    -d 'name=test&
+        metadataUri={"uri": "http://www.clarin.eu/1", "label": "reference 1", "description": "Testing the first reference"}&
+        metadataUri={"uri": "http://www.clarin.eu/1", "label": "reference 2", "description": "Testing a second reference"}&
+        description=test-collection&
+        keyword=test&
+        purpose=&
+        reproducibility=none' \
+    http://localhost:8080/vcr/service/submit/extensional
+                    </pre>
+                </p>
+                <p>
+                    More information available <a href="https://docs.google.com/document/d/1HYNDhtNIamcNP3kQg4IgLhcOk7uH60Ij5PJVksJLADM/edit#heading=h.pk25cossgcjr">here</a>.
+                </p>
+            </div>
         </wicket:extend>
     </body>
 </html>

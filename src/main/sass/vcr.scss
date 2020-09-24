@@ -464,3 +464,12 @@ h3.pnl-title {
 .full-width {
     width: 100%;
 }
+
+table.api-doc-table td {
+    padding-left: 15px;
+    padding-right: 15px;
+}
+
+.api-parameter {
+    color: $clarin_blue;
+}
