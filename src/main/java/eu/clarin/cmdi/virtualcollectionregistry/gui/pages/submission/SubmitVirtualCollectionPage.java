@@ -22,6 +22,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.CreateAndEditVirtualCo
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.basic.Label;
@@ -40,14 +41,9 @@ import org.slf4j.LoggerFactory;
 public class SubmitVirtualCollectionPage extends BasePage {
     
     private static final Logger logger = LoggerFactory.getLogger(SubmitVirtualCollectionPage.class);
+    private final SubmitHandlerFactory handlerFactory = new SubmitHandlerFactory();
     
-    private final List<Handler> handlers = new ArrayList<>();
-    
-    public SubmitVirtualCollectionPage() {
-        //Add all supported API versions
-        handlers.add(new SubmitVirtualCollectionPageV1_0());
-        handlers.add(new SubmitVirtualCollectionPageV1_1());
-    }
+    public SubmitVirtualCollectionPage() {}
     
     @Override
     protected void onBeforeRender() {     
@@ -83,7 +79,7 @@ public class SubmitVirtualCollectionPage extends BasePage {
         }
         
         boolean handled = false;
-        for(Handler handler : handlers) {
+        for(SubmissionHandler handler : handlerFactory.getHandlers()) {
             if(handler.checkVersion(api_version.toString())) {
                 handled = true;
                 handler.handle(request, response, session, params, type);
@@ -92,82 +88,20 @@ public class SubmitVirtualCollectionPage extends BasePage {
                 
         if(!handled) {
             throw new SubmitVirtualCollectionException("Unsupported API version: "+api_version.toString());
+        } else {
+            if(!isSignedIn()) {
+                //Set proper content panel based on      
+                add(new Label("type", new Model(type.toString())));
+                add(new LoginPanel("panel"));
+            } else {
+                //Already logged in, so redirect to creation page
+                //TODO: show choice to add to an existing collection or create a new collection
+                logger.trace("Redirect logged in");
+                throw new RestartResponseException(CreateAndEditVirtualCollectionPage.class);
+            }
         }
  
         /** cascades the call to its children */
         super.onBeforeRender();
-    }
-    
-    private interface Handler extends Serializable {
-        public boolean checkVersion(String received_api_version);
-        public void handle(WebRequest request, WebResponse response, ApplicationSession session, PageParameters params , VirtualCollection.Type type);
-        public void postProcess(VirtualCollection.Type type);
-    }
-    
-    private class SubmitVirtualCollectionPageV1_0 implements Handler {        
-        private final String SUPPORTED_API_VERSION = "1.0";
-        
-        @Override
-        public boolean checkVersion(String received_api_version) {
-            return received_api_version.equalsIgnoreCase(SUPPORTED_API_VERSION);
-        }
-        
-        @Override
-        public void handle(WebRequest request, WebResponse response, ApplicationSession session, PageParameters params, VirtualCollection.Type type) {
-            SubmissionUtils.checkSubmission(request, response, session, type);     
-            if(!isSignedIn()) {
-                //Set proper content panel based on      
-                add(new Label("type", new Model(type.toString())));
-                add(new LoginPanel("panel"));
-            } else {
-                //Already logged in, so redirect to creation page
-                //TODO: show choice to add to an existing collection or create a new collection
-                logger.trace("Redirect logged in");
-                throw new RestartResponseException(CreateAndEditVirtualCollectionPage.class);
-            }
-        }
-        
-        @Override
-        public void postProcess(VirtualCollection.Type type) {
-            if(!isSignedIn()) {
-                //Set proper content panel based on      
-                add(new Label("type", new Model(type.toString())));
-                add(new LoginPanel("panel"));
-            } else {
-                //Already logged in, so redirect to creation page
-                //TODO: show choice to add to an existing collection or create a new collection
-                logger.trace("Redirect logged in");
-                throw new RestartResponseException(CreateAndEditVirtualCollectionPage.class);
-            }
-        }
-    }
-   
-    private class SubmitVirtualCollectionPageV1_1 implements Handler {        
-        private final String SUPPORTED_API_VERSION = "1.1";
-        
-        @Override
-        public boolean checkVersion(String received_api_version) {
-            return received_api_version.equalsIgnoreCase(SUPPORTED_API_VERSION);
-        }
-        
-        @Override
-        public void handle(WebRequest request, WebResponse response, ApplicationSession session, PageParameters params, VirtualCollection.Type type) {
-            SubmissionUtils.checkSubmission(request, response, session, type);     
-            
-        }
-        
-        @Override
-        public void postProcess(VirtualCollection.Type type) {
-            if(!isSignedIn()) {
-                //Set proper content panel based on      
-                add(new Label("type", new Model(type.toString())));
-                add(new LoginPanel("panel"));
-            } else {
-                //Already logged in, so redirect to creation page
-                //TODO: show choice to add to an existing collection or create a new collection
-                logger.trace("Redirect logged in");
-                throw new RestartResponseException(CreateAndEditVirtualCollectionPage.class);
-            }
-        }
     }
 }
