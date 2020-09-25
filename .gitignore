@@ -1,3 +1,4 @@
+docker/vcr_mysql_dump.sql
 *.iml
 .idea
 nbactions.xml
