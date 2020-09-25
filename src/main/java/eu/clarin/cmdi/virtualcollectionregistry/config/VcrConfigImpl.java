@@ -16,6 +16,9 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.config;
 
+import java.util.Locale;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.stereotype.Component;
 
@@ -25,6 +28,8 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class VcrConfigImpl implements VcrConfig {
+    private final static Logger logger = LoggerFactory.getLogger(VcrConfigImpl.class);
+    
     @Value("${eu.clarin.cmdi.vcr.lrs.endpoint:https://switchboard.clarin.eu/#/vcr}")
     private String lrsEndpoint;
     
@@ -39,6 +44,9 @@ public class VcrConfigImpl implements VcrConfig {
     
     @Value("${eu.clarin.cmdi.vcr.logout_enable:false}")
     private boolean logoutEnabled;
+    
+    @Value("${eu.clarin.cmdi.vcr.locale:en-GB}")
+    private String locale;
     
     @Override
     public String getSwitchboardEndpoint() {
@@ -67,5 +75,26 @@ public class VcrConfigImpl implements VcrConfig {
     @Override
     public String getLogoutMode() {
         return logoutMode;
+    }
+    
+     @Override
+    public String getLocaleString() {
+        return locale;
+    }
+    
+    @Override
+    public Locale getLocale() {
+        return new Locale(getLocaleString());
+    }
+    
+    @Override
+    public void logConfig() {
+        logger.info("Configuration:");
+        logger.info("  lrsEndpoint:          {}", lrsEndpoint);
+        logger.info("  lrsEnableResources:   {}", lrsEnableResources);
+        logger.info("  lrsEnableCollections: {}", lrsEnableCollections);
+        logger.info("  logoutMode:           {}", logoutMode);
+        logger.info("  logoutEnabled:        {}", logoutEnabled);
+        logger.info("  locale:               {}", locale);
     }
 }

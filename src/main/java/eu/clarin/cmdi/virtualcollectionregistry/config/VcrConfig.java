@@ -16,6 +16,8 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.config;
 
+import java.util.Locale;
+
 /**
  *
  * @author wilelb
@@ -26,4 +28,7 @@ public interface VcrConfig {
     public boolean isSwitchboardEnabledForCollections();
     public String getLogoutMode();
     public boolean isLogoutEnabled();
+    public String getLocaleString();
+    public Locale getLocale();
+    public void logConfig();
 }

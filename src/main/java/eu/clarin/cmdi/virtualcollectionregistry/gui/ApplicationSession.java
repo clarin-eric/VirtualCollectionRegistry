@@ -4,6 +4,7 @@ import de.mpg.aai.shhaa.model.AuthAttribute;
 import de.mpg.aai.shhaa.model.AuthPrincipal;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import java.security.Principal;
+import java.util.Locale;
 import java.util.regex.Pattern;
 import javax.servlet.http.HttpServletRequest;
 import org.apache.wicket.request.Request;
@@ -33,6 +34,11 @@ public class ApplicationSession extends AuthenticatedWebSession {
 
     public ApplicationSession(Request request) {
         super(request);
+        Application application = (Application) getApplication();
+        Locale locale = application.getConfig().getLocale();
+        if(locale != null) {
+            super.setLocale(locale);
+        }
     }
 
     public boolean signIn(Principal principal) {

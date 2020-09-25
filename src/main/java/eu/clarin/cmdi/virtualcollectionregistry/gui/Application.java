@@ -7,6 +7,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.DataStore;
 import eu.clarin.cmdi.virtualcollectionregistry.JavaScriptResources;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
+import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AboutPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AdminPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePrivateCollectionsPage;
@@ -20,7 +21,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.VirtualCollectionDetai
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmitVirtualCollectionException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmitVirtualCollectionPage;
 import eu.clarin.cmdi.wicket.ExtremeNoopTheme;
-import org.apache.wicket.IWicketInternalException;
 import org.apache.wicket.Page;
 import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
 import org.apache.wicket.Session;
@@ -29,7 +29,6 @@ import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.core.request.handler.PageProvider;
 import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
-import org.apache.wicket.core.request.handler.RenderPageRequestHandler.RedirectPolicy;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.IRequestHandler;
@@ -57,6 +56,9 @@ public class Application extends AuthenticatedWebApplication {
     @Autowired
     private AdminUsersService adminUsersService;
 
+    @Autowired
+    private VcrConfig vcrConfig;
+    
     @Override
     protected void init() {
         super.init();
@@ -72,6 +74,13 @@ public class Application extends AuthenticatedWebApplication {
    
     
         logger.info("Initialising VCR web application");
+        if (vcrConfig != null) {
+            vcrConfig.logConfig(); //write current configuration to logger
+        } else {
+            logger.error("Failed to inject VcrConfig");
+            throw new RuntimeException("Failed to start the Virtual Collection Registry. Failed to inject VCR configuration");
+        }
+        
         getComponentInstantiationListeners().add(new SpringComponentInjector(this));
 
         getMarkupSettings().setDefaultMarkupEncoding("utf-8");
@@ -114,7 +123,6 @@ public class Application extends AuthenticatedWebApplication {
                 return null;
             }
         });
-        
     }
 
     @Override
@@ -161,33 +169,9 @@ public class Application extends AuthenticatedWebApplication {
     public static Application get() {
         return (Application) WebApplication.get();
     }
-/*
-    @Override
-    public IProvider<IExceptionMapper> getExceptionMapperProvider() {
-        return new CustomExceptionMapperProvider();
-    }
-    
-    private static class CustomExceptionMapperProvider implements IProvider<IExceptionMapper> {
-        @Override
-        public IExceptionMapper get() {
-                return new CustomExceptionMapper();
-        }
-    }
-    
-    private static class CustomExceptionMapper extends DefaultExceptionMapper {
-        @Override
-        protected IRequestHandler mapExpectedExceptions(Exception e, final org.apache.wicket.Application application) {
-            IRequestHandler handler = super.mapExpectedExceptions(e, application);
-            if(handler == null) {
-                //map our exceptions
-                if(e instanceof SubmitVirtualCollectionException) {
-                    logger.info("Creating new error page handler");
-                    handler = createPageRequestHandler(new PageProvider(new SubmitVirtualCollectionErrorPage((SubmitVirtualCollectionException)e)));
-                }
-            }
-            return handler;
-        }
 
-    }
-*/
+    public VcrConfig getConfig() {
+        return vcrConfig;
+    }   
+    
 } // class Application
