@@ -47,7 +47,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <!-- dependency versions -->
         <slf4j.version>1.7.21</slf4j.version>
-        <hibernate.version>5.4.15.Final</hibernate.version>
+        <hibernate.version>5.4.18.Final</hibernate.version>
         <hibernate.jpaVersion>1.0.0.Final</hibernate.jpaVersion>
         <jersey.version>2.29.1</jersey.version>
         <jackson.version>2.10.1</jackson.version>
@@ -184,7 +184,7 @@
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>            
             <artifactId>jersey-container-servlet</artifactId>
-            <version>2.30.1</version>
+            <version>2.31</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
@@ -199,7 +199,7 @@
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-server</artifactId>
-            <version>2.30.1</version>
+            <version>2.31</version>
         </dependency>
         
        
@@ -537,7 +537,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.10</version>
+            <version>4.5.12</version>
             <type>jar</type>
         </dependency>
         
