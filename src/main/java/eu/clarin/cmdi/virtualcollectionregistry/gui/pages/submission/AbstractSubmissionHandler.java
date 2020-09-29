@@ -29,6 +29,8 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
 public abstract class AbstractSubmissionHandler implements SubmissionHandler {
 
     private final String version;
+    private boolean latest;
+    private boolean deprecated;
     
     public AbstractSubmissionHandler(String version) {
         this.version = version;
@@ -44,4 +46,31 @@ public abstract class AbstractSubmissionHandler implements SubmissionHandler {
 
     @Override
     public abstract void postProcess(VirtualCollection.Type type);
+    
+    @Override
+    public String getVersion() {
+        return version;
+    }
+    
+    @Override
+    public SubmissionHandler setLatest(boolean latest) {
+        this.latest = latest;
+        return this;
+    }
+
+    @Override
+    public boolean isLatest() {
+        return latest;
+    }
+
+    @Override
+    public SubmissionHandler setDeprecated(boolean deprecated) {
+        this.deprecated = deprecated;
+        return this;
+    }
+
+    @Override
+    public boolean isDeprecated() {
+        return deprecated;
+    }
 }

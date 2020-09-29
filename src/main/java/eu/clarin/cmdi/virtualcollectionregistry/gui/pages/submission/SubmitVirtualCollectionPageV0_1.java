@@ -26,10 +26,9 @@ import org.apache.wicket.request.mapper.parameter.PageParameters;
  *
  * @author wilelb
  */
-public class SubmitVirtualCollectionPageV1_0 extends AbstractSubmissionHandler {
-        
-     public SubmitVirtualCollectionPageV1_0() {
-         super("1.0");
+public class SubmitVirtualCollectionPageV0_1 extends AbstractSubmissionHandler {
+     public SubmitVirtualCollectionPageV0_1() {
+         super("0.1");
      }
         
     @Override
@@ -40,4 +39,5 @@ public class SubmitVirtualCollectionPageV1_0 extends AbstractSubmissionHandler {
     @Override
     public void postProcess(VirtualCollection.Type type) {
     }
+    
 }

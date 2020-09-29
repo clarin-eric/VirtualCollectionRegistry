@@ -28,8 +28,14 @@ public class SubmitHandlerFactory {
     private final List<SubmissionHandler> handlers = new ArrayList<>();
     
     public SubmitHandlerFactory() {
-        handlers.add(new SubmitVirtualCollectionPageV1_0());
-        handlers.add(new SubmitVirtualCollectionPageV1_1());
+        handlers.add(
+            new SubmitVirtualCollectionPageV0_1()
+                .setDeprecated(true)); 
+        handlers.add(
+            new SubmitVirtualCollectionPageV1_0());
+        handlers.add(
+            new SubmitVirtualCollectionPageV1_1()
+                .setLatest(true));
     }
     
     public List<SubmissionHandler> getHandlers() {

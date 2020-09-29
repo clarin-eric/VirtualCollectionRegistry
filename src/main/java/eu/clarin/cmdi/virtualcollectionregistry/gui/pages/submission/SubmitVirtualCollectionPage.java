@@ -54,6 +54,9 @@ public class SubmitVirtualCollectionPage extends BasePage {
         }
         
         logger.trace("No collection stored in session");     
+        boolean isDeprecated = false;
+        String thisVersion = "";
+        String latestVersion = "";
         
         WebRequest request = (WebRequest)RequestCycle.get().getRequest();
         WebResponse response = (WebResponse)RequestCycle.get().getResponse();
@@ -82,7 +85,13 @@ public class SubmitVirtualCollectionPage extends BasePage {
         for(SubmissionHandler handler : handlerFactory.getHandlers()) {
             if(handler.checkVersion(api_version.toString())) {
                 handled = true;
+                isDeprecated = handler.isDeprecated();
+                thisVersion = handler.getVersion();
                 handler.handle(request, response, session, params, type);
+            }
+            
+            if(handler.isLatest()) {
+                latestVersion = handler.getVersion();
             }
         }
                 
@@ -90,7 +99,11 @@ public class SubmitVirtualCollectionPage extends BasePage {
             throw new SubmitVirtualCollectionException("Unsupported API version: "+api_version.toString());
         } else {
             if(!isSignedIn()) {
-                //Set proper content panel based on      
+                //Set proper content panel based on   
+                Label lblWarning = new Label("warning", "This API version ("+thisVersion+") is deprecated, please update to use the latest version ("+latestVersion+")");
+                add(lblWarning);
+                lblWarning.setVisible(isDeprecated);
+                
                 add(new Label("type", new Model(type.toString())));
                 add(new LoginPanel("panel"));
             } else {

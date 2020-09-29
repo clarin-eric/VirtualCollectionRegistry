@@ -44,4 +44,9 @@ public interface SubmissionHandler extends Serializable {
         
         public void postProcess(VirtualCollection.Type type);
     
+        public String getVersion();
+        public SubmissionHandler setLatest(boolean latest);
+        public boolean isLatest();
+        public SubmissionHandler setDeprecated(boolean deprecated);
+        public boolean isDeprecated();
 }

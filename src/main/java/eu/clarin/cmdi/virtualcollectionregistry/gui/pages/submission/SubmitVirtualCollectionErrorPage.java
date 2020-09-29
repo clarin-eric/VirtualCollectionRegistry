@@ -18,6 +18,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BasePage;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.repeater.RepeatingView;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -40,6 +41,19 @@ public class SubmitVirtualCollectionErrorPage extends BasePage {
         super();  
         logger.info("Created new SubmitVirtualCollectionErrorPage. {}", e == null ? "No exception available" : "Exception: "+e.getMessage());
         add(new Label("error", e == null ? "No exception available" : e.getMessage()));
+        
+        RepeatingView listItems = new RepeatingView("versions");
+        for(SubmissionHandler h : new SubmitHandlerFactory().getHandlers()) {
+            String value = h.getVersion();
+            if(h.isDeprecated()) {
+                value += " (deprecated)"; 
+            } 
+            if (h.isLatest()) {
+                value += " (latest)";
+            }
+            listItems.add(new Label(listItems.newChildId(), value));
+        }
+        add(listItems);
     }
     
 }
