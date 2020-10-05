@@ -11,8 +11,15 @@ import org.springframework.stereotype.Service;
 public class DummyPersistentIdentifierProvider implements
         PersistentIdentifierProvider {
 
+    private final String id = "DUMMY";
+    
     public DummyPersistentIdentifierProvider() throws VirtualCollectionRegistryException {
         super();
+    }
+    
+    @Override
+    public String getId() {
+        return id;
     }
 
     @Override

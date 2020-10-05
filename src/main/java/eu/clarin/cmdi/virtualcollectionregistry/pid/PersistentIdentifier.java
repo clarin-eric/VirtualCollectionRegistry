@@ -25,9 +25,9 @@ public class PersistentIdentifier implements Serializable {
     private static final long serialVersionUID = 1L;
 
     public static enum Type {
-
-        DUMMY, HANDLE;
+        DUMMY, HANDLE, DOI;
     }
+    
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)

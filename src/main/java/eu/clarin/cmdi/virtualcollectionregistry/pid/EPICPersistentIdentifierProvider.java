@@ -37,9 +37,12 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
     @Value("${eu.clarin.cmdi.virtualcollectionregistry.base_uri}")
     private String baseUri;
 
-    @Value("${pid_provider.epic.infix:VCR-}")
+    private final static String DEFAULT_INFIX = "VC-";
+    @Value("${pid_provider.epic.infix:VC-}")
     private String infix;
 
+    private final String id = "EPIC";
+    
     /**
      *
      * @param pidWriter PID writer implementation to use
@@ -52,11 +55,16 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
     }
 
     @Override
+    public String getId() {
+        return id;
+    }
+    
+    @Override
     public PersistentIdentifier createIdentifier(VirtualCollection vc) throws VirtualCollectionRegistryException {
         logger.debug("creating handle for virtual collection \"{}\"", vc.getId());
         final Map<HandleField, String> fieldMap = createPIDFieldMap(vc);
         try {
-            final String requestedPid = String.format("%s%d", infix, vc.getId());
+            final String requestedPid = String.format("%s%d", getInfix(), vc.getId());
             final String pid = pidWriter.registerNewPID(configuration, fieldMap, requestedPid);
             return new PersistentIdentifier(vc, PersistentIdentifier.Type.HANDLE, pid);
         } catch (HttpException ex) {
@@ -100,4 +108,10 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
         this.infix = infix;
     }
 
+    protected String getInfix() {
+        if(this.infix.isEmpty()) {
+            return DEFAULT_INFIX;
+        }
+        return infix;
+    }
 }

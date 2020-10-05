@@ -29,6 +29,7 @@ import org.apache.commons.httpclient.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
@@ -47,6 +48,10 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
     @Autowired
    // @Qualifier("EPICPersistentIdentifierProvider")
     private PersistentIdentifierProvider pid_provider;
+   
+     @Autowired
+    @Qualifier("DoiPersistentIdentifierProvider")
+    private PersistentIdentifierProvider doi_provider;
     
     @Override
     public void perform(long now) {
@@ -93,7 +98,8 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
         q.setParameter("date", nowDateAlloc);
         q.setLockMode(LockModeType.PESSIMISTIC_WRITE);
         for (VirtualCollection vc : q.getResultList()) {
-            allocatePersistentIdentifier(em, vc); 
+            allocatePersistentIdentifier(pid_provider, em, vc); 
+            allocatePersistentIdentifier(doi_provider, em, vc); 
         }
         em.getTransaction().commit();
     }   
@@ -101,17 +107,22 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
     /**
      * Assign a PID for this VirtualCollection.
      * 
+     * @param provider
      * @param em
      * @param vc 
      */
-    protected void allocatePersistentIdentifier(EntityManager em, VirtualCollection vc) {
+    protected void allocatePersistentIdentifier(PersistentIdentifierProvider provider, EntityManager em, VirtualCollection vc) {
         VirtualCollection.State currentState = vc.getState();
-        logger.info("Found {} with state {}", vc.getName(), currentState);
+        logger.info("Found {} with state {}, processing with PID provider {}", vc.getName(), currentState, provider.getId());
 
         if(!vc.hasPersistentIdentifier()) {
             try {
-                PersistentIdentifier pid = pid_provider.createIdentifier(vc);
-                vc.setPersistentIdentifier(pid);
+                PersistentIdentifier pid = provider.createIdentifier(vc);
+                if(pid.getType() == PersistentIdentifier.Type.DOI) {
+                    
+                } else {
+                    vc.setPersistentIdentifier(pid);
+                }
             } catch (VirtualCollectionRegistryException ex) {                
                 logger.error("Failed to mint PID, setting vc to error state", ex);
                 vc.setState(VirtualCollection.State.ERROR);

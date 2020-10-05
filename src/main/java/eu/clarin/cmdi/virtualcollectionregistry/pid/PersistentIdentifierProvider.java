@@ -7,6 +7,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
 public abstract interface PersistentIdentifierProvider {
 
+    String getId();
+    
     PersistentIdentifier createIdentifier(VirtualCollection vc)
             throws VirtualCollectionRegistryException;
 

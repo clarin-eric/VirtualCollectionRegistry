@@ -43,6 +43,13 @@ public class GWDGPersistentIdentifierProvider implements
 
     public static final String BASE_URI = "eu.clarin.cmdi.virtualcollectionregistry.base_uri";
 
+    private final String id = "GWDG";
+    
+    @Override
+    public String getId() {
+        return id;
+    }
+
     private static enum Attribute {
 
         PID, URL, CREATOR, EXPDATE;
