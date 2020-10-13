@@ -42,7 +42,7 @@
     <properties>
         <!-- project settings -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-        <!-- plug-in settings -->
+        <!-- compiler settings -->
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <!-- dependency versions -->
@@ -56,11 +56,11 @@
         <!--<spring.version>4.3.25.RELEASE</spring.version>-->
         <!--<spring.version>5.2.1.RELEASE</spring.version>-->
         
-        <!-- Production settings below -->
-        <log4j.appender>File</log4j.appender>
-        <war.webxml>src/main/webapp/WEB-INF/web-shib.xml</war.webxml>
-        <war.shhaa>src/main/resources/normal</war.shhaa>
-        <war.contextxml>src/main/webapp/META-INF/prod/context.xml</war.contextxml>
+        <!-- local development settings, alternatives provided below in in the profiles section -->
+        <log4j.appender>FILE</log4j.appender>
+        <war.webxml>src/main/resources/profiles/dev/web.xml</war.webxml>
+        <war.contextxml>src/main/resources/profiles/dev/context.xml</war.contextxml>
+        <war.shhaa.dir>src/main/resources/profiles/dev/</war.shhaa.dir>
         
         <!-- Tell Netbeans to insert the right license header -->
         <netbeans.hint.license>gpl30</netbeans.hint.license> 
@@ -71,60 +71,28 @@
             <id>development</id>
             <properties>
                 <log4j.appender>FILE</log4j.appender>               
-                <war.webxml>src/main/webapp/WEB-INF/web-basic-local.xml</war.webxml>
-                <war.shhaa>src/main/resources/dev</war.shhaa>
-                <war.contextxml>src/main/webapp/META-INF/dev/context.xml</war.contextxml>
+                <war.webxml>src/main/resources/profiles/dev/web.xml</war.webxml>
+                <war.contextxml>src/main/resources/profiles/dev/context.xml</war.contextxml>
+                <war.shhaa.dir>src/main/resources/profiles/dev/</war.shhaa.dir>
             </properties>
         </profile>
         <profile>
             <id>docker</id>
             <properties>
                 <log4j.appender>FILE</log4j.appender>            
-                <war.webxml>src/main/webapp/WEB-INF/web-shib.xml</war.webxml>
-                <war.shhaa>src/main/resources/docker</war.shhaa>
-                <war.contextxml>src/main/webapp/META-INF/docker/context.xml</war.contextxml>
+                <war.webxml>src/main/resources/profiles/docker/web.xml</war.webxml>
+                <war.contextxml>src/main/resources/profiles/docker/context.xml</war.contextxml>
+                <war.shhaa.dir>src/main/resources/profiles/docker/</war.shhaa.dir>
             </properties>
         </profile>
         <profile>
-            <id>docker-local</id>
+            <id>release</id>
             <properties>
                 <log4j.appender>FILE</log4j.appender>            
-                <!--war.webxml>src/main/webapp/WEB-INF/web-shib.xml</war.webxml-->
-                <war.webxml>src/main/webapp/WEB-INF/web-basic-local.xml</war.webxml>
-                <war.shhaa>src/main/resources/docker</war.shhaa>
-                <war.contextxml>src/main/webapp/META-INF/docker/context.xml</war.contextxml>
+                <war.webxml>src/main/resources/profiles/release/web.xml</war.webxml>
+                <war.contextxml>src/main/resources/profiles/release/context.xml</war.contextxml>
+                <war.shhaa.dir>src/main/resources/profiles/release/</war.shhaa.dir>
             </properties>
-            <build>
-                <plugins>
-                    <plugin>
-                        <artifactId>exec-maven-plugin</artifactId>
-                        <version>1.6.0</version>
-                        <groupId>org.codehaus.mojo</groupId>
-                        <executions>
-                            <execution><!-- Run our version calculation script -->
-                                <id>clean-webapp-docker</id>
-                                <phase>clean</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <executable>${basedir}/scripts/clean.sh</executable>
-                                </configuration>
-                            </execution>
-                            <execution><!-- Run our version calculation script -->
-                                <id>deploy-webapp-docker</id>
-                                <phase>package</phase>
-                                <goals>
-                                    <goal>exec</goal>
-                                </goals>
-                                <configuration>
-                                    <executable>${basedir}/docker/deploy.sh</executable>
-                                </configuration>
-                            </execution>
-                        </executions>
-                    </plugin>
-                </plugins>
-            </build>
         </profile>
     </profiles>
 
@@ -692,7 +660,9 @@
                 <artifactId>maven-compiler-plugin</artifactId>
                 <version>3.8.1</version>
                 <configuration>
-                    <release>8</release>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.source}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
                 </configuration>
             </plugin>
             <plugin>
@@ -713,16 +683,14 @@
                             </includes>
                         </resource>
                         <!-- Make documentation available -->
-                        <!--
                         <resource>
                             <directory>doc</directory>
                         </resource>
-                        -->
                         <resource>
-                            <directory>${war.shhaa}</directory>
+                            <directory>${war.shhaa.dir}</directory>
                             <targetPath>WEB-INF</targetPath>
                             <includes>
-                                <include>**/*</include>
+                                <include>shhaa.xml</include>
                             </includes>
                         </resource>
                     </webResources>

@@ -38,6 +38,7 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
     private String baseUri;
 
     private final static String DEFAULT_INFIX = "VC-";
+
     @Value("${pid_provider.epic.infix:VC-}")
     private String infix;
 
@@ -108,6 +109,7 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
         this.infix = infix;
     }
 
+    //Make sure we return the default infix value if an empty infix has been set
     protected String getInfix() {
         if(this.infix.isEmpty()) {
             return DEFAULT_INFIX;

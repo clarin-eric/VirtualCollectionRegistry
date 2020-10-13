@@ -15,7 +15,7 @@
             removeAbandonedOnBorrow="true"
             removeAbandonedOnMaintenance="true"
             defaultAutoCommit="false"
-            driverClassName="com.mysql.jdbc.Driver"
+            driverClassName="com.mysql.cj.jdbc.Driver"
             validationQuery="SELECT 1"
             username="vcruser"
             password="vcrpassword"
