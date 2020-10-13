@@ -1,0 +1,101 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context antiJARLocking="true" path="/">
+<!-- *******
+     * VCR *
+     ******* -->
+    <Resource name="jdbc/VirtualCollectionStore" auth="Container"
+              type="javax.sql.DataSource"
+              maxActive="8" maxIdle="4" maxWait="10000"
+              removeAbandoned="true"
+              defaultAutoCommit="false"
+              driverClassName="com.mysql.cj.jdbc.Driver"
+              validationQuery="SELECT 1"
+              username="vcruser"
+              password="vcrpassword"
+              url="jdbc:mysql://localhost:3306/vcr" />
+            <!--
+            <Parameter
+                       name="eu.clarin.cmdi.virtualcollectionregistry.admindb.basedir"
+                       value="/Users/wilelb" />
+            -->
+    <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.admindb"
+               value="vcr-admin.conf" />
+
+    <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.collectiondisplayname"
+               value="CLARIN Virtual Collection Registry" />
+
+    <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.base_uri"
+               value="http://localhost:8080/VirtualCollectionRegistry"
+               override="false"/>
+
+    <Parameter name="pid_provider.epic.service_base_url"
+               value="http://pid-vm04.gwdg.de:8080/handles/"
+               override="false"/>
+
+    <Parameter name="pid_provider.epic.handle_prefix"
+               value="11148"
+               override="false"/>
+
+    <Parameter name="pid_provider.epic.user"
+               value="clarintest1"
+               override="false"/>
+
+    <Parameter name="pid_provider.epic.password"
+               value="xrl#4xbE"
+               override="false"/>
+
+            <!-- Switchboard endpoint -->
+    <Parameter name="eu.clarin.cmdi.vcr.lrs.endpoint"
+               value="https://switchboard.clarin.eu/#/vcr"
+               override="false"/>
+
+            <!-- Enable switchboard ingegration for resources -->
+    <Parameter name="eu.clarin.cmdi.vcr.lrs.enable_for_resources"
+               value="true"
+               override="false" />
+
+            <!-- Enable switchboard ingegration for collections -->
+    <Parameter name="eu.clarin.cmdi.vcr.lrs.enable_for_collections"
+               value="false"
+               override="false" />
+
+
+            <!--
+            <Parameter name="eu.clarin.cmdi.vcr.piwik.enableTracker"
+                       value="false"
+                       override="false"/>
+
+            <Parameter name="eu.clarin.cmdi.vcr.piwik.siteId"
+                       value="1"
+                       override="false" />
+
+            <Parameter name="eu.clarin.cmdi.vcr.piwik.host"
+                       value="https://stats.clarin.eu/"
+                       override="false" />
+
+             <Parameter name="eu.clarin.cmdi.vcr.piwik.domains"
+                       value="*.vcr.clarin.eu"
+                       override="false" />
+            -->
+
+    <Parameter name="eu.clarin.cmdi.vcr.logout_mode"
+               value="shibboleth"
+               override="false" />
+
+    <Parameter name="eu.clarin.cmdi.vcr.logout_enable"
+               value="false"
+               override="false" />
+
+    <Parameter name="eu.clarin.cmdi.vcr.snippet.survey"
+               value="survey.html"
+               override="false" />
+
+    <Parameter name="eu.clarin.cmdi.vcr.snippet.credits"
+               value="credits.html"
+               override="false" />
+
+    <Parameter name="eu.clarin.cmdi.vcr.mode"
+               value="alpha"
+               override="false" />
+
+</Context>
