@@ -499,7 +499,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.1</version>
             <type>jar</type>
             <scope>test</scope>
         </dependency>
@@ -689,14 +689,6 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <release>8</release>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.2.3</version>
                 <configuration>
@@ -712,12 +704,11 @@
                                 <include>*.xsd</include>
                             </includes>
                         </resource>
-                        <!-- Make documentation available -->
-                        <!--
+                        <!-- Make API documentation available (referenced from the help page) -->
                         <resource>
                             <directory>doc</directory>
                         </resource>
-                        -->
+                        <!-- Include proper shhaa config based on selected profile -->
                         <resource>
                             <directory>${war.shhaa}</directory>
                             <targetPath>WEB-INF</targetPath>
@@ -845,6 +836,7 @@
                     <configuration>
                         <source>${maven.compiler.source}</source>
                         <target>${maven.compiler.source}</target>
+                        <encoding>${project.build.sourceEncoding}</encoding>
                     </configuration>
                 </plugin>
             </plugins>
