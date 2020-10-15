@@ -307,4 +307,9 @@ public class GWDGPersistentIdentifierProvider implements
         return value;
     }
 
+        @Override
+        public boolean ownsIdentifier(String pid) {
+            throw new RuntimeException("Not implemented");
+        }
+
 } // class GWDGPersistentIdentifierProvider

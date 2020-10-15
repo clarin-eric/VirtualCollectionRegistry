@@ -19,6 +19,7 @@ package eu.clarin.cmdi.virtualcollectionregistry;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifierProvider;
+
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -29,7 +30,6 @@ import org.apache.commons.httpclient.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.stereotype.Component;
 
 /**
@@ -48,11 +48,7 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
     @Autowired
    // @Qualifier("EPICPersistentIdentifierProvider")
     private PersistentIdentifierProvider pid_provider;
-   
-     @Autowired
-    @Qualifier("DoiPersistentIdentifierProvider")
-    private PersistentIdentifierProvider doi_provider;
-    
+
     @Override
     public void perform(long now) {
         logger.trace("Maintenance check");
@@ -98,8 +94,7 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
         q.setParameter("date", nowDateAlloc);
         q.setLockMode(LockModeType.PESSIMISTIC_WRITE);
         for (VirtualCollection vc : q.getResultList()) {
-            allocatePersistentIdentifier(pid_provider, em, vc); 
-            allocatePersistentIdentifier(doi_provider, em, vc); 
+            allocatePersistentIdentifier(pid_provider, em, vc);
         }
         em.getTransaction().commit();
     }   
@@ -138,7 +133,7 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
         if(vc.hasPersistentIdentifier()) {
             logger.info("assigned pid (identifer='{}') to virtual"
                     + "collection (id={})",
-                    vc.getPersistentIdentifier().getIdentifier(),
+                    vc.getPrimaryIdentifier().getIdentifier(),
                     vc.getId());
         }
     }

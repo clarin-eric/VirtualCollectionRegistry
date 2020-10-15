@@ -24,11 +24,15 @@ import java.net.URI;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.context.annotation.Profile;
+import org.springframework.stereotype.Service;
 
 /**
  *
  * @author wilelb
  */
+@Service
+@Profile("vcr.pid.doi")
 public class DoiPersistentIdentifierProvider implements PersistentIdentifierProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(DoiPersistentIdentifierProvider.class);
@@ -65,5 +69,9 @@ public class DoiPersistentIdentifierProvider implements PersistentIdentifierProv
     public void deleteIdentifier(String pid) throws VirtualCollectionRegistryException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
-    
+
+    @Override
+    public boolean ownsIdentifier(String pid) {
+        throw new RuntimeException("Not implemented");
+    }
 }

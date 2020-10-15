@@ -18,4 +18,5 @@ public abstract interface PersistentIdentifierProvider {
     void deleteIdentifier(String pid)
             throws VirtualCollectionRegistryException;
 
+    boolean ownsIdentifier(String pid);
 }

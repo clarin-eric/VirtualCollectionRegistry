@@ -179,7 +179,7 @@ public class VirtualColletionRegistryOAIRepository implements Repository {
             @Override
             public String getIdentifier(Object resource) {
                 return ((VirtualCollection) resource)
-                        .getPersistentIdentifier().getURI();
+                        .getPrimaryIdentifier().getURI();
             }
 
             @Override

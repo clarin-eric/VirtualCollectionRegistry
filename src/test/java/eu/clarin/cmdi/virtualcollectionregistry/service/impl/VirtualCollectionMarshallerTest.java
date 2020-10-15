@@ -132,8 +132,8 @@ public class VirtualCollectionMarshallerTest {
             m.unmarshal(new ByteArrayInputStream(out.toByteArray()),
                     Format.XML, "utf-8");
         assertEquals(vc.getOwner(), vc2.getOwner());
-        assertEquals(vc.getPersistentIdentifier(),
-                vc2.getPersistentIdentifier());
+        assertEquals(vc.getPrimaryIdentifier(),
+                vc2.getPrimaryIdentifier());
         assertEquals(vc.getState(), vc2.getState());
         assertEquals(vc.getType(), vc2.getType());
         assertEquals(vc.getName(), vc2.getName());
@@ -203,8 +203,8 @@ public class VirtualCollectionMarshallerTest {
             m.unmarshal(new ByteArrayInputStream(out.toByteArray()),
                     Format.XML, "utf-8");
         assertEquals(vc.getOwner(), vc2.getOwner());
-        assertEquals(vc.getPersistentIdentifier(),
-                vc2.getPersistentIdentifier());
+        assertEquals(vc.getPrimaryIdentifier(),
+                vc2.getPrimaryIdentifier());
         assertEquals(vc.getState(), vc2.getState());
         assertEquals(vc.getType(), vc2.getType());
         assertEquals(vc.getName(), vc2.getName());

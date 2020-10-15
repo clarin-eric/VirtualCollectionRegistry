@@ -8,5 +8,9 @@ DELETE FROM `config` WHERE `key` = 'db_version_check';
 SELECT `value` INTO @current_value FROM `config` WHERE ( `key` = 'db_version' AND `value` = '1.0.0' );
 INSERT INTO `config` (`key`, `value`) VALUES ('db_version_check', @current_value);
 
+-- Update identifiers table and make all existing identifiers primary
+ALTER TABLE pid ADD COLUMN `primary` BOOLEAN NOT NULL AFTER `type`;
+UPDATE pid SET `primary` = 1;
+
 -- Update current database config value
-UPDATE `config` SET `value` = '1.0.1' WHERE `key` = 'db_version';
+UPDATE `config` SET `value` = '1.1.0' WHERE `key` = 'db_version';

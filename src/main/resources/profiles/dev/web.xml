@@ -13,7 +13,7 @@
     
     <context-param>
         <param-name>spring.profiles.active</param-name>
-        <param-value>vcr.pid.dummy</param-value>
+        <param-value>vcr.pid.multi.dummy</param-value>
         <!--<param-value>vcr.pid.gwdg</param-value>-->
     </context-param>
     

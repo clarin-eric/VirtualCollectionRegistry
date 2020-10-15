@@ -8,18 +8,40 @@ import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
 import java.net.URI;
+import java.util.LinkedList;
+import java.util.List;
 
 @Service
 @Profile("vcr.pid.multi")
-public class MultipleIdentifierProvider implements PersistentIdentifierProvider {
+public class PersistentIdentifierProviderFactory implements PersistentIdentifierProvider {
 
-    @Autowired
-    @Qualifier("EPICPersistentIdentifierProvider")
-    private PersistentIdentifierProvider primary_provider;
 
-    @Autowired
-    @Qualifier("DoiPersistentIdentifierProvider")
-    private PersistentIdentifierProvider citable_provider;
+    /*
+
+    class A {
+        Field a;
+        Field b;
+    }
+
+    class Test1 implements Field {
+    }
+
+    class Test2 implements Field {
+    }
+
+     */
+
+
+    /* Provider responsible to mint primary identifiers */
+    private final PersistentIdentifierProvider primaryProvider;
+
+    /* Other providers that will mint identifiers for this collection */
+    private final List<PersistentIdentifierProvider> otherProviders = new LinkedList<>();
+
+    public PersistentIdentifierProviderFactory() {
+        primaryProvider = new EPICPersistentIdentifierProvider();
+        otherProviders.add(new DoiPersistentIdentifierProvider());
+    }
 
     @Override
     public String getId() {
@@ -28,8 +50,10 @@ public class MultipleIdentifierProvider implements PersistentIdentifierProvider 
 
     @Override
     public PersistentIdentifier createIdentifier(VirtualCollection vc) throws VirtualCollectionRegistryException {
-        PersistentIdentifier id = primary_provider.createIdentifier(vc);
-        citable_provider.createIdentifier(vc);
+        PersistentIdentifier id = primaryProvider.createIdentifier(vc);
+        for(PersistentIdentifierProvider provider : otherProviders) {
+            provider.createIdentifier(vc);
+        }
         return id;
     }
 

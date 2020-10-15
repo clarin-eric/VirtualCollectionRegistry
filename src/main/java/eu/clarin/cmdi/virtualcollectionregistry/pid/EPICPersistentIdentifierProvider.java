@@ -116,4 +116,9 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
         }
         return infix;
     }
+
+    @Override
+    public boolean ownsIdentifier(String pid) {
+        return pid.toLowerCase().startsWith(configuration.getHandlePrefix().toLowerCase());
+    }
 }

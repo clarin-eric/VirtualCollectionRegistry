@@ -24,10 +24,18 @@ public class PersistentIdentifier implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
+    public Boolean getPrimary() {
+        return primary;
+    }
+
+    public void setPrimary(Boolean primary) {
+        this.primary = primary;
+    }
+
     public static enum Type {
         DUMMY, HANDLE, DOI;
     }
-    
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
@@ -51,10 +59,17 @@ public class PersistentIdentifier implements Serializable {
             length = 255)
     private String identifier;
 
+    @Column(name = "primary")
+    private Boolean primary;
+
     protected PersistentIdentifier() {
     }
 
     public PersistentIdentifier(VirtualCollection vc, Type type, String identifier) {
+        this(vc, type, true, identifier);
+    }
+
+    public PersistentIdentifier(VirtualCollection vc, Type type, boolean primary, String identifier) {
         if (vc == null) {
             throw new NullArgumentException("vc == null");
         }
@@ -71,6 +86,7 @@ public class PersistentIdentifier implements Serializable {
         this.vc = vc;
         this.type = type;
         this.identifier = identifier;
+        this.primary = primary;
     }
 
     public Long getId() {

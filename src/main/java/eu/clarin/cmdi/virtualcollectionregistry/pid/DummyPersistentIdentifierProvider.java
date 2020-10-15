@@ -39,4 +39,8 @@ public class DummyPersistentIdentifierProvider implements
             throws VirtualCollectionRegistryException {
     }
 
+    @Override
+    public boolean ownsIdentifier(String pid) {
+        return pid.toLowerCase().startsWith("dummy");
+    }
 } // class DummyPersistentIdentifierProvider

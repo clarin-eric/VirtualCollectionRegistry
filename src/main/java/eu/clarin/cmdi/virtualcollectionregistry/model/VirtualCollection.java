@@ -6,13 +6,7 @@ import eu.clarin.cmdi.wicket.components.citation.Citable;
 import eu.clarin.cmdi.wicket.components.pid.PersistentIdentifieable;
 import eu.clarin.cmdi.wicket.components.pid.PidType;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.Calendar;
-import java.util.Date;
-import java.util.GregorianCalendar;
-import java.util.HashSet;
-import java.util.List;
-import java.util.Set;
+import java.util.*;
 
 import javax.persistence.Basic;
 import javax.persistence.CascadeType;
@@ -74,7 +68,10 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 public class VirtualCollection implements Serializable, IdentifiedEntity, PersistentIdentifieable, Citable {
     private static final long serialVersionUID = 1L;
 
-    public List<PersistentIdentifier> getIdentifiers() {
+    public Set<PersistentIdentifier> getIdentifiers() {
+        if(identifiers == null) {
+            return new HashSet<>();
+        }
         return identifiers;
     }
     
@@ -103,11 +100,12 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     }
 
     public PersistentIdentifier getPrimaryIdentifier() {
-        PersistentIdentifier primary = null;
-        for(PersistentIdentifier id : identifiers) {
-            
+        for (PersistentIdentifier id : getIdentifiers()) {
+            if (id.getPrimary()) {
+                return id;
+            }
         }
-        return primary;
+        return null;
     }
     
     @Override
@@ -223,7 +221,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     @OneToMany(cascade = CascadeType.ALL,
                fetch = FetchType.EAGER,
                orphanRemoval = true)
-    private List<PersistentIdentifier> identifiers;
+    private Set<PersistentIdentifier> identifiers;
     
     /* Indication of the issue if state = ERROR */
     @Column(name = "problem", nullable = true)
@@ -338,8 +336,12 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         if (hasPersistentIdentifier() || !(state == State.PUBLIC_PENDING || state == State.PUBLIC_FROZEN_PENDING)) {
             throw new IllegalStateException("illegal state");
         }
-        //this.persistentId = persistentId;
+
+        if(this.identifiers == null) {
+            this.identifiers = new HashSet<>();
+        }
         this.identifiers.add(persistentId);
+
         switch(state) {
             case PUBLIC_PENDING: this.state = State.PUBLIC; break;
             case PUBLIC_FROZEN_PENDING: this.state = State.PUBLIC_FROZEN; break;
@@ -632,7 +634,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     public int hashCode() {
         return new HashCodeBuilder(1391, 295)
             .append(this.getOwner())
-            .append(this.getPersistentIdentifier())
+            .append(this.getPrimaryIdentifier())
             .append(this.getState())
             .append(this.getType())
             .append(this.getName())
@@ -670,7 +672,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     public String toString() {
         String result = "";
         result += String.format("id             : %s\n", this.getId());
-        result += String.format("pid            : %s\n", this.getPersistentIdentifier());
+        result += String.format("pid            : %s\n", this.getPrimaryIdentifier());
         result += String.format("name           : %s\n", this.getName());
         result += String.format("owner          : %s\n", this.getOwner());
         result += String.format("purpose        : %s\n", this.getPurpose());
