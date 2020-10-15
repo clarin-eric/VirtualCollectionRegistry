@@ -472,9 +472,13 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         if (this == vc) {
             return;
         }
+        //The persistent identifier should be changed.
+        //Add check to make sure they are equal.
+        /*
         if (vc.hasPersistentIdentifier()) {
             this.setPersistentIdentifier(vc.getPersistentIdentifier());
         }
+         */
         this.setState(state);
         this.setType(vc.getType());
         this.setName(vc.getName());
