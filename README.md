@@ -2,7 +2,7 @@
 
 Instances:
 
-* [Production instance](http://clarin.ids-mannheim.de/vcr/app/public)
+* [Production instance](https://collections.clarin.eu/)
 * [Beta instance](https://beta-vcr.clarin.eu)
 
 ## Documentation

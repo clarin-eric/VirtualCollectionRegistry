@@ -7,6 +7,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.DataStore;
 import eu.clarin.cmdi.virtualcollectionregistry.JavaScriptResources;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
+import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AboutPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AdminPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePrivateCollectionsPage;
@@ -25,6 +26,7 @@ import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.apache.wicket.validation.validator.StringValidator;
 import org.slf4j.Logger;
@@ -47,6 +49,9 @@ public class Application extends AuthenticatedWebApplication {
     @Autowired
     private AdminUsersService adminUsersService;
 
+    @Autowired
+    private VcrConfig vcrConfig;
+    
     @Override
     protected void init() {
         super.init();
@@ -62,6 +67,13 @@ public class Application extends AuthenticatedWebApplication {
    
     
         logger.info("Initialising VCR web application");
+        if (vcrConfig != null) {
+            vcrConfig.logConfig(); //write current configuration to logger
+        } else {
+            logger.error("Failed to inject VcrConfig");
+            throw new RuntimeException("Failed to start the Virtual Collection Registry. Failed to inject VCR configuration");
+        }
+        
         getComponentInstantiationListeners().add(new SpringComponentInjector(this));
 
         getMarkupSettings().setDefaultMarkupEncoding("utf-8");
@@ -131,4 +143,8 @@ public class Application extends AuthenticatedWebApplication {
         return (Application) WebApplication.get();
     }
 
+    public VcrConfig getConfig() {
+        return vcrConfig;
+    }   
+    
 } // class Application

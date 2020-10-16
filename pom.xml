@@ -47,7 +47,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <!-- dependency versions -->
         <slf4j.version>1.7.21</slf4j.version>
-        <hibernate.version>5.4.8.Final</hibernate.version>
+        <hibernate.version>5.4.18.Final</hibernate.version>
         <hibernate.jpaVersion>1.0.0.Final</hibernate.jpaVersion>
         <jersey.version>2.29.1</jersey.version>
         <jackson.version>2.10.1</jackson.version>
@@ -184,7 +184,7 @@
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>            
             <artifactId>jersey-container-servlet</artifactId>
-            <version>${jersey.version}</version>
+            <version>2.31</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
@@ -199,7 +199,7 @@
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-server</artifactId>
-            <version>${jersey.version}</version>
+            <version>2.31</version>
         </dependency>
         
        
@@ -426,7 +426,7 @@
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>jquery</artifactId>
-            <version>3.4.1</version>
+            <version>3.5.0</version>
         </dependency>
         <dependency>
             <groupId>org.webjars</groupId>
@@ -499,7 +499,7 @@
         <dependency>
             <groupId>junit</groupId>
             <artifactId>junit</artifactId>
-            <version>4.12</version>
+            <version>4.13.1</version>
             <type>jar</type>
             <scope>test</scope>
         </dependency>
@@ -537,7 +537,7 @@
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpclient</artifactId>
-            <version>4.5.10</version>
+            <version>4.5.12</version>
             <type>jar</type>
         </dependency>
         
@@ -689,14 +689,6 @@
             </plugin>
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <release>8</release>
-                </configuration>
-            </plugin>
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
                 <version>3.2.3</version>
                 <configuration>
@@ -712,12 +704,11 @@
                                 <include>*.xsd</include>
                             </includes>
                         </resource>
-                        <!-- Make documentation available -->
-                        <!--
+                        <!-- Make API documentation available (referenced from the help page) -->
                         <resource>
                             <directory>doc</directory>
                         </resource>
-                        -->
+                        <!-- Include proper shhaa config based on selected profile -->
                         <resource>
                             <directory>${war.shhaa}</directory>
                             <targetPath>WEB-INF</targetPath>
@@ -788,7 +779,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <execute />
+                                        <execute/>
                                     </action>
                                 </pluginExecution>
                                 <pluginExecution>
@@ -801,7 +792,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <execute />
+                                        <execute/>
                                     </action>
                                 </pluginExecution>
                                 <pluginExecution>
@@ -814,7 +805,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <execute />
+                                        <execute/>
                                     </action>
                                 </pluginExecution>
                                 <pluginExecution>
@@ -827,7 +818,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <execute />
+                                        <execute/>
                                     </action>
                                 </pluginExecution>
                             </pluginExecutions>
@@ -845,6 +836,7 @@
                     <configuration>
                         <source>${maven.compiler.source}</source>
                         <target>${maven.compiler.source}</target>
+                        <encoding>${project.build.sourceEncoding}</encoding>
                     </configuration>
                 </plugin>
             </plugins>
