@@ -1,10 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
 import eu.clarin.cmdi.oai.provider.impl.OAIProvider;
-import eu.clarin.cmdi.virtualcollectionregistry.model.User;
-import eu.clarin.cmdi.virtualcollectionregistry.model.User_;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
+import eu.clarin.cmdi.virtualcollectionregistry.model.*;
 import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidator;
 import java.nio.charset.Charset;
@@ -37,6 +34,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry, InitializingBean, DisposableBean {
+
+    private final static String REQUIRED_DB_VERSION = "1.0.1";
 
     @Autowired
     private DataStore datastore; //TODO: replace with Spring managed EM?
@@ -82,6 +81,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         logger.info("\tSpecial character: [\u65E5]");
         
         try {
+            checkDbVersion();
             long t1 = System.nanoTime();
             VirtualCollectionList collections = getAllVirtualCollections();
             creatorService.initialize(collections.getItems());
@@ -434,6 +434,37 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             logger.error("error while retrieving virtual collection", e);
             throw new VirtualCollectionRegistryException(
                     "error while retrieving virtual collection", e);
+        }
+    }
+
+    private void checkDbVersion() throws VirtualCollectionRegistryException {
+        logger.info("checkDbVersion()");
+        EntityManager em = datastore.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            TypedQuery<DbConfig> q = em.createNamedQuery("DbConfig.findByKey", DbConfig.class);
+            q.setParameter("keyName", "db_version");
+            DbConfig result = q.getSingleResult();
+            String dbVersion = result.getValue();
+            logger.info("Database version = {}", dbVersion);
+            if (!dbVersion.equalsIgnoreCase(REQUIRED_DB_VERSION)) {
+                throw new VirtualCollectionRegistryException(
+                    "Incorrect db_version, expected "+REQUIRED_DB_VERSION+", got "+dbVersion);
+            }
+
+        } catch(NoResultException e) {
+            logger.error("No db_version key found in config table", e);
+            throw new VirtualCollectionRegistryException(
+                    "No db_version key found in config table", e);
+        } catch (Exception e) {
+            logger.error("error while verifying database version", e);
+            throw new VirtualCollectionRegistryException(
+                    "error while verifying database version", e);
+        } finally {
+            EntityTransaction tx = em.getTransaction();
+            if ((tx != null) && !tx.getRollbackOnly()) {
+                tx.commit();
+            }
         }
     }
 

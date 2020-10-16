@@ -216,7 +216,7 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
         }
         if (vc.hasPersistentIdentifier()) {
             writer.writeAttribute("persistentId",
-                    vc.getPersistentIdentifier().getIdentifier());
+                    vc.getPrimaryIdentifier().getIdentifier());
         }
         writer.writeAttribute("state", getStateRepresentation(vc.getState()));
 

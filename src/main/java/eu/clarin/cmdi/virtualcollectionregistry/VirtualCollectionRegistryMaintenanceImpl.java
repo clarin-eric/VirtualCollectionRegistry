@@ -19,6 +19,7 @@ package eu.clarin.cmdi.virtualcollectionregistry;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifierProvider;
+
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -45,9 +46,8 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
     private DataStore datastore; //TODO: replace with Spring managed EM?
     
     @Autowired
-   // @Qualifier("EPICPersistentIdentifierProvider")
     private PersistentIdentifierProvider pid_provider;
-    
+
     @Override
     public void perform(long now) {
         logger.trace("Maintenance check");
@@ -93,7 +93,7 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
         q.setParameter("date", nowDateAlloc);
         q.setLockMode(LockModeType.PESSIMISTIC_WRITE);
         for (VirtualCollection vc : q.getResultList()) {
-            allocatePersistentIdentifier(em, vc); 
+            allocatePersistentIdentifier(pid_provider, em, vc);
         }
         em.getTransaction().commit();
     }   
@@ -101,17 +101,22 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
     /**
      * Assign a PID for this VirtualCollection.
      * 
+     * @param provider
      * @param em
      * @param vc 
      */
-    protected void allocatePersistentIdentifier(EntityManager em, VirtualCollection vc) {
+    protected void allocatePersistentIdentifier(PersistentIdentifierProvider provider, EntityManager em, VirtualCollection vc) {
         VirtualCollection.State currentState = vc.getState();
-        logger.info("Found {} with state {}", vc.getName(), currentState);
+        logger.info("Found {} with state {}, processing with PID provider {}", vc.getName(), currentState, provider.getId());
 
         if(!vc.hasPersistentIdentifier()) {
             try {
-                PersistentIdentifier pid = pid_provider.createIdentifier(vc);
-                vc.setPersistentIdentifier(pid);
+                PersistentIdentifier pid = provider.createIdentifier(vc);
+                if(pid.getType() == PersistentIdentifier.Type.DOI) {
+                    
+                } else {
+                    vc.setPersistentIdentifier(pid);
+                }
             } catch (VirtualCollectionRegistryException ex) {                
                 logger.error("Failed to mint PID, setting vc to error state", ex);
                 vc.setState(VirtualCollection.State.ERROR);
@@ -127,7 +132,7 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
         if(vc.hasPersistentIdentifier()) {
             logger.info("assigned pid (identifer='{}') to virtual"
                     + "collection (id={})",
-                    vc.getPersistentIdentifier().getIdentifier(),
+                    vc.getPrimaryIdentifier().getIdentifier(),
                     vc.getId());
         }
     }

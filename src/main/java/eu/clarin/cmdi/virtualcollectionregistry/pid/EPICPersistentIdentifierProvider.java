@@ -38,9 +38,13 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
     private String baseUri;
 
     private final static String DEFAULT_INFIX = "VC-";
-    
+
     @Value("${pid_provider.epic.infix:VC-}")
     private String infix;
+
+    private final String id = "EPIC";
+
+    private boolean primary = false;
 
     /**
      *
@@ -53,6 +57,11 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
         this.configuration = configuration;
     }
 
+    @Override
+    public String getId() {
+        return id;
+    }
+    
     @Override
     public PersistentIdentifier createIdentifier(VirtualCollection vc) throws VirtualCollectionRegistryException {
         logger.debug("creating handle for virtual collection \"{}\"", vc.getId());
@@ -109,5 +118,19 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
         }
         return infix;
     }
-    
+
+    @Override
+    public boolean ownsIdentifier(String pid) {
+        return pid.toLowerCase().startsWith(configuration.getHandlePrefix().toLowerCase());
+    }
+
+    @Override
+    public boolean isPrimaryProvider() {
+        return primary;
+    }
+
+    @Override
+    public void setPrimaryProvider(boolean primary) {
+        this.primary = primary;
+    }
 }

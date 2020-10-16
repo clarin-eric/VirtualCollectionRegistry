@@ -2,18 +2,8 @@ package eu.clarin.cmdi.virtualcollectionregistry.pid;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.io.Serializable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
+
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -24,21 +14,29 @@ public class PersistentIdentifier implements Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static enum Type {
-
-        DUMMY, HANDLE;
+    public Boolean getPrimary() {
+        return primary;
     }
+
+    public void setPrimary(Boolean primary) {
+        this.primary = primary;
+    }
+
+    public static enum Type {
+        DUMMY, HANDLE, DOI;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,
-            optional = true)
+    @ManyToOne(cascade = CascadeType.ALL,
+          fetch = FetchType.LAZY,
+          optional = true)
     @JoinColumn(name = "vc_id",
             nullable = false,
-            unique = true)
+            unique = false)
     private VirtualCollection vc;
 
     @Column(name = "type")
@@ -51,10 +49,17 @@ public class PersistentIdentifier implements Serializable {
             length = 255)
     private String identifier;
 
+    @Column(name = "primary")
+    private Boolean primary;
+
     protected PersistentIdentifier() {
     }
 
     public PersistentIdentifier(VirtualCollection vc, Type type, String identifier) {
+        this(vc, type, true, identifier);
+    }
+
+    public PersistentIdentifier(VirtualCollection vc, Type type, boolean primary, String identifier) {
         if (vc == null) {
             throw new NullArgumentException("vc == null");
         }
@@ -71,6 +76,7 @@ public class PersistentIdentifier implements Serializable {
         this.vc = vc;
         this.type = type;
         this.identifier = identifier;
+        this.primary = primary;
     }
 
     public Long getId() {
