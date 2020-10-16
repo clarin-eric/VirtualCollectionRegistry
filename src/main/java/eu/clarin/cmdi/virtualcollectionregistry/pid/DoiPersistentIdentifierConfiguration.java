@@ -21,11 +21,13 @@ import de.uni_leipzig.asv.clarin.webservices.pidservices2.impl.PidWriterImpl;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidWriter;
 import org.springframework.beans.factory.annotation.Value;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Profile;
 
 /**
  *
  * @author wilelb
  */
+@Profile("vcr.pid.doi")
 @org.springframework.context.annotation.Configuration
 public class DoiPersistentIdentifierConfiguration {
     @Value("${pid_provider.doi.service_base_url}")

@@ -19,4 +19,7 @@ public abstract interface PersistentIdentifierProvider {
             throws VirtualCollectionRegistryException;
 
     boolean ownsIdentifier(String pid);
+
+    boolean isPrimaryProvider();
+    void setPrimaryProvider(boolean primary);
 }

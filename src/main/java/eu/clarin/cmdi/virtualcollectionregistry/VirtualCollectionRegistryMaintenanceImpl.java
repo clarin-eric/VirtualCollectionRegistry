@@ -46,7 +46,6 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
     private DataStore datastore; //TODO: replace with Spring managed EM?
     
     @Autowired
-   // @Qualifier("EPICPersistentIdentifierProvider")
     private PersistentIdentifierProvider pid_provider;
 
     @Override

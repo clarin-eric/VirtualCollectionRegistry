@@ -307,9 +307,17 @@ public class GWDGPersistentIdentifierProvider implements
         return value;
     }
 
-        @Override
-        public boolean ownsIdentifier(String pid) {
-            throw new RuntimeException("Not implemented");
-        }
+    @Override
+    public boolean ownsIdentifier(String pid) {
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public boolean isPrimaryProvider() {
+        return false;
+    }
+
+    @Override
+    public void setPrimaryProvider(boolean primary) { }
 
 } // class GWDGPersistentIdentifierProvider

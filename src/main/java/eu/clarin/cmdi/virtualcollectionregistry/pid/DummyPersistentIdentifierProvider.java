@@ -43,4 +43,12 @@ public class DummyPersistentIdentifierProvider implements
     public boolean ownsIdentifier(String pid) {
         return pid.toLowerCase().startsWith("dummy");
     }
+
+    @Override
+    public boolean isPrimaryProvider() {
+        return false;
+    }
+
+    @Override
+    public void setPrimaryProvider(boolean primary) { }
 } // class DummyPersistentIdentifierProvider

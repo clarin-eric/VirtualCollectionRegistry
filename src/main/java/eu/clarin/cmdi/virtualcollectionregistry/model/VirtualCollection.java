@@ -220,7 +220,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     
     @OneToMany(cascade = CascadeType.ALL,
                fetch = FetchType.EAGER,
-               orphanRemoval = true)
+                mappedBy = "vc")
     private Set<PersistentIdentifier> identifiers;
     
     /* Indication of the issue if state = ERROR */

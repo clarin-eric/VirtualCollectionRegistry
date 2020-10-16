@@ -10,11 +10,18 @@
         </listener-class>
     </listener>
     -->
-    
+
+    <!--
+        Available profiles:
+        - vcr.pid.dummy
+        - vcr.pid.gwdg
+        - vcr.pid.epic
+        - vcr.pid.doi
+        - vcr.pid.multi
+    -->
     <context-param>
         <param-name>spring.profiles.active</param-name>
-        <param-value>vcr.pid.multi.dummy</param-value>
-        <!--<param-value>vcr.pid.gwdg</param-value>-->
+        <param-value>vcr.pid.multi</param-value>
     </context-param>
     
     <!-- Persistence -->

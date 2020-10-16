@@ -43,7 +43,9 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
     private String infix;
 
     private final String id = "EPIC";
-    
+
+    private boolean primary = false;
+
     /**
      *
      * @param pidWriter PID writer implementation to use
@@ -120,5 +122,15 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
     @Override
     public boolean ownsIdentifier(String pid) {
         return pid.toLowerCase().startsWith(configuration.getHandlePrefix().toLowerCase());
+    }
+
+    @Override
+    public boolean isPrimaryProvider() {
+        return primary;
+    }
+
+    @Override
+    public void setPrimaryProvider(boolean primary) {
+        this.primary = primary;
     }
 }

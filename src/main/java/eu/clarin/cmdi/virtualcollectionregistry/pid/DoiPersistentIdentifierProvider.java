@@ -74,4 +74,12 @@ public class DoiPersistentIdentifierProvider implements PersistentIdentifierProv
     public boolean ownsIdentifier(String pid) {
         throw new RuntimeException("Not implemented");
     }
+
+    @Override
+    public boolean isPrimaryProvider() {
+        return false;
+    }
+
+    @Override
+    public void setPrimaryProvider(boolean primary) { }
 }
