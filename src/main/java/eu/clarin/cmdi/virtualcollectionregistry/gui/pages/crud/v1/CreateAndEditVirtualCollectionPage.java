@@ -1,9 +1,6 @@
-package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
+package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1;
 
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermissionException;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionValidationException;
+import eu.clarin.cmdi.virtualcollectionregistry.*;
 import eu.clarin.cmdi.virtualcollectionregistry.feedback.CreatorValidationFailedMessage;
 import eu.clarin.cmdi.virtualcollectionregistry.feedback.KeywordValidationFailedMessage;
 import eu.clarin.cmdi.virtualcollectionregistry.feedback.NameValidationFailedMessage;
@@ -12,13 +9,16 @@ import eu.clarin.cmdi.virtualcollectionregistry.feedback.ReproducibilityNoticeVa
 import eu.clarin.cmdi.virtualcollectionregistry.feedback.ResourceValidationFailedMessage;
 import eu.clarin.cmdi.virtualcollectionregistry.feedback.TypeValidationFailedMessage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.AuthorsInput;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.CheckboxInput;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.CheckboxInputChangeListener;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.CollectionQuery;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.KeywordInput;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.QueryInput;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.forms.ResourceInput;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BasePage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePublicCollectionsPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.UIUtils;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1.forms.AuthorsInput;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1.forms.CheckboxInput;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1.forms.CheckboxInputChangeListener;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1.forms.CollectionQuery;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1.forms.KeywordInput;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1.forms.QueryInput;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1.forms.ResourceInput;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmissionUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
@@ -251,7 +251,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         
         protected FormBuilder addTextinput(IModel model, String name, String label, String tooltipText, boolean required, boolean multiline, IFeedbackMessageFilter filter) {
             final WebMarkupContainer tooltipComponent = new WebMarkupContainer("tt_"+name);
-            UIUtils.addTooltip(tooltipComponent, tooltipText, "accordion", DEFAULT_TOOLTIP_DATA_PLACEMENT);       
+            UIUtils.addTooltip(tooltipComponent, tooltipText, "accordion", DEFAULT_TOOLTIP_DATA_PLACEMENT);
             if( multiline ) {
                 tooltipComponent.add(new TextArea(name, model).add(StringValidator.minimumLength(1)));
             } else if (!multiline && required ) {           
@@ -417,9 +417,11 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
     
     private void persist() {
         logger.debug("Persist");
-        
-        String name = nameModel.getObject();        
-        String description = descriptionModel.getObject();
+
+
+
+        String name = UserInputSanitizer.sanitize(nameModel.getObject());
+        String description =  UserInputSanitizer.sanitize(descriptionModel.getObject());
 
         Purpose purpose = null;
         if(purposeModel.getObject() != null) {
@@ -430,7 +432,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
             reproducibility = reproducibilityModel.getObject();
         }
         String repoducibilityNotice = reproducibilityNoticeModel.getObject();
-        List<String> keywords =  (ArrayList)(new ArrayList(keywordsModel.getObject()).clone());
+        List<String> keywords =  UserInputSanitizer.sanitizeList((ArrayList)(new ArrayList(keywordsModel.getObject()).clone()));
         List<Creator> creators =  (ArrayList)(new ArrayList(authorsModel.getObject()).clone());
         List<Resource> resources = (ArrayList)(new ArrayList(resourceModel.getObject()).clone());
         

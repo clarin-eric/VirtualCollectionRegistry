@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry, InitializingBean, DisposableBean {
 
-    private final static String REQUIRED_DB_VERSION = "1.0.1";
+    private final static String REQUIRED_DB_VERSION = "1.2.0";
 
     @Autowired
     private DataStore datastore; //TODO: replace with Spring managed EM?

@@ -17,6 +17,11 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.model.Model;
 
+import com.vladsch.flexmark.util.ast.Node;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
+import com.vladsch.flexmark.util.data.MutableDataSet;
+
 @SuppressWarnings("serial")
 final class ColumnName extends AbstractColumn<VirtualCollection, String> {
     
@@ -39,7 +44,16 @@ final class ColumnName extends AbstractColumn<VirtualCollection, String> {
             details.setOutputMarkupId(true);
             
             final String desc = vc.getDescription();
-            final MultiLineLabel descLabel = new MultiLineLabel("desc", desc);
+            String htmlValue = "";
+            if(desc != null) {
+                MutableDataSet options = new MutableDataSet();
+                Parser parser = Parser.builder(options).build();
+                HtmlRenderer renderer = HtmlRenderer.builder(options).build();
+                Node document = parser.parse(desc);
+                htmlValue = renderer.render(document);
+            }
+            final MultiLineLabel descLabel = new MultiLineLabel("desc", htmlValue);
+            descLabel.setEscapeModelStrings(false);
             if (desc == null) {
                 descLabel.setVisible(false);
             }

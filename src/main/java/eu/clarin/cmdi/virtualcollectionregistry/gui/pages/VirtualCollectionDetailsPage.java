@@ -63,6 +63,10 @@ import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.string.Strings;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import com.vladsch.flexmark.util.ast.Node;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
+import com.vladsch.flexmark.util.data.MutableDataSet;
 
 @SuppressWarnings("serial")
 public class VirtualCollectionDetailsPage extends BasePage {
@@ -224,14 +228,32 @@ public class VirtualCollectionDetailsPage extends BasePage {
         public BasicTextPanel(String id, String label, IModel value) {
             this(id, label, value, false);
         }
-        
+
         public BasicTextPanel(String id, String label, IModel value, boolean multiline) {
+            this(id, label, value, false, false);
+        }
+
+        public BasicTextPanel(String id, String label, IModel value, boolean multiline, boolean withMarkdown) {
             super(id);            
             add(new Label("label", label));
+
+            String htmlValue = "";
+            if(value.getObject() != null) {
+                MutableDataSet options = new MutableDataSet();
+                Parser parser = Parser.builder(options).build();
+                HtmlRenderer renderer = HtmlRenderer.builder(options).build();
+                Node document = parser.parse(value.getObject().toString());
+                htmlValue = renderer.render(document);
+            }
+
             if(!multiline) {
-                add(new CustomLabel("value", value));
+                CustomLabel lbl = new CustomLabel("value", new Model(htmlValue));
+                lbl.setEscapeModelStrings(false);
+                add(lbl);
             } else {
-                add(new MultiLineLabel("value", value));
+                MultiLineLabel lbl = new MultiLineLabel("value", htmlValue);
+                lbl.setEscapeModelStrings(false);
+                add(lbl);
             }
         }
     }
@@ -274,7 +296,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
             add(new BasicTextPanel("name", "Name", new Model(model.getObject().getName())));
             add(new BasicTextPanel("type", "Type", new Model(model.getObject().getType())));            
             add(new BasicTextPanel("creationDate", "Creation date", new Model(model.getObject().getCreationDate())));
-            add(new BasicTextPanel("description", "Description", new Model(model.getObject().getDescription())).add(hideIfEmpty));
+            add(new BasicTextPanel("description", "Description", new Model(model.getObject().getDescription()), false, true).add(hideIfEmpty));
             add(new BasicTextPanel("purpose", "Purpose", new Model(model.getObject().getPurpose())).add(hideIfEmpty));
             add(new BasicTextPanel("reproducibility", "Reproducibility", new Model(model.getObject().getReproducibility())).add(hideIfEmpty));
             add(new BasicTextPanel("reproducibilityNotice", "Reproducibility notice", new Model(model.getObject().getReproducibilityNotice())).add(hideIfEmpty));

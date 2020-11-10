@@ -6,6 +6,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryExcepti
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionValidationException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1.CreateAndEditVirtualCollectionPage;
 import eu.clarin.cmdi.wicket.components.citation.CitationPanelFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.Dialogs;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.CollectionsProvider;
@@ -315,7 +316,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
                     editPublishedDialog.close(target);
                     target.add(table);
                     //Forward to edit page
-                    setResponsePage(CreateAndEditVirtualCollectionPage.class, 
+                    setResponsePage(CreateAndEditVirtualCollectionPage.class,
                         buildParamsFromMap(Collections.singletonMap("id", model.getObject().getId())));
                 }
             }            

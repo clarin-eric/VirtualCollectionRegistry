@@ -32,6 +32,45 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
         RESOURCE;
     } // enum Resource.Type
 
+    @Column(name = "mimetype", nullable = true, length = 255)
+    private String mimeType;
+
+    /**
+     * @return the mimeType
+     */
+    public String getMimetype() {
+        return mimeType;
+    }
+
+    /**
+     * @param mimeType the mimeType to set
+     */
+    public void setMimetype(String mimeType) {
+        if (mimeType.equalsIgnoreCase("application/x-cmdi+xml")) {
+            setType(Resource.Type.METADATA);
+        } else {
+            setType(Resource.Type.RESOURCE);
+        }
+        this.mimeType = mimeType;
+    }
+
+    @Column(name = "checked", nullable = true, length = 255)
+    private String check;
+
+    /**
+     * @return the check
+     */
+    public String getCheck() {
+        return check;
+    }
+
+    /**
+     * @param check the check to set
+     */
+    public void setCheck(String check) {
+        this.check = check;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)

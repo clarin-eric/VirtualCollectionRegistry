@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+    <head><title></title></head>
+    <body>
+        
+        <wicket:panel>            
+            <div class="row">
+                <div class="col-xs-3">Name:</div>
+                <div class="col-xs-9" wicket:id="title"></div>
+                
+                <div class="col-xs-3">Type:</div>
+                <div class="col-xs-9" wicket:id="type"></div>
+                
+                <div class="col-xs-3">Authors:</div>
+                <div class="col-xs-9">
+                    <div wicket:id="authors_list">
+                        <div wicket:id="wrapper1"> 
+                            <span wicket:id="name">name</span> /
+                            <span wicket:id="email">email</span> / 
+                            <span wicket:id="affiliation">affiliation</span>
+                        </div>
+                    </div>
+                </div>
+            
+                <div class="col-xs-3">References:</div>
+                <div class="col-xs-9">
+                    <div wicket:id="references_list">
+                        <div wicket:id="wrapper2"> 
+                            <a wicket:id="ref_link"><span wicket:id="title">title</span></a> /
+                            <span wicket:id="description">description</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="col-xs-12">
+                    <a class="btn btn-sm btn-primary" wicket:id="btn_edit">Edit</a>
+                    <a class="btn btn-sm btn-default" wicket:id="btn_remove">Remove</a>
+                </div>
+            </div>
+        </wicket:panel>
+        
+    </body>
+</html>

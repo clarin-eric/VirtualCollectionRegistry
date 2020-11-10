@@ -1,0 +1,36 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+    <head><title></title></head>
+    <body>
+        
+        <wicket:panel>  
+            
+            <div class="col-xs-2" style="text-align: right;">
+                <div wicket:id="label">label</div>
+            </div>
+            <div class="col-xs-10">
+                <!-- Editor to add new reference -->
+                <!--<div>Add new reference:</div>-->
+                <div wicket:id="reference">[NAME]</div>            
+            
+                <!-- Editor to improve a reference -->
+                <div class="col-md-10 col-md-offset-2 col-sm-12" wicket:id="ref_editor_wrapper">
+                    <div wicket:id="ref_editor"></div>
+                </div>
+
+                <!-- The list of references -->
+                <div class="col-md-10 col-md-offset-2 col-sm-12" wicket:id="ajaxwrapper">        
+                    <div wicket:id="lbl_no_references"></div>
+                    <div wicket:id="listview">
+                        <div wicket:id="pnl_reference">label</div>
+                    </div>
+                </div>
+            </div>
+            
+            <!-- Modal -->
+            <div id="myModal" wicket:id="modal"></div>
+        </wicket:panel>       
+        
+    </body>
+</html>

@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+<head />
+<body>
+<wicket:extend>
+
+    <div class="row">
+        <!-- Collection Editor -->
+        <div class="col-md-8 col-xs-12">
+            <h3>Create / Edit Collection:</h3>
+            <div wicket:id="create_and_edit_panel">[CREATE AND EDIT PANEL]</div>
+        </div>
+
+        <!-- Collection Overview -->
+        <div class="col-md-4 col-xs-12">
+            <h3>Collections:</h3>
+            <div wicket:id="ajaxwrapper">
+                <div wicket:id="lbl_no_collections">label</div>
+                <div wicket:id="listview">
+                    <div wicket:id="pnl_collection">label</div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- Modal -->
+    <div id="myModal" wicket:id="modal"></div>
+
+</wicket:extend>
+
+</body>
+</html>
