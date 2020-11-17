@@ -131,7 +131,7 @@ public class BasePage extends WebPage {
                 return (Label) super.newBrandLabel(markupId).setEscapeModelStrings(false);
             }
         };
-        navbar.setBrandName(Model.of("<i class=\"glyphicon glyphicon-book\" aria-hidden=\"true\"></i> Virtual Collections"));
+        navbar.setBrandName(Model.of("<img src=\"./images/icon-services-vcr.png\" width=\"24\" height=\"24\" aria-hidden=\"true\" style=\"margin-right: 10px;\" alt=\"Virtual Collection Registry icon\"></img>Virtual Collection Registry"));
         
         final List<INavbarComponent> menuItems = new ArrayList<>();
         //Default menu items
