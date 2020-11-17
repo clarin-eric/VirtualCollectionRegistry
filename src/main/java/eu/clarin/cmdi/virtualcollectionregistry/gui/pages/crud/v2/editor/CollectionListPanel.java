@@ -6,11 +6,13 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
+import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.slf4j.Logger;
@@ -23,7 +25,10 @@ import org.slf4j.LoggerFactory;
 public class CollectionListPanel extends ActionablePanel {
     
     private final static Logger logger = LoggerFactory.getLogger(CollectionListPanel.class);
-    
+
+    private final Link btnEdit;
+    private final Link btnRemove;
+
     public CollectionListPanel(String id, final VirtualCollection collection) {
         super(id);
         
@@ -56,30 +61,54 @@ public class CollectionListPanel extends ActionablePanel {
             }
         };
         add(referencesListview);
-        
-        add(new AjaxFallbackLink("btn_edit") {
+
+        btnEdit = new AjaxFallbackLink("btn_edit") {
             @Override
             public void onClick(final AjaxRequestTarget target) {
                 logger.info("Fire edit event for collection with id = {}", collection.getId());
-                 fireEvent(
-                    new AbstractEvent<>(
-                        EventType.EDIT,
-                        collection, 
-                        target));
+                fireEvent(
+                        new AbstractEvent<>(
+                                EventType.EDIT,
+                                collection,
+                                target));
             }
-        }); 
-        
-        add(new AjaxFallbackLink("btn_remove") {
+        };
+        add(btnEdit);
+
+        btnRemove = new AjaxFallbackLink("btn_remove") {
             @Override
             public void onClick(final AjaxRequestTarget target) {
                 logger.info("Fire delete event for collection with id = {}", collection.getId());
                 fireEvent(
-                    new AbstractEvent<>(
-                        EventType.DELETE, 
-                        collection, 
-                        target));
+                        new AbstractEvent<>(
+                                EventType.DELETE,
+                                collection,
+                                target));
             }
-        });  
+        };
+        add(btnRemove);
+    }
+
+    public void setEditing(boolean editing) {
+        if(!editing) {
+            logger.info("Enabling collection buttons (editing={})", editing);
+            enableButtonLink(btnEdit);
+            enableButtonLink(btnRemove);
+        } else {
+            logger.info("Disabling collection buttons (editing={})", editing);
+            disableButton(btnEdit);
+            disableButton(btnRemove);
+        }
+    }
+
+    private void enableButtonLink(Link btn) {
+        btn.setEnabled(true);
+        btn.add(AttributeModifier.remove("disabled"));
+    }
+
+    private void disableButton(Link btn) {
+        btn.setEnabled(false);
+        btn.add(new AttributeModifier("disabled", "true"));
     }
 }
     

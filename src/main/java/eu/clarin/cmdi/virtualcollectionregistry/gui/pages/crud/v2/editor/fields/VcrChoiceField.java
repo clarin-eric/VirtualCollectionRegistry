@@ -18,13 +18,9 @@ import org.slf4j.LoggerFactory;
  */
 public class VcrChoiceField extends AbstractField {
     private static final Logger logger = LoggerFactory.getLogger(VcrChoiceField.class);
-    
-    public VcrChoiceField(String id, String label, List<String> choices) {
-        this(id, label, choices, null, Model.of(""), null);
-    }
-        
-    public VcrChoiceField(String id, String label, List<String> choices, String defaultValue, final IModel dataModel, final FieldComposition parent) {
-        super(id, label, defaultValue, dataModel, parent, new RadioChoice<>("input_radio_choice", dataModel, choices));
+
+    public VcrChoiceField(String id, String label, List<String> choices, final IModel<String> dataModel) {
+        super(id, label, dataModel, null, new RadioChoice<>("input_radio_choice", dataModel, choices));
     }
         
     @Override

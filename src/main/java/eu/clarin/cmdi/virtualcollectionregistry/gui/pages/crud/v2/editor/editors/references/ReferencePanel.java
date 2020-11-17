@@ -40,10 +40,11 @@ public class ReferencePanel extends Panel {
         }
         
         WebMarkupContainer editorWrapper = new WebMarkupContainer("wrapper");
-        
+
+        String check = ref.getReference().getCheck();
         editorWrapper.add(new Label("state", ref.getState()));
         editorWrapper.add(new Label("value", ref.getReference().getRef()));
-        editorWrapper.add(new Label("check", ref.getReference().getCheck()));
+        editorWrapper.add(new Label("check", check == null ? "waiting for check" : check));
         editorWrapper.add(new Label("type", ref.getReference().getType()));
         editorWrapper.add(new Label("title", titleModel));
         editorWrapper.add(new Label("description", descriptionModel));

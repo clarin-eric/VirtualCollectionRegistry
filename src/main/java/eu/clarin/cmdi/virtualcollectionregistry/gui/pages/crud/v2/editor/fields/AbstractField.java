@@ -5,6 +5,9 @@ import java.util.List;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.AjaxFormComponentOnKeySubmitBehavior;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.references.ReferencesEditor;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.DataUpdatedEvent;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.Event;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.Listener;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -39,7 +42,7 @@ public abstract class AbstractField extends Panel implements Field {
     
     private final List<InputValidator> inputValidators = new ArrayList<>();
     
-    private boolean required = false;
+    protected boolean required = false;
     
     private final Model errorMessageModel = Model.of("");
     private Label lblErrorMessage;
@@ -50,15 +53,15 @@ public abstract class AbstractField extends Panel implements Field {
     
     private boolean completeSubmitOnUpdate = false;
     
-    //private final IModel labelModel;
+    private final IModel labelModel;
     private String label;
     private Label lbl;
 
     public AbstractField(String id, String label, Component editComponent) {
-        this(id, label, null, new Model<>(), null, editComponent);
+        this(id, label, new Model<>(), null, editComponent);
     }
     
-    public AbstractField(String id, String label, String defaultValue, final IModel dataModel, final FieldComposition parent, Component editComponent) {
+    public AbstractField(String id, String label, final IModel dataModel, final FieldComposition parent, Component editComponent) {
         super(id);
         this.label = label;
         this.editComponent = editComponent;
@@ -72,11 +75,11 @@ public abstract class AbstractField extends Panel implements Field {
         }
 
         if(label != null) {
-            lbl = new Label("label", Model.of(label + ":"));
-            if (required) {
-                lbl.add(new AttributeModifier("class", "required"));
-            }
+            labelModel = Model.of(label.isEmpty() ? "" : label + ":");
+            lbl = new Label("label", labelModel);
             add(lbl);
+        } else {
+            labelModel = Model.of("");
         }
 
         lblErrorMessage = new Label("error_message", errorMessageModel);
@@ -158,32 +161,21 @@ public abstract class AbstractField extends Panel implements Field {
         String input = (String)dataModel.getObject(); 
         
         //Check for value if required == true
-        if(required && input == null) {
-            lblErrorMessage.setVisible(true);
-            errorMessageModel.setObject("Required field.");
-            return false;
-        } 
-        if(required && input.isEmpty()) {
-            lblErrorMessage.setVisible(true);
-            errorMessageModel.setObject("Required field.");
-            return false;
+        if(required && (input == null || input.isEmpty())) {
+            return setError("Required field.");
         }
-        
+
         //If any validator fails, set error message and return false
         if(input != null) {
             for(InputValidator v : this.inputValidators) {
                 if(!v.validate(input)) {
-                    lblErrorMessage.setVisible(true);
-                    errorMessageModel.setObject(v.getErrorMessage());
-                    return false;
+                    return setError(v.getErrorMessage());
                 }
             }
         }
         
         //All validators passed, reset error message and return true
-        lblErrorMessage.setVisible(false);
-        errorMessageModel.setObject("");
-        return true;
+        return setError(null);
     }
     
     public void addValidator(InputValidator validator) {
@@ -194,9 +186,11 @@ public abstract class AbstractField extends Panel implements Field {
     
     public void setRequired(boolean required) {
         this.required = required;
-        //labelModel.setObject(label + (required ? "*" : ""));
+        labelModel.setObject(label.isEmpty() ? "" : label + ":");
         if(lbl != null) {
             lbl.add(new AttributeModifier("class", "required"));
+        } else {
+            lbl.add(new AttributeModifier("class", "optional"));
         }
     }
     
@@ -225,7 +219,9 @@ public abstract class AbstractField extends Panel implements Field {
             modelToUpdate.setObject("");
         }
         logger.debug("Field: id="+getId()+", value=" + value);
-        
+
+        fireEvent(new DataUpdatedEvent(target));
+
         if(target != null) {
             target.add(this);
             if(nextComponentToFocus != null) {
@@ -240,5 +236,36 @@ public abstract class AbstractField extends Panel implements Field {
     public void setCompleteSubmitOnUpdate(boolean completeSubmitOnUpdate) {
         this.completeSubmitOnUpdate = completeSubmitOnUpdate;
     }
-    
+
+    protected boolean setError(String message) {
+        if(message != null) {
+            lblErrorMessage.setVisible(true);
+            errorMessageModel.setObject(message);
+            logger.info("Validation failed for field with label = {}, message = {}", label, message);
+            return false;
+        }
+
+        lblErrorMessage.setVisible(false);
+        errorMessageModel.setObject("");
+        return true;
+    }
+
+
+
+
+    private final List<Listener> actionListeners = new ArrayList<>();
+
+    public void addListener(Listener l) {
+        actionListeners.add(l);
+    }
+
+    public void removeListener(Listener l) {
+        throw new RuntimeException("Not implemented");
+    }
+
+    protected void fireEvent(Event evt) {
+        for(Listener l : actionListeners) {
+            l.handleEvent(evt);
+        }
+    }
 }

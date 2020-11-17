@@ -7,14 +7,8 @@ import java.util.List;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.ActionablePanel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.dialogs.ModalConfirmAction;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.dialogs.ModalConfirmDialog;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.AbstractEvent;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.Event;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.EventType;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.Listener;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.AbstractField;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.ComposedField;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.FieldComposition;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.VcrTextField;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.*;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.*;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -38,6 +32,8 @@ import org.slf4j.LoggerFactory;
      private final static Logger logger = LoggerFactory.getLogger(AuthorsEditor.class);
 
      private final List<Editable<Creator>> authors = new ArrayList<>();
+
+     private AuthorEditPanel pnl;
 
      @Override
      public boolean completeSubmit(AjaxRequestTarget target) {
@@ -88,6 +84,7 @@ import org.slf4j.LoggerFactory;
 
                      noAuthors.setVisible(authors.size() <= 0);
                      ajaxWrapper.setVisible(authors.size() > 0);
+                     pnl.setVisible(false);
 
                      if (target != null) {
                          target.add(componentToUpdate);
@@ -219,6 +216,9 @@ import org.slf4j.LoggerFactory;
 
                      noAuthors.setVisible(authors.size() <= 0);
                      ajaxWrapper.setVisible(authors.size() > 0);
+                     pnl.setVisible(true);
+
+                     fireEvent(new DataUpdatedEvent(target));
 
                      if (target != null) {
                          target.add(componentToUpdate);
@@ -284,6 +284,7 @@ import org.slf4j.LoggerFactory;
                                  }
                                  noAuthors.setVisible(authors.isEmpty());
                              }
+                            fireEvent(new DataUpdatedEvent(event.getAjaxRequestTarget()));
                              event.updateTarget(ajaxWrapper);
                          break;
                      case CANCEL:
@@ -330,10 +331,11 @@ import org.slf4j.LoggerFactory;
 
          ajaxWrapper.add(noAuthors);
          add(ajaxWrapper);
-         add(new AuthorEditPanel("pnl_create_author", null, componentToUpdate));
 
-         noAuthors.setVisible(authors.size() <= 0);
-         ajaxWrapper.setVisible(authors.size() > 0);
+         pnl = new AuthorEditPanel("pnl_create_author", null, componentToUpdate);
+         add(pnl);
+
+         noAuthors.setVisible(authors.isEmpty());
      }
 
      /**
@@ -352,12 +354,25 @@ import org.slf4j.LoggerFactory;
       */
      public void setData(List<Creator> authors) {
          logger.info("Set author data: {} authors", authors.size());
+         this.authors.clear();
          for(Creator a : authors) {
              this.authors.add(new Editable<>(a));
          }
+         noAuthors.setVisible(authors.isEmpty());
      }
 
      public void reset() {
          authors.clear();
+         noAuthors.setVisible(authors.isEmpty());
+     }
+
+     @Override
+     public boolean validate() {
+         //Check for value if required == true
+         if(required && authors.isEmpty()) {
+             return setError("Required field.");
+         }
+         //All validators passed, reset error message and return true
+         return setError(null);
      }
  }

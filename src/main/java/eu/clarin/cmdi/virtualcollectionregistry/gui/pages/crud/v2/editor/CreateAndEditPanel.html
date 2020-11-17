@@ -6,28 +6,42 @@
         
         <wicket:panel>
             <!-- Editor simple/advance toggle -->
-            <div class="col-xs-12" style="text-align: right">
-                <label>
-                    <!--<input type="checkbox" wicket:id="btn_editor_mode" data-toggle="toggle">-->
-                    <input type="checkbox" wicket:id="btn_editor_mode">
-                    Advanced Mode
-                </label>
+            <div class="row">
+                <div class="col-xs-12" style="text-align: right">
+                    <label>
+                        <input type="checkbox" wicket:id="btn_editor_mode">
+                        Advanced Mode
+                    </label>
+                </div>
             </div>
 
             <!-- Collection edit fields -->
-            <div class="col-xs-12 field-row" wicket:id="name">[NAME]</div>
-            <div class="col-xs-12 field-row" wicket:id="description">[DESCRIPTION]</div>
-            <div class="col-xs-12 field-row" wicket:id="purpose">[PURPOSE]</div>
-            <div class="col-xs-12 field-row" wicket:id="repro">[REPRODUCIBILITY]</div>
-            <div class="col-xs-12 field-row" wicket:id="repro_notice">[REPRODUCIBILITY NOTICE]</div>
-            <div class="col-xs-12 field-row" wicket:id="keywords">[KEYWORDS]</div>
-            <div class="col-xs-12 field-row" wicket:id="authors">[AUTHORS]</div>
-            <div class="col-xs-12 field-row" wicket:id="references">[REFERENCES]</div>
+            <div class="row">
+                <div class="col-xs-12 field-row" wicket:id="name">[NAME]</div>
+                <div class="col-xs-12 field-row" wicket:id="description">[DESCRIPTION]</div>
+                <div class="col-xs-12 field-row" wicket:id="type">[TYPE]</div>
+                <div class="col-xs-12 field-row" wicket:id="purpose">[PURPOSE]</div>
+                <div class="col-xs-12 field-row" wicket:id="repro">[REPRODUCIBILITY]</div>
+                <div class="col-xs-12 field-row" wicket:id="repro_notice">[REPRODUCIBILITY NOTICE]</div>
+                <div class="col-xs-12 field-row" wicket:id="keywords">[KEYWORDS]</div>
+            </div>
+
+            <div class="row" style="margin-top: 25px">
+                <div class="col-xs-12 field-row" wicket:id="authors">[AUTHORS]</div>
+            </div>
+
+            <div class="row" style="margin-top: 25px">
+                <div class="col-xs-12 field-row" wicket:id="references">[REFERENCES]</div>
+            </div>
 
             <!-- Button row -->
-            <div class="col-xs-12" >
-                <a class="btn btn-sm btn-primary" wicket:id="btn_save">Save</a>
-                <a class="btn btn-sm btn-default" wicket:id="btn_cancel">Cancel</a>    
+            <div class="row" style="margin-top: 25px">
+                <div class="col-xs-6" style="text-align: right;">
+                    <a class="btn btn-sm btn-primary" wicket:id="btn_save">Save Collection</a>
+                </div>
+                <div class="col-xs-6">
+                    <a class="btn btn-sm btn-default" wicket:id="btn_cancel">Cancel</a>
+                </div>
             </div>
 
         </wicket:panel>

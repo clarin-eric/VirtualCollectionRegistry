@@ -24,13 +24,11 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.SaveEventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.dialogs.ModalConfirmAction;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.dialogs.ModalConfirmDialog;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.DataUpdatedEvent;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.Event;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.EventType;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.Listener;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.AbstractField;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.ComposedField;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.InputValidator;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.VcrTextField;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.*;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -79,7 +77,7 @@ public class ReferencesEditor extends ComposedField {
     private final ModalConfirmDialog localDialog;
     
     private final int workerSleepTime = 1000;
-    private final int uiRefreshTimeInSeconds = 60;
+    private final int uiRefreshTimeInSeconds = 1;
     
     public class Validator implements InputValidator, Serializable {
         private String message = "";
@@ -103,7 +101,7 @@ public class ReferencesEditor extends ComposedField {
     }
     
     public ReferencesEditor(String id, String label) {
-        super(id, label, null);
+        super(id, "References", null);
         setOutputMarkupId(true);
 
         final WebMarkupContainer editorWrapper = new WebMarkupContainer("ref_editor_wrapper");
@@ -219,8 +217,9 @@ public class ReferencesEditor extends ComposedField {
         ajaxWrapper.add(new AbstractAjaxTimerBehavior(Duration.seconds(uiRefreshTimeInSeconds)) {
             @Override
             protected void onTimer(AjaxRequestTarget target) {
+                //fireEvent(new DataUpdatedEvent(target));
                 if(target != null) {
-                    target.add(ajaxWrapper);                
+                    target.add(ajaxWrapper);
                 }
             }
         });
@@ -232,11 +231,8 @@ public class ReferencesEditor extends ComposedField {
         ajaxWrapper.add(lblNoReferences);
         ajaxWrapper.add(listview);
         add(ajaxWrapper);
-        
-        //add(lblNoReferences);
-        //add(listview);
-        
-        AbstractField f1 = new VcrTextField("reference", "", "Add new reference by URL or PID", data, this);
+
+        AbstractField f1 = new VcrTextFieldWithoutLabel("reference", "Add new reference by URL or PID", data, this);
         f1.setCompleteSubmitOnUpdate(true);
         f1.addValidator(new Validator());
         add(f1);
@@ -270,6 +266,8 @@ public class ReferencesEditor extends ComposedField {
                 new Thread(worker).start();
                 logger.info("Worker thread started");
             }
+
+            fireEvent(new DataUpdatedEvent(target));
             
             if(target != null) {
                 lblNoReferences.setVisible(references.isEmpty());
@@ -299,6 +297,8 @@ public class ReferencesEditor extends ComposedField {
         editor.setVisible(false);
         editor.reset();
         references.clear();
+        lblNoReferences.setVisible(references.isEmpty());
+        listview.setVisible(!references.isEmpty());
     }
     
     public enum State {
@@ -317,6 +317,15 @@ public class ReferencesEditor extends ComposedField {
         logger.info("Set resource data: {} resources", data.size());
         for(Resource r : data) {
             this.references.add(new ReferenceJob(r));
+        }
+        lblNoReferences.setVisible(references.isEmpty());
+        listview.setVisible(!references.isEmpty());
+
+        if(worker == null || !worker.isRunning()) {
+            worker = new Worker();
+            worker.start();
+            new Thread(worker).start();
+            logger.info("Worker thread started");
         }
     }
     
@@ -390,12 +399,12 @@ public class ReferencesEditor extends ComposedField {
         
         
         private void analyze(final ReferenceJob job) throws IOException {
-            logger.info("Analyzing");
+            logger.debug("Analyzing: {}", job.getReference().getRef());
             
             CloseableHttpClient httpclient = HttpClients.createDefault();
             try {
                 HttpGet httpget = new HttpGet(job.getReference().getRef());
-                logger.info("Executing request " + httpget.getRequestLine());
+                logger.debug("Executing request " + httpget.getRequestLine());
 
                 // Create a custom response handler
                 ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
@@ -404,25 +413,25 @@ public class ReferencesEditor extends ComposedField {
                     public String handleResponse(
                             final HttpResponse response) throws ClientProtocolException, IOException {
                         for(Header h : response.getHeaders("Content-Type")) {
-                            logger.info(h.getName() + " - " + h.getValue());
+                            logger.debug(h.getName() + " - " + h.getValue());
                             
                             String[] parts = h.getValue().split(";");
                             String mediaType = parts[0];
                             
-                            logger.info("Media-Type="+mediaType);
+                            logger.debug("Media-Type="+mediaType);
                             if(parts.length > 1) {
                                 String p = parts[1].trim();
                                 if(p.startsWith("charset=")) {
-                                    logger.info("Charset="+p.replaceAll("charset=", ""));
+                                    logger.debug("Charset="+p.replaceAll("charset=", ""));
                                 } else if(p.startsWith("boundary=")) {
-                                    logger.info("Boundary="+p.replaceAll("boundary=", ""));
+                                    logger.debug("Boundary="+p.replaceAll("boundary=", ""));
                                 }
                             }
 
                             job.getReference().setMimetype(mediaType);
                         }
                         for(Header h : response.getHeaders("Content-Length")) {
-                            logger.info(h.getName() + " - " + h.getValue());
+                            logger.debug(h.getName() + " - " + h.getValue());
                         }
                         int status = response.getStatusLine().getStatusCode();
                         if (status >= 200 && status < 300) {
@@ -549,5 +558,15 @@ public class ReferencesEditor extends ComposedField {
         }
         
         return result;
+    }
+
+    @Override
+    public boolean validate() {
+        //Check for value if required == true
+        if(required && references.isEmpty()) {
+            return setError("Required field.");
+        }
+        //All validators passed, reset error message and return true
+        return setError(null);
     }
 }

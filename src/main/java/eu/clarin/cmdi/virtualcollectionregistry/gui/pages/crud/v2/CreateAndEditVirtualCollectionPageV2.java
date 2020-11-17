@@ -13,8 +13,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.Event;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.EventType;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.Listener;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.table.CollectionsProvider;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.table.PrivateCollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.Page;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
@@ -29,7 +27,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.util.ArrayList;
+import java.security.Principal;
 import java.util.List;
 
 @AuthorizeInstantiation(Roles.USER)
@@ -42,7 +40,9 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
 
     private final ModalConfirmDialog modal;
 
-    private final List<VirtualCollection> collections;// = new ArrayList<>();
+    private final PrivateCollectionsManager provider;
+
+    private VirtualCollection vc = null;;
 
     /**
      * Create a new virtual collection
@@ -72,8 +72,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
      * @throws VirtualCollectionRegistryException
      */
     public CreateAndEditVirtualCollectionPageV2(Long id, final Page previousPage) throws VirtualCollectionRegistryException {
-        logger.debug("CreateAndEditVirtualCollectionPage, page param id=" + id);
-        VirtualCollection vc = null;
+
         if(id != null) {
             vc = vcr.retrieveVirtualCollection(id);
             if (vc != null) {
@@ -81,8 +80,8 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
             }
         }
 
-        CollectionsProvider provider = new PrivateCollectionsProvider();
-        collections = provider.getList();
+        ApplicationSession session = (ApplicationSession) getSession();
+        this.provider = new PrivateCollectionsManager(session.getPrincipal());
 
         final WebMarkupContainer ajaxWrapper = new WebMarkupContainer("ajaxwrapper");
         final Label labelNoCollections = new Label("lbl_no_collections", "No collections");
@@ -102,7 +101,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
                             logger.info("No collection found for removal");
                         } else {
                             removeCollection((VirtualCollection)event.getData());
-                            labelNoCollections.setVisible(collections.isEmpty());
+                            labelNoCollections.setVisible(provider.isEmpty());
                         }
                         event.updateTarget(ajaxWrapper);
                         break;
@@ -121,32 +120,36 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
             public void handleEvent(Event<VirtualCollection> event) {
                 switch(event.getType()) {
                     case SAVE:
+                        logger.info("Saving collection");
                         //Search or exising collection
                         int idx = -1;
                         Long id = event.getData().getId();
-                        for(int i = 0; i < collections.size(); i++) {
-                            Long listId = collections.get(i).getId();
-                            if(listId == id) {
+                        for(int i = 0; i < provider.size(); i++) {
+                            Long listId = provider.get(i).getId();
+                            if(listId.longValue() == id.longValue()) {
                                 idx = i;
                             }
                         }
                         //Update or insert
-                        if(idx >= 0) {
-                            //Update collection
-                            logger.info("Updating existing collection (id={}) @ idx={}", id, idx);
-                            collections.set(idx, event.getData());
-                        } else {
-                            //New collection
-                            logger.info("Adding new collection (id={})", id);
-                            collections.add(event.getData());
+                        try {
+                            if (idx >= 0) {
+                                provider.set(idx, event.getData()); //Update collection
+                            } else {
+                                provider.add(event.getData()); //New collection
+                            }
+                        } catch(VirtualCollectionRegistryException ex) {
+                            logger.info("Failed to persist collect. Error: {}", ex.toString());
                         }
-
-                        labelNoCollections.setVisible(collections.isEmpty());
+                        labelNoCollections.setVisible(provider.isEmpty());
 
                         //Update ui
                         if(event.getAjaxRequestTarget() != null) {
                             event.getAjaxRequestTarget().add(ajaxWrapper);
-
+                        }
+                        break;
+                    case CANCEL:
+                        if(event.getAjaxRequestTarget() != null) {
+                            event.getAjaxRequestTarget().add(ajaxWrapper);
                         }
                         break;
                     default:
@@ -156,19 +159,25 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
         });
         add(crud);
 
-        ListView listview = new ListView("listview", collections) {
+        ListView listview = new ListView("listview", provider.getList()) {
             @Override
             protected void populateItem(ListItem item) {
-                CollectionListPanel pnl =
+                final CollectionListPanel pnl =
                         new CollectionListPanel("pnl_collection", (VirtualCollection)item.getModel().getObject());
+                pnl.setEditing(crud.isEditing());
                 pnl.addListener(new Listener<VirtualCollection>() {
                     @Override
                     public void handleEvent(Event<VirtualCollection> event) {
                         switch(event.getType()) {
                             case EDIT:
+                                logger.info("Edit event");
                                 crud.editCollection(event.getData());
+                                pnl.setEditing(crud.isEditing());
                                 if(event.getAjaxRequestTarget() != null) {
                                     event.getAjaxRequestTarget().add(crud);
+                                    event.getAjaxRequestTarget().add(ajaxWrapper);
+                                } else {
+                                    logger.info("Ajax target is null");
                                 }
                                 break;
                             case DELETE:
@@ -191,7 +200,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
             }
         };
         ajaxWrapper.add(labelNoCollections);
-        labelNoCollections.setVisible(collections.isEmpty());
+        labelNoCollections.setVisible(provider.isEmpty());
         ajaxWrapper.add(listview);
         add(ajaxWrapper);
     }
@@ -201,15 +210,15 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
         int idxToRemove = -1;
         Long id = c.getId();//event.getData().getId();
         logger.info("Removing collection with id = {}",id);
-        for(int i = 0; i < collections.size(); i++) {
-            Long listId = collections.get(i).getId();
+        for(int i = 0; i < provider.size(); i++) {
+            Long listId = provider.get(i).getId();
             if(listId == id) {
                 idxToRemove = i;
             }
         }
         //Remove collection
         if(idxToRemove >= 0) {
-            collections.remove(idxToRemove);
+            provider.remove(idxToRemove);
         } else {
             logger.warn("Tried to remove but could not find collection with id={}", id);
         }

@@ -1,15 +1,22 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.StringTokenizer;
+
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.ActionablePanel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.authors.AuthorsEditor;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.dialogs.ModalConfirmDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.references.ReferencesEditor;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.AbstractEvent;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.Event;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.EventType;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.Listener;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.*;
+import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
@@ -24,20 +31,21 @@ import org.slf4j.LoggerFactory;
  * 
  * @author wilelb
  */
-public class CreateAndEditPanel extends ActionablePanel {
+public class CreateAndEditPanel extends ActionablePanel implements Listener {
     
     private final static Logger logger = LoggerFactory.getLogger(CreateAndEditPanel.class);
 
-    //Keep track of the original collection, used to detect changes and reset the
-    //form
+    //Keep track of the original collection, used to detect changes and reset the form
     private VirtualCollection originalCollection;
     
     private final IModel<String> nameModel = Model.of("");
     private final IModel<String> descriptionModel= Model.of("");
-    private final IModel<String> purposeModel = Model.of("");
-    private final IModel<String> reproModel = Model.of("");
+    private final IModel<String> typeModel = Model.of(VirtualCollection.DEFAULT_TYPE_VALUE.toString());
+    private final IModel<String> purposeModel = Model.of(VirtualCollection.DEFAULT_PURPOSE_VALUE.toString());
+    private final IModel<String> reproModel = Model.of(VirtualCollection.DEFAULT_REPRODUCIBILIY_VALUE.toString());
     private final IModel<String> reproNoticeModel = Model.of("");
     private final IModel<String> keywordsModel= Model.of("");
+
 
     private final AuthorsEditor authorsEditor;
     private final ReferencesEditor referencesEditor;
@@ -47,6 +55,8 @@ public class CreateAndEditPanel extends ActionablePanel {
     private final List<AbstractField> modeAdvancedFields = new ArrayList<>();
 
     private final ModalConfirmDialog dialog;
+
+    private final AjaxFallbackLink btnSave;
 
     private enum Mode {
         SIMPLE,
@@ -79,21 +89,27 @@ public class CreateAndEditPanel extends ActionablePanel {
         final Component ajax_update_component = this;
 
         addRequiredField(
-            new VcrTextField("name", "Name", "", nameModel),
+            new VcrTextField("name", "Name", "New collection name", nameModel),
             new Mode[]{Mode.SIMPLE, Mode.ADVANCED});
 
         addRequiredField(
-            new VcrTextArea("description", "Description", "", descriptionModel),
+            new VcrTextArea("description", "Description", "New collection description", descriptionModel),
             new Mode[]{Mode.SIMPLE, Mode.ADVANCED});
+
+        addRequiredField(
+                new VcrChoiceField(
+                        "type",
+                        "Type",
+                        enumValuesAsList(VirtualCollection.Type.values()),
+                        typeModel),
+                new Mode[]{Mode.ADVANCED});
 
         addRequiredField(
             new VcrChoiceField(
                 "purpose",
                 "Purpose",
                 enumValuesAsList(VirtualCollection.Purpose.values()),
-                VirtualCollection.DEFAULT_PURPOSE_VALUE.toString(),
-                purposeModel,
-                null),
+                purposeModel),
             new Mode[]{Mode.ADVANCED});
 
         addRequiredField(
@@ -101,35 +117,28 @@ public class CreateAndEditPanel extends ActionablePanel {
                 "repro",
                 "Reproducibility",
                 enumValuesAsList(VirtualCollection.Reproducibility.values()),
-                VirtualCollection.DEFAULT_REPRODUCIBILIY_VALUE.toString(),
-                reproModel,
-                null),
+                reproModel),
             new Mode[]{Mode.ADVANCED});
 
         addOptionalField(
             new VcrTextArea(
                 "repro_notice",
                 "Reproducibility Notice",
-                "",
+                "Describe the expected reproducibility of processing results in more detail",
                 reproNoticeModel),
             new Mode[]{Mode.ADVANCED});
 
         addOptionalField(
-            new VcrTextField("keywords", "Keywords", "", keywordsModel),
+            new VcrTextField("keywords", "Keywords", "List of keywords, separated by space or comma.", keywordsModel),
             new Mode[]{Mode.SIMPLE, Mode.ADVANCED});
 
         this.authorsEditor = new AuthorsEditor("authors", "Authors");
-        //addRequiredField(this.authorsEditor, true);
-        this.authorsEditor.setRequired(true);
-        add(authorsEditor);
-        fields.add(authorsEditor);
+        addRequiredField(this.authorsEditor, new Mode[]{Mode.SIMPLE, Mode.ADVANCED});
 
         this.referencesEditor = new ReferencesEditor("references", "Resources");
-        this.referencesEditor.setRequired(true);
-        add(referencesEditor);
-        fields.add(referencesEditor);
+        addRequiredField(this.referencesEditor, new Mode[]{Mode.SIMPLE, Mode.ADVANCED});
 
-        add(new AjaxFallbackLink("btn_save") {
+        btnSave = new AjaxFallbackLink("btn_save") {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 if(validate()) {
@@ -138,12 +147,15 @@ public class CreateAndEditPanel extends ActionablePanel {
                 } else {
                     logger.info("Failed to validate");
                 }
-                
+
                 if (target != null) {
                     target.add(ajax_update_component);
                 }
             }
-        });
+        };
+        //disableSaveButton();
+        add(btnSave);
+
         add(new AjaxFallbackLink("btn_cancel") {
             @Override
             public void onClick(AjaxRequestTarget target) {
@@ -152,6 +164,12 @@ public class CreateAndEditPanel extends ActionablePanel {
                 if (target != null) {
                     target.add(ajax_update_component);
                 }
+
+                fireEvent(
+                    new AbstractEvent<VirtualCollection>(
+                            EventType.CANCEL,
+                            null,
+                            target));
             }
         });
 
@@ -170,6 +188,15 @@ public class CreateAndEditPanel extends ActionablePanel {
         updateMode(DEFAULT_EDITOR_MODE);
     }
 
+    private void enableSaveButton() {
+        btnSave.setEnabled(false);
+        btnSave.add(new AttributeModifier("disabled", "true"));
+    }
+
+    private void disableSaveButton() {
+        btnSave.setEnabled(true);
+        btnSave.add(AttributeModifier.remove("disabled"));
+    }
     private List<String> enumValuesAsList(Object[] values) {
         List<String> result = new ArrayList<>();
         for(Object o : values) {
@@ -186,10 +213,22 @@ public class CreateAndEditPanel extends ActionablePanel {
         addField(c, modes, true);
     }
 
+
+    @Override
+    public void handleEvent(Event event) {
+        if(validate()) {
+            //enableSaveButton();
+        } else {
+            //disableSaveButton();
+        }
+        event.getAjaxRequestTarget().add(this);
+    }
+
     private void addField(AbstractField c, Mode[] modes, boolean required) {
         c.setRequired(required);
         add(c);
         fields.add(c);
+        c.addListener(this);
 
         //Add field to associated mode list
         for(Mode m: modes) {
@@ -221,9 +260,11 @@ public class CreateAndEditPanel extends ActionablePanel {
     }
 
     public void editCollection(VirtualCollection c) {
+        logger.info("edit collection: {}", c.getId());
         this.originalCollection = c; //TODO: deep clone?
         nameModel.setObject(c.getName());
         descriptionModel.setObject(c.getDescription());
+        typeModel.setObject(c.getType().toString());
 
         String keywords = "";
         for(String keyword : c.getKeywords()) {
@@ -237,8 +278,27 @@ public class CreateAndEditPanel extends ActionablePanel {
         authorsEditor.setData(c.getCreators());
         referencesEditor.setData(c.getResources());
     }
-    
+
+    private void reset() {
+        logger.info("reset");
+        this.originalCollection = null;
+        nameModel.setObject("");
+        descriptionModel.setObject("");
+        keywordsModel.setObject("");
+        purposeModel.setObject(VirtualCollection.DEFAULT_PURPOSE_VALUE.toString());
+        reproModel.setObject(VirtualCollection.DEFAULT_REPRODUCIBILIY_VALUE.toString());
+        reproNoticeModel.setObject("");
+        authorsEditor.reset();
+        referencesEditor.reset();
+        disableSaveButton();
+    }
+
+    public boolean isEditing() {
+        return this.originalCollection != null;
+    }
+
     private boolean validate() {
+        logger.info("Validating collection");
         for(Field f : fields) {
             if(!f.validate()) {
                 return false;
@@ -246,35 +306,43 @@ public class CreateAndEditPanel extends ActionablePanel {
         }
         return true;
     }
-    
-     //TODO: externalise persist action via interface
+
     private void persist(final AjaxRequestTarget target) {
-        final VirtualCollection newCollection = new VirtualCollection();
-        /*
-        if(this.originalCollection != null && this.originalCollection.getId() != null && !this.originalCollection.getId().isEmpty()) {
-            newCollection.setId(this.originalCollection.getId());
-        } else {
-            newCollection.setId(UUID.randomUUID().toString());
+        VirtualCollection newCollection = new VirtualCollection();
+        newCollection.setCreationDate(new Date()); // FIXME: get date from GUI?
+
+        if (this.originalCollection != null && this.originalCollection.getId() != null) {
+            newCollection = originalCollection;
         }
+
+        newCollection.setDateModified(new Date());
         newCollection.setName(nameModel.getObject());
-        newCollection.setType(typeModel.getObject());
-        newCollection.setAuthors(authorsEditor.getData());
-        newCollection.setReferences(referencesEditor.getData());
-        */
+        newCollection.setDescription(descriptionModel.getObject());
+        newCollection.setType(VirtualCollection.Type.valueOf(typeModel.getObject()));
+        newCollection.setPurpose(VirtualCollection.Purpose.valueOf(purposeModel.getObject()));
+        newCollection.setReproducibility(VirtualCollection.Reproducibility.valueOf(reproModel.getObject()));
+        newCollection.setReproducibilityNotice(reproNoticeModel.getObject());
+        //newCollection.setGeneratedBy();
+        //newCollection.setOwner();
+
+        List<String> keywords = new ArrayList<>();
+        StringTokenizer tokens = new StringTokenizer(keywordsModel.getObject(), " \t\n\r\f,;");
+        while (tokens.hasMoreTokens()) {
+            keywords.add(tokens.nextToken().trim());
+        }
+        newCollection.getKeywords().clear();
+        newCollection.getKeywords().addAll(keywords);
+
+        newCollection.getCreators().clear();
+        newCollection.getCreators().addAll(authorsEditor.getData());
+
+        newCollection.getResources().clear();
+        newCollection.getResources().addAll(referencesEditor.getData());
+
         fireEvent(
-            new AbstractEvent<VirtualCollection>(
-                EventType.SAVE,
-                newCollection, 
-                target));
+                new AbstractEvent<VirtualCollection>(
+                        EventType.SAVE,
+                        newCollection,
+                        target));
     }
-    
-    private void reset() {
-        nameModel.setObject("");
-        purposeModel.setObject(VirtualCollection.DEFAULT_PURPOSE_VALUE.toString());
-        reproModel.setObject(VirtualCollection.DEFAULT_REPRODUCIBILIY_VALUE.toString());
-        reproNoticeModel.setObject("");
-        authorsEditor.reset();
-        referencesEditor.reset();
-    }
-    
 }

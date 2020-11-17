@@ -68,6 +68,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 public class VirtualCollection implements Serializable, IdentifiedEntity, PersistentIdentifieable, Citable {
     private static final long serialVersionUID = 1L;
 
+    public static final Type DEFAULT_TYPE_VALUE = Type.EXTENSIONAL;
     public static final Purpose DEFAULT_PURPOSE_VALUE = Purpose.REFERENCE;
     public static final Reproducibility DEFAULT_REPRODUCIBILIY_VALUE = Reproducibility.INTENDED;
 

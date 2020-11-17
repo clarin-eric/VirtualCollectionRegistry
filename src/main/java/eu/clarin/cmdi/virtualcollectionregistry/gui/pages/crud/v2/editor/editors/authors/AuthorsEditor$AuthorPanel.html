@@ -5,14 +5,15 @@
 <body>
 
     <wicket:panel>            
-        <div>
-            <span wicket:id="name"></span>
-            <span wicket:id="email"></span>
-            <span wicket:id="affiliation"></span>
-            <a class="btn btn-sm btn-primary" wicket:id="btn_edit">Edit</a>
-            <a class="btn btn-sm btn-default" wicket:id="btn_remove">Remove</a>
+        <div class="row">
+            <div class="col-xs-3" wicket:id="name"></div>
+            <div class="col-xs-3" wicket:id="email"></div>
+            <div class="col-xs-3" wicket:id="affiliation"></div>
+            <div class="col-xs-3">
+                <a class="btn btn-sm btn-primary" wicket:id="btn_edit">Edit</a>
+                <a class="btn btn-sm btn-default" wicket:id="btn_remove">Remove</a>
+            </div>
         </div>
-
     </wicket:panel>       
 
 </body>

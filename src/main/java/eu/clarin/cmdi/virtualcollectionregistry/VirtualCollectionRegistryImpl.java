@@ -147,7 +147,17 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         
         logger.debug("creating virtual collection");
 
-        validator.validate(vc);
+        try {
+            validator.validate(vc);
+        } catch(VirtualCollectionValidationException ex) {
+            logger.info("Validation failed: ");
+            for(String s: ex.getAllErrorsAsList()) {
+                logger.info("   validation error: "+s);
+            }
+
+            throw ex;
+        }
+
         EntityManager em = datastore.getEntityManager();
         try {            
             em.getTransaction().begin();
