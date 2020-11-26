@@ -14,7 +14,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Entity
 @Table(name = "creator")
-public class Creator implements Serializable, IdentifiedEntity {
+public class Creator implements Serializable, IdentifiedEntity, Orderable {
 
     private static final long serialVersionUID = 1L;
 
@@ -43,6 +43,9 @@ public class Creator implements Serializable, IdentifiedEntity {
 
     @Column(name = "role", length = 255)
     private String role;
+
+    @Column(name = "display_order", nullable = false)
+    private Long displayOrder;
 
     public Creator() {
         super();
@@ -176,6 +179,15 @@ public class Creator implements Serializable, IdentifiedEntity {
         copy.setTelephone(telephone);
         copy.setWebsite(website);
         return copy;
+    }
+
+    @Override
+    public Long getDisplayOrder() {
+        return displayOrder;
+    }
+
+    public void setDisplayOrder(Long displayOrder) {
+        this.displayOrder = displayOrder;
     }
 
 } // class Creator

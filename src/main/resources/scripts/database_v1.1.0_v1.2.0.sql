@@ -10,6 +10,11 @@ INSERT INTO `config` (`key`, `value`) VALUES ('db_version_check', @current_value
 
 ALTER TABLE resource ADD COLUMN `checked` VARCHAR(255) NULL;
 ALTER TABLE resource ADD COLUMN `mimetype` VARCHAR(255) NULL;
+ALTER TABLE resource ADD COLUMN `display_order` BIGINT NULL;
+UPDATE resource SET display_order = 1;
+
+ALTER TABLE creator ADD COLUMN `display_order` BIGINT NULL;
+UPDATE creator SET display_order = 1;
 
 -- Update current database config value
 UPDATE `config` SET `value` = '1.2.0' WHERE `key` = 'db_version';

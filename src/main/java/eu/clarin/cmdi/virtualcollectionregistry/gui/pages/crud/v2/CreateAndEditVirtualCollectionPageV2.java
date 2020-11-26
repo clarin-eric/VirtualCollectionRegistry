@@ -5,6 +5,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryExcepti
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermissionException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BasePage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePrivateCollectionsPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePublicCollectionsPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1.CreateAndEditVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.CollectionListPanel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.CreateAndEditPanel;
@@ -14,7 +16,9 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.EventType;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.Listener;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.wicket.components.panel.EmptyPanel;
 import org.apache.wicket.Page;
+import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
@@ -60,7 +64,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
      * @throws VirtualCollectionRegistryException
      */
     public CreateAndEditVirtualCollectionPageV2(PageParameters params) throws VirtualCollectionRegistryException {
-        this(params.get("id").toLong(), null);
+        this(params.get("collection-id").toLong(), null);
     }
 
     /**
@@ -72,7 +76,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
      * @throws VirtualCollectionRegistryException
      */
     public CreateAndEditVirtualCollectionPageV2(Long id, final Page previousPage) throws VirtualCollectionRegistryException {
-
+        logger.info("Collection id = {}", id);
         if(id != null) {
             vc = vcr.retrieveVirtualCollection(id);
             if (vc != null) {
@@ -142,16 +146,26 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
                         }
                         labelNoCollections.setVisible(provider.isEmpty());
 
-                        //Update ui
+                        throw new RestartResponseException(BrowsePrivateCollectionsPage.class);
+                        //AJAX style same page refresh
+                        /*
                         if(event.getAjaxRequestTarget() != null) {
                             event.getAjaxRequestTarget().add(ajaxWrapper);
                         }
                         break;
+                         */
+
                     case CANCEL:
+
+                        throw new RestartResponseException(BrowsePrivateCollectionsPage.class);
+                        //AJAX style same page refresh
+                        /*
                         if(event.getAjaxRequestTarget() != null) {
                             event.getAjaxRequestTarget().add(ajaxWrapper);
                         }
                         break;
+
+                         */
                     default:
                         throw new RuntimeException("Unhandled event. type = "+event.getType().toString());
                 }
@@ -159,9 +173,19 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
         });
         add(crud);
 
+
+        if(vc != null) {
+            crud.editCollection(vc);
+        //    pnl.setEditing(crud.isEditing());
+        }
+
+
         ListView listview = new ListView("listview", provider.getList()) {
             @Override
             protected void populateItem(ListItem item) {
+
+                final EmptyPanel pnl = new EmptyPanel("pnl_collection");
+                /*
                 final CollectionListPanel pnl =
                         new CollectionListPanel("pnl_collection", (VirtualCollection)item.getModel().getObject());
                 pnl.setEditing(crud.isEditing());
@@ -196,13 +220,18 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
                         }
                     }
                 });
+                 */
                 item.add(pnl);
             }
         };
         ajaxWrapper.add(labelNoCollections);
         labelNoCollections.setVisible(provider.isEmpty());
         ajaxWrapper.add(listview);
-        add(ajaxWrapper);
+
+        final WebMarkupContainer wrapper = new WebMarkupContainer("wrapper");
+        wrapper.add(ajaxWrapper);
+        wrapper.setVisible(false);
+        add(wrapper);
     }
 
     private void removeCollection(VirtualCollection c) {

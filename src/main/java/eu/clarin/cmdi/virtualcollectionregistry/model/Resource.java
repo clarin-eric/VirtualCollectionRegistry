@@ -22,11 +22,11 @@ import org.slf4j.LoggerFactory;
 
 @Entity
 @Table(name = "resource")
-public class Resource implements Serializable, IdentifiedEntity, PersistentIdentifieable {
+public class Resource implements Serializable, IdentifiedEntity, PersistentIdentifieable, Orderable {
     
     private final static Logger logger = LoggerFactory.getLogger(Resource.class);
     private static final long serialVersionUID = 1L;
-    
+
     public static enum Type {
         METADATA,
         RESOURCE;
@@ -89,7 +89,10 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
     @Lob
     @Column(name = "description", length = 8192)
     private String description;
-    
+
+    @Column(name = "display_order", nullable = false)
+    private Long displayOrder;
+
     public Resource() {
         super();
     }
@@ -243,5 +246,14 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
         return  HandleLinkModel.isHandle(this.ref) || 
                 HandleLinkModel.isDoi(this.ref) || 
                 HandleLinkModel.isNbn(this.ref);
+    }
+
+    @Override
+    public Long getDisplayOrder() {
+        return displayOrder;
+    }
+
+    public void setDisplayOrder(Long displayOrder) {
+        this.displayOrder = displayOrder;
     }
 } // class Resource

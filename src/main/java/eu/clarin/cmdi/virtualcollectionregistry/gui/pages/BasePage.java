@@ -135,31 +135,53 @@ public class BasePage extends WebPage {
         
         final List<INavbarComponent> menuItems = new ArrayList<>();
         //Default menu items
-        menuItems.add(new ImmutableNavbarComponent(new NavbarButton(BrowsePublicCollectionsPage.class, Model.of("Browse")), ComponentPosition.LEFT));
-        menuItems.add(new ImmutableNavbarComponent(new NavbarButton(CreateAndEditVirtualCollectionPage.class, Model.of("Create")), ComponentPosition.LEFT));
-        menuItems.add(new ImmutableNavbarComponent(new NavbarButton(CreateAndEditVirtualCollectionPageV2.class, Model.of("Create2")), ComponentPosition.LEFT));
-        menuItems.add(new ImmutableNavbarComponent(new NavbarButton(HelpPage.class, Model.of("Help")), ComponentPosition.LEFT));
+        menuItems.add(
+                new ImmutableNavbarComponent(
+                    new NavbarButton(BrowsePublicCollectionsPage.class, Model.of("Browse")),
+                ComponentPosition.LEFT));
+        //menuItems.add(
+        //      new ImmutableNavbarComponent(
+        //          new NavbarButton(CreateAndEditVirtualCollectionPage.class, Model.of("Create")), C
+    //          omponentPosition.LEFT));
+        menuItems.add(
+                new ImmutableNavbarComponent(
+                    new NavbarButton(CreateAndEditVirtualCollectionPageV2.class, Model.of("Create")),
+                ComponentPosition.LEFT));
+
+        if(isSignedIn()) {
+            menuItems.add(
+                    new ImmutableNavbarComponent(
+                            new NavbarButton(BrowsePrivateCollectionsPage.class, Model.of("My Collections")),
+                            ComponentPosition.LEFT));
+        }
+
+        menuItems.add(
+                new ImmutableNavbarComponent(
+                    new NavbarButton(HelpPage.class, Model.of("Help")),
+                ComponentPosition.LEFT));
         
         if (isSignedIn() && isUserAdmin()) {
-            menuItems.add(new ImmutableNavbarComponent(new NavbarButton(AdminPage.class, Model.of("Admin")), ComponentPosition.LEFT));
+            menuItems.add(new ImmutableNavbarComponent(
+                    new NavbarButton(AdminPage.class, Model.of("Admin")), ComponentPosition.LEFT));
         }
         
         //Add login or user profile + logout buttons based on authentication state
         if(isSignedIn()) {
-            final NavbarButton userLink = new NavbarButton(BrowsePrivateCollectionsPage.class, Model.of(getUser().getName()));
+            final NavbarButton userLink = new NavbarButton(UserProfilePage.class, Model.of(getUser().getName()));
             userLink.setIconType(GlyphIconType.user);
             menuItems.add(new ImmutableNavbarComponent(userLink, ComponentPosition.RIGHT));
             
             if(vcrConfig.isLogoutEnabled()) {
-            final NavbarButton logoutLink = new NavbarButton(LogoutPage.class, Model.of("Logout"));
-            logoutLink.setIconType(GlyphIconType.logout);
-            menuItems.add(new ImmutableNavbarComponent(logoutLink, ComponentPosition.RIGHT));
+                final NavbarButton logoutLink = new NavbarButton(LogoutPage.class, Model.of("Logout"));
+                logoutLink.setIconType(GlyphIconType.logout);
+                menuItems.add(new ImmutableNavbarComponent(logoutLink, ComponentPosition.RIGHT));
             }            
         } else {
             final NavbarButton loginLink = new NavbarButton(LoginPage.class, Model.of("Login"));
                loginLink.setIconType(GlyphIconType.login);
             menuItems.add(new ImmutableNavbarComponent(loginLink, ComponentPosition.RIGHT));
         }
+
         // link to CLARIN website
         final Component clarinLink = new NavbarExternalLink(Model.of("http://www.clarin.eu/")) {
             @Override

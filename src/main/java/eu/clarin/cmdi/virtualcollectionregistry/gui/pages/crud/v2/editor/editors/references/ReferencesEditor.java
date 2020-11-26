@@ -19,6 +19,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.CreateAndEditPanel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.CancelEventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.EventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.SaveEventHandler;
@@ -78,7 +79,9 @@ public class ReferencesEditor extends ComposedField {
     
     private final int workerSleepTime = 1000;
     private final int uiRefreshTimeInSeconds = 1;
-    
+
+    private CreateAndEditPanel.Mode editorMode;
+
     public class Validator implements InputValidator, Serializable {
         private String message = "";
             
@@ -100,25 +103,23 @@ public class ReferencesEditor extends ComposedField {
             }
     }
     
-    public ReferencesEditor(String id, String label) {
+    public ReferencesEditor(String id, String label, Model<Boolean> advancedEditorMode) {
         super(id, "References", null);
+        this.editorMode = editorMode;
         setOutputMarkupId(true);
 
         final WebMarkupContainer editorWrapper = new WebMarkupContainer("ref_editor_wrapper");
         editorWrapper.setOutputMarkupId(true);
-        
+
         final WebMarkupContainer ajaxWrapper = new WebMarkupContainer("ajaxwrapper");
         ajaxWrapper.setOutputMarkupId(true);
-        
-        localDialog = new ModalConfirmDialog("modal");
+
+        localDialog = new ModalConfirmDialog("references_modal");
         localDialog.addListener(new Listener() {
             @Override
             public void handleEvent(final Event event) {
                 switch(event.getType()) {
-                    case OK:                        
-                            logger.info("Default confirm");
-                            event.updateTarget(ajaxWrapper);
-                        break;                        
+                    case OK: event.updateTarget(ajaxWrapper); break;
                     case CONFIRMED_DELETE:
                             if(event.getData() == null) {
                                 logger.trace("No reference found for removal");
@@ -128,22 +129,20 @@ public class ReferencesEditor extends ComposedField {
                                 for(int i = 0; i < references.size(); i++) {
                                     String value = references.get(i).getReference().getRef();
                                     if(value.equalsIgnoreCase(r.getRef())) {
-                                        references.remove(i);                                        
+                                        references.remove(i);
                                         event.getAjaxRequestTarget().add(ajaxWrapper);
                                         event.getAjaxRequestTarget().add(editorWrapper);
-                                    }                                
+                                    }
                                 }
                             }
                             event.updateTarget(ajaxWrapper);
                         break;
-                    case CANCEL: 
-                            event.updateTarget();
-                        break;
+                    case CANCEL: event.updateTarget(); break;
                 }
             }
         });
         add(localDialog);
-        
+
         editor = new ReferenceEditor("ref_editor", this, new SaveEventHandler() {
             @Override
             public void handleSaveEvent() {
@@ -156,18 +155,18 @@ public class ReferencesEditor extends ComposedField {
                 edit_index = -1;
                 editor.setVisible(false);
             }
-        });
+        }, advancedEditorMode);
         editor.setVisible(false);
         editorWrapper.add(editor);
         add(editorWrapper);
-        
+
         lblNoReferences = new Label("lbl_no_references", "No resources found.");
-        
+
         listview = new ListView("listview", references) {
             @Override
             protected void populateItem(ListItem item) {
                 ReferenceJob ref = (ReferenceJob)item.getModel().getObject();
-                ReferencePanel c = new ReferencePanel("pnl_reference", ref);
+                ReferencePanel c = new ReferencePanel("pnl_reference", ref, advancedEditorMode, references.size() > 1);
                 c.addEventHandler(new EventHandler<Resource>() {
                     @Override
                     public void handleEditEvent(Resource t, AjaxRequestTarget target) {
@@ -180,19 +179,15 @@ public class ReferencesEditor extends ComposedField {
                                 break;
                             }
                         }
-                        
+
                         if(edit_index < 0) {
                             editor.setVisible(false);
                             editor.reset();
+                            listview.setVisible(true);
                         } else {
                             editor.setReference(references.get(edit_index).getReference());
-                            /*
-                            editor.setReferenceModels(
-                                    references.get(edit_index).getReference(), 
-                                    new PropertyModel<String>(references.get(edit_index).getReference(), "title"), 
-                                    new PropertyModel<String>(references.get(edit_index).getReference(), "description"));
-                            */
                             editor.setVisible(true);
+                            listview.setVisible(false);
                         }
                         target.add(editorWrapper);
                     }
@@ -201,7 +196,7 @@ public class ReferencesEditor extends ComposedField {
                     public void handleRemoveEvent(Resource t, AjaxRequestTarget target) {
                         String title = "Confirm removal";
                         String body = "Confirm removal of reference: "+t.getLabel();
-                        localDialog.update(title, body);                                
+                        localDialog.update(title, body);
                         localDialog.setModalConfirmAction(
                             new ModalConfirmAction<>(
                                 EventType.CONFIRMED_DELETE,
@@ -209,7 +204,7 @@ public class ReferencesEditor extends ComposedField {
                         target.add(localDialog);
                         localDialog.show(target);
                     }
-                }); 
+                });
                 item.add(c);
             }
         };
@@ -224,10 +219,10 @@ public class ReferencesEditor extends ComposedField {
             }
         });
         ajaxWrapper.add(listview);
-       
+
         lblNoReferences.setVisible(references.isEmpty());
         listview.setVisible(!references.isEmpty());
-        
+
         ajaxWrapper.add(lblNoReferences);
         ajaxWrapper.add(listview);
         add(ajaxWrapper);

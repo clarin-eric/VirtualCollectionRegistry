@@ -7,6 +7,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionValidationExcep
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1.CreateAndEditVirtualCollectionPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.CreateAndEditVirtualCollectionPageV2;
 import eu.clarin.cmdi.wicket.components.citation.CitationPanelFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.Dialogs;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.CollectionsProvider;
@@ -397,8 +398,8 @@ public class BrowseEditableCollectionsPanel extends Panel {
                 confirmEditHandler.setObject(new VolatileEntityModel<>(vc));
                 editPublishedDialog.show(target);
             } else {
-                setResponsePage(CreateAndEditVirtualCollectionPage.class, 
-                        buildParamsFromMap(Collections.singletonMap("id", vc.getId())));
+                setResponsePage(CreateAndEditVirtualCollectionPageV2.class,
+                        buildParamsFromMap(Collections.singletonMap("collection-id", vc.getId())));
             }
         }
     }

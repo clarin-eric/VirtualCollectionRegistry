@@ -6,13 +6,18 @@
         
         <wicket:panel>            
             <div>
-                Edit reference (<span wicket:id="url"></span>):
+                Edit reference:
                 <div wicket:id="wrapper" class="reference">
+                    <div wicket:id="url">[TYPE]</div>
                     <div wicket:id="type">[TYPE]</div>
                     <div wicket:id="title">[NAME]</div>
                     <div wicket:id="description">[DESCRIPTION]</div>
-                    <a wicket:id="save">Update Reference</a>
-                    <a wicket:id="cancel">Cancel</a>
+                    <div class="col-xs-6" style="text-align: right">
+                    <a class="btn btn-sm btn-primary" wicket:id="save">Update Reference</a>
+                    </div>
+                    <div class="col-xs-6" style="text-align: left">
+                    <a class="btn btn-sm btn-default" wicket:id="cancel">Cancel</a>
+                    </div>
                 </div>
             </div>
             

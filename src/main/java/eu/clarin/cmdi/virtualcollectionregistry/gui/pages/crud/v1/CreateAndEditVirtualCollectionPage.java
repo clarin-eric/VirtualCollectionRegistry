@@ -138,7 +138,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
      * @throws eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException
      */
     public CreateAndEditVirtualCollectionPage(PageParameters params) throws VirtualCollectionRegistryException {
-        final Long id = params.get("id").toLong();
+        final Long id = params.get("collection-id").toLong();
         logger.debug("CreateAndEditVirtualCollectionPage, page param id="+id);
         initializeWithCollection(vcr.retrieveVirtualCollection(id));        
     } 

@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.references;
 
+import com.sun.org.apache.xpath.internal.operations.Bool;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.CancelEventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.SaveEventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.VcrChoiceField;
@@ -37,14 +38,16 @@ public class ReferenceEditor extends Panel {
     
     private Resource data;
     
-    public ReferenceEditor(String id, final Component componentToUpdate, final SaveEventHandler saveEventHandler, final CancelEventHandler cancelEventHandler) {
+    public ReferenceEditor(String id, final Component componentToUpdate, final SaveEventHandler saveEventHandler, final CancelEventHandler cancelEventHandler, Model<Boolean> advancedEditor) {
         super(id); 
         final Component _this = this;
         this.componentToUpdate = componentToUpdate;
         
-        add(new Label("url", urlModel));
-        
         WebMarkupContainer wrapper = new WebMarkupContainer("wrapper");
+
+        VcrTextField tfUrl = new VcrTextField("url", "Url", "Reference url", urlModel);
+        tfUrl.setCompleteSubmitOnUpdate(true);
+        wrapper.add(tfUrl);
 
         VcrChoiceField typeField = new VcrChoiceField(
                 "type",
@@ -52,6 +55,7 @@ public class ReferenceEditor extends Panel {
                 enumValuesAsList(Resource.Type.values()),
                 typeModel);
         typeField.setCompleteSubmitOnUpdate(true);
+        typeField.setVisible(advancedEditor.getObject());
         wrapper.add(typeField);
 
         VcrTextField tf = new VcrTextField("title", "Title", "", titleModel);

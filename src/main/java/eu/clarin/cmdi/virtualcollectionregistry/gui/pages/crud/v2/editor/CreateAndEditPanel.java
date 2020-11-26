@@ -46,7 +46,6 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     private final IModel<String> reproNoticeModel = Model.of("");
     private final IModel<String> keywordsModel= Model.of("");
 
-
     private final AuthorsEditor authorsEditor;
     private final ReferencesEditor referencesEditor;
     
@@ -58,11 +57,13 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
 
     private final AjaxFallbackLink btnSave;
 
-    private enum Mode {
+    public static enum Mode {
         SIMPLE,
         ADVANCED
     }
     private final static Mode DEFAULT_EDITOR_MODE = Mode.SIMPLE;
+
+    private Model<Boolean> advancedEditorModeModel = Model.of(false);
 
     /**
      * Create a new virtual collection
@@ -135,7 +136,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         this.authorsEditor = new AuthorsEditor("authors", "Authors");
         addRequiredField(this.authorsEditor, new Mode[]{Mode.SIMPLE, Mode.ADVANCED});
 
-        this.referencesEditor = new ReferencesEditor("references", "Resources");
+        this.referencesEditor = new ReferencesEditor("references", "Resources", advancedEditorModeModel);
         addRequiredField(this.referencesEditor, new Mode[]{Mode.SIMPLE, Mode.ADVANCED});
 
         btnSave = new AjaxFallbackLink("btn_save") {
@@ -159,7 +160,6 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         add(new AjaxFallbackLink("btn_cancel") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-                logger.info("Cancel button clicked");
                 reset();
                 if (target != null) {
                     target.add(ajax_update_component);
@@ -173,7 +173,6 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
             }
         });
 
-        Model<Boolean> advancedEditorModeModel = Model.of(false);
         add(new AjaxCheckBox("btn_editor_mode", advancedEditorModeModel) {
             @Override
             public void onUpdate(AjaxRequestTarget target) {
@@ -280,7 +279,6 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     }
 
     private void reset() {
-        logger.info("reset");
         this.originalCollection = null;
         nameModel.setObject("");
         descriptionModel.setObject("");

@@ -2,6 +2,7 @@
 
 import java.io.Serializable;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.List;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.ActionablePanel;
@@ -10,6 +11,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.*;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.*;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
+import eu.clarin.cmdi.virtualcollectionregistry.model.Orderable;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
@@ -20,6 +22,7 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -35,12 +38,14 @@ import org.slf4j.LoggerFactory;
 
      private AuthorEditPanel pnl;
 
+     private final ListView listview;
+
      @Override
      public boolean completeSubmit(AjaxRequestTarget target) {
          return false;
      }
 
-     public class Editable<T> implements Serializable {
+     public class Editable<T extends Orderable> implements Serializable, Comparable {
          private final T data;
 
          private boolean editing = false;
@@ -60,6 +65,16 @@ import org.slf4j.LoggerFactory;
          public T getData() {
              return data;
          }
+
+         @Override
+         public int compareTo(@NotNull Object o) {
+             if(o instanceof Editable) {
+                 Long thisDisplayOrder = getData().getDisplayOrder();
+                 Long otherDisplayOrder = ((Editable<T>) o).getData().getDisplayOrder();
+                 return thisDisplayOrder.compareTo(otherDisplayOrder);
+             }
+             return 0;
+         }
      }
 
      public class AuthorPanel extends ActionablePanel {
@@ -73,6 +88,50 @@ import org.slf4j.LoggerFactory;
              add(new Label("email", a.getEMail()));
              add(new Label("affiliation", a.getOrganisation()));
 
+             AjaxFallbackLink orderTopButton = new AjaxFallbackLink("btn_order_top") {
+                 @Override
+                 public void onClick(AjaxRequestTarget target) {
+                     move(0, a.getId());
+                     if (target != null) {
+                         target.add(componentToUpdate);
+                     }
+                 }
+             };
+             orderTopButton.setEnabled(authors.size() > 1);
+             add(orderTopButton);
+             AjaxFallbackLink orderUpButton = new AjaxFallbackLink("btn_order_up") {
+                 @Override
+                 public void onClick(AjaxRequestTarget target) {
+                     move(-1, a.getId());
+                     if (target != null) {
+                         target.add(componentToUpdate);
+                     }
+                 }
+             };
+             orderUpButton.setEnabled(authors.size() > 1);
+             add(orderUpButton);
+             AjaxFallbackLink orderDownButton = new AjaxFallbackLink("btn_order_down") {
+                 @Override
+                 public void onClick(AjaxRequestTarget target) {
+                     move(1, a.getId());
+                     if (target != null) {
+                         target.add(componentToUpdate);
+                     }
+                 }
+             };
+             orderDownButton.setEnabled(authors.size() > 1);
+             add(orderDownButton);
+             AjaxFallbackLink orderBottomButton = new AjaxFallbackLink("btn_order_bottom") {
+                 @Override
+                 public void onClick(AjaxRequestTarget target) {
+                     move(authors.size()-1, a.getId());
+                     if (target != null) {
+                         target.add(componentToUpdate);
+                     }
+                 }
+             };
+             orderBottomButton.setEnabled(authors.size() > 1);
+             add(orderBottomButton);
              AjaxFallbackLink editButton = new AjaxFallbackLink("btn_edit") {
                  @Override
                  public void onClick(AjaxRequestTarget target) {
@@ -179,19 +238,17 @@ import org.slf4j.LoggerFactory;
 
          @Override
          public boolean completeSubmit(AjaxRequestTarget target) {
-             logger.info("completeSubmit :: focuscount = {}", this.focusCount);
+             logger.trace("completeSubmit :: focuscount = {}", this.focusCount);
              if(focusCount > 0) {
                  //One component of this composition still has focus, dont submit
-                 logger.info("focusCount > 0, in composition focus, no submit");
+                 logger.trace("focusCount > 0, in composition focus, no submit");
              } else if (focusCount < 0) {
                  //Should not happen, log to detect any issues
-                 logger.info("focusCount < 0, this is an invalid composition focus state");
+                 logger.trace("focusCount < 0, this is an invalid composition focus state");
              } else {
                  //focusCount = 0, so all components in the composition lost focus. Submit now.
-                 logger.info("Completing author submit: name=" + mdlName.getObject() + ", email=" + mdlEmail.getObject() + ", affiliation=" + mdlAffiliation.getObject());
-
+                 logger.trace("Completing author submit: name=" + mdlName.getObject() + ", email=" + mdlEmail.getObject() + ", affiliation=" + mdlAffiliation.getObject());
                  boolean valid = validate();
-                 logger.info("Valid = " + valid);
                  if (valid) {
                      String name = mdlName.getObject();
                      String email = mdlEmail.getObject();
@@ -252,27 +309,27 @@ import org.slf4j.LoggerFactory;
          super(id, label, null);
          setOutputMarkupId(true);
 
+         final WebMarkupContainer editorwrapper = new WebMarkupContainer("editorwrapper");
+         editorwrapper.setOutputMarkupId(true);
+
          final Component componentToUpdate = this;
          noAuthors = new Label("lbl_no_authors", "No authors");
 
          ajaxWrapper = new WebMarkupContainer("ajaxwrapper");
          ajaxWrapper.setOutputMarkupId(true);
 
-         localDialog = new ModalConfirmDialog("modal");
+         localDialog = new ModalConfirmDialog("authors_modal");
          localDialog.addListener(new Listener() {
              @Override
              public void handleEvent(final Event event) {
                  switch(event.getType()) {
-                     case OK:
-                             logger.info("Default confirm");
-                             event.updateTarget(ajaxWrapper);
-                         break;
+                     case OK: event.updateTarget(ajaxWrapper); break;
                      case CONFIRMED_DELETE:
                              if(event.getData() == null) {
-                                 logger.info("No author found for removal");
+                                 logger.trace("No author found for removal");
                              } else {
                                  Creator a = (Creator)event.getData();
-                                 logger.info("Removing author with id = {}", a.getId());
+                                 logger.trace("Removing author with id = {}", a.getId());
                                  int idx = -1;
                                  for(int i = 0; i < authors.size(); i++) {
                                      if(authors.get(i).data.getId() == a.getId()) {
@@ -284,58 +341,56 @@ import org.slf4j.LoggerFactory;
                                  }
                                  noAuthors.setVisible(authors.isEmpty());
                              }
-                            fireEvent(new DataUpdatedEvent(event.getAjaxRequestTarget()));
                              event.updateTarget(ajaxWrapper);
                          break;
-                     case CANCEL:
-                             event.updateTarget();
-                         break;
+                     case CANCEL: event.updateTarget(); break;
                  }
              }
          });
          add(localDialog);
 
-         ListView listview = new ListView("listview", authors) {
+         listview = new ListView("listview", authors) {
              @Override
              protected void populateItem(ListItem item) {
                  Editable<Creator> object = (Editable<Creator>) item.getModel().getObject();
-                 if(object.isEditing()) {
-                     item.add(new AuthorEditPanel("pnl_author_details", object, componentToUpdate));
-                 } else {
-                     ActionablePanel pnl = new AuthorPanel("pnl_author_details", object, componentToUpdate);
-                     pnl.addListener(new Listener<Creator>() {
+                 if(!object.isEditing()) {
+                     ActionablePanel _pnl = new AuthorPanel("pnl_author_details", object, componentToUpdate);
+                     _pnl.addListener(new Listener<Creator>() {
                          @Override
                          public void handleEvent(Event<Creator> event) {
                              switch(event.getType()) {
-                             case DELETE:
-                                 String title = "Confirm removal";
-                                 String body = "Confirm removal of author: "+event.getData().getPerson();
-                                 localDialog.update(title, body);
-                                 localDialog.setModalConfirmAction(
-                                     new ModalConfirmAction<>(
-                                         EventType.CONFIRMED_DELETE,
-                                         event.getData()));
-                                 event.getAjaxRequestTarget().add(localDialog);
-                                 localDialog.show(event.getAjaxRequestTarget());
-                                 break;
-                             default:
-                                 throw new RuntimeException("Unhandled event. type = "+event.getType().toString());
-                         }
+                                 case DELETE:
+                                     String title = "Confirm removal";
+                                     String body = "Confirm removal of author: "+event.getData().getPerson();
+                                     localDialog.update(title, body);
+                                     localDialog.setModalConfirmAction(
+                                             new ModalConfirmAction<>(
+                                                     EventType.CONFIRMED_DELETE,
+                                                     event.getData()));
+                                     event.getAjaxRequestTarget().add(localDialog);
+                                     localDialog.show(event.getAjaxRequestTarget());
+                                     break;
+                                 default:
+                                     throw new RuntimeException("Unhandled event. type = "+event.getType().toString());
+                             }
                          }
                      });
-                     item.add(pnl);
+                     _pnl.setVisible(pnl.isVisible());  //Hide panel after adding if we are currently editing
+                     item.add(_pnl);
+                 } else if(object.isEditing()) {
+                     item.add(new AuthorEditPanel("pnl_author_details", object, componentToUpdate));
                  }
              }
          };
          ajaxWrapper.add(listview);
 
+         noAuthors.setVisible(authors.isEmpty());
          ajaxWrapper.add(noAuthors);
          add(ajaxWrapper);
 
          pnl = new AuthorEditPanel("pnl_create_author", null, componentToUpdate);
-         add(pnl);
-
-         noAuthors.setVisible(authors.isEmpty());
+         editorwrapper.add(pnl);
+         add(editorwrapper);
      }
 
      /**
@@ -353,7 +408,7 @@ import org.slf4j.LoggerFactory;
       * @param authors
       */
      public void setData(List<Creator> authors) {
-         logger.info("Set author data: {} authors", authors.size());
+         logger.trace("Set author data: {} authors", authors.size());
          this.authors.clear();
          for(Creator a : authors) {
              this.authors.add(new Editable<>(a));
@@ -374,5 +429,34 @@ import org.slf4j.LoggerFactory;
          }
          //All validators passed, reset error message and return true
          return setError(null);
+     }
+
+     protected void move(int direction, Long id) {
+
+         int idx = -1;
+         for(int i = 0; i < authors.size() && idx == -1; i++) {
+             if(authors.get(i).getData().getId() == id) {
+                 idx = i;
+             }
+         }
+
+         if(idx == -1) { //not found
+             logger.info("Author with id = {} not found.", id);
+             return;
+         }
+
+         if (direction == -1 && idx > 0) {
+             authors.get(idx).getData().setDisplayOrder(new Long(idx-1));
+             authors.get(idx-1).getData().setDisplayOrder(new Long(idx));
+         } else if(direction == 1 && idx < authors.size()-1) {
+             authors.get(idx).getData().setDisplayOrder(new Long(idx+1));
+             authors.get(idx+1).getData().setDisplayOrder(new Long(idx));
+         } else {
+             authors.get(idx).getData().setDisplayOrder(new Long(id));
+             authors.get(id.intValue()).getData().setDisplayOrder(new Long(idx));
+         }
+
+
+         Collections.sort(authors);
      }
  }
