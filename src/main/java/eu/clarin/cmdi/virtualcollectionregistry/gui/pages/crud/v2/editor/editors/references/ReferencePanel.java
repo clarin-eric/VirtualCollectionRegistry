@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.EventHandler;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.MoveListEventHandler;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -22,6 +23,7 @@ public class ReferencePanel extends Panel {
     private static Logger logger = LoggerFactory.getLogger(ReferencePanel.class);
     
     private transient List<EventHandler> eventHandlers = new ArrayList<>();
+    private transient List<MoveListEventHandler> moveListEventHandlers = new ArrayList<>();
     
     /**
      * 
@@ -48,8 +50,6 @@ public class ReferencePanel extends Panel {
         if(ref.getState() == ReferencesEditor.State.INITIALIZED || ref.getState() == ReferencesEditor.State.ANALYZING) {
             analysing = true;
         }
-
-
 
         WebMarkupContainer stateIcon = new WebMarkupContainer("state");
         switch(ref.getState()) {
@@ -93,7 +93,9 @@ public class ReferencePanel extends Panel {
         AjaxFallbackLink orderTopButton = new AjaxFallbackLink("btn_order_top") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-
+                for(MoveListEventHandler handler : moveListEventHandlers) {
+                    handler.handleMoveTop(ref.getReference().getId(), target);
+                }
             }
         };
         orderTopButton.setVisible(!analysing);
@@ -102,7 +104,9 @@ public class ReferencePanel extends Panel {
         AjaxFallbackLink orderUpButton = new AjaxFallbackLink("btn_order_up") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-
+                for(MoveListEventHandler handler : moveListEventHandlers) {
+                    handler.handleMoveUp(ref.getReference().getId(), target);
+                }
             }
         };
         orderUpButton.setVisible(!analysing);
@@ -111,7 +115,9 @@ public class ReferencePanel extends Panel {
         AjaxFallbackLink orderDownButton = new AjaxFallbackLink("btn_order_down") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-
+                for(MoveListEventHandler handler : moveListEventHandlers) {
+                    handler.handleMoveDown(ref.getReference().getId(), target);
+                }
             }
         };
         orderDownButton.setVisible(!analysing);
@@ -120,7 +126,9 @@ public class ReferencePanel extends Panel {
         AjaxFallbackLink orderBottomButton = new AjaxFallbackLink("btn_order_bottom") {
             @Override
             public void onClick(AjaxRequestTarget target) {
-
+                for(MoveListEventHandler handler : moveListEventHandlers) {
+                    handler.handleMoveEnd(ref.getReference().getId(), target);
+                }
             }
         };
         orderBottomButton.setVisible(!analysing);
@@ -160,5 +168,9 @@ public class ReferencePanel extends Panel {
     
     public void addEventHandler(EventHandler handler) {
         this.eventHandlers.add(handler);
+    }
+
+    public void addMoveListEventHandler(MoveListEventHandler handler) {
+        this.moveListEventHandlers.add(handler);
     }
 }

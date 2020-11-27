@@ -9,12 +9,14 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.authors.AuthorsEditor;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.jetbrains.annotations.NotNull;
 
 @Entity
 @Table(name = "creator")
-public class Creator implements Serializable, IdentifiedEntity, Orderable {
+public class Creator implements Serializable, IdentifiedEntity, Orderable, Comparable {
 
     private static final long serialVersionUID = 1L;
 
@@ -188,6 +190,15 @@ public class Creator implements Serializable, IdentifiedEntity, Orderable {
 
     public void setDisplayOrder(Long displayOrder) {
         this.displayOrder = displayOrder;
+    }
+
+    @Override
+    public int compareTo(@NotNull Object o) {
+        if( o == null) return 0;
+        if(o instanceof Creator) {
+            return OrderableComparator.compare(this, (Creator)o);
+        }
+        return 0;
     }
 
 } // class Creator

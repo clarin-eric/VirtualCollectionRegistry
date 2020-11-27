@@ -124,7 +124,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
             public void handleEvent(Event<VirtualCollection> event) {
                 switch(event.getType()) {
                     case SAVE:
-                        logger.info("Saving collection");
+                        logger.debug("Saving collection");
                         //Search or exising collection
                         int idx = -1;
                         Long id = event.getData().getId();

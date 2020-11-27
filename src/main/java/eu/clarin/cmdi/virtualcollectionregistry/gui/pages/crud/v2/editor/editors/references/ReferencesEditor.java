@@ -5,6 +5,7 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Iterator;
 
 import java.util.List;
@@ -22,7 +23,9 @@ import javax.xml.xpath.XPathFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.CreateAndEditPanel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.CancelEventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.EventHandler;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.MoveListEventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.SaveEventHandler;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.authors.AuthorsEditor;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.dialogs.ModalConfirmAction;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.dialogs.ModalConfirmDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.DataUpdatedEvent;
@@ -30,6 +33,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.EventType;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.Listener;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.*;
+import eu.clarin.cmdi.virtualcollectionregistry.model.OrderableComparator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
@@ -40,6 +44,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -49,6 +54,7 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.time.Duration;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.w3c.dom.Document;
@@ -107,6 +113,7 @@ public class ReferencesEditor extends ComposedField {
         super(id, "References", null);
         this.editorMode = editorMode;
         setOutputMarkupId(true);
+        Component componentToUpdate = this;
 
         final WebMarkupContainer editorWrapper = new WebMarkupContainer("ref_editor_wrapper");
         editorWrapper.setOutputMarkupId(true);
@@ -167,6 +174,36 @@ public class ReferencesEditor extends ComposedField {
             protected void populateItem(ListItem item) {
                 ReferenceJob ref = (ReferenceJob)item.getModel().getObject();
                 ReferencePanel c = new ReferencePanel("pnl_reference", ref, advancedEditorMode, references.size() > 1);
+                c.addMoveListEventHandler(new MoveListEventHandler() {
+                    @Override
+                    public void handleMoveUp(Long id, AjaxRequestTarget target) {
+                        move(0, id);
+                        if (target != null) {
+                            target.add(componentToUpdate);
+                        }
+                    }
+                    @Override
+                    public void handleMoveDown(Long id, AjaxRequestTarget target) {
+                        move(1, id);
+                        if (target != null) {
+                            target.add(componentToUpdate);
+                        }
+                    }
+                    @Override
+                    public void handleMoveTop(Long id, AjaxRequestTarget target) {
+                        move(-1, id);
+                        if (target != null) {
+                            target.add(componentToUpdate);
+                        }
+                    }
+                    @Override
+                    public void handleMoveEnd(Long id, AjaxRequestTarget target) {
+                        move(references.size()-1, id);
+                        if (target != null) {
+                            target.add(componentToUpdate);
+                        }
+                    }
+                });
                 c.addEventHandler(new EventHandler<Resource>() {
                     @Override
                     public void handleEditEvent(Resource t, AjaxRequestTarget target) {
@@ -324,7 +361,7 @@ public class ReferencesEditor extends ComposedField {
         }
     }
     
-    public class ReferenceJob implements Serializable {
+    public class ReferenceJob implements Serializable, Comparable{
         private Resource ref;
         private State state;
         
@@ -343,6 +380,17 @@ public class ReferencesEditor extends ComposedField {
         
         public Resource getReference() {
             return this.ref;
+        }
+
+        @Override
+        public int compareTo(@NotNull Object o) {
+            if( o == null) return 0;
+            if(o instanceof ReferenceJob) {
+                return OrderableComparator.compare(
+                        getReference(),
+                        ((ReferenceJob) o).getReference());
+            }
+            return 0;
         }
     }
     
@@ -391,8 +439,7 @@ public class ReferencesEditor extends ComposedField {
             }
             logger.info("Worker thread finished");
         }
-        
-        
+
         private void analyze(final ReferenceJob job) throws IOException {
             logger.debug("Analyzing: {}", job.getReference().getRef());
             
@@ -563,5 +610,46 @@ public class ReferencesEditor extends ComposedField {
         }
         //All validators passed, reset error message and return true
         return setError(null);
+    }
+
+    protected void move(int direction, Long id) {
+        //Abort on invalid direction
+        if(direction < -1 || direction >= references.size()) {
+            logger.warn("References list move: invalid direction={}, references size={}.", direction, references.size());
+            return;
+        }
+
+        //Find index of specified (by id) collection
+        int idx = -1;
+        for(int i = 0; i < references.size() && idx == -1; i++) {
+            if(references.get(i).getReference().getId() == id) {
+                idx = i;
+            }
+        }
+
+        //Abort if the collection was not found
+        if(idx == -1) {
+            logger.warn("References list move: reference with id = {} not found.", id);
+            return;
+        }
+
+        //Swap the collection with the collection at the specified destination (up=1, down=-1, beginning=0 or end=i)
+        if (direction == -1) {
+            if(idx > 0) {
+                references.get(idx).getReference().setDisplayOrder(new Long(idx - 1));
+                references.get(idx - 1).getReference().setDisplayOrder(new Long(idx));
+            }
+        } else if(direction == 1) {
+            if( idx < references.size()-1) {
+                references.get(idx).getReference().setDisplayOrder(new Long(idx + 1));
+                references.get(idx + 1).getReference().setDisplayOrder(new Long(idx));
+            }
+        } else {
+            references.get(idx).getReference().setDisplayOrder(new Long(direction));
+            references.get(direction).getReference().setDisplayOrder(new Long(idx));
+        }
+
+        //Resort list based on new sort order
+        Collections.sort(references);
     }
 }

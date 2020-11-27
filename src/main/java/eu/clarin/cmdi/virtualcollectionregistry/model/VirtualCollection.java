@@ -437,6 +437,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         if (creators == null) {
             this.creators = new ArrayList<Creator>();
         }
+        Collections.sort(this.creators);
         return creators;
     }
 
@@ -524,10 +525,10 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         this.setPurpose(vc.getPurpose());
         this.setReproducibility(vc.getReproducibility());
         this.setReproducibilityNotice(vc.getReproducibilityNotice());
-        
-        // Creators
-        Set<Creator> obsolete_creators =
-            new HashSet<Creator>(this.getCreators());
+
+        /*
+        // Clear any removed creators
+        Set<Creator> obsolete_creators = new HashSet<Creator>(this.getCreators());
         for (Creator creator : vc.getCreators()) {
             if (!obsolete_creators.contains(creator)) {
                 this.getCreators().add(creator);
@@ -540,7 +541,10 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
             }
             obsolete_creators = null;
         }
+        */
+        this.creators = vc.getCreators();
 
+        /*
         // Keywords
         Set<String> obsolete_keywords =
             new HashSet<String>(this.getKeywords());
@@ -556,7 +560,10 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
             }
             obsolete_keywords = null;
         }
+        */
+        this.keywords = vc.getKeywords();
 
+        /*
         // Resources
         Set<Resource> obsolete_resources =
             new HashSet<Resource>(this.getResources());
@@ -572,6 +579,8 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
             }
             obsolete_resources = null;
         }
+        */
+        this.resources = vc.getResources();
 
         if (vc.generatedBy != null) {
             final GeneratedBy genBy = vc.generatedBy;

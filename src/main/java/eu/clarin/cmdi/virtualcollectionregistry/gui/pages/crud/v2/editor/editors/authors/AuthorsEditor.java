@@ -12,6 +12,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.*;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Orderable;
+import eu.clarin.cmdi.virtualcollectionregistry.model.OrderableComparator;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
@@ -69,9 +70,9 @@ import org.slf4j.LoggerFactory;
          @Override
          public int compareTo(@NotNull Object o) {
              if(o instanceof Editable) {
-                 Long thisDisplayOrder = getData().getDisplayOrder();
-                 Long otherDisplayOrder = ((Editable<T>) o).getData().getDisplayOrder();
-                 return thisDisplayOrder.compareTo(otherDisplayOrder);
+                 return OrderableComparator.compare(
+                     getData(),
+                     ((Editable<T>) o).getData());
              }
              return 0;
          }
@@ -353,6 +354,11 @@ import org.slf4j.LoggerFactory;
              @Override
              protected void populateItem(ListItem item) {
                  Editable<Creator> object = (Editable<Creator>) item.getModel().getObject();
+                 logger.info("Authors ListView: {}, id={}, display order={}",
+                         object.getData().getPerson(),
+                         object.getData().getId(),
+                         object.getData().getDisplayOrder());
+
                  if(!object.isEditing()) {
                      ActionablePanel _pnl = new AuthorPanel("pnl_author_details", object, componentToUpdate);
                      _pnl.addListener(new Listener<Creator>() {
@@ -399,7 +405,8 @@ import org.slf4j.LoggerFactory;
      public List<Creator> getData() {
          List<Creator> result = new ArrayList<>();
          for(Editable<Creator> ea : authors) {
-             result.add(ea.getData());
+             Creator c = ea.getData();
+             result.add(c);
          }
          return result;
      }
@@ -432,7 +439,13 @@ import org.slf4j.LoggerFactory;
      }
 
      protected void move(int direction, Long id) {
+         //Abort on invalid direction
+         if(direction < -1 || direction >= authors.size()) {
+             logger.warn("Author list move: invalid direction={}, authors size={}.", direction, authors.size());
+             return;
+         }
 
+         //Find index of specified (by id) collection
          int idx = -1;
          for(int i = 0; i < authors.size() && idx == -1; i++) {
              if(authors.get(i).getData().getId() == id) {
@@ -440,11 +453,13 @@ import org.slf4j.LoggerFactory;
              }
          }
 
-         if(idx == -1) { //not found
-             logger.info("Author with id = {} not found.", id);
+         //Abort if the collection was not found
+         if(idx == -1) {
+             logger.warn("Author list move: author with id = {} not found.", id);
              return;
          }
 
+         //Swap the collection with the collection at the specified destination (up=1, down=-1, beginning=0 or end=i)
          if (direction == -1 && idx > 0) {
              authors.get(idx).getData().setDisplayOrder(new Long(idx-1));
              authors.get(idx-1).getData().setDisplayOrder(new Long(idx));
@@ -452,11 +467,11 @@ import org.slf4j.LoggerFactory;
              authors.get(idx).getData().setDisplayOrder(new Long(idx+1));
              authors.get(idx+1).getData().setDisplayOrder(new Long(idx));
          } else {
-             authors.get(idx).getData().setDisplayOrder(new Long(id));
-             authors.get(id.intValue()).getData().setDisplayOrder(new Long(idx));
+             authors.get(idx).getData().setDisplayOrder(new Long(direction));
+             authors.get(direction).getData().setDisplayOrder(new Long(idx));
          }
 
-
+         //Resort list based on new sort order
          Collections.sort(authors);
-     }
- }
+    }
+}

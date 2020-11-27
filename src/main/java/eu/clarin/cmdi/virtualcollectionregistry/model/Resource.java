@@ -17,12 +17,13 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Entity
 @Table(name = "resource")
-public class Resource implements Serializable, IdentifiedEntity, PersistentIdentifieable, Orderable {
+public class Resource implements Serializable, IdentifiedEntity, PersistentIdentifieable, Orderable, Comparable {
     
     private final static Logger logger = LoggerFactory.getLogger(Resource.class);
     private static final long serialVersionUID = 1L;
@@ -255,5 +256,13 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
 
     public void setDisplayOrder(Long displayOrder) {
         this.displayOrder = displayOrder;
+    }
+
+    @Override
+    public int compareTo(@NotNull Object o) {
+        if(o instanceof Resource) {
+            return OrderableComparator.compare(this, (Resource)o);
+        }
+        return 0;
     }
 } // class Resource
