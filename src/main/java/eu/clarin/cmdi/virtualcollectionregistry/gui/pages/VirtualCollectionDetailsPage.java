@@ -296,10 +296,10 @@ public class VirtualCollectionDetailsPage extends BasePage {
             add(new BasicTextPanel("name", "Name", new Model(model.getObject().getName())));
             add(new BasicTextPanel("type", "Type", new Model(model.getObject().getType())));            
             add(new BasicTextPanel("creationDate", "Creation date", new Model(model.getObject().getCreationDate())));
-            add(new BasicTextPanel("description", "Description", new Model(model.getObject().getDescription()), false, true).add(hideIfEmpty));
+            add(new BasicTextPanel("description", "Description", new Model(model.getObject().getDescription()), true, true).add(hideIfEmpty));
             add(new BasicTextPanel("purpose", "Purpose", new Model(model.getObject().getPurpose())).add(hideIfEmpty));
             add(new BasicTextPanel("reproducibility", "Reproducibility", new Model(model.getObject().getReproducibility())).add(hideIfEmpty));
-            add(new BasicTextPanel("reproducibilityNotice", "Reproducibility notice", new Model(model.getObject().getReproducibilityNotice())).add(hideIfEmpty));
+            add(new BasicTextPanel("reproducibilityNotice", "Reproducibility notice", new Model(model.getObject().getReproducibilityNotice()), true, true).add(hideIfEmpty));
             add(new BasicPidPanel("pid", "Persistent identifier", new Model(model.getObject())));
             add(new BasicListPanel("keywords", "Keywords", model.getObject().getKeywords()).add(hideIfEmpty));
         }

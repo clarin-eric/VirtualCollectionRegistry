@@ -152,15 +152,23 @@ public class ReferencesEditor extends ComposedField {
 
         editor = new ReferenceEditor("ref_editor", this, new SaveEventHandler() {
             @Override
-            public void handleSaveEvent() {
+            public void handleSaveEvent(AjaxRequestTarget target) {
                 edit_index = -1;
                 editor.setVisible(false);
+                listview.setVisible(true);
+                if(target != null) {
+                    target.add(componentToUpdate);
+                }
             }
         }, new CancelEventHandler() {
             @Override
-            public void handleCancelEvent() {
+            public void handleCancelEvent(AjaxRequestTarget target) {
                 edit_index = -1;
                 editor.setVisible(false);
+                listview.setVisible(true);
+                if(target != null) {
+                    target.add(componentToUpdate);
+                }
             }
         }, advancedEditorMode);
         editor.setVisible(false);
@@ -226,7 +234,8 @@ public class ReferencesEditor extends ComposedField {
                             editor.setVisible(true);
                             listview.setVisible(false);
                         }
-                        target.add(editorWrapper);
+
+                        target.add(componentToUpdate);
                     }
 
                     @Override

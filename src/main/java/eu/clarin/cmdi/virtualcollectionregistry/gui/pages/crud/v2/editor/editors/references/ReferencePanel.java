@@ -3,6 +3,10 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editor
 import java.util.ArrayList;
 import java.util.List;
 
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
+import com.vladsch.flexmark.util.ast.Node;
+import com.vladsch.flexmark.util.data.MutableDataSet;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.EventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.MoveListEventHandler;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -86,7 +90,17 @@ public class ReferencePanel extends Panel {
         lblTitle.setVisible(!analysing);
         editorWrapper.add(lblTitle);
 
-        Label labelDescription = new Label("description", descriptionModel);
+        String htmlValue = "";
+        if(descriptionModel.getObject() != null) {
+            MutableDataSet options = new MutableDataSet();
+            Parser parser = Parser.builder(options).build();
+            HtmlRenderer renderer = HtmlRenderer.builder(options).build();
+            Node document = parser.parse(descriptionModel.getObject().toString());
+            htmlValue = renderer.render(document);
+        }
+
+        Label labelDescription = new Label("description", Model.of(htmlValue));
+        labelDescription.setEscapeModelStrings(false);
         labelDescription.setVisible(!analysing);
         editorWrapper.add(labelDescription);
 

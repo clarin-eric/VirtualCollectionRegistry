@@ -91,7 +91,7 @@ public abstract class AbstractField extends Panel implements Field {
         if(c != null) {
             c.add(getOnFocusUpdatingBehavior(parent));
             c.add(getOnBlurUpdatingBehavior(parent, t));
-            c.add(getOnKeySubmitBehavior(parent, t));
+           // c.add(getOnKeySubmitBehavior(parent, t));
         }
     }
     

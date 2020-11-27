@@ -1,6 +1,10 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.references;
 
 import com.sun.org.apache.xpath.internal.operations.Bool;
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
+import com.vladsch.flexmark.util.ast.Node;
+import com.vladsch.flexmark.util.data.MutableDataSet;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.CancelEventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.SaveEventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.VcrChoiceField;
@@ -61,7 +65,7 @@ public class ReferenceEditor extends Panel {
         VcrTextField tf = new VcrTextField("title", "Title", "", titleModel);
         tf.setCompleteSubmitOnUpdate(true);         
         wrapper.add(tf);
-        
+
         VcrTextArea ta = new VcrTextArea("description", "Description", "", descriptionModel);
         ta.setCompleteSubmitOnUpdate(true); 
         wrapper.add(ta);
@@ -72,20 +76,20 @@ public class ReferenceEditor extends Panel {
                 data.setLabel(titleModel.getObject());
                 data.setDescription( descriptionModel.getObject());
                 reset();
-                saveEventHandler.handleSaveEvent();
-                if (target != null) {
+                saveEventHandler.handleSaveEvent(target);
+                /*if (target != null) {
                     target.add(componentToUpdate);
-                }
+                }*/
             }
         });
         wrapper.add(new AjaxFallbackLink("cancel") {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 reset();
-                cancelEventHandler.handleCancelEvent();
-                if (target != null) {
+                cancelEventHandler.handleCancelEvent(target);
+                /*if (target != null) {
                     target.add(componentToUpdate);
-                }
+                }*/
             }
         });
         
