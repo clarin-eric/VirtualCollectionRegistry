@@ -7,6 +7,7 @@ import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.data.MutableDataSet;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.EventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.MoveListEventHandler;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -74,6 +75,13 @@ public class ReferencePanel extends Panel {
             urlValue = "("+ref.getReference().getRef()+")";
         }
         editorWrapper.add(new Label("value", urlValue));
+
+
+        WebMarkupContainer alert = new WebMarkupContainer("alert");
+        Label lblRecommendation = new Label("lbl_recommendation", Model.of("We recommend to use persistent identifiers (DOI, Handle, ...) instead of direct URLs to improve stability."));
+        alert.add(lblRecommendation);
+        alert.setVisible(!HandleLinkModel.isSupportedPersistentIdentifier(ref.getReference().getRef()));
+        editorWrapper.add(alert);
 
         Label lblWaiting = new Label("lbl_waiting", "Waiting on analysis");
         lblWaiting.setVisible(analysing);

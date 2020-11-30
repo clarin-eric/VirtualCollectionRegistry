@@ -43,9 +43,11 @@ final class ColumnName extends AbstractColumn<VirtualCollection, String> {
             final WebMarkupContainer details = new WebMarkupContainer("details");
             details.setOutputMarkupId(true);
 
-            Label lblProblems = new Label("problems", Model.of(vc.getProblemDetails() == null ? "Errors: No details available" : "Errors: "+vc.getProblemDetails()));
-            lblProblems.setVisible(vc.getState() == VirtualCollection.State.ERROR);
-            details.add(lblProblems);
+            WebMarkupContainer problems = new WebMarkupContainer("problems");
+            Label lblProblems = new Label("lbl_problems", Model.of(vc.getProblemDetails() == null ? "Errors: No details available" : "Errors: "+vc.getProblemDetails()));
+            problems.setVisible(vc.getState() == VirtualCollection.State.ERROR);
+            problems.add(lblProblems);
+            details.add(problems);
 
             final String desc = vc.getDescription();
             String htmlValue = "";

@@ -61,7 +61,7 @@ public class VirtualCollectionPrePublicationValidatorTest {
             fail("Validation should not fail");
         }
     }
-    
+    /*
     @Test(expected = VirtualCollectionValidationException.class)
     public void testValidateResourcesNonPid() throws Exception {
         // Non-PIDs should not be allowed as references
@@ -70,7 +70,7 @@ public class VirtualCollectionPrePublicationValidatorTest {
         vc.getResources().add(new Resource(Resource.Type.METADATA, "http://clarin.eu"));
         instance.validate(vc);
     }
-    
+    */
     @Test(expected = VirtualCollectionValidationException.class)
     public void testValidateQueryUriNonPid() throws Exception {
         // Non-PIDs should not be allowed as query URI
