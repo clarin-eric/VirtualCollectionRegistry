@@ -120,8 +120,9 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
             } catch (VirtualCollectionRegistryException ex) {                
                 logger.error("Failed to mint PID, setting vc to error state", ex);
                 vc.setState(VirtualCollection.State.ERROR);
+                vc.setProblemDetails(ex.getMessage());
                 if(ex.getCause() instanceof HttpException) {                                                  
-                    vc.setProblem(VirtualCollection.Problem.PID_MINTING_UNKOWN);
+                    vc.setProblem(VirtualCollection.Problem.PID_MINTING_HTTP_ERROR);
                 } else {
                     vc.setProblem(VirtualCollection.Problem.PID_MINTING_UNKOWN);
                 }

@@ -206,7 +206,6 @@ public class BrowseEditableCollectionsPanel extends Panel {
                             IModel<VirtualCollection> model) {
                         State state = model.getObject().getState();
                         if(state == State.PUBLIC_FROZEN || state == State.PUBLIC || state == State.PRIVATE || isAdmin) {
-                            //return new ActionsColumn(componentId, model);
                             return new ActionsPanel(componentId, model);
                         } else {
                             return new EmptyPanel(componentId, model);
@@ -237,27 +236,6 @@ public class BrowseEditableCollectionsPanel extends Panel {
             @Override
             public void handle(AjaxRequestTarget target) {
                 prePublishCheck(target, this.model, false);
-                /*
-                VirtualCollection vc = this.model.getObject();
-                if (vc != null) {
-                    try {
-                        try {
-                            prePublicationValidator.validate(vc);                    
-                            doPublish(vc.getId(), false, target); //TODO: howto force publish of a frozen collection?
-                        } catch (VirtualCollectionValidationException ex) {
-                            logger.info("Confirm publishing of collection with errors");                           
-                            confirmPublishWithWarnings(target, model, ex.getAllErrorsAsList());
-                        }
-                    } catch (VirtualCollectionRegistryException ex) {
-                        logger.error("Could not publish collection {}, id {}", vc.getName(), vc.getId(), ex);
-                        Session.get().error(ex.getMessage());
-                        throw new RuntimeException();
-                    }
-                } else {
-                    logger.info("Failed to validate null virtual collection");
-                    throw new RuntimeException();
-                }
-                */
             }            
 
             @Override

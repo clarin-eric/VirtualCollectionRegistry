@@ -1,5 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.table;
 
+import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.markup.html.basic.Label;
@@ -25,7 +27,13 @@ final class ColumnState extends AbstractColumn<VirtualCollection, String> {
             String componentId, IModel<VirtualCollection> model) {
         final VirtualCollection.State state = model.getObject().getState();
         final String label = renderer.getDisplayValue(state).toString();
-        item.add(new Label(componentId, label));
+
+        Label lbl = new Label(componentId, label);
+        if(state == VirtualCollection.State.ERROR) {
+            lbl.add(new AttributeModifier("data-toggle", "tooltip"));
+            lbl.add(new AttributeModifier("title", model.getObject().getProblem()));
+        }
+        item.add(lbl);
     }
 
     @Override

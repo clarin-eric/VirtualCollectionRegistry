@@ -161,9 +161,15 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         return getPidUri();
     }
 
-    
-    
-    
+    public String getProblemDetails() {
+        return problemDetails;
+    }
+
+    public void setProblemDetails(String problemDetails) {
+        this.problemDetails = problemDetails;
+    }
+
+
     public static enum State {
         PRIVATE,
         PUBLIC_PENDING,
@@ -194,7 +200,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     } // enum VirtualCollecion.Reproducibility
 
     public static enum Problem {
-        PID_MINTING_API_UNREACHABLE,
+        PID_MINTING_HTTP_ERROR,
         PID_MINTING_UNKOWN,
         UNKOWN
     }
@@ -226,11 +232,17 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
                fetch = FetchType.EAGER,
                 mappedBy = "vc")
     private Set<PersistentIdentifier> identifiers;
-    
+
+    //Make this a list of problems?
+
     /* Indication of the issue if state = ERROR */
     @Column(name = "problem", nullable = true)
     private VirtualCollection.Problem problem;
-    
+
+    @Column(name = "problem_details", nullable = true)
+    private String problemDetails;
+
+
     @Column(name = "state", nullable = false)
     private VirtualCollection.State state;
 

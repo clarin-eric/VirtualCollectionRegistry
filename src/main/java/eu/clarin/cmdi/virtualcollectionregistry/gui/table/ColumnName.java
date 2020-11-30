@@ -42,7 +42,11 @@ final class ColumnName extends AbstractColumn<VirtualCollection, String> {
             
             final WebMarkupContainer details = new WebMarkupContainer("details");
             details.setOutputMarkupId(true);
-            
+
+            Label lblProblems = new Label("problems", Model.of(vc.getProblemDetails() == null ? "" : vc.getProblemDetails()));
+            lblProblems.setVisible(vc.getState() == VirtualCollection.State.ERROR);
+            details.add(lblProblems);
+
             final String desc = vc.getDescription();
             String htmlValue = "";
             if(desc != null) {

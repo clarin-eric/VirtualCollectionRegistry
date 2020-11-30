@@ -16,5 +16,7 @@ UPDATE resource SET display_order = 1;
 ALTER TABLE creator ADD COLUMN `display_order` BIGINT NULL;
 UPDATE creator SET display_order = 1;
 
+ALTER TABLE virtualcollection ADD COLUMN `problem_details` TEXT NULL;
+
 -- Update current database config value
 UPDATE `config` SET `value` = '1.2.0' WHERE `key` = 'db_version';
