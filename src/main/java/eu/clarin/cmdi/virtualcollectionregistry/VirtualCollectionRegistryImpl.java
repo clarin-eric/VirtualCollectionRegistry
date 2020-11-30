@@ -278,7 +278,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             }
             //Non private collections or collections in error state cannot be 
             //deleted by non-admin users
-            if (!vc.isPrivate() && vc.getState() == VirtualCollection.State.ERROR) {
+            if (!vc.isPrivate() && vc.getState() != VirtualCollection.State.ERROR) {
                 logger.debug("virtual collection (id={}) cannot be "
                         + "deleted (invalid state)", id);
                 throw new VirtualCollectionRegistryPermissionException(

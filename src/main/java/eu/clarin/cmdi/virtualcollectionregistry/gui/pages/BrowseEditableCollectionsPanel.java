@@ -21,9 +21,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
@@ -34,6 +36,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.util.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -78,6 +81,32 @@ public class BrowseEditableCollectionsPanel extends Panel {
         }
     }
 
+    private class ActionsErrorPanel extends  PanelWithUserInformation {
+        public ActionsErrorPanel(String id, IModel<VirtualCollection> model) {
+            super(id, model);
+            setRenderBodyOnly(true);
+
+            final AjaxLink<VirtualCollection> retryLink
+                    = new AjaxLink<VirtualCollection>("retry", model) {
+                @Override
+                public void onClick(AjaxRequestTarget target) {
+                    doRetry(target, model);
+                }
+            };
+            UIUtils.addTooltip(retryLink, "Retry publishing this collection");
+            add(retryLink);
+
+            final AjaxLink<VirtualCollection> deleteLink
+                    = new AjaxLink<VirtualCollection>("delete", model) {
+                @Override
+                public void onClick(AjaxRequestTarget target) {
+                    doDelete(target, getModelObject());
+                }
+            };
+            UIUtils.addTooltip(deleteLink, "Delete this collection");
+            add(deleteLink);
+        }
+    }
     private class ActionsPanel extends PanelWithUserInformation {
         public ActionsPanel(String id, IModel<VirtualCollection> model) {
             super(id, model);
@@ -199,7 +228,8 @@ public class BrowseEditableCollectionsPanel extends Panel {
      */
     public BrowseEditableCollectionsPanel(String id, CollectionsProvider provider, final boolean isAdmin, final PageReference reference) {
         super(id);
-        this.setOutputMarkupId(true);       
+        this.setOutputMarkupId(true);
+
         table = new VirtualCollectionTable("collectionsTable", provider, true, isAdmin) {
                     @Override
                     protected Panel createActionColumn(String componentId,
@@ -207,6 +237,8 @@ public class BrowseEditableCollectionsPanel extends Panel {
                         State state = model.getObject().getState();
                         if(state == State.PUBLIC_FROZEN || state == State.PUBLIC || state == State.PRIVATE || isAdmin) {
                             return new ActionsPanel(componentId, model);
+                        } else if(state == State.ERROR) {
+                            return new ActionsErrorPanel(componentId, model);
                         } else {
                             return new EmptyPanel(componentId, model);
                         }
@@ -218,6 +250,8 @@ public class BrowseEditableCollectionsPanel extends Panel {
                         State state = model.getObject().getState();
                         if(state == State.PUBLIC_FROZEN || state == State.PUBLIC || state == State.PRIVATE || isAdmin) {
                             return new ActionsPanel(componentId, model);
+                        } else if(state == State.ERROR) {
+                            return new ActionsErrorPanel(componentId, model);
                         } else {
                             return new EmptyPanel(componentId, model);
                         }
@@ -228,8 +262,9 @@ public class BrowseEditableCollectionsPanel extends Panel {
                         return reference;
                     }
                 };
+        table.setOutputMarkupId(true);
         add(table);
-  
+
         confirmHandler = new eu.clarin.cmdi.wicket.components.ConfirmationDialog.Handler<VirtualCollection>() {
             private IModel<VirtualCollection> model;
             
@@ -410,6 +445,11 @@ public class BrowseEditableCollectionsPanel extends Panel {
         confirmDeleteCollectionModel.setObject(new StringResourceModel("collections.deleteconfirm",new VolatileEntityModel<VirtualCollection>(vc)).getObject());
         confirmDeleteHandler.setObject(new VolatileEntityModel<>(vc));
         deleteDialog.show(target);
+    }
+
+    private void doRetry(AjaxRequestTarget target,
+                         IModel<VirtualCollection> model) {
+        confirmPublish(target, model);
     }
 
     private void doDetails(AjaxRequestTarget target, IModel<VirtualCollection> vc) {
