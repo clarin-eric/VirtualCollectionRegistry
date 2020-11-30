@@ -51,10 +51,12 @@ public class Creator implements Serializable, IdentifiedEntity, Orderable, Compa
 
     public Creator() {
         super();
+        this.displayOrder = 0L;
     }
 
     public Creator(String person) {
         super();
+        this.displayOrder = 0L;
         this.setPerson(person);
     }
 

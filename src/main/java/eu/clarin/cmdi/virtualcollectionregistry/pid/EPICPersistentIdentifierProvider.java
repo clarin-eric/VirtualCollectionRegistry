@@ -97,6 +97,9 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
 
     private String makeCollectionURI(VirtualCollection vc) {
         String base = baseUri;
+        if(base == null) {
+            throw new RuntimeException("baseUri cannot be null");
+        }
         if(base.endsWith("/")) {
             base = base.substring(0, base.length()-1);
         }

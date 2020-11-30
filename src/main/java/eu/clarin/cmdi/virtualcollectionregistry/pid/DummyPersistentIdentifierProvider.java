@@ -25,6 +25,9 @@ public class DummyPersistentIdentifierProvider implements
     @Override
     public PersistentIdentifier createIdentifier(VirtualCollection vc)
             throws VirtualCollectionRegistryException {
+        try {
+            Thread.sleep(10000);
+        } catch(InterruptedException ex) {}
         return new PersistentIdentifier(vc, PersistentIdentifier.Type.DUMMY,
                 "dummy-" + Long.toString(vc.getId()));
     }

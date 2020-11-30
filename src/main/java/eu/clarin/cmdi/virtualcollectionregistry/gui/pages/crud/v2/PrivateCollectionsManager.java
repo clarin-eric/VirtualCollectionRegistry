@@ -37,13 +37,13 @@ public class PrivateCollectionsManager implements Serializable {
     }
 
     public void set(int i, VirtualCollection collection) throws VirtualCollectionRegistryException {
-        logger.debug("Updating existing virtual collection with id: {}", collection.getId());
+        //logger.debug("Updating existing virtual collection with id: {}", collection.getId());
         Application.get().getRegistry().updateVirtualCollection(principal, collection.getId(), collection);
         this.provider.getList().set(i, collection);
     }
 
     public void add(VirtualCollection collection) throws VirtualCollectionRegistryException {
-        logger.debug("Creating new virtual collection");
+        //logger.debug("Creating new virtual collection");
         Application.get().getRegistry().createVirtualCollection(principal, collection);
         this.provider.getList().add(collection);
     }

@@ -96,10 +96,12 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
 
     public Resource() {
         super();
+        this.displayOrder = 0L;
     }
     
     public Resource(Resource.Type type, String ref) {
         super();
+        this.displayOrder = 0L;
         this.setType(type);
         this.setRef(ref);
     }

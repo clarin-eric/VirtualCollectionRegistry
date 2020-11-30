@@ -31,6 +31,7 @@ final class ColumnState extends AbstractColumn<VirtualCollection, String> {
         Label lbl = new Label(componentId, label);
         if(state == VirtualCollection.State.ERROR) {
             lbl.add(new AttributeModifier("data-toggle", "tooltip"));
+            lbl.add(new AttributeModifier("data-placement", "bottom"));
             lbl.add(new AttributeModifier("title", model.getObject().getProblem()));
         }
         item.add(lbl);

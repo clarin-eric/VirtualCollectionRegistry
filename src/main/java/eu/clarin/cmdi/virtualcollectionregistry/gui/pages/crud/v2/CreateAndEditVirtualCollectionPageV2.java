@@ -128,10 +128,12 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
                         //Search or exising collection
                         int idx = -1;
                         Long id = event.getData().getId();
-                        for(int i = 0; i < provider.size(); i++) {
-                            Long listId = provider.get(i).getId();
-                            if(listId.longValue() == id.longValue()) {
-                                idx = i;
+                        if(id != null) {
+                            for (int i = 0; i < provider.size(); i++) {
+                                Long listId = provider.get(i).getId();
+                                if (listId.longValue() == id.longValue()) {
+                                    idx = i;
+                                }
                             }
                         }
                         //Update or insert

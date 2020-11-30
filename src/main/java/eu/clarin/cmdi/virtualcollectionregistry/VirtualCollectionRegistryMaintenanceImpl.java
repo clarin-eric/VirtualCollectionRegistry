@@ -113,7 +113,7 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
             try {
                 PersistentIdentifier pid = provider.createIdentifier(vc);
                 if(pid.getType() == PersistentIdentifier.Type.DOI) {
-                    
+                    //TODO: implement
                 } else {
                     vc.setPersistentIdentifier(pid);
                 }
@@ -126,10 +126,18 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
                 } else {
                     vc.setProblem(VirtualCollection.Problem.PID_MINTING_UNKOWN);
                 }
+                logger.info("Set problem details: {}", vc.getProblemDetails());
+            } catch(Exception ex) {
+                logger.error("Failed to mint PID, setting vc to error state", ex);
+                vc.setState(VirtualCollection.State.ERROR);
+                vc.setProblem(VirtualCollection.Problem.UNKOWN);
+                vc.setProblemDetails(ex.getMessage());
+                logger.info("Set problem details: {}", vc.getProblemDetails());
             }
         }
 
-        em.persist(vc);
+        em.persist(vc); //update collection
+
         if(vc.hasPersistentIdentifier()) {
             logger.info("assigned pid (identifer='{}') to virtual"
                     + "collection (id={})",

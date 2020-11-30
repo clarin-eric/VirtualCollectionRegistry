@@ -422,7 +422,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             throw new IllegalArgumentException("id <= 0");
         }
 
-        logger.debug("retrieve virtual collection (id={})", id);
+        logger.trace("retrieve virtual collection (id={})", id);
 
         EntityManager em = datastore.getEntityManager();
         try {            
@@ -434,7 +434,6 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                 logger.debug("virtual collection (id={}) not found", id);
                 throw new VirtualCollectionNotFoundException(id);
             }
-            logger.debug("virtual collection retrieved (id={})", id);
             return vc;
         } catch (VirtualCollectionRegistryException e) {
             em.getTransaction().rollback();
