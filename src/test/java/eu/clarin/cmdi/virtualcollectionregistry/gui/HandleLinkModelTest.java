@@ -72,4 +72,26 @@ public class HandleLinkModelTest {
         assertEquals("Something else", instance.getObject());
     }
 
+    @Test
+    public void testIsHandle() {
+        assertTrue(HandleLinkModel.isHandle("hdl:123/456"));
+        assertTrue(HandleLinkModel.isHandle("https://hdl.handle.net/123/456"));
+        assertTrue(HandleLinkModel.isHandle("http://hdl.handle.net/123/456"));
+        assertTrue(HandleLinkModel.isHandle("https://handle.net/123/456"));
+        assertTrue(HandleLinkModel.isHandle("http://handle.net/123/456"));
+    }
+
+    @Test
+    public void testIsDoi() {
+        assertTrue(HandleLinkModel.isDoi("doi:10.5281/zenodo.3694223"));
+        assertTrue(HandleLinkModel.isDoi("https://doi.org/10.5281/zenodo.3694223"));
+        assertTrue(HandleLinkModel.isDoi("http://doi.org/10.5281/zenodo.3694223"));
+        assertTrue(HandleLinkModel.isDoi("https://dx.doi.org/10.5281/zenodo.3694223"));
+        assertTrue(HandleLinkModel.isDoi("http://dx.doi.org/10.5281/zenodo.3694223"));
+    }
+
+    @Test
+    public void testIsNbn() {
+        assertTrue(HandleLinkModel.isNbn("urn:nbn:whatever"));
+    }
 }
