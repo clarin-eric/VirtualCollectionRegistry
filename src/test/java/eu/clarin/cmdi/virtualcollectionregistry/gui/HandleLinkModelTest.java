@@ -77,8 +77,8 @@ public class HandleLinkModelTest {
         assertTrue(HandleLinkModel.isHandle("hdl:123/456"));
         assertTrue(HandleLinkModel.isHandle("https://hdl.handle.net/123/456"));
         assertTrue(HandleLinkModel.isHandle("http://hdl.handle.net/123/456"));
-        assertTrue(HandleLinkModel.isHandle("https://handle.net/123/456"));
-        assertTrue(HandleLinkModel.isHandle("http://handle.net/123/456"));
+        assertFalse(HandleLinkModel.isHandle("https://handle.net/123/456"));
+        assertFalse(HandleLinkModel.isHandle("http://handle.net/123/456"));
     }
 
     @Test
