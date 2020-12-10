@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.table;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.VirtualCollectionDetailsPage;
+import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
@@ -22,27 +23,39 @@ import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 
+import java.util.HashMap;
+import java.util.Map;
+
 @SuppressWarnings("serial")
 final class ColumnName extends AbstractColumn<VirtualCollection, String> {
     
     private final VirtualCollectionTable table;
 
+    private final Map<Long, Boolean> collapsedState= new HashMap<>();
     
     private final class ItemCell extends Panel {
         private final WebMarkupContainer nameColumn;
 
         public ItemCell(String id, IModel<VirtualCollection> model) {
             super(id);
+
+            final VirtualCollection vc = model.getObject();
+            if(!collapsedState.containsKey(vc.getId())) {
+                collapsedState.put(vc.getId(), false);
+            }
+
             setRenderBodyOnly(true);
 
             nameColumn = new WebMarkupContainer("nameColumn");
             nameColumn.setOutputMarkupId(true);
-            
-            final VirtualCollection vc = model.getObject();
-            
+
             final WebMarkupContainer details = new WebMarkupContainer("details");
             details.setOutputMarkupId(true);
-
+            if(!collapsedState.get(vc.getId())) {
+                details.add(new AttributeModifier("class", Model.of("details col-xs-12 collapse")));
+            } else {
+                details.add(new AttributeModifier("class", Model.of("details col-xs-12")));
+            }
             WebMarkupContainer problems = new WebMarkupContainer("problems");
             Label lblProblems = new Label("lbl_problems", Model.of(vc.getProblemDetails() == null ? "Errors: No details available" : "Errors: "+vc.getProblemDetails()));
             problems.setVisible(vc.getState() == VirtualCollection.State.ERROR);
@@ -65,9 +78,22 @@ final class ColumnName extends AbstractColumn<VirtualCollection, String> {
             }
             details.add(descLabel);
             
-            AbstractLink toggleLink = new AbstractLink("toggle-link") {};            
-            toggleLink.add(new AttributeModifier("data-toggle", new Model<>("collapse")));
-            toggleLink.add(new AttributeModifier("data-target", new Model<>("#"+details.getMarkupId())));
+            AjaxFallbackLink toggleLink = new AjaxFallbackLink("toggle-link") {
+                @Override
+                public void onClick(AjaxRequestTarget target) {
+                    collapsedState.put(vc.getId(), !collapsedState.get(vc.getId()));
+                    if(target != null) {
+                        target.add(table);
+                    }
+                }
+            };
+            if(!collapsedState.get(vc.getId())) {
+                toggleLink.add(new AttributeModifier("class", Model.of("hover collapsed")));
+            } else {
+                toggleLink.add(new AttributeModifier("class", Model.of("hover")));
+            }
+            //toggleLink.add(new AttributeModifier("data-toggle", new Model<>("collapse")));
+            //toggleLink.add(new AttributeModifier("data-target", new Model<>("#"+details.getMarkupId())));
             
             AjaxLink citeButton = new AjaxLink( "name", new Model<String>("") ){ 
             @Override
@@ -94,6 +120,7 @@ final class ColumnName extends AbstractColumn<VirtualCollection, String> {
     ColumnName(VirtualCollectionTable table) {
         super(new ResourceModel("column.name", "Name"), "name");
         this.table = table;
+        this.table.setOutputMarkupId(true);
     }
 
     @Override
