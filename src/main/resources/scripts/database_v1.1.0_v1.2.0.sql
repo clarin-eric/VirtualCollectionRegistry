@@ -18,5 +18,8 @@ UPDATE creator SET display_order = 1;
 
 ALTER TABLE virtualcollection ADD COLUMN `problem_details` TEXT NULL;
 
+-- Allow one to many relation from collection to pid
+DROP INDEX vc_id ON pid;
+
 -- Update current database config value
 UPDATE `config` SET `value` = '1.2.0' WHERE `key` = 'db_version';

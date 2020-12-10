@@ -203,6 +203,7 @@ public class BasePage extends WebPage {
         // skip lazy auto-auth for login page
         if (!this.getClass().isInstance(LoginPage.class)) {
             AuthenticationHandler.handleAuthentication(getSession());
+            //AuthenticationHandler.handleOptionalLogin(getSession(), this);
         }
         super.onBeforeRender();
     }

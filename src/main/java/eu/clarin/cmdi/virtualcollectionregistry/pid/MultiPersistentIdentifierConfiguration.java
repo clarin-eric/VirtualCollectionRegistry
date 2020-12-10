@@ -41,7 +41,7 @@ public class MultiPersistentIdentifierConfiguration {
 
         //DOI provider for citable identifiers
         PersistentIdentifierProvider doi = new DoiPersistentIdentifierProvider(
-                new PidWriterImpl(),
+                new DoiPidWriter(),
                 new Configuration(doiServiceBaseUrl, doiHandlePrefix, doiUser, doiPassword));
 
         List<PersistentIdentifierProvider> list = new LinkedList<>();

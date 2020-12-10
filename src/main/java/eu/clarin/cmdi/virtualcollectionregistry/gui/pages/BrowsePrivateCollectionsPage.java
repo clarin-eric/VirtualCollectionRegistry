@@ -19,19 +19,6 @@ public class BrowsePrivateCollectionsPage extends BasePage {
                 new BrowseEditableCollectionsPanel("collections", new PrivateCollectionsProvider(), getPageReference());
         pnl.setOutputMarkupId(true);
         add(pnl);
-/*
-        //This breaks the buttons on the page
-        logger.info("Added updating timer");
-        add(new AbstractAjaxTimerBehavior(Duration.seconds(1)) {
-            @Override
-            protected void onTimer(AjaxRequestTarget target) {
-                logger.info("My collections panel timer tick...");
-                if(target != null) {
-                    target.add(pnl);
-                }
-            }
-        });
-  */
     }
     
 }

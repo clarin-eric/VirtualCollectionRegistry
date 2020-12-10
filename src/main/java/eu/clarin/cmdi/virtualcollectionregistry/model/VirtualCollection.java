@@ -349,8 +349,11 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         if (persistentId == null) {
             throw new NullPointerException("pid == null");
         }
-        if (hasPersistentIdentifier() || !(state == State.PUBLIC_PENDING || state == State.PUBLIC_FROZEN_PENDING)) {
-            throw new IllegalStateException("illegal state");
+        if (persistentId.getPrimary() && hasPersistentIdentifier()) {
+            throw new IllegalStateException("Already has a primary peristent identifier");
+        }
+        if(!(state == State.PUBLIC_PENDING || state == State.PUBLIC_FROZEN_PENDING || state == State.ERROR)) {
+            throw new IllegalStateException("illegal state, current state = "+state);
         }
 
         if(this.identifiers == null) {
@@ -358,11 +361,14 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         }
         this.identifiers.add(persistentId);
 
+        /*
         switch(state) {
             case PUBLIC_PENDING: this.state = State.PUBLIC; break;
             case PUBLIC_FROZEN_PENDING: this.state = State.PUBLIC_FROZEN; break;
+            case ERROR: this.state = State.PUBLIC; break; //TODO: properly handle switching from ERROR to PUBLIC_FROZEN state
             default: throw new IllegalStateException("Invalid state transition. Unexpected source state: "+state);
         }
+         */
     }
 
     public VirtualCollection.Problem getProblem() {
@@ -382,6 +388,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
             throw new NullPointerException("state == null");
         }
         this.state = state;
+        this.setDateModified(new Date());
     }
 
     public boolean isPrivate() {

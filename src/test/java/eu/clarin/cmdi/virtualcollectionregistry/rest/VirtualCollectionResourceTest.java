@@ -95,7 +95,7 @@ public class VirtualCollectionResourceTest {
         final Response response = instance.getVirtualCollection(request);
         assertEquals(200, response.getStatus());
         assertEquals(vc, response.getEntity());
-        assertEquals(VirtualCollection.State.PUBLIC, vc.getState());
+        assertEquals(VirtualCollection.State.PUBLIC_PENDING, vc.getState());
     }
 
     /**
@@ -122,7 +122,7 @@ public class VirtualCollectionResourceTest {
         final Response response = instance.getVirtualCollection(request);
         assertEquals(200, response.getStatus());
         assertEquals(vc, response.getEntity());
-        assertEquals(VirtualCollection.State.PUBLIC_FROZEN, vc.getState());
+        assertEquals(VirtualCollection.State.PUBLIC_FROZEN_PENDING, vc.getState());
     }
     
     /**

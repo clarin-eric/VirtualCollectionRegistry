@@ -5,8 +5,7 @@ import java.io.File;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
-import java.util.HashSet;
-import java.util.Set;
+import java.util.*;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -21,6 +20,7 @@ import org.springframework.stereotype.Component;
 public class AdminUsersServiceImpl implements AdminUsersService {
 
     private final static Logger logger = LoggerFactory.getLogger(AdminUsersServiceImpl.class);
+
     private final Set<String> adminUsers = new HashSet<>();
 
     @Value("${eu.clarin.cmdi.virtualcollectionregistry.admindb:}")
@@ -68,8 +68,7 @@ public class AdminUsersServiceImpl implements AdminUsersService {
         } else {
             filenameWithPath = adminDbBaseDir + filename;
         }
-               
-        
+
         logger.info("filenameWithPath: "+filenameWithPath);
         
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(
@@ -83,6 +82,16 @@ public class AdminUsersServiceImpl implements AdminUsersService {
                 adminUsers.add(line);
             } // while
         }
+    }
+
+
+    public List<String> getAdminUsers() {
+        List<String> admins = new LinkedList<>();
+        for(String admin : this.adminUsers) {
+            admins.add(admin);
+        }
+        Collections.sort(admins);
+        return admins;
     }
 
 }

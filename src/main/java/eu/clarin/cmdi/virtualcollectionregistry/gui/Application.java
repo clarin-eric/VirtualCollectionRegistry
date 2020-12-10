@@ -8,17 +8,12 @@ import eu.clarin.cmdi.virtualcollectionregistry.DataStore;
 import eu.clarin.cmdi.virtualcollectionregistry.JavaScriptResources;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AboutPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AdminPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePrivateCollectionsPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePublicCollectionsPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.*;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1.CreateAndEditVirtualCollectionPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.HelpPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.CreateAndEditVirtualCollectionPageV2;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmitVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LoginPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LogoutPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.VirtualCollectionDetailsPage;
 import eu.clarin.cmdi.wicket.ExtremeNoopTheme;
 import org.apache.wicket.Page;
 import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
@@ -98,6 +93,7 @@ public class Application extends AuthenticatedWebApplication {
         mountPage("/admin", AdminPage.class);
         mountPage("/details/${id}", VirtualCollectionDetailsPage.class);
         mountPage("/submit/${type}", SubmitVirtualCollectionPage.class);
+        mountPage("/profile", UserProfilePage.class);
     }
 
     @Override

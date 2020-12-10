@@ -9,14 +9,11 @@ public abstract interface PersistentIdentifierProvider {
 
     String getId();
     
-    PersistentIdentifier createIdentifier(VirtualCollection vc)
-            throws VirtualCollectionRegistryException;
+    PersistentIdentifier createIdentifier(VirtualCollection vc) throws VirtualCollectionRegistryException;
 
-    void updateIdentifier(String pid, URI target)
-            throws VirtualCollectionRegistryException;
+    void updateIdentifier(String pid, URI target) throws VirtualCollectionRegistryException;
 
-    void deleteIdentifier(String pid)
-            throws VirtualCollectionRegistryException;
+    void deleteIdentifier(String pid) throws VirtualCollectionRegistryException;
 
     boolean ownsIdentifier(String pid);
 

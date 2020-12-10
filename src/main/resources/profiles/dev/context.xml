@@ -14,13 +14,13 @@
                     username="vcruser"
                     password="vcrpassword"
                     url="jdbc:mysql://localhost:3306/vcr" />
-    <!--
+
     <Parameter
                name="eu.clarin.cmdi.virtualcollectionregistry.admindb.basedir"
-               value="/Users/wilelb" />
-    -->
+               value="." override="false"/>
+
     <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.admindb"
-               value="vcr-admin.conf" />
+               value="vcr-admin.conf" override="false"/>
 
     <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.collectiondisplayname"
                value="CLARIN Virtual Collection Registry" />
@@ -28,7 +28,29 @@
     <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.base_uri"
                value="http://localhost:8080/VirtualCollectionRegistry"
                override="false"/>
-    
+
+    <!-- Configure pid providers configuration -->
+    <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.pidprovider.basedir"
+               value="."
+               override="false"/>
+
+    <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.pidprovider.configfile"
+               value="pidproviders.properties"
+               override="false"/>
+
+    <!--
+        Available profiles:
+        - vcr.pid.dummy
+        - vcr.pid.gwdg
+        - vcr.pid.epic
+        - vcr.pid.doi
+        - vcr.pid.multi
+    -->
+    <Parameter name="spring.profiles.active"
+               value="vcr.pid.multi"
+               override="false"/>
+
+    <!-- EPIC -->
     <Parameter name="pid_provider.epic.service_base_url"
                value="http://pid-vm04.gwdg.de:8080/handles/"
                override="false"/>
@@ -42,9 +64,26 @@
                override="false"/>
     
     <Parameter name="pid_provider.epic.password"
-               value="xrl#4xbE"
+               value=""
                override="false"/>
-    
+
+    <!-- DataCite DOI test environment -->
+    <Parameter name="pid_provider.doi.service_base_url"
+               value="https://api.test.datacite.org/"
+               override="false"/>
+
+    <Parameter name="pid_provider.doi.handle_prefix"
+               value="10.17907"
+               override="false"/>
+
+    <Parameter name="pid_provider.doi.user"
+               value=""
+               override="false"/>
+
+    <Parameter name="pid_provider.doi.password"
+               value=""
+               override="false"/>
+
     <!-- Switchboard endpoint -->
     <Parameter name="eu.clarin.cmdi.vcr.lrs.endpoint" 
                value="https://switchboard.clarin.eu/#/vcr" 
