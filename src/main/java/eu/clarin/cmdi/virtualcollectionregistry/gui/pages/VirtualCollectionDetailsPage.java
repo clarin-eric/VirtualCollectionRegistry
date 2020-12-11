@@ -75,7 +75,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
 
     private final static Logger logger = LoggerFactory.getLogger(VirtualCollectionDetailsPage.class);
     
-    public static final String PARAM_VC_ID = "id";
+    public static final String PARAM_VC_ID = "collection-id";
     public static final String PARAM_BACK_PAGE = "backPage";
     //private static final String CSS_CLASS = "collectionDetails";
     private static final IConverter convDate = new DateConverter();
@@ -370,21 +370,6 @@ public class VirtualCollectionDetailsPage extends BasePage {
     private DataTable<Resource, String> buildResourcesTable(String id, final IModel<VirtualCollection> model) {
         @SuppressWarnings("rawtypes")
             final List<IColumn<Resource, String>> cols = new ArrayList<>();
-            cols.add(new PropertyColumn<Resource, String>(
-                    Model.of("Type"), "type") {
-                        @Override
-                        public void populateItem(Item<ICellPopulator<Resource>> item,
-                                String componentId, IModel<Resource> model) {
-                            final Resource.Type type = model.getObject().getType();
-                            item.add(new Label(componentId,
-                                            convEnum.convertToString(type, getLocale())));
-                        }
-
-                        @Override
-                        public String getCssClass() {
-                            return "type";
-                        }
-                    });
             cols.add(new AbstractColumn<Resource, String>(Model.of("Reference")) {
                 @Override
                 public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> rowModel) {                

@@ -20,7 +20,7 @@ public class VcrChoiceField extends AbstractField {
     private static final Logger logger = LoggerFactory.getLogger(VcrChoiceField.class);
 
     public VcrChoiceField(String id, String label, List<String> choices, final IModel<String> dataModel) {
-        super(id, label, dataModel, null, new RadioChoice<>("input_radio_choice", dataModel, choices));
+        super(id, label, dataModel, null, new RadioChoice<>("input_radio_choice", dataModel, choices), true);
     }
         
     @Override

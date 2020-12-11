@@ -97,7 +97,7 @@ public class VirtualCollectionCMDIWriterImplTest extends XMLTestCase {
         vc.getKeywords().add("keyword1");
         vc.getKeywords().add("keyword2");
 
-        final Creator creator = new Creator("Test creator");
+        final Creator creator = new Creator("Test","creator");
         creator.setEMail("test@creator.org");
         creator.setOrganisation("Test Inc.");
         vc.getCreators().add(creator);

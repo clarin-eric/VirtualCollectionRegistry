@@ -169,7 +169,8 @@ import org.slf4j.LoggerFactory;
 
      public class AuthorEditPanel extends Panel implements FieldComposition {
 
-         private final IModel<String> mdlName = new Model<>();
+         private final IModel<String> mdlFamilyName = new Model<>();
+         private final IModel<String> mdlGivenName = new Model<>();
          private final IModel<String> mdlEmail = new Model<>();
          private final IModel<String> mdlAffiliation = new Model<>();
 
@@ -206,25 +207,30 @@ import org.slf4j.LoggerFactory;
 
              if(editableAuthor != null) {
                  Creator a = editableAuthor.getData();
-                 mdlName.setObject(a.getPerson());
+                 mdlFamilyName.setObject(a.getFamilyName());
+                 mdlGivenName.setObject(a.getGivenName());
                  mdlEmail.setObject(a.getEMail());
                  mdlAffiliation.setObject(a.getOrganisation());
              }
 
-             AbstractField f1 = new VcrTextField("author_name", "Name", "New author name", mdlName, this);
+             AbstractField f1 = new VcrTextField("author_family_name", "Family Name", "New author family name", mdlFamilyName, this);
              f1.setRequired(true);
-             AbstractField f2 = new VcrTextField("author_email", "Email", "New author email", mdlEmail, this);
+             AbstractField f2 = new VcrTextField("author_given_name", "Given Name", "New author given name", mdlGivenName, this);
              f2.setRequired(true);
-             AbstractField f3 = new VcrTextField("author_affiliation", "Affiliation", "New author affiliation (optional)", mdlAffiliation, this);
-             f3.setCompleteSubmitOnUpdate(true);
+             AbstractField f3 = new VcrTextField("author_email", "Email", "New author email", mdlEmail, this);
+             f3.setRequired(true);
+             AbstractField f4 = new VcrTextField("author_affiliation", "Affiliation", "New author affiliation (optional)", mdlAffiliation, this);
+             f4.setCompleteSubmitOnUpdate(true);
 
              fields.add(f1);
              fields.add(f2);
              fields.add(f3);
+             fields.add(f4);
 
              add(f1);
              add(f2);
              add(f3);
+             add(f4);
          }
 
          public boolean validate() {
@@ -248,27 +254,32 @@ import org.slf4j.LoggerFactory;
                  logger.trace("focusCount < 0, this is an invalid composition focus state");
              } else {
                  //focusCount = 0, so all components in the composition lost focus. Submit now.
-                 logger.trace("Completing author submit: name=" + mdlName.getObject() + ", email=" + mdlEmail.getObject() + ", affiliation=" + mdlAffiliation.getObject());
+                 logger.trace("Completing author submit: name="+mdlFamilyName.getObject()+
+                         ", "+mdlGivenName.getObject()+", email=" + mdlEmail.getObject() +
+                         ", affiliation=" + mdlAffiliation.getObject());
                  boolean valid = validate();
                  if (valid) {
-                     String name = mdlName.getObject();
+                     String familyName = mdlFamilyName.getObject();
+                     String givenName = mdlGivenName.getObject();
                      String email = mdlEmail.getObject();
                      String affiliation = mdlAffiliation.getObject() == null ? null : mdlAffiliation.getObject();
 
                      //Create or edit
                      if(editableAuthor == null) {
-                         Creator creator = new Creator(name);
+                         Creator creator = new Creator(mdlFamilyName.getObject(), mdlGivenName.getObject());
                          creator.setEMail(email);
                          creator.setOrganisation(affiliation);
                          authors.add(new Editable(creator));
                      } else {
-                         editableAuthor.getData().setPerson(name);
+                         editableAuthor.getData().setFamilyName(mdlFamilyName.getObject());
+                         editableAuthor.getData().setGivenName(mdlGivenName.getObject());
                          editableAuthor.getData().setEMail(email);
                          editableAuthor.getData().setOrganisation(affiliation);
                          editableAuthor.setEditing(false);
                      }
 
-                     mdlName.setObject("");
+                     mdlFamilyName.setObject("");
+                     mdlGivenName.setObject("");
                      mdlEmail.setObject("");
                      mdlAffiliation.setObject("");
 

@@ -46,7 +46,8 @@ public class AuthorsInput extends FormComponentPanel<List<Creator>> {
     
     private static Logger logger = LoggerFactory.getLogger(AuthorsInput.class);
     
-    final private IModel<String> personModel = Model.of("");
+    final private IModel<String> familyNameModel = Model.of("");
+    final private IModel<String> givenNameModel = Model.of("");
     final private IModel<String> emailModel = Model.of("");
     final private IModel<String> organisationModel = Model.of("");
     final private IModel<List<Creator>> listModel;
@@ -105,7 +106,8 @@ public class AuthorsInput extends FormComponentPanel<List<Creator>> {
         form.setOutputMarkupId(true);
 
         Label lbl = new Label("label", "Author(s)");		
-        TextField<String> inputPerson = new TextField("input_person", personModel);
+        TextField<String> inputFamilyName = new TextField("input_person_family", familyNameModel);
+        TextField<String> inputGivenName = new TextField("input_person_given", givenNameModel);
         //inputPerson.setRequired(true);
         TextField<String> inputEmail = new TextField("input_email", emailModel);
         //inputEmail.setRequired(true);
@@ -120,18 +122,21 @@ public class AuthorsInput extends FormComponentPanel<List<Creator>> {
                     
                    logger.info("Authors form successfully submitted!");
                 
-                    String person = personModel.getObject();
+                    String familyName = familyNameModel.getObject();
+                    String givenName = givenNameModel.getObject();
                     String email = emailModel.getObject();
                     String organisation = organisationModel.getObject();
 
                     //logger.info("person: ["+person+"], email: ["+email+"], org: ["+organisation+"]");
                     List<String> errors = new ArrayList<>();
-                    if (person == null || person.isEmpty()) {
-                        errors.add("Person is a required field.");
+                    if (familyName == null || familyName.isEmpty()) {
+                        errors.add("familyName is a required field.");
                     }
-
+                    if (givenName == null || givenName.isEmpty()) {
+                        errors.add("givenName is a required field.");
+                    }
                     if (errors.isEmpty()) {
-                        Creator creator = new Creator(person);
+                        Creator creator = new Creator(familyName, givenName);
                         if (email != null && !email.isEmpty()) {
                             creator.setEMail(email);
                         }
@@ -140,7 +145,8 @@ public class AuthorsInput extends FormComponentPanel<List<Creator>> {
                         }
 
                         listModel.getObject().add(creator);
-                        personModel.setObject(null);
+                        familyNameModel.setObject(null);
+                        givenNameModel.setObject(null);
                         emailModel.setObject(null);
                         organisationModel.setObject(null);
                     }
@@ -174,7 +180,8 @@ public class AuthorsInput extends FormComponentPanel<List<Creator>> {
         };
 
         form.add(lbl);   
-        form.add(inputPerson);
+        form.add(inputFamilyName);
+        form.add(inputGivenName);
         form.add(inputEmail);
         form.add(inputOrganisation);
         form.add(btnAdd);              

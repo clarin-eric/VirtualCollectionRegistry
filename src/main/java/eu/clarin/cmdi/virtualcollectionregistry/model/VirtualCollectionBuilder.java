@@ -120,17 +120,20 @@ public class VirtualCollectionBuilder {
     
     public VirtualCollectionBuilder addCreator(Principal p) throws VirtualCollectionRegistryUsageException {
         if(p != null && p.getName() != null) {
-            Creator c = new Creator(p.getName());
+            Creator c = new Creator(p.getName(), "");
             this.vc.getCreators().add(c);
         }
         return this;
     }
     
-    public VirtualCollectionBuilder addCreator(String name) throws VirtualCollectionRegistryUsageException {
-        if(name == null) {
-            throw new VirtualCollectionRegistryUsageException("Cannot set creator from empty name");
+    public VirtualCollectionBuilder addCreator(String familyName, String givenName) throws VirtualCollectionRegistryUsageException {
+        if(familyName == null) {
+            throw new VirtualCollectionRegistryUsageException("Cannot set creator from empty familyName");
         }
-        Creator c = new Creator(name);
+        if(givenName == null) {
+            throw new VirtualCollectionRegistryUsageException("Cannot set creator from empty givenName");
+        }
+        Creator c = new Creator(familyName, givenName);
         this.vc.getCreators().add(c);
         return this;
     }

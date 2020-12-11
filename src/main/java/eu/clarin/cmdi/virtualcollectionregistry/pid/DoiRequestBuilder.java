@@ -17,9 +17,9 @@ public class DoiRequestBuilder {
         request.addTitle(vc.getTitle());
         for(Creator vc_creator: vc.getCreators()) {
             if(vc_creator.getOrganisation() != null && !vc_creator.getOrganisation().isEmpty()) {
-                request.addCreator(vc_creator.getPerson(), vc_creator.getOrganisation());
+                request.addCreator(vc_creator.getFamilyName(), vc_creator.getGivenName(), vc_creator.getOrganisation());
             } else {
-                request.addCreator(vc_creator.getPerson(), vc_creator.getOrganisation());
+                request.addCreator(vc_creator.getFamilyName(), vc_creator.getGivenName());
             }
         }
         return request;

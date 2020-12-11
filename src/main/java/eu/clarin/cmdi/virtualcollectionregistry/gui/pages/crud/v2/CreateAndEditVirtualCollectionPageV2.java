@@ -39,6 +39,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
 
     private static Logger logger = LoggerFactory.getLogger(CreateAndEditVirtualCollectionPageV2.class);
 
+    public final static String PARAM_VC_ID = "collection-id";
     @SpringBean
     private VirtualCollectionRegistry vcr;
 
@@ -64,7 +65,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
      * @throws VirtualCollectionRegistryException
      */
     public CreateAndEditVirtualCollectionPageV2(PageParameters params) throws VirtualCollectionRegistryException {
-        this(params.get("collection-id").toLong(), null);
+        this(params.get(PARAM_VC_ID).toLong(), null);
     }
 
     /**

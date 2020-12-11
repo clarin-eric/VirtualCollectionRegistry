@@ -11,7 +11,7 @@ public class VcrTextFieldWithoutLabel extends AbstractField {
     }
 
     public VcrTextFieldWithoutLabel(String id, String placeHolderValue, final IModel dataModel, final FieldComposition parent) {
-        super(id, null, dataModel, parent, new TextField("input_textfield", dataModel));
+        super(id, null, dataModel, parent, new TextField("input_textfield", dataModel), true);
         if(placeHolderValue != null && !placeHolderValue.isEmpty()) {
             editComponent.add(new AttributeModifier("placeholder", placeHolderValue));
         }

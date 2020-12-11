@@ -21,5 +21,8 @@ ALTER TABLE virtualcollection ADD COLUMN `problem_details` TEXT NULL;
 -- Allow one to many relation from collection to pid
 DROP INDEX vc_id ON pid;
 
+ALTER TABLE creator CHANGE `person` `family_name` VARCHAR(255);
+ALTER TABLE creator ADD COLUMN `given_name` VARCHAR(255) NULL;
+
 -- Update current database config value
 UPDATE `config` SET `value` = '1.2.0' WHERE `key` = 'db_version';

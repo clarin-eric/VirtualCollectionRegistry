@@ -15,7 +15,7 @@ public class VcrTextArea extends AbstractField {
     }
 
     public VcrTextArea(String id, String label, String placeHolderValue, final IModel dataModel) {
-        super(id, label, dataModel, null, new TextArea("input", dataModel));
+        super(id, label, dataModel, null, new TextArea("input", dataModel), false);
 
         Label lbl = new Label("markdown", "Note: Markdown supported (<a target=\"_new\" href=\"https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet\">cheat sheet</a>)");
         lbl.setEscapeModelStrings(false);

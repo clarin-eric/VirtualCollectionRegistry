@@ -44,7 +44,7 @@ public class VirtualCollectionPrePublicationValidatorTest {
         vc.setDescription("Description");
         vc.setPurpose(VirtualCollection.Purpose.SAMPLE);
         vc.setReproducibility(VirtualCollection.Reproducibility.INTENDED);
-        vc.getCreators().add(new Creator("creator"));
+        vc.getCreators().add(new Creator("Test", "creator"));
         instance = new VirtualCollectionPrePublicationValidator();
     }
     

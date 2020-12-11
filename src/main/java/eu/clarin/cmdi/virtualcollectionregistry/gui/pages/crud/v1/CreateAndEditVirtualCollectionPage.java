@@ -159,7 +159,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
                 if(vc.getOwner() == null) {
                     Principal p = getUser();
                     vc.setOwner(new User(p.getName()));
-                    vc.getCreators().add(new Creator(p.getName()));
+                    vc.getCreators().add(new Creator(p.getName(), ""));
                 }
                 
                 this.submissionMode = true;

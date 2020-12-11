@@ -57,17 +57,20 @@ public abstract class AbstractField extends Panel implements Field {
     private String label;
     private Label lbl;
 
+    private final boolean enableOnKeySubmit;
+
     public AbstractField(String id, String label, Component editComponent) {
-        this(id, label, new Model<>(), null, editComponent);
+        this(id, label, new Model<>(), null, editComponent, true);
     }
     
-    public AbstractField(String id, String label, final IModel dataModel, final FieldComposition parent, Component editComponent) {
+    public AbstractField(String id, String label, final IModel dataModel, final FieldComposition parent, Component editComponent, boolean enableOnKeySubmit) {
         super(id);
         this.label = label;
         this.editComponent = editComponent;
         this.dataModel = dataModel;
+        this.enableOnKeySubmit = enableOnKeySubmit;
         setOutputMarkupId(true);
-        
+
         addUpdatingBehavior(editComponent, parent, this);
         if(editComponent != null) {
             add(editComponent);
@@ -89,9 +92,11 @@ public abstract class AbstractField extends Panel implements Field {
     
     protected void addUpdatingBehavior(Component c, final FieldComposition parent, final Component t) {
         if(c != null) {
-            c.add(getOnFocusUpdatingBehavior(parent));
+            //c.add(getOnFocusUpdatingBehavior(parent));
             c.add(getOnBlurUpdatingBehavior(parent, t));
-           // c.add(getOnKeySubmitBehavior(parent, t));
+            if(this.enableOnKeySubmit) {
+                c.add(getOnKeySubmitBehavior(parent, t));
+            }
         }
     }
     

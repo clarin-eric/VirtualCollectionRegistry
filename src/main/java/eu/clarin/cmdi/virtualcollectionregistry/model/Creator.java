@@ -9,7 +9,6 @@ import javax.persistence.GenerationType;
 import javax.persistence.Id;
 import javax.persistence.Table;
 
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.authors.AuthorsEditor;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.jetbrains.annotations.NotNull;
@@ -25,8 +24,11 @@ public class Creator implements Serializable, IdentifiedEntity, Orderable, Compa
     @Column(name = "id", nullable = false, updatable = false)
     private Long id;
 
-    @Column(name = "person", nullable = false, length = 255)
-    private String person;
+    @Column(name = "family_name", nullable = false, length = 255)
+    private String familyName;
+
+    @Column(name = "given_name", nullable = false, length = 255)
+    private String givenName;
 
     @Column(name = "address", length = 255)
     private String address;
@@ -54,11 +56,13 @@ public class Creator implements Serializable, IdentifiedEntity, Orderable, Compa
         this.displayOrder = 0L;
     }
 
-    public Creator(String person) {
+    public Creator(String familyName, String givenName) {
         super();
         this.displayOrder = 0L;
-        this.setPerson(person);
+        this.setFamilyName(familyName);
+        this.setGivenName(givenName);
     }
+
 
     @Override
     public Long getId() {
@@ -66,11 +70,10 @@ public class Creator implements Serializable, IdentifiedEntity, Orderable, Compa
     }
 
     public String getPerson() {
-        return person;
-    }
-
-    public void setPerson(String person) {
-        this.person = person;
+        if(getGivenName() == null) {
+            return getFamilyName();
+        }
+        return getFamilyName() +", "+ getGivenName();
     }
 
     public String getAddress() {
@@ -161,7 +164,8 @@ public class Creator implements Serializable, IdentifiedEntity, Orderable, Compa
         address = other.getAddress();
         email = other.getEMail();
         organisation = other.getOrganisation();
-        person = other.getPerson();
+        givenName = other.getGivenName();
+        familyName = other.getFamilyName();
         role = other.getRole();
         telephone = other.getTelephone();
         website = other.getWebsite();
@@ -178,7 +182,8 @@ public class Creator implements Serializable, IdentifiedEntity, Orderable, Compa
         copy.setAddress(address);
         copy.setEMail(email);
         copy.setOrganisation(organisation);
-        copy.setPerson(person);
+        copy.setFamilyName(familyName);
+        copy.setGivenName(givenName);
         copy.setRole(role);
         copy.setTelephone(telephone);
         copy.setWebsite(website);
@@ -203,4 +208,19 @@ public class Creator implements Serializable, IdentifiedEntity, Orderable, Compa
         return 0;
     }
 
+    public String getFamilyName() {
+        return familyName;
+    }
+
+    public void setFamilyName(String familyName) {
+        this.familyName = familyName;
+    }
+
+    public String getGivenName() {
+        return givenName;
+    }
+
+    public void setGivenName(String givenName) {
+        this.givenName = givenName;
+    }
 } // class Creator

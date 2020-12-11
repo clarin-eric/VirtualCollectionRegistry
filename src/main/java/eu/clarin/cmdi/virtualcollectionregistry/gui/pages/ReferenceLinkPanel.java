@@ -44,13 +44,12 @@ public class ReferenceLinkPanel extends Panel {
     public ReferenceLinkPanel(String id, IModel<Resource> model) {
         super(id, model);
         
-        if(model.getObject().hasPersistentIdentifier()) {
-            add(new PidPanel("link", new Model<>(model.getObject()), "resource (file or service)"));
-        } else {
-            // Shared rerence model
-            final PropertyModel<String> refModel = new PropertyModel<>(model, "ref");     
-            add(new LinkPanel("link", refModel,  new ReferenceLabelModel(model)));
-        }
+        final PropertyModel<String> refModel = new PropertyModel<>(model, "ref");
+        add(new LinkPanel("link", refModel,  new ReferenceLabelModel(model)));
+
+        PidPanel pPanel = new PidPanel("pid", new Model<>(model.getObject()), "resource (file or service)");
+        pPanel.setVisible(model.getObject().hasPersistentIdentifier());
+        add(pPanel);
 
         String htmlValue = "";
         if(model.getObject().getDescription() != null) {

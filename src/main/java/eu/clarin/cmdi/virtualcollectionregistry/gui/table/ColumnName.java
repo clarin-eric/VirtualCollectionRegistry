@@ -92,9 +92,7 @@ final class ColumnName extends AbstractColumn<VirtualCollection, String> {
             } else {
                 toggleLink.add(new AttributeModifier("class", Model.of("hover")));
             }
-            //toggleLink.add(new AttributeModifier("data-toggle", new Model<>("collapse")));
-            //toggleLink.add(new AttributeModifier("data-target", new Model<>("#"+details.getMarkupId())));
-            
+
             AjaxLink citeButton = new AjaxLink( "name", new Model<String>("") ){ 
             @Override
             public void onClick( AjaxRequestTarget target ) {

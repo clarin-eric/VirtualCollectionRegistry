@@ -131,7 +131,8 @@ public class BasePage extends WebPage {
                 return (Label) super.newBrandLabel(markupId).setEscapeModelStrings(false);
             }
         };
-        navbar.setBrandName(Model.of("<img src=\"./images/icon-services-vcr.png\" width=\"24\" height=\"24\" aria-hidden=\"true\" style=\"margin-right: 10px;\" alt=\"Virtual Collection Registry icon\"></img>Virtual Collection Registry"));
+        String imgPath = getContextPath()+"/images/icon-services-vcr.png";
+        navbar.setBrandName(Model.of("<img src=\""+imgPath+"\" width=\"24\" height=\"24\" aria-hidden=\"true\" style=\"margin-right: 10px;\" alt=\"Virtual Collection Registry icon\"></img>Virtual Collection Registry"));
         
         final List<INavbarComponent> menuItems = new ArrayList<>();
         //Default menu items
@@ -139,10 +140,6 @@ public class BasePage extends WebPage {
                 new ImmutableNavbarComponent(
                     new NavbarButton(BrowsePublicCollectionsPage.class, Model.of("Browse")),
                 ComponentPosition.LEFT));
-        //menuItems.add(
-        //      new ImmutableNavbarComponent(
-        //          new NavbarButton(CreateAndEditVirtualCollectionPage.class, Model.of("Create")), C
-    //          omponentPosition.LEFT));
         menuItems.add(
                 new ImmutableNavbarComponent(
                     new NavbarButton(CreateAndEditVirtualCollectionPageV2.class, Model.of("Create")),

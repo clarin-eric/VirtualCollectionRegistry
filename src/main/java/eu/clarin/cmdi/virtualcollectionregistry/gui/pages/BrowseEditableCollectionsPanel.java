@@ -331,7 +331,9 @@ public class BrowseEditableCollectionsPanel extends Panel {
                     target.add(table);
                     //Forward to edit page
                     setResponsePage(CreateAndEditVirtualCollectionPage.class,
-                        buildParamsFromMap(Collections.singletonMap("id", model.getObject().getId())));
+                        buildParamsFromMap(
+                            Collections.singletonMap(
+                                CreateAndEditVirtualCollectionPageV2.PARAM_VC_ID, model.getObject().getId())));
                 }
             }            
 
@@ -412,7 +414,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
                 editPublishedDialog.show(target);
             } else {
                 setResponsePage(CreateAndEditVirtualCollectionPageV2.class,
-                        buildParamsFromMap(Collections.singletonMap("collection-id", vc.getId())));
+                        buildParamsFromMap(Collections.singletonMap(CreateAndEditVirtualCollectionPageV2.PARAM_VC_ID, vc.getId())));
             }
         }
     }

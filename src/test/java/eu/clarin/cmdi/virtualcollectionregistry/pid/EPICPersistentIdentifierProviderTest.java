@@ -42,8 +42,8 @@ public class EPICPersistentIdentifierProviderTest {
         VirtualCollection vc = new VirtualCollection();
         vc.setName("VC Name");
         vc.setId(123L);
-        vc.getCreators().add(new Creator("Joe Unit"));
-        vc.getCreators().add(new Creator("Joe Mock"));
+        vc.getCreators().add(new Creator("Joe", "Unit"));
+        vc.getCreators().add(new Creator("Joe", "Mock"));
 
         context.checking(new Expectations() {
             {
@@ -53,7 +53,7 @@ public class EPICPersistentIdentifierProviderTest {
                         allOf(
                                 hasEntry(HandleField.URL, "http://vcr/service/virtualcollections/123"),
                                 hasEntry(HandleField.TITLE, "VC Name"),
-                                hasEntry(HandleField.CREATOR, "Joe Unit")
+                                hasEntry(HandleField.CREATOR, "Joe, Unit")
                         ),
                         equalTo("VCR-test-123")
                 );

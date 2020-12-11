@@ -36,7 +36,8 @@ public class ChaningCreatorProviderTest {
         
         final CreatorProvider provider2 = context.mock(CreatorProvider.class, "p2");
         final Creator creator2 = new Creator();
-        creator2.setPerson("pers2");
+        creator2.setFamilyName("pers");
+        creator2.setGivenName("2");
         creator2.setRole("role2");
         creator2.setTelephone("tel2");
         creator2.setWebsite("web2");
@@ -45,7 +46,8 @@ public class ChaningCreatorProviderTest {
         expResult.setAddress("addr1");
         expResult.setEMail("email1");
         expResult.setOrganisation("org1");
-        expResult.setPerson("pers2");
+        expResult.setFamilyName("pers");
+        expResult.setGivenName("2");
         expResult.setRole("role2");
         expResult.setTelephone("tel2");
         expResult.setWebsite("web2");

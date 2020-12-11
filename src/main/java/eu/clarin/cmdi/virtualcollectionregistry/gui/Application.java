@@ -85,13 +85,13 @@ public class Application extends AuthenticatedWebApplication {
         mountPage("/public", BrowsePublicCollectionsPage.class);
         mountPage("/private", BrowsePrivateCollectionsPage.class);
         mountPage("/create", CreateAndEditVirtualCollectionPage.class);
-        mountPage("/edit/${id}", CreateAndEditVirtualCollectionPage.class);
+        mountPage("/edit/${collection-id}", CreateAndEditVirtualCollectionPage.class);
         mountPage("/createv2", CreateAndEditVirtualCollectionPageV2.class);
-        mountPage("/editv2/${id}", CreateAndEditVirtualCollectionPageV2.class);
+        mountPage("/editv2/${collection-id}", CreateAndEditVirtualCollectionPageV2.class);
         mountPage("/about", AboutPage.class);
         mountPage("/help", HelpPage.class);
         mountPage("/admin", AdminPage.class);
-        mountPage("/details/${id}", VirtualCollectionDetailsPage.class);
+        mountPage("/details/${collection-id}", VirtualCollectionDetailsPage.class);
         mountPage("/submit/${type}", SubmitVirtualCollectionPage.class);
         mountPage("/profile", UserProfilePage.class);
     }

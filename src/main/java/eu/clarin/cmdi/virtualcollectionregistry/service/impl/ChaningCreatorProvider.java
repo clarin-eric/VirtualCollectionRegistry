@@ -50,7 +50,8 @@ public class ChaningCreatorProvider implements CreatorProvider {
         }
         for (Creator template : creators) {
             if (template.getPerson() != null) {
-                creator.setPerson(template.getPerson());
+                creator.setFamilyName(template.getFamilyName());
+                creator.setGivenName(template.getGivenName());
                 break;
             }
         }

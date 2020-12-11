@@ -46,19 +46,19 @@ public class DoiRequest implements PidRequest {
         this.request.data.attributes.titles.add(t);
     }
 
-    public void addCreator(String name) {
-        this.addCreator(name, null);
+    public void addCreator(String familyName, String givenName) {
+        this.addCreator(familyName, givenName, null);
     }
 
-    public void addCreator(String name, String affiliation) {
+    public void addCreator(String familyName, String givenName, String affiliation) {
         if(this.request.data.attributes.creators == null) {
             this.request.data.attributes.creators = new LinkedList<>();
         }
 
 
         Creator c = new Creator();
-        c.familyName = name;
-        c.givenName = "";
+        c.familyName = familyName;
+        c.givenName = givenName;
         c.nameType = "Personal";
         if(affiliation != null) {
             c.affiliation = new LinkedList<>();
