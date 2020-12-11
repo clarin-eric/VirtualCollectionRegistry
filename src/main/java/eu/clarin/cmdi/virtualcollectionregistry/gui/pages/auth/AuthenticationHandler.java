@@ -79,8 +79,16 @@ public class AuthenticationHandler {
             throw new RedirectToUrlException("https://local.vcr.clarin.eu/Shibboleth.sso/Logout");
         }
     }
-    
+
+    public static void handleOptionalLogin(final ApplicationSession session, final WebPage page) {
+        handleLogin(session, page, false);
+    }
+
     public static void handleLogin(final ApplicationSession session, final WebPage page) {
+        handleLogin(session, page, true);
+    }
+
+    public static void handleLogin(final ApplicationSession session, final WebPage page, boolean loginRequired) {
         logger.trace("Handling login");
         
         final RequestCycle cycle =  RequestCycle.get();
@@ -105,7 +113,7 @@ public class AuthenticationHandler {
                     throw new RestartResponseAtInterceptPageException(SubmitVirtualCollectionPage.class);                    
                 }
                 throw new RestartResponseAtInterceptPageException(Application.get().getHomePage());
-            } else {
+            } else if (loginRequired) {
                 logger.debug("Access denied");
                 throw new RestartResponseException(
                         Application.get().getApplicationSettings()

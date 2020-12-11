@@ -12,8 +12,9 @@ public class DummyPersistentIdentifierProvider implements
         PersistentIdentifierProvider {
 
     private final String id = "DUMMY";
-    
-    public DummyPersistentIdentifierProvider() throws VirtualCollectionRegistryException {
+    private boolean primary = false;
+
+    public DummyPersistentIdentifierProvider() {//throws VirtualCollectionRegistryException {
         super();
     }
     
@@ -25,7 +26,10 @@ public class DummyPersistentIdentifierProvider implements
     @Override
     public PersistentIdentifier createIdentifier(VirtualCollection vc)
             throws VirtualCollectionRegistryException {
-        return new PersistentIdentifier(vc, PersistentIdentifier.Type.DUMMY,
+        try {
+            Thread.sleep(10000);
+        } catch(InterruptedException ex) {}
+        return new PersistentIdentifier(vc, PersistentIdentifier.Type.DUMMY, primary,
                 "dummy-" + Long.toString(vc.getId()));
     }
 
@@ -46,9 +50,11 @@ public class DummyPersistentIdentifierProvider implements
 
     @Override
     public boolean isPrimaryProvider() {
-        return false;
+        return primary;
     }
 
     @Override
-    public void setPrimaryProvider(boolean primary) { }
+    public void setPrimaryProvider(boolean primary) {
+        this.primary = primary;
+    }
 } // class DummyPersistentIdentifierProvider

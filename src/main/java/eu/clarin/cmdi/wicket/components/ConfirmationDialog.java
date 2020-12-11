@@ -21,6 +21,7 @@ import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.model.IModel;
 
 /**
@@ -32,7 +33,8 @@ public class ConfirmationDialog extends BaseInfoDialog {
 //    private final static Logger logger = LoggerFactory.getLogger(ConfirmationDialog.class);
     
     private final  List<DialogButton> buttons;
-    
+    private CheckBox cb;
+
     private Component body;
     private final String title;
     private final Handler confirmHandler;
@@ -65,7 +67,7 @@ public class ConfirmationDialog extends BaseInfoDialog {
                 }
             });
         }
-        buildContent(title, body, buttons);
+        buildContent(title, body, buttons, cb);
     }
     
     public void setContentPanel(Component content) {
@@ -78,6 +80,9 @@ public class ConfirmationDialog extends BaseInfoDialog {
         buttons.add(button);
     }
 
+    public void addCheckbox(CheckBox cb) {
+        this.cb = cb;
+    }
    /*
     public void confirm(AjaxRequestTarget target) {
         if(confirmHandler != null) {

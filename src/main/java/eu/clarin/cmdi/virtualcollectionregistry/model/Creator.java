@@ -11,10 +11,11 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.jetbrains.annotations.NotNull;
 
 @Entity
 @Table(name = "creator")
-public class Creator implements Serializable, IdentifiedEntity {
+public class Creator implements Serializable, IdentifiedEntity, Orderable, Comparable {
 
     private static final long serialVersionUID = 1L;
 
@@ -23,8 +24,11 @@ public class Creator implements Serializable, IdentifiedEntity {
     @Column(name = "id", nullable = false, updatable = false)
     private Long id;
 
-    @Column(name = "person", nullable = false, length = 255)
-    private String person;
+    @Column(name = "family_name", nullable = false, length = 255)
+    private String familyName;
+
+    @Column(name = "given_name", nullable = false, length = 255)
+    private String givenName;
 
     @Column(name = "address", length = 255)
     private String address;
@@ -44,14 +48,21 @@ public class Creator implements Serializable, IdentifiedEntity {
     @Column(name = "role", length = 255)
     private String role;
 
+    @Column(name = "display_order", nullable = false)
+    private Long displayOrder;
+
     public Creator() {
         super();
+        this.displayOrder = 0L;
     }
 
-    public Creator(String person) {
+    public Creator(String familyName, String givenName) {
         super();
-        this.setPerson(person);
+        this.displayOrder = 0L;
+        this.setFamilyName(familyName);
+        this.setGivenName(givenName);
     }
+
 
     @Override
     public Long getId() {
@@ -59,11 +70,10 @@ public class Creator implements Serializable, IdentifiedEntity {
     }
 
     public String getPerson() {
-        return person;
-    }
-
-    public void setPerson(String person) {
-        this.person = person;
+        if(getGivenName() == null) {
+            return getFamilyName();
+        }
+        return getFamilyName() +", "+ getGivenName();
     }
 
     public String getAddress() {
@@ -154,7 +164,8 @@ public class Creator implements Serializable, IdentifiedEntity {
         address = other.getAddress();
         email = other.getEMail();
         organisation = other.getOrganisation();
-        person = other.getPerson();
+        givenName = other.getGivenName();
+        familyName = other.getFamilyName();
         role = other.getRole();
         telephone = other.getTelephone();
         website = other.getWebsite();
@@ -171,11 +182,45 @@ public class Creator implements Serializable, IdentifiedEntity {
         copy.setAddress(address);
         copy.setEMail(email);
         copy.setOrganisation(organisation);
-        copy.setPerson(person);
+        copy.setFamilyName(familyName);
+        copy.setGivenName(givenName);
         copy.setRole(role);
         copy.setTelephone(telephone);
         copy.setWebsite(website);
         return copy;
     }
 
+    @Override
+    public Long getDisplayOrder() {
+        return displayOrder;
+    }
+
+    public void setDisplayOrder(Long displayOrder) {
+        this.displayOrder = displayOrder;
+    }
+
+    @Override
+    public int compareTo(@NotNull Object o) {
+        if( o == null) return 0;
+        if(o instanceof Creator) {
+            return OrderableComparator.compare(this, (Creator)o);
+        }
+        return 0;
+    }
+
+    public String getFamilyName() {
+        return familyName;
+    }
+
+    public void setFamilyName(String familyName) {
+        this.familyName = familyName;
+    }
+
+    public String getGivenName() {
+        return givenName;
+    }
+
+    public void setGivenName(String givenName) {
+        this.givenName = givenName;
+    }
 } // class Creator

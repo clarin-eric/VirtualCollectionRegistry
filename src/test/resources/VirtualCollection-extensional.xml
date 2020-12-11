@@ -7,7 +7,8 @@
     <CreationDate>2009-12-31</CreationDate>
     <Creators>
         <Creator>
-            <Person>Joe User</Person>
+            <FamilyName>Joe</FamilyName>
+            <GivenName>User</GivenName>
             <Address>Example Address Joe</Address>
             <Email>joe.user@example.com</Email>
             <Organisation>Example Organization</Organisation>
@@ -16,7 +17,8 @@
             <Role>Test Role Joe</Role>
         </Creator>
         <Creator>
-            <Person>Jane User</Person>
+            <FamilyName>Jane</FamilyName>
+            <GivenName>User</GivenName>
             <Address>Example Address Jane</Address>
             <Email>jane.user@example.com</Email>
             <Organisation>Example Organization</Organisation>

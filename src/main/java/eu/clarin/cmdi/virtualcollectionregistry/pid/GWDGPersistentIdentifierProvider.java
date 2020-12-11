@@ -44,7 +44,9 @@ public class GWDGPersistentIdentifierProvider implements
     public static final String BASE_URI = "eu.clarin.cmdi.virtualcollectionregistry.base_uri";
 
     private final String id = "GWDG";
-    
+
+    private boolean primary = false;
+
     @Override
     public String getId() {
         return id;
@@ -147,7 +149,7 @@ public class GWDGPersistentIdentifierProvider implements
             }
             logger.info("created handle \"{}\" for virtual collection \"{}\"",
                     pid, vc.getId());
-            return new PersistentIdentifier(vc, PersistentIdentifier.Type.HANDLE, pid);
+            return new PersistentIdentifier(vc, PersistentIdentifier.Type.HANDLE, primary, pid);
         } catch (VirtualCollectionRegistryException e) {
             throw new RuntimeException("failed to create handle", e);
         }
@@ -314,10 +316,12 @@ public class GWDGPersistentIdentifierProvider implements
 
     @Override
     public boolean isPrimaryProvider() {
-        return false;
+        return this.primary;
     }
 
     @Override
-    public void setPrimaryProvider(boolean primary) { }
+    public void setPrimaryProvider(boolean primary) {
+        this.primary = primary;
+    }
 
 } // class GWDGPersistentIdentifierProvider

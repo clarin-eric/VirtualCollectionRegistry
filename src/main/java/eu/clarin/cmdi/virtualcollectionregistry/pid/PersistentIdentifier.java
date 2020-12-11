@@ -1,16 +1,19 @@
 package eu.clarin.cmdi.virtualcollectionregistry.pid;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.io.Serializable;
 import javax.persistence.*;
 
+import eu.clarin.cmdi.wicket.components.pid.PersistentIdentifieable;
+import eu.clarin.cmdi.wicket.components.pid.PidType;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Entity
 @Table(name = "pid")
-public class PersistentIdentifier implements Serializable {
+public class PersistentIdentifier implements PersistentIdentifieable, Serializable {
 
     private static final long serialVersionUID = 1L;
 
@@ -49,7 +52,7 @@ public class PersistentIdentifier implements Serializable {
             length = 255)
     private String identifier;
 
-    @Column(name = "primary")
+    @Column(name = "is_primary", columnDefinition = "TINYINT", length = 1)
     private Boolean primary;
 
     protected PersistentIdentifier() {
@@ -95,6 +98,26 @@ public class PersistentIdentifier implements Serializable {
         return identifier;
     }
 
+    @Override
+    public String getPidUri() {
+        return getActionableURI();
+    }
+
+    @Override
+    public PidType getPidType() {
+        return HandleLinkModel.getPidType(getURI());
+    }
+
+    @Override
+    public String getPidTitle() {
+        return getIdentifier();
+    }
+
+    @Override
+    public boolean hasPersistentIdentifier() {
+        return true;
+    }
+
     /**
      * Provides a URI representation of this persistent identifier. Notice that
      * this URI is not necessarily actionable, and may therefore differ from the
@@ -109,6 +132,8 @@ public class PersistentIdentifier implements Serializable {
                 return "dummy:identifier-" + vc.getId();
             case HANDLE:
                 return "hdl:" + identifier;
+            case DOI:
+                return "doi:" + identifier;
             default:
                 throw new InternalError();
         }
@@ -133,6 +158,8 @@ public class PersistentIdentifier implements Serializable {
                 return "dummy:identifier-" + vc.getId();
             case HANDLE:
                 return "http://hdl.handle.net/" + identifier;
+            case DOI:
+                return "https://doi.org/" + identifier;
             default:
                 throw new InternalError();
         }

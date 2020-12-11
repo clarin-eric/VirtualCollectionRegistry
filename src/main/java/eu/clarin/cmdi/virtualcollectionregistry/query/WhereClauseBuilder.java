@@ -132,8 +132,9 @@ class WhereClauseBuilder implements QueryParserVisitor {
                     node.getOperator(), node.getValue());
             break;
         case QueryParserConstants.CR_PERSON:
+            //Todo: take givenName into account
             predicate = makeStringPredicate(data,
-                    root.join(VirtualCollection_.creators).get(Creator_.person),
+                    root.join(VirtualCollection_.creators).get(Creator_.familyName),
                     node.getOperator(), node.getValue());
             break;
         case QueryParserConstants.CR_EMAIL:

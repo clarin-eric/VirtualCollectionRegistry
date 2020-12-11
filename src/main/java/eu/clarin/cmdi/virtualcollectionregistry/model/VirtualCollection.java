@@ -68,6 +68,10 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 public class VirtualCollection implements Serializable, IdentifiedEntity, PersistentIdentifieable, Citable {
     private static final long serialVersionUID = 1L;
 
+    public static final Type DEFAULT_TYPE_VALUE = Type.EXTENSIONAL;
+    public static final Purpose DEFAULT_PURPOSE_VALUE = Purpose.REFERENCE;
+    public static final Reproducibility DEFAULT_REPRODUCIBILIY_VALUE = Reproducibility.INTENDED;
+
     public Set<PersistentIdentifier> getIdentifiers() {
         if(identifiers == null) {
             return new HashSet<>();
@@ -157,9 +161,15 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         return getPidUri();
     }
 
-    
-    
-    
+    public String getProblemDetails() {
+        return problemDetails;
+    }
+
+    public void setProblemDetails(String problemDetails) {
+        this.problemDetails = problemDetails;
+    }
+
+
     public static enum State {
         PRIVATE,
         PUBLIC_PENDING,
@@ -190,7 +200,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     } // enum VirtualCollecion.Reproducibility
 
     public static enum Problem {
-        PID_MINTING_API_UNREACHABLE,
+        PID_MINTING_HTTP_ERROR,
         PID_MINTING_UNKOWN,
         UNKOWN
     }
@@ -222,11 +232,17 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
                fetch = FetchType.EAGER,
                 mappedBy = "vc")
     private Set<PersistentIdentifier> identifiers;
-    
+
+    //Make this a list of problems?
+
     /* Indication of the issue if state = ERROR */
     @Column(name = "problem", nullable = true)
     private VirtualCollection.Problem problem;
-    
+
+    @Column(name = "problem_details", nullable = true)
+    private String problemDetails;
+
+
     @Column(name = "state", nullable = false)
     private VirtualCollection.State state;
 
@@ -333,8 +349,11 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         if (persistentId == null) {
             throw new NullPointerException("pid == null");
         }
-        if (hasPersistentIdentifier() || !(state == State.PUBLIC_PENDING || state == State.PUBLIC_FROZEN_PENDING)) {
-            throw new IllegalStateException("illegal state");
+        if (persistentId.getPrimary() && hasPersistentIdentifier()) {
+            throw new IllegalStateException("Already has a primary peristent identifier");
+        }
+        if(!(state == State.PUBLIC_PENDING || state == State.PUBLIC_FROZEN_PENDING || state == State.ERROR)) {
+            throw new IllegalStateException("illegal state, current state = "+state);
         }
 
         if(this.identifiers == null) {
@@ -342,11 +361,14 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         }
         this.identifiers.add(persistentId);
 
+        /*
         switch(state) {
             case PUBLIC_PENDING: this.state = State.PUBLIC; break;
             case PUBLIC_FROZEN_PENDING: this.state = State.PUBLIC_FROZEN; break;
+            case ERROR: this.state = State.PUBLIC; break; //TODO: properly handle switching from ERROR to PUBLIC_FROZEN state
             default: throw new IllegalStateException("Invalid state transition. Unexpected source state: "+state);
         }
+         */
     }
 
     public VirtualCollection.Problem getProblem() {
@@ -366,6 +388,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
             throw new NullPointerException("state == null");
         }
         this.state = state;
+        this.setDateModified(new Date());
     }
 
     public boolean isPrivate() {
@@ -433,6 +456,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         if (creators == null) {
             this.creators = new ArrayList<Creator>();
         }
+        Collections.sort(this.creators);
         return creators;
     }
 
@@ -520,10 +544,10 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         this.setPurpose(vc.getPurpose());
         this.setReproducibility(vc.getReproducibility());
         this.setReproducibilityNotice(vc.getReproducibilityNotice());
-        
-        // Creators
-        Set<Creator> obsolete_creators =
-            new HashSet<Creator>(this.getCreators());
+
+        /*
+        // Clear any removed creators
+        Set<Creator> obsolete_creators = new HashSet<Creator>(this.getCreators());
         for (Creator creator : vc.getCreators()) {
             if (!obsolete_creators.contains(creator)) {
                 this.getCreators().add(creator);
@@ -536,7 +560,10 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
             }
             obsolete_creators = null;
         }
+        */
+        this.creators = vc.getCreators();
 
+        /*
         // Keywords
         Set<String> obsolete_keywords =
             new HashSet<String>(this.getKeywords());
@@ -552,7 +579,10 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
             }
             obsolete_keywords = null;
         }
+        */
+        this.keywords = vc.getKeywords();
 
+        /*
         // Resources
         Set<Resource> obsolete_resources =
             new HashSet<Resource>(this.getResources());
@@ -568,6 +598,8 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
             }
             obsolete_resources = null;
         }
+        */
+        this.resources = vc.getResources();
 
         if (vc.generatedBy != null) {
             final GeneratedBy genBy = vc.generatedBy;

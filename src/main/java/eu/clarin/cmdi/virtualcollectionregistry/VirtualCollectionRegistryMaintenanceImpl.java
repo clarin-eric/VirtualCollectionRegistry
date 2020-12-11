@@ -44,20 +44,23 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
     
     @Autowired
     private DataStore datastore; //TODO: replace with Spring managed EM?
-    
+
     @Autowired
-    private PersistentIdentifierProvider pid_provider;
+    private PidProviderService pidProviderService;
+
+    //@Autowired
+    //private PersistentIdentifierProvider pid_provider;
 
     @Override
     public void perform(long now) {
-        logger.trace("Maintenance check");
+        logger.debug("Maintenance check (now={})", now);
         long t1 = System.nanoTime();
         
         // allocate persistent identifier roughly after 30 seconds
         final Date nowDateAlloc = new Date(now - 30 * 1000);
         // (for now) purge deleted collection roughly after 30 seconds
         final Date nowDatePurge = new Date(now - 30 * 1000);
-        // handle collections in error immediatly
+        // handle collections in error immediately
         final Date nowDateError = new Date(now);
 
         EntityManager em = datastore.getEntityManager();
@@ -92,8 +95,13 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
         q.setParameter("states", states);
         q.setParameter("date", nowDateAlloc);
         q.setLockMode(LockModeType.PESSIMISTIC_WRITE);
-        for (VirtualCollection vc : q.getResultList()) {
-            allocatePersistentIdentifier(pid_provider, em, vc);
+
+        List<VirtualCollection> collectionsToUpdate = q.getResultList();
+        if(collectionsToUpdate.size() > 0) {
+            logger.info("Assigning pid to #{} collections", collectionsToUpdate.size());
+            for (VirtualCollection vc : collectionsToUpdate) {
+                allocatePersistentIdentifier(em, vc);
+            }
         }
         em.getTransaction().commit();
     }   
@@ -101,34 +109,69 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
     /**
      * Assign a PID for this VirtualCollection.
      * 
-     * @param provider
      * @param em
      * @param vc 
      */
-    protected void allocatePersistentIdentifier(PersistentIdentifierProvider provider, EntityManager em, VirtualCollection vc) {
+    protected void allocatePersistentIdentifier(EntityManager em, VirtualCollection vc) {
         VirtualCollection.State currentState = vc.getState();
-        logger.info("Found {} with state {}, processing with PID provider {}", vc.getName(), currentState, provider.getId());
 
         if(!vc.hasPersistentIdentifier()) {
             try {
-                PersistentIdentifier pid = provider.createIdentifier(vc);
-                if(pid.getType() == PersistentIdentifier.Type.DOI) {
-                    
-                } else {
+                //Mint identifiers and update collection
+                List<PersistentIdentifier> pids = pidProviderService.createIdentifiers(vc);
+                for(PersistentIdentifier pid : pids) {
                     vc.setPersistentIdentifier(pid);
                 }
-            } catch (VirtualCollectionRegistryException ex) {                
+
+                //If no errors occured, update collection state
+                switch(vc.getState()) {
+                    case PUBLIC_PENDING: vc.setState(VirtualCollection.State.PUBLIC); break;
+                    case PUBLIC_FROZEN_PENDING: vc.setState(VirtualCollection.State.PUBLIC_FROZEN); break;
+                    default: throw new VirtualCollectionRegistryException("Invalid state transition: "+vc.getState()+" --> PUBLIC or PUBLIC_FROZEN");
+                }
+
+                logger.info("Assigned all pids, state = {}, id = {}", vc.getState(), vc.getId());
+
+            } catch (VirtualCollectionRegistryException ex) {
                 logger.error("Failed to mint PID, setting vc to error state", ex);
                 vc.setState(VirtualCollection.State.ERROR);
+                vc.setProblemDetails(ex.getMessage());
                 if(ex.getCause() instanceof HttpException) {                                                  
-                    vc.setProblem(VirtualCollection.Problem.PID_MINTING_UNKOWN);
+                    vc.setProblem(VirtualCollection.Problem.PID_MINTING_HTTP_ERROR);
                 } else {
                     vc.setProblem(VirtualCollection.Problem.PID_MINTING_UNKOWN);
                 }
+                logger.info("Set problem details: {}", vc.getProblemDetails());
+            } catch(Exception ex) {
+                logger.error("Failed to mint PID, setting vc to error state", ex);
+                vc.setState(VirtualCollection.State.ERROR);
+                vc.setProblem(VirtualCollection.Problem.UNKOWN);
+                vc.setProblemDetails(ex.getMessage());
+                logger.info("Set problem details: {}", vc.getProblemDetails());
+            }
+        } else {
+            try {
+                switch (vc.getState()) {
+                    case PUBLIC_PENDING:
+                        vc.setState(VirtualCollection.State.PUBLIC);
+                        break;
+                    case PUBLIC_FROZEN_PENDING:
+                        vc.setState(VirtualCollection.State.PUBLIC_FROZEN);
+                        break;
+                    default:
+                        throw new VirtualCollectionRegistryException("Invalid state transition: " + vc.getState() + " --> PUBLIC or PUBLIC_FROZEN");
+                }
+            } catch(Exception ex) {
+                logger.error("Failed to update collection state", ex);
+                vc.setState(VirtualCollection.State.ERROR);
+                vc.setProblem(VirtualCollection.Problem.UNKOWN);
+                vc.setProblemDetails(ex.getMessage());
+                logger.info("Set problem details: {}", vc.getProblemDetails());
             }
         }
 
-        em.persist(vc);
+        em.persist(vc); //update collection
+
         if(vc.hasPersistentIdentifier()) {
             logger.info("assigned pid (identifer='{}') to virtual"
                     + "collection (id={})",
@@ -171,10 +214,14 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
         q.setParameter("state", VirtualCollection.State.ERROR);
         q.setParameter("date", nowDateError);
         q.setLockMode(LockModeType.PESSIMISTIC_WRITE);
-        for (VirtualCollection vc : q.getResultList()) {
-            VirtualCollection.State currentState = vc.getState();
-            logger.info("Found [{}] in error state.", vc.getName(), currentState);
-            //TODO: handle virtual collections in error state
+        List<VirtualCollection> resultList = q.getResultList();
+        if(resultList.size() > 0) {
+            logger.debug("Found #{} collections in error state.", resultList.size());
+            for (VirtualCollection vc : resultList) {
+                VirtualCollection.State currentState = vc.getState();
+                logger.trace("Found [{}] in error state.", vc.getName(), currentState);
+                //TODO: handle virtual collections in error state
+            }
         }
         em.getTransaction().commit();
     }

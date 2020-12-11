@@ -17,10 +17,10 @@
 package eu.clarin.cmdi.virtualcollectionregistry.pid;
 
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.Configuration;
-import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidWriter;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.net.URI;
+import org.apache.commons.httpclient.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -29,6 +29,18 @@ import org.springframework.stereotype.Service;
 
 /**
  *
+ *  DataCite DOI REST API docs:
+ *  - https://support.datacite.org/docs/api-create-dois
+ *  - https://support.datacite.org/reference/dois-2
+ *
+ *  Schema:
+ *  - https://support.datacite.org/docs/schema-mandatory-properties-v43
+ *  - https://github.com/datacite/schema/blob/aa5db56897b6ed255e6f2c5d14cfdcbff165567e/source/json/kernel-4.3/datacite_4.3_schema.json
+ *
+ *  Fabrica
+ *  - test: https://doi.test.datacite.org/dois/
+ *
+ *
  * @author wilelb
  */
 @Service
@@ -36,29 +48,48 @@ import org.springframework.stereotype.Service;
 public class DoiPersistentIdentifierProvider implements PersistentIdentifierProvider {
 
     private static final Logger logger = LoggerFactory.getLogger(DoiPersistentIdentifierProvider.class);
-    private final PidWriter pidWriter;
+    private final DoiPidWriter pidWriter;
     private final Configuration configuration;
     private final String id = "DOI";
-    
+    private boolean primary = false;
+    private String baseUri = null;
+
     @Override
     public String getId() {
         return id;
     }
-    
+
+    public void setBaseUri(String baseUri) {
+        this.baseUri = baseUri;
+    }
+
     /**
      *
      * @param pidWriter PID writer implementation to use
      * @param configuration configuration to be passed to PID writer methods
      */
     @Autowired
-    public DoiPersistentIdentifierProvider(PidWriter pidWriter, Configuration configuration) {
+    public DoiPersistentIdentifierProvider(DoiPidWriter pidWriter, Configuration configuration) {
         this.pidWriter = pidWriter;
         this.configuration = configuration;
     }
+
     @Override
     public PersistentIdentifier createIdentifier(VirtualCollection vc) throws VirtualCollectionRegistryException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
-    }
+        if(baseUri == null) {
+            throw new VirtualCollectionRegistryException("baseUri cannot be null");
+        }
+
+        logger.debug("creating doi for virtual collection \"{}\"", vc.getId());
+        try {
+            DoiRequest req =
+                DoiRequestBuilder.createGenerateDoiRequest(configuration.getHandlePrefix(), vc, baseUri);
+            final String pid = pidWriter.registerNewPID(configuration, req);
+            return new PersistentIdentifier(vc, PersistentIdentifier.Type.DOI, primary, pid);
+        } catch (HttpException ex) {
+            throw new VirtualCollectionRegistryException("Could not create DOI identifier", ex);
+        }
+     }
 
     @Override
     public void updateIdentifier(String pid, URI target) throws VirtualCollectionRegistryException {
@@ -77,9 +108,9 @@ public class DoiPersistentIdentifierProvider implements PersistentIdentifierProv
 
     @Override
     public boolean isPrimaryProvider() {
-        return false;
+        return this.primary;
     }
 
     @Override
-    public void setPrimaryProvider(boolean primary) { }
+    public void setPrimaryProvider(boolean primary) { this.primary = primary; }
 }

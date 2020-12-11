@@ -1,5 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
+import java.util.List;
+
 /**
  *
  * @author twagoo
@@ -7,5 +9,5 @@ package eu.clarin.cmdi.virtualcollectionregistry;
 public interface AdminUsersService {
 
     boolean isAdmin(String user);
-    
+    public List<String> getAdminUsers();
 }

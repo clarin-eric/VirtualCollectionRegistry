@@ -45,9 +45,9 @@ public class VirtualCollectionPrePublicationValidator implements VirtualCollecti
         VirtualCollectionValidationException exception = new VirtualCollectionValidationException();
 
         switch (vc.getType()) {
-            case EXTENSIONAL:
-                validateResources(vc, exception);
-                break;
+            //case EXTENSIONAL:
+            //    validateResources(vc, exception);
+            //    break;
             case INTENSIONAL:
                 validateGeneratedBy(vc, exception);
                 break;

@@ -377,10 +377,14 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
     private void writeCreator(XMLStreamWriter writer, Creator creator) throws XMLStreamException {
         writer.writeStartElement("Creator");
         
-        writer.writeStartElement("Person");
-        writer.writeCharacters(creator.getPerson());
-        writer.writeEndElement(); // "Person" element
-        
+        writer.writeStartElement("FamilyName");
+        writer.writeCharacters(creator.getFamilyName());
+        writer.writeEndElement(); // "FamilyName" element
+
+        writer.writeStartElement("GivenName");
+        writer.writeCharacters(creator.getGivenName());
+        writer.writeEndElement(); // "GivenName" element
+
         if (creator.getAddress() != null) {
             writer.writeStartElement("Address");
             writer.writeCharacters(creator.getAddress());
@@ -508,8 +512,12 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
         if (readStart(reader, "Creators", false, true)) {
             readStart(reader, "Creator", true, true);
             do {
-                readStart(reader, "Person", true, true);
-                Creator creator = new Creator(readString(reader, false));
+                readStart(reader, "FamilyName", true, true);
+                String familyName = readString(reader, false);
+                readStart(reader, "GivenName", true, true);
+                String givenName = readString(reader, false);
+                Creator creator = new Creator(familyName, givenName);
+
                 if (readStart(reader, "Address", false, true)) {
                     creator.setAddress(readString(reader, false));
                 }

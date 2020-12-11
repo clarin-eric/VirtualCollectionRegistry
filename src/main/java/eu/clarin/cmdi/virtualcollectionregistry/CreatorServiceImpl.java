@@ -64,7 +64,7 @@ public class CreatorServiceImpl implements CreatorService {
         String email = reverseClarinUserEmail(currentPrincipal);
         logger.info("Clarin user email = {}", email);
         if (email != null) {
-            Creator c = new Creator(email);
+            Creator c = new Creator();
             c.setEMail(email);
             results.add(c);
         }

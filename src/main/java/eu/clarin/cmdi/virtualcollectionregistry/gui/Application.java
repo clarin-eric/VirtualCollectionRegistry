@@ -8,16 +8,12 @@ import eu.clarin.cmdi.virtualcollectionregistry.DataStore;
 import eu.clarin.cmdi.virtualcollectionregistry.JavaScriptResources;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AboutPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AdminPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePrivateCollectionsPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePublicCollectionsPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.CreateAndEditVirtualCollectionPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.HelpPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.*;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1.CreateAndEditVirtualCollectionPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.CreateAndEditVirtualCollectionPageV2;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmitVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LoginPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LogoutPage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.VirtualCollectionDetailsPage;
 import eu.clarin.cmdi.wicket.ExtremeNoopTheme;
 import org.apache.wicket.Page;
 import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
@@ -26,7 +22,6 @@ import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
-import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.apache.wicket.validation.validator.StringValidator;
 import org.slf4j.Logger;
@@ -90,12 +85,15 @@ public class Application extends AuthenticatedWebApplication {
         mountPage("/public", BrowsePublicCollectionsPage.class);
         mountPage("/private", BrowsePrivateCollectionsPage.class);
         mountPage("/create", CreateAndEditVirtualCollectionPage.class);
+        mountPage("/edit/${collection-id}", CreateAndEditVirtualCollectionPage.class);
+        mountPage("/createv2", CreateAndEditVirtualCollectionPageV2.class);
+        mountPage("/editv2/${collection-id}", CreateAndEditVirtualCollectionPageV2.class);
         mountPage("/about", AboutPage.class);
         mountPage("/help", HelpPage.class);
         mountPage("/admin", AdminPage.class);
-        mountPage("/details/${id}", VirtualCollectionDetailsPage.class);
-        mountPage("/edit/${id}", CreateAndEditVirtualCollectionPage.class);
+        mountPage("/details/${collection-id}", VirtualCollectionDetailsPage.class);
         mountPage("/submit/${type}", SubmitVirtualCollectionPage.class);
+        mountPage("/profile", UserProfilePage.class);
     }
 
     @Override

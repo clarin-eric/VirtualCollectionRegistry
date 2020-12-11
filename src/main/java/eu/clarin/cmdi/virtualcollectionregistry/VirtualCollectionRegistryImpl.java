@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry, InitializingBean, DisposableBean {
 
-    private final static String REQUIRED_DB_VERSION = "1.0.1";
+    private final static String REQUIRED_DB_VERSION = "1.2.0";
 
     @Autowired
     private DataStore datastore; //TODO: replace with Spring managed EM?
@@ -94,7 +94,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                 public void run() {
                     maintenance.perform(new Date().getTime());
                 }
-            }, 60, 60, TimeUnit.SECONDS);
+            }, 30, 30, TimeUnit.SECONDS);
             maintenanceExecutor.scheduleWithFixedDelay(new Runnable() {
                 @Override
                 public void run() {
@@ -147,7 +147,17 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         
         logger.debug("creating virtual collection");
 
-        validator.validate(vc);
+        try {
+            validator.validate(vc);
+        } catch(VirtualCollectionValidationException ex) {
+            logger.info("Validation failed: ");
+            for(String s: ex.getAllErrorsAsList()) {
+                logger.info("   validation error: "+s);
+            }
+
+            throw ex;
+        }
+
         EntityManager em = datastore.getEntityManager();
         try {            
             em.getTransaction().begin();
@@ -268,7 +278,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             }
             //Non private collections or collections in error state cannot be 
             //deleted by non-admin users
-            if (!vc.isPrivate() && vc.getState() == VirtualCollection.State.ERROR) {
+            if (!vc.isPrivate() && vc.getState() != VirtualCollection.State.ERROR) {
                 logger.debug("virtual collection (id={}) cannot be "
                         + "deleted (invalid state)", id);
                 throw new VirtualCollectionRegistryPermissionException(
@@ -412,7 +422,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             throw new IllegalArgumentException("id <= 0");
         }
 
-        logger.debug("retrieve virtual collection (id={})", id);
+        logger.trace("retrieve virtual collection (id={})", id);
 
         EntityManager em = datastore.getEntityManager();
         try {            
@@ -424,7 +434,6 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                 logger.debug("virtual collection (id={}) not found", id);
                 throw new VirtualCollectionNotFoundException(id);
             }
-            logger.debug("virtual collection retrieved (id={})", id);
             return vc;
         } catch (VirtualCollectionRegistryException e) {
             em.getTransaction().rollback();
