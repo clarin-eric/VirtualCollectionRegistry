@@ -9,13 +9,14 @@ import org.springframework.beans.factory.annotation.Qualifier;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.util.LinkedList;
 import java.util.List;
 
 @Service
 @Profile("vcr.pid.multi")
-public class MultiPersistentIdentifierProvider implements PersistentIdentifierProvider {
+public class MultiPersistentIdentifierProvider implements PersistentIdentifierProvider, Serializable {
 
     /* Providers that will mint identifiers for this collection */
     private final List<PersistentIdentifierProvider> providers;

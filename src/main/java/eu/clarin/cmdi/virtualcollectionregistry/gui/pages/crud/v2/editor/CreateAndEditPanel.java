@@ -1,9 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor;
 
-import java.util.ArrayList;
-import java.util.Date;
-import java.util.List;
-import java.util.StringTokenizer;
+import java.util.*;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.ActionablePanel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.authors.AuthorsEditor;
@@ -15,12 +12,15 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.Listener;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.*;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
+import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
+import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedByQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.slf4j.Logger;
@@ -46,14 +46,20 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     private final IModel<String> reproNoticeModel = Model.of("");
     private final IModel<String> keywordsModel= Model.of("");
 
+    private final IModel<String> intDescription = Model.of("");
+    private final IModel<String> intQueryUri = Model.of("");
+    private final IModel<String> intQueryProfile = Model.of("");
+    private final IModel<String> intQueryParameters = Model.of("");
+
     private final AuthorsEditor authorsEditor;
     private final ReferencesEditor referencesEditor;
-    
-    private final List<AbstractField> fields = new ArrayList<>();
-    private final List<AbstractField> modeSimpleFields = new ArrayList<>();
-    private final List<AbstractField> modeAdvancedFields = new ArrayList<>();
 
-    private final ModalConfirmDialog dialog;
+    //List of fields
+    private final List<AbstractField> fields = new ArrayList<>();
+    //Map of field id to support editor modes for that field
+    private final Map<String, Mode[]> fieldMode = new HashMap<>();
+
+    //private final ModalConfirmDialog dialog;
 
     private final AjaxFallbackLink btnSave;
 
@@ -84,33 +90,96 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
      */
     public CreateAndEditPanel(String id, VirtualCollection collection, ModalConfirmDialog dialog) {
         super(id);
-        this.dialog = dialog;
+        //this.dialog = dialog;
         this.setOutputMarkupId(true);
         
         final Component ajax_update_component = this;
 
+        //Default updater to toggle visibility based on editor mode
+        VisabilityUpdater v = new VisabilityUpdater() {
+            @Override
+            public void updateVisability(Component componentToUpdate) {
+                Mode currentMode = advancedEditorModeModel.getObject() ? Mode.ADVANCED : Mode.SIMPLE;
+                Mode[] modes = fieldMode.get(componentToUpdate.getId());
+
+                boolean visible = false;
+                for(Mode m : modes) {
+                    if(m == currentMode) {
+                        visible = true;
+                    }
+                }
+
+                componentToUpdate.setVisible(visible);
+            };
+        };
+
+        //Updater to only show fields if the collection type is extensional
+        VisabilityUpdater vExtensional = new VisabilityUpdater() {
+            @Override
+            public void updateVisability(Component componentToUpdate) {
+                boolean visible = false;
+                VirtualCollection.Type t = VirtualCollection.Type.valueOf(typeModel.getObject());
+                if(t == VirtualCollection.Type.EXTENSIONAL) {
+                    Mode currentMode = advancedEditorModeModel.getObject() ? Mode.ADVANCED : Mode.SIMPLE;
+                    Mode[] modes = fieldMode.get(componentToUpdate.getId());
+
+                    for (Mode m : modes) {
+                        if (m == currentMode) {
+                            visible = true;
+                        }
+                    }
+                }
+                componentToUpdate.setVisible(visible);
+            };
+        };
+
+        //Updater to onlu show fields if the collection type is intensional
+        VisabilityUpdater vIntensional = new VisabilityUpdater() {
+            @Override
+            public void updateVisability(Component componentToUpdate) {
+                boolean visible = false;
+                VirtualCollection.Type t = VirtualCollection.Type.valueOf(typeModel.getObject());
+                if(t == VirtualCollection.Type.INTENSIONAL) {
+                    Mode currentMode = advancedEditorModeModel.getObject() ? Mode.ADVANCED : Mode.SIMPLE;
+                    Mode[] modes = fieldMode.get(componentToUpdate.getId());
+                    for (Mode m : modes) {
+                        if (m == currentMode) {
+                            visible = true;
+                        }
+                    }
+                }
+                componentToUpdate.setVisible(visible);
+            };
+        };
+
         addRequiredField(
-            new VcrTextField("name", "Name", "New collection name", nameModel),
+            new VcrTextField("name", "Name", "New collection name", nameModel, v),
             new Mode[]{Mode.SIMPLE, Mode.ADVANCED});
 
         addRequiredField(
-            new VcrTextArea("description", "Description", "New collection description", descriptionModel),
+            new VcrTextArea("description", "Description", "New collection description", descriptionModel, v),
             new Mode[]{Mode.SIMPLE, Mode.ADVANCED});
 
-        addRequiredField(
-                new VcrChoiceField(
-                        "type",
-                        "Type",
-                        enumValuesAsList(VirtualCollection.Type.values()),
-                        typeModel),
-                new Mode[]{Mode.ADVANCED});
+        VcrChoiceField field = new VcrChoiceField(
+                "type",
+                "Type",
+                enumValuesAsList(VirtualCollection.Type.values()),
+                typeModel, v);
+        field.addListener(new Listener() {
+            @Override
+            public void handleEvent(Event event) {
+                updateAllFieldVisability();
+                event.getAjaxRequestTarget().add(ajax_update_component);
+            }
+        });
+        addRequiredField(field, new Mode[]{Mode.ADVANCED});
 
         addRequiredField(
             new VcrChoiceField(
                 "purpose",
                 "Purpose",
                 enumValuesAsList(VirtualCollection.Purpose.values()),
-                purposeModel),
+                purposeModel, v),
             new Mode[]{Mode.ADVANCED});
 
         addRequiredField(
@@ -118,7 +187,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
                 "repro",
                 "Reproducibility",
                 enumValuesAsList(VirtualCollection.Reproducibility.values()),
-                reproModel),
+                reproModel, v),
             new Mode[]{Mode.ADVANCED});
 
         addOptionalField(
@@ -126,18 +195,50 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
                 "repro_notice",
                 "Reproducibility Notice",
                 "Describe the expected reproducibility of processing results in more detail",
-                reproNoticeModel),
+                reproNoticeModel, v),
             new Mode[]{Mode.ADVANCED});
 
         addOptionalField(
-            new VcrTextField("keywords", "Keywords", "List of keywords, separated by space or comma.", keywordsModel),
+            new VcrTextField("keywords", "Keywords", "List of keywords, separated by space or comma.", keywordsModel, v),
             new Mode[]{Mode.SIMPLE, Mode.ADVANCED});
 
         this.authorsEditor = new AuthorsEditor("authors", "Authors");
         addRequiredField(this.authorsEditor, new Mode[]{Mode.SIMPLE, Mode.ADVANCED});
 
-        this.referencesEditor = new ReferencesEditor("references", "Resources", advancedEditorModeModel);
+        this.referencesEditor = new ReferencesEditor("references", "Resources", advancedEditorModeModel, vExtensional);
         addRequiredField(this.referencesEditor, new Mode[]{Mode.SIMPLE, Mode.ADVANCED});
+
+        addOptionalField(
+                new VcrTextArea(
+                        "int_description",
+                        "Query description",
+                        "A prose description of the procedure by which the collection items can be retrieved from the external service.",
+                        intDescription, vIntensional),
+                new Mode[]{Mode.ADVANCED});
+
+        addOptionalField(
+                new VcrTextField(
+                        "int_uri",
+                        "Query URI",
+                        "The location of the service from which the items should be retrieved.",
+                        intQueryUri, vIntensional),
+                new Mode[]{Mode.ADVANCED});
+
+        addOptionalField(
+                new VcrTextField(
+                        "int_query_profile",
+                        "Query profile",
+                        "Identifier of the mechanism, i.e. the protocol to be used.",
+                        intQueryProfile, vIntensional),
+                new Mode[]{Mode.ADVANCED});
+
+        addOptionalField(
+                new VcrTextArea(
+                        "int_query_parameters",
+                        "Query parameters",
+                        "The query that should be passed on to the service by which it can look up the items that are part of this collection.",
+                        intQueryParameters, vIntensional, false),
+                new Mode[]{Mode.ADVANCED});
 
         btnSave = new AjaxFallbackLink("btn_save") {
             @Override
@@ -176,7 +277,8 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         add(new AjaxCheckBox("btn_editor_mode", advancedEditorModeModel) {
             @Override
             public void onUpdate(AjaxRequestTarget target) {
-                updateMode(advancedEditorModeModel.getObject() ? Mode.ADVANCED : Mode.SIMPLE);
+                updateAllFieldVisability();
+                //updateMode(advancedEditorModeModel.getObject() ? Mode.ADVANCED : Mode.SIMPLE);
                 if (target != null) {
                     target.add(ajax_update_component);
                 }
@@ -184,7 +286,14 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         });
 
         //Update field visibility based on the active editor mode
-        updateMode(DEFAULT_EDITOR_MODE);
+        //updateMode(DEFAULT_EDITOR_MODE);
+        updateAllFieldVisability();
+    }
+
+    private void updateAllFieldVisability() {
+        for(AbstractField f: fields) {
+            f.updateVisability();
+        }
     }
 
     private void enableSaveButton() {
@@ -212,7 +321,6 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         addField(c, modes, true);
     }
 
-
     @Override
     public void handleEvent(Event event) {
         if(validate()) {
@@ -228,34 +336,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         add(c);
         fields.add(c);
         c.addListener(this);
-
-        //Add field to associated mode list
-        for(Mode m: modes) {
-            switch(m) {
-                case SIMPLE: modeSimpleFields.add(c); break;
-                case ADVANCED: modeAdvancedFields.add(c); break;
-            }
-        }
-    }
-
-    private void updateMode(Mode editorMode) {
-        //Select list of fields for the active editor mode
-        List<AbstractField> activeFields = new ArrayList<>();
-        switch(editorMode) {
-            case SIMPLE: activeFields = modeSimpleFields; break;
-            case ADVANCED: activeFields = modeAdvancedFields; break;
-            default: activeFields = modeSimpleFields;
-        }
-        //Hide all fields
-        for(AbstractField f: fields) {
-            f.setVisible(false);
-        }
-        //Show fields enabled for the current editor mode
-        for(AbstractField f : activeFields) {
-            f.setVisible(true);
-        }
-        authorsEditor.setVisible(true);
-        referencesEditor.setVisible(true);
+        fieldMode.put(c.getId(), modes);
     }
 
     public void editCollection(VirtualCollection c) {
@@ -276,6 +357,15 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         reproNoticeModel.setObject(c.getReproducibilityNotice());
         authorsEditor.setData(c.getCreators());
         referencesEditor.setData(c.getResources());
+
+        if(c.getGeneratedBy() != null) {
+            if (c.getGeneratedBy().getQuery() != null) {
+                intQueryParameters.setObject(c.getGeneratedBy().getQuery().getValue());
+                intQueryProfile.setObject(c.getGeneratedBy().getQuery().getProfile());
+            }
+            intQueryUri.setObject(c.getGeneratedBy().getURI());
+            intDescription.setObject(c.getGeneratedBy().getDescription());
+        }
     }
 
     private void reset() {
@@ -283,11 +373,16 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         nameModel.setObject("");
         descriptionModel.setObject("");
         keywordsModel.setObject("");
+        typeModel.setObject(VirtualCollection.DEFAULT_TYPE_VALUE.toString());
         purposeModel.setObject(VirtualCollection.DEFAULT_PURPOSE_VALUE.toString());
         reproModel.setObject(VirtualCollection.DEFAULT_REPRODUCIBILIY_VALUE.toString());
         reproNoticeModel.setObject("");
         authorsEditor.reset();
         referencesEditor.reset();
+        intQueryParameters.setObject("");
+        intQueryProfile.setObject("");
+        intQueryUri.setObject("");
+        intDescription.setObject("");
         disableSaveButton();
     }
 
@@ -320,7 +415,6 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         newCollection.setPurpose(VirtualCollection.Purpose.valueOf(purposeModel.getObject()));
         newCollection.setReproducibility(VirtualCollection.Reproducibility.valueOf(reproModel.getObject()));
         newCollection.setReproducibilityNotice(reproNoticeModel.getObject());
-        //newCollection.setGeneratedBy();
         //newCollection.setOwner();
 
         List<String> keywords = new ArrayList<>();
@@ -334,8 +428,17 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         newCollection.getCreators().clear();
         newCollection.getCreators().addAll(authorsEditor.getData());
 
-        newCollection.getResources().clear();
-        newCollection.getResources().addAll(referencesEditor.getData());
+        VirtualCollection.Type t = VirtualCollection.Type.valueOf(typeModel.getObject());
+        if(t == VirtualCollection.Type.EXTENSIONAL) {
+            newCollection.getResources().clear();
+            newCollection.getResources().addAll(referencesEditor.getData());
+        } else if(t == VirtualCollection.Type.INTENSIONAL) {
+            GeneratedBy genBy = new GeneratedBy();
+            genBy.setDescription(intDescription.getObject());
+            genBy.setURI(intQueryUri.getObject());
+            genBy.setQuery(new GeneratedByQuery(intQueryProfile.getObject(), intQueryParameters.getObject()));
+            newCollection.setGeneratedBy(genBy);
+        }
 
         fireEvent(
                 new AbstractEvent<VirtualCollection>(

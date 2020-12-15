@@ -59,12 +59,15 @@ public abstract class AbstractField extends Panel implements Field {
 
     private final boolean enableOnKeySubmit;
 
-    public AbstractField(String id, String label, Component editComponent) {
-        this(id, label, new Model<>(), null, editComponent, true);
+    private final VisabilityUpdater visabilityUpdater;
+
+    public AbstractField(String id, String label, Component editComponent, VisabilityUpdater visabilityUpdater) {
+        this(id, label, new Model<>(), null, editComponent, true, visabilityUpdater);
     }
     
-    public AbstractField(String id, String label, final IModel dataModel, final FieldComposition parent, Component editComponent, boolean enableOnKeySubmit) {
+    public AbstractField(String id, String label, final IModel dataModel, final FieldComposition parent, Component editComponent, boolean enableOnKeySubmit, VisabilityUpdater visabilityUpdater) {
         super(id);
+        this.visabilityUpdater = visabilityUpdater;
         this.label = label;
         this.editComponent = editComponent;
         this.dataModel = dataModel;
@@ -88,6 +91,12 @@ public abstract class AbstractField extends Panel implements Field {
         lblErrorMessage = new Label("error_message", errorMessageModel);
         lblErrorMessage.setVisible(false);
         add(lblErrorMessage);
+    }
+
+    public void updateVisability() {
+        if(this.visabilityUpdater != null) {
+            this.visabilityUpdater.updateVisability(this);
+        }
     }
     
     protected void addUpdatingBehavior(Component c, final FieldComposition parent, final Component t) {
@@ -119,21 +128,6 @@ public abstract class AbstractField extends Panel implements Field {
                 if(validate()) {
                     handleUpdateData(target, dataModel, nextComponentToFocus);                    
                     if(parent != null && completeSubmitOnUpdate) {
-                        /*
-                        Thread t = new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                 try {
-                                    Thread.sleep(500);
-                                } catch(Exception ex) {
-
-                                }
-                                parent.decreaseFocusCount();
-                                parent.completeSubmit(target);
-                            }
-                        }, "blur");
-                        t.start();
-                       */
                         parent.decreaseFocusCount();
                         parent.completeSubmit(target);
                     }
@@ -223,7 +217,6 @@ public abstract class AbstractField extends Panel implements Field {
         if(resetOnSubmit) {
             modelToUpdate.setObject("");
         }
-        logger.debug("Field: id="+getId()+", value=" + value);
 
         fireEvent(new DataUpdatedEvent(target));
 

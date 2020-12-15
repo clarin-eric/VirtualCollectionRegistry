@@ -106,6 +106,7 @@ public class PidProviderServiceImpl implements PidProviderService {
         String baseUrl = props.getProperty(key_prefix+".baseurl");
         String primary = props.getProperty(key_prefix+".primary");
         String prefix = props.getProperty(key_prefix+".prefix");
+        String infix = props.getProperty(key_prefix+".infix");
         String username = props.getProperty(key_prefix+".username");
         String password = props.getProperty(key_prefix+".password");
         Configuration config = new Configuration(baseUrl, prefix, username, password);

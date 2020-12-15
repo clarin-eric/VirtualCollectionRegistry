@@ -477,11 +477,11 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
             }
             
             if (new_vc.getId() == null) {
-                logger.debug("Creating new virtual collection");                
+                logger.trace("Creating new virtual collection");
                 new_vc.setCreationDate(new Date()); // FIXME: get date from GUI?
                 vcr.createVirtualCollection(principal, new_vc);
             } else {
-                logger.debug("Updating existing virtual collection with id: {}", new_vc.getId());
+                logger.trace("Updating existing virtual collection with id: {}", new_vc.getId());
                 vcr.updateVirtualCollection(principal, new_vc.getId(), new_vc);
             }
             

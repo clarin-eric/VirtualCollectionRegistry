@@ -9,12 +9,12 @@ import org.apache.wicket.model.IModel;
  * @author wilelb
  */
 public class VcrTextField extends AbstractField {
-        public VcrTextField(String id, String label, String placeHolderValue, final IModel dataModel) {
-            this(id, label, placeHolderValue, dataModel, null);
+        public VcrTextField(String id, String label, String placeHolderValue, final IModel dataModel, VisabilityUpdater v) {
+            this(id, label, placeHolderValue, dataModel, null, v);
         }
 
-        public VcrTextField(String id, String label, String placeHolderValue, final IModel dataModel, final FieldComposition parent) {
-            super(id, label, dataModel, parent, new TextField("input_textfield", dataModel), true);
+        public VcrTextField(String id, String label, String placeHolderValue, final IModel dataModel, final FieldComposition parent, VisabilityUpdater v) {
+            super(id, label, dataModel, parent, new TextField("input_textfield", dataModel), true, v);
             if(placeHolderValue != null && !placeHolderValue.isEmpty()) {
                 editComponent.add(new AttributeModifier("placeholder", placeHolderValue));
             }

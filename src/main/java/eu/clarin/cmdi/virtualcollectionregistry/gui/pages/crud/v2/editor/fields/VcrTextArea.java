@@ -10,15 +10,20 @@ import org.apache.wicket.model.IModel;
  * @author wilelb
  */
 public class VcrTextArea extends AbstractField {
-    public VcrTextArea(String id, String label, final IModel dataModel) {
-        this(id, label, null, dataModel);
+    public VcrTextArea(String id, String label, final IModel dataModel, VisabilityUpdater v) {
+        this(id, label, null, dataModel, v);
     }
 
-    public VcrTextArea(String id, String label, String placeHolderValue, final IModel dataModel) {
-        super(id, label, dataModel, null, new TextArea("input", dataModel), false);
+    public VcrTextArea(String id, String label, String placeHolderValue, final IModel dataModel, VisabilityUpdater v) {
+        this(id, label, placeHolderValue, dataModel, v, true);
+    }
+
+    public VcrTextArea(String id, String label, String placeHolderValue, final IModel dataModel, VisabilityUpdater v, boolean markdownSupported) {
+        super(id, label, dataModel, null, new TextArea("input", dataModel), false, v);
 
         Label lbl = new Label("markdown", "Note: Markdown supported (<a target=\"_new\" href=\"https://github.com/adam-p/markdown-here/wiki/Markdown-Cheatsheet\">cheat sheet</a>)");
         lbl.setEscapeModelStrings(false);
+        lbl.setVisible(markdownSupported);
         add(lbl);
 
         if(placeHolderValue != null && !placeHolderValue.isEmpty()) {

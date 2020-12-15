@@ -66,7 +66,7 @@ import org.xml.sax.SAXException;
  *
  * @author wilelb
  */
-public class ReferencesEditor extends ComposedField {
+public class ReferencesEditor extends ComposedField{
     private static Logger logger = LoggerFactory.getLogger(ReferencesEditor.class);
     
     private final List<ReferenceJob> references = new CopyOnWriteArrayList<>();
@@ -86,15 +86,12 @@ public class ReferencesEditor extends ComposedField {
     private final int workerSleepTime = 1000;
     private final int uiRefreshTimeInSeconds = 1;
 
-    private CreateAndEditPanel.Mode editorMode;
-
     public class Validator implements InputValidator, Serializable {
         private String message = "";
             
             @Override
             public boolean validate(String input) {
                 try {
-                    //URI.create(input); 
                     new URL(input);
                 } catch(MalformedURLException ex) {
                     message = ex.getMessage();
@@ -109,9 +106,8 @@ public class ReferencesEditor extends ComposedField {
             }
     }
     
-    public ReferencesEditor(String id, String label, Model<Boolean> advancedEditorMode) {
-        super(id, "References", null);
-        this.editorMode = editorMode;
+    public ReferencesEditor(String id, String label, Model<Boolean> advancedEditorMode, VisabilityUpdater updater) {
+        super(id, "References", null, updater);
         setOutputMarkupId(true);
         Component componentToUpdate = this;
 
@@ -273,7 +269,7 @@ public class ReferencesEditor extends ComposedField {
         ajaxWrapper.add(listview);
         add(ajaxWrapper);
 
-        AbstractField f1 = new VcrTextFieldWithoutLabel("reference", "Add new reference by URL or PID", data, this);
+        AbstractField f1 = new VcrTextFieldWithoutLabel("reference", "Add new reference by URL or PID", data, this,null);
         f1.setCompleteSubmitOnUpdate(true);
         f1.addValidator(new Validator());
         add(f1);

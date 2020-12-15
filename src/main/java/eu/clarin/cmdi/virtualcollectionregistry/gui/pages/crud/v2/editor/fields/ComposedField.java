@@ -9,8 +9,8 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
  */
 public abstract class ComposedField extends AbstractField implements FieldComposition {
     
-    public ComposedField(String id, String label, Component editComponent) {
-        super(id, label, editComponent);
+    public ComposedField(String id, String label, Component editComponent, VisabilityUpdater v) {
+        super(id, label, editComponent, v);
     }
  
     @Override

@@ -19,6 +19,8 @@ package eu.clarin.cmdi.virtualcollectionregistry.pid;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.Configuration;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+
+import java.io.Serializable;
 import java.net.URI;
 import org.apache.commons.httpclient.HttpException;
 import org.slf4j.Logger;
@@ -45,7 +47,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Profile("vcr.pid.doi")
-public class DoiPersistentIdentifierProvider implements PersistentIdentifierProvider {
+public class DoiPersistentIdentifierProvider implements PersistentIdentifierProvider, Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(DoiPersistentIdentifierProvider.class);
     private final DoiPidWriter pidWriter;

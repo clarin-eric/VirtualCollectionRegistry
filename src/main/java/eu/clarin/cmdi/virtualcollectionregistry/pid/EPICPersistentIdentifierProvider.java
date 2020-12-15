@@ -6,6 +6,8 @@ import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidWriter;
 import eu.clarin.cmdi.virtualcollectionregistry.PidProviderServiceImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+
+import java.io.Serializable;
 import java.net.URI;
 import java.util.EnumMap;
 import java.util.Map;
@@ -28,7 +30,7 @@ import org.springframework.stereotype.Service;
  */
 @Service
 @Profile("vcr.pid.epic")
-public class EPICPersistentIdentifierProvider implements PersistentIdentifierProvider {
+public class EPICPersistentIdentifierProvider implements PersistentIdentifierProvider, Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(EPICPersistentIdentifierProvider.class);
     private final PidWriter pidWriter;

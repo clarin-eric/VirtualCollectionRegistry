@@ -213,13 +213,13 @@ import org.slf4j.LoggerFactory;
                  mdlAffiliation.setObject(a.getOrganisation());
              }
 
-             AbstractField f1 = new VcrTextField("author_family_name", "Family Name", "New author family name", mdlFamilyName, this);
+             AbstractField f1 = new VcrTextField("author_family_name", "Family Name", "New author family name", mdlFamilyName, this,null);
              f1.setRequired(true);
-             AbstractField f2 = new VcrTextField("author_given_name", "Given Name", "New author given name", mdlGivenName, this);
+             AbstractField f2 = new VcrTextField("author_given_name", "Given Name", "New author given name", mdlGivenName, this,null);
              f2.setRequired(true);
-             AbstractField f3 = new VcrTextField("author_email", "Email", "New author email", mdlEmail, this);
+             AbstractField f3 = new VcrTextField("author_email", "Email", "New author email", mdlEmail, this,null);
              f3.setRequired(true);
-             AbstractField f4 = new VcrTextField("author_affiliation", "Affiliation", "New author affiliation (optional)", mdlAffiliation, this);
+             AbstractField f4 = new VcrTextField("author_affiliation", "Affiliation", "New author affiliation (optional)", mdlAffiliation, this,null);
              f4.setCompleteSubmitOnUpdate(true);
 
              fields.add(f1);
@@ -318,7 +318,11 @@ import org.slf4j.LoggerFactory;
      private final ModalConfirmDialog localDialog;
 
      public AuthorsEditor(String id, String label) {
-         super(id, label, null);
+         this(id, label, null);
+     }
+
+     public AuthorsEditor(String id, String label, VisabilityUpdater updater) {
+         super(id, label, null, updater);
          setOutputMarkupId(true);
 
          final WebMarkupContainer editorwrapper = new WebMarkupContainer("editorwrapper");
