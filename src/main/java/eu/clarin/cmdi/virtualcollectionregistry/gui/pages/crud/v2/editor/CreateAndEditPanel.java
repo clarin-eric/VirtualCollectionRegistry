@@ -70,6 +70,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     private final static Mode DEFAULT_EDITOR_MODE = Mode.SIMPLE;
 
     private Model<Boolean> advancedEditorModeModel = Model.of(false);
+    private Model<Boolean> toggleHelpModeModel = Model.of(false);
 
     /**
      * Create a new virtual collection
@@ -164,6 +165,12 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
                 "type",
                 "Type",
                 enumValuesAsList(VirtualCollection.Type.values()),
+                "Specifies the type of this collection: "+
+                        "<ul>"+
+                            "<li>Extensional: Type of virtual collection that explicitly enumerates the references to resources or metadata documents that make up the collection.</li>"+
+                            "<li>Intensional: Type of virtual collection that defines a query by which the items of the collection can be retrieved ad-hoc from a secondary service.</li>"+
+                        "</ul>"+
+                        "Note: changing this value will affect wich collection fields you can edit.",
                 typeModel, v);
         field.addListener(new Listener() {
             @Override
@@ -179,6 +186,13 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
                 "purpose",
                 "Purpose",
                 enumValuesAsList(VirtualCollection.Purpose.values()),
+                "An indication of the intended usage of the present virtual collection:"+
+                    "<ul>"+
+                        "<li>research: the virtual collection bundles resources that are relevant to a specific research (question).</li>"+
+                        "<li>reference: the virtual collection bundles resources, that are to be cited in a publication.</li>"+
+                        "<li>sample: this virtual collection bundles is intended to serve as an sample for research data</li>"+
+                        "<li>future-use: the purpose of this virtual collection is not specified yet. Used in published collection is advised against.</li>"+
+                    "</ul>",
                 purposeModel, v),
             new Mode[]{Mode.ADVANCED});
 
@@ -187,6 +201,12 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
                 "repro",
                 "Reproducibility",
                 enumValuesAsList(VirtualCollection.Reproducibility.values()),
+                "An indication of the degree to which results obtained from processing of the present collection can be expected to be stable:"+
+                        "<ul>"+
+                            "<li>intended: processing results can be expected to remain stable</li>"+
+                            "<li>fluctuating: Processing results may vary</li>"+
+                            "<li>untended: no claims with respect to the stability of the processing results are made</li>"+
+                        "</ul>",
                 reproModel, v),
             new Mode[]{Mode.ADVANCED});
 
@@ -221,6 +241,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
                         "int_uri",
                         "Query URI",
                         "The location of the service from which the items should be retrieved.",
+                        "This value may be a persistent identifier, but could also be a plain URI although this is advised against for published collections.",
                         intQueryUri, vIntensional),
                 new Mode[]{Mode.ADVANCED});
 
@@ -229,6 +250,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
                         "int_query_profile",
                         "Query profile",
                         "Identifier of the mechanism, i.e. the protocol to be used.",
+                            "A application exploiting the query can use this to use a proper driver to talk to the service. Example: In case of CLARIN-FCS access the endpoint by FCS-compatible means.",
                         intQueryProfile, vIntensional),
                 new Mode[]{Mode.ADVANCED});
 
@@ -237,6 +259,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
                         "int_query_parameters",
                         "Query parameters",
                         "The query that should be passed on to the service by which it can look up the items that are part of this collection.",
+                        "This value should be in the query language supported by the service. Example: In case of CLARIN-FCS, this value is the CQL query to be send to the endpoint.",
                         intQueryParameters, vIntensional, false),
                 new Mode[]{Mode.ADVANCED});
 
@@ -274,11 +297,22 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
             }
         });
 
+        //Toggle help checkbox
+        add(new AjaxCheckBox("btn_editor_toggle_help", toggleHelpModeModel) {
+            @Override
+            public void onUpdate(AjaxRequestTarget target) {
+                toggleHelpMode();
+                if (target != null) {
+                    target.add(ajax_update_component);
+                }
+            }
+        });
+
+        //Toggle editor mode checkbox
         add(new AjaxCheckBox("btn_editor_mode", advancedEditorModeModel) {
             @Override
             public void onUpdate(AjaxRequestTarget target) {
                 updateAllFieldVisability();
-                //updateMode(advancedEditorModeModel.getObject() ? Mode.ADVANCED : Mode.SIMPLE);
                 if (target != null) {
                     target.add(ajax_update_component);
                 }
@@ -286,10 +320,15 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         });
 
         //Update field visibility based on the active editor mode
-        //updateMode(DEFAULT_EDITOR_MODE);
         updateAllFieldVisability();
     }
 
+    private void toggleHelpMode() {
+        boolean showHelp = toggleHelpModeModel.getObject();
+        for(AbstractField f: fields) {
+            f.showHelp(showHelp);
+        }
+    }
     private void updateAllFieldVisability() {
         for(AbstractField f: fields) {
             f.updateVisability();

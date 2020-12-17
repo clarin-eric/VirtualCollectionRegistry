@@ -12,6 +12,7 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -61,11 +62,14 @@ public abstract class AbstractField extends Panel implements Field {
 
     private final VisabilityUpdater visabilityUpdater;
 
-    public AbstractField(String id, String label, Component editComponent, VisabilityUpdater visabilityUpdater) {
-        this(id, label, new Model<>(), null, editComponent, true, visabilityUpdater);
+    private final WebMarkupContainer helpMessage;
+    private final String helpText;
+
+    public AbstractField(String id, String label, String help_text, Component editComponent, VisabilityUpdater visabilityUpdater) {
+        this(id, label, help_text, new Model<>(), null, editComponent, true, visabilityUpdater);
     }
     
-    public AbstractField(String id, String label, final IModel dataModel, final FieldComposition parent, Component editComponent, boolean enableOnKeySubmit, VisabilityUpdater visabilityUpdater) {
+    public AbstractField(String id, String label, String help_text, final IModel dataModel, final FieldComposition parent, Component editComponent, boolean enableOnKeySubmit, VisabilityUpdater visabilityUpdater) {
         super(id);
         this.visabilityUpdater = visabilityUpdater;
         this.label = label;
@@ -91,6 +95,21 @@ public abstract class AbstractField extends Panel implements Field {
         lblErrorMessage = new Label("error_message", errorMessageModel);
         lblErrorMessage.setVisible(false);
         add(lblErrorMessage);
+
+        helpMessage = new WebMarkupContainer("help_message");
+        WebMarkupContainer helpMessageIcon = new WebMarkupContainer("icon");
+        helpMessage.add(helpMessageIcon);
+        this.helpText = help_text;
+        Label helpMessageLabel = new Label("message", Model.of(help_text == null ? "" : help_text));
+        helpMessageLabel.setEscapeModelStrings(false);
+        helpMessage.add(helpMessageLabel);
+        helpMessage.setVisible(help_text != null);
+        add(helpMessage);
+        helpMessage.setVisible(false);
+    }
+
+    public void showHelp(boolean showHelp) {
+        helpMessage.setVisible(this.helpText != null && !this.helpText.isEmpty() && showHelp);
     }
 
     public void updateVisability() {

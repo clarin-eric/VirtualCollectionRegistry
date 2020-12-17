@@ -329,7 +329,8 @@ import org.slf4j.LoggerFactory;
          editorwrapper.setOutputMarkupId(true);
 
          final Component componentToUpdate = this;
-         noAuthors = new Label("lbl_no_authors", "No authors");
+         noAuthors = new Label("lbl_no_authors", "No authors found.<br />Please add one or more persons responsible for creation of this virtual collection.");
+         noAuthors.setEscapeModelStrings(false);
 
          ajaxWrapper = new WebMarkupContainer("ajaxwrapper");
          ajaxWrapper.setOutputMarkupId(true);

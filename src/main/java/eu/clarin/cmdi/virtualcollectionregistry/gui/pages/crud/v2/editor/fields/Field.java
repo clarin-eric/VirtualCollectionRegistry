@@ -8,4 +8,5 @@ public interface Field {
     void setRequired(boolean required);
     boolean validate();
     void updateVisability();
+    void showHelp(boolean showHelp);
 }

@@ -171,7 +171,8 @@ public class ReferencesEditor extends ComposedField{
         editorWrapper.add(editor);
         add(editorWrapper);
 
-        lblNoReferences = new Label("lbl_no_references", "No resources found.");
+        lblNoReferences = new Label("lbl_no_references", "No resources found.<br />Please add one or more members that make up this virtual collection by means of a (persistent) reference. ");
+        lblNoReferences.setEscapeModelStrings(false);
 
         listview = new ListView("listview", references) {
             @Override
