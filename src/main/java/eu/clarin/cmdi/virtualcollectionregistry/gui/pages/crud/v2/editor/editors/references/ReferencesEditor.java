@@ -20,6 +20,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.CreateAndEditPanel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.CancelEventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.EventHandler;
@@ -91,13 +92,22 @@ public class ReferencesEditor extends ComposedField{
             
             @Override
             public boolean validate(String input) {
+                //Try to parse url
                 try {
                     new URL(input);
+                    message = "";
                 } catch(MalformedURLException ex) {
-                    message = ex.getMessage();
-                    return false;
+                    message += ex.getMessage();
                 }
-                return true;
+
+                //Try to parse handle
+                if(!HandleLinkModel.isSupportedPersistentIdentifier(input)) {
+                    message += "Not a valid persistent identifier";
+                } else {
+                    message = "";
+                }
+
+                return message.isEmpty();
             }
 
             @Override
@@ -255,7 +265,6 @@ public class ReferencesEditor extends ComposedField{
         ajaxWrapper.add(new AbstractAjaxTimerBehavior(Duration.seconds(uiRefreshTimeInSeconds)) {
             @Override
             protected void onTimer(AjaxRequestTarget target) {
-                //fireEvent(new DataUpdatedEvent(target));
                 if(target != null) {
                     target.add(ajaxWrapper);
                 }
@@ -292,10 +301,14 @@ public class ReferencesEditor extends ComposedField{
                 references.add(new ReferenceJob(new Resource(Resource.Type.RESOURCE, value)));
                 data.setObject("");
             } else if(handlePid(value)) {
-                references.add(new ReferenceJob(new Resource(Resource.Type.RESOURCE, value)));
+                String actionableValue = HandleLinkModel.getActionableUri(value);
+                references.add(new ReferenceJob(new Resource(Resource.Type.RESOURCE, actionableValue)));
                 data.setObject("");
             } else {
-//                references.add(new ReferenceJob(new UnkownReference(value, "Not a valid URL or PID.")));
+                //abort
+                logger.warn("Unhandled reference (not url AND not pid)");
+                fireEvent(new DataUpdatedEvent(target)); //Is this required?
+                return false;
             }
 
             if(worker == null || !worker.isRunning()) {
@@ -328,7 +341,7 @@ public class ReferencesEditor extends ComposedField{
     }
     
     private boolean handlePid(String value) {
-        return false;
+        return HandleLinkModel.isSupportedPersistentIdentifier(value);
     }
     
     public void reset() {

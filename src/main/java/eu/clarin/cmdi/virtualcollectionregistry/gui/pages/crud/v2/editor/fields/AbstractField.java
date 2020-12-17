@@ -27,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * @author wilelb
  */
 public abstract class AbstractField extends Panel implements Field {
-    private static final Logger logger = LoggerFactory.getLogger(ReferencesEditor.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractField.class);
     
     //Clear TextField on submit, defaults to false;
     private boolean resetOnSubmit = false;
