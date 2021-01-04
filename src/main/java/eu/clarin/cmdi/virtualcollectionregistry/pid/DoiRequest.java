@@ -25,14 +25,13 @@ public class DoiRequest implements PidRequest {
         this.request.data.attributes.event = "publish";
     }
 
+    public void setDoi(String doi) { this.request.data.attributes.doi = doi; }
     public void setPrefix(String prefix) {
         this.request.data.attributes.prefix = prefix;
     }
-
     public void setUrl(String url) {
         this.request.data.attributes.url = url;
     }
-
     public void setPublicationYear(String year) {
         this.request.data.attributes.publicationYear = year;
     }
