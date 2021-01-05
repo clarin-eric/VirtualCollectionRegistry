@@ -105,7 +105,15 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
         this.setType(type);
         this.setRef(ref);
     }
-    
+
+    public Resource(Resource.Type type, String ref, String label) {
+        super();
+        this.displayOrder = 0L;
+        this.setType(type);
+        this.setRef(ref);
+        this.setLabel(label);
+    }
+
     @Override
     public Long getId() {
         return id;

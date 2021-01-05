@@ -516,19 +516,25 @@ lds-dual-ring {
     }
 }
 
-.icon-success {
-    color: green;
+.icon {
     margin-right: 5px;
+    margin-left: 5px;
+}
+
+.icon-success {
+    color: #155724;
+}
+
+.icon-passed {
+    color: #856404;
 }
 
 .icon-failed {
-    color: darkred;
-    margin-right: 5px;
+    color: #721c24;
 }
 
 .icon-waiting {
-    color: #555555;
-    margin-right: 5px;
+    color: #383d41;
 }
 
 .reference-title {
@@ -545,4 +551,12 @@ lds-dual-ring {
 .alert-small {
     padding: 5px;
     margin: 5px;
+}
+
+.help-message {
+    color: #383d41;
+}
+
+.error-message {
+    color: #721c24;
 }

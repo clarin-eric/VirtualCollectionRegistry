@@ -21,6 +21,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.markup.html.WebMarkupContainer;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.slf4j.Logger;
@@ -53,6 +54,9 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
 
     private final AuthorsEditor authorsEditor;
     private final ReferencesEditor referencesEditor;
+
+    private final IModel<String> mdlErrorMessage = Model.of("");
+    private final Label lblErrorMessage;
 
     //List of fields
     private final List<AbstractField> fields = new ArrayList<>();
@@ -318,6 +322,10 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
                 }
             }
         });
+
+        lblErrorMessage = new Label("error_message", mdlErrorMessage);
+        lblErrorMessage.setVisible(false);
+        add(lblErrorMessage);
 
         //Update field visibility based on the active editor mode
         updateAllFieldVisability();

@@ -93,6 +93,7 @@ public abstract class AbstractField extends Panel implements Field {
         }
 
         lblErrorMessage = new Label("error_message", errorMessageModel);
+        lblErrorMessage.setEscapeModelStrings(false);
         lblErrorMessage.setVisible(false);
         add(lblErrorMessage);
 
@@ -204,11 +205,13 @@ public abstract class AbstractField extends Panel implements Field {
     
     public void setRequired(boolean required) {
         this.required = required;
-        labelModel.setObject(label.isEmpty() ? "" : label + ":");
         if(lbl != null) {
-            lbl.add(new AttributeModifier("class", "required"));
-        } else {
-            lbl.add(new AttributeModifier("class", "optional"));
+            labelModel.setObject(label.isEmpty() ? "" : label + ":");
+            if(required) {
+                lbl.add(new AttributeModifier("class", "required"));
+            } else {
+                lbl.add(new AttributeModifier("class", "optional"));
+            }
         }
     }
     

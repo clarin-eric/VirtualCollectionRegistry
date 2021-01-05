@@ -49,7 +49,7 @@ public class ReferencePanel extends Panel {
         
         WebMarkupContainer editorWrapper = new WebMarkupContainer("wrapper");
 
-        String check = ref.getReference().getCheck();
+        //String check = ref.getReference().getCheck();
 
         boolean analysing = false;
         if(ref.getState() == ReferencesEditor.State.INITIALIZED || ref.getState() == ReferencesEditor.State.ANALYZING) {
@@ -59,13 +59,18 @@ public class ReferencePanel extends Panel {
         WebMarkupContainer stateIcon = new WebMarkupContainer("state");
         switch(ref.getState()) {
             case DONE:
-                stateIcon.add(new AttributeAppender("class", "fa fa-check-circle-o icon-success"));
+                if(HandleLinkModel.isSupportedPersistentIdentifier(ref.getReference().getRef())) {
+                    stateIcon.add(new AttributeAppender("class", "fa fa-check-circle-o icon icon-success"));
+                } else {
+                    stateIcon.add(new AttributeAppender("class", "fa fa-check-circle-o icon icon-passed"));
+                    //TODO: make clickable and show popup with details
+                }
                 break;
             case FAILED:
-                stateIcon.add(new AttributeAppender("class", "fa fa-times-circle-o icon-failed"));
+                stateIcon.add(new AttributeAppender("class", "fa fa-times-circle-o icon icon-failed"));
                 break;
             default:
-                stateIcon.add(new AttributeAppender("class", "fa fa-dot-circle-o icon-waiting"));
+                stateIcon.add(new AttributeAppender("class", "fa fa-dot-circle-o icon icon-waiting"));
                 break;
         }
         editorWrapper.add(stateIcon);
@@ -76,13 +81,13 @@ public class ReferencePanel extends Panel {
         }
         editorWrapper.add(new Label("value", urlValue));
 
-
+/*
         WebMarkupContainer alert = new WebMarkupContainer("alert");
         Label lblRecommendation = new Label("lbl_recommendation", Model.of("We recommend to use persistent identifiers (DOI, Handle, ...) instead of direct URLs to improve stability."));
         alert.add(lblRecommendation);
         alert.setVisible(!HandleLinkModel.isSupportedPersistentIdentifier(ref.getReference().getRef()));
         editorWrapper.add(alert);
-
+*/
         Label lblWaiting = new Label("lbl_waiting", "Waiting on analysis");
         lblWaiting.setVisible(analysing);
         editorWrapper.add(lblWaiting);

@@ -72,6 +72,7 @@ public class ReferencesEditor extends ComposedField{
     
     private final List<ReferenceJob> references = new CopyOnWriteArrayList<>();
     private IModel<String> data = new Model<>();
+    private IModel<String> mdlReferenceTitle = new Model<>();
     
     final Label lblNoReferences;
     final ListView listview;
@@ -90,30 +91,36 @@ public class ReferencesEditor extends ComposedField{
     public class Validator implements InputValidator, Serializable {
         private String message = "";
             
-            @Override
-            public boolean validate(String input) {
-                //Try to parse url
-                try {
-                    new URL(input);
-                    message = "";
-                } catch(MalformedURLException ex) {
-                    message += ex.getMessage();
-                }
+        @Override
+        public boolean validate(String input) {
+            message = "";
+            boolean validUrl = false;
+            boolean validPid = false;
 
-                //Try to parse handle
-                if(!HandleLinkModel.isSupportedPersistentIdentifier(input)) {
-                    message += "Not a valid persistent identifier";
-                } else {
-                    message = "";
-                }
-
-                return message.isEmpty();
+            //Try to parse url
+            try {
+                new URL(input);
+                validUrl = true;
+            } catch(MalformedURLException ex) {
+                message += !message.isEmpty() ? "<br />" : "";
+                message += ex.getMessage()+".";
             }
 
-            @Override
-            public String getErrorMessage() {
-                return message;
+            //Try to parse handle
+            if(HandleLinkModel.isSupportedPersistentIdentifier(input)) {
+                validPid = true;
+            } else {
+                message += !message.isEmpty() ? "<br />" : "";
+                message += "Not a valid persistent identifier.";
             }
+
+            return (validUrl || validPid);
+        }
+
+        @Override
+        public String getErrorMessage() {
+            return message;
+        }
     }
     
     public ReferencesEditor(String id, String label, Model<Boolean> advancedEditorMode, VisabilityUpdater updater) {
@@ -280,9 +287,16 @@ public class ReferencesEditor extends ComposedField{
         add(ajaxWrapper);
 
         AbstractField f1 = new VcrTextFieldWithoutLabel("reference", "Add new reference by URL or PID", data, this,null);
-        f1.setCompleteSubmitOnUpdate(true);
+        f1.setCompleteSubmitOnUpdate(false);
+        f1.setRequired(true);
         f1.addValidator(new Validator());
         add(f1);
+
+        AbstractField f2 = new VcrTextFieldWithoutLabel("reference_title", "Set a title for this new reference", mdlReferenceTitle, this,null);
+        f2.setCompleteSubmitOnUpdate(true);
+        f2.setRequired(true);
+        //f2.addValidator(new Validator());
+        add(f2);
     }
     
     @Override
@@ -293,17 +307,21 @@ public class ReferencesEditor extends ComposedField{
 
     @Override
     public boolean completeSubmit(AjaxRequestTarget target) {
-        logger.info("Completing reference submit: value="+data.getObject());
-        
         String value = data.getObject();
-        if(value != null && !value.isEmpty()) {
+        String title = mdlReferenceTitle.getObject();
+
+        logger.info("Completing reference submit: value="+value+",title="+title);
+
+        if(value != null && !value.isEmpty() && title != null && !title.isEmpty()) {
             if(handleUrl(value)) {
-                references.add(new ReferenceJob(new Resource(Resource.Type.RESOURCE, value)));
+                references.add(new ReferenceJob(new Resource(Resource.Type.RESOURCE, value, title)));
                 data.setObject("");
+                mdlReferenceTitle.setObject("");
             } else if(handlePid(value)) {
                 String actionableValue = HandleLinkModel.getActionableUri(value);
-                references.add(new ReferenceJob(new Resource(Resource.Type.RESOURCE, actionableValue)));
+                references.add(new ReferenceJob(new Resource(Resource.Type.RESOURCE, actionableValue, title)));
                 data.setObject("");
+                mdlReferenceTitle.setObject("");
             } else {
                 //abort
                 logger.warn("Unhandled reference (not url AND not pid)");
