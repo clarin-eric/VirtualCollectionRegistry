@@ -271,10 +271,14 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 if(validate()) {
+                    mdlErrorMessage.setObject("");
+                    lblErrorMessage.setVisible(false);
                     persist(target);
                     reset();
                 } else {
                     logger.info("Failed to validate");
+                    mdlErrorMessage.setObject("Collection failed to validate.<br />Please fix all issues and try again.");
+                    lblErrorMessage.setVisible(true);
                 }
 
                 if (target != null) {
@@ -325,6 +329,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
 
         lblErrorMessage = new Label("error_message", mdlErrorMessage);
         lblErrorMessage.setVisible(false);
+        lblErrorMessage.setEscapeModelStrings(false);
         add(lblErrorMessage);
 
         //Update field visibility based on the active editor mode
@@ -352,6 +357,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         btnSave.setEnabled(true);
         btnSave.add(AttributeModifier.remove("disabled"));
     }
+
     private List<String> enumValuesAsList(Object[] values) {
         List<String> result = new ArrayList<>();
         for(Object o : values) {
@@ -372,6 +378,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     public void handleEvent(Event event) {
         if(validate()) {
             //enableSaveButton();
+
         } else {
             //disableSaveButton();
         }
