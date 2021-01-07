@@ -2,6 +2,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor;
 
 import java.util.*;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.ActionablePanel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.authors.AuthorsEditor;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.dialogs.ModalConfirmDialog;
@@ -455,6 +456,16 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     }
 
     private void persist(final AjaxRequestTarget target) {
+        //Make sure we have a principal, otherwise fail early
+        ApplicationSession session = (ApplicationSession)getSession();
+        if(session.getPrincipal() == null) {
+            logger.warn("Collection persist attempt with null principal (expired session?).");
+            mdlErrorMessage.setObject("Save cancelled.<br />Session seemed to have expired.");
+            lblErrorMessage.setVisible(true);
+            target.add(this);
+            return;
+        }
+
         VirtualCollection newCollection = new VirtualCollection();
         newCollection.setCreationDate(new Date()); // FIXME: get date from GUI?
 
