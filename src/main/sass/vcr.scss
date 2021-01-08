@@ -560,3 +560,15 @@ lds-dual-ring {
 .error-message {
     color: #721c24;
 }
+
+h1, h2, h3, h4, h5, h6 {
+    color: #0080aa;
+}
+
+#help h2 {
+    border-bottom: 2px solid #eee;
+}
+
+#help {
+    text-align: justify;
+}
