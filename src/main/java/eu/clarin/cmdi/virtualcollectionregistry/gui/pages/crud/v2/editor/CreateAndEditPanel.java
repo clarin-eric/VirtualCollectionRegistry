@@ -67,6 +67,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     //private final ModalConfirmDialog dialog;
 
     private final AjaxFallbackLink btnSave;
+    private final WebMarkupContainer cbHelpLabel;
 
     public static enum Mode {
         SIMPLE,
@@ -307,7 +308,8 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         });
 
         //Toggle help checkbox
-        add(new AjaxCheckBox("btn_editor_toggle_help", toggleHelpModeModel) {
+        cbHelpLabel = new WebMarkupContainer("btn_editor_toggle_help_lbl", Model.of("Show Help"));
+        AjaxCheckBox cbHelp = new AjaxCheckBox("btn_editor_toggle_help", toggleHelpModeModel) {
             @Override
             public void onUpdate(AjaxRequestTarget target) {
                 toggleHelpMode();
@@ -315,7 +317,10 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
                     target.add(ajax_update_component);
                 }
             }
-        });
+        };
+        cbHelpLabel.setVisible(false);
+        cbHelpLabel.add(cbHelp);
+        add(cbHelpLabel);
 
         //Toggle editor mode checkbox
         add(new AjaxCheckBox("btn_editor_mode", advancedEditorModeModel) {
@@ -343,7 +348,9 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
             f.showHelp(showHelp);
         }
     }
+
     private void updateAllFieldVisability() {
+        cbHelpLabel.setVisible(advancedEditorModeModel.getObject());
         for(AbstractField f: fields) {
             f.updateVisability();
         }
