@@ -188,7 +188,7 @@ public class ReferencesEditor extends ComposedField{
         editorWrapper.add(editor);
         add(editorWrapper);
 
-        lblNoReferences = new Label("lbl_no_references", "No resources found.<br />Please add one or more members that make up this virtual collection by means of a (persistent) reference. ");
+        lblNoReferences = new Label("lbl_no_references", "No references found.<br />Please add one or more members that make up this virtual collection by means of a (persistent) reference. ");
         lblNoReferences.setEscapeModelStrings(false);
 
         listview = new ListView("listview", references) {
@@ -383,7 +383,7 @@ public class ReferencesEditor extends ComposedField{
     }
     
     public void setData(List<Resource> data) {
-        logger.info("Set resource data: {} resources", data.size());
+        logger.info("Set resource data: {} reference", data.size());
         for(Resource r : data) {
             this.references.add(new ReferenceJob(r));
         }

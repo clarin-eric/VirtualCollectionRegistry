@@ -377,13 +377,13 @@ td.reference div div {
 
 
 
-.panel-heading a:after {
+.collapsible .panel-heading a:after {
     font-family:'Glyphicons Halflings';
     content:"\e114";
     float: right;
     color: grey;
 }
-.panel-heading a.collapsed:after {
+.collapsible .panel-heading a.collapsed:after {
     content:"\e080";
 }
 
@@ -570,10 +570,14 @@ h1, h2, h3, h4, h5, h6 {
 }
 
 #help {
-    text-align: justify;
+    text-align: left;
     display: inline-block;
     height: 100%;
     min-height: 100%;
+}
+
+#help .toggle {
+    color: #0080aa;
 }
 
 .toc {

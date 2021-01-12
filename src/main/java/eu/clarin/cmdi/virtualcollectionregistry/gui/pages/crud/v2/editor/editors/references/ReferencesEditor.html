@@ -13,7 +13,7 @@
                 <div wicket:id="reference" class="col-xs-12 field-row">[URI]</div>
                 <div wicket:id="reference_title" class="col-xs-12 field-row">[TITLE]</div>
                 <div class="col-md-12 col-xs-12">
-                    <div class="col-xs-12"><i>Press &lt;return&gt; to add this reference</i></div>
+                    <div class="col-xs-12"><i>Press &lt;enter&gt; to add this reference</i></div>
                 </div>
 
                 <div class="col-md-10 col-md-offset-2 col-sm-12 help_message" wicket:id="help_message">
@@ -28,7 +28,7 @@
 
                 <!-- The list of references -->
                 <div class="col-md-12 col-md-offset-0 col-sm-12" wicket:id="ajaxwrapper" style="margin-top: 10px">
-                    <div wicket:id="lbl_no_references"></div>
+                    <div wicket:id="lbl_no_references" class="error-message"></div>
                     <div wicket:id="listview">
                         <div wicket:id="pnl_reference">label</div>
                     </div>

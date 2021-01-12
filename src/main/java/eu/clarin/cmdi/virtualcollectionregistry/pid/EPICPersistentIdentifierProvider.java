@@ -113,7 +113,7 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
 
     //Make sure we return the default infix value if an empty infix has been set
     protected String getInfix() {
-        if(this.infix.isEmpty()) {
+        if(this.infix == null || this.infix.isEmpty()) {
             return PidProviderServiceImpl.DEFAULT_INFIX;
         }
         return infix;

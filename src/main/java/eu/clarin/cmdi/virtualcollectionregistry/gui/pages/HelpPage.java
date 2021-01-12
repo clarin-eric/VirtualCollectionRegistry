@@ -31,8 +31,10 @@ public class HelpPage extends BasePage {
     public static final String BASE_URI = "eu.clarin.cmdi.virtualcollectionregistry.base_uri";
 
     public HelpPage() {
-        final String baseUri = WebApplication.get().getServletContext().getInitParameter(BASE_URI);
-
+        String baseUri = WebApplication.get().getServletContext().getInitParameter(BASE_URI);
+        if(baseUri.endsWith("/")) {
+            baseUri = baseUri.substring(0, baseUri.length()-1);
+        }
         final String serviceBaseUri = String.format("%s/service", baseUri);
         add(new ExternalLink("restLink", serviceBaseUri)
                 .add(new Label("restUrl", serviceBaseUri)));
@@ -50,6 +52,7 @@ public class HelpPage extends BasePage {
         add(new Image("img-vcr-menu-create", new ContextRelativeResource("/images/help-vcr-menu-create.png")));
         add(new Image("img-vcr-editor-modes", new ContextRelativeResource("/images/help-vcr-editor-modes.png")));
         add(new Image("img-vcr-menu-my-collections", new ContextRelativeResource("/images/help-vcr-menu-my-collections.png")));
+        add(new Image("img-vcr-lifecycle", new ContextRelativeResource("/images/vcr-lifecycle.png")));
     }
 
 }
