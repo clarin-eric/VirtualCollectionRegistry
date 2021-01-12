@@ -15,6 +15,9 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.Event;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.EventType;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.Listener;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmissionUtils;
+import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
+import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.wicket.components.panel.EmptyPanel;
 import org.apache.wicket.Page;
@@ -82,6 +85,23 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
             vc = vcr.retrieveVirtualCollection(id);
             if (vc != null) {
                 this.checkAccess(vc);
+            }
+        }
+
+
+        if(vc == null) {
+            VirtualCollection submitted_vc = SubmissionUtils.retrieveCollection(getSession());
+            if(submitted_vc != null) {
+                logger.info("Processing submitted collection. id="+submitted_vc.getId());
+                vc = submitted_vc;
+                //Check if any of the properties require updating
+                if(vc.getOwner() == null) {
+                    Principal p = getUser();
+                    vc.setOwner(new User(p.getName()));
+                    vc.getCreators().add(new Creator(p.getName(), ""));
+                }
+
+                //this.submissionMode = true;
             }
         }
 
