@@ -85,8 +85,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
             }
         }
 
-        ApplicationSession session = (ApplicationSession) getSession();
-        this.provider = new PrivateCollectionsManager(session.getPrincipal());
+        this.provider = new PrivateCollectionsManager();
 
         final WebMarkupContainer ajaxWrapper = new WebMarkupContainer("ajaxwrapper");
         final Label labelNoCollections = new Label("lbl_no_collections", "No collections");
@@ -125,7 +124,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
             public void handleEvent(Event<VirtualCollection> event) {
                 switch(event.getType()) {
                     case SAVE:
-                        logger.debug("Saving collection");
+                        logger.trace("Saving collection");
                         //Search or exising collection
                         int idx = -1;
                         Long id = event.getData().getId();
@@ -140,90 +139,33 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
                         //Update or insert
                         try {
                             if (idx >= 0) {
-                                provider.set(idx, event.getData()); //Update collection
+                                provider.set(idx, event.getData(), event.getPrincipal()); //Update collection
                             } else {
-                                provider.add(event.getData()); //New collection
+                                provider.add(event.getData(), event.getPrincipal()); //New collection
                             }
                         } catch(VirtualCollectionRegistryException ex) {
-                            logger.info("Failed to persist collect. Error: {}", ex.toString());
+                            logger.error("Failed to persist collect. Error: {}", ex.toString());
                         }
                         labelNoCollections.setVisible(provider.isEmpty());
 
                         throw new RestartResponseException(BrowsePrivateCollectionsPage.class);
-                        //AJAX style same page refresh
-                        /*
-                        if(event.getAjaxRequestTarget() != null) {
-                            event.getAjaxRequestTarget().add(ajaxWrapper);
-                        }
-                        break;
-                         */
-
                     case CANCEL:
-
                         throw new RestartResponseException(BrowsePrivateCollectionsPage.class);
-                        //AJAX style same page refresh
-                        /*
-                        if(event.getAjaxRequestTarget() != null) {
-                            event.getAjaxRequestTarget().add(ajaxWrapper);
-                        }
-                        break;
-
-                         */
                     default:
                         throw new RuntimeException("Unhandled event. type = "+event.getType().toString());
                 }
             }
         });
         add(crud);
-
-
+        
         if(vc != null) {
             crud.editCollection(vc);
-        //    pnl.setEditing(crud.isEditing());
         }
-
 
         ListView listview = new ListView("listview", provider.getList()) {
             @Override
             protected void populateItem(ListItem item) {
-
                 final EmptyPanel pnl = new EmptyPanel("pnl_collection");
-                /*
-                final CollectionListPanel pnl =
-                        new CollectionListPanel("pnl_collection", (VirtualCollection)item.getModel().getObject());
-                pnl.setEditing(crud.isEditing());
-                pnl.addListener(new Listener<VirtualCollection>() {
-                    @Override
-                    public void handleEvent(Event<VirtualCollection> event) {
-                        switch(event.getType()) {
-                            case EDIT:
-                                logger.info("Edit event");
-                                crud.editCollection(event.getData());
-                                pnl.setEditing(crud.isEditing());
-                                if(event.getAjaxRequestTarget() != null) {
-                                    event.getAjaxRequestTarget().add(crud);
-                                    event.getAjaxRequestTarget().add(ajaxWrapper);
-                                } else {
-                                    logger.info("Ajax target is null");
-                                }
-                                break;
-                            case DELETE:
-                                String title = "Confirm removal";
-                                String body = "Confirm removal of collection: "+event.getData().getName();
-                                modal.update(title, body);
-                                modal.setModalConfirmAction(
-                                        new ModalConfirmAction<>(
-                                                EventType.CONFIRMED_DELETE,
-                                                event.getData()));
-                                event.getAjaxRequestTarget().add(modal);
-                                modal.show(event.getAjaxRequestTarget());
-                                break;
-                            default:
-                                throw new RuntimeException("Unhandled event. type = "+event.getType().toString());
-                        }
-                    }
-                });
-                 */
                 item.add(pnl);
             }
         };
@@ -240,8 +182,8 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
     private void removeCollection(VirtualCollection c) {
         //Search index for collection to remove
         int idxToRemove = -1;
-        Long id = c.getId();//event.getData().getId();
-        logger.info("Removing collection with id = {}",id);
+        Long id = c.getId();
+        logger.trace("Removing collection with id = {}",id);
         for(int i = 0; i < provider.size(); i++) {
             Long listId = provider.get(i).getId();
             if(listId == id) {

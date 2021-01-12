@@ -386,7 +386,6 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     public void handleEvent(Event event) {
         if(validate()) {
             //enableSaveButton();
-
         } else {
             //disableSaveButton();
         }
@@ -515,6 +514,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         fireEvent(
                 new AbstractEvent<VirtualCollection>(
                         EventType.SAVE,
+                        session.getPrincipal(),
                         newCollection,
                         target));
     }
