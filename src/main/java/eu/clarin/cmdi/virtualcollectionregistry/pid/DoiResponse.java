@@ -4,12 +4,16 @@ import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonInclude;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import javax.validation.constraints.Null;
 import javax.xml.bind.annotation.XmlRootElement;
 import java.util.List;
 
 public class DoiResponse {
+    private static final Logger logger = LoggerFactory.getLogger(DoiResponse.class);
+
     private static final ObjectMapper mapper = new ObjectMapper();
 
     public static String parseDoiFromResponse(String json) throws JsonProcessingException {
@@ -21,6 +25,7 @@ public class DoiResponse {
             }
             pid = response.data.id;
         } catch(JsonProcessingException ex) {
+            logger.info("Response JSON: "+json);
             throw ex;
         }
         return pid;
