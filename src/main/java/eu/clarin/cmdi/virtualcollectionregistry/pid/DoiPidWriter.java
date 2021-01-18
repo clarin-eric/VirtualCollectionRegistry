@@ -20,6 +20,8 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
+import java.net.URISyntaxException;
+import java.net.URL;
 
 public class DoiPidWriter {
 
@@ -33,17 +35,17 @@ public class DoiPidWriter {
         String generated_pid = null;
         try {
             generated_pid = doRequest(configuration, doiRequest.toJsonString());
-        } catch(IOException | NullPointerException ex) {
+        } catch(IOException | NullPointerException | URISyntaxException ex) {
             throw new HttpException("Failed to mint DOI", ex);
         }
         return generated_pid;
     }
 
-    private String doRequest(Configuration configuration, String requestJsonBody) throws IOException, NullPointerException {
+    private String doRequest(Configuration configuration, String requestJsonBody) throws IOException, NullPointerException, URISyntaxException {
         String doi = null;
-
-        //TODO: get this from configuration
-        HttpHost targetHost = new HttpHost("api.test.datacite.org", 443, "https");
+        
+        URL url  = new URL(configuration.getServiceBaseURL());
+        HttpHost targetHost = new HttpHost(url.getHost(), url.getPort(), url.toURI().getScheme());
 
         //Configure preemptive authentication
         //  https://stackoverflow.com/a/21592593
@@ -66,11 +68,11 @@ public class DoiPidWriter {
             HttpPost httppost = new HttpPost("/dois");
 
             httppost.setHeader("Accept", "application/json");
-            httppost.setHeader("Content-type", "application/json");
+            httppost.setHeader("Content-type", "application/vnd.api+json");
             httppost.setEntity(new StringEntity(requestJsonBody));
 
             logger.debug("Executing request: host uri=" + targetHost.toURI()+", request="+httppost.getRequestLine());
-            logger.debug("Username={}, password={}", configuration.getUser(), configuration.getPassword());
+            logger.debug("Username={}, password={}", configuration.getUser(), "xxxxxxxxx");
             logger.debug("Request entity json: {}", requestJsonBody);
             logger.debug("Request entity: {}", httppost.getEntity().toString());
 
