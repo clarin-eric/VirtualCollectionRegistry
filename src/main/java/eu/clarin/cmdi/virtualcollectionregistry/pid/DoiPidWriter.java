@@ -69,7 +69,7 @@ public class DoiPidWriter {
             httppost.setHeader("Content-type", "application/json");
             httppost.setEntity(new StringEntity(requestJsonBody));
 
-            logger.debug("Executing request " + httppost.getRequestLine());
+            logger.debug("Executing request: host uri=" + targetHost.toURI()+", request="+httppost.getRequestLine());
             logger.debug("Username={}, password={}", configuration.getUser(), configuration.getPassword());
             logger.debug("Request entity json: {}", requestJsonBody);
             logger.debug("Request entity: {}", httppost.getEntity().toString());
