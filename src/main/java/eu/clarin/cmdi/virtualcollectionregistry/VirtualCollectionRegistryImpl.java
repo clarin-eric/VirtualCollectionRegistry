@@ -1,10 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
 import eu.clarin.cmdi.oai.provider.impl.OAIProvider;
-import eu.clarin.cmdi.virtualcollectionregistry.model.User;
-import eu.clarin.cmdi.virtualcollectionregistry.model.User_;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
+import eu.clarin.cmdi.virtualcollectionregistry.model.*;
 import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidator;
 import java.nio.charset.Charset;
@@ -37,6 +34,8 @@ import org.springframework.stereotype.Service;
 
 @Service
 public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry, InitializingBean, DisposableBean {
+
+    private final static String REQUIRED_DB_VERSION = "1.2.0";
 
     @Autowired
     private DataStore datastore; //TODO: replace with Spring managed EM?
@@ -82,6 +81,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         logger.info("\tSpecial character: [\u65E5]");
         
         try {
+            checkDbVersion();
             long t1 = System.nanoTime();
             VirtualCollectionList collections = getAllVirtualCollections();
             creatorService.initialize(collections.getItems());
@@ -94,7 +94,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                 public void run() {
                     maintenance.perform(new Date().getTime());
                 }
-            }, 60, 60, TimeUnit.SECONDS);
+            }, 30, 30, TimeUnit.SECONDS);
             maintenanceExecutor.scheduleWithFixedDelay(new Runnable() {
                 @Override
                 public void run() {
@@ -147,7 +147,17 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         
         logger.debug("creating virtual collection");
 
-        validator.validate(vc);
+        try {
+            validator.validate(vc);
+        } catch(VirtualCollectionValidationException ex) {
+            logger.info("Validation failed: ");
+            for(String s: ex.getAllErrorsAsList()) {
+                logger.info("   validation error: "+s);
+            }
+
+            throw ex;
+        }
+
         EntityManager em = datastore.getEntityManager();
         try {            
             em.getTransaction().begin();
@@ -268,7 +278,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             }
             //Non private collections or collections in error state cannot be 
             //deleted by non-admin users
-            if (!vc.isPrivate() && vc.getState() == VirtualCollection.State.ERROR) {
+            if (!vc.isPrivate() && vc.getState() != VirtualCollection.State.ERROR) {
                 logger.debug("virtual collection (id={}) cannot be "
                         + "deleted (invalid state)", id);
                 throw new VirtualCollectionRegistryPermissionException(
@@ -412,7 +422,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             throw new IllegalArgumentException("id <= 0");
         }
 
-        logger.debug("retrieve virtual collection (id={})", id);
+        logger.trace("retrieve virtual collection (id={})", id);
 
         EntityManager em = datastore.getEntityManager();
         try {            
@@ -424,7 +434,6 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                 logger.debug("virtual collection (id={}) not found", id);
                 throw new VirtualCollectionNotFoundException(id);
             }
-            logger.debug("virtual collection retrieved (id={})", id);
             return vc;
         } catch (VirtualCollectionRegistryException e) {
             em.getTransaction().rollback();
@@ -434,6 +443,37 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             logger.error("error while retrieving virtual collection", e);
             throw new VirtualCollectionRegistryException(
                     "error while retrieving virtual collection", e);
+        }
+    }
+
+    private void checkDbVersion() throws VirtualCollectionRegistryException {
+        logger.info("checkDbVersion()");
+        EntityManager em = datastore.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            TypedQuery<DbConfig> q = em.createNamedQuery("DbConfig.findByKey", DbConfig.class);
+            q.setParameter("keyName", "db_version");
+            DbConfig result = q.getSingleResult();
+            String dbVersion = result.getValue();
+            logger.info("Database version = {}", dbVersion);
+            if (!dbVersion.equalsIgnoreCase(REQUIRED_DB_VERSION)) {
+                throw new VirtualCollectionRegistryException(
+                    "Incorrect db_version, expected "+REQUIRED_DB_VERSION+", got "+dbVersion);
+            }
+
+        } catch(NoResultException e) {
+            logger.error("No db_version key found in config table", e);
+            throw new VirtualCollectionRegistryException(
+                    "No db_version key found in config table", e);
+        } catch (Exception e) {
+            logger.error("error while verifying database version", e);
+            throw new VirtualCollectionRegistryException(
+                    "error while verifying database version", e);
+        } finally {
+            EntityTransaction tx = em.getTransaction();
+            if ((tx != null) && !tx.getRollbackOnly()) {
+                tx.commit();
+            }
         }
     }
 

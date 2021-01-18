@@ -49,7 +49,7 @@ public class CitationDialog extends BaseInfoDialog {
                         CitationDialog.this.close(target);
                     }
                 });
-        buildContent(TITLE, new Body(getContentWicketId()), buttons);
+        buildContent(TITLE, new Body(getContentWicketId()), buttons, null);
     }
     
     private class Body extends Panel {

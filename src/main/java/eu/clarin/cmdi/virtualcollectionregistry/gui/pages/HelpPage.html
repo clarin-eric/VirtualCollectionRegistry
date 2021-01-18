@@ -7,121 +7,272 @@
     <body>
         <wicket:extend>
             <div id="help">
-                <h1>Glossary</h1>
-                <h2>Collection types</h2>
-                <dl>
-                    <dt>extensional</dt>
-                    <dd>
-                        Type of virtual collection that explicitly enumerates the references to resources or metadata documents that make up the collection
-                        <dl>
-                            <dt>resources</dt>
-                            <dd>
-                                The members that make up an extensional virtual collection by means of a persistent reference.
-                                These members may be of type <em>metadata</em> for referencing metadata, or <em>resource</em> for directly referencing a resource.
-                            </dd>
-                        </dl>
-                    </dd>
+                <!-- Left column, TOC -->
+                <div class="col-xs-2 toc">
+                    <h3>Table of content:</h3>
+                    <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a href="#introduction">Introduction</a>
+                                </h4>
+                            </div>
+                        </div>
 
-                    <dt>intensional</dt>
-                    <dd>
-                        Type of virtual collection that defines a query by which the items of the collection can be retrieved ad-hoc from a secondary service <em>(experimental, use at own risk!)</em>
-                        <dl>
-                            <dt>query description</dt>
-                            <dd>
-                                A prose description of the procedure by which the collection items can be retrieved from the external service.
-                            </dd>
-                            <dt>query URI</dt>
-                            <dd>
-                                The location of the service from which the items should be retrieved. This value may be a persistent identifier, but could also be a plain URI although this is advised against for published collections.
-                            </dd>
-                            <dt>query profile</dt>
-                            <dd>
-                                Identifier of the mechanism, i.e. the protocol to be used, by which the members of the virtual collection should be retrieved. A application exploiting the query can use this to use a proper driver to talk to the service. Example: In case of CLARIN-FCS access the endpoint by FCS-compatible means.
-                            </dd>
-                            <dt>query value</dt>
-                            <dd>
-                                The query that should be passed on to the service by which it can look up the items that are part of this collection. This value should be in the query language supported by the service. Example: In case of CLARIN-FCS, this value is the CQL query to be send to the endpoint.
-                            </dd>
-                        </dl>
-                    </dd>
-                </dl>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a href="#manual">Manual</a>
+                                </h4>
+                            </div>
+                                <ul class="list-group">
+                                    <li class="list-group-item">
+                                        <a href="#manual-browsing">Browsing</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="#manual-citing">Citing</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="#manual-creating">Creating New Collections</a>
+                                    </li>
+                                    <li class="list-group-item">
+                                        <a href="#manual-your-collections">Managing Your Collections</a>
+                                    </li>
+                                </ul>
+                        </div>
 
-                <h2>General collection properties</h2>
-                <dl>                    
-                    <dt>purpose</dt>
-                    <dd>
-                        An indication of the intended usage of the present virtual collection:
-                        <dl>
-                            <dt>research</dt>
-                            <dd>
-                                The virtual collection bundles resources that are relevant to a specific research (question).
-                            </dd>
-                            <dt>reference</dt>
-                            <dd>
-                                The virtual collection bundles resources, that are to be cited in a publication.
-                            </dd>
-                            <dt>sample</dt>
-                            <dd>
-                                This virtual collection bundles is intended to serve as an sample for research data
-                            </dd>
-                            <dt>future-use</dt>
-                            <dd>
-                                The purpose of this virtual collection is not specified yet. Used in published collection is advised against.
-                            </dd>
-                        </dl>
-                    </dd>
+                        <div class="panel panel-default">
+                            <div class="panel-heading">
+                                <h4 class="panel-title">
+                                    <a href="#rest-api">Technical</a>
+                                </h4>
+                            </div>
+                            <ul class="list-group">
+                                <li class="list-group-item">
+                                    <a href="#technical-rest-api">REST API</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="#technical-oai-pmh">OAI-PMH</a>
+                                </li>
+                                <li class="list-group-item">
+                                    <a href="#technical-integration">Integration with external repositories</a>
+                                </li>
+                            </ul>
+                        </div>
+                </div>
 
-                    <dt>reproducibility</dt>
-                    <dd>
-                        An indication of the degree to which results obtained from processing of the present collection can be expected to be stable:
-                        <dl>
-                            <dt>intended reproducibility</dt>
-                            <dd>
-                                Processing results can be expected to remain stable
-                            </dd>
-                            <dt>fluctuating reproducibility</dt>
-                            <dd>
-                                Processing results may vary
-                            </dd>
-                            <dt>untended reproducibility</dt>
-                            <dd>
-                                No claims with respect to the stability of the processing results are made
-                            </dd>
-                            <dt>reproducibility note</dt>
-                            <dd>
-                                Optional notes describing the expected reproducibility of processing results in more detail
-                            </dd>
-                        </dl>
-                    </dd>
+                <!-- Right column, content -->
+                <div class="col-xs-7">
+                    <!-- Introduction -->
+                    <div class="col-xs-12">
+                        <a name="introduction">
+                            <h1>Introduction</h1>
+                        </a>
+                        <p>
+                            <img width="200" class="img-responsive pull-right" alt="virtual collections schematic" wicket:id="img-virtualcollection">
+                            A virtual collection is a coherent set of links to digital objects (e.g. annotated text, video) that can
+                            be easily created, accessed and cited.<br />
+                            The links can originate from different archives, hence the term  virtual. A virtual collection is suitable
+                            for manual access (using a web-browser) as well as automated processing (e.g. by a webservice).
+                        </p>
+                        <p>
+                            More information can be found on the <a href="https://www.clarin.eu/content/virtual-collections">CLARIN website</a>.
+                        </p>
+                    </div>
 
-                    <dt>keyword</dt>
-                    <dd>
-                        A word or short phrase signifying a salient facet of the present virtual collection
-                    </dd>
+                    <!-- Manual -->
+                    <div class="col-xs-12">
+                        <h1>User Manual</h1>
+                        <!-- Browsing -->
+                        <a name="manual-browsing">
+                            <h2>Browsing Collections</h2>
+                        </a>
+                        <p>
+                            Click on the "Browse" button in the top menu:<br />
+                            <img width="400" alt="menu browse item" wicket:id="img-vcr-menu-browse">
+                        </p>
+                        <p>
+                            The Virtual Collection Registry home page lists all <b>public</b> collections.
+                            For each collection the title, type and creation date are shown.
+                        </p>
+                        <p>
+                            Available actions:
+                            <ul>
+                                <li>Click the <span class="toggle glyphicon glyphicon-chevron-right"></span> button to view the collection description.</li>
+                                <li>Click the collection title to view the complete collection details.</li>
+                                <li>Click the <button type="button" class="btn btn-primary btn-xs"><span class="fa fa-quote-right"></span></button> button to get the citation details for this collection.</li>
+                            </ul>
+                        </p>
+                        <p>
+                            The list of collection can be filtered by clicking the <button type="button" class="btn btn-primary btn-xs"><span class="fa fa-filter"></span></button> button.
+                            This will open the filter options:
+                            <br/>
+                            <img width="300" alt="menu filter options" wicket:id="img-vcr-filter">
+                            <br />
+                            After filling in one or more filter options, press the "Filter" button to apply the filter or
+                            use the "Clear" button to clear any applied filter.
+                        </p>
+                        <!-- Citing -->
+                        <a name="manual-citing">
+                            <h2>Citing Collections</h2>
+                        </a>
+                        <p>
+                            Collections can be cited by clicking the <button type="button" class="btn btn-primary btn-xs"><span class="fa fa-quote-right"></span></button>
+                            icon. This icon is available for each collection in the public list of collections and for individual collections on the collection
+                            details page.
+                        </p>
+                        <p>
+                            Clicking the citation button will show the following dialog providing basic citation information:
+                            <br />
+                            <img  width="500" alt="virtual collection citation dialog" wicket:id="img-vcr-citation-dialog">
+                            <br />
+                            Please make sure that you use the assigned persistent identier, shown in the Link field, when citing a virtual
+                            collection. All public collections have been assigned a persistent identifier.
+                        </p>
+                        <!-- Creation -->
+                        <a name="manual-creating">
+                            <h2>Creating New Collections</h2>
+                        </a>
+                        <p>
+                            Click on the "Create" button in the top menu:<br />
+                            <img width="400" alt="menu create item" wicket:id="img-vcr-menu-create">
+                        </p>
+                        <p>
+                            By default the collection editor is shown in simple mode. As listed below, a number of fields
+                            <img height="50" class="pull-right" alt="editor advanced mode item" wicket:id="img-vcr-editor-modes">
+                            are not shown in simple mode and will use the assigned default values. If you want to edit
+                            these fields you can switch over to advanced mode using the checkbo in the upper right corner:
+                            There is also the option to show additional help. If you toggle the checkbox, additional descriptions
+                            will be shown inline with the fields.
+                        </p>
+                        <p>
+                            Each collection has the following fields:
+                            <ul>
+                                <li>A name</li>
+                                <li>A description</li>
+                                <li>0 or more keywords</li>
+                                <li>1 or more authors</li>
+                            </ul>
+                            In advanced mode the following additional fields are available:
+                            <ul>
+                                <li>A type. One of extensional (default) or intensional.</li>
+                                <li>A purpose. One of Research, reference (default), sample or future use.</li>
+                                <li>A reproducibility. One of intended (default), fluctuating or untended.</li>
+                                <li>An optional reproducibility notice, empty by default</li>
+                            </ul>
+                            Depending on the selected type, a different set of input field will be shown.
+                        </p>
+                        <p>
+                            For extensional collections 1 or more references must be added. To add a reference a URI (URL or PID) and a title
+                            must be supplied. The references will be scanned in the background.
+                            </p>
+                        <p>
+                            Each reference is marked:
+                            <ul>
+                                <li>
+                                    with a grey dot ( <span class="fa fa-dot-circle-o icon icon-waiting"></span> ) while scanning.
+                                </li>
+                                <li>
+                                    with a yellow check (<span class="fa fa-check-circle-o icon icon-passed"></span>) if the URI is valid but is not recognized as a PID.
+                                </li>
+                                <li>
+                                    with a green check (<span class="fa fa-check-circle-o icon icon-success"></span>) if the reference is valid and recognized as a PID.
+                                </li>
+                                <li>
+                                    with a red cross (<span class="fa fa-times-circle-o icon icon-failed"></span>) if the URI did not return a valid response.
+                                    This will prevent you from saving the collection. All references must be valid.
+                                </li>
+                            </ul>
+                        </p>
+                        <p>
+                            For an intensional collection several fields describing the query must be supplied.
+                        </p>
+                        <p>
+                            After saving the collection, the collection is assigned the <b>private</b> state. In order to cite
+                            this collection or allow other people to find this collection, the collection must be published first.
+                            See the next section, <a href="#manual-your-collections">Your Collections</a>, on how to publish the
+                            newly created collectio.
+                        </p>
+                        <!-- Managing your collections -->
+                        <a name="manual-your-collections">
+                            <h2>Managing Your Collections</h2>
+                        </a>
+                        <p>
+                            When logged in, click on the "My Collections" button in the top menu: <br />
+                            <img width="400" alt="menu my collections item" wicket:id="img-vcr-menu-my-collections">
+                        </p>
+                        <p>
+                            The My Collections page allows you to manage all your collections. This includes both your <b>public</b> and <b>private</b> collections.
+                            Private collections will not be listed in the public Browse Collections page. Depending on the collection
+                            state different operations are available.
+                        </p>
+                        <p>
+                            Available operations for collections in <b>public</b> state:
+                            <ul>
+                                <li>Cite collection</li>
+                                <li>View collection details</li>
+                                <li>Edit collection</li>
+                            </ul>
 
-                    <dt>creators</dt>
-                    <dd>
-                        One or more persons, who created this virtual collection. 
-                    </dd>
-                </dl>
+                            Available operations for collections in <b>private</b> state:
+                            <ul>
+                                <li>View collection details</li>
+                                <li>Publish collection</li>
+                                <li>Edit collection</li>
+                                <li>Delete collection</li>
+                            </ul>
 
-                <h2>REST service</h2>
-                <p>
-                    The Virtual Collection Registry REST service is accessible
-                    at <a wicket:id="restLink"><wicket:container wicket:id="restUrl">[url]</wicket:container></a> (base URL).
-                </p>
-                <p>
-                    Documentation can be found <a href="Protocol.txt">here</a>.
-                    You can also consult the <a wicket:id="wadlLink">WADL</a> file.
-                </p>
-                
-                <h2>OAI provider</h2>
-                <p>
-                    The Virtual Collection Registry OAI provider offers all
-                    published collections as CMDI or Dublin Core metadata
-                    over the OAI/PMH protocol. It is accessible at
-                     <a wicket:id="oaiLink"><wicket:container wicket:id="oaiUrl">[url]</wicket:container></a>.
-                </p>
+                            Available operations for collections in <b>error</b> state:
+                            <ul>
+                                <li>Retry publication</li>
+                                <li>Delete collection</li>
+                            </ul>
+
+                            If you want to have a public collection deleted, please contact one of the administrators. Make
+                            sure to include a motivation.
+                        </p>
+                        <p>
+                            Collection lifecycle:<br />
+                            <img width="300" alt="vcr lifecycle" wicket:id="img-vcr-lifecycle">
+                        </p>
+                    </div>
+
+                    <!-- Technical -->
+                    <div class="col-xs-12">
+                        <a name="technical"><h1>Technical Documentation</h1></a>
+
+                        <!-- REST API -->
+                        <a name="technical-rest-api"><h2>REST service</h2></a>
+                        <p>
+                            The Virtual Collection Registry REST service is accessible
+                            at <a wicket:id="restLink"><wicket:container wicket:id="restUrl">[url]</wicket:container></a> (base URL).
+                        </p>
+                        <p>
+                            Documentation can be found <a href="Protocol.txt">here</a>.
+                            You can also consult the <a wicket:id="wadlLink">WADL</a> file.
+                        </p>
+
+                        <!-- OAI PMH -->
+                        <a name="technical-oai-pmh"><h2>OAI provider</h2></a>
+                        <p>
+                            The Virtual Collection Registry OAI provider offers all
+                            published collections as CMDI or Dublin Core metadata
+                            over the OAI/PMH protocol. It is accessible at
+                            <a wicket:id="oaiLink"><wicket:container wicket:id="oaiUrl">[url]</wicket:container></a>.
+                        </p>
+
+                        <!-- Integration -->
+                        <a name="technical-integration"><h2>Integration with external repositories</h2></a>
+                        <p>
+                            The Virtual Collection Registry can be integrated into exteran repositories, such as the
+                            Virtual Language Observatory, to make it easy to create collections from search results. All
+                            technical information required to enable such an integration can be found
+                            <a href="https://github.com/clarin-eric/VirtualCollectionRegistry/tree/master/doc/Integration.md">
+                                here</a> on GitHub.
+                        </p>
+                    </div>
+
+                </div>
+
             </div>
         </wicket:extend>
     </body>

@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+    <head><title></title></head>
+    <body>
+        
+        <wicket:panel>            
+            <div class="col-xs-2" style="text-align: right;">                
+                <span wicket:id="label"></span>
+            </div>
+            <div class="col-xs-10">
+                <span wicket:id="input_radio_choice">
+                    <input type="radio">radio 1</input>
+                    <input type="radio">radio 2</input>
+                </span>
+            </div>
+            <div class="col-md-10 col-md-offset-2 col-sm-12 help_message" wicket:id="help_message">
+                <i class="fa fa-info-circle" aria-hidden="true" wicket:id="icon"></i>
+                <span wicket:id="message" class="help-message"></span>
+            </div>
+            <div class="col-xs-10 col-xs-offset-2 error-message" wicket:id="error_message"></div>
+        </wicket:panel>
+        
+    </body>
+</html>

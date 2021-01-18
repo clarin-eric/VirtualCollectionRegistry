@@ -20,9 +20,12 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.core.request.handler.IPartialPageRequestHandler;
 import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
@@ -44,7 +47,7 @@ public class BaseInfoDialog extends ModalWindow {
     public static final String CONTENT_ID = "dlg-content-body";
     
     private final class Content extends Panel {
-        public Content(String id, String title, Component body, List<DialogButton> buttons) {
+        public Content(String id, String title, Component body, List<DialogButton> buttons, CheckBox cb) {
             super(id);
 
             add(new Label("title", new Model(title)));            
@@ -56,6 +59,15 @@ public class BaseInfoDialog extends ModalWindow {
             });
 
             add(body);
+            if(cb != null) {
+                add(cb);
+            } else {
+                WebMarkupContainer _cb = new WebMarkupContainer("cb");
+                _cb.add(new Label("cb_label", Model.of("")));
+                _cb.setVisible(false);
+                add(_cb);
+            }
+
             add(new ListView<DialogButton>("buttons", buttons) {
 		@Override
 		protected void populateItem(ListItem<DialogButton> item) {                    
@@ -65,6 +77,13 @@ public class BaseInfoDialog extends ModalWindow {
                             item.getModelObject().handleButtonClick(target);
                         } 
                     };
+
+                    if(item.getModel().getObject().getCssClass() != null ) {
+                        btn.add(new AttributeAppender("class", item.getModel().getObject().getCssClass()));
+                    } else {
+                        btn.add(new AttributeAppender("class", " btn-primary"));
+                    }
+
                     btn.add(new Label("btn-label", new Model(item.getModelObject().getLabel())));
                     item.add(btn);
                    item.setRenderBodyOnly(true);
@@ -90,8 +109,8 @@ public class BaseInfoDialog extends ModalWindow {
         setMaskType(MaskType.SEMI_TRANSPARENT);
     }
     
-    protected void buildContent(String title, Component body, List<DialogButton> buttons) {
-        setContent(new Content(this.getContentId(), title, body, buttons));
+    protected void buildContent(String title, Component body, List<DialogButton> buttons, CheckBox cb) {
+        setContent(new Content(this.getContentId(), title, body, buttons, cb));
     }    
     
     @Override

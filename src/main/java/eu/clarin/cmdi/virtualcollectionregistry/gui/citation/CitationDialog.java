@@ -71,7 +71,7 @@ public class CitationDialog extends ModalDialogBase {
         this.setCssClassName("/css/custom_modal.css");
         //Update models in content panel
         if(model.getObject() != null && model.getObject().hasPersistentIdentifier()) {
-            PersistentIdentifier pid = model.getObject().getPersistentIdentifier();
+            PersistentIdentifier pid = model.getObject().getPrimaryIdentifier();
             link.setDefaultModel(new Model<>(pid.getActionableURI()));
             linkLabel.setDefaultModel(new Model<>(pid.getURI()));
         }

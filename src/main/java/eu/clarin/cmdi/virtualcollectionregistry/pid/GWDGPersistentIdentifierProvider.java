@@ -4,6 +4,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.ServletUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
+import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
 import java.util.ArrayList;
@@ -39,9 +40,18 @@ import org.springframework.stereotype.Service;
 @Service
 @Profile("vcr.pid.gwdg")
 public class GWDGPersistentIdentifierProvider implements
-        PersistentIdentifierProvider {
+        PersistentIdentifierProvider, Serializable {
 
     public static final String BASE_URI = "eu.clarin.cmdi.virtualcollectionregistry.base_uri";
+
+    private final String id = "GWDG";
+
+    private boolean primary = false;
+
+    @Override
+    public String getId() {
+        return id;
+    }
 
     private static enum Attribute {
 
@@ -140,7 +150,7 @@ public class GWDGPersistentIdentifierProvider implements
             }
             logger.info("created handle \"{}\" for virtual collection \"{}\"",
                     pid, vc.getId());
-            return new PersistentIdentifier(vc, PersistentIdentifier.Type.HANDLE, pid);
+            return new PersistentIdentifier(vc, PersistentIdentifier.Type.HANDLE, primary, pid);
         } catch (VirtualCollectionRegistryException e) {
             throw new RuntimeException("failed to create handle", e);
         }
@@ -298,6 +308,21 @@ public class GWDGPersistentIdentifierProvider implements
                     + "parameter \"" + parameter + "\" is invalid");
         }
         return value;
+    }
+
+    @Override
+    public boolean ownsIdentifier(String pid) {
+        throw new RuntimeException("Not implemented");
+    }
+
+    @Override
+    public boolean isPrimaryProvider() {
+        return this.primary;
+    }
+
+    @Override
+    public void setPrimaryProvider(boolean primary) {
+        this.primary = primary;
     }
 
 } // class GWDGPersistentIdentifierProvider

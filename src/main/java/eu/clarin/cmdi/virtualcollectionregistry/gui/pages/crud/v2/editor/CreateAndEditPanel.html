@@ -1,0 +1,69 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+    <head><title></title></head>
+    <body>
+        
+        <wicket:panel>
+            <!-- Editor simple/advance toggle -->
+            <div class="row">
+                <div class="col-xs-12" style="text-align: right">
+                    <label wicket:id="btn_editor_toggle_help_lbl">
+                        <input type="checkbox" wicket:id="btn_editor_toggle_help">
+                        Show help
+                    </label>
+                    <label>
+                        <input type="checkbox" wicket:id="btn_editor_mode">
+                        Advanced Mode
+                    </label>
+                </div>
+            </div>
+
+            <!-- Collection edit fields -->
+            <div class="row">
+                <div class="col-xs-12 field-row" wicket:id="name">[NAME]</div>
+                <div class="col-xs-12 field-row" wicket:id="description">[DESCRIPTION]</div>
+                <div class="col-xs-12 field-row" wicket:id="type">[TYPE]</div>
+                <div class="col-xs-12 field-row" wicket:id="purpose">[PURPOSE]</div>
+                <div class="col-xs-12 field-row" wicket:id="repro">[REPRODUCIBILITY]</div>
+                <div class="col-xs-12 field-row" wicket:id="repro_notice">[REPRODUCIBILITY NOTICE]</div>
+                <div class="col-xs-12 field-row" wicket:id="keywords">[KEYWORDS]</div>
+            </div>
+
+            <div class="row" style="margin-top: 25px">
+                <div class="col-xs-12 field-row" wicket:id="authors">[AUTHORS]</div>
+            </div>
+
+            <!-- Extensional block -->
+            <div class="row" style="margin-top: 25px">
+                <div class="col-xs-12 field-row" wicket:id="references">[REFERENCES]</div>
+            </div>
+
+            <!-- Intensional block -->
+            <div class="row" style="margin-top: 25px">
+                <div class="col-xs-12 field-row" wicket:id="int_description">[INT DESCRIPTION]</div>
+                <div class="col-xs-12 field-row" wicket:id="int_uri">[INT URI]</div>
+                <div class="col-xs-12 field-row" wicket:id="int_query_profile">[INT QUERY PROFILE]</div>
+                <div class="col-xs-12 field-row" wicket:id="int_query_parameters">[INT QUERY PARAMETERS]</div>
+            </div>
+
+            <!-- Button row -->
+            <div class="row" style="margin-top: 25px">
+                <div class="col-xs-6" style="text-align: right;">
+                    <a class="btn btn-sm btn-primary" wicket:id="btn_save">Save Collection</a>
+                </div>
+                <div class="col-xs-6">
+                    <a class="btn btn-sm btn-default" wicket:id="btn_cancel">Cancel</a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12" style="text-align: center">
+                    <span wicket:id="error_message" class="error-message"></span>
+                </div>
+            </div>
+
+        </wicket:panel>
+        
+    </body>
+</html>

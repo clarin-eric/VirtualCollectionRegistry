@@ -2,6 +2,8 @@ package eu.clarin.cmdi.virtualcollectionregistry.pid;
 
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+
+import java.io.Serializable;
 import java.net.URI;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -9,16 +11,27 @@ import org.springframework.stereotype.Service;
 @Service
 @Profile("vcr.pid.dummy")
 public class DummyPersistentIdentifierProvider implements
-        PersistentIdentifierProvider {
+        PersistentIdentifierProvider, Serializable {
 
-    public DummyPersistentIdentifierProvider() throws VirtualCollectionRegistryException {
+    private final String id = "DUMMY";
+    private boolean primary = false;
+
+    public DummyPersistentIdentifierProvider() {//throws VirtualCollectionRegistryException {
         super();
+    }
+    
+    @Override
+    public String getId() {
+        return id;
     }
 
     @Override
     public PersistentIdentifier createIdentifier(VirtualCollection vc)
             throws VirtualCollectionRegistryException {
-        return new PersistentIdentifier(vc, PersistentIdentifier.Type.DUMMY,
+        try {
+            Thread.sleep(10000);
+        } catch(InterruptedException ex) {}
+        return new PersistentIdentifier(vc, PersistentIdentifier.Type.DUMMY, primary,
                 "dummy-" + Long.toString(vc.getId()));
     }
 
@@ -32,4 +45,18 @@ public class DummyPersistentIdentifierProvider implements
             throws VirtualCollectionRegistryException {
     }
 
+    @Override
+    public boolean ownsIdentifier(String pid) {
+        return pid.toLowerCase().startsWith("dummy");
+    }
+
+    @Override
+    public boolean isPrimaryProvider() {
+        return primary;
+    }
+
+    @Override
+    public void setPrimaryProvider(boolean primary) {
+        this.primary = primary;
+    }
 } // class DummyPersistentIdentifierProvider

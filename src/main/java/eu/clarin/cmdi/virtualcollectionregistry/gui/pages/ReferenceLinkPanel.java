@@ -1,5 +1,9 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
+import com.vladsch.flexmark.html.HtmlRenderer;
+import com.vladsch.flexmark.parser.Parser;
+import com.vladsch.flexmark.util.ast.Node;
+import com.vladsch.flexmark.util.data.MutableDataSet;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.wicket.components.pid.PidPanel;
 
@@ -40,22 +44,34 @@ public class ReferenceLinkPanel extends Panel {
     public ReferenceLinkPanel(String id, IModel<Resource> model) {
         super(id, model);
         
-        if(model.getObject().hasPersistentIdentifier()) {
-            add(new PidPanel("link", new Model<>(model.getObject()), "resource (file or service)"));
-        } else {
-            // Shared rerence model
-            final PropertyModel<String> refModel = new PropertyModel<>(model, "ref");     
-            add(new LinkPanel("link", refModel,  new ReferenceLabelModel(model)));
+        final PropertyModel<String> refModel = new PropertyModel<>(model, "ref");
+        add(new LinkPanel("link", refModel,  new ReferenceLabelModel(model)));
+
+        PidPanel pPanel = new PidPanel("pid", new Model<>(model.getObject()), "resource (file or service)");
+        pPanel.setVisible(model.getObject().hasPersistentIdentifier());
+        add(pPanel);
+
+        String htmlValue = "";
+        if(model.getObject().getDescription() != null) {
+            MutableDataSet options = new MutableDataSet();
+            Parser parser = Parser.builder(options).build();
+            HtmlRenderer renderer = HtmlRenderer.builder(options).build();
+            Node document = parser.parse(model.getObject().getDescription());
+            htmlValue = renderer.render(document);
+
+            logger.info("Original value={}, html value={}", model.getObject().getDescription(), htmlValue);
         }
 
-        final PropertyModel<String> descriptionModel = new PropertyModel<>(model, "description");
-        add(new Label("description", descriptionModel) {
+        //final PropertyModel<String> descriptionModel = new PropertyModel<>(model, "description");
+        Label lbl = new Label("description", Model.of(htmlValue)) {
             @Override
             protected void onConfigure() {
                 super.onConfigure();
-                setVisible(descriptionModel.getObject() != null);
+                setVisible(model.getObject().getDescription() != null);
             }
-        });
+        };
+        lbl.setEscapeModelStrings(false);
+        add(lbl);
     }
 
     /**

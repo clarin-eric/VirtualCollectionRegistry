@@ -22,7 +22,7 @@ CREATE TABLE `config` (
   `value` varchar(255) NOT NULL
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
--- Insert initial data
+-- Insert initial data into config table
 LOCK TABLES `config` WRITE;
 ALTER TABLE `config` DISABLE KEYS;
 INSERT INTO `config` VALUES ('db_version','1.0.0');

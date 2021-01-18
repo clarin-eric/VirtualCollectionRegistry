@@ -24,13 +24,14 @@ public class SAMLCreatorProvider implements CreatorProvider {
         final Creator creator = new Creator();
         if (userPrincipal instanceof AuthPrincipal) {
             final AuthPrincipal principal = (AuthPrincipal) userPrincipal;
-            creator.setPerson(getAttribute(principal, DISPLAY_NAME_ATTRIBUTE));
+            creator.setFamilyName(getAttribute(principal, DISPLAY_NAME_ATTRIBUTE));
+            creator.setGivenName("");
             creator.setOrganisation(getAttribute(principal, ORGANISATION_ATTRIBUTE));
             creator.setEMail(getAttribute(principal, MAIL_ATTRIBUTE));
         }
 
-        if (creator.getPerson() == null) {
-            creator.setPerson(userPrincipal.getName());
+        if (creator.getFamilyName() == null) {
+            creator.setFamilyName(userPrincipal.getName());
         }
 
         return creator;

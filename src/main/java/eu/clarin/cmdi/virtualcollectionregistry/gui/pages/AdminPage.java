@@ -1,20 +1,28 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
+import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
+import eu.clarin.cmdi.virtualcollectionregistry.PidProviderService;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.AdminCollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import java.util.ArrayList;
 import java.util.List;
+
+import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifierProvider;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeAction;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.form.IChoiceRenderer;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Page that allows the admin to select a "space" (public or user private) and
@@ -29,10 +37,37 @@ public class AdminPage extends BasePage {
     @SpringBean
     private VirtualCollectionRegistry vc;
 
+    @SpringBean
+    private AdminUsersService adminUsersService;
+
+    @SpringBean
+    private PidProviderService pidProviderService;
+
     public final static User PUBLIC_USER = new User("___PUBLIC___",  "Published collections");
     
     public AdminPage() {
         super();
+
+        ListView authorsListview = new ListView("admin_list", adminUsersService.getAdminUsers()) {
+            @Override
+            protected void populateItem(ListItem item) {
+                item.add(new Label("admin_list_item", Model.of(item.getModel().getObject().toString())));
+            }
+        };
+        add(authorsListview);
+
+        ListView pidProvidersListview = new ListView("pid_list", pidProviderService.getProviders()) {
+            @Override
+            protected void populateItem(ListItem item) {
+                PersistentIdentifierProvider provider = (PersistentIdentifierProvider)item.getModel().getObject();
+                String value = provider.getId();
+                if(provider.isPrimaryProvider()){
+                    value += " (primary)";
+                }
+                item.add(new Label("pid_list_item", Model.of(value)));
+            }
+        };
+        add(pidProvidersListview);
 
         // user model shared between spaces form and the table's provider
         final IModel<User> userModel = new Model<>(null);

@@ -1,44 +1,45 @@
 package eu.clarin.cmdi.virtualcollectionregistry.pid;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.io.Serializable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.OneToOne;
-import javax.persistence.Table;
+import javax.persistence.*;
+
+import eu.clarin.cmdi.wicket.components.pid.PersistentIdentifieable;
+import eu.clarin.cmdi.wicket.components.pid.PidType;
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Entity
 @Table(name = "pid")
-public class PersistentIdentifier implements Serializable {
+public class PersistentIdentifier implements PersistentIdentifieable, Serializable {
 
     private static final long serialVersionUID = 1L;
 
-    public static enum Type {
-
-        DUMMY, HANDLE;
+    public Boolean getPrimary() {
+        return primary;
     }
+
+    public void setPrimary(Boolean primary) {
+        this.primary = primary;
+    }
+
+    public static enum Type {
+        DUMMY, HANDLE, DOI;
+    }
+
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
     private Long id;
 
-    @OneToOne(cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,
-            optional = true)
+    @ManyToOne(cascade = CascadeType.ALL,
+          fetch = FetchType.LAZY,
+          optional = true)
     @JoinColumn(name = "vc_id",
             nullable = false,
-            unique = true)
+            unique = false)
     private VirtualCollection vc;
 
     @Column(name = "type")
@@ -51,10 +52,17 @@ public class PersistentIdentifier implements Serializable {
             length = 255)
     private String identifier;
 
+    @Column(name = "is_primary", columnDefinition = "TINYINT", length = 1)
+    private Boolean primary;
+
     protected PersistentIdentifier() {
     }
 
     public PersistentIdentifier(VirtualCollection vc, Type type, String identifier) {
+        this(vc, type, true, identifier);
+    }
+
+    public PersistentIdentifier(VirtualCollection vc, Type type, boolean primary, String identifier) {
         if (vc == null) {
             throw new NullArgumentException("vc == null");
         }
@@ -71,6 +79,7 @@ public class PersistentIdentifier implements Serializable {
         this.vc = vc;
         this.type = type;
         this.identifier = identifier;
+        this.primary = primary;
     }
 
     public Long getId() {
@@ -89,6 +98,26 @@ public class PersistentIdentifier implements Serializable {
         return identifier;
     }
 
+    @Override
+    public String getPidUri() {
+        return getActionableURI();
+    }
+
+    @Override
+    public PidType getPidType() {
+        return HandleLinkModel.getPidType(getURI());
+    }
+
+    @Override
+    public String getPidTitle() {
+        return getIdentifier();
+    }
+
+    @Override
+    public boolean hasPersistentIdentifier() {
+        return true;
+    }
+
     /**
      * Provides a URI representation of this persistent identifier. Notice that
      * this URI is not necessarily actionable, and may therefore differ from the
@@ -103,6 +132,8 @@ public class PersistentIdentifier implements Serializable {
                 return "dummy:identifier-" + vc.getId();
             case HANDLE:
                 return "hdl:" + identifier;
+            case DOI:
+                return "doi:" + identifier;
             default:
                 throw new InternalError();
         }
@@ -127,6 +158,8 @@ public class PersistentIdentifier implements Serializable {
                 return "dummy:identifier-" + vc.getId();
             case HANDLE:
                 return "http://hdl.handle.net/" + identifier;
+            case DOI:
+                return "https://doi.org/" + identifier;
             default:
                 throw new InternalError();
         }

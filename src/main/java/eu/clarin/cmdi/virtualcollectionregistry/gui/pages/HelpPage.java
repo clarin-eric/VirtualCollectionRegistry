@@ -17,8 +17,10 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.request.resource.ContextRelativeResource;
 
 /**
  *
@@ -29,8 +31,10 @@ public class HelpPage extends BasePage {
     public static final String BASE_URI = "eu.clarin.cmdi.virtualcollectionregistry.base_uri";
 
     public HelpPage() {
-        final String baseUri = WebApplication.get().getServletContext().getInitParameter(BASE_URI);
-
+        String baseUri = WebApplication.get().getServletContext().getInitParameter(BASE_URI);
+        if(baseUri.endsWith("/")) {
+            baseUri = baseUri.substring(0, baseUri.length()-1);
+        }
         final String serviceBaseUri = String.format("%s/service", baseUri);
         add(new ExternalLink("restLink", serviceBaseUri)
                 .add(new Label("restUrl", serviceBaseUri)));
@@ -41,6 +45,14 @@ public class HelpPage extends BasePage {
 
         add(new ExternalLink("wadlLink", String.format("%s/application.wadl", serviceBaseUri)));
 
+        add(new Image("img-virtualcollection", new ContextRelativeResource("/images/virtualcollection.png")));
+        add(new Image("img-vcr-menu-browse", new ContextRelativeResource("/images/help-vcr-menu-browse.png")));
+        add(new Image("img-vcr-filter", new ContextRelativeResource("/images/help-vcr-filter.png")));
+        add(new Image("img-vcr-citation-dialog", new ContextRelativeResource("/images/help-vcr-citation-dialog.png")));
+        add(new Image("img-vcr-menu-create", new ContextRelativeResource("/images/help-vcr-menu-create.png")));
+        add(new Image("img-vcr-editor-modes", new ContextRelativeResource("/images/help-vcr-editor-modes.png")));
+        add(new Image("img-vcr-menu-my-collections", new ContextRelativeResource("/images/help-vcr-menu-my-collections.png")));
+        add(new Image("img-vcr-lifecycle", new ContextRelativeResource("/images/vcr-lifecycle.png")));
     }
 
 }

@@ -17,20 +17,60 @@ import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 @Entity
 @Table(name = "resource")
-public class Resource implements Serializable, IdentifiedEntity, PersistentIdentifieable {
+public class Resource implements Serializable, IdentifiedEntity, PersistentIdentifieable, Orderable, Comparable {
     
     private final static Logger logger = LoggerFactory.getLogger(Resource.class);
     private static final long serialVersionUID = 1L;
-    
+
     public static enum Type {
         METADATA,
         RESOURCE;
     } // enum Resource.Type
+
+    @Column(name = "mimetype", nullable = true, length = 255)
+    private String mimeType;
+
+    /**
+     * @return the mimeType
+     */
+    public String getMimetype() {
+        return mimeType;
+    }
+
+    /**
+     * @param mimeType the mimeType to set
+     */
+    public void setMimetype(String mimeType) {
+        if (mimeType.equalsIgnoreCase("application/x-cmdi+xml")) {
+            setType(Resource.Type.METADATA);
+        } else {
+            setType(Resource.Type.RESOURCE);
+        }
+        this.mimeType = mimeType;
+    }
+
+    @Column(name = "checked", nullable = true, length = 255)
+    private String check;
+
+    /**
+     * @return the check
+     */
+    public String getCheck() {
+        return check;
+    }
+
+    /**
+     * @param check the check to set
+     */
+    public void setCheck(String check) {
+        this.check = check;
+    }
 
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
@@ -50,17 +90,30 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
     @Lob
     @Column(name = "description", length = 8192)
     private String description;
-    
+
+    @Column(name = "display_order", nullable = false)
+    private Long displayOrder;
+
     public Resource() {
         super();
+        this.displayOrder = 0L;
     }
     
     public Resource(Resource.Type type, String ref) {
         super();
+        this.displayOrder = 0L;
         this.setType(type);
         this.setRef(ref);
     }
-    
+
+    public Resource(Resource.Type type, String ref, String label) {
+        super();
+        this.displayOrder = 0L;
+        this.setType(type);
+        this.setRef(ref);
+        this.setLabel(label);
+    }
+
     @Override
     public Long getId() {
         return id;
@@ -204,5 +257,22 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
         return  HandleLinkModel.isHandle(this.ref) || 
                 HandleLinkModel.isDoi(this.ref) || 
                 HandleLinkModel.isNbn(this.ref);
+    }
+
+    @Override
+    public Long getDisplayOrder() {
+        return displayOrder;
+    }
+
+    public void setDisplayOrder(Long displayOrder) {
+        this.displayOrder = displayOrder;
+    }
+
+    @Override
+    public int compareTo(@NotNull Object o) {
+        if(o instanceof Resource) {
+            return OrderableComparator.compare(this, (Resource)o);
+        }
+        return 0;
     }
 } // class Resource

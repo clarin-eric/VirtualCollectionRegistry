@@ -136,7 +136,7 @@ public class PidInfoDialog extends BaseInfoDialog {
                         PidInfoDialog.this.close(target);
                     }
                 });
-        buildContent(TITLE, new Body(getContentWicketId(), context), buttons);
+        buildContent(TITLE, new Body(getContentWicketId(), context), buttons, null);
     }
     
     private class Body extends Panel {

@@ -25,15 +25,21 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
  */
 public abstract class DialogButton implements Serializable {
         private final String label;
-        
-        public DialogButton(String label) {
+        private String cssclass = null;
+
+    public DialogButton(String label) {
+        this(label, null);
+    }
+
+        public DialogButton(String label, String cssclass) {
             this.label = label;
+            this.cssclass = cssclass;
         }
         
         public String getLabel() {
             return this.label;
         }
-        
+        public String getCssClass() { return this.cssclass; }
         public abstract void handleButtonClick(AjaxRequestTarget target);
     
 }

@@ -79,7 +79,7 @@ public class VirtualCollectionMarshallerTest {
         assertEquals(2, vc.getCreators().size());
         Creator c = vc.getCreators().get(0);
         assertNotNull(c);
-        assertEquals("Joe User", c.getPerson());
+        assertEquals("Joe, User", c.getPerson());
         assertEquals("Example Address Joe", c.getAddress());
         assertEquals("joe.user@example.com", c.getEMail());
         assertEquals("Example Organization", c.getOrganisation());
@@ -88,7 +88,7 @@ public class VirtualCollectionMarshallerTest {
         assertEquals("Test Role Joe", c.getRole());
         c = vc.getCreators().get(1);
         assertNotNull(c);
-        assertEquals("Jane User", c.getPerson());
+        assertEquals("Jane, User", c.getPerson());
         assertEquals("Example Address Jane", c.getAddress());
         assertEquals("jane.user@example.com", c.getEMail());
         assertEquals("Example Organization", c.getOrganisation());
@@ -132,8 +132,8 @@ public class VirtualCollectionMarshallerTest {
             m.unmarshal(new ByteArrayInputStream(out.toByteArray()),
                     Format.XML, "utf-8");
         assertEquals(vc.getOwner(), vc2.getOwner());
-        assertEquals(vc.getPersistentIdentifier(),
-                vc2.getPersistentIdentifier());
+        assertEquals(vc.getPrimaryIdentifier(),
+                vc2.getPrimaryIdentifier());
         assertEquals(vc.getState(), vc2.getState());
         assertEquals(vc.getType(), vc2.getType());
         assertEquals(vc.getName(), vc2.getName());
@@ -180,7 +180,7 @@ public class VirtualCollectionMarshallerTest {
         assertEquals(1, vc.getCreators().size());
         Creator c = vc.getCreators().get(0);
         assertNotNull(c);
-        assertEquals("Joe User", c.getPerson());
+        assertEquals("Joe, User", c.getPerson());
         assertEquals("joe.user@example.com", c.getEMail());
         assertEquals("Example Organization", c.getOrganisation());
 
@@ -203,8 +203,8 @@ public class VirtualCollectionMarshallerTest {
             m.unmarshal(new ByteArrayInputStream(out.toByteArray()),
                     Format.XML, "utf-8");
         assertEquals(vc.getOwner(), vc2.getOwner());
-        assertEquals(vc.getPersistentIdentifier(),
-                vc2.getPersistentIdentifier());
+        assertEquals(vc.getPrimaryIdentifier(),
+                vc2.getPrimaryIdentifier());
         assertEquals(vc.getState(), vc2.getState());
         assertEquals(vc.getType(), vc2.getType());
         assertEquals(vc.getName(), vc2.getName());

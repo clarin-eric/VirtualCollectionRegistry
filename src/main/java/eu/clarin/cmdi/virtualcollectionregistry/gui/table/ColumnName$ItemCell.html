@@ -7,11 +7,14 @@
 <wicket:panel>
   <div wicket:id="nameColumn" class="col-xs-12">
       <div class="name collection toggle-details">
-          <a data-toggle="collapse" wicket:id="toggle-link" class="hover collapsed"><span class="toggle"></span></a>
+          <a wicket:id="toggle-link" class="hover collapsed"><span class="toggle"></span></a>
           <a wicket:id="name"><span class="title" wicket:id="label">name</span></a>
       </div>
     <div wicket:id="details" class="details col-xs-12 collapse">
-        <div wicket:id="desc" class="desc"></div>
+        <div class="alert alert-danger alert-small" role="alert" wicket:id="problems">
+            <span wicket:id="lbl_problems"></span>
+        </div>
+         <div wicket:id="desc" class="desc"></div>
     </div>
   </div>
 </wicket:panel>

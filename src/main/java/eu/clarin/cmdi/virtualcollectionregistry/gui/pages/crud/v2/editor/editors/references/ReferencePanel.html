@@ -1,0 +1,54 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN" "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml" xmlns:wicket="http://wicket.apache.org/">
+    <head><title></title></head>
+    <body>
+        
+        <wicket:panel>            
+            <div wicket:id="wrapper" class="row reference-row">
+                <div class="col-xs-10">
+                    <!--
+                    <div class="col-xs-12">
+                        <div class="alert alert-warning alert-small" role="alert" wicket:id="alert">
+                            <span wicket:id="lbl_recommendation"></span>
+                        </div>
+                    </div>
+                    -->
+                    <div class="col-xs-12">
+                        <span wicket:id="title" class="reference-title"></span>
+                        <span wicket:id="value" class="reference-url"></span>
+                        <i wicket:id="state"></i>
+                    </div>
+                    <div class="col-xs-12"><span wicket:id="lbl_waiting"></span></div>
+                    <div class="col-xs-3"><span wicket:id="lbl_type">Type:</span></div>
+                    <div class="col-xs-9"><span wicket:id="type"></span></div>
+                    <div class="col-xs-12"><span wicket:id="description"></span></div>
+                </div>
+                <div class="col-xs-2" style="text-align: right">
+                    <div class="lds-dual-ring" wicket:id="spinner"></div>
+                    <div class="btn-group" role="group" aria-label="reference_action_buttons">
+                        <a class="btn btn-xs btn-default" wicket:id="btn_order_top">
+                            <span class="fa fa-angle-double-up"></span>
+                        </a>
+                        <a class="btn btn-xs btn-default" wicket:id="btn_order_up">
+                            <span class="fa fa-angle-up"></span>
+                        </a>
+                        <a class="btn btn-xs btn-default" wicket:id="btn_order_down">
+                            <span class="fa fa-angle-down"></span>
+                        </a>
+                        <a class="btn btn-xs btn-default" wicket:id="btn_order_bottom">
+                            <span class="fa fa-angle-double-down"></span>
+                        </a>
+                        <a class="btn btn-xs btn-default" wicket:id="btn_edit">
+                            <i class="fa fa-pencil-square-o"></i>
+                        </a>
+                        <a class="btn btn-xs btn-default" wicket:id="btn_remove">
+                            <i class="fa fa-trash-o"></i>
+                        </a>
+                    </div>
+                </div>
+            </div>
+        </wicket:panel>       
+        
+    </body>
+</html>

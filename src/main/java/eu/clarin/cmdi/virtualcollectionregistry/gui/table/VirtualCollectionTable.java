@@ -3,6 +3,9 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.table;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePrivateCollectionsPage;
+import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxNavigationToolbar;
@@ -18,9 +21,14 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
+import org.apache.wicket.util.time.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("serial")
 public abstract class VirtualCollectionTable extends Panel {
+
+    private final static Logger logger = LoggerFactory.getLogger(VirtualCollectionTable.class);
 
     private static final ResourceReference JAVASCRIPT_RESOURCE =
         new PackageResourceReference(VirtualCollectionTable.class, "VirtualCollectionTable.js");
@@ -34,6 +42,7 @@ public abstract class VirtualCollectionTable extends Panel {
         columns.add(new ColumnName(this));
         if (showState) {
             columns.add(new ColumnState(this));
+            columns.add(new ColumnProcessing(this));
         }
         columns.add(new ColumnType(this));
         columns.add(new ColumnCreated(this));
@@ -57,6 +66,15 @@ public abstract class VirtualCollectionTable extends Panel {
             new FilterForm("filterForm", provider, table, showState, isAdmin);
         add(form);
         add(table);
+
+        add(new AbstractAjaxTimerBehavior(Duration.seconds(1)) {
+            @Override
+            protected void onTimer(AjaxRequestTarget target) {
+                if(target != null) {
+                    target.add(table);
+                }
+            }
+        });
     }
 
     @Override

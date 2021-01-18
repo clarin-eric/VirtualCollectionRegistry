@@ -53,6 +53,18 @@ public abstract class CollectionsProvider extends
         }
     }
 
+    public List<VirtualCollection> getList() {
+        try {
+            final VirtualCollectionRegistry vcr
+                    = Application.get().getRegistry();
+            final List<VirtualCollection> results
+                    = vcr.getVirtualCollections(0, (int)size(), getFilter());
+            return results;
+        } catch (VirtualCollectionRegistryException e) {
+            throw new WicketRuntimeException(e);
+        }
+    }
+
     @Override
     public Iterator<? extends VirtualCollection> iterator(long first,
             long count) {
