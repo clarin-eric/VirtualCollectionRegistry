@@ -12,6 +12,7 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -26,7 +27,7 @@ import org.slf4j.LoggerFactory;
  * @author wilelb
  */
 public abstract class AbstractField extends Panel implements Field {
-    private static final Logger logger = LoggerFactory.getLogger(ReferencesEditor.class);
+    private static final Logger logger = LoggerFactory.getLogger(AbstractField.class);
     
     //Clear TextField on submit, defaults to false;
     private boolean resetOnSubmit = false;
@@ -59,12 +60,18 @@ public abstract class AbstractField extends Panel implements Field {
 
     private final boolean enableOnKeySubmit;
 
-    public AbstractField(String id, String label, Component editComponent) {
-        this(id, label, new Model<>(), null, editComponent, true);
+    private final VisabilityUpdater visabilityUpdater;
+
+    private final WebMarkupContainer helpMessage;
+    private final String helpText;
+
+    public AbstractField(String id, String label, String help_text, Component editComponent, VisabilityUpdater visabilityUpdater) {
+        this(id, label, help_text, new Model<>(), null, editComponent, true, visabilityUpdater);
     }
     
-    public AbstractField(String id, String label, final IModel dataModel, final FieldComposition parent, Component editComponent, boolean enableOnKeySubmit) {
+    public AbstractField(String id, String label, String help_text, final IModel dataModel, final FieldComposition parent, Component editComponent, boolean enableOnKeySubmit, VisabilityUpdater visabilityUpdater) {
         super(id);
+        this.visabilityUpdater = visabilityUpdater;
         this.label = label;
         this.editComponent = editComponent;
         this.dataModel = dataModel;
@@ -86,8 +93,30 @@ public abstract class AbstractField extends Panel implements Field {
         }
 
         lblErrorMessage = new Label("error_message", errorMessageModel);
+        lblErrorMessage.setEscapeModelStrings(false);
         lblErrorMessage.setVisible(false);
         add(lblErrorMessage);
+
+        helpMessage = new WebMarkupContainer("help_message");
+        WebMarkupContainer helpMessageIcon = new WebMarkupContainer("icon");
+        helpMessage.add(helpMessageIcon);
+        this.helpText = help_text;
+        Label helpMessageLabel = new Label("message", Model.of(help_text == null ? "" : help_text));
+        helpMessageLabel.setEscapeModelStrings(false);
+        helpMessage.add(helpMessageLabel);
+        helpMessage.setVisible(help_text != null);
+        add(helpMessage);
+        helpMessage.setVisible(false);
+    }
+
+    public void showHelp(boolean showHelp) {
+        helpMessage.setVisible(this.helpText != null && !this.helpText.isEmpty() && showHelp);
+    }
+
+    public void updateVisability() {
+        if(this.visabilityUpdater != null) {
+            this.visabilityUpdater.updateVisability(this);
+        }
     }
     
     protected void addUpdatingBehavior(Component c, final FieldComposition parent, final Component t) {
@@ -119,21 +148,6 @@ public abstract class AbstractField extends Panel implements Field {
                 if(validate()) {
                     handleUpdateData(target, dataModel, nextComponentToFocus);                    
                     if(parent != null && completeSubmitOnUpdate) {
-                        /*
-                        Thread t = new Thread(new Runnable() {
-                            @Override
-                            public void run() {
-                                 try {
-                                    Thread.sleep(500);
-                                } catch(Exception ex) {
-
-                                }
-                                parent.decreaseFocusCount();
-                                parent.completeSubmit(target);
-                            }
-                        }, "blur");
-                        t.start();
-                       */
                         parent.decreaseFocusCount();
                         parent.completeSubmit(target);
                     }
@@ -191,11 +205,13 @@ public abstract class AbstractField extends Panel implements Field {
     
     public void setRequired(boolean required) {
         this.required = required;
-        labelModel.setObject(label.isEmpty() ? "" : label + ":");
         if(lbl != null) {
-            lbl.add(new AttributeModifier("class", "required"));
-        } else {
-            lbl.add(new AttributeModifier("class", "optional"));
+            labelModel.setObject(label.isEmpty() ? "" : label + ":");
+            if(required) {
+                lbl.add(new AttributeModifier("class", "required"));
+            } else {
+                lbl.add(new AttributeModifier("class", "optional"));
+            }
         }
     }
     
@@ -223,7 +239,6 @@ public abstract class AbstractField extends Panel implements Field {
         if(resetOnSubmit) {
             modelToUpdate.setObject("");
         }
-        logger.debug("Field: id="+getId()+", value=" + value);
 
         fireEvent(new DataUpdatedEvent(target));
 

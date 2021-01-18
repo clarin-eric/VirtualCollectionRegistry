@@ -3,6 +3,8 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 
+import java.security.Principal;
+
 /**
  *
  * @author wilelb
@@ -13,15 +15,21 @@ public class AbstractEvent<T> implements Event<T> {
     private final EventType type;
     private final T data;
     protected final AjaxRequestTarget target;
-    
+    private final Principal principal;
+
     public AbstractEvent(EventType type, AjaxRequestTarget target) {
         this(type, null, target);
     }
-    
+
     public AbstractEvent(EventType type, T data, AjaxRequestTarget target) {
+        this(type, null, data, target);
+    }
+
+    public AbstractEvent(EventType type, Principal p, T data, AjaxRequestTarget target) {
         this.type = type;
         this.data = data;
         this.target = target;
+        this.principal = p;
     }
     
     @Override
@@ -49,5 +57,10 @@ public class AbstractEvent<T> implements Event<T> {
         if(this.target != null && c != null) {
             this.target.add(c);
         }
+    }
+
+    @Override
+    public Principal getPrincipal() {
+        return this.principal;
     }
 }

@@ -4,6 +4,8 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.ActionablePanel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.dialogs.ModalConfirmAction;
@@ -167,7 +169,7 @@ import org.slf4j.LoggerFactory;
 
      }
 
-     public class AuthorEditPanel extends Panel implements FieldComposition {
+     public class AuthorEditPanel extends Panel implements FieldComposition, Serializable {
 
          private final IModel<String> mdlFamilyName = new Model<>();
          private final IModel<String> mdlGivenName = new Model<>();
@@ -213,13 +215,31 @@ import org.slf4j.LoggerFactory;
                  mdlAffiliation.setObject(a.getOrganisation());
              }
 
-             AbstractField f1 = new VcrTextField("author_family_name", "Family Name", "New author family name", mdlFamilyName, this);
+             AbstractField f1 = new VcrTextField("author_family_name", "Family Name", "New author family name", mdlFamilyName, this,null);
              f1.setRequired(true);
-             AbstractField f2 = new VcrTextField("author_given_name", "Given Name", "New author given name", mdlGivenName, this);
+             AbstractField f2 = new VcrTextField("author_given_name", "Given Name", "New author given name", mdlGivenName, this,null);
              f2.setRequired(true);
-             AbstractField f3 = new VcrTextField("author_email", "Email", "New author email", mdlEmail, this);
+             AbstractField f3 = new VcrTextField("author_email", "Email", "New author email", mdlEmail, this,null);
              f3.setRequired(true);
-             AbstractField f4 = new VcrTextField("author_affiliation", "Affiliation", "New author affiliation (optional)", mdlAffiliation, this);
+             f3.addValidator(new InputValidator() {
+                 /*
+                 Reference: https://blog.mailtrap.io/java-email-validation/
+                  */
+                 private final String regex = "^(.+)@(.+)[.](.+)$";
+                 private final Pattern pattern = Pattern.compile(regex);
+                 private String message = null;
+                 @Override
+                 public boolean validate(String input) {
+                     Matcher matcher = pattern.matcher(input);
+                     return matcher.matches();
+                 }
+
+                 @Override
+                 public String getErrorMessage() {
+                     return "Invalid email address.";
+                 }
+             });
+             AbstractField f4 = new VcrTextField("author_affiliation", "Affiliation", "New author affiliation (optional)", mdlAffiliation, this,null);
              f4.setCompleteSubmitOnUpdate(true);
 
              fields.add(f1);
@@ -318,14 +338,19 @@ import org.slf4j.LoggerFactory;
      private final ModalConfirmDialog localDialog;
 
      public AuthorsEditor(String id, String label) {
-         super(id, label, null);
+         this(id, label, null);
+     }
+
+     public AuthorsEditor(String id, String label, VisabilityUpdater updater) {
+         super(id, label, null, updater);
          setOutputMarkupId(true);
 
          final WebMarkupContainer editorwrapper = new WebMarkupContainer("editorwrapper");
          editorwrapper.setOutputMarkupId(true);
 
          final Component componentToUpdate = this;
-         noAuthors = new Label("lbl_no_authors", "No authors");
+         noAuthors = new Label("lbl_no_authors", "No authors found.<br />Please add one or more persons responsible for creation of this virtual collection.");
+         noAuthors.setEscapeModelStrings(false);
 
          ajaxWrapper = new WebMarkupContainer("ajaxwrapper");
          ajaxWrapper.setOutputMarkupId(true);

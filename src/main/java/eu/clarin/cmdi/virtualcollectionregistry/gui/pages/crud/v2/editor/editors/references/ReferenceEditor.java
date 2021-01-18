@@ -42,7 +42,7 @@ public class ReferenceEditor extends Panel {
         
         WebMarkupContainer wrapper = new WebMarkupContainer("wrapper");
 
-        VcrTextField tfUrl = new VcrTextField("url", "Url", "Reference url", urlModel);
+        VcrTextField tfUrl = new VcrTextField("url", "Url", "Reference url", urlModel,null);
         tfUrl.setCompleteSubmitOnUpdate(true);
         wrapper.add(tfUrl);
 
@@ -50,16 +50,16 @@ public class ReferenceEditor extends Panel {
                 "type",
                 "Type",
                 enumValuesAsList(Resource.Type.values()),
-                typeModel);
+                typeModel,null);
         typeField.setCompleteSubmitOnUpdate(true);
         typeField.setVisible(advancedEditor.getObject());
         wrapper.add(typeField);
 
-        VcrTextField tf = new VcrTextField("title", "Title", "", titleModel);
+        VcrTextField tf = new VcrTextField("title", "Title", "", titleModel,null);
         tf.setCompleteSubmitOnUpdate(true);         
         wrapper.add(tf);
 
-        VcrTextArea ta = new VcrTextArea("description", "Description", "", descriptionModel);
+        VcrTextArea ta = new VcrTextArea("description", "Description", "", descriptionModel,null);
         ta.setCompleteSubmitOnUpdate(true); 
         wrapper.add(ta);
         

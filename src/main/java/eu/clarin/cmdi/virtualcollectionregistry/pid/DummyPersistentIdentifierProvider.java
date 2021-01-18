@@ -2,6 +2,8 @@ package eu.clarin.cmdi.virtualcollectionregistry.pid;
 
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+
+import java.io.Serializable;
 import java.net.URI;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
@@ -9,7 +11,7 @@ import org.springframework.stereotype.Service;
 @Service
 @Profile("vcr.pid.dummy")
 public class DummyPersistentIdentifierProvider implements
-        PersistentIdentifierProvider {
+        PersistentIdentifierProvider, Serializable {
 
     private final String id = "DUMMY";
     private boolean primary = false;

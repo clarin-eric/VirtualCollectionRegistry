@@ -20,6 +20,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.CreateAndEditPanel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.CancelEventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.EventHandler;
@@ -66,11 +67,12 @@ import org.xml.sax.SAXException;
  *
  * @author wilelb
  */
-public class ReferencesEditor extends ComposedField {
+public class ReferencesEditor extends ComposedField{
     private static Logger logger = LoggerFactory.getLogger(ReferencesEditor.class);
     
     private final List<ReferenceJob> references = new CopyOnWriteArrayList<>();
     private IModel<String> data = new Model<>();
+    private IModel<String> mdlReferenceTitle = new Model<>();
     
     final Label lblNoReferences;
     final ListView listview;
@@ -86,32 +88,43 @@ public class ReferencesEditor extends ComposedField {
     private final int workerSleepTime = 1000;
     private final int uiRefreshTimeInSeconds = 1;
 
-    private CreateAndEditPanel.Mode editorMode;
-
     public class Validator implements InputValidator, Serializable {
         private String message = "";
             
-            @Override
-            public boolean validate(String input) {
-                try {
-                    //URI.create(input); 
-                    new URL(input);
-                } catch(MalformedURLException ex) {
-                    message = ex.getMessage();
-                    return false;
-                }
-                return true;
+        @Override
+        public boolean validate(String input) {
+            message = "";
+            boolean validUrl = false;
+            boolean validPid = false;
+
+            //Try to parse url
+            try {
+                new URL(input);
+                validUrl = true;
+            } catch(MalformedURLException ex) {
+                message += !message.isEmpty() ? "<br />" : "";
+                message += ex.getMessage()+".";
             }
 
-            @Override
-            public String getErrorMessage() {
-                return message;
+            //Try to parse handle
+            if(HandleLinkModel.isSupportedPersistentIdentifier(input)) {
+                validPid = true;
+            } else {
+                message += !message.isEmpty() ? "<br />" : "";
+                message += "Not a valid persistent identifier.";
             }
+
+            return (validUrl || validPid);
+        }
+
+        @Override
+        public String getErrorMessage() {
+            return message;
+        }
     }
     
-    public ReferencesEditor(String id, String label, Model<Boolean> advancedEditorMode) {
-        super(id, "References", null);
-        this.editorMode = editorMode;
+    public ReferencesEditor(String id, String label, Model<Boolean> advancedEditorMode, VisabilityUpdater updater) {
+        super(id, "References", null, updater);
         setOutputMarkupId(true);
         Component componentToUpdate = this;
 
@@ -175,7 +188,8 @@ public class ReferencesEditor extends ComposedField {
         editorWrapper.add(editor);
         add(editorWrapper);
 
-        lblNoReferences = new Label("lbl_no_references", "No resources found.");
+        lblNoReferences = new Label("lbl_no_references", "No references found.<br />Please add one or more members that make up this virtual collection by means of a (persistent) reference. ");
+        lblNoReferences.setEscapeModelStrings(false);
 
         listview = new ListView("listview", references) {
             @Override
@@ -258,7 +272,6 @@ public class ReferencesEditor extends ComposedField {
         ajaxWrapper.add(new AbstractAjaxTimerBehavior(Duration.seconds(uiRefreshTimeInSeconds)) {
             @Override
             protected void onTimer(AjaxRequestTarget target) {
-                //fireEvent(new DataUpdatedEvent(target));
                 if(target != null) {
                     target.add(ajaxWrapper);
                 }
@@ -273,10 +286,17 @@ public class ReferencesEditor extends ComposedField {
         ajaxWrapper.add(listview);
         add(ajaxWrapper);
 
-        AbstractField f1 = new VcrTextFieldWithoutLabel("reference", "Add new reference by URL or PID", data, this);
-        f1.setCompleteSubmitOnUpdate(true);
+        AbstractField f1 = new VcrTextFieldWithoutLabel("reference", "Add new reference by URL or PID", data, this,null);
+        f1.setCompleteSubmitOnUpdate(false);
+        f1.setRequired(true);
         f1.addValidator(new Validator());
         add(f1);
+
+        AbstractField f2 = new VcrTextFieldWithoutLabel("reference_title", "Set a title for this new reference", mdlReferenceTitle, this,null);
+        f2.setCompleteSubmitOnUpdate(true);
+        f2.setRequired(true);
+        //f2.addValidator(new Validator());
+        add(f2);
     }
     
     @Override
@@ -287,18 +307,26 @@ public class ReferencesEditor extends ComposedField {
 
     @Override
     public boolean completeSubmit(AjaxRequestTarget target) {
-        logger.info("Completing reference submit: value="+data.getObject());
-        
         String value = data.getObject();
-        if(value != null && !value.isEmpty()) {
+        String title = mdlReferenceTitle.getObject();
+
+        logger.info("Completing reference submit: value="+value+",title="+title);
+
+        if(value != null && !value.isEmpty() && title != null && !title.isEmpty()) {
             if(handleUrl(value)) {
-                references.add(new ReferenceJob(new Resource(Resource.Type.RESOURCE, value)));
+                references.add(new ReferenceJob(new Resource(Resource.Type.RESOURCE, value, title)));
                 data.setObject("");
+                mdlReferenceTitle.setObject("");
             } else if(handlePid(value)) {
-                references.add(new ReferenceJob(new Resource(Resource.Type.RESOURCE, value)));
+                String actionableValue = HandleLinkModel.getActionableUri(value);
+                references.add(new ReferenceJob(new Resource(Resource.Type.RESOURCE, actionableValue, title)));
                 data.setObject("");
+                mdlReferenceTitle.setObject("");
             } else {
-//                references.add(new ReferenceJob(new UnkownReference(value, "Not a valid URL or PID.")));
+                //abort
+                logger.warn("Unhandled reference (not url AND not pid)");
+                fireEvent(new DataUpdatedEvent(target)); //Is this required?
+                return false;
             }
 
             if(worker == null || !worker.isRunning()) {
@@ -331,7 +359,7 @@ public class ReferencesEditor extends ComposedField {
     }
     
     private boolean handlePid(String value) {
-        return false;
+        return HandleLinkModel.isSupportedPersistentIdentifier(value);
     }
     
     public void reset() {
@@ -355,7 +383,7 @@ public class ReferencesEditor extends ComposedField {
     }
     
     public void setData(List<Resource> data) {
-        logger.info("Set resource data: {} resources", data.size());
+        logger.info("Set resource data: {} reference", data.size());
         for(Resource r : data) {
             this.references.add(new ReferenceJob(r));
         }

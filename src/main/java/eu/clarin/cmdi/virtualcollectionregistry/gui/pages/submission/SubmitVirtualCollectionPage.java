@@ -17,7 +17,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BasePage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1.CreateAndEditVirtualCollectionPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.CreateAndEditVirtualCollectionPageV2;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.basic.Label;
@@ -43,7 +43,7 @@ public class SubmitVirtualCollectionPage extends BasePage {
         VirtualCollection vc = SubmissionUtils.retrieveCollection(getSession());
         if(vc != null) {        
             logger.info("Collection stored in session, redirect to edit page");
-            throw new RestartResponseException(CreateAndEditVirtualCollectionPage.class);
+            throw new RestartResponseException(CreateAndEditVirtualCollectionPageV2.class);
         }
         
         logger.debug("No collection stored in session");
@@ -58,8 +58,7 @@ public class SubmitVirtualCollectionPage extends BasePage {
             //TODO: handle error
             logger.error("Invalid collection type: {}",type_string);
         }
-        
-           
+
         if (type != null) {
             SubmissionUtils.checkSubmission( (WebRequest)RequestCycle.get().getRequest(), (WebResponse)RequestCycle.get().getResponse(), getSession(), type);     
             if(!isSignedIn()) {
@@ -70,7 +69,7 @@ public class SubmitVirtualCollectionPage extends BasePage {
                 //Already logged in, so redirect to creation page
                 //TODO: show choice to add to an existing collection or create a new collection
                 logger.info("Redirect logged in");
-                throw new RestartResponseException(CreateAndEditVirtualCollectionPage.class);
+                throw new RestartResponseException(CreateAndEditVirtualCollectionPageV2.class);
             }
         }
 
@@ -79,9 +78,4 @@ public class SubmitVirtualCollectionPage extends BasePage {
         /** cascades the call to its children */
         super.onBeforeRender();
     }
-    
-  
-  
-
-   
 }

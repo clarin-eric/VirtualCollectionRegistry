@@ -20,11 +20,9 @@ public class PrivateCollectionsManager implements Serializable {
     private static Logger logger = LoggerFactory.getLogger(PrivateCollectionsManager.class);
 
     private final CollectionsProvider provider;
-    private final transient Principal principal;
 
-    public PrivateCollectionsManager(Principal principal) {
+    public PrivateCollectionsManager() {
         this.provider = new PrivateCollectionsProvider();
-        this.principal = principal;
     }
 
     public VirtualCollection remove(int i) {
@@ -36,14 +34,14 @@ public class PrivateCollectionsManager implements Serializable {
         return this.provider.getList().get(i);
     }
 
-    public void set(int i, VirtualCollection collection) throws VirtualCollectionRegistryException {
-        //logger.debug("Updating existing virtual collection with id: {}", collection.getId());
+    public void set(int i, VirtualCollection collection, Principal principal) throws VirtualCollectionRegistryException {
+        logger.trace("Updating existing virtual collection with id: {}", collection.getId());
         Application.get().getRegistry().updateVirtualCollection(principal, collection.getId(), collection);
         this.provider.getList().set(i, collection);
     }
 
-    public void add(VirtualCollection collection) throws VirtualCollectionRegistryException {
-        //logger.debug("Creating new virtual collection");
+    public void add(VirtualCollection collection, Principal principal) throws VirtualCollectionRegistryException {
+        logger.trace("Creating new virtual collection");
         Application.get().getRegistry().createVirtualCollection(principal, collection);
         this.provider.getList().add(collection);
     }

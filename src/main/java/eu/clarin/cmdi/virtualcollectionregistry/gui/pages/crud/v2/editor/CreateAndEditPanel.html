@@ -8,6 +8,10 @@
             <!-- Editor simple/advance toggle -->
             <div class="row">
                 <div class="col-xs-12" style="text-align: right">
+                    <label wicket:id="btn_editor_toggle_help_lbl">
+                        <input type="checkbox" wicket:id="btn_editor_toggle_help">
+                        Show help
+                    </label>
                     <label>
                         <input type="checkbox" wicket:id="btn_editor_mode">
                         Advanced Mode
@@ -30,8 +34,17 @@
                 <div class="col-xs-12 field-row" wicket:id="authors">[AUTHORS]</div>
             </div>
 
+            <!-- Extensional block -->
             <div class="row" style="margin-top: 25px">
                 <div class="col-xs-12 field-row" wicket:id="references">[REFERENCES]</div>
+            </div>
+
+            <!-- Intensional block -->
+            <div class="row" style="margin-top: 25px">
+                <div class="col-xs-12 field-row" wicket:id="int_description">[INT DESCRIPTION]</div>
+                <div class="col-xs-12 field-row" wicket:id="int_uri">[INT URI]</div>
+                <div class="col-xs-12 field-row" wicket:id="int_query_profile">[INT QUERY PROFILE]</div>
+                <div class="col-xs-12 field-row" wicket:id="int_query_parameters">[INT QUERY PARAMETERS]</div>
             </div>
 
             <!-- Button row -->
@@ -41,6 +54,12 @@
                 </div>
                 <div class="col-xs-6">
                     <a class="btn btn-sm btn-default" wicket:id="btn_cancel">Cancel</a>
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12" style="text-align: center">
+                    <span wicket:id="error_message" class="error-message"></span>
                 </div>
             </div>
 

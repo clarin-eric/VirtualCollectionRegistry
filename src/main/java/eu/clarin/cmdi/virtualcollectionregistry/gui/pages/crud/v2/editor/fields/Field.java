@@ -5,6 +5,8 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields
  * @author wilelb
  */
 public interface Field {
-    public void setRequired(boolean required);
-    public boolean validate();
+    void setRequired(boolean required);
+    boolean validate();
+    void updateVisability();
+    void showHelp(boolean showHelp);
 }
