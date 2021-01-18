@@ -16,7 +16,7 @@ public class DoiResponse {
 
     private static final ObjectMapper mapper = new ObjectMapper();
 
-    public static String parseDoiFromResponse(String json) throws JsonProcessingException {
+    public static String parseDoiFromResponse(String json) throws Exception {
         String pid = null;
         try {
             Container response = mapper.readValue(json, Container.class);
@@ -24,7 +24,7 @@ public class DoiResponse {
                 throw new NullPointerException("Response data.id field cannot be null");
             }
             pid = response.data.id;
-        } catch(JsonProcessingException ex) {
+        } catch(Exception ex) {
             logger.info("Response JSON: "+json);
             throw ex;
         }

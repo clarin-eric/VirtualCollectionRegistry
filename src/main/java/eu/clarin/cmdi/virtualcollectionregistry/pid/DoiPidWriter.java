@@ -88,7 +88,7 @@ public class DoiPidWriter {
             } finally {
                 response.close();
             }
-        } catch(IOException ex) {
+        } catch(Exception ex) {
             throw new IOException("Failed to communicate with DOI API", ex);
         } finally {
             try {
