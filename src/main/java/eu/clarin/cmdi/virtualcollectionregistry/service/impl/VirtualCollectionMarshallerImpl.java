@@ -382,7 +382,9 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
         writer.writeEndElement(); // "FamilyName" element
 
         writer.writeStartElement("GivenName");
-        writer.writeCharacters(creator.getGivenName());
+        if(creator.getGivenName() != null) {
+            writer.writeCharacters(creator.getGivenName());
+        }
         writer.writeEndElement(); // "GivenName" element
 
         if (creator.getAddress() != null) {

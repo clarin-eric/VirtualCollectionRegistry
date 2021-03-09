@@ -29,27 +29,46 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
 /**
  * REST resource representing the collection of virtual collections
  *
  * @author twagoo
  */
-@Path("/virtualcollections")
+//@Path("/virtualcollections")
 public class VirtualCollectionsResource {
 
-    @Context
-    private ResourceContext resourceContext;
     @Autowired
     private VirtualCollectionRegistry registry;
     @Autowired
     private VirtualCollectionMarshaller marshaller;
+
+    @Context
+    private ResourceContext resourceContext;
     @Context
     private SecurityContext security;
     @Context
     private UriInfo uriInfo;
     @Context
     private HttpHeaders headers;
+
+    public VirtualCollectionsResource() {}
+
+    public VirtualCollectionsResource(
+            VirtualCollectionRegistry registry,
+            VirtualCollectionMarshaller marshaller,
+            ResourceContext resourceContext,
+            SecurityContext security,
+            UriInfo uriInfo,
+            HttpHeaders headers) {
+        this.registry = registry;
+        this.marshaller = marshaller;
+        this.resourceContext = resourceContext;
+        this.security = security;
+        this.uriInfo= uriInfo;
+        this.headers = headers;
+    }
 
     /**
      * All virtual collections will be retrieved; if a query expression is used,

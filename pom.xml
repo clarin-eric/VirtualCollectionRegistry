@@ -98,6 +98,24 @@
 
     <dependencies>
         <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-api</artifactId>
+            <version>0.11.2</version>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-impl</artifactId>
+            <version>0.11.2</version>
+            <scope>runtime</scope>
+        </dependency>
+        <dependency>
+            <groupId>io.jsonwebtoken</groupId>
+            <artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
+            <version>0.11.2</version>
+            <scope>runtime</scope>
+        </dependency>
+
+        <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>slf4j-api</artifactId>
             <version>${slf4j.version}</version>
@@ -169,9 +187,17 @@
             <artifactId>jersey-server</artifactId>
             <version>2.31</version>
         </dependency>
-        
-       
-        
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-core</artifactId>
+            <version>2.1.7</version>
+        </dependency>
+        <dependency>
+            <groupId>io.swagger.core.v3</groupId>
+            <artifactId>swagger-annotations</artifactId>
+            <version>2.1.7</version>
+        </dependency>
+
         <!--
                 <dependency>
                     <groupId>com.sun.jersey</groupId>            
@@ -697,6 +723,17 @@
                         <resource>
                             <directory>doc</directory>
                         </resource>
+                        <!-- Make REST API documentation available -->
+                        <resource>
+                            <directory>service-doc</directory>
+                            <excludes>
+                                <exclude>*.html</exclude>
+                            </excludes>
+                        </resource>
+                        <resource>
+                            <directory>swagger-ui-3.44.0/dist</directory>
+                            <targetPath>service-doc</targetPath>
+                        </resource>
                         <!-- Include proper shhaa config based on selected profile -->
                         <resource>
                             <directory>${war.shhaa.dir}</directory>
@@ -744,7 +781,41 @@
                     </descriptors>
                 </configuration>
             </plugin>
-             
+
+            <plugin>
+                <groupId>io.openapitools.swagger</groupId>
+                <artifactId>swagger-maven-plugin</artifactId>
+                <version>2.1.5</version>
+                <configuration>
+                    <resourcePackages>
+                        <resourcePackage>eu.clarin.cmdi.virtualcollectionregistry.rest</resourcePackage>
+                    </resourcePackages>
+                    <outputDirectory>${basedir}/service-doc/</outputDirectory>
+                    <outputFilename>swagger</outputFilename>
+                    <outputFormats>JSON,YAML</outputFormats>
+                    <prettyPrint>true</prettyPrint>
+                    <swaggerConfig>
+                        <servers>
+                            <server>
+                                <url>http://localhost:8080/vcr/service</url>
+                                <description>Endpoint URL</description>
+                            </server>
+                        </servers>
+                        <info>
+                            <title>Title</title>
+                            <version>1.0.0</version>
+                        </info>
+                    </swaggerConfig>
+                </configuration>
+                <executions>
+                    <execution>
+                        <phase>prepare-package</phase>
+                        <goals>
+                            <goal>generate</goal>
+                        </goals>
+                    </execution>
+                </executions>
+            </plugin>
         </plugins>
 
         <pluginManagement>

@@ -43,7 +43,7 @@ public class DoiPidWriter {
 
     private String doRequest(Configuration configuration, String requestJsonBody) throws IOException, NullPointerException, URISyntaxException {
         String doi = null;
-        
+
         URL url  = new URL(configuration.getServiceBaseURL());
         HttpHost targetHost = new HttpHost(url.getHost(), url.getPort(), url.toURI().getScheme());
 

@@ -1,0 +1,787 @@
+{
+  "openapi" : "3.0.1",
+  "info" : {
+    "title" : "Title",
+    "version" : "1.0.0"
+  },
+  "servers" : [ {
+    "url" : "http://localhost:8080/vcr/service",
+    "description" : "Endpoint URL"
+  } ],
+  "paths" : {
+    "/" : {
+      "get" : {
+        "operationId" : "getDescription",
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "text/xml" : { }
+            }
+          }
+        }
+      }
+    },
+    "/my-virtualcollections" : {
+      "get" : {
+        "summary" : "Get the list of private collections",
+        "description" : "Get the list of private collections for the user identified via the supplied API key.",
+        "operationId" : "getMyVirtualCollections",
+        "parameters" : [ {
+          "name" : "q",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "offset",
+          "in" : "query",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 0
+          }
+        }, {
+          "name" : "count",
+          "in" : "query",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : -1
+          }
+        } ],
+        "responses" : {
+          "401" : {
+            "description" : "Missing or invalid API key in Authorization header.",
+            "content" : {
+              "text/plain" : { }
+            }
+          },
+          "404" : {
+            "description" : "Missing description.",
+            "content" : {
+              "text/plain" : { }
+            }
+          },
+          "500" : {
+            "description" : "Unexpected server side error.",
+            "content" : {
+              "text/html" : { }
+            }
+          },
+          "200" : {
+            "description" : "JVM system properties of a particular host.",
+            "content" : {
+              "application/json" : { },
+              "application/xml" : { }
+            }
+          }
+        },
+        "security" : [ {
+          "apiKey" : [ ]
+        } ]
+      }
+    },
+    "/submit" : {
+      "post" : {
+        "operationId" : "submitNewVc",
+        "requestBody" : {
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "type" : {
+                    "type" : "string",
+                    "default" : "EXTENSIONAL",
+                    "enum" : [ "EXTENSIONAL", "INTENSIONAL" ]
+                  },
+                  "name" : {
+                    "type" : "string"
+                  },
+                  "metadataUri" : {
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string"
+                    }
+                  },
+                  "resourceUri" : {
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string"
+                    }
+                  },
+                  "description" : {
+                    "type" : "string"
+                  },
+                  "keyword" : {
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string"
+                    }
+                  },
+                  "purpose" : {
+                    "type" : "string",
+                    "enum" : [ "RESEARCH", "REFERENCE", "SAMPLE", "FUTURE_USE" ]
+                  },
+                  "reproducibility" : {
+                    "type" : "string",
+                    "enum" : [ "INTENDED", "FLUCTUATING", "UNTENDED" ]
+                  },
+                  "reproducibilityNotice" : {
+                    "type" : "string"
+                  },
+                  "creationDate" : {
+                    "type" : "string",
+                    "format" : "date-time"
+                  },
+                  "queryDescription" : {
+                    "type" : "string"
+                  },
+                  "queryUri" : {
+                    "type" : "string"
+                  },
+                  "queryProfile" : {
+                    "type" : "string"
+                  },
+                  "queryValue" : {
+                    "type" : "string"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "text/html" : { }
+            }
+          }
+        }
+      }
+    },
+    "/submit/extensional" : {
+      "post" : {
+        "operationId" : "submitNewExtensionalVc",
+        "requestBody" : {
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "name" : {
+                    "type" : "string"
+                  },
+                  "metadataUri" : {
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string"
+                    }
+                  },
+                  "resourceUri" : {
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string"
+                    }
+                  },
+                  "description" : {
+                    "type" : "string"
+                  },
+                  "keyword" : {
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string"
+                    }
+                  },
+                  "purpose" : {
+                    "type" : "string",
+                    "enum" : [ "RESEARCH", "REFERENCE", "SAMPLE", "FUTURE_USE" ]
+                  },
+                  "reproducibility" : {
+                    "type" : "string",
+                    "enum" : [ "INTENDED", "FLUCTUATING", "UNTENDED" ]
+                  },
+                  "reproducibilityNotice" : {
+                    "type" : "string"
+                  },
+                  "creationDate" : {
+                    "type" : "string",
+                    "format" : "date-time"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "text/html" : { }
+            }
+          }
+        }
+      }
+    },
+    "/submit/intensional" : {
+      "post" : {
+        "operationId" : "submitNewIntensionalVc",
+        "requestBody" : {
+          "content" : {
+            "application/x-www-form-urlencoded" : {
+              "schema" : {
+                "type" : "object",
+                "properties" : {
+                  "name" : {
+                    "type" : "string"
+                  },
+                  "description" : {
+                    "type" : "string"
+                  },
+                  "queryDescription" : {
+                    "type" : "string"
+                  },
+                  "queryUri" : {
+                    "type" : "string"
+                  },
+                  "queryProfile" : {
+                    "type" : "string"
+                  },
+                  "queryValue" : {
+                    "type" : "string"
+                  },
+                  "keyword" : {
+                    "type" : "array",
+                    "items" : {
+                      "type" : "string"
+                    }
+                  },
+                  "purpose" : {
+                    "type" : "string",
+                    "enum" : [ "RESEARCH", "REFERENCE", "SAMPLE", "FUTURE_USE" ]
+                  },
+                  "reproducibility" : {
+                    "type" : "string",
+                    "enum" : [ "INTENDED", "FLUCTUATING", "UNTENDED" ]
+                  },
+                  "reproducibilityNotice" : {
+                    "type" : "string"
+                  },
+                  "creationDate" : {
+                    "type" : "string",
+                    "format" : "date-time"
+                  }
+                }
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "text/html" : { }
+            }
+          }
+        }
+      }
+    },
+    "/v1/collections" : {
+      "get" : {
+        "operationId" : "getVirtualCollections",
+        "parameters" : [ {
+          "name" : "q",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "offset",
+          "in" : "query",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 0
+          }
+        }, {
+          "name" : "count",
+          "in" : "query",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : -1
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "text/xml" : { },
+              "application/xml" : { },
+              "application/json" : { }
+            }
+          }
+        }
+      },
+      "post" : {
+        "operationId" : "createVirtualCollection",
+        "requestBody" : {
+          "content" : {
+            "text/xml" : {
+              "schema" : {
+                "type" : "object"
+              }
+            },
+            "application/xml" : {
+              "schema" : {
+                "type" : "object"
+              }
+            },
+            "application/json" : {
+              "schema" : {
+                "type" : "object"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "text/xml" : { },
+              "application/xml" : { },
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/v1/collections/{id}" : {
+      "get" : {
+        "operationId" : "getVirtualCollection",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/x-cmdi+xml" : { },
+              "text/xml" : { },
+              "application/xml" : { },
+              "application/json" : { }
+            }
+          }
+        }
+      },
+      "put" : {
+        "operationId" : "updateVirtualCollection",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "text/xml" : {
+              "schema" : {
+                "type" : "object"
+              }
+            },
+            "application/xml" : {
+              "schema" : {
+                "type" : "object"
+              }
+            },
+            "application/json" : {
+              "schema" : {
+                "type" : "object"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "text/xml" : { },
+              "application/xml" : { },
+              "application/json" : { }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "operationId" : "deleteVirtualCollection",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "text/xml" : { },
+              "application/xml" : { },
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/v1/collections/{id}/state" : {
+      "get" : {
+        "operationId" : "getVirtualCollectionState",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "text/xml" : { },
+              "application/xml" : { },
+              "application/json" : { }
+            }
+          }
+        }
+      },
+      "post" : {
+        "operationId" : "setVirtualCollectionState",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "text/xml" : {
+              "schema" : {
+                "type" : "string",
+                "xml" : {
+                  "name" : "State"
+                },
+                "enum" : [ "private", "public", "public_frozen" ]
+              }
+            },
+            "application/xml" : {
+              "schema" : {
+                "type" : "string",
+                "xml" : {
+                  "name" : "State"
+                },
+                "enum" : [ "private", "public", "public_frozen" ]
+              }
+            },
+            "application/json" : {
+              "schema" : {
+                "type" : "string",
+                "xml" : {
+                  "name" : "State"
+                },
+                "enum" : [ "private", "public", "public_frozen" ]
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "text/xml" : { },
+              "application/xml" : { },
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/v2/collections" : {
+      "get" : {
+        "operationId" : "getVirtualCollections_1",
+        "parameters" : [ {
+          "name" : "q",
+          "in" : "query",
+          "schema" : {
+            "type" : "string"
+          }
+        }, {
+          "name" : "offset",
+          "in" : "query",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : 0
+          }
+        }, {
+          "name" : "count",
+          "in" : "query",
+          "schema" : {
+            "type" : "integer",
+            "format" : "int32",
+            "default" : -1
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "text/xml" : { },
+              "application/xml" : { },
+              "application/json" : { }
+            }
+          }
+        }
+      },
+      "post" : {
+        "operationId" : "createVirtualCollection_1",
+        "requestBody" : {
+          "content" : {
+            "text/xml" : {
+              "schema" : {
+                "type" : "object"
+              }
+            },
+            "application/xml" : {
+              "schema" : {
+                "type" : "object"
+              }
+            },
+            "application/json" : {
+              "schema" : {
+                "type" : "object"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "text/xml" : { },
+              "application/xml" : { },
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/v2/collections/{id}" : {
+      "get" : {
+        "operationId" : "getVirtualCollection_1",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "application/x-cmdi+xml" : { },
+              "text/xml" : { },
+              "application/xml" : { },
+              "application/json" : { }
+            }
+          }
+        }
+      },
+      "put" : {
+        "operationId" : "updateVirtualCollection_1",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "text/xml" : {
+              "schema" : {
+                "type" : "object"
+              }
+            },
+            "application/xml" : {
+              "schema" : {
+                "type" : "object"
+              }
+            },
+            "application/json" : {
+              "schema" : {
+                "type" : "object"
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "text/xml" : { },
+              "application/xml" : { },
+              "application/json" : { }
+            }
+          }
+        }
+      },
+      "delete" : {
+        "operationId" : "deleteVirtualCollection_1",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "text/xml" : { },
+              "application/xml" : { },
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    },
+    "/v2/collections/{id}/state" : {
+      "get" : {
+        "operationId" : "getVirtualCollectionState_1",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "text/xml" : { },
+              "application/xml" : { },
+              "application/json" : { }
+            }
+          }
+        }
+      },
+      "post" : {
+        "operationId" : "setVirtualCollectionState_1",
+        "parameters" : [ {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        }, {
+          "name" : "id",
+          "in" : "path",
+          "required" : true,
+          "schema" : {
+            "type" : "integer",
+            "format" : "int64"
+          }
+        } ],
+        "requestBody" : {
+          "content" : {
+            "text/xml" : {
+              "schema" : {
+                "type" : "string",
+                "xml" : {
+                  "name" : "State"
+                },
+                "enum" : [ "private", "public", "public_frozen" ]
+              }
+            },
+            "application/xml" : {
+              "schema" : {
+                "type" : "string",
+                "xml" : {
+                  "name" : "State"
+                },
+                "enum" : [ "private", "public", "public_frozen" ]
+              }
+            },
+            "application/json" : {
+              "schema" : {
+                "type" : "string",
+                "xml" : {
+                  "name" : "State"
+                },
+                "enum" : [ "private", "public", "public_frozen" ]
+              }
+            }
+          }
+        },
+        "responses" : {
+          "default" : {
+            "description" : "default response",
+            "content" : {
+              "text/xml" : { },
+              "application/xml" : { },
+              "application/json" : { }
+            }
+          }
+        }
+      }
+    }
+  },
+  "components" : {
+    "securitySchemes" : {
+      "apiKey" : {
+        "type" : "apiKey",
+        "name" : "Authorization",
+        "in" : "header"
+      }
+    }
+  }
+}

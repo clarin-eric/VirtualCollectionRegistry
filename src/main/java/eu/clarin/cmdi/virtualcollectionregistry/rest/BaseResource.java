@@ -23,17 +23,18 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
+import javax.ws.rs.container.ResourceContext;
+import javax.ws.rs.core.*;
 import org.apache.wicket.util.io.IOUtils;
-
 /**
  *
  * @author twagoo
  */
+//@Component
 @Path("")
 public class BaseResource {
+    @Context
+    private ResourceContext resourceContext;
 
     /**
      * Serves a short description HTML page at the service root
@@ -57,4 +58,17 @@ public class BaseResource {
         return Response.ok(writer).type(MediaType.TEXT_HTML).build();
     }
 
+    @Path("/v1/collections")
+    public VirtualCollectionsResource getCollectionsV1() {
+        final VirtualCollectionsResource resource =
+                resourceContext.getResource(VirtualCollectionsResource.class);
+        return resource;
+    }
+
+    @Path("/v2/collections")
+    public VirtualCollectionsResource getCollectionsV2() {
+        final VirtualCollectionsResource resource =
+                resourceContext.getResource(VirtualCollectionsResource.class);
+        return resource;
+    }
 }

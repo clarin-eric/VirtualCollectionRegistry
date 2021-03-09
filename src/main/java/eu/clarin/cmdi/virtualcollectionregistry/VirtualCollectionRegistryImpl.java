@@ -603,14 +603,16 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                     results = q.getResultList();
                 }
             }
-            
-            for(VirtualCollection vc : results) {
-                logger.info("Authors for "+vc.getName());
-                for(String a : vc.getAuthors()) {
-                    logger.info("\tAuthor: "+a);
+/*
+            if(results != null) {
+                for (VirtualCollection vc : results) {
+                    logger.info("Authors for " + vc.getName());
+                    for (String a : vc.getAuthors()) {
+                        logger.info("\tAuthor: " + a);
+                    }
                 }
             }
-            
+*/
             return new VirtualCollectionList(results, offset, (int) totalCount);
         } catch (Exception e) {
             logger.error("error while enumerating virtual collections", e);
@@ -623,9 +625,6 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             }
         }
     }
-
-    
-    
     
     public VirtualCollectionList getAllVirtualCollections()
             throws VirtualCollectionRegistryException {

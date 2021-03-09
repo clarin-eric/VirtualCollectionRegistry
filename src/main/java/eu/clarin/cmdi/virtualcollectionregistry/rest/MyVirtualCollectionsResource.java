@@ -3,6 +3,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.rest;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
+import eu.clarin.cmdi.virtualcollectionregistry.rest.auth.Secured;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -21,15 +22,33 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
+
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.media.Content;
 
 /**
  * REST resource representing the collection of the user's virtual collections
  * (public or private)
  *
+ * https://github.com/swagger-api/swagger-core/wiki/Swagger-2.X---Annotations
+ *
  * @author twagoo
  */
 @Path("/my-virtualcollections")
+@SecurityScheme(
+        name = "apiKey",
+        type = SecuritySchemeType.APIKEY,
+        in = SecuritySchemeIn.HEADER,
+        paramName = HttpHeaders.AUTHORIZATION
+)
 public class MyVirtualCollectionsResource {
 
     @Autowired
@@ -59,10 +78,38 @@ public class MyVirtualCollectionsResource {
      * VirtualCollectionRegistry#getVirtualCollections(java.security.Principal,
      * java.lang.String, int, int)
      */
+    @Secured
     @GET
     @Produces({MediaType.TEXT_XML,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_JSON})
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Missing or invalid API key in "+HttpHeaders.AUTHORIZATION+" header.",
+                            content = @Content(mediaType = "text/plain")
+                    ),
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Missing description.",
+                            content = @Content(mediaType = "text/plain")
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Unexpected server side error.",
+                            content = {@Content(mediaType = "text/html")}
+                    ),
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "JVM system properties of a particular host.",
+                            content = {@Content(mediaType = "application/json"), @Content(mediaType = "application/xml")}
+                    )
+            })
+    @Operation(
+            security = { @SecurityRequirement(name = "apiKey") },
+            summary = "Get the list of private collections",
+            description = "Get the list of private collections for the user identified via the supplied API key.")
     public Response getMyVirtualCollections(@QueryParam("q") String query,
             @DefaultValue("0") @QueryParam("offset") int offset,
             @DefaultValue("-1") @QueryParam("count") int count)
