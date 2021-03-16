@@ -7,17 +7,27 @@
 <body>
 
     <wicket:extend>
-        <h1>User Profile</h1>
-        <h2>Api keys</h2>
-        Some API endpoints require authentication. You can generate and revoke API keys on this page.
-        The endpoints expect the api key in the "Authorization" header. Curl example:
-        <pre>Authorization: [api key goes here]</pre>
+        <div class="row">
+            <div class="col-xs-8">
+                <h1>User Profile</h1>
+                <h2>Api keys</h2>
+                <p>
+                    Some API endpoints require authentication. You can generate and revoke API keys on this page.
+                </p>
+                <p>
+                    The endpoints expect the api key in the "Authorization" header.<br />
+                    Curl example:
+                    <pre>curl -H "Authorization: [api key goes here]" http://localhost:8080/[path to api endpoint]</pre>
+                </p>
+                <p>
+                    Api documentation is available <a href="./service/">here</a>.
+                </p>
 
-        <h3>Available keys:</h3>
-        <table wicket:id="api_keys_table" class="api-key-table">[description]</table>
-
-        <a wicket:id="btn_new_api_key" class="btn btn-primary"><span wicket:id="btn_new_api_key_label"></span></a>
-
+                <h3>Available keys:</h3>
+                <table wicket:id="api_keys_table" class="api-key-table">[description]</table>
+                <a wicket:id="btn_new_api_key" class="btn btn-primary"><span wicket:id="btn_new_api_key_label"></span></a>
+            </div>
+        </div>
     </wicket:extend>
 
 </body>
