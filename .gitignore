@@ -18,3 +18,4 @@ docker/vcr-admin.conf
 docker/vcr/
 docker/webapps
 tmp
+service-doc

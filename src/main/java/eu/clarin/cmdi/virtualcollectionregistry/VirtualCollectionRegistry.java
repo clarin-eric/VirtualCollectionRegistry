@@ -62,4 +62,29 @@ public interface VirtualCollectionRegistry {
     
     CreatorService getCreatorService();
 
+
+    /**
+     * Return user object for the given principal
+     * @param principal
+     * @return
+     * @throws VirtualCollectionRegistryException
+     */
+    User fetchUser(Principal principal) throws VirtualCollectionRegistryException;
+
+    /**
+     * Create a new user for the given principal
+     * @param principal
+     * @return the created User object. Can be null in case of an error.
+     * @throws VirtualCollectionRegistryException
+     */
+    User createUser(Principal principal)  throws VirtualCollectionRegistryException;
+
+    /**
+     * Create a new uer for the given principal if it does not already exist
+     * @param principal
+     * @return the created or existing User object. Can be null in case of an error.
+     * @throws VirtualCollectionRegistryException
+     */
+    User createUserIfNotExists(Principal principal)  throws VirtualCollectionRegistryException;
+
 } // interface VirtualCollectionRegistry

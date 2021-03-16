@@ -4,6 +4,7 @@
     <!--<provider>org.hibernate.ejb.HibernatePersistence</provider>-->
     <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
     <jta-data-source>java:comp/env/jdbc/VirtualCollectionStore</jta-data-source>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.ApiKey</class>
     <class>eu.clarin.cmdi.virtualcollectionregistry.model.User</class>
     <class>eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection</class>
     <class>eu.clarin.cmdi.virtualcollectionregistry.model.Creator</class>

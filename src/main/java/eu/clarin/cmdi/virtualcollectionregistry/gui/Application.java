@@ -35,7 +35,9 @@ public class Application extends AuthenticatedWebApplication {
 
     public final static StringValidator MAX_LENGTH_VALIDATOR = 
         new StringValidator(null, 255);
-    
+
+    private final static Class HOME_PAGE_CLASS = BrowsePublicCollectionsPage.class;
+
     @Autowired
     private VirtualCollectionRegistry registry;
     @Autowired
@@ -70,6 +72,7 @@ public class Application extends AuthenticatedWebApplication {
         
         getComponentInstantiationListeners().add(new SpringComponentInjector(this));
 
+        getApplicationSettings().setPageExpiredErrorPage(HOME_PAGE_CLASS);
         getMarkupSettings().setDefaultMarkupEncoding("utf-8");
         getRequestCycleSettings().setResponseRequestEncoding("utf-8");
 
@@ -95,7 +98,7 @@ public class Application extends AuthenticatedWebApplication {
 
     @Override
     public Class<? extends Page> getHomePage() {
-        return BrowsePublicCollectionsPage.class;
+        return HOME_PAGE_CLASS;
     }
 
     @Override

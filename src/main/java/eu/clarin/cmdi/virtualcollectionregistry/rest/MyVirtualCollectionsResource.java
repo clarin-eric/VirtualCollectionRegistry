@@ -44,10 +44,10 @@ import io.swagger.v3.oas.annotations.media.Content;
  */
 @Path("/my-virtualcollections")
 @SecurityScheme(
-        name = "apiKey",
-        type = SecuritySchemeType.APIKEY,
-        in = SecuritySchemeIn.HEADER,
-        paramName = HttpHeaders.AUTHORIZATION
+    name = "apiKey",
+    type = SecuritySchemeType.APIKEY,
+    in = SecuritySchemeIn.HEADER,
+    paramName = HttpHeaders.AUTHORIZATION
 )
 public class MyVirtualCollectionsResource {
 
@@ -84,32 +84,32 @@ public class MyVirtualCollectionsResource {
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_JSON})
     @ApiResponses(
-            value = {
-                    @ApiResponse(
-                            responseCode = "401",
-                            description = "Missing or invalid API key in "+HttpHeaders.AUTHORIZATION+" header.",
-                            content = @Content(mediaType = "text/plain")
-                    ),
-                    @ApiResponse(
-                            responseCode = "404",
-                            description = "Missing description.",
-                            content = @Content(mediaType = "text/plain")
-                    ),
-                    @ApiResponse(
-                            responseCode = "500",
-                            description = "Unexpected server side error.",
-                            content = {@Content(mediaType = "text/html")}
-                    ),
-                    @ApiResponse(
-                            responseCode = "200",
-                            description = "JVM system properties of a particular host.",
-                            content = {@Content(mediaType = "application/json"), @Content(mediaType = "application/xml")}
-                    )
-            })
+        value = {
+            @ApiResponse(
+                    responseCode = "401",
+                    description = "Missing or invalid API key in "+HttpHeaders.AUTHORIZATION+" header.",
+                    content = @Content(mediaType = "text/plain")
+            ),
+            @ApiResponse(
+                    responseCode = "404",
+                    description = "Missing description.",
+                    content = @Content(mediaType = "text/plain")
+            ),
+            @ApiResponse(
+                    responseCode = "500",
+                    description = "Unexpected server side error.",
+                    content = {@Content(mediaType = "text/html")}
+            ),
+            @ApiResponse(
+                    responseCode = "200",
+                    description = "JVM system properties of a particular host.",
+                    content = {@Content(mediaType = "application/json"), @Content(mediaType = "application/xml")}
+            )
+        })
     @Operation(
-            security = { @SecurityRequirement(name = "apiKey") },
-            summary = "Get the list of private collections",
-            description = "Get the list of private collections for the user identified via the supplied API key.")
+        security = { @SecurityRequirement(name = "apiKey") },
+        summary = "Get the list of private collections",
+        description = "Get the list of private collections for the user identified via the supplied API key.")
     public Response getMyVirtualCollections(@QueryParam("q") String query,
             @DefaultValue("0") @QueryParam("offset") int offset,
             @DefaultValue("-1") @QueryParam("count") int count)

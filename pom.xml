@@ -794,18 +794,6 @@
                     <outputFilename>swagger</outputFilename>
                     <outputFormats>JSON,YAML</outputFormats>
                     <prettyPrint>true</prettyPrint>
-                    <swaggerConfig>
-                        <servers>
-                            <server>
-                                <url>http://localhost:8080/vcr/service</url>
-                                <description>Endpoint URL</description>
-                            </server>
-                        </servers>
-                        <info>
-                            <title>Title</title>
-                            <version>1.0.0</version>
-                        </info>
-                    </swaggerConfig>
                 </configuration>
                 <executions>
                     <execution>

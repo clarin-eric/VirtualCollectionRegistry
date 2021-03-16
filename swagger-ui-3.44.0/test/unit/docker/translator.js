@@ -185,7 +185,7 @@ describe("docker: env translator", function() {
         // Order is important to this test... legacy vars should be
         // superseded regardless of what is fed in first.
         API_URL: "/old.json",
-        URL: "/swagger.json",
+        URL: "/swagger.json.bak",
         URLS: `["/one", "/two"]`,
         API_URLS: `["/three", "/four"]`,
       }
@@ -199,7 +199,7 @@ describe("docker: env translator", function() {
 
     it("should pick up legacy variables when using base config", function () {
       const input = {
-        API_URL: "/swagger.json",
+        API_URL: "/swagger.json.bak",
         API_URLS: `["/one", "/two"]`,
       }
 
@@ -227,7 +227,7 @@ describe("docker: env translator", function() {
         CONFIG_URL: "/wow",
         DOM_ID: "#swagger_ui",
         SPEC: `{ swagger: "2.0" }`,
-        URL: "/swagger.json",
+        URL: "/swagger.json.bak",
         URLS: `["/one", "/two"]`,
         URLS_PRIMARY_NAME: "one",
         LAYOUT: "BaseLayout",
@@ -283,7 +283,7 @@ describe("docker: env translator", function() {
         CONFIG_URL: "/wow",
         DOM_ID: "#swagger_ui",
         SPEC: `{ swagger: "2.0" }`,
-        URL: "/swagger.json",
+        URL: "/swagger.json.bak",
         URLS: `["/one", "/two"]`,
         URLS_PRIMARY_NAME: "one",
         LAYOUT: "BaseLayout",

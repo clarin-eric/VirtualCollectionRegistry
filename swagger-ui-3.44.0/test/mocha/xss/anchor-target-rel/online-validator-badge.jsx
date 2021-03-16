@@ -12,7 +12,7 @@ describe("<OnlineValidatorBadge/> Anchor Target Safety", function () {
       getConfigs: () => ({}),
       getComponent: () => null,
       specSelectors: {
-        url: () => "swagger.json"
+        url: () => "swagger.json.bak"
       }
     }
     const wrapper = mount(

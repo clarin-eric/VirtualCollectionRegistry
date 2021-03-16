@@ -2,6 +2,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.CreateAndEditVirtualCollectionPageV2;
+import eu.clarin.cmdi.wicket.ClipboardJs;
 import eu.clarin.cmdi.wicket.PiwikTracker;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LogoutPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.AuthenticationHandler;
@@ -96,14 +97,17 @@ public class BasePage extends WebPage {
         } else {
             add(new WebMarkupContainer("piwik")); //empty placeholder
         }
-        
+
         //Include survey if configured (typically mopinion user satisfaction
         if (Strings.isEmpty(piwikConfig.getSnippetSurvey())) {
             add(new WebMarkupContainer("surveySnippet"));
         } else {
             add(new Include("surveySnippet", piwikConfig.getSnippetSurvey()));
         }
-         
+
+        //Initialize clipboard support on the #content section
+        add(new ClipboardJs("clipboardJsSnippet", ".clipboard"));
+
         //Include extra credits if configured
         if (Strings.isEmpty(piwikConfig.getSnippetCredits())) {
             add(new WebMarkupContainer("creditsSnippet"));

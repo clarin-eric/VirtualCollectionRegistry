@@ -25,29 +25,42 @@ import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
 import javax.ws.rs.container.ResourceContext;
 import javax.ws.rs.core.*;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.servers.Server;
 import org.apache.wicket.util.io.IOUtils;
+
 /**
- *
  * @author twagoo
  */
-//@Component
 @Path("")
+@OpenAPIDefinition(
+    info = @Info(
+        title = "Virtual Collection Registry REST API",
+        version = "1.0.0",
+        description = "Virtual Collection Registry REST API.<br />Description of the API protocol is available <a href=\"../Protocol.txt\">here</a>.<br />Code repository: <a href=\"https://github.com/clarin-eric/VirtualCollectionRegistry\">GitHub</a>."
+    ),
+    servers = {
+        @Server(
+            description = "Local API endpoint",
+            url = "http://localhost:8080/vcr/service"
+        )
+    }
+)
 public class BaseResource {
+
     @Context
     private ResourceContext resourceContext;
 
     /**
      * Serves a short description HTML page at the service root
-     *
-     * @return
      */
     @GET
     @Produces({MediaType.TEXT_XML})
     public Response getDescription() {
         final StreamingOutput writer = new StreamingOutput() {
             @Override
-            public void write(OutputStream output) throws IOException,
-                    WebApplicationException {
+            public void write(OutputStream output) throws IOException, WebApplicationException {
                 try (InputStream is = getClass().getResourceAsStream("/restIndex.html")) {
                     IOUtils.copy(is, output);
                 } finally {
@@ -58,6 +71,9 @@ public class BaseResource {
         return Response.ok(writer).type(MediaType.TEXT_HTML).build();
     }
 
+    /**
+     * Server api v1
+     */
     @Path("/v1/collections")
     public VirtualCollectionsResource getCollectionsV1() {
         final VirtualCollectionsResource resource =
@@ -65,6 +81,9 @@ public class BaseResource {
         return resource;
     }
 
+    /**
+     * Server api v2
+     */
     @Path("/v2/collections")
     public VirtualCollectionsResource getCollectionsV2() {
         final VirtualCollectionsResource resource =

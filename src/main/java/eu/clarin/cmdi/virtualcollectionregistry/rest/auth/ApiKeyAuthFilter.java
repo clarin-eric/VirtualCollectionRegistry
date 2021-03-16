@@ -1,7 +1,14 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest.auth;
 
+import eu.clarin.cmdi.virtualcollectionregistry.ApiKeyException;
+import eu.clarin.cmdi.virtualcollectionregistry.ApiKeyNotFoundException;
+import eu.clarin.cmdi.virtualcollectionregistry.ApiKeyRevokedException;
+import eu.clarin.cmdi.virtualcollectionregistry.ApiKeyService;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.annotation.Autowired;
+
 import javax.annotation.Priority;
 import javax.ws.rs.Priorities;
 import javax.ws.rs.container.ContainerRequestContext;
@@ -28,6 +35,9 @@ public class ApiKeyAuthFilter implements ContainerRequestFilter {
     private static final String REALM = "vcr";
     private static final String AUTHENTICATION_SCHEME = "";
 
+    @Autowired
+    private ApiKeyService apiKeyService;
+
     @Override
     public void filter(ContainerRequestContext requestContext) throws IOException {
         logger.info("Filtering API key from request");
@@ -52,14 +62,16 @@ public class ApiKeyAuthFilter implements ContainerRequestFilter {
         // Validate the received token
         try {
             validateToken(token);
-        } catch (Exception e) {
+        } catch (Exception ex) {
+            logger.info("Token failed to validate.", ex);
             abortWithUnauthorized(requestContext);
         }
 
         // Update the security context based on the information associated with the token
         try {
             updatePrincipal(requestContext, token);
-        } catch(Exception e) {
+        } catch(Exception ex) {
+            logger.error("Failed to set principal.", ex);
             abortWithUnauthorized(requestContext);
         }
     }
@@ -100,6 +112,11 @@ public class ApiKeyAuthFilter implements ContainerRequestFilter {
      */
     private void validateToken(String token) throws Exception {
         logger.info("Validating token: ["+token+"]");
+        try {
+            apiKeyService.getUserForApiKey(token);
+        } catch (Exception ex) {
+            throw ex;
+        }
     }
 
     /**

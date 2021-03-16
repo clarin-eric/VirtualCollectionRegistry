@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry, InitializingBean, DisposableBean {
 
-    private final static String REQUIRED_DB_VERSION = "1.2.0";
+    private final static String REQUIRED_DB_VERSION = "1.3.0";
 
     @Autowired
     private DataStore datastore; //TODO: replace with Spring managed EM?
@@ -59,7 +59,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
     /**
      * Scheduled executor service for the maintenance check
      *
-     * @see #maintenance(long)
+     * //@see #maintenance(long)
      */
     private final ScheduledExecutorService maintenanceExecutor
             = createSingleThreadScheduledExecutor("VirtualCollectionRegistry-Maintenance");
@@ -762,6 +762,30 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                 tx.commit();
             }
         }
+    }
+
+    public User createUser(Principal principal) throws VirtualCollectionRegistryException {
+        return null;
+    }
+
+    public User createUserIfNotExists(Principal principal) throws VirtualCollectionRegistryException {
+        return null;
+    }
+
+    public User fetchUser(Principal principal) throws VirtualCollectionRegistryException {
+        User user = null;
+        EntityManager em = datastore.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            user = fetchUser(em, principal);
+            em.getTransaction().commit();
+        } catch (Exception e) {
+            em.getTransaction().rollback();
+            logger.error("error while querying user with name="+principal.toString(), e);
+            throw new VirtualCollectionRegistryException(
+                    "error while querying user with name="+principal.toString(), e);
+        }
+        return user;
     }
 
     private static User fetchUser(EntityManager em, Principal principal) {
