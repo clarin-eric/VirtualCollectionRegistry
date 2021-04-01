@@ -43,6 +43,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
     private static Logger logger = LoggerFactory.getLogger(CreateAndEditVirtualCollectionPageV2.class);
 
     public final static String PARAM_VC_ID = "collection-id";
+
     @SpringBean
     private VirtualCollectionRegistry vcr;
 
@@ -217,7 +218,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
             logger.warn("Tried to remove but could not find collection with id={}", id);
         }
     }
-
+/*
     private void checkAccess(final VirtualCollection vc) throws VirtualCollectionRegistryPermissionException {
         // do not allow editing of VC's that are non-private or owned
         // by someone else! (except for admin)
@@ -230,4 +231,5 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
             throw new UnauthorizedInstantiationException(CreateAndEditVirtualCollectionPage.class);
         }
     }
+ */
 }

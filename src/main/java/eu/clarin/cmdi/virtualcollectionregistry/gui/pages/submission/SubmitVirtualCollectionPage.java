@@ -18,6 +18,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BasePage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.CreateAndEditVirtualCollectionPageV2;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.MergeCollectionsPage;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.basic.Label;
@@ -43,7 +44,9 @@ public class SubmitVirtualCollectionPage extends BasePage {
         VirtualCollection vc = SubmissionUtils.retrieveCollection(getSession());
         if(vc != null) {        
             logger.info("Collection stored in session, redirect to edit page");
-            throw new RestartResponseException(CreateAndEditVirtualCollectionPageV2.class);
+            //Class target = CreateAndEditVirtualCollectionPageV2.class;
+            Class target = MergeCollectionsPage.class;
+            throw new RestartResponseException(target);
         }
         
         logger.debug("No collection stored in session");

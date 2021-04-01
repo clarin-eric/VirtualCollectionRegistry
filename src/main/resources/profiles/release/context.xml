@@ -25,7 +25,7 @@
                value="CLARIN Virtual Collection Registry" />
 
     <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.base_uri"
-               value="http://localhost:8080/VirtualCollectionRegistry"
+               value="http://localhost:8080/"
                override="false"/>
 
     <Parameter name="pid_provider.epic.service_base_url"

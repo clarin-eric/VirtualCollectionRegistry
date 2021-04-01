@@ -38,7 +38,17 @@ import org.apache.wicket.util.io.IOUtils;
     info = @Info(
         title = "Virtual Collection Registry REST API",
         version = "1.0.0",
-        description = "Virtual Collection Registry REST API.<br />Description of the API protocol is available <a href=\"../Protocol.txt\">here</a>.<br />Code repository: <a href=\"https://github.com/clarin-eric/VirtualCollectionRegistry\">GitHub</a>."
+        description = "The Virtual Collection Registry (VCR) REST API is documented following the open API specification. The UI on this page."
+                + "allows you to test and play with the various resources."
+                + "<br />Description of the API protocol is available <a href=\"../Protocol.txt\">here</a>."
+                + "<br /><br />In addition to the REST API there are submission endpoints available to provide a low "
+                + "friction integration with external data catalogues. Documentation is available <a href=\"https://github.com/clarin-eric/VirtualCollectionRegistry/blob/master/doc/Integration.md\">here</a>."
+                + "<br />Submission endpoint test paages:"
+                + "<ul>"
+                + "<li><a target=\"_new\" href=\"../test_vc_submission_extensional.html\">Extensional collections</a></li>"
+                + "<li><a target=\"_new\" href=\"../test_vc_submission_intensional.html\">Intensional collections</a></li>"
+                + "</ul>"
+                + "<br />Code repository is hosted on <a href=\"https://github.com/clarin-eric/VirtualCollectionRegistry\">GitHub</a>."
     ),
     servers = {
         @Server(

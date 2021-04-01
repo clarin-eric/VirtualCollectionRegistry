@@ -1,10 +1,20 @@
 openapi: 3.0.1
 info:
-  title: Title
+  title: Virtual Collection Registry REST API
+  description: The Virtual Collection Registry (VCR) REST API is documented following
+    the open API specification. The UI on this page.allows you to test and play with
+    the various resources.<br />Description of the API protocol is available <a href="../Protocol.txt">here</a>.<br
+    /><br />In addition to the REST API there are submission endpoints available to
+    provide a low friction integration with external data catalogues. Documentation
+    is available <a href="https://github.com/clarin-eric/VirtualCollectionRegistry/blob/master/doc/Integration.md">here</a>.<br
+    />Submission endpoint test paages:<ul><li><a target="_new" href="../test_vc_submission_extensional.html">Extensional
+    collections</a></li><li><a target="_new" href="../test_vc_submission_intensional.html">Intensional
+    collections</a></li></ul><br />Code repository is hosted on <a href="https://github.com/clarin-eric/VirtualCollectionRegistry">GitHub</a>.
   version: 1.0.0
 servers:
 - url: http://localhost:8080/vcr/service
-  description: Endpoint URL
+  description: Local API endpoint
+  variables: {}
 paths:
   /:
     get:
@@ -57,167 +67,9 @@ paths:
             application/xml: {}
       security:
       - apiKey: []
-  /submit:
-    post:
-      operationId: submitNewVc
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                type:
-                  type: string
-                  default: EXTENSIONAL
-                  enum:
-                  - EXTENSIONAL
-                  - INTENSIONAL
-                name:
-                  type: string
-                metadataUri:
-                  type: array
-                  items:
-                    type: string
-                resourceUri:
-                  type: array
-                  items:
-                    type: string
-                description:
-                  type: string
-                keyword:
-                  type: array
-                  items:
-                    type: string
-                purpose:
-                  type: string
-                  enum:
-                  - RESEARCH
-                  - REFERENCE
-                  - SAMPLE
-                  - FUTURE_USE
-                reproducibility:
-                  type: string
-                  enum:
-                  - INTENDED
-                  - FLUCTUATING
-                  - UNTENDED
-                reproducibilityNotice:
-                  type: string
-                creationDate:
-                  type: string
-                  format: date-time
-                queryDescription:
-                  type: string
-                queryUri:
-                  type: string
-                queryProfile:
-                  type: string
-                queryValue:
-                  type: string
-      responses:
-        default:
-          description: default response
-          content:
-            text/html: {}
-  /submit/extensional:
-    post:
-      operationId: submitNewExtensionalVc
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                metadataUri:
-                  type: array
-                  items:
-                    type: string
-                resourceUri:
-                  type: array
-                  items:
-                    type: string
-                description:
-                  type: string
-                keyword:
-                  type: array
-                  items:
-                    type: string
-                purpose:
-                  type: string
-                  enum:
-                  - RESEARCH
-                  - REFERENCE
-                  - SAMPLE
-                  - FUTURE_USE
-                reproducibility:
-                  type: string
-                  enum:
-                  - INTENDED
-                  - FLUCTUATING
-                  - UNTENDED
-                reproducibilityNotice:
-                  type: string
-                creationDate:
-                  type: string
-                  format: date-time
-      responses:
-        default:
-          description: default response
-          content:
-            text/html: {}
-  /submit/intensional:
-    post:
-      operationId: submitNewIntensionalVc
-      requestBody:
-        content:
-          application/x-www-form-urlencoded:
-            schema:
-              type: object
-              properties:
-                name:
-                  type: string
-                description:
-                  type: string
-                queryDescription:
-                  type: string
-                queryUri:
-                  type: string
-                queryProfile:
-                  type: string
-                queryValue:
-                  type: string
-                keyword:
-                  type: array
-                  items:
-                    type: string
-                purpose:
-                  type: string
-                  enum:
-                  - RESEARCH
-                  - REFERENCE
-                  - SAMPLE
-                  - FUTURE_USE
-                reproducibility:
-                  type: string
-                  enum:
-                  - INTENDED
-                  - FLUCTUATING
-                  - UNTENDED
-                reproducibilityNotice:
-                  type: string
-                creationDate:
-                  type: string
-                  format: date-time
-      responses:
-        default:
-          description: default response
-          content:
-            text/html: {}
   /v1/collections:
     get:
-      operationId: getVirtualCollections
+      operationId: getVirtualCollections_1
       parameters:
       - name: q
         in: query
@@ -243,7 +95,7 @@ paths:
             application/xml: {}
             application/json: {}
     post:
-      operationId: createVirtualCollection
+      operationId: createVirtualCollection_1
       requestBody:
         content:
           text/xml:
@@ -264,7 +116,7 @@ paths:
             application/json: {}
   /v1/collections/{id}:
     get:
-      operationId: getVirtualCollection
+      operationId: getVirtualCollectionDetailsRedirect_1
       parameters:
       - name: id
         in: path
@@ -276,12 +128,9 @@ paths:
         default:
           description: default response
           content:
-            application/x-cmdi+xml: {}
-            text/xml: {}
-            application/xml: {}
-            application/json: {}
+            text/html: {}
     put:
-      operationId: updateVirtualCollection
+      operationId: updateVirtualCollection_1
       parameters:
       - name: id
         in: path
@@ -308,7 +157,7 @@ paths:
             application/xml: {}
             application/json: {}
     delete:
-      operationId: deleteVirtualCollection
+      operationId: deleteVirtualCollection_1
       parameters:
       - name: id
         in: path
@@ -325,7 +174,7 @@ paths:
             application/json: {}
   /v1/collections/{id}/state:
     get:
-      operationId: getVirtualCollectionState
+      operationId: getVirtualCollectionState_1
       parameters:
       - name: id
         in: path
@@ -341,7 +190,7 @@ paths:
             application/xml: {}
             application/json: {}
     post:
-      operationId: setVirtualCollectionState
+      operationId: setVirtualCollectionState_1
       parameters:
       - name: id
         in: path
@@ -393,7 +242,7 @@ paths:
             application/json: {}
   /v2/collections:
     get:
-      operationId: getVirtualCollections_1
+      operationId: getVirtualCollections
       parameters:
       - name: q
         in: query
@@ -419,7 +268,7 @@ paths:
             application/xml: {}
             application/json: {}
     post:
-      operationId: createVirtualCollection_1
+      operationId: createVirtualCollection
       requestBody:
         content:
           text/xml:
@@ -440,7 +289,7 @@ paths:
             application/json: {}
   /v2/collections/{id}:
     get:
-      operationId: getVirtualCollection_1
+      operationId: getVirtualCollectionDetailsRedirect
       parameters:
       - name: id
         in: path
@@ -452,12 +301,9 @@ paths:
         default:
           description: default response
           content:
-            application/x-cmdi+xml: {}
-            text/xml: {}
-            application/xml: {}
-            application/json: {}
+            text/html: {}
     put:
-      operationId: updateVirtualCollection_1
+      operationId: updateVirtualCollection
       parameters:
       - name: id
         in: path
@@ -484,7 +330,7 @@ paths:
             application/xml: {}
             application/json: {}
     delete:
-      operationId: deleteVirtualCollection_1
+      operationId: deleteVirtualCollection
       parameters:
       - name: id
         in: path
@@ -501,7 +347,7 @@ paths:
             application/json: {}
   /v2/collections/{id}/state:
     get:
-      operationId: getVirtualCollectionState_1
+      operationId: getVirtualCollectionState
       parameters:
       - name: id
         in: path
@@ -517,7 +363,7 @@ paths:
             application/xml: {}
             application/json: {}
     post:
-      operationId: setVirtualCollectionState_1
+      operationId: setVirtualCollectionState
       parameters:
       - name: id
         in: path

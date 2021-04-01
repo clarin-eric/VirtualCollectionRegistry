@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
 import com.google.common.collect.Lists;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermissionException;
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.DateConverter;
@@ -179,7 +180,11 @@ public class VirtualCollectionDetailsPage extends BasePage {
         }
         
         //Will throw and exception and abort flow if authorization fails
-        checkAccess(model.getObject());
+        try {
+            checkAccess(model.getObject());
+        } catch (VirtualCollectionRegistryPermissionException e) {
+            throw new UnauthorizedActionException(this, Component.RENDER);
+        }
 
         final Link<Void> backLink = new Link<Void>("back") {
             @Override
@@ -527,6 +532,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
      * @throws UnauthorizedActionException if the VC is private and the current
      * user is not the owner
      */
+    /*
     private void checkAccess(final VirtualCollection vc) throws UnauthorizedActionException {
         if (vc.isPrivate()
                 && !isUserAdmin()
@@ -535,7 +541,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
             throw new UnauthorizedActionException(this, Component.RENDER);
         }
     }
-
+*/
     @Override
     protected void onBeforeRender() {
         super.onBeforeRender();

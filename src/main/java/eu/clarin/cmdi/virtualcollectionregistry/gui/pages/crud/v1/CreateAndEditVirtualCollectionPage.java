@@ -513,7 +513,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
             this.removeAll();
         }
     } 
-    
+    /*
     private void checkAccess(final VirtualCollection vc) throws VirtualCollectionRegistryPermissionException {
         // do not allow editing of VC's that are non-private or owned
         // by someone else! (except for admin)
@@ -525,5 +525,6 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
             logger.warn("User {} attempts to edit virtual collection {} with state {} owned by {}", new Object[]{getUser().getName(), vc.getId(), vc.getState(), vc.getOwner().getName()});
             throw new UnauthorizedInstantiationException(CreateAndEditVirtualCollectionPage.class);
         }
-    }    
+    }
+     */
 } // class CreateVirtualCollecionPage
