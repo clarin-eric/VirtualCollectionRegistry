@@ -1,7 +1,7 @@
 ## Introduction
 This document aims to provide a description of the virtual collection registry (VCR) submission endpoints, which can be used to create virtual collections from external applications.
 
-Note: The original version of this document was managed via google drive. This document
+_Note_: The original version of this document was managed via [google documents](https://docs.google.com/document/d/1HYNDhtNIamcNP3kQg4IgLhcOk7uH60Ij5PJVksJLADM/). This markdown version
 replaces the google drive version.
 
 ## Submission endpoints
