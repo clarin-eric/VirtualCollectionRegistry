@@ -69,8 +69,9 @@ Figure 1 shows a sequence diagram describing the interaction between the user (u
 ![Figure 1: sequence diagram!](./vcr_integration_workflow_sequence_diagram.png "Figure 1: sequence diagram")
 Diagram [source](https://www.websequencediagrams.com/?lz=dGl0bGUgVkNSIEludGVncmF0aW9uIHdvcmtmbG93CgpVc2VyLWFnZW50LT5TZXJ2aWNlOiAxLiBzZWxlY3QgcmVzb3VyY2VzIGFuZCBjcmVhdGUgY29sbGVjdGlvbgoALActPgA-CjogMi4gSFRUUCAyMDAgT0sAVg1WQ1I6IDMuIFBPU1Qgd2l0aCBwYXJhbWV0ZXJzIHRvIFZDUgpWQ1IAIgdQcm9jZXNzIDQuIGlucHV0AIEABXN0b3JlIGluIHNlc3Npb24AJQs1LiBMb2dpAAcMNi4gUmVkaXJlY3QgdG8AgTALAIFHBmlvbiBwYWdlIABwBgCBOgw3AIE7C29rIG9yAIFPBmVycm9yICg0eHggb3IgNXh4KQ&s=default)
 
-Step 5: Login is only required if no authenticated session is available and is not specified in detail. This workflow can be quite complicated, especially in the SAML case. For the integration of an external service this is not very relevant since this is taken care of completely on the VCR side.
-Figure 1: VCR Integration workflow (source)
+Note:
+* Step 5: Login is only required if no authenticated session is available and is not specified in detail. This workflow can be quite complicated, especially in the SAML case. For the integration of an external service this is not very relevant since this is taken care of completely on the VCR side.
+* Since authentication is implemented via SAML SSO, all communication must happen via the user-agent, including the POST from the service to the VCR endpoint (step 3). The easiest way to achieve this is via form on the external application side. See integration section for an example.
 
 ## Integration
 
@@ -93,6 +94,21 @@ following minimal set of required parameters:
 Notes:
 * A set of keywords is optional but is prefered.
 * Purpose and reproducibility can be omitted in most cases as long as the defaults (`purpose= REFERENCE` and `reproducibility=INTENDED`) make sense.
+
+
+### Form example
+
+This is an example of how you can implement a form, served by an external application, to submit a virtual collection:
+```
+<form id="virtualCollectionForm" method="post" enctype="application/x-www-form-urlencoded" name="vcrForm" action="https://collections.clarin.eu/submit/extensional"> 
+    <input id="collectionName" type="text" class="form-control" name="name" value="Your collection name">
+    <input id="collectionDescription" type="text" class="form-control" name="description" value="Your collection description">
+    <input type="hidden" name="metadataUri" value="{&quot;uri&quot;:&quot;https://1.uri.com&quot;,&quot;label&quot;:&quot;uri 1&quot;,&quot;description&quot;:null}">         
+    <input type="hidden" name="metadataUri" value="{&quot;uri&quot;:&quot;https://2.uri.com&quot;,&quot;label&quot;:&quot;uri 2&quot;,&quot;description&quot;:null}">
+    ...             
+    <input type="submit" value="Submit">
+</form>
+```
 
 ### Example integration
 
