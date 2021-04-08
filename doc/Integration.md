@@ -26,12 +26,12 @@ The following parameters are supported and should be sent in form urlencoded for
 |------|------|----------|-----------|
 | name  | String | Yes | Extensional + Intensional |
 | description | String | Yes |Extensional + Intensional |
-| keyword | List<String> | No | Extensional + Intensional |
+| keyword | List&lt;String&gt; | No | Extensional + Intensional |
 | purpose | Controlled Vocabulary | No | Extensional + Intensional |
 | reproducibility | Controlled Vocabulary | No | Extensional + Intensional |
 | reproducibilityNotice | String | No | Extensional + Intensional |
-| metadataUri | List<String> or List<JSON> | Yes | Extensional |
-| resourceUri | List<String> or List<JSON> | Yes | Extensional |
+| metadataUri | List&lt;String&gt; or List&lt;JSON&gt; | Yes | Extensional |
+| resourceUri | List&lt;String&gt; or List&lt;JSON&gt; | Yes | Extensional |
 | queryDescription | String | Yes | Intensional |
 | queryUri | String | Yes | Intensional |
 | queryProfile | String | Yes | Intensional |
@@ -39,7 +39,11 @@ The following parameters are supported and should be sent in form urlencoded for
 
 Notes:
 
-* List<String> or List<JSON> parameter keys can be supplied multiple times, e.g. metadataUri=...&metadataUri=...
+* Lists: `List<String>` or `List<JSON>`, must be specified by repeating the parameter key multiple times, e.g. `metadataUri=...&metadataUri=...`
+  * For a `List<String>` the `key=value` pair can be provided one or more times, where `value` must be a single string value: 
+  `key=value_1&key=value_2&...`
+  * For a `List<JSON>` the `key=value` pair can be provided one or more times, where `value` must be a single JSON object :
+  `key={"prop1": "val_1", ...}&key={"prop2": "val_2", ...}&...`
 * Purpose Controlled vocabulary (default value marked with *): 
   * `RESEARCH, REFERENCE*, SAMPLE, FUTURE_USE`
 * Reproducibility Controlled vocabulary (default value in bold): 
@@ -70,20 +74,25 @@ Figure 1: VCR Integration workflow (source)
 
 ## Integration
 
-Integration of the VCR in an external application (portal, catalog, …) typically requires functionality in the external location to gather a set of links. This can be a search result, a cherry picking approach to select individual links or a combination. In the end this is really up to the external application.
+Integration of the VCR in an external application (portal, catalog, …) typically creates an extensional collection. This 
+requires functionality in the external application to gather a set of links. This can be a search result, a cherry picking 
+approach to select individual links or a combination. In the end this is really up to the external application.
 
 One consideration is to send links to individual resources or send links to landing pages with a collection of links. 
 
-After collecting a set of links in the external application, the extensional collection endpoint can be called with the following parameters:
+After collecting a set of links in the external application, the extensional collection endpoint can be called with the 
+following minimal set of required parameters:
 
-| Name | Type | Required | Endpoints |
-|------|------|----------|-----------|
-| name | String | Yes | Extensional + Intensional |
-| description | String | Yes | Extensional + Intensional |
-| metadataUri | List<String> | Yes | Extensional |
-| resourceUri | List<String> | Yes | Extensional |
+| Name | Type | Required |
+|------|------|----------|
+| name | String | Yes |
+| description | String | Yes |
+| metadataUri | List&lt;String&gt; | Yes |
+| resourceUri | List&lt;String&gt; | Yes |
 
-A set of keywords is optional but is prefered, purpose and reproducibility can be omitted in most cases as long as the defaults (purpose= REFERENCE and reproducibility=INTENDED) make sense.
+Notes:
+* A set of keywords is optional but is prefered.
+* Purpose and reproducibility can be omitted in most cases as long as the defaults (`purpose= REFERENCE` and `reproducibility=INTENDED`) make sense.
 
 ### Example integration
 
