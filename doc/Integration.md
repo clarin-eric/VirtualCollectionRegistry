@@ -101,8 +101,8 @@ Notes:
 This is an example of how you can implement a form, served by an external application, to submit a virtual collection:
 ```
 <form id="virtualCollectionForm" method="post" enctype="application/x-www-form-urlencoded" name="vcrForm" action="https://collections.clarin.eu/submit/extensional"> 
-    <input id="collectionName" type="text" class="form-control" name="name" value="Your collection name">
-    <input id="collectionDescription" type="text" class="form-control" name="description" value="Your collection description">
+    <input id="collectionName" type="text" name="name" value="Your collection name">
+    <input id="collectionDescription" type="text" name="description" value="Your collection description">
     <input type="hidden" name="metadataUri" value="{&quot;uri&quot;:&quot;https://1.uri.com&quot;,&quot;label&quot;:&quot;uri 1&quot;,&quot;description&quot;:null}">         
     <input type="hidden" name="metadataUri" value="{&quot;uri&quot;:&quot;https://2.uri.com&quot;,&quot;label&quot;:&quot;uri 2&quot;,&quot;description&quot;:null}">
     ...             
