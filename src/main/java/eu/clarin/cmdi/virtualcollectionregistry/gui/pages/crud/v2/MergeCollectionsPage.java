@@ -11,6 +11,9 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.table.PrivateCollectionsProv
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import org.apache.wicket.RestartResponseException;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
@@ -31,8 +34,6 @@ public class MergeCollectionsPage extends BasePage {
     private CollectionsProvider provider;
 
     public MergeCollectionsPage(PageParameters params) throws VirtualCollectionRegistryException {
-        //this.provider = new PrivateCollectionsManager();
-
         VirtualCollection submitted_vc = SubmissionUtils.retrieveCollection(getSession());
         if(submitted_vc != null) {
             logger.info("Processing submitted collection. id="+submitted_vc.getId());
@@ -51,8 +52,22 @@ public class MergeCollectionsPage extends BasePage {
 
         this.provider = new PrivateCollectionsProvider();
 
-        add(new WebMarkupContainer("btn_add_new"));
-        add(new WebMarkupContainer("btn_merge"));
+        int num_collections = this.provider.getList().size();
+        logger.info("# private collections: "+num_collections);
+        add(new AjaxFallbackLink("btn_add_new") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                throw new RestartResponseException(CreateAndEditVirtualCollectionPageV2.class);
+            }
+        });
+        add(new AjaxFallbackLink("btn_merge") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                if(target != null) {
+                    //target.add();
+                }
+            }
+        });
     }
 }
 

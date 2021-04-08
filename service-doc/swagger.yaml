@@ -69,179 +69,6 @@ paths:
       - apiKey: []
   /v1/collections:
     get:
-      operationId: getVirtualCollections_1
-      parameters:
-      - name: q
-        in: query
-        schema:
-          type: string
-      - name: offset
-        in: query
-        schema:
-          type: integer
-          format: int32
-          default: 0
-      - name: count
-        in: query
-        schema:
-          type: integer
-          format: int32
-          default: -1
-      responses:
-        default:
-          description: default response
-          content:
-            text/xml: {}
-            application/xml: {}
-            application/json: {}
-    post:
-      operationId: createVirtualCollection_1
-      requestBody:
-        content:
-          text/xml:
-            schema:
-              type: object
-          application/xml:
-            schema:
-              type: object
-          application/json:
-            schema:
-              type: object
-      responses:
-        default:
-          description: default response
-          content:
-            text/xml: {}
-            application/xml: {}
-            application/json: {}
-  /v1/collections/{id}:
-    get:
-      operationId: getVirtualCollectionDetailsRedirect_1
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        default:
-          description: default response
-          content:
-            text/html: {}
-    put:
-      operationId: updateVirtualCollection_1
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      requestBody:
-        content:
-          text/xml:
-            schema:
-              type: object
-          application/xml:
-            schema:
-              type: object
-          application/json:
-            schema:
-              type: object
-      responses:
-        default:
-          description: default response
-          content:
-            text/xml: {}
-            application/xml: {}
-            application/json: {}
-    delete:
-      operationId: deleteVirtualCollection_1
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        default:
-          description: default response
-          content:
-            text/xml: {}
-            application/xml: {}
-            application/json: {}
-  /v1/collections/{id}/state:
-    get:
-      operationId: getVirtualCollectionState_1
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      responses:
-        default:
-          description: default response
-          content:
-            text/xml: {}
-            application/xml: {}
-            application/json: {}
-    post:
-      operationId: setVirtualCollectionState_1
-      parameters:
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      - name: id
-        in: path
-        required: true
-        schema:
-          type: integer
-          format: int64
-      requestBody:
-        content:
-          text/xml:
-            schema:
-              type: string
-              xml:
-                name: State
-              enum:
-              - private
-              - public
-              - public_frozen
-          application/xml:
-            schema:
-              type: string
-              xml:
-                name: State
-              enum:
-              - private
-              - public
-              - public_frozen
-          application/json:
-            schema:
-              type: string
-              xml:
-                name: State
-              enum:
-              - private
-              - public
-              - public_frozen
-      responses:
-        default:
-          description: default response
-          content:
-            text/xml: {}
-            application/xml: {}
-            application/json: {}
-  /v2/collections:
-    get:
       operationId: getVirtualCollections
       parameters:
       - name: q
@@ -287,7 +114,7 @@ paths:
             text/xml: {}
             application/xml: {}
             application/json: {}
-  /v2/collections/{id}:
+  /v1/collections/{id}:
     get:
       operationId: getVirtualCollectionDetailsRedirect
       parameters:
@@ -345,7 +172,7 @@ paths:
             text/xml: {}
             application/xml: {}
             application/json: {}
-  /v2/collections/{id}/state:
+  /v1/collections/{id}/state:
     get:
       operationId: getVirtualCollectionState
       parameters:
@@ -364,6 +191,179 @@ paths:
             application/json: {}
     post:
       operationId: setVirtualCollectionState
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          text/xml:
+            schema:
+              type: string
+              xml:
+                name: State
+              enum:
+              - private
+              - public
+              - public_frozen
+          application/xml:
+            schema:
+              type: string
+              xml:
+                name: State
+              enum:
+              - private
+              - public
+              - public_frozen
+          application/json:
+            schema:
+              type: string
+              xml:
+                name: State
+              enum:
+              - private
+              - public
+              - public_frozen
+      responses:
+        default:
+          description: default response
+          content:
+            text/xml: {}
+            application/xml: {}
+            application/json: {}
+  /v2/collections:
+    get:
+      operationId: getVirtualCollections_1
+      parameters:
+      - name: q
+        in: query
+        schema:
+          type: string
+      - name: offset
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: 0
+      - name: count
+        in: query
+        schema:
+          type: integer
+          format: int32
+          default: -1
+      responses:
+        default:
+          description: default response
+          content:
+            text/xml: {}
+            application/xml: {}
+            application/json: {}
+    post:
+      operationId: createVirtualCollection_1
+      requestBody:
+        content:
+          text/xml:
+            schema:
+              type: object
+          application/xml:
+            schema:
+              type: object
+          application/json:
+            schema:
+              type: object
+      responses:
+        default:
+          description: default response
+          content:
+            text/xml: {}
+            application/xml: {}
+            application/json: {}
+  /v2/collections/{id}:
+    get:
+      operationId: getVirtualCollectionDetailsRedirect_1
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        default:
+          description: default response
+          content:
+            text/html: {}
+    put:
+      operationId: updateVirtualCollection_1
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      requestBody:
+        content:
+          text/xml:
+            schema:
+              type: object
+          application/xml:
+            schema:
+              type: object
+          application/json:
+            schema:
+              type: object
+      responses:
+        default:
+          description: default response
+          content:
+            text/xml: {}
+            application/xml: {}
+            application/json: {}
+    delete:
+      operationId: deleteVirtualCollection_1
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        default:
+          description: default response
+          content:
+            text/xml: {}
+            application/xml: {}
+            application/json: {}
+  /v2/collections/{id}/state:
+    get:
+      operationId: getVirtualCollectionState_1
+      parameters:
+      - name: id
+        in: path
+        required: true
+        schema:
+          type: integer
+          format: int64
+      responses:
+        default:
+          description: default response
+          content:
+            text/xml: {}
+            application/xml: {}
+            application/json: {}
+    post:
+      operationId: setVirtualCollectionState_1
       parameters:
       - name: id
         in: path
