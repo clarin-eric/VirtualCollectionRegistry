@@ -72,7 +72,7 @@ public class SubmitVirtualCollectionPage extends BasePage {
                 //Already logged in, so redirect to creation page
                 //TODO: show choice to add to an existing collection or create a new collection
                 logger.info("Redirect logged in");
-                throw new RestartResponseException(CreateAndEditVirtualCollectionPageV2.class);
+                throw new RestartResponseException(MergeCollectionsPage.class);//CreateAndEditVirtualCollectionPageV2.class);
             }
         }
 

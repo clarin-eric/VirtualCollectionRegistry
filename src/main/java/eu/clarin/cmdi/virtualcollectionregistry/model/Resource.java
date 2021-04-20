@@ -28,6 +28,8 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
     private final static Logger logger = LoggerFactory.getLogger(Resource.class);
     private static final long serialVersionUID = 1L;
 
+    private transient boolean merged = false;
+
     public static enum Type {
         METADATA,
         RESOURCE;
@@ -47,10 +49,12 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
      * @param mimeType the mimeType to set
      */
     public void setMimetype(String mimeType) {
-        if (mimeType.equalsIgnoreCase("application/x-cmdi+xml")) {
-            setType(Resource.Type.METADATA);
-        } else {
-            setType(Resource.Type.RESOURCE);
+        if(mimeType != null) {
+            if (mimeType.equalsIgnoreCase("application/x-cmdi+xml")) {
+                setType(Resource.Type.METADATA);
+            } else {
+                setType(Resource.Type.RESOURCE);
+            }
         }
         this.mimeType = mimeType;
     }
@@ -274,5 +278,13 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
             return OrderableComparator.compare(this, (Resource)o);
         }
         return 0;
+    }
+
+    public void setMerged() {
+        this.merged = true;
+    }
+
+    public boolean isMerged() {
+        return this.merged;
     }
 } // class Resource

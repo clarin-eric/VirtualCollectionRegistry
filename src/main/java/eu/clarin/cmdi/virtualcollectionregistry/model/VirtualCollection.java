@@ -169,7 +169,6 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         this.problemDetails = problemDetails;
     }
 
-
     public static enum State {
         PRIVATE,
         PUBLIC_PENDING,
@@ -711,6 +710,35 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
             result += String.format("  resources    : %s\n", this.getReproducibilityNotice());
         }
         return result;
+    }
+
+    public boolean canMerge() {
+        return  state != State.ERROR &&
+                state != VirtualCollection.State.DELETED &&
+                state != VirtualCollection.State.DEAD &&
+                state != VirtualCollection.State.PUBLIC_FROZEN &&
+                state != VirtualCollection.State.PUBLIC_FROZEN_PENDING &&
+                state != VirtualCollection.State.PUBLIC_PENDING;
+    }
+
+    /**
+     * Merge resources from the otherCollection with this collection.
+     *
+     * @param otherCollection
+     * @return
+     */
+    public void merge(VirtualCollection otherCollection) {
+        //Add merged resources to this collection
+        for(Resource r : otherCollection.getResources()) {
+            Resource new_r = new Resource();
+            new_r.setLabel(r.getLabel());
+            new_r.setDescription(r.getDescription());
+            new_r.setMimetype(r.getMimetype());
+            new_r.setRef(r.getRef());
+            new_r.setType(r.getType());
+            new_r.setMerged();
+            getResources().add(new_r);
+        }
     }
 
 } // class VirtualCollection

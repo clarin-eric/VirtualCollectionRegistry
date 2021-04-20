@@ -179,7 +179,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
             return;
         }
         
-        //Will throw and exception and abort flow if authorization fails
+        //Will throw an exception and abort flow if authorization fails
         try {
             checkAccess(model.getObject());
         } catch (VirtualCollectionRegistryPermissionException e) {

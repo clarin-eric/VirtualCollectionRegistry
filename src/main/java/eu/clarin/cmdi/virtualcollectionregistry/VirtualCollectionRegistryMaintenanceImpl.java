@@ -41,18 +41,21 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
     
     private static final Logger logger
             = LoggerFactory.getLogger(VirtualCollectionRegistryMaintenanceImpl.class);
-    
+
+    private final boolean maintenance_enabled = false;
+
     @Autowired
     private DataStore datastore; //TODO: replace with Spring managed EM?
 
     @Autowired
     private PidProviderService pidProviderService;
 
-    //@Autowired
-    //private PersistentIdentifierProvider pid_provider;
-
     @Override
     public void perform(long now) {
+        if(!maintenance_enabled) {
+            return;
+        }
+
         logger.debug("Maintenance check (now={})", now);
         long t1 = System.nanoTime();
         

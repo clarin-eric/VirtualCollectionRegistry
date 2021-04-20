@@ -66,7 +66,7 @@ public abstract class VirtualCollectionTable extends Panel {
             new FilterForm("filterForm", provider, table, showState, isAdmin);
         add(form);
         add(table);
-
+/*
         add(new AbstractAjaxTimerBehavior(Duration.seconds(1)) {
             @Override
             protected void onTimer(AjaxRequestTarget target) {
@@ -75,6 +75,7 @@ public abstract class VirtualCollectionTable extends Panel {
                 }
             }
         });
+*/
     }
 
     @Override

@@ -81,13 +81,6 @@ public class ReferencePanel extends Panel {
         }
         editorWrapper.add(new Label("value", urlValue));
 
-/*
-        WebMarkupContainer alert = new WebMarkupContainer("alert");
-        Label lblRecommendation = new Label("lbl_recommendation", Model.of("We recommend to use persistent identifiers (DOI, Handle, ...) instead of direct URLs to improve stability."));
-        alert.add(lblRecommendation);
-        alert.setVisible(!HandleLinkModel.isSupportedPersistentIdentifier(ref.getReference().getRef()));
-        editorWrapper.add(alert);
-*/
         Label lblWaiting = new Label("lbl_waiting", "Waiting on analysis");
         lblWaiting.setVisible(analysing);
         editorWrapper.add(lblWaiting);
@@ -102,6 +95,10 @@ public class ReferencePanel extends Panel {
         Label lblTitle = new Label("title", titleModel);
         lblTitle.setVisible(!analysing);
         editorWrapper.add(lblTitle);
+
+        Label lblMerged = new Label("merged", "This resource was merged from the submitted collection.");
+        lblMerged.setVisible(ref.getReference().isMerged());
+        editorWrapper.add(lblMerged);
 
         String htmlValue = "";
         if(descriptionModel.getObject() != null) {

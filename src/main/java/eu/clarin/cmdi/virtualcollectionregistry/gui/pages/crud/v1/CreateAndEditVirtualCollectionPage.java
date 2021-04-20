@@ -418,8 +418,6 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
     private void persist() {
         logger.debug("Persist");
 
-
-
         String name = UserInputSanitizer.sanitize(nameModel.getObject());
         String description =  UserInputSanitizer.sanitize(descriptionModel.getObject());
 

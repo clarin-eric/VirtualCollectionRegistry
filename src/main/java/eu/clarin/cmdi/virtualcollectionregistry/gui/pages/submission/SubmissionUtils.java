@@ -45,14 +45,14 @@ public class SubmissionUtils {
     private static Logger logger = LoggerFactory.getLogger(SubmissionUtils.class);
     
     private final static String COLLECTION_ATTRIBUTE_NAME="submitted_collection";
-    //private final static String RETURN_ATTRIBUTE_NAME="return";
-    
+    private final static String COLLECTION_MERGE_ID_ATTRIBUTE_NAME="submitted_collection_merge_id";
+
     private static void debugHttpHeaders(WebRequest request) {
          HttpServletRequest r = (HttpServletRequest)request.getContainerRequest();
         Enumeration e = r.getHeaderNames();
         while(e.hasMoreElements()) {
             String name = e.nextElement().toString();
-            logger.info("Header: {}={}", name, r.getHeader(name));
+            logger.debug("Header: {}={}", name, r.getHeader(name));
         }
     }
     
@@ -140,15 +140,15 @@ public class SubmissionUtils {
                 }        
             };
         } else if (principal != null) {
-            logger.info("Using username={} from principal", principal.getName());
+            logger.debug("Using username={} from principal", principal.getName());
         }
         
-        logger.info("Request charset="+request.getCharset());
-        logger.info("Container request="+request.getContainerRequest().getClass());
+        logger.trace("Request charset="+request.getCharset());
+        logger.trace("Container request="+request.getContainerRequest().getClass());
         HttpServletRequest req = (HttpServletRequest)request.getContainerRequest();
         Enumeration e = req.getHeaderNames();
         
-        logger.info("HttpServletRequest:");
+        logger.trace("HttpServletRequest:");
         for(Object name : Collections.list(req.getHeaderNames())) {
             String values = "";
             for(Object value : Collections.list(req.getHeaders(name.toString()))) {
@@ -157,7 +157,7 @@ public class SubmissionUtils {
                 }
                 values += value.toString();
             }
-            logger.info("\tHeader, name="+name.toString()+", values="+values);
+            logger.trace("\tHeader, name="+name.toString()+", values="+values);
         }
         
         for(Object name : Collections.list(req.getParameterNames())) {
@@ -168,10 +168,10 @@ public class SubmissionUtils {
                 }
                 values += value.toString();
             }
-            logger.info("\tParam, name="+name.toString()+", values="+values);
+            logger.trace("\tParam, name="+name.toString()+", values="+values);
         }
         
-        logger.info("Wicket WebRequest:");
+        logger.trace("Wicket WebRequest:");
         IRequestParameters params = request.getPostParameters();
         for(String name : params.getParameterNames()) {
             String values = "";
@@ -181,7 +181,7 @@ public class SubmissionUtils {
                 }
                 values += value.toString();
             }
-            logger.info("\tParam name="+name+", value(s)="+values);
+            logger.trace("\tParam name="+name+", value(s)="+values);
         }
         
         String name = params.getParameterValue("name").toString();
@@ -241,7 +241,7 @@ public class SubmissionUtils {
             }
             
                 storeCollection(session, vc);      //Serialize the collection to the current session           
-            logger.info("Build virtual collection");
+            logger.debug("Build virtual collection");
         } catch(VirtualCollectionRegistryUsageException ex) {
             logger.error("Failed to build virtual collection", ex);
         }
@@ -267,121 +267,38 @@ public class SubmissionUtils {
     
     public static void clearCollectionFromSession(ApplicationSession session) {
         if(session.getAttribute(COLLECTION_ATTRIBUTE_NAME) != null) {
-            logger.debug("Clearing virtual collection from session");
+            logger.debug("Clearing virtual collection ("+COLLECTION_ATTRIBUTE_NAME+") from session");
             session.setAttribute(COLLECTION_ATTRIBUTE_NAME, null); 
+        }
+        if(session.getAttribute(COLLECTION_MERGE_ID_ATTRIBUTE_NAME) != null) {
+            logger.debug("Clearing collection merge id ("+COLLECTION_MERGE_ID_ATTRIBUTE_NAME+") from session");
+            session.setAttribute(COLLECTION_MERGE_ID_ATTRIBUTE_NAME, null);
         }
     }
     
-    protected static void storeCollection(ApplicationSession session, VirtualCollection vc) {
-        logger.info("Storing collection into session: "+session.getId());
+    public static void storeCollection(ApplicationSession session, VirtualCollection vc) {
+        logger.debug("Storing collection into session: "+session.getId());
         session.setAttribute(COLLECTION_ATTRIBUTE_NAME, vc); 
-        //storeCollectionInCookie
     }
     
     public static VirtualCollection retrieveCollection(ApplicationSession session) {
-        logger.info("Loading collection from session: "+session.getId());
-        VirtualCollection vc = (VirtualCollection)session.getAttribute(COLLECTION_ATTRIBUTE_NAME);        
-        //VirtualCollection vc = readCollectionFromCookie();
-        return vc;
-    }
-    
-     /*
-    private void storeCollectionInCookie() {       
-        String cookieValue = serializeCollection();
-        WebResponse webResponse = (WebResponse)RequestCycle.get().getResponse();
-        Cookie cookie = new Cookie("collection", cookieValue);
-        cookie.setPath("/vcr");
-        webResponse.addCookie(cookie);
-        Cookie cookie2 = new Cookie("return", "extensional"); //TODO: how to make this dynamic
-        cookie2.setPath("/vcr");
-        webResponse.addCookie(cookie2);
-        
-    }
-    
-    private VirtualCollection readCollectionFromCookie() {
-        Cookie cookie = ((WebRequest)RequestCycle.get().getRequest()).getCookie("collection");
-        if (cookie == null) {
+        logger.debug("Loading collection from session: "+session.getId());
+        Object obj = session.getAttribute(COLLECTION_ATTRIBUTE_NAME);
+        if(obj == null) {
             return null;
         }
-        return deserializeCollection(cookie.getValue());
+        return (VirtualCollection)obj;
     }
-    
-     private String getEncodedValue(StringValue val) {
-        String result = "";
-        if(val != null && val.toString() != null) {             
-            result = getEncodedValue(val.toString());
-        }
-        return result;
-    }
-    
-    private String getEncodedValue(String val) {
-        String result = "";
-        if(val != null) {             
-            try {
-                result = URLEncoder.encode(val, "UTF-8");
-            } catch(UnsupportedEncodingException ex) {
-                logger.warn("Failed to encode value.", ex);
-            }
-        }
-        return result;
-    }
-    
-   
-    
-    private String serializeCollection() {
-        VirtualCollection vc = checkSubmission(VirtualCollection.Type.EXTENSIONAL);
-        if(vc == null) {
-            return null;
-        }
-        IRequestParameters params = RequestCycle.get().getRequest().getPostParameters();
 
-        String serialized = "name="+getEncodedValue(vc.getName());
-        serialized += "&description="+getEncodedValue(vc.getDescription());
-        serialized += "&reproducibilityNotice="+getEncodedValue(vc.getReproducibilityNotice());
-        if(vc.getPurpose() == null) {
-            serialized += "&purpose=";
-        } else {
-            serialized += "&purpose="+getEncodedValue(vc.getPurpose().toString());
-        }
-        for(String val : vc.getKeywords()) {
-            serialized += "&keyword="+getEncodedValue(val);
-        }
-        for(Resource val : vc.getResources()) {
-            switch(val.getType()) {
-                case METADATA:
-                    serialized += "&metadataUri="+getEncodedValue(val.getRef());
-                    break;
-                case RESOURCE:
-                    serialized += "&resourceUri="+getEncodedValue(val.getRef());
-                    break;
-            } 
-        }
-        return serialized;
+    public static void storeCollectionMergeId(ApplicationSession session, Long id) {
+        session.setAttribute(COLLECTION_MERGE_ID_ATTRIBUTE_NAME, id);
     }
-    
-    private VirtualCollection deserializeCollection(String serialized) {
-         VirtualCollectionBuilder builder = new VirtualCollectionBuilder();        
-        try {
-            List<NameValuePair> params = URLEncodedUtils.parse(serialized, Charset.forName("UTF-8"));
-            for(NameValuePair param : params) {
-                switch(param.getName()) {
-                    case "name": builder.setName(param.getValue()); break;
-                    case "description": builder.setDescription(param.getValue()); break;
-                    case "reproducibilityNotice": builder.setReproducibilityNotice(param.getValue()); break;
-                    case "purpose": 
-                            if(param.getValue() != null && !param.getValue().isEmpty()) {
-                                builder.setPurpose(VirtualCollection.Purpose.valueOf(param.getValue())); 
-                            }
-                        break;
-                    case "keyword": builder.addKeyword(param.getValue()); break;
-                    case "metadataUri": builder.addMetadataResource(param.getValue()); break;
-                    case "resourceUri": builder.addResourceResource(param.getValue()); break;
-                }
-            }
-        } catch(VirtualCollectionRegistryUsageException ex) {
-            logger.warn("Failed to build vc", ex);
+
+    public static Long retrieveCollectionMergeId(ApplicationSession session) {
+        Object obj = session.getAttribute(COLLECTION_MERGE_ID_ATTRIBUTE_NAME);
+        if(obj == null) {
+            return null;
         }
-        return builder.build();
+        return (Long)obj;
     }
-*/
 }

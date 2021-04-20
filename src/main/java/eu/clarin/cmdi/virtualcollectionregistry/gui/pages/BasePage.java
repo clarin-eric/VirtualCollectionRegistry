@@ -66,7 +66,9 @@ public class BasePage extends WebPage {
     public static final String BETA_MODE = "eu.clarin.cmdi.virtualcollectionregistry.beta_mode";
     
     private final static JavaScriptResourceReference INIT_JAVASCRIPT_REFERENCE = new JavaScriptResourceReference(BasePage.class, "BasePage.js");
-    
+
+    protected FeedbackPanel feedback;
+
     protected BasePage(IModel<?> model) {
         super(model);
         addComponents();
@@ -91,7 +93,7 @@ public class BasePage extends WebPage {
         add(new WebMarkupContainer("header")
                 .add(createHeaderMenu("menu"))); // navbar in header
 
-        FeedbackPanel feedback = new FeedbackPanel("feedback");
+        feedback = new FeedbackPanel("feedback");
         feedback.setFilter((FeedbackMessage fm) -> !(fm.getMessage() instanceof IValidationFailedMessage));
         add(feedback);
 
@@ -235,7 +237,12 @@ public class BasePage extends WebPage {
         
         return false;
     }
-    
+
+    protected boolean hasUser() {
+        Principal principal = getSession().getPrincipal();
+        return principal != null;
+    }
+
     protected Principal getUser() {
         Principal principal = getSession().getPrincipal();
         if (principal == null) {
@@ -259,15 +266,25 @@ public class BasePage extends WebPage {
      * @param vc collection to check for
      * @throws VirtualCollectionRegistryPermissionException if the VC is private and the current
      * user is not the owner
+     *
      */
-    protected void checkAccess(final VirtualCollection vc) throws VirtualCollectionRegistryPermissionException {
-        // do not allow editing of VC's that are non-private or owned
-        // by someone else! (except for admin)
+    protected void  checkAccess(final VirtualCollection vc) throws VirtualCollectionRegistryPermissionException {
+        //Allow unauthenticated access to public collections
+        if(!hasUser()) {
+            if( vc.getState() == VirtualCollection.State.PUBLIC ||
+                vc.getState() == VirtualCollection.State.PUBLIC_FROZEN) {
+                return;
+            }
+            throw new UnauthorizedInstantiationException(CreateAndEditVirtualCollectionPage.class);
+        }
+
+        //An authenticated user is available, do not allow editing of VC's that are non-private or owned by someone else!
+        //(except for admin)
         if (!isUserAdmin()
                 && ( //only allow editing of private & public
                 !(vc.getState() == VirtualCollection.State.PRIVATE || vc.getState() == VirtualCollection.State.PUBLIC)
-                        // only allow editing by the owner
-                        || vc.getOwner() == null || !(vc.getOwner().equalsPrincipal(getUser()) || vc.getOwner().getName().equalsIgnoreCase("anonymous")) )) {
+                // only allow editing by the owner
+                || vc.getOwner() == null || !(vc.getOwner().equalsPrincipal(getUser()) || vc.getOwner().getName().equalsIgnoreCase("anonymous")) )) {
             logger.warn("User {} attempts to edit virtual collection {} with state {} owned by {}", new Object[]{getUser().getName(), vc.getId(), vc.getState(), vc.getOwner().getName()});
             throw new UnauthorizedInstantiationException(CreateAndEditVirtualCollectionPage.class);
         }

@@ -277,6 +277,7 @@ public class ReferencesEditor extends ComposedField{
                 }
             }
         });
+
         ajaxWrapper.add(listview);
 
         lblNoReferences.setVisible(references.isEmpty());
@@ -310,7 +311,7 @@ public class ReferencesEditor extends ComposedField{
         String value = data.getObject();
         String title = mdlReferenceTitle.getObject();
 
-        logger.info("Completing reference submit: value="+value+",title="+title);
+        logger.debug("Completing reference submit: value="+value+",title="+title);
 
         if(value != null && !value.isEmpty() && title != null && !title.isEmpty()) {
             if(handleUrl(value)) {
@@ -333,7 +334,7 @@ public class ReferencesEditor extends ComposedField{
                 worker = new Worker();
                 worker.start();
                 new Thread(worker).start();
-                logger.info("Worker thread started");
+                logger.trace("Worker thread started");
             }
 
             fireEvent(new DataUpdatedEvent(target));
@@ -383,7 +384,7 @@ public class ReferencesEditor extends ComposedField{
     }
     
     public void setData(List<Resource> data) {
-        logger.info("Set resource data: {} reference", data.size());
+        logger.trace("Set resource data: {} reference", data.size());
         for(Resource r : data) {
             this.references.add(new ReferenceJob(r));
         }
@@ -394,7 +395,7 @@ public class ReferencesEditor extends ComposedField{
             worker = new Worker();
             worker.start();
             new Thread(worker).start();
-            logger.info("Worker thread started");
+            logger.trace("Worker thread started");
         }
     }
     
@@ -474,16 +475,16 @@ public class ReferencesEditor extends ComposedField{
                     }
                 }
             }
-            logger.info("Worker thread finished");
+            logger.trace("Worker thread finished");
         }
 
         private void analyze(final ReferenceJob job) throws IOException {
-            logger.debug("Analyzing: {}", job.getReference().getRef());
+            logger.trace("Analyzing: {}", job.getReference().getRef());
             
             CloseableHttpClient httpclient = HttpClients.createDefault();
             try {
                 HttpGet httpget = new HttpGet(job.getReference().getRef());
-                logger.debug("Executing request " + httpget.getRequestLine());
+                logger.trace("Executing request " + httpget.getRequestLine());
 
                 // Create a custom response handler
                 ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
@@ -497,13 +498,13 @@ public class ReferencesEditor extends ComposedField{
                             String[] parts = h.getValue().split(";");
                             String mediaType = parts[0];
                             
-                            logger.debug("Media-Type="+mediaType);
+                            logger.trace("Media-Type="+mediaType);
                             if(parts.length > 1) {
                                 String p = parts[1].trim();
                                 if(p.startsWith("charset=")) {
-                                    logger.debug("Charset="+p.replaceAll("charset=", ""));
+                                    logger.trace("Charset="+p.replaceAll("charset=", ""));
                                 } else if(p.startsWith("boundary=")) {
-                                    logger.debug("Boundary="+p.replaceAll("boundary=", ""));
+                                    logger.trace("Boundary="+p.replaceAll("boundary=", ""));
                                 }
                             }
 
@@ -556,7 +557,7 @@ public class ReferencesEditor extends ComposedField{
     }
 
     private void parseCmdi(final String xml, final ReferenceJob job) throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
-        logger.info("Parsing CMDI");
+        logger.trace("Parsing CMDI");
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
@@ -564,11 +565,11 @@ public class ReferencesEditor extends ComposedField{
         Document doc = builder.parse(new java.io.ByteArrayInputStream(xml.getBytes()));
 
         String profile = getValueForXPath(doc, "//default:CMD/default:Header/default:MdProfile/text()");
-        logger.info("CMDI profile = " + profile);
+        logger.trace("CMDI profile = " + profile);
         
         String name = getValueForXPath(doc, "//default:CMD/default:Components/default:lat-session/default:Name/text()");
         String description = getValueForXPath(doc, "//default:CMD/default:Components/default:lat-session/default:descriptions/default:Description[lang('eng')]/text()");
-        logger.info("Name = " + name + ", description = " + description);
+        logger.trace("Name = " + name + ", description = " + description);
         
         if(name != null) {
             job.getReference().setLabel(name);
