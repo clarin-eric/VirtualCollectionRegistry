@@ -9,6 +9,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.JavaScriptResources;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.*;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin.AdminPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.CreateAndEditVirtualCollectionPageV2;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmitVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LoginPage;

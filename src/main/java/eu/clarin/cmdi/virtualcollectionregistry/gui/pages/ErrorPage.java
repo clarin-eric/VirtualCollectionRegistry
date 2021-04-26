@@ -10,6 +10,13 @@ import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 
+/**
+ * Page to display errors that are not suitable to be displayed in-line on the page.
+ *
+ * Example:
+ * getSession().error(new ErrorPage.Error("Error title", "Error body"));
+ * throw new RestartResponseException(ErrorPage.class);
+ */
 public class ErrorPage extends BasePage {
     private final static Logger logger = LoggerFactory.getLogger(ErrorPage.class);
 

@@ -33,8 +33,8 @@ import org.springframework.stereotype.Service;
 public class EPICPersistentIdentifierProvider implements PersistentIdentifierProvider, Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(EPICPersistentIdentifierProvider.class);
-    private final PidWriter pidWriter;
-    private final Configuration configuration;
+    private final transient PidWriter pidWriter;
+    private final transient Configuration configuration;
 
     private final String id = "EPIC";
 
@@ -112,7 +112,8 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
     }
 
     //Make sure we return the default infix value if an empty infix has been set
-    protected String getInfix() {
+    @Override
+    public String getInfix() {
         if(this.infix == null || this.infix.isEmpty()) {
             return PidProviderServiceImpl.DEFAULT_INFIX;
         }
@@ -136,5 +137,23 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
 
     public String getBaseUri() {
         return baseUri;
+    }
+
+    @Override
+    public PublicConfiguration getPublicConfiguration() {
+        return new PublicConfiguration() {
+            @Override
+            public String getBaseUrl() {
+                return configuration.getServiceBaseURL();
+            }
+            @Override
+            public String getPrefix() {
+                return configuration.getHandlePrefix();
+            }
+            @Override
+            public String getUsername() {
+                return configuration.getUser();
+            }
+        };
     }
 }

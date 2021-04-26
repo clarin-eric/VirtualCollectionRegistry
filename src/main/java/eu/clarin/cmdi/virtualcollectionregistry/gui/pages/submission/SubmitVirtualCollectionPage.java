@@ -17,8 +17,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BasePage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.CreateAndEditVirtualCollectionPageV2;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.MergeCollectionsPage;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.basic.Label;

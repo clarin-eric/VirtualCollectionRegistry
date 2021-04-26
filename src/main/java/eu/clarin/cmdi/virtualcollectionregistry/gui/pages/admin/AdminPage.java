@@ -1,8 +1,10 @@
-package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
+package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin;
 
 import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.PidProviderService;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BasePage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowseEditableCollectionsPanel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.AdminCollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import java.util.ArrayList;
@@ -60,11 +62,7 @@ public class AdminPage extends BasePage {
             @Override
             protected void populateItem(ListItem item) {
                 PersistentIdentifierProvider provider = (PersistentIdentifierProvider)item.getModel().getObject();
-                String value = provider.getId();
-                if(provider.isPrimaryProvider()){
-                    value += " (primary)";
-                }
-                item.add(new Label("pid_list_item", Model.of(value)));
+                item.add(new PidProviderPanel("pid_list_item", provider));
             }
         };
         add(pidProvidersListview);

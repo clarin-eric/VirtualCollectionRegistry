@@ -17,9 +17,13 @@
         </div>
         <div class="row">
             <div class="col-xs-6">
-                <h2>New collection</h2>
-                <a class="btn btn-default" wicket:id="btn_add_new">Add new collection</a> <br />
-                <a class="btn btn-default" wicket:id="btn_cancel">Cancel submission</a>
+                <h2>Actions:</h2>
+                <a class="btn btn-default" wicket:id="btn_add_new"><span wicket:id="btn_add_new_label">[Add new collection]</span></a> <br />
+                <br />
+                <a class="btn btn-default" wicket:id="btn_merge_with"><span wicket:id="btn_merge_with_label">[Merge with selected collection]</span></a> <br />
+                <span wicket:id="btn_merge_with_label_message"></span><br />
+                <br />
+                <a class="btn btn-default" wicket:id="btn_cancel"><span wicket:id="btn_cancel_label">[Cancel submission]</span></a>
             </div>
             <!--
         </div>
@@ -27,22 +31,16 @@
         -->
             <div class="col-xs-5">
                 <h2>Merge with existing collection</h2>
-                <h4 wicket:id="collections_list_label">Available collections:</h4>
+                <h4 wicket:id="collections_list_label">[Available collections:]</h4>
                 <span wicket:id="collections_list">
-                    <div class="row" style="margin-top: 2px; margin-bottom: 2px; border: solid 1px #000000; padding: 2px;">
-                        <div class="col-xs-6">
-                            <span wicket:id="collection_title"></span> <br />
+                    <div class="row" style="margin-top: 2px; margin-bottom: 2px; border: solid 1px #000000; padding: 2px;" wicket:id="selectable-collection">
+                        <div class="col-xs-12">
+                            <b wicket:id="collection_title"></b> <br />
                             Created at: <span wicket:id="collection_created"></span>,
                             Last modified at: <span wicket:id="collection_modified"></span>,
                             # resources: <span wicket:id="collection_resources_count"></span><br />
                             Type: <span wicket:id="collection_type"></span>,
                             State: <span wicket:id="collection_state"></span>
-                        </div>
-                        <div class="col-xs-3">
-                            <span wicket:id="collection_message">message</span>
-                        </div>
-                        <div class="col-xs-3">
-                            <a class="btn btn-default btn-xs" wicket:id="collection_btn_merge">Merge with this collection</a>
                         </div>
                     </div>
                 </span>

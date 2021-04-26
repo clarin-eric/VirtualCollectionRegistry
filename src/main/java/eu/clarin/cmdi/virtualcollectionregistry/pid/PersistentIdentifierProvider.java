@@ -8,7 +8,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 public abstract interface PersistentIdentifierProvider {
 
     String getId();
-    
+
     PersistentIdentifier createIdentifier(VirtualCollection vc) throws VirtualCollectionRegistryException;
 
     void updateIdentifier(String pid, URI target) throws VirtualCollectionRegistryException;
@@ -18,5 +18,10 @@ public abstract interface PersistentIdentifierProvider {
     boolean ownsIdentifier(String pid);
 
     boolean isPrimaryProvider();
+
     void setPrimaryProvider(boolean primary);
+
+    String getInfix();
+
+    PublicConfiguration getPublicConfiguration();
 }

@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Profile;
  */
 @Profile("vcr.pid.doi")
 @org.springframework.context.annotation.Configuration
-public class DoiPersistentIdentifierConfiguration {
+public class DoiPersistentIdentifierConfiguration implements PublicConfiguration {
     @Value("${pid_provider.doi.service_base_url}")
     private String serviceBaseUrl;
     @Value("${pid_provider.doi.handle_prefix}")
@@ -47,5 +47,20 @@ public class DoiPersistentIdentifierConfiguration {
     @Bean
     public PidWriter pidWriter() {
         return new PidWriterImpl();
+    }
+
+    @Override
+    public String getBaseUrl() {
+        return serviceBaseUrl;
+    }
+
+    @Override
+    public String getPrefix() {
+        return handlePrefix;
+    }
+
+    @Override
+    public String getUsername() {
+        return user;
     }
 }

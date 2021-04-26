@@ -2,6 +2,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermissionException;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin.AdminPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1.CreateAndEditVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.CreateAndEditVirtualCollectionPageV2;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
