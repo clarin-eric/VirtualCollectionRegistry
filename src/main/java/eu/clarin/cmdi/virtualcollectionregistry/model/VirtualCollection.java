@@ -718,7 +718,8 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
                 state != VirtualCollection.State.DEAD &&
                 state != VirtualCollection.State.PUBLIC_FROZEN &&
                 state != VirtualCollection.State.PUBLIC_FROZEN_PENDING &&
-                state != VirtualCollection.State.PUBLIC_PENDING;
+                state != VirtualCollection.State.PUBLIC_PENDING &&
+                state != VirtualCollection.State.PUBLIC;
     }
 
     /**
