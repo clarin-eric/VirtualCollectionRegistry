@@ -104,6 +104,8 @@ public class SubmissionUtils {
      * FormParam("description") String description,            
      * 
      * //optional params
+     * FormParam("origin") String origin //Associated with new collection and all resources, to support tracking of origin of resources.
+     *
      * FormParam("keyword") List<String> keywords,
      * FormParam("purpose") Purpose purpose,
      * FormParam("reproducibility") Reproducibility reproducibility,

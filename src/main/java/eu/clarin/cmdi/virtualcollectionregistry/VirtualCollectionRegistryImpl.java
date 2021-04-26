@@ -35,7 +35,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry, InitializingBean, DisposableBean {
 
-    private final static String REQUIRED_DB_VERSION = "1.3.0";
+    private final static String REQUIRED_DB_VERSION = "1.4.0";
 
     @Autowired
     private DataStore datastore; //TODO: replace with Spring managed EM?
@@ -446,8 +446,44 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         }
     }
 
+    public String getDbVersion() throws VirtualCollectionRegistryException {
+        logger.info("getDbVersion()");
+        String dbVersion = null;
+        EntityManager em = datastore.getEntityManager();
+        try {
+            em.getTransaction().begin();
+            TypedQuery<DbConfig> q = em.createNamedQuery("DbConfig.findByKey", DbConfig.class);
+            q.setParameter("keyName", "db_version");
+            DbConfig result = q.getSingleResult();
+            dbVersion = result.getValue();
+        } catch(NoResultException e) {
+            logger.error("No db_version key found in config table", e);
+            throw new VirtualCollectionRegistryException(
+                    "No db_version key found in config table", e);
+        } catch (Exception e) {
+            logger.error("error while verifying database version", e);
+            throw new VirtualCollectionRegistryException(
+                    "error while verifying database version", e);
+        } finally {
+            EntityTransaction tx = em.getTransaction();
+            if ((tx != null) && !tx.getRollbackOnly()) {
+                tx.commit();
+            }
+        }
+        return dbVersion;
+    }
+
     private void checkDbVersion() throws VirtualCollectionRegistryException {
         logger.info("checkDbVersion()");
+        String dbVersion = getDbVersion();
+        if(dbVersion == null) {
+            throw new VirtualCollectionRegistryException(
+                    "No db_version found. Expected "+REQUIRED_DB_VERSION);
+        } else if(!dbVersion.equalsIgnoreCase(REQUIRED_DB_VERSION)) {
+            throw new VirtualCollectionRegistryException(
+                    "Incorrect db_version, expected "+REQUIRED_DB_VERSION+", got "+dbVersion);
+        }
+        /*
         EntityManager em = datastore.getEntityManager();
         try {
             em.getTransaction().begin();
@@ -475,6 +511,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                 tx.commit();
             }
         }
+         */
     }
 
     @Override

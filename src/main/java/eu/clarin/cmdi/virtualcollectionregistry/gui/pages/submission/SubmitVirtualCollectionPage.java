@@ -64,13 +64,13 @@ public class SubmitVirtualCollectionPage extends BasePage {
             SubmissionUtils.checkSubmission( (WebRequest)RequestCycle.get().getRequest(), (WebResponse)RequestCycle.get().getResponse(), getSession(), type);     
             if(!isSignedIn()) {
                 //Set proper content panel based on      
-                add(new Label("type", new Model(type.toString())));
+                add(new Label("type", new Model(type.toString()+" Collection Submission")));
                 add(new LoginPanel("panel"));
             } else {
                 //Already logged in, so redirect to creation page
                 //TODO: show choice to add to an existing collection or create a new collection
                 logger.info("Redirect logged in");
-                throw new RestartResponseException(MergeCollectionsPage.class);//CreateAndEditVirtualCollectionPageV2.class);
+                throw new RestartResponseException(MergeCollectionsPage.class);
             }
         }
 

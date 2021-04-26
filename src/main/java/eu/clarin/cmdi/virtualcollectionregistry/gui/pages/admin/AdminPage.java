@@ -50,13 +50,8 @@ public class AdminPage extends BasePage {
     public AdminPage() {
         super();
 
-        ListView authorsListview = new ListView("admin_list", adminUsersService.getAdminUsers()) {
-            @Override
-            protected void populateItem(ListItem item) {
-                item.add(new Label("admin_list_item", Model.of(item.getModel().getObject().toString())));
-            }
-        };
-        add(authorsListview);
+        add(new Label("lbl_server_config", Model.of("Server Configuration")));
+        add(new AdminPanel("pnl_admins", adminUsersService));
 
         ListView pidProvidersListview = new ListView("pid_list", pidProviderService.getProviders()) {
             @Override
@@ -66,6 +61,9 @@ public class AdminPage extends BasePage {
             }
         };
         add(pidProvidersListview);
+
+        add(new Label("lbl_pnl_database", Model.of("Database")));
+        add(new DatabasePanel("pnl_database", vc));
 
         // user model shared between spaces form and the table's provider
         final IModel<User> userModel = new Model<>(null);
