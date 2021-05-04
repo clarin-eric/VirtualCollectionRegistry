@@ -241,6 +241,8 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     @Column(name = "problem_details", nullable = true)
     private String problemDetails;
 
+    @Column(name = "origin", nullable = true)
+    private String origin;
 
     @Column(name = "state", nullable = false)
     private VirtualCollection.State state;
@@ -252,7 +254,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     @Column(name = "name", nullable = false, length = 255)
     private String name;
 
-    @Lob
+    //@Lob
     @Basic(fetch = FetchType.EAGER)
     @Column(name = "description", length = 8192)
     private String description;
@@ -276,7 +278,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     @Column(name = "reproducibility")
     private VirtualCollection.Reproducibility reproducibility;
 
-    @Lob
+    //@Lob
     @Basic(fetch = FetchType.EAGER)
     @Column(name = "reproducibility_notice", length = 8192)
     private String reproducibilityNotice;
@@ -740,6 +742,14 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
             new_r.setMerged();
             getResources().add(new_r);
         }
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
     }
 
 } // class VirtualCollection

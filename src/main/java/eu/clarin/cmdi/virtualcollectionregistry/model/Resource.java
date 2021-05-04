@@ -91,12 +91,15 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
     @Column(name = "label", nullable = true, length = 255)
     private String label;
     
-    @Lob
+    //@Lob
     @Column(name = "description", length = 8192)
     private String description;
 
     @Column(name = "display_order", nullable = false)
     private Long displayOrder;
+
+    @Column(name = "origin", nullable = true)
+    private String origin;
 
     public Resource() {
         super();
@@ -287,4 +290,13 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
     public boolean isMerged() {
         return this.merged;
     }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
+
 } // class Resource

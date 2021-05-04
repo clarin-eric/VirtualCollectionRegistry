@@ -16,6 +16,19 @@
                     password="vcrpassword"
                     url="jdbc:mysql://localhost:3306/vcr" />
 
+<!--
+    <Resource name="jdbc/VirtualCollectionStore" auth="Container"
+              type="javax.sql.DataSource"
+              maxTotal="8" maxIdle="4" maxWaitMillis="10000"
+              removeAbandonedOnBorrow="true"
+              removeAbandonedOnMaintenance="true"
+              defaultAutoCommit="false"
+              driverClassName="org.postgresql.Driver"
+              validationQuery="SELECT 1"
+              username="vcruser"
+              password="vcrpassword"
+              url="jdbc:postgresql://localhost:5432/vcr" />
+-->
     <Parameter
                name="eu.clarin.cmdi.virtualcollectionregistry.admindb.basedir"
                value="/Users/wilelb/" override="false"/>

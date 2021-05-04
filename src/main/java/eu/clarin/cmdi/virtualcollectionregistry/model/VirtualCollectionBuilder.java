@@ -47,6 +47,7 @@ public class VirtualCollectionBuilder {
     }
     
     public VirtualCollection build() {
+        logger.debug("Build virtual collection");
         return this.vc;
     }
 
@@ -56,7 +57,12 @@ public class VirtualCollectionBuilder {
         }
         return this;
     }
-    
+
+    public VirtualCollectionBuilder setOrigin(String origin) throws VirtualCollectionRegistryUsageException {
+        this.vc.setOrigin(origin);
+        return this;
+    }
+
     public VirtualCollectionBuilder setName(String name) throws VirtualCollectionRegistryUsageException {
         if (name == null) {
             throw new VirtualCollectionRegistryUsageException("No name specified for collection");
@@ -152,59 +158,42 @@ public class VirtualCollectionBuilder {
          private String uri;
          private String description;
          private String label;
+         private String origin;
 
-        /**
-         * @return the uri
-         */
         public String getUri() {
             return uri;
         }
-
-        /**
-         * @param uri the uri to set
-         */
         public void setUri(String uri) {
             this.uri = uri;
         }
-
-        /**
-         * @return the Description
-         */
         public String getDescription() {
             return description;
         }
-
-        /**
-         * @param Description the Description to set
-         */
         public void setDescription(String description) {
             this.description = description;
         }
-
-        /**
-         * @return the label
-         */
         public String getLabel() {
             return label;
         }
-
-        /**
-         * @param label the label to set
-         */
         public void setLabel(String label) {
             this.label = label;
         }
+        public String getOrigin() { return origin; }
+        public void setOrigin(String origin) { this.origin = origin; }
      }
      
      private void addResource(Resource.Type type, String uri) {
          logger.debug("Resource input: "+uri);
          try {
                 ResourceInput input = mapper.readValue(uri, ResourceInput.class);
-                logger.debug("Parsed JSON input: uri="+input.getUri()+", label="+input.getLabel()+", description="+input.getDescription());
+                logger.debug("Parsed JSON input: uri="+input.getUri()+
+                        ", label="+input.getLabel()+
+                        ", description="+input.getDescription()+
+                        ", origin="+input.getOrigin());
                 Resource r = new Resource(type, input.getUri());
                 r.setDescription(input.getDescription());
                 r.setLabel(input.label);
-                
+                r.setOrigin(input.origin);
                 this.vc.getResources().add(r);
             } catch(IOException ex) {
                 logger.debug("Failed to unmarshal resource json: "+ex.getMessage()+", falling back to add as plain url with value="+uri);
@@ -240,16 +229,16 @@ public class VirtualCollectionBuilder {
     
     public VirtualCollectionBuilder setIntenstionalQuery(String description, String uri, String profile, String value) throws VirtualCollectionRegistryUsageException {
         if(!isValid(description)) {
-            throw new VirtualCollectionRegistryUsageException("Intensional description is reqiured");
+            throw new VirtualCollectionRegistryUsageException("Intensional description is required");
         }
         if(!isValid(uri)) {
-            throw new VirtualCollectionRegistryUsageException("Intensional uri is reqiured");
+            throw new VirtualCollectionRegistryUsageException("Intensional uri is required");
         }
         if(!isValid(profile)) {
-            throw new VirtualCollectionRegistryUsageException("Intensional query profile is reqiured");
+            throw new VirtualCollectionRegistryUsageException("Intensional query profile is required");
         }
         if(!isValid(value)) {
-            throw new VirtualCollectionRegistryUsageException("Intensional query value is reqiured");
+            throw new VirtualCollectionRegistryUsageException("Intensional query value is required");
         }        
         GeneratedBy gen = new GeneratedBy();
         gen.setDescription(description);

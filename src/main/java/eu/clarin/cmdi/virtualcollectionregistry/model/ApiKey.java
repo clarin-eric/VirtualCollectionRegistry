@@ -7,7 +7,7 @@ import java.io.Serializable;
 import java.util.Date;
 
 @Entity
-@Table(name = "api_keys")
+@Table(name = "api_key")
 @NamedQueries({
         @NamedQuery(name = "ApiKey.findByValue",
                 query = "SELECT k FROM ApiKey k WHERE k.value = :value")
