@@ -323,7 +323,13 @@
             <version>8.0.18</version>
             <type>jar</type>
         </dependency>
-        
+        <dependency>
+            <groupId>org.postgresql</groupId>
+            <artifactId>postgresql</artifactId>
+            <version>42.2.19</version>
+        </dependency>
+
+
         <dependency>
             <groupId>de.mpg.mpgaai</groupId>
             <artifactId>mpgaai-shhaa</artifactId>

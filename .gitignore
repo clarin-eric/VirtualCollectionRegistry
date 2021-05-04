@@ -1,4 +1,6 @@
 docker/vcr_mysql_dump.sql
+docker/ca
+docker/cert
 *.iml
 .idea
 nbactions.xml

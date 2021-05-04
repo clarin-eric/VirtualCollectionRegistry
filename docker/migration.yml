@@ -1,0 +1,14 @@
+version: '2'
+services:
+
+  #https://github.com/dimitri/pgloader
+  #https://hub.docker.com/r/dimitri/pgloader/
+  #https://www.digitalocean.com/community/tutorials/how-to-migrate-mysql-database-to-postgres-using-pgloader
+
+  database_migration:
+    image: "dimitri/pgloader:latest"
+    command: pgloader /data/migration.load
+    networks:
+      - vcr
+    volumes:
+    - ./migration:/data
