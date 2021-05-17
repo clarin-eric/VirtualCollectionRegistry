@@ -16,19 +16,18 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission;
 
+import de.mpg.aai.shhaa.config.ConfigContext;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
+import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.request.http.WebResponse;
@@ -57,7 +56,7 @@ public class SubmissionUtils {
      * @param request
      * @return 
      */
-    private static String getUserAuthWorkaround(WebRequest request) {       
+    private static String getUserAuthWorkaround(WebRequest request, ServletContext servletCtx) {
         //Basic authentication
         String authz = request.getHeader("authorization");
         if(authz != null) {
@@ -69,21 +68,24 @@ public class SubmissionUtils {
                 return p2[0];
             }
         }
-        
-        //SAML authentication        
+
+        //SAML authentication
+        String username = null;
+
+        //Load fallback username and possible username header names from SSHAA config
+        ConfigContext confCtx = ConfigContext.getActiveConfigContext(servletCtx);
+        String fallbackUsername = confCtx.getConfiguration().getFallbackUid();
+        Set<String> shibUsernameHeaderNames = confCtx.getConfiguration().getShibUsernameIDs();
+
         authz = request.getHeader("auth_type");
         if(authz != null && authz.equalsIgnoreCase("shibboleth")) {
-            String username = request.getHeader("oid-edupersonprincipalname");
-            if(username != null) {
-                return username;
-            }
-            username = request.getHeader("mace-edupersonprincipalname");
-            if(username != null) {
-                return username;
-            }
-            username = request.getHeader("edupersontargetedid");
-            if(username != null) {
-                return username;
+            //Fetch username from any of the supported saml headers
+            for(String usernameHeaderName : shibUsernameHeaderNames) {
+                String value = request.getHeader(usernameHeaderName);
+                if(value != null && !value.equalsIgnoreCase(fallbackUsername)) {
+                    username = value;
+                    break;
+                }
             }
         }
         
@@ -124,8 +126,9 @@ public class SubmissionUtils {
     public static void checkSubmission(WebRequest request, WebResponse response, ApplicationSession session, VirtualCollection.Type type) {
         debugWebRequest(request);
 
+        final ServletContext servletCtxt = WebApplication.get().getServletContext();
         final IRequestParameters params = request.getPostParameters();
-        final String username = getUserAuthWorkaround(request);
+        final String username = getUserAuthWorkaround(request, servletCtxt);
 
         //Get user principal from the server context. If this is null, try the username
         //fallback to workaround the issue where the principal is not available in the
@@ -146,6 +149,8 @@ public class SubmissionUtils {
             return;
         }
 
+        String origin = request.getHeader("referer");
+
         try {
             //Add shared fields to builder
             VirtualCollectionBuilder vcBuilder = new VirtualCollectionBuilder()
@@ -153,6 +158,7 @@ public class SubmissionUtils {
                 .setName(params.getParameterValue("name").toString())
                 .setDescription(params.getParameterValue("description").toString())
                 .setOwner(principal)
+                .setOrigin(origin)//params.getParameterValue("origin").toString())
                 .addCreator(principal)
                 .addKeywords(getAsStringList(params.getParameterValues("keyword")))
                 .setPurpose(getPurposeFromParams(params, "purpose"))
@@ -163,9 +169,13 @@ public class SubmissionUtils {
             //Add extensional or intenstional specific fields to builder
             switch(type) {
                 case EXTENSIONAL:
+                    String originalQuery = params.getParameterValue("original_query").toString();
+                    if(originalQuery.isEmpty()) {
+                        originalQuery = null;
+                    }
                     vcBuilder = vcBuilder
-                        .addMetadataResources(getAsStringList(params.getParameterValues("metadataUri")))
-                        .addResourceResources(getAsStringList(params.getParameterValues("resourceUri")));
+                        .addMetadataResources(getAsStringList(params.getParameterValues("metadataUri")), originalQuery)
+                        .addResourceResources(getAsStringList(params.getParameterValues("resourceUri")), originalQuery);
                     break;
                 case INTENSIONAL:
                     vcBuilder = vcBuilder

@@ -59,7 +59,12 @@ public class VirtualCollectionBuilder {
     }
 
     public VirtualCollectionBuilder setOrigin(String origin) throws VirtualCollectionRegistryUsageException {
-        this.vc.setOrigin(origin);
+        logger.info("Setting origin to: {}", origin);
+        if(origin.isEmpty()) {
+            this.vc.setOrigin(null);
+        } else {
+            this.vc.setOrigin(origin);
+        }
         return this;
     }
 
@@ -157,8 +162,7 @@ public class VirtualCollectionBuilder {
      public  static class ResourceInput {
          private String uri;
          private String description;
-         private String label;
-         private String origin;
+         private String label;;
 
         public String getUri() {
             return uri;
@@ -178,49 +182,49 @@ public class VirtualCollectionBuilder {
         public void setLabel(String label) {
             this.label = label;
         }
-        public String getOrigin() { return origin; }
-        public void setOrigin(String origin) { this.origin = origin; }
      }
      
-     private void addResource(Resource.Type type, String uri) {
+     private void addResource(Resource.Type type, String uri, String originalQuery) {
          logger.debug("Resource input: "+uri);
          try {
                 ResourceInput input = mapper.readValue(uri, ResourceInput.class);
                 logger.debug("Parsed JSON input: uri="+input.getUri()+
                         ", label="+input.getLabel()+
-                        ", description="+input.getDescription()+
-                        ", origin="+input.getOrigin());
+                        ", description="+input.getDescription());
                 Resource r = new Resource(type, input.getUri());
+                r.setOriginalQuery(originalQuery);
                 r.setDescription(input.getDescription());
                 r.setLabel(input.label);
-                r.setOrigin(input.origin);
+                r.setOrigin(this.vc.getOrigin());
                 this.vc.getResources().add(r);
             } catch(IOException ex) {
                 logger.debug("Failed to unmarshal resource json: "+ex.getMessage()+", falling back to add as plain url with value="+uri);
-                this.vc.getResources().add(new Resource(type, uri));
+                Resource r = new Resource(type, uri);
+                r.setOrigin(this.vc.getOrigin());
+                this.vc.getResources().add(r);
             }
      }
      
-    public VirtualCollectionBuilder addMetadataResource(String uri) {
-        this.addResource(Resource.Type.METADATA, uri);
+    public VirtualCollectionBuilder addMetadataResource(String uri, String originalQuery) {
+        this.addResource(Resource.Type.METADATA, uri, originalQuery);
         return this;
     }
     
-    public VirtualCollectionBuilder addMetadataResources(List<String> metadataUris) {
+    public VirtualCollectionBuilder addMetadataResources(List<String> metadataUris, String originalQuery) {
         for(String uri : metadataUris) {
-            addMetadataResource(uri);
+            addMetadataResource(uri, originalQuery);
         }
         return this;
     }
     
-    public VirtualCollectionBuilder addResourceResource(String uri) {
-        this.addResource(Resource.Type.RESOURCE, uri);
+    public VirtualCollectionBuilder addResourceResource(String uri, String originalQuery) {
+        this.addResource(Resource.Type.RESOURCE, uri, originalQuery);
         return this;
     }
 
-    public VirtualCollectionBuilder addResourceResources(List<String> resourceUris) {
+    public VirtualCollectionBuilder addResourceResources(List<String> resourceUris, String originalQuery) {
         for(String uri : resourceUris) {
-            this.addResourceResource(uri);
+            this.addResourceResource(uri, originalQuery);
         }
         return this;
     }

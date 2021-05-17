@@ -119,12 +119,6 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
             }
         }
 
-        //this.provider = new PrivateCollectionsManager();
-
-        //final WebMarkupContainer ajaxWrapper = new WebMarkupContainer("ajaxwrapper");
-        //final Label labelNoCollections = new Label("lbl_no_collections", "No collections");
-        //ajaxWrapper.setOutputMarkupId(true);
-
         modal = new ModalConfirmDialog("modal");
         modal.addListener(new Listener() {
             @Override
@@ -186,13 +180,6 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
         if(vc != null) {
             crud.editCollection(vc);
         }
-        /*
-        final WebMarkupContainer wrapper = new WebMarkupContainer("wrapper");
-        wrapper.add(ajaxWrapper);
-        wrapper.setVisible(false);
-        add(wrapper);
-
-         */
     }
 
     private void removeCollection(VirtualCollection c) {

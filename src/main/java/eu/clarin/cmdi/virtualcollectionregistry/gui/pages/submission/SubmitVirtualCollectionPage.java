@@ -61,7 +61,13 @@ public class SubmitVirtualCollectionPage extends BasePage {
         }
 
         if (type != null) {
-            SubmissionUtils.checkSubmission( (WebRequest)RequestCycle.get().getRequest(), (WebResponse)RequestCycle.get().getResponse(), getSession(), type);     
+            SubmissionUtils.checkSubmission(
+                    (WebRequest)RequestCycle.get().getRequest(),
+                    (WebResponse)RequestCycle.get().getResponse(),
+                    getSession(),
+                    type
+            );
+
             if(!isSignedIn()) {
                 //Set proper content panel based on      
                 add(new Label("type", new Model(type.toString()+" Collection Submission")));

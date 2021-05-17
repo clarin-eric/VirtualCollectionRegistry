@@ -101,6 +101,9 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
     @Column(name = "origin", nullable = true)
     private String origin;
 
+    @Column(name = "original_query", nullable = true)
+    private String originalQuery;
+
     public Resource() {
         super();
         this.displayOrder = 0L;
@@ -297,6 +300,14 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
 
     public void setOrigin(String origin) {
         this.origin = origin;
+    }
+
+    public String getOriginalQuery() {
+        return originalQuery;
+    }
+
+    public void setOriginalQuery(String originalQuery) {
+        this.originalQuery = originalQuery;
     }
 
 } // class Resource

@@ -477,6 +477,8 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
 
         if (this.originalCollection != null && this.originalCollection.getId() != null) {
             newCollection = originalCollection;
+        } else if(this.originalCollection != null) {
+            newCollection.setOrigin(originalCollection.getOrigin());
         }
 
         newCollection.setDateModified(new Date());
