@@ -88,6 +88,9 @@ public class ReferencesEditor extends ComposedField{
     private final int workerSleepTime = 1000;
     private final int uiRefreshTimeInSeconds = 1;
 
+    private boolean currentValidation = false;
+    private boolean previousValidation = false;
+
     public class Validator implements InputValidator, Serializable {
         private String message = "";
             
@@ -166,12 +169,15 @@ public class ReferencesEditor extends ComposedField{
         editor = new ReferenceEditor("ref_editor", this, new SaveEventHandler() {
             @Override
             public void handleSaveEvent(AjaxRequestTarget target) {
+                //Reset state so this reference is rescanned
+                references.get(edit_index).setState(State.INITIALIZED);
                 edit_index = -1;
                 editor.setVisible(false);
                 listview.setVisible(true);
                 if(target != null) {
                     target.add(componentToUpdate);
                 }
+
             }
         }, new CancelEventHandler() {
             @Override
@@ -272,9 +278,11 @@ public class ReferencesEditor extends ComposedField{
         ajaxWrapper.add(new AbstractAjaxTimerBehavior(Duration.seconds(uiRefreshTimeInSeconds)) {
             @Override
             protected void onTimer(AjaxRequestTarget target) {
+                //validate(); //make sure this validation is up to date before re rendering the component
                 if(target != null) {
                     target.add(ajaxWrapper);
                 }
+                fireEvent(new CustomDataUpdateEvent(target));
             }
         });
 
@@ -296,8 +304,13 @@ public class ReferencesEditor extends ComposedField{
         AbstractField f2 = new VcrTextFieldWithoutLabel("reference_title", "Set a title for this new reference", mdlReferenceTitle, this,null);
         f2.setCompleteSubmitOnUpdate(true);
         f2.setRequired(true);
-        //f2.addValidator(new Validator());
         add(f2);
+    }
+
+    public static class CustomDataUpdateEvent extends DataUpdatedEvent {
+        public CustomDataUpdateEvent(AjaxRequestTarget target) {
+            super(target);
+        }
     }
     
     @Override
@@ -465,11 +478,14 @@ public class ReferencesEditor extends ComposedField{
                     for(ReferenceJob job : references) {
                         if(job.getState() == State.INITIALIZED) {
                             job.setState(State.ANALYZING);
+                            //fireEvent(new DataUpdatedEvent(null));
                             try {
                                 analyze(job);
                                 job.setState(State.DONE);
+                                //fireEvent(new DataUpdatedEvent(null));
                             } catch(Exception ex) {
                                 job.setState(State.FAILED);
+                                //fireEvent(new DataUpdatedEvent(null));
                             }   
                         }
                     }
@@ -640,14 +656,42 @@ public class ReferencesEditor extends ComposedField{
         return result;
     }
 
+    /**
+     * If one or more validators failed, set error message and return false otherwise reset error message and return
+     * true.
+     *
+     * @return false if one or more validators failed, true otherwise
+     */
     @Override
     public boolean validate() {
+        previousValidation = currentValidation;
+
         //Check for value if required == true
         if(required && references.isEmpty()) {
-            return setError("Required field.");
+            currentValidation = setError("Required field.");
+            return currentValidation;
         }
-        //All validators passed, reset error message and return true
-        return setError(null);
+
+        //Check if any resource was not valid
+        long errorCount = 0;
+        for(ReferenceJob job : references) {
+            if(job.getState() != State.DONE) {
+                errorCount++;
+            }
+        }
+
+        if(errorCount > 0) {
+            String prefix = errorCount == 1 ? "One resource " : errorCount+ " resources ";
+            currentValidation = setError(prefix + "failed to validate");
+            return currentValidation;
+        }
+
+        currentValidation = setError(null);
+        return currentValidation;
+    }
+
+    public boolean didValidationStateChange() {
+        return currentValidation != previousValidation;
     }
 
     protected void move(int direction, Long id) {

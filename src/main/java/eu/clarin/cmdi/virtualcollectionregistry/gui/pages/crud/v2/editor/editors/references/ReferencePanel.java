@@ -167,7 +167,7 @@ public class ReferencePanel extends Panel {
                 }
             }
         };
-        btnEdit.setEnabled(ref.getState() == ReferencesEditor.State.DONE);
+        btnEdit.setEnabled(getButtonState(ref.getState()));
         btnEdit.setVisible(!analysing);
         editorWrapper.add(btnEdit);
         
@@ -179,7 +179,7 @@ public class ReferencePanel extends Panel {
                 }
             }
         };
-        btnRemove.setEnabled(ref.getState() == ReferencesEditor.State.DONE);
+        btnRemove.setEnabled(getButtonState(ref.getState()));
         btnRemove.setVisible(!analysing);
         editorWrapper.add(btnRemove);
 
@@ -189,7 +189,11 @@ public class ReferencePanel extends Panel {
 
         add(editorWrapper);
     }
-    
+
+    private boolean getButtonState(ReferencesEditor.State state) {
+        return state != ReferencesEditor.State.INITIALIZED && state != ReferencesEditor.State.ANALYZING;
+    }
+
     public void addEventHandler(EventHandler handler) {
         this.eventHandlers.add(handler);
     }
