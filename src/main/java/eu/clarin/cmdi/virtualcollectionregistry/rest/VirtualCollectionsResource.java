@@ -4,6 +4,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
+import eu.clarin.cmdi.virtualcollectionregistry.rest.auth.Secured;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller.Format;
 import java.io.IOException;
@@ -28,6 +29,14 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 
@@ -88,7 +97,16 @@ public class VirtualCollectionsResource {
     @Produces({MediaType.TEXT_XML,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_JSON})
-    public Response getVirtualCollections(@QueryParam("q") String query,
+    @Operation(
+        summary = "Get the list of public collections",
+        description = "Get the list of public collections.")
+    @Parameters( value = {
+        @Parameter(name = "query", description = "Query to filter specific collections"),
+        @Parameter(name = "offset", description = "Start with this index. Default = 0"),
+        @Parameter(name = "count", description = "Include this many results. Use -1 for all results. Default = -1")
+    })
+    public Response getVirtualCollections(
+            @QueryParam("q") String query,
             @DefaultValue("0") @QueryParam("offset") int offset,
             @DefaultValue("-1") @QueryParam("count") int count)
             throws VirtualCollectionRegistryException {
@@ -119,6 +137,7 @@ public class VirtualCollectionsResource {
      *
      * @throws VirtualCollectionRegistryException
      */
+    @Secured
     @POST
     @Consumes({MediaType.TEXT_XML,
         MediaType.APPLICATION_XML,
@@ -126,6 +145,28 @@ public class VirtualCollectionsResource {
     @Produces({MediaType.TEXT_XML,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_JSON})
+    @Operation(
+            security = { @SecurityRequirement(name = "apiKey") },
+            summary = "Create a new collection",
+            description = "A virtual collection will be created based on the representation of the virtual collection sent in the request body. ID and state, if provided, will be ignored so this will always result in a private collection with a new identifier.")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Missing or invalid API key in "+HttpHeaders.AUTHORIZATION+" header.",
+                            content = @Content(mediaType = "text/html")
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Unexpected server side error.",
+                            content = {@Content(mediaType = "text/html")}
+                    ),
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Representation of the created collection.",
+                            content = {@Content(mediaType = "application/json"), @Content(mediaType = "application/xml")}
+                    )
+            })
     public Response createVirtualCollection(InputStream input)
             throws VirtualCollectionRegistryException {
         Principal principal = security.getUserPrincipal();

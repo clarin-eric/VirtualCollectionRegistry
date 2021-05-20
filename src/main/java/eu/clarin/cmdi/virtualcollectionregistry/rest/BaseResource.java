@@ -94,10 +94,12 @@ public class BaseResource {
     /**
      * Server api v2
      */
+    /*
     @Path("/v2/collections")
     public VirtualCollectionsResource getCollectionsV2() {
         final VirtualCollectionsResource resource =
                 resourceContext.getResource(VirtualCollectionsResource.class);
         return resource;
     }
+     */
 }

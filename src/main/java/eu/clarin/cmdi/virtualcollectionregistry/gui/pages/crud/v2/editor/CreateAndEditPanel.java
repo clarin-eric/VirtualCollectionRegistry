@@ -395,7 +395,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
                 ", target="+event.getAjaxRequestTarget());
 
         validate();
-        
+
         if(event instanceof ReferencesEditor.CustomDataUpdateEvent) {
             if(referencesEditor.didValidationStateChange()) {
                 event.getAjaxRequestTarget().add(referencesEditor);

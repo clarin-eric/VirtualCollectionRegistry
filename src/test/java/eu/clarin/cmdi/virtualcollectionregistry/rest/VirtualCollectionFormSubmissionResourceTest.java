@@ -73,8 +73,8 @@ public class VirtualCollectionFormSubmissionResourceTest {
                 new VirtualCollectionBuilder()
                 .setName("Test ")
                 .setDescription("Test description")
-                .addMetadataResource("https://www.clarin.eu/metedata/1", null)
-                .addResourceResource("https://www.clarin.eu/resource/1", null)
+                .addMetadataResource("https://www.clarin.eu/metedata/1", null, null)
+                .addResourceResource("https://www.clarin.eu/resource/1", null,  null)
                 .addKeyword("Test 1")
                 .addKeyword("Test 2")
                 .build();

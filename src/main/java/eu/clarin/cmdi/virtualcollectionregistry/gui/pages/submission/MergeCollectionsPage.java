@@ -76,7 +76,8 @@ public class MergeCollectionsPage extends BasePage {
         labels.put("btn_add_new_label", "Add as new Collection");
         labels.put("btn_merge_with_label", "Merge with selected Collection");
         labels.put("btn_cancel_label", "Cancel submission");
-
+        labels.put("lbl_origin", "Origin:");
+        labels.put("lbl_query", "Query:");
 
         this.setOutputMarkupId(true);
         final Component componentToUpdate = this;
@@ -108,6 +109,16 @@ public class MergeCollectionsPage extends BasePage {
         addLabel(this, "lbl_submitted_title");
         addLabel(this, "lbl_submitted_desc");
         addLabel(this, "lbl_submitted_resources");
+
+        addField(this, "val_origin", submitted_vc.getOrigin());
+        addLabel(this, "lbl_origin");
+
+        addLabel(this, "lbl_query");
+        String qry = "";
+        if(submitted_vc.getResources().size() > 0) {
+            qry = submitted_vc.getResources().get(0).getOriginalQuery();
+        }
+        addField(this, "val_query", qry);
 
         //Submission summary
         addField(this, "submitted_title", submitted_vc.getTitle());

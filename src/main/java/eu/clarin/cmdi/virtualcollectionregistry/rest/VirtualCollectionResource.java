@@ -4,6 +4,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.rest.auth.Secured;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
 import java.io.IOException;
 import java.io.InputStream;
@@ -27,6 +28,14 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
+
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -108,6 +117,27 @@ public final class VirtualCollectionResource {
         MediaType.TEXT_XML,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_JSON})
+    @Operation(
+            summary = "Retrieve a virtual collection",
+            description = "The virtual collection referenced by the URI will be retrieved.")
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            responseCode = "404",
+                            description = "Not found.",
+                            content = {@Content(mediaType = "text/html")}
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Unexpected server side error.",
+                            content = {@Content(mediaType = "text/html")}
+                    ),
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "Representation of the requested collection.",
+                            content = {@Content(mediaType = "application/json"), @Content(mediaType = "application/xml")}
+                    )
+            })
     public Response getVirtualCollection(@Context Request request)
             throws VirtualCollectionRegistryException {
         final VirtualCollection vc = registry.retrieveVirtualCollection(id);
@@ -155,6 +185,7 @@ public final class VirtualCollectionResource {
      * @return A response containing a {@link RestResponse}
      * @throws VirtualCollectionRegistryException
      */
+    @Secured
     @PUT
     @Consumes({MediaType.TEXT_XML,
         MediaType.APPLICATION_XML,
@@ -162,6 +193,28 @@ public final class VirtualCollectionResource {
     @Produces({MediaType.TEXT_XML,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_JSON})
+    @Operation(
+        security = { @SecurityRequirement(name = "apiKey") },
+        summary = "Update a virtual collection ",
+        description = "The virtual collection identified by the URI will be updated, actually replaced, with the representation of the virtual collection sent in the request body.")
+    @ApiResponses(
+        value = {
+            @ApiResponse(
+                responseCode = "401",
+                description = "Missing or invalid API key in "+HttpHeaders.AUTHORIZATION+" header.",
+                content = @Content(mediaType = "text/html")
+            ),
+            @ApiResponse(
+                responseCode = "500",
+                description = "Unexpected server side error.",
+                content = {@Content(mediaType = "text/html")}
+            ),
+            @ApiResponse(
+                responseCode = "200",
+                description = "Representation of the updated collection.",
+                content = {@Content(mediaType = "application/json"), @Content(mediaType = "application/xml")}
+            )
+        })
     public Response updateVirtualCollection(InputStream input) throws VirtualCollectionRegistryException {
         Principal principal = security.getUserPrincipal();
         if (principal == null) {
@@ -190,10 +243,33 @@ public final class VirtualCollectionResource {
      * @return A response containing a {@link RestResponse}
      * @throws VirtualCollectionRegistryException
      */
+    @Secured
     @DELETE
     @Produces({MediaType.TEXT_XML,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_JSON})
+    @Operation(
+        security = { @SecurityRequirement(name = "apiKey") },
+        summary = "Delete a virtual collection ",
+        description = "The virtual collection referenced by the URI will be deleted.")
+    @ApiResponses(
+        value = {
+            @ApiResponse(
+                responseCode = "401",
+                description = "Missing or invalid API key in "+HttpHeaders.AUTHORIZATION+" header.",
+                content = @Content(mediaType = "text/html")
+            ),
+            @ApiResponse(
+                responseCode = "500",
+                description = "Unexpected server side error.",
+                content = {@Content(mediaType = "text/html")}
+            ),
+            @ApiResponse(
+                responseCode = "200",
+                description = "",
+                content = {@Content(mediaType = "application/json"), @Content(mediaType = "application/xml")}
+            )
+        })
     public Response deleteVirtualCollection()
             throws VirtualCollectionRegistryException {
         Principal principal = security.getUserPrincipal();

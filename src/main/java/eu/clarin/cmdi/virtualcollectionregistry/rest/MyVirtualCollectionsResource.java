@@ -23,6 +23,8 @@ import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
 
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -80,37 +82,36 @@ public class MyVirtualCollectionsResource {
      */
     @Secured
     @GET
-    @Produces({MediaType.TEXT_XML,
-        MediaType.APPLICATION_XML,
-        MediaType.APPLICATION_JSON})
-    @ApiResponses(
-        value = {
-            @ApiResponse(
-                    responseCode = "401",
-                    description = "Missing or invalid API key in "+HttpHeaders.AUTHORIZATION+" header.",
-                    content = @Content(mediaType = "text/plain")
-            ),
-            @ApiResponse(
-                    responseCode = "404",
-                    description = "Missing description.",
-                    content = @Content(mediaType = "text/plain")
-            ),
-            @ApiResponse(
-                    responseCode = "500",
-                    description = "Unexpected server side error.",
-                    content = {@Content(mediaType = "text/html")}
-            ),
-            @ApiResponse(
-                    responseCode = "200",
-                    description = "JVM system properties of a particular host.",
-                    content = {@Content(mediaType = "application/json"), @Content(mediaType = "application/xml")}
-            )
-        })
+    @Produces({MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Operation(
         security = { @SecurityRequirement(name = "apiKey") },
         summary = "Get the list of private collections",
         description = "Get the list of private collections for the user identified via the supplied API key.")
-    public Response getMyVirtualCollections(@QueryParam("q") String query,
+    @Parameters( value = {
+        @Parameter(name = "query", description = "Query to filter specific collections"),
+        @Parameter(name = "offset", description = "Start with this index. Default = 0"),
+        @Parameter(name = "count", description = "Include this many results. Use -1 for all results.")
+    })
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Missing or invalid API key in "+HttpHeaders.AUTHORIZATION+" header.",
+                            content = @Content(mediaType = "text/html")
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Unexpected server side error.",
+                            content = {@Content(mediaType = "text/html")}
+                    ),
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "List of all collections for the authenticated user.",
+                            content = {@Content(mediaType = "application/json"), @Content(mediaType = "application/xml")}
+                    )
+            })
+    public Response getMyVirtualCollections(
+            @QueryParam("q") String query,
             @DefaultValue("0") @QueryParam("offset") int offset,
             @DefaultValue("-1") @QueryParam("count") int count)
             throws VirtualCollectionRegistryException {

@@ -21,6 +21,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageEx
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder;
+
+import java.net.URI;
 import java.security.Principal;
 import java.util.*;
 import javax.servlet.ServletContext;
@@ -149,7 +151,8 @@ public class SubmissionUtils {
             return;
         }
 
-        String origin = request.getHeader("referer");
+        URI uri = URI.create(request.getHeader("referer"));
+        String originUrl = String.format("%s://%s%s", uri.getScheme(), uri.getHost(), uri.getPort() != -1 ? ":"+uri.getPort() : "");
 
         try {
             //Add shared fields to builder
@@ -158,7 +161,7 @@ public class SubmissionUtils {
                 .setName(params.getParameterValue("name").toString())
                 .setDescription(params.getParameterValue("description").toString())
                 .setOwner(principal)
-                .setOrigin(origin)//params.getParameterValue("origin").toString())
+                .setOrigin(originUrl)
                 .addCreator(principal)
                 .addKeywords(getAsStringList(params.getParameterValues("keyword")))
                 .setPurpose(getPurposeFromParams(params, "purpose"))
@@ -174,8 +177,8 @@ public class SubmissionUtils {
                         originalQuery = null;
                     }
                     vcBuilder = vcBuilder
-                        .addMetadataResources(getAsStringList(params.getParameterValues("metadataUri")), originalQuery)
-                        .addResourceResources(getAsStringList(params.getParameterValues("resourceUri")), originalQuery);
+                        .addMetadataResources(getAsStringList(params.getParameterValues("metadataUri")), originUrl, originalQuery)
+                        .addResourceResources(getAsStringList(params.getParameterValues("resourceUri")), originUrl, originalQuery);
                     break;
                 case INTENSIONAL:
                     vcBuilder = vcBuilder

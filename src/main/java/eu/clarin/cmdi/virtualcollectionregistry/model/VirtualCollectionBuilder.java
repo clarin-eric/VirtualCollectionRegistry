@@ -47,7 +47,6 @@ public class VirtualCollectionBuilder {
     }
     
     public VirtualCollection build() {
-        logger.debug("Build virtual collection");
         return this.vc;
     }
 
@@ -184,7 +183,7 @@ public class VirtualCollectionBuilder {
         }
      }
      
-     private void addResource(Resource.Type type, String uri, String originalQuery) {
+     private void addResource(Resource.Type type, String uri, String originUrl, String originalQuery) {
          logger.debug("Resource input: "+uri);
          try {
                 ResourceInput input = mapper.readValue(uri, ResourceInput.class);
@@ -192,39 +191,40 @@ public class VirtualCollectionBuilder {
                         ", label="+input.getLabel()+
                         ", description="+input.getDescription());
                 Resource r = new Resource(type, input.getUri());
-                r.setOriginalQuery(originalQuery);
                 r.setDescription(input.getDescription());
                 r.setLabel(input.label);
-                r.setOrigin(this.vc.getOrigin());
+                r.setOrigin(originUrl);
+                r.setOriginalQuery(originalQuery);
                 this.vc.getResources().add(r);
             } catch(IOException ex) {
                 logger.debug("Failed to unmarshal resource json: "+ex.getMessage()+", falling back to add as plain url with value="+uri);
                 Resource r = new Resource(type, uri);
                 r.setOrigin(this.vc.getOrigin());
+                r.setOriginalQuery(originalQuery);
                 this.vc.getResources().add(r);
             }
      }
      
-    public VirtualCollectionBuilder addMetadataResource(String uri, String originalQuery) {
-        this.addResource(Resource.Type.METADATA, uri, originalQuery);
+    public VirtualCollectionBuilder addMetadataResource(String uri, String originUrl, String originalQuery) {
+        this.addResource(Resource.Type.METADATA, uri, originUrl, originalQuery);
         return this;
     }
     
-    public VirtualCollectionBuilder addMetadataResources(List<String> metadataUris, String originalQuery) {
+    public VirtualCollectionBuilder addMetadataResources(List<String> metadataUris, String originUrl, String originalQuery) {
         for(String uri : metadataUris) {
-            addMetadataResource(uri, originalQuery);
+            addMetadataResource(uri, originUrl, originalQuery);
         }
         return this;
     }
     
-    public VirtualCollectionBuilder addResourceResource(String uri, String originalQuery) {
-        this.addResource(Resource.Type.RESOURCE, uri, originalQuery);
+    public VirtualCollectionBuilder addResourceResource(String uri, String originUrl, String originalQuery) {
+        this.addResource(Resource.Type.RESOURCE, uri, originUrl,originalQuery);
         return this;
     }
 
-    public VirtualCollectionBuilder addResourceResources(List<String> resourceUris, String originalQuery) {
+    public VirtualCollectionBuilder addResourceResources(List<String> resourceUris, String originUrl, String originalQuery) {
         for(String uri : resourceUris) {
-            this.addResourceResource(uri, originalQuery);
+            this.addResourceResource(uri, originUrl, originalQuery);
         }
         return this;
     }
