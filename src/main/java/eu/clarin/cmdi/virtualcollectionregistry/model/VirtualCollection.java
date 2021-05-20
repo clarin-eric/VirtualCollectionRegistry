@@ -37,6 +37,8 @@ import javax.persistence.Version;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Entity
 @Table(name = "virtualcollection")
@@ -67,6 +69,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 })
 public class VirtualCollection implements Serializable, IdentifiedEntity, PersistentIdentifieable, Citable {
     private static final long serialVersionUID = 1L;
+
+    private final static Logger logger = LoggerFactory.getLogger(VirtualCollection.class);
 
     public static final Type DEFAULT_TYPE_VALUE = Type.EXTENSIONAL;
     public static final Purpose DEFAULT_PURPOSE_VALUE = Purpose.REFERENCE;
@@ -733,14 +737,27 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     public void merge(VirtualCollection otherCollection) {
         //Add merged resources to this collection
         for(Resource r : otherCollection.getResources()) {
-            Resource new_r = new Resource();
-            new_r.setLabel(r.getLabel());
-            new_r.setDescription(r.getDescription());
-            new_r.setMimetype(r.getMimetype());
-            new_r.setRef(r.getRef());
-            new_r.setType(r.getType());
-            new_r.setMerged();
-            getResources().add(new_r);
+            boolean exists = false;
+            for(Resource existing_resource : getResources()) {
+                if(existing_resource.getRef().equalsIgnoreCase(r.getRef())) {
+                    exists = true;
+                }
+            }
+
+            if(!exists) {
+                Resource new_r = new Resource();
+                new_r.setLabel(r.getLabel());
+                new_r.setDescription(r.getDescription());
+                new_r.setMimetype(r.getMimetype());
+                new_r.setRef(r.getRef());
+                new_r.setType(r.getType());
+                new_r.setMerged();
+                new_r.setOrigin(r.getOrigin());
+                new_r.setOriginalQuery(r.getOriginalQuery());
+                getResources().add(new_r);
+            } else {
+                logger.warn("Skipping resource with duplicate ref: "+r.getRef());
+            }
         }
     }
 

@@ -11,6 +11,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.CreateAndEditV
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.CollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.PrivateCollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
+import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.Component;
@@ -38,7 +39,9 @@ import java.util.*;
 public class MergeCollectionsPage extends BasePage {
 
     private final static String MESSAGE_MERGE_NO_COLLECTION = "Please select a collection first.";
-    private final static String MESSAGE_MERGE_WITH_COLLECTION = "Merging with collection: %s";
+    private final static String MESSAGE_MERGE_WITH_COLLECTION = "Merging with collection: %s%s";
+    private final static String MESSAGE_MERGE_WITH_COLLECTION_NO_DUPLICATES = " (All references will be merged)";
+    private final static String MESSAGE_MERGE_WITH_COLLECTION_DUPLICATES = " (%d duplicate %s will not be merged)";
     private final static String LABEL_NO_PRIVATE_COLLECTIONS_AVAILABLE = "No private collections available.";
     private final static String LABEL_AVAILABLE_COLLECTIONS = "Available collections:";
 
@@ -255,7 +258,27 @@ public class MergeCollectionsPage extends BasePage {
         if(selectedCollection == null) {
             btnMergeWithMessageModel.setObject(MESSAGE_MERGE_NO_COLLECTION);
         } else {
-            btnMergeWithMessageModel.setObject(String.format(MESSAGE_MERGE_WITH_COLLECTION, selectedCollection.getTitle()));
+            String duplicatesMessage = "";
+            VirtualCollection submittedCollection = SubmissionUtils.retrieveCollection(getSession());
+            if(submittedCollection == null) {
+                logger.warn("Cannot compute duplicate references, submitted collection = null");
+            } else {
+                long notUniqueCount = 0;
+                for(Resource submittedResource : submittedCollection.getResources()) {
+                    for(Resource existingResource : selectedCollection.getResources()) {
+                        if(submittedResource.getRef().equalsIgnoreCase(existingResource.getRef())) {
+                            notUniqueCount++;
+                        }
+                    }
+                }
+                if(notUniqueCount > 0) {
+                    duplicatesMessage = String.format(MESSAGE_MERGE_WITH_COLLECTION_DUPLICATES, notUniqueCount, notUniqueCount == 1 ? "reference" : "references");
+                } else {
+                    duplicatesMessage = MESSAGE_MERGE_WITH_COLLECTION_NO_DUPLICATES;
+                }
+            }
+
+            btnMergeWithMessageModel.setObject(String.format(MESSAGE_MERGE_WITH_COLLECTION, selectedCollection.getTitle(), duplicatesMessage));
         }
         super.onBeforeRender();
     }
