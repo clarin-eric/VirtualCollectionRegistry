@@ -296,6 +296,9 @@ public final class VirtualCollectionResource {
     @Produces({MediaType.TEXT_XML,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_JSON})
+    @Operation(
+            summary = "Retrieve virtual collection publication state.",
+            description = "Retrieve the publication state of the virtual collection referenced by the URI .")
     public Response getVirtualCollectionState()
             throws VirtualCollectionRegistryException {
         VirtualCollection.State state = registry.getVirtualCollectionState(id);
@@ -333,6 +336,9 @@ public final class VirtualCollectionResource {
     @Produces({MediaType.TEXT_XML,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_JSON})
+    @Operation(
+            summary = "Update virtual collection publication state.",
+            description = "Update the publication state of the virtual collection referenced by the URI .")
     public Response setVirtualCollectionState(@PathParam("id") long id,
             State state)
             throws VirtualCollectionRegistryException {

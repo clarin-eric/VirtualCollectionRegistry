@@ -85,8 +85,8 @@ public class MyVirtualCollectionsResource {
     @Produces({MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Operation(
         security = { @SecurityRequirement(name = "apiKey") },
-        summary = "Get the list of private collections",
-        description = "Get the list of private collections for the user identified via the supplied API key.")
+        summary = "Retrieve a list of private collections",
+        description = "Retrieve a list of private collections for the user identified via the supplied API key.")
     @Parameters( value = {
         @Parameter(name = "query", description = "Query to filter specific collections"),
         @Parameter(name = "offset", description = "Start with this index. Default = 0"),

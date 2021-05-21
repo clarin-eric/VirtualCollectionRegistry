@@ -98,8 +98,8 @@ public class VirtualCollectionsResource {
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_JSON})
     @Operation(
-        summary = "Get the list of public collections",
-        description = "Get the list of public collections.")
+        summary = "Retrieve a list of public collections",
+        description = "Retrieve a list of public collections.")
     @Parameters( value = {
         @Parameter(name = "query", description = "Query to filter specific collections"),
         @Parameter(name = "offset", description = "Start with this index. Default = 0"),
