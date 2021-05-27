@@ -92,7 +92,7 @@ public class SubmissionUtils {
                 }
             }
         } else if(confCtx == null) {
-            logger.warn("Failed to load ConfigContext from ServletContext");
+            logger.warn("Failed to load ConfigContext from ServletContext (servletCtx = "+(servletCtx == null ? "null" : servletCtx.toString())+")");
         } else if(confCtx.getConfiguration() == null) {
             logger.warn("Configuration in config context is null");
         }
@@ -179,7 +179,7 @@ public class SubmissionUtils {
             switch(type) {
                 case EXTENSIONAL:
                     String originalQuery = params.getParameterValue("original_query").toString();
-                    if(originalQuery.isEmpty()) {
+                    if(originalQuery != null && originalQuery.isEmpty()) {
                         originalQuery = null;
                     }
                     vcBuilder = vcBuilder
