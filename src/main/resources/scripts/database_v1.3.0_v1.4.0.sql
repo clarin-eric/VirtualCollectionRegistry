@@ -13,6 +13,7 @@ INSERT INTO `config` (`key`, `value`) VALUES ('db_version_check', @current_value
 ALTER TABLE virtualcollection ADD COLUMN `origin` VARCHAR(255) NULL;
 ALTER TABLE resource ADD COLUMN `origin` VARCHAR(255) NULL;
 ALTER TABLE resource ADD COLUMN `original_query` VARCHAR(255) NULL;
+RENAME TABLE user TO vcr_user;
 
 -- Update current database config value
 UPDATE `config` SET `value` = '1.4.0' WHERE `key` = 'db_version';

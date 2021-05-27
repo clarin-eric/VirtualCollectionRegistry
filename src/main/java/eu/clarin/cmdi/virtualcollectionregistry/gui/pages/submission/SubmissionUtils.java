@@ -76,19 +76,25 @@ public class SubmissionUtils {
 
         //Load fallback username and possible username header names from SSHAA config
         ConfigContext confCtx = ConfigContext.getActiveConfigContext(servletCtx);
-        String fallbackUsername = confCtx.getConfiguration().getFallbackUid();
-        Set<String> shibUsernameHeaderNames = confCtx.getConfiguration().getShibUsernameIDs();
+        if(confCtx != null && confCtx.getConfiguration() != null) {
+            String fallbackUsername = confCtx.getConfiguration().getFallbackUid();
+            Set<String> shibUsernameHeaderNames = confCtx.getConfiguration().getShibUsernameIDs();
 
-        authz = request.getHeader("auth_type");
-        if(authz != null && authz.equalsIgnoreCase("shibboleth")) {
-            //Fetch username from any of the supported saml headers
-            for(String usernameHeaderName : shibUsernameHeaderNames) {
-                String value = request.getHeader(usernameHeaderName);
-                if(value != null && !value.equalsIgnoreCase(fallbackUsername)) {
-                    username = value;
-                    break;
+            authz = request.getHeader("auth_type");
+            if(authz != null && authz.equalsIgnoreCase("shibboleth")) {
+                //Fetch username from any of the supported saml headers
+                for(String usernameHeaderName : shibUsernameHeaderNames) {
+                    String value = request.getHeader(usernameHeaderName);
+                    if(value != null && !value.equalsIgnoreCase(fallbackUsername)) {
+                        username = value;
+                        break;
+                    }
                 }
             }
+        } else if(confCtx == null) {
+            logger.warn("Failed to load ConfigContext from ServletContext");
+        } else if(confCtx.getConfiguration() == null) {
+            logger.warn("Configuration in config context is null");
         }
         
         return null;

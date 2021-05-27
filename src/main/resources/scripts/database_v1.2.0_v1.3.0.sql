@@ -10,7 +10,7 @@ INSERT INTO `config` (`key`, `value`) VALUES ('db_version_check', @current_value
 
 -- Apply updates
 
-CREATE TABLE `api_keys` (
+CREATE TABLE `api_key` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `user_id` bigint(20) NOT NULL,
   `value` varchar(255) NOT NULL,
