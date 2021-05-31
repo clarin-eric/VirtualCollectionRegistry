@@ -36,7 +36,7 @@ public class UserProfilePage extends BasePage {
 
     private final Component componentToUpdate;
 
-    private List<ApiKey> keys;
+    private List<ApiKey> keys = new LinkedList<>();
 
     private Properties i18n = new Properties();
 
