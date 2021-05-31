@@ -1,11 +1,13 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
 import com.google.common.collect.Lists;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermissionException;
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.DateConverter;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.DetachableVirtualCollectionModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin.AdminPage;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
@@ -36,10 +38,8 @@ import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulato
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
-import org.apache.wicket.extensions.markup.html.repeater.data.table.PropertyColumn;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.ComponentTag;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.link.AbstractLink;
@@ -178,8 +178,12 @@ public class VirtualCollectionDetailsPage extends BasePage {
             return;
         }
         
-        //Will throw and exception and abort flow if authorization fails
-        checkAccess(model.getObject());
+        //Will throw an exception and abort flow if authorization fails
+        try {
+            checkAccess(model.getObject());
+        } catch (VirtualCollectionRegistryPermissionException e) {
+            throw new UnauthorizedActionException(this, Component.RENDER);
+        }
 
         final Link<Void> backLink = new Link<Void>("back") {
             @Override
@@ -527,6 +531,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
      * @throws UnauthorizedActionException if the VC is private and the current
      * user is not the owner
      */
+    /*
     private void checkAccess(final VirtualCollection vc) throws UnauthorizedActionException {
         if (vc.isPrivate()
                 && !isUserAdmin()
@@ -535,7 +540,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
             throw new UnauthorizedActionException(this, Component.RENDER);
         }
     }
-
+*/
     @Override
     protected void onBeforeRender() {
         super.onBeforeRender();

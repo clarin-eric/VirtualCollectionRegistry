@@ -21,7 +21,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
 @Entity
-@Table(name = "user")
+@Table(name = "vcr_user")
 @NamedQueries({
     @NamedQuery(name = "User.findByName",
                 query = "SELECT u FROM User u WHERE u.name = :name")
@@ -40,16 +40,23 @@ public class User implements Serializable, IdentifiedEntity {
     @Column(name = "display_name", length = 255)
     private String displayName;
 
-    @OneToMany(cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY,
-               mappedBy = "owner",
-               orphanRemoval = true)
-    private Set<VirtualCollection> collections =
-        new LinkedHashSet<VirtualCollection>();
+    @OneToMany(
+        cascade = CascadeType.ALL,
+        fetch = FetchType.LAZY,
+        mappedBy = "owner",
+        orphanRemoval = true
+    )
+    private Set<VirtualCollection> collections = new LinkedHashSet<VirtualCollection>();
 
+    @OneToMany(
+        cascade = CascadeType.ALL,
+        fetch = FetchType.EAGER,
+        mappedBy = "user",
+        orphanRemoval = true
+    )
+    private Set<ApiKey> apiKeys = new LinkedHashSet<ApiKey>();
 
-    protected User() {
-    }
+    protected User() { }
 
     public User(String name, String displayName) {
         super();
@@ -129,4 +136,11 @@ public class User implements Serializable, IdentifiedEntity {
             .toHashCode();
     }
 
+    public Set<ApiKey> getApiKeys() {
+        return apiKeys;
+    }
+
+    public void setApiKeys(Set<ApiKey> apiKeys) {
+        this.apiKeys = apiKeys;
+    }
 } // class User

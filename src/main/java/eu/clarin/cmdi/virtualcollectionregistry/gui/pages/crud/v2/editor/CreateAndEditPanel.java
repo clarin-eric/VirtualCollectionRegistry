@@ -288,6 +288,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
                 }
             }
         };
+        btnSave.setOutputMarkupId(true);
         //disableSaveButton();
         add(btnSave);
 
@@ -340,6 +341,9 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
 
         //Update field visibility based on the active editor mode
         updateAllFieldVisability();
+
+        //Initial validation to trigger update of UI buttons
+        validate();
     }
 
     private void toggleHelpMode() {
@@ -357,13 +361,13 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     }
 
     private void enableSaveButton() {
-        btnSave.setEnabled(false);
-        btnSave.add(new AttributeModifier("disabled", "true"));
+        btnSave.setEnabled(true);
+        btnSave.add(AttributeModifier.remove("disabled"));
     }
 
     private void disableSaveButton() {
-        btnSave.setEnabled(true);
-        btnSave.add(AttributeModifier.remove("disabled"));
+        btnSave.setEnabled(false);
+        btnSave.add(new AttributeModifier("disabled", "true"));
     }
 
     private List<String> enumValuesAsList(Object[] values) {
@@ -384,12 +388,22 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
 
     @Override
     public void handleEvent(Event event) {
-        if(validate()) {
-            //enableSaveButton();
+        logger.trace("handleEvent:"+
+                " class="+event.getClass().getCanonicalName()+
+                ", data="+event.getData()+
+                ", type="+event.getType()+
+                ", target="+event.getAjaxRequestTarget());
+
+        validate();
+
+        if(event instanceof ReferencesEditor.CustomDataUpdateEvent) {
+            if(referencesEditor.didValidationStateChange()) {
+                event.getAjaxRequestTarget().add(referencesEditor);
+            }
+            event.getAjaxRequestTarget().add(btnSave);
         } else {
-            //disableSaveButton();
+            event.getAjaxRequestTarget().add(this);
         }
-        event.getAjaxRequestTarget().add(this);
     }
 
     private void addField(AbstractField c, Mode[] modes, boolean required) {
@@ -427,6 +441,9 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
             intQueryUri.setObject(c.getGeneratedBy().getURI());
             intDescription.setObject(c.getGeneratedBy().getDescription());
         }
+
+        //redo initial validation
+        validate();
     }
 
     private void reset() {
@@ -452,13 +469,26 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     }
 
     private boolean validate() {
-        logger.info("Validating collection");
+        logger.debug("Validating collection");
+        boolean valid = true;
         for(Field f : fields) {
             if(!f.validate()) {
-                return false;
+                valid = false;
             }
         }
-        return true;
+
+        //Update buttons
+        if(valid) {
+            //enableSaveButton();
+            btnSave.setEnabled(true);
+            btnSave.add(AttributeModifier.remove("disabled"));
+        } else {
+            //disableSaveButton();
+            btnSave.setEnabled(false);
+            btnSave.add(new AttributeModifier("disabled", "true"));
+        }
+
+        return valid;
     }
 
     private void persist(final AjaxRequestTarget target) {
@@ -477,6 +507,8 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
 
         if (this.originalCollection != null && this.originalCollection.getId() != null) {
             newCollection = originalCollection;
+        } else if(this.originalCollection != null) {
+            newCollection.setOrigin(originalCollection.getOrigin());
         }
 
         newCollection.setDateModified(new Date());

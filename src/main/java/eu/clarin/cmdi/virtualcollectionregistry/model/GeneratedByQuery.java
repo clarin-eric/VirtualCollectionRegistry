@@ -18,7 +18,7 @@ public class GeneratedByQuery implements Serializable {
     @Column(name = "generatedby_query_profile", length = 255)
     private String profile;
 
-    @Lob
+    //@Lob
     @Basic(fetch = FetchType.EAGER)
     @Column(name = "generatedby_query_value", length = 8192)
     private String value;

@@ -3,10 +3,15 @@ package eu.clarin.cmdi.virtualcollectionregistry.pid;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import org.apache.commons.io.IOUtils;
+import org.apache.http.entity.StringEntity;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.io.StringWriter;
+import java.io.UnsupportedEncodingException;
+import java.nio.charset.StandardCharsets;
 import java.util.Date;
 
 public class DoiPersistentIdentifierProviderTest {
@@ -15,11 +20,11 @@ public class DoiPersistentIdentifierProviderTest {
     private static String prefix = "10.5438";
 
     @Test
-    public void testCreate() throws JsonProcessingException {
+    public void testCreate() throws JsonProcessingException, UnsupportedEncodingException {
 
         VirtualCollection vc = new VirtualCollection();
         vc.setId(1L);
-        vc.setName("Test VC");
+        vc.setName("Test VC éë");
         Creator c = new Creator("Test", " Person");
         c.setOrganisation("Test Org");
         vc.getCreators().add(c);
@@ -30,5 +35,10 @@ public class DoiPersistentIdentifierProviderTest {
         String json = request.toJsonString();;
 
         logger.info("Json={}", json);
+
+        StringEntity jsonEntity = new StringEntity(json, StandardCharsets.UTF_8);
+        logger.info("entity content type={}", jsonEntity.getContentType());
+
+
     }
 }

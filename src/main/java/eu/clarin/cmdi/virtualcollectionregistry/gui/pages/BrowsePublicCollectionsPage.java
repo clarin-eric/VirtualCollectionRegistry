@@ -8,6 +8,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -36,17 +37,6 @@ public class BrowsePublicCollectionsPage extends BasePage {
             AjaxLink lrsLink = UIUtils.getLrsRedirectAjaxLink("lrs", model, vcrConfig.getSwitchboardEndpoint());
             lrsLink.setVisible(vcrConfig.isSwitchboardEnabledForCollections());
             add(lrsLink);
-            /*
-            final AjaxLink<VirtualCollection> detailsLink
-                    = new AjaxLink<VirtualCollection>("details", model) {
-                        @Override
-                        public void onClick(AjaxRequestTarget target) {
-                            doDetails(target, getModel());
-                        }
-                    };
-            UIUtils.addTooltip(detailsLink, "View collection details");
-            add(detailsLink);    
-            */
         }
         
     } // class BrowsePublicCollectionsPage.ActionsPanel

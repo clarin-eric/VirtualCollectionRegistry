@@ -16,19 +16,20 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission;
 
+import de.mpg.aai.shhaa.config.ConfigContext;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder;
+
+import java.net.URI;
 import java.security.Principal;
-import java.util.ArrayList;
-import java.util.Base64;
-import java.util.Collections;
-import java.util.Date;
-import java.util.Enumeration;
-import java.util.List;
+import java.util.*;
+import javax.servlet.ServletContext;
 import javax.servlet.http.Cookie;
 import javax.servlet.http.HttpServletRequest;
+
+import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.IRequestParameters;
 import org.apache.wicket.request.http.WebRequest;
 import org.apache.wicket.request.http.WebResponse;
@@ -45,16 +46,10 @@ public class SubmissionUtils {
     private static Logger logger = LoggerFactory.getLogger(SubmissionUtils.class);
     
     private final static String COLLECTION_ATTRIBUTE_NAME="submitted_collection";
-    //private final static String RETURN_ATTRIBUTE_NAME="return";
-    
-    private static void debugHttpHeaders(WebRequest request) {
-         HttpServletRequest r = (HttpServletRequest)request.getContainerRequest();
-        Enumeration e = r.getHeaderNames();
-        while(e.hasMoreElements()) {
-            String name = e.nextElement().toString();
-            logger.info("Header: {}={}", name, r.getHeader(name));
-        }
-    }
+    private final static String COLLECTION_MERGE_ID_ATTRIBUTE_NAME="submitted_collection_merge_id";
+
+    private final static VirtualCollection.Reproducibility DEFAULT_REPRODUCIBILITY = VirtualCollection.Reproducibility.INTENDED;
+    private final static VirtualCollection.Purpose DEFAULT_PURPOSE = VirtualCollection.Purpose.REFERENCE;
     
     /**
      * Try to obtain a meaningful username from the headers sent by the client in
@@ -63,7 +58,7 @@ public class SubmissionUtils {
      * @param request
      * @return 
      */
-    private static String getUserAuthWorkaround(WebRequest request) {       
+    private static String getUserAuthWorkaround(WebRequest request, ServletContext servletCtx) {
         //Basic authentication
         String authz = request.getHeader("authorization");
         if(authz != null) {
@@ -75,25 +70,34 @@ public class SubmissionUtils {
                 return p2[0];
             }
         }
-        
-        //SAML authentication        
-        authz = request.getHeader("auth_type");
-        if(authz != null && authz.equalsIgnoreCase("shibboleth")) {
-            String username = request.getHeader("oid-edupersonprincipalname");
-            if(username != null) {
-                return username;
+
+        //SAML authentication
+        String username = null;
+
+        //Load fallback username and possible username header names from SSHAA config
+        ConfigContext confCtx = ConfigContext.getActiveConfigContext(servletCtx);
+        if(confCtx != null && confCtx.getConfiguration() != null) {
+            String fallbackUsername = confCtx.getConfiguration().getFallbackUid();
+            Set<String> shibUsernameHeaderNames = confCtx.getConfiguration().getShibUsernameIDs();
+
+            authz = request.getHeader("auth_type");
+            if(authz != null && authz.equalsIgnoreCase("shibboleth")) {
+                //Fetch username from any of the supported saml headers
+                for(String usernameHeaderName : shibUsernameHeaderNames) {
+                    String value = request.getHeader(usernameHeaderName);
+                    if(value != null && !value.equalsIgnoreCase(fallbackUsername)) {
+                        username = value;
+                        break;
+                    }
+                }
             }
-            username = request.getHeader("mace-edupersonprincipalname");
-            if(username != null) {
-                return username;
-            }
-            username = request.getHeader("edupersontargetedid");
-            if(username != null) {
-                return username;
-            }
+        } else if(confCtx == null) {
+            logger.warn("Failed to load ConfigContext from ServletContext (servletCtx = "+(servletCtx == null ? "null" : servletCtx.toString())+")");
+        } else if(confCtx.getConfiguration() == null) {
+            logger.warn("Configuration in config context is null");
         }
         
-        return null;
+        return username;
     }
     
     /**
@@ -104,6 +108,8 @@ public class SubmissionUtils {
      * FormParam("description") String description,            
      * 
      * //optional params
+     * FormParam("origin") String origin //Associated with new collection and all resources, to support tracking of origin of resources.
+     *
      * FormParam("keyword") List<String> keywords,
      * FormParam("purpose") Purpose purpose,
      * FormParam("reproducibility") Reproducibility reproducibility,
@@ -125,14 +131,19 @@ public class SubmissionUtils {
      * @param type
      * @return 
      */
-    public static VirtualCollection checkSubmission(WebRequest request, WebResponse response, ApplicationSession session, VirtualCollection.Type type) {          
-        final String username = getUserAuthWorkaround(request);
+    public static void checkSubmission(WebRequest request, WebResponse response, ApplicationSession session, VirtualCollection.Type type) {
+        debugWebRequest(request);
+
+        final ServletContext servletCtxt = WebApplication.get().getServletContext();
+        final IRequestParameters params = request.getPostParameters();
+        final String username = getUserAuthWorkaround(request, servletCtxt);
 
         //Get user principal from the server context. If this is null, try the username
-        //fallback to workaround the issue where the principal is available in the 
+        //fallback to workaround the issue where the principal is not available in the
         //filter chain yet
         Principal principal = session.getPrincipal();
         if(principal == null && username != null) {
+            logger.debug("Principal is null, using username={} instead", username);
             principal = new Principal() {
                 @Override
                 public String getName() {
@@ -140,119 +151,75 @@ public class SubmissionUtils {
                 }        
             };
         } else if (principal != null) {
-            logger.info("Using username={} from principal", principal.getName());
+            logger.debug("Using principal={}", principal.getName());
+        } else {
+            logger.warn("Both username and principal are null. Aborting submission");
+            return;
         }
-        
-        logger.info("Request charset="+request.getCharset());
-        logger.info("Container request="+request.getContainerRequest().getClass());
-        HttpServletRequest req = (HttpServletRequest)request.getContainerRequest();
-        Enumeration e = req.getHeaderNames();
-        
-        logger.info("HttpServletRequest:");
-        for(Object name : Collections.list(req.getHeaderNames())) {
-            String values = "";
-            for(Object value : Collections.list(req.getHeaders(name.toString()))) {
-                if(!values.isEmpty()) {
-                    values += "; ";
-                }
-                values += value.toString();
-            }
-            logger.info("\tHeader, name="+name.toString()+", values="+values);
-        }
-        
-        for(Object name : Collections.list(req.getParameterNames())) {
-            String values = "";
-            for(Object value : req.getParameterValues(name.toString())) {
-                if(!values.isEmpty()) {
-                    values += "; ";
-                }
-                values += value.toString();
-            }
-            logger.info("\tParam, name="+name.toString()+", values="+values);
-        }
-        
-        logger.info("Wicket WebRequest:");
-        IRequestParameters params = request.getPostParameters();
-        for(String name : params.getParameterNames()) {
-            String values = "";
-            for(StringValue value : params.getParameterValues(name)) {
-                if(!values.isEmpty()) {
-                    values += "; ";
-                }
-                values += value.toString();
-            }
-            logger.info("\tParam name="+name+", value(s)="+values);
-        }
-        
-        String name = params.getParameterValue("name").toString();
-        String description = params.getParameterValue("description").toString();
-        String reproducibilityNotice = params.getParameterValue("reproducibilityNotice").toString();       
-        
-        String val = params.getParameterValue("reproducibility").toString();
-        VirtualCollection.Reproducibility reproducibility = VirtualCollection.Reproducibility.INTENDED;
-        if(val != null && !val.isEmpty()) {
-            reproducibility = VirtualCollection.Reproducibility.valueOf(val);
-        }
-        
-        val = params.getParameterValue("purpose").toString();
-        VirtualCollection.Purpose purpose = VirtualCollection.Purpose.REFERENCE;
-        if(val != null && !val.isEmpty()) {
-            purpose = VirtualCollection.Purpose.valueOf(val);
-        }
-        
-        VirtualCollection vc = null; 
+
+        URI uri = URI.create(request.getHeader("referer"));
+        String originUrl = String.format("%s://%s%s", uri.getScheme(), uri.getHost(), uri.getPort() != -1 ? ":"+uri.getPort() : "");
+
         try {
-            
+            //Add shared fields to builder
+            VirtualCollectionBuilder vcBuilder = new VirtualCollectionBuilder()
+                .setType(type)
+                .setName(params.getParameterValue("name").toString())
+                .setDescription(params.getParameterValue("description").toString())
+                .setOwner(principal)
+                .setOrigin(originUrl)
+                .addCreator(principal)
+                .addKeywords(getAsStringList(params.getParameterValues("keyword")))
+                .setPurpose(getPurposeFromParams(params, "purpose"))
+                .setReproducibility(getReproducibilityFromParams(params, "reproducibility"))
+                .setReproducibilityNotice(params.getParameterValue("reproducibilityNotice").toString())
+                .setCreationDate(new Date());
+
+            //Add extensional or intenstional specific fields to builder
             switch(type) {
-                case EXTENSIONAL:                 
-                    vc = new VirtualCollectionBuilder()
-                        .setName(name)
-                        .setOwner(principal) 
-                        .setType(VirtualCollection.Type.EXTENSIONAL)
-                        .addCreator(principal)
-                        .addMetadataResources(getAsStringList(params.getParameterValues("metadataUri")))
-                        .addResourceResources(getAsStringList(params.getParameterValues("resourceUri")))
-                        .addKeywords(getAsStringList(params.getParameterValues("keyword")))
-                        .setDescription(description)
-                        .setPurpose(purpose)
-                        .setReproducibility(reproducibility)
-                        .setReproducibilityNotice(reproducibilityNotice)
-                        .setCreationDate(new Date())     
-                        .build();
+                case EXTENSIONAL:
+                    String originalQuery = params.getParameterValue("original_query").toString();
+                    if(originalQuery != null && originalQuery.isEmpty()) {
+                        originalQuery = null;
+                    }
+                    vcBuilder = vcBuilder
+                        .addMetadataResources(getAsStringList(params.getParameterValues("metadataUri")), originUrl, originalQuery)
+                        .addResourceResources(getAsStringList(params.getParameterValues("resourceUri")), originUrl, originalQuery);
                     break;
-                case INTENSIONAL: 
-                    params.getParameterValue("queryDescription");
-                    params.getParameterValue("queryUri");
-                    params.getParameterValue("queryProfile");
-                    params.getParameterValue("queryValue");
-                     vc = new VirtualCollectionBuilder()
-                        .setName(name)
-                        .setOwner(principal) 
-                        .setType(VirtualCollection.Type.INTENSIONAL)
-                        .addCreator(principal)                    
-                        .addKeywords(getAsStringList(params.getParameterValues("keyword")))
-                        .setDescription(description)
-                        .setPurpose(purpose)
-                        .setReproducibility(reproducibility)
-                        .setReproducibilityNotice(reproducibilityNotice)
-                        .setCreationDate(new Date())
-                        .build();
+                case INTENSIONAL:
+                    vcBuilder = vcBuilder
+                            .setIntenstionalQuery(
+                                params.getParameterValue("queryDescription").toString(),
+                                params.getParameterValue("queryUri").toString(),
+                                params.getParameterValue("queryProfile").toString(),
+                                params.getParameterValue("queryValue").toString()
+                            );
                     break;
             }
-            
-                storeCollection(session, vc);      //Serialize the collection to the current session           
-            logger.info("Build virtual collection");
+
+            //Build collection and serialize to the current session
+            storeCollection(session, vcBuilder.build());
         } catch(VirtualCollectionRegistryUsageException ex) {
             logger.error("Failed to build virtual collection", ex);
         }
-        
-        if(principal == null) {
-            //Not authenticated
-            logger.warn("Not authenticated");
-            return null;
+    }
+
+    private static VirtualCollection.Reproducibility getReproducibilityFromParams(IRequestParameters params, String paramName) {
+        VirtualCollection.Reproducibility result = DEFAULT_REPRODUCIBILITY;
+        String val = params.getParameterValue(paramName).toString();
+        if(val != null && !val.isEmpty()) {
+            result = VirtualCollection.Reproducibility.valueOf(val);
         }
-        
-        return vc;
+        return result;
+    }
+
+    private static VirtualCollection.Purpose getPurposeFromParams(IRequestParameters params, String paramName) {
+        VirtualCollection.Purpose result = DEFAULT_PURPOSE;
+        String val = params.getParameterValue(paramName).toString();
+        if(val != null && !val.isEmpty()) {
+            result = VirtualCollection.Purpose.valueOf(val);
+        }
+        return result;
     }
     
     private static List<String> getAsStringList(List<StringValue> input) {
@@ -267,121 +234,80 @@ public class SubmissionUtils {
     
     public static void clearCollectionFromSession(ApplicationSession session) {
         if(session.getAttribute(COLLECTION_ATTRIBUTE_NAME) != null) {
-            logger.debug("Clearing virtual collection from session");
+            logger.debug("Clearing virtual collection ("+COLLECTION_ATTRIBUTE_NAME+") from session");
             session.setAttribute(COLLECTION_ATTRIBUTE_NAME, null); 
+        }
+        if(session.getAttribute(COLLECTION_MERGE_ID_ATTRIBUTE_NAME) != null) {
+            logger.debug("Clearing collection merge id ("+COLLECTION_MERGE_ID_ATTRIBUTE_NAME+") from session");
+            session.setAttribute(COLLECTION_MERGE_ID_ATTRIBUTE_NAME, null);
         }
     }
     
-    protected static void storeCollection(ApplicationSession session, VirtualCollection vc) {
-        logger.info("Storing collection into session: "+session.getId());
+    public static void storeCollection(ApplicationSession session, VirtualCollection vc) {
+        logger.debug("Storing collection into session: "+session.getId());
         session.setAttribute(COLLECTION_ATTRIBUTE_NAME, vc); 
-        //storeCollectionInCookie
     }
     
     public static VirtualCollection retrieveCollection(ApplicationSession session) {
-        logger.info("Loading collection from session: "+session.getId());
-        VirtualCollection vc = (VirtualCollection)session.getAttribute(COLLECTION_ATTRIBUTE_NAME);        
-        //VirtualCollection vc = readCollectionFromCookie();
-        return vc;
-    }
-    
-     /*
-    private void storeCollectionInCookie() {       
-        String cookieValue = serializeCollection();
-        WebResponse webResponse = (WebResponse)RequestCycle.get().getResponse();
-        Cookie cookie = new Cookie("collection", cookieValue);
-        cookie.setPath("/vcr");
-        webResponse.addCookie(cookie);
-        Cookie cookie2 = new Cookie("return", "extensional"); //TODO: how to make this dynamic
-        cookie2.setPath("/vcr");
-        webResponse.addCookie(cookie2);
-        
-    }
-    
-    private VirtualCollection readCollectionFromCookie() {
-        Cookie cookie = ((WebRequest)RequestCycle.get().getRequest()).getCookie("collection");
-        if (cookie == null) {
+        logger.debug("Loading collection from session: "+session.getId());
+        Object obj = session.getAttribute(COLLECTION_ATTRIBUTE_NAME);
+        if(obj == null) {
             return null;
         }
-        return deserializeCollection(cookie.getValue());
+        return (VirtualCollection)obj;
     }
-    
-     private String getEncodedValue(StringValue val) {
-        String result = "";
-        if(val != null && val.toString() != null) {             
-            result = getEncodedValue(val.toString());
-        }
-        return result;
-    }
-    
-    private String getEncodedValue(String val) {
-        String result = "";
-        if(val != null) {             
-            try {
-                result = URLEncoder.encode(val, "UTF-8");
-            } catch(UnsupportedEncodingException ex) {
-                logger.warn("Failed to encode value.", ex);
-            }
-        }
-        return result;
-    }
-    
-   
-    
-    private String serializeCollection() {
-        VirtualCollection vc = checkSubmission(VirtualCollection.Type.EXTENSIONAL);
-        if(vc == null) {
-            return null;
-        }
-        IRequestParameters params = RequestCycle.get().getRequest().getPostParameters();
 
-        String serialized = "name="+getEncodedValue(vc.getName());
-        serialized += "&description="+getEncodedValue(vc.getDescription());
-        serialized += "&reproducibilityNotice="+getEncodedValue(vc.getReproducibilityNotice());
-        if(vc.getPurpose() == null) {
-            serialized += "&purpose=";
-        } else {
-            serialized += "&purpose="+getEncodedValue(vc.getPurpose().toString());
-        }
-        for(String val : vc.getKeywords()) {
-            serialized += "&keyword="+getEncodedValue(val);
-        }
-        for(Resource val : vc.getResources()) {
-            switch(val.getType()) {
-                case METADATA:
-                    serialized += "&metadataUri="+getEncodedValue(val.getRef());
-                    break;
-                case RESOURCE:
-                    serialized += "&resourceUri="+getEncodedValue(val.getRef());
-                    break;
-            } 
-        }
-        return serialized;
+    public static void storeCollectionMergeId(ApplicationSession session, Long id) {
+        session.setAttribute(COLLECTION_MERGE_ID_ATTRIBUTE_NAME, id);
     }
-    
-    private VirtualCollection deserializeCollection(String serialized) {
-         VirtualCollectionBuilder builder = new VirtualCollectionBuilder();        
-        try {
-            List<NameValuePair> params = URLEncodedUtils.parse(serialized, Charset.forName("UTF-8"));
-            for(NameValuePair param : params) {
-                switch(param.getName()) {
-                    case "name": builder.setName(param.getValue()); break;
-                    case "description": builder.setDescription(param.getValue()); break;
-                    case "reproducibilityNotice": builder.setReproducibilityNotice(param.getValue()); break;
-                    case "purpose": 
-                            if(param.getValue() != null && !param.getValue().isEmpty()) {
-                                builder.setPurpose(VirtualCollection.Purpose.valueOf(param.getValue())); 
-                            }
-                        break;
-                    case "keyword": builder.addKeyword(param.getValue()); break;
-                    case "metadataUri": builder.addMetadataResource(param.getValue()); break;
-                    case "resourceUri": builder.addResourceResource(param.getValue()); break;
+
+    public static Long retrieveCollectionMergeId(ApplicationSession session) {
+        Object obj = session.getAttribute(COLLECTION_MERGE_ID_ATTRIBUTE_NAME);
+        if(obj == null) {
+            return null;
+        }
+        return (Long)obj;
+    }
+
+    public static void debugWebRequest(WebRequest request) {
+        logger.trace("Request charset="+request.getCharset());
+        logger.trace("Container request="+request.getContainerRequest().getClass());
+        HttpServletRequest req = (HttpServletRequest)request.getContainerRequest();
+
+        logger.trace("HttpServletRequest:");
+        for(Object name : Collections.list(req.getHeaderNames())) {
+            String values = "";
+            for(Object value : Collections.list(req.getHeaders(name.toString()))) {
+                if(!values.isEmpty()) {
+                    values += "; ";
                 }
+                values += value.toString();
             }
-        } catch(VirtualCollectionRegistryUsageException ex) {
-            logger.warn("Failed to build vc", ex);
+            logger.trace("\tHeader, name="+name.toString()+", values="+values);
         }
-        return builder.build();
+
+        for(Object name : Collections.list(req.getParameterNames())) {
+            String values = "";
+            for(Object value : req.getParameterValues(name.toString())) {
+                if(!values.isEmpty()) {
+                    values += "; ";
+                }
+                values += value.toString();
+            }
+            logger.trace("\tParam, name="+name.toString()+", values="+values);
+        }
+
+        logger.trace("Wicket WebRequest:");
+        IRequestParameters params = request.getPostParameters();
+        for(String name : params.getParameterNames()) {
+            String values = "";
+            for(StringValue value : params.getParameterValues(name)) {
+                if(!values.isEmpty()) {
+                    values += "; ";
+                }
+                values += value.toString();
+            }
+            logger.trace("\tParam name="+name+", value(s)="+values);
+        }
     }
-*/
 }

@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+    <head />
+    <body>
+        <wicket:extend>
+
+            <div class="row">
+                <div class="col-xs-12">
+
+                    <h1 wicket:id="lbl_server_config">[Server configuration]</h1>
+                    <div class="row">
+                        <div class="col-xs-6">
+                            <h3>Persistent Identifiers Provider(s)</h3>
+                            <ul wicket:id="pid_list">
+                                <div wicket:id="pid_list_item">pid provider</div>
+                            </ul>
+                        </div>
+                        <div class="col-xs-6">
+                            <h3>Administrators</h3>
+                            <div wicket:id="pnl_admins">[admins]</div>
+                            <h3 wicket:id="lbl_pnl_database">[Database]</h3>
+                            <div wicket:id="pnl_database">[database info panel]</div>
+                        </div>
+                    </div>
+
+                </div>
+            </div>
+
+            <div class="row">
+                <div class="col-xs-12">
+                    <h1>Collection administration</h1>
+                    <form wicket:id="spaceSelectForm">
+                        <label for="space">Collections space:</label>
+                        <select id="space" wicket:id="space">
+                            <option>Public</option>
+                            <option>User 1</option>
+                            <option>User 2</option>
+                        </select>
+                        <input type="submit" value="Select" />
+                    </form>
+                    <wicket:container wicket:id="collections">[collections]</wicket:container>
+                </div>
+            </div>
+
+        </wicket:extend>
+    </body>
+</html>

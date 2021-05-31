@@ -51,8 +51,8 @@ import org.springframework.stereotype.Service;
 public class DoiPersistentIdentifierProvider implements PersistentIdentifierProvider, Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(DoiPersistentIdentifierProvider.class);
-    private final DoiPidWriter pidWriter;
-    private final Configuration configuration;
+    private final transient     DoiPidWriter pidWriter;
+    private final transient Configuration configuration;
     private final String id = "DOI";
     private boolean primary = false;
     private String baseUri = null;
@@ -66,6 +66,7 @@ public class DoiPersistentIdentifierProvider implements PersistentIdentifierProv
     public void setBaseUri(String baseUri) {
         this.baseUri = baseUri;
     }
+
 
     /**
      *
@@ -128,10 +129,29 @@ public class DoiPersistentIdentifierProvider implements PersistentIdentifierProv
     }
 
     //Make sure we return the default infix value if an empty infix has been set
-    protected String getInfix() {
+    @Override
+    public String getInfix() {
         if(this.infix == null || this.infix.isEmpty()) {
             return PidProviderServiceImpl.DEFAULT_INFIX;
         }
         return infix;
+    }
+
+    @Override
+    public PublicConfiguration getPublicConfiguration() {
+        return new PublicConfiguration() {
+            @Override
+            public String getBaseUrl() {
+                return configuration.getServiceBaseURL();
+            }
+            @Override
+            public String getPrefix() {
+                return configuration.getHandlePrefix();
+            }
+            @Override
+            public String getUsername() {
+                return configuration.getUser();
+            }
+        };
     }
 }

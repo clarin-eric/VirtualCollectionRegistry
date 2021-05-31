@@ -23,30 +23,54 @@ import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
 import javax.ws.rs.WebApplicationException;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.Response;
-import javax.ws.rs.core.StreamingOutput;
+import javax.ws.rs.container.ResourceContext;
+import javax.ws.rs.core.*;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.servers.Server;
 import org.apache.wicket.util.io.IOUtils;
 
 /**
- *
  * @author twagoo
  */
 @Path("")
+@OpenAPIDefinition(
+    info = @Info(
+        title = "Virtual Collection Registry REST API",
+        version = "1.0.0",
+        description = "The Virtual Collection Registry (VCR) REST API is documented following the open API specification. The UI on this page."
+                + "allows you to test and play with the various resources."
+                + "<br />Description of the API protocol is available <a href=\"../Protocol.txt\">here</a>."
+                + "<br /><br />In addition to the REST API there are submission endpoints available to provide a low "
+                + "friction integration with external data catalogues. Documentation is available <a href=\"https://github.com/clarin-eric/VirtualCollectionRegistry/blob/master/doc/Integration.md\">here</a>."
+                + "<br />Submission endpoint test paages:"
+                + "<ul>"
+                + "<li><a target=\"_new\" href=\"../test_vc_submission_extensional.html\">Extensional collections</a></li>"
+                + "<li><a target=\"_new\" href=\"../test_vc_submission_intensional.html\">Intensional collections</a></li>"
+                + "</ul>"
+                + "<br />Code repository is hosted on <a href=\"https://github.com/clarin-eric/VirtualCollectionRegistry\">GitHub</a>."
+    ),
+    servers = {
+        @Server(
+            description = "Local API endpoint",
+            url = "http://localhost:8080/vcr/service"
+        )
+    }
+)
 public class BaseResource {
+
+    @Context
+    private ResourceContext resourceContext;
 
     /**
      * Serves a short description HTML page at the service root
-     *
-     * @return
      */
     @GET
     @Produces({MediaType.TEXT_XML})
     public Response getDescription() {
         final StreamingOutput writer = new StreamingOutput() {
             @Override
-            public void write(OutputStream output) throws IOException,
-                    WebApplicationException {
+            public void write(OutputStream output) throws IOException, WebApplicationException {
                 try (InputStream is = getClass().getResourceAsStream("/restIndex.html")) {
                     IOUtils.copy(is, output);
                 } finally {
@@ -57,4 +81,25 @@ public class BaseResource {
         return Response.ok(writer).type(MediaType.TEXT_HTML).build();
     }
 
+    /**
+     * Server api v1
+     */
+    @Path("/v1/collections")
+    public VirtualCollectionsResource getCollectionsV1() {
+        final VirtualCollectionsResource resource =
+                resourceContext.getResource(VirtualCollectionsResource.class);
+        return resource;
+    }
+
+    /**
+     * Server api v2
+     */
+    /*
+    @Path("/v2/collections")
+    public VirtualCollectionsResource getCollectionsV2() {
+        final VirtualCollectionsResource resource =
+                resourceContext.getResource(VirtualCollectionsResource.class);
+        return resource;
+    }
+     */
 }

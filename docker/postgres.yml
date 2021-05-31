@@ -1,0 +1,18 @@
+version: '2'
+services:
+
+  databasepg:
+    image: "registry.gitlab.com/clarin-eric/docker-postgres:1.3.0"
+    environment:
+      POSTGRES_USER: vcruser
+      POSTGRES_PASSWORD: vcrpassword
+      POSTGRES_DB: vcr
+    ports:
+      - 5432:5432
+    networks:
+      - vcr
+    volumes:
+      - db_data:/var/lib/postgresql/data
+
+volumes:
+  db_data:

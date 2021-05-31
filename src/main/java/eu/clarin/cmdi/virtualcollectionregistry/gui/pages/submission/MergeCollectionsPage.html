@@ -1,0 +1,50 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+        "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+<head />
+<body>
+
+    <wicket:extend>
+        <div class="row">
+            <div class="col-xs-12">
+                <h2 wicket:id="heading_submitted_collection">[Submitted collection]</h2>
+                <span wicket:id="lbl_submitted_title">Title:</span> <span wicket:id="submitted_title">[title]</span><br/>
+                <span wicket:id="lbl_submitted_desc">Description:</span> <span wicket:id="submitted_description">[description]</span><br/>
+                <span wicket:id="lbl_submitted_resources">#resources:</span> <span wicket:id="submitted_resources">[title]</span><br/><br/>
+                <span wicket:id="lbl_origin">Origin:</span> <span wicket:id="val_origin">[origin]</span><br />
+                <span wicket:id="lbl_query">Query:</span> <span wicket:id="val_query">[query]</span>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col-xs-6">
+                <h2 wicket:id="heading_actions">[Actions]</h2>
+                <a class="btn btn-default" wicket:id="btn_add_new"><span wicket:id="btn_add_new_label">[Add new collection]</span></a> <br />
+                <br />
+                <a class="btn btn-default" wicket:id="btn_merge_with"><span wicket:id="btn_merge_with_label">[Merge with selected collection]</span></a> <br />
+                <span wicket:id="btn_merge_with_label_message"></span><br />
+                <br />
+                <a class="btn btn-default" wicket:id="btn_cancel"><span wicket:id="btn_cancel_label">[Cancel submission]</span></a>
+            </div>
+            <div class="col-xs-5">
+                <h2 wicket:id="heading_merge_collection">[Merge with existing collection]</h2>
+                <h4 wicket:id="collections_list_label">[Available collections:]</h4>
+                <span wicket:id="collections_list">
+                    <div class="row" style="margin-top: 2px; margin-bottom: 2px; border: solid 1px #000000; padding: 2px;" wicket:id="selectable-collection">
+                        <div class="col-xs-12">
+                            <b wicket:id="collection_title"></b> <br />
+                            <span wicket:id="lbl_collection_created">Created at:</span> <span wicket:id="collection_created"></span>,
+                            <span wicket:id="lbl_collection_modified">Last modified at:</span> <span wicket:id="collection_modified"></span>,
+                            <span wicket:id="lbl_collection_resources_count"># resources:</span> <span wicket:id="collection_resources_count"></span><br />
+                            <span wicket:id="lbl_collection_type">Type:</span> <span wicket:id="collection_type"></span>,
+                            <span wicket:id="lbl_collection_state">State:</span> <span wicket:id="collection_state"></span>
+                        </div>
+                    </div>
+                </span>
+            </div>
+        </div>
+    </wicket:extend>
+
+</body>
+</html>

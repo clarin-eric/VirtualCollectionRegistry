@@ -64,7 +64,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 
  * @author twagoo
  */
-@Path("/submit")
+//@Path("/submit")
 public class VirtualCollectionFormSubmissionResource {
 
     @Autowired
@@ -154,8 +154,8 @@ public class VirtualCollectionFormSubmissionResource {
                 .setName(name)
                 .setType(VirtualCollection.Type.EXTENSIONAL)
                 .addCreator(principal)
-                .addMetadataResources(metadataUris)
-                .addResourceResources(resourceUris)
+                .addMetadataResources(metadataUris, null, null)
+                .addResourceResources(resourceUris, null,null)
                 .addKeywords(keywords)
                 .setDescription(description)
                 .setPurpose(purpose)
@@ -334,7 +334,6 @@ public class VirtualCollectionFormSubmissionResource {
             html += "</html>\n";
             return html;
         }
-        
         private String getFooter() {
             String html = "";
             html += "<footer id=\"footer\">\n";

@@ -9,6 +9,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.JavaScriptResources;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.*;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin.AdminPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.CreateAndEditVirtualCollectionPageV2;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmitVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LoginPage;
@@ -35,7 +36,9 @@ public class Application extends AuthenticatedWebApplication {
 
     public final static StringValidator MAX_LENGTH_VALIDATOR = 
         new StringValidator(null, 255);
-    
+
+    private final static Class HOME_PAGE_CLASS = BrowsePublicCollectionsPage.class;
+
     @Autowired
     private VirtualCollectionRegistry registry;
     @Autowired
@@ -70,6 +73,7 @@ public class Application extends AuthenticatedWebApplication {
         
         getComponentInstantiationListeners().add(new SpringComponentInjector(this));
 
+        getApplicationSettings().setPageExpiredErrorPage(HOME_PAGE_CLASS);
         getMarkupSettings().setDefaultMarkupEncoding("utf-8");
         getRequestCycleSettings().setResponseRequestEncoding("utf-8");
 
@@ -95,7 +99,7 @@ public class Application extends AuthenticatedWebApplication {
 
     @Override
     public Class<? extends Page> getHomePage() {
-        return BrowsePublicCollectionsPage.class;
+        return HOME_PAGE_CLASS;
     }
 
     @Override

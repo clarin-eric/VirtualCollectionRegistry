@@ -37,6 +37,8 @@ import javax.persistence.Version;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @Entity
 @Table(name = "virtualcollection")
@@ -67,6 +69,8 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 })
 public class VirtualCollection implements Serializable, IdentifiedEntity, PersistentIdentifieable, Citable {
     private static final long serialVersionUID = 1L;
+
+    private final static Logger logger = LoggerFactory.getLogger(VirtualCollection.class);
 
     public static final Type DEFAULT_TYPE_VALUE = Type.EXTENSIONAL;
     public static final Purpose DEFAULT_PURPOSE_VALUE = Purpose.REFERENCE;
@@ -169,7 +173,6 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         this.problemDetails = problemDetails;
     }
 
-
     public static enum State {
         PRIVATE,
         PUBLIC_PENDING,
@@ -242,6 +245,8 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     @Column(name = "problem_details", nullable = true)
     private String problemDetails;
 
+    @Column(name = "origin", nullable = true)
+    private String origin;
 
     @Column(name = "state", nullable = false)
     private VirtualCollection.State state;
@@ -253,7 +258,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     @Column(name = "name", nullable = false, length = 255)
     private String name;
 
-    @Lob
+    //@Lob
     @Basic(fetch = FetchType.EAGER)
     @Column(name = "description", length = 8192)
     private String description;
@@ -277,7 +282,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     @Column(name = "reproducibility")
     private VirtualCollection.Reproducibility reproducibility;
 
-    @Lob
+    //@Lob
     @Basic(fetch = FetchType.EAGER)
     @Column(name = "reproducibility_notice", length = 8192)
     private String reproducibilityNotice;
@@ -711,6 +716,57 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
             result += String.format("  resources    : %s\n", this.getReproducibilityNotice());
         }
         return result;
+    }
+
+    public boolean canMerge() {
+        return  state != State.ERROR &&
+                state != VirtualCollection.State.DELETED &&
+                state != VirtualCollection.State.DEAD &&
+                state != VirtualCollection.State.PUBLIC_FROZEN &&
+                state != VirtualCollection.State.PUBLIC_FROZEN_PENDING &&
+                state != VirtualCollection.State.PUBLIC_PENDING &&
+                state != VirtualCollection.State.PUBLIC;
+    }
+
+    /**
+     * Merge resources from the otherCollection with this collection.
+     *
+     * @param otherCollection
+     * @return
+     */
+    public void merge(VirtualCollection otherCollection) {
+        //Add merged resources to this collection
+        for(Resource r : otherCollection.getResources()) {
+            boolean exists = false;
+            for(Resource existing_resource : getResources()) {
+                if(existing_resource.getRef().equalsIgnoreCase(r.getRef())) {
+                    exists = true;
+                }
+            }
+
+            if(!exists) {
+                Resource new_r = new Resource();
+                new_r.setLabel(r.getLabel());
+                new_r.setDescription(r.getDescription());
+                new_r.setMimetype(r.getMimetype());
+                new_r.setRef(r.getRef());
+                new_r.setType(r.getType());
+                new_r.setMerged();
+                new_r.setOrigin(r.getOrigin());
+                new_r.setOriginalQuery(r.getOriginalQuery());
+                getResources().add(new_r);
+            } else {
+                logger.warn("Skipping resource with duplicate ref: "+r.getRef());
+            }
+        }
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
     }
 
 } // class VirtualCollection

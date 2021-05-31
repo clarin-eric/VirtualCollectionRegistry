@@ -59,4 +59,14 @@ public class DummyPersistentIdentifierProvider implements
     public void setPrimaryProvider(boolean primary) {
         this.primary = primary;
     }
+
+    @Override
+    public String getInfix() {
+        return null;
+    }
+
+    @Override
+    public PublicConfiguration getPublicConfiguration() {
+        return null;
+    }
 } // class DummyPersistentIdentifierProvider

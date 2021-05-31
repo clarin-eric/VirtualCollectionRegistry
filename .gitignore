@@ -1,4 +1,6 @@
 docker/vcr_mysql_dump.sql
+docker/ca
+docker/cert
 *.iml
 .idea
 nbactions.xml
@@ -18,3 +20,4 @@ docker/vcr-admin.conf
 docker/vcr/
 docker/webapps
 tmp
+service-doc

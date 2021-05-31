@@ -21,6 +21,8 @@ import org.apache.wicket.markup.html.image.Image;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.resource.ContextRelativeResource;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 /**
  *
@@ -30,12 +32,20 @@ public class HelpPage extends BasePage {
 
     public static final String BASE_URI = "eu.clarin.cmdi.virtualcollectionregistry.base_uri";
 
+    private static Logger logger = LoggerFactory.getLogger(HelpPage.class);
+
     public HelpPage() {
         String baseUri = WebApplication.get().getServletContext().getInitParameter(BASE_URI);
+        String contextPath = WebApplication.get().getServletContext().getContextPath();
         if(baseUri.endsWith("/")) {
             baseUri = baseUri.substring(0, baseUri.length()-1);
         }
-        final String serviceBaseUri = String.format("%s/service", baseUri);
+        baseUri += contextPath;
+        if(baseUri.endsWith("/")) {
+            baseUri = baseUri.substring(0, baseUri.length()-1);
+        }
+
+        final String serviceBaseUri = String.format("%s/service/", baseUri);
         add(new ExternalLink("restLink", serviceBaseUri)
                 .add(new Label("restUrl", serviceBaseUri)));
 
@@ -43,7 +53,12 @@ public class HelpPage extends BasePage {
         add(new ExternalLink("oaiLink", oaiIdentifyUri)
                 .add(new Label("oaiUrl", oaiIdentifyUri)));
 
-        add(new ExternalLink("wadlLink", String.format("%s/application.wadl", serviceBaseUri)));
+        String wadlUri = serviceBaseUri;
+        if(!serviceBaseUri.endsWith("/")) {
+            wadlUri += "/";
+        }
+        wadlUri += "application.wadl";
+        add(new ExternalLink("wadlLink", wadlUri));
 
         add(new Image("img-virtualcollection", new ContextRelativeResource("/images/virtualcollection.png")));
         add(new Image("img-vcr-menu-browse", new ContextRelativeResource("/images/help-vcr-menu-browse.png")));

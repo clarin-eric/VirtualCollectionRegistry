@@ -29,7 +29,7 @@ import org.springframework.context.annotation.Profile;
  */
 @Profile("vcr.pid.epic")
 @org.springframework.context.annotation.Configuration
-public class EPICPersistentIdentifierConfiguration {
+public class EPICPersistentIdentifierConfiguration implements PublicConfiguration {
 
     @Value("${pid_provider.epic.service_base_url}")
     private String serviceBaseUrl;
@@ -50,4 +50,18 @@ public class EPICPersistentIdentifierConfiguration {
         return new PidWriterImpl();
     }
 
+    @Override
+    public String getBaseUrl() {
+        return serviceBaseUrl;
+    }
+
+    @Override
+    public String getPrefix() {
+        return handlePrefix;
+    }
+
+    @Override
+    public String getUsername() {
+        return user;
+    }
 }

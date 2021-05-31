@@ -38,6 +38,7 @@ public class CitationPanel extends Panel {
         super(id);
     
         final CitationDialog citationDialog = new CitationDialog("citationDialog", model);
+
         AjaxLink citeButton = new AjaxLink( "citeButton", new Model<String>("Cite") ){ 
             @Override
             public void onClick( AjaxRequestTarget target ) {

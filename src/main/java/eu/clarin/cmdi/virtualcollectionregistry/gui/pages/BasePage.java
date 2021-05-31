@@ -1,7 +1,12 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermissionException;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin.AdminPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1.CreateAndEditVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.CreateAndEditVirtualCollectionPageV2;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.wicket.ClipboardJs;
 import eu.clarin.cmdi.wicket.PiwikTracker;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LogoutPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.AuthenticationHandler;
@@ -24,6 +29,7 @@ import javax.servlet.ServletContext;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
+import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
@@ -61,7 +67,9 @@ public class BasePage extends WebPage {
     public static final String BETA_MODE = "eu.clarin.cmdi.virtualcollectionregistry.beta_mode";
     
     private final static JavaScriptResourceReference INIT_JAVASCRIPT_REFERENCE = new JavaScriptResourceReference(BasePage.class, "BasePage.js");
-    
+
+    protected FeedbackPanel feedback;
+
     protected BasePage(IModel<?> model) {
         super(model);
         addComponents();
@@ -86,7 +94,7 @@ public class BasePage extends WebPage {
         add(new WebMarkupContainer("header")
                 .add(createHeaderMenu("menu"))); // navbar in header
 
-        FeedbackPanel feedback = new FeedbackPanel("feedback");
+        feedback = new FeedbackPanel("feedback");
         feedback.setFilter((FeedbackMessage fm) -> !(fm.getMessage() instanceof IValidationFailedMessage));
         add(feedback);
 
@@ -96,14 +104,17 @@ public class BasePage extends WebPage {
         } else {
             add(new WebMarkupContainer("piwik")); //empty placeholder
         }
-        
+
         //Include survey if configured (typically mopinion user satisfaction
         if (Strings.isEmpty(piwikConfig.getSnippetSurvey())) {
             add(new WebMarkupContainer("surveySnippet"));
         } else {
             add(new Include("surveySnippet", piwikConfig.getSnippetSurvey()));
         }
-         
+
+        //Initialize clipboard support on the #content section
+        add(new ClipboardJs("clipboardJsSnippet", ".clipboard"));
+
         //Include extra credits if configured
         if (Strings.isEmpty(piwikConfig.getSnippetCredits())) {
             add(new WebMarkupContainer("creditsSnippet"));
@@ -227,7 +238,12 @@ public class BasePage extends WebPage {
         
         return false;
     }
-    
+
+    protected boolean hasUser() {
+        Principal principal = getSession().getPrincipal();
+        return principal != null;
+    }
+
     protected Principal getUser() {
         Principal principal = getSession().getPrincipal();
         if (principal == null) {
@@ -243,6 +259,35 @@ public class BasePage extends WebPage {
         } catch(WicketRuntimeException ex) {
             logger.error("Invalid principal", ex);
             return false;
+        }
+    }
+
+    /**
+     *
+     * @param vc collection to check for
+     * @throws VirtualCollectionRegistryPermissionException if the VC is private and the current
+     * user is not the owner
+     *
+     */
+    protected void  checkAccess(final VirtualCollection vc) throws VirtualCollectionRegistryPermissionException {
+        //Allow unauthenticated access to public collections
+        if(!hasUser()) {
+            if( vc.getState() == VirtualCollection.State.PUBLIC ||
+                vc.getState() == VirtualCollection.State.PUBLIC_FROZEN) {
+                return;
+            }
+            throw new UnauthorizedInstantiationException(CreateAndEditVirtualCollectionPage.class);
+        }
+
+        //An authenticated user is available, do not allow editing of VC's that are non-private or owned by someone else!
+        //(except for admin)
+        if (!isUserAdmin()
+                && ( //only allow editing of private & public
+                !(vc.getState() == VirtualCollection.State.PRIVATE || vc.getState() == VirtualCollection.State.PUBLIC)
+                // only allow editing by the owner
+                || vc.getOwner() == null || !(vc.getOwner().equalsPrincipal(getUser()) || vc.getOwner().getName().equalsIgnoreCase("anonymous")) )) {
+            logger.warn("User {} attempts to edit virtual collection {} with state {} owned by {}", new Object[]{getUser().getName(), vc.getId(), vc.getState(), vc.getOwner().getName()});
+            throw new UnauthorizedInstantiationException(CreateAndEditVirtualCollectionPage.class);
         }
     }
 

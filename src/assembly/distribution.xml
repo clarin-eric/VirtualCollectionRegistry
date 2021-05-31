@@ -10,12 +10,11 @@
     <fileSets>
         <fileSet>
             <directory>${project.basedir}/doc</directory>
-            <outputDirectory>/doc</outputDirectory>
+            <outputDirectory>doc</outputDirectory>
         </fileSet>
         <fileSet>
             <directory>${project.build.directory}</directory>
-            <!--directory>${project.basedir}/bin</directory-->
-            <outputDirectory>/war</outputDirectory>
+            <outputDirectory>war</outputDirectory>
             <includes>
                 <include>*.war</include>
             </includes>
