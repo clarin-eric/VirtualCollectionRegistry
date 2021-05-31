@@ -125,4 +125,3 @@ Figure 2 shows how to create a virtual collection based on some search result (K
 
  After clicking the highlighted “Create virtual collection from search result” button, the user is redirected to a confirmation page, shown in figure 3, before being sent to the VCR:
 ![Figure 3: VLO integration confirmation example!](./vcr_integration_example_2.png "Figure 2: VLO integration confirmation example")
-
