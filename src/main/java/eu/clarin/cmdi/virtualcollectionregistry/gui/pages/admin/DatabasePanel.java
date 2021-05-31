@@ -12,6 +12,7 @@ import javax.naming.Context;
 import javax.naming.InitialContext;
 import javax.naming.NamingException;
 import javax.sql.DataSource;
+import java.sql.Connection;
 import java.sql.SQLException;
 
 public class DatabasePanel extends Panel {
@@ -27,21 +28,31 @@ public class DatabasePanel extends Panel {
         String productVersion = "";
         String version = "";
         String minorVersion = "";
+        Connection c = null;
         try {
             InitialContext ic = new InitialContext();
             Context xmlContext = (Context) ic.lookup("java:comp/env");
             DataSource myDatasource = (DataSource) xmlContext.lookup("jdbc/VirtualCollectionStore");
-            product = myDatasource.getConnection().getMetaData().getDatabaseProductName();
-            productVersion = myDatasource.getConnection().getMetaData().getDatabaseProductVersion();
+            c = myDatasource.getConnection();
+            product = c.getMetaData().getDatabaseProductName();
+            productVersion = c.getMetaData().getDatabaseProductVersion();
             version = String.format(
                 "%d.%d",
-                myDatasource.getConnection().getMetaData().getDatabaseMajorVersion(),
-                myDatasource.getConnection().getMetaData().getDatabaseMinorVersion()
+                c.getMetaData().getDatabaseMajorVersion(),
+                c.getMetaData().getDatabaseMinorVersion()
             );
         } catch (NamingException | SQLException ex) {
             logger.warn("Failed to get database info.", ex);
             product = "Unkown";
             productVersion = "Unkown";
+        } finally {
+            if(c != null) {
+                try {
+                    c.close();
+                } catch(SQLException ex) {
+                    logger.warn("Failed to close database connection. This can cause a connection leak.");
+                }
+            }
         }
 
         add(new Label("lbl_database_product", "Product:"));
