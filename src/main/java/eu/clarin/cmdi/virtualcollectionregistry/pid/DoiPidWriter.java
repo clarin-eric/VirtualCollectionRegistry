@@ -34,7 +34,8 @@ public class DoiPidWriter {
     public String registerNewPID(Configuration configuration, PidRequest doiRequest) throws HttpException {
         String generated_pid = null;
         try {
-            generated_pid = doRequest(configuration, doiRequest.toJsonString());
+            String json_data = doiRequest.toJsonString();
+            generated_pid = doRequest(configuration, json_data);
         } catch(IOException | NullPointerException | URISyntaxException ex) {
             throw new HttpException("Failed to mint DOI", ex);
         }

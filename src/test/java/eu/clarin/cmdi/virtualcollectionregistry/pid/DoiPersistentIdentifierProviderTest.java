@@ -19,7 +19,7 @@ public class DoiPersistentIdentifierProviderTest {
 
         VirtualCollection vc = new VirtualCollection();
         vc.setId(1L);
-        vc.setName("Test VC");
+        vc.setName("Test VC éë");
         Creator c = new Creator("Test", " Person");
         c.setOrganisation("Test Org");
         vc.getCreators().add(c);

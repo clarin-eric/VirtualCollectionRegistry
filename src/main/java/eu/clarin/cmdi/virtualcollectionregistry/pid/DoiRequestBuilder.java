@@ -23,7 +23,7 @@ public class DoiRequestBuilder {
 
     private static DoiRequest createBasicDoiRequest(VirtualCollection vc, String baseUri) {
         DoiRequest request = new DoiRequest();
-         request.setUrl(EPICPersistentIdentifierProvider.makeCollectionURI(vc, baseUri));
+        request.setUrl(EPICPersistentIdentifierProvider.makeCollectionURI(vc, baseUri));
         request.setPublicationYear(vc.getYear());
         request.addTitle(vc.getTitle());
         for(Creator vc_creator: vc.getCreators()) {
