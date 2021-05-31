@@ -40,6 +40,9 @@ public class UserProfilePage extends BasePage {
 
     private Properties i18n = new Properties();
 
+    private final Label lblNoKeys;
+    private final DataTable<ApiKey, String> table;
+
     private interface MarkupIdGenerator {
         public String getMarkupId(ApiKey key);
     }
@@ -88,31 +91,33 @@ public class UserProfilePage extends BasePage {
             }
             final String username = principal.getName();
             User user = apiKeyService.getUser(username);
-            if (user.getApiKeys().isEmpty()) {
-                add(new Label("api_keys", i18n.getProperty("msg_no_api_keys")));
-            } else {
-                keys = new LinkedList<>(user.getApiKeys());
-                Collections.sort(keys);
 
-                final MarkupIdGenerator generator = new CopyMarkupIdGenerator();
+            keys = new LinkedList<>(user.getApiKeys());
+            Collections.sort(keys);
 
-                final ApiKeyProvider provider = new ApiKeyProvider(keys);
-                final List<IColumn<ApiKey, String>> columns = new ArrayList<>();
-                columns.add(
-                    new SimpleTextColumn(i18n.getProperty("tbl_header_api_key"), "value","value")
-                        .addCssClass("api-key").setMarkupIdGenerator(generator));
-                columns.add(new SimpleTextColumn(i18n.getProperty("tbl_header_created"), "createdAt"));
-                columns.add(new SimpleTextColumn(i18n.getProperty("tbl_header_last_used"), "lastUsedAt", "Not used"));
-                columns.add(new SimpleTextColumn(i18n.getProperty("tbl_header_revoked"), "revokedAt", "Active"));
-                columns.add(new ButtonColumn(generator));
+            lblNoKeys = new Label("no_api_keys", i18n.getProperty("msg_no_api_keys"));
+            lblNoKeys.setVisible(keys.isEmpty());
+            add(lblNoKeys);
 
-                final DataTable<ApiKey, String> table =
-                        new AjaxFallbackDefaultDataTable<>("api_keys_table",
-                                columns, provider, 30);
-                add(table);
+            final MarkupIdGenerator generator = new CopyMarkupIdGenerator();
 
-                //add(new ClipboardJsBehavior());
-            }
+            final ApiKeyProvider provider = new ApiKeyProvider(keys);
+            final List<IColumn<ApiKey, String>> columns = new ArrayList<>();
+            columns.add(
+                new SimpleTextColumn(i18n.getProperty("tbl_header_api_key"), "value","value")
+                    .addCssClass("api-key").setMarkupIdGenerator(generator));
+            columns.add(new SimpleTextColumn(i18n.getProperty("tbl_header_created"), "createdAt"));
+            columns.add(new SimpleTextColumn(i18n.getProperty("tbl_header_last_used"), "lastUsedAt", "Not used"));
+            columns.add(new SimpleTextColumn(i18n.getProperty("tbl_header_revoked"), "revokedAt", "Active"));
+            columns.add(new ButtonColumn(generator));
+
+            table = new AjaxFallbackDefaultDataTable<>("api_keys_table",
+                            columns, provider, 30);
+            table.setVisible(!keys.isEmpty());
+            add(table);
+
+            //add(new ClipboardJsBehavior());
+
 
             AjaxFallbackLink btnSave = new AjaxFallbackLink("btn_new_api_key") {
                 @Override
@@ -136,6 +141,7 @@ public class UserProfilePage extends BasePage {
             throw new RestartResponseException(LoginPage.class);
         }
     }
+
 
     public abstract class BasicColumn extends AbstractColumn<ApiKey, String> {
 
@@ -228,6 +234,10 @@ public class UserProfilePage extends BasePage {
                 keys.addAll(user.getApiKeys());
                 Collections.sort(keys);
             }
+
+            //Update UI component visability
+            lblNoKeys.setVisible(keys.isEmpty());
+            table.setVisible(!keys.isEmpty());
         }
         super.onBeforeRender();
     }
