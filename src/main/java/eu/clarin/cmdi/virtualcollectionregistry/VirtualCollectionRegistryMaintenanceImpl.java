@@ -42,7 +42,7 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
     private static final Logger logger
             = LoggerFactory.getLogger(VirtualCollectionRegistryMaintenanceImpl.class);
 
-    private final boolean maintenance_enabled = false;
+    private final boolean maintenance_enabled = true;
 
     @Autowired
     private DataStore datastore; //TODO: replace with Spring managed EM?
