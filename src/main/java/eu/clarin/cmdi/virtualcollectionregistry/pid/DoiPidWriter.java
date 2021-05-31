@@ -22,6 +22,7 @@ import org.slf4j.LoggerFactory;
 import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
+import java.nio.charset.StandardCharsets;
 
 public class DoiPidWriter {
 
@@ -70,7 +71,7 @@ public class DoiPidWriter {
 
             httppost.setHeader("Accept", "application/json");
             httppost.setHeader("Content-type", "application/vnd.api+json");
-            httppost.setEntity(new StringEntity(requestJsonBody));
+            httppost.setEntity(new StringEntity(requestJsonBody, StandardCharsets.UTF_8));
 
             logger.debug("Executing request: host uri=" + targetHost.toURI()+", request="+httppost.getRequestLine());
             logger.debug("Username={}, password={}", configuration.getUser(), "xxxxxxxxx");
