@@ -94,13 +94,13 @@ public class DoiPidWriter {
             }
         } catch(Exception ex) {
             throw new IOException("Failed to communicate with DOI API", ex);
-        } finally {
+        } /*finally {
             try {
                 httpclient.close();
             } catch(IOException ex) {
                 throw new IOException("Failed to close DOI API http client", ex);
             }
-        }
+        }*/
 
         return doi;
     }
