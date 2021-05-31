@@ -97,7 +97,7 @@ public class SubmissionUtils {
             logger.warn("Configuration in config context is null");
         }
         
-        return null;
+        return username;
     }
     
     /**

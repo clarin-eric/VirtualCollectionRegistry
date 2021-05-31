@@ -441,6 +441,9 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
             intQueryUri.setObject(c.getGeneratedBy().getURI());
             intDescription.setObject(c.getGeneratedBy().getDescription());
         }
+
+        //redo initial validation
+        validate();
     }
 
     private void reset() {
