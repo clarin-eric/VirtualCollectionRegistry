@@ -285,12 +285,27 @@ public class BasePage extends WebPage {
                 && ( //only allow editing of private & public
                 !(vc.getState() == VirtualCollection.State.PRIVATE || vc.getState() == VirtualCollection.State.PUBLIC)
                 // only allow editing by the owner
-                || vc.getOwner() == null || !(vc.getOwner().equalsPrincipal(getUser()) || vc.getOwner().getName().equalsIgnoreCase("anonymous")) )) {
+                || vc.getOwner() == null || !(vc.getOwner().equalsPrincipal(getUser()) || vc.getOwner().getName().equalsIgnoreCase("anonymous")) )
+
+        ) {
             logger.warn("User {} attempts to edit virtual collection {} with state {} owned by {}", new Object[]{getUser().getName(), vc.getId(), vc.getState(), vc.getOwner().getName()});
             throw new UnauthorizedInstantiationException(CreateAndEditVirtualCollectionPage.class);
         }
     }
 
+    protected void checkReadAccess(final VirtualCollection vc) throws VirtualCollectionRegistryPermissionException {
+        checkAccess(vc);
+
+        boolean isPublic = vc.getState() == VirtualCollection.State.PUBLIC || vc.getState() == VirtualCollection.State.PUBLIC_FROZEN;
+        if(!isPublic
+                && !isUserAdmin()
+                && !vc.getOwner().equalsPrincipal(getUser())
+        ) {
+            // user trying to access other user's collection
+            throw new VirtualCollectionRegistryPermissionException("Unauthorized");//this, Component.RENDER);
+        }
+    }
+    
     @Override
     public ApplicationSession getSession() {
         return (ApplicationSession) super.getSession();
