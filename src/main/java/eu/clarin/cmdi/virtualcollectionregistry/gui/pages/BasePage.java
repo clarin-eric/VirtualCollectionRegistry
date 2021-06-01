@@ -291,6 +291,17 @@ public class BasePage extends WebPage {
         }
     }
 
+    protected void checkReadAccess(final VirtualCollection vc) throws VirtualCollectionRegistryPermissionException {
+        boolean isPublic = vc.getState() == VirtualCollection.State.PUBLIC || vc.getState() == VirtualCollection.State.PUBLIC_FROZEN;
+        if(!isPublic
+                && !isUserAdmin()
+                && !vc.getOwner().equalsPrincipal(getUser())
+        ) {
+            // user trying to access other user's collection
+            throw new VirtualCollectionRegistryPermissionException("Unauthorized");//this, Component.RENDER);
+        }
+    }
+
     @Override
     public ApplicationSession getSession() {
         return (ApplicationSession) super.getSession();
