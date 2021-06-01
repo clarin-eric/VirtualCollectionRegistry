@@ -305,7 +305,7 @@ public class BasePage extends WebPage {
             throw new VirtualCollectionRegistryPermissionException("Unauthorized");//this, Component.RENDER);
         }
     }
-    
+
     @Override
     public ApplicationSession getSession() {
         return (ApplicationSession) super.getSession();
