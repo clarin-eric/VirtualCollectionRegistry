@@ -48,6 +48,7 @@ public class HelpPage extends BasePage {
         final String serviceBaseUri = String.format("%s/service/", baseUri);
         add(new ExternalLink("restLink", serviceBaseUri)
                 .add(new Label("restUrl", serviceBaseUri)));
+        add(new ExternalLink("restLink2", serviceBaseUri));
 
         final String oaiIdentifyUri = String.format("%s/oai?verb=Identify", baseUri);
         add(new ExternalLink("oaiLink", oaiIdentifyUri)
