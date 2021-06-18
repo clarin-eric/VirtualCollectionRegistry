@@ -20,6 +20,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BasePage;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebRequest;
@@ -34,9 +35,16 @@ import org.slf4j.LoggerFactory;
 public class SubmitVirtualCollectionPage extends BasePage {
     
     private static final Logger logger = LoggerFactory.getLogger(SubmitVirtualCollectionPage.class);
-    
+
+    public class ErrorPanel extends Panel {
+        public ErrorPanel(String id, String errorMessage) {
+            super(id);
+            add(new Label("error", errorMessage));
+        }
+    }
+
     public SubmitVirtualCollectionPage() {}
-    
+
     @Override
     protected void onBeforeRender() {     
         VirtualCollection vc = SubmissionUtils.retrieveCollection(getSession());
@@ -61,14 +69,17 @@ public class SubmitVirtualCollectionPage extends BasePage {
         }
 
         if (type != null) {
-            SubmissionUtils.checkSubmission(
+            String submissionError = SubmissionUtils.checkSubmission(
                     (WebRequest)RequestCycle.get().getRequest(),
                     (WebResponse)RequestCycle.get().getResponse(),
                     getSession(),
                     type
             );
 
-            if(!isSignedIn()) {
+            if(submissionError != null) {
+                add(new Label("type", new Model(type.toString()+" Collection Submission")));
+                add(new ErrorPanel("panel", "Submitted collection is not valid: "+submissionError));
+            } else if(!isSignedIn()) {
                 //Set proper content panel based on      
                 add(new Label("type", new Model(type.toString()+" Collection Submission")));
                 add(new LoginPanel("panel"));

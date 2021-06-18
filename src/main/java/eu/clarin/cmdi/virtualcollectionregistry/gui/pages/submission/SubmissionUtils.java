@@ -131,7 +131,7 @@ public class SubmissionUtils {
      * @param type
      * @return 
      */
-    public static void checkSubmission(WebRequest request, WebResponse response, ApplicationSession session, VirtualCollection.Type type) {
+    public static String checkSubmission(WebRequest request, WebResponse response, ApplicationSession session, VirtualCollection.Type type) {
         debugWebRequest(request);
 
         final ServletContext servletCtxt = WebApplication.get().getServletContext();
@@ -154,7 +154,7 @@ public class SubmissionUtils {
             logger.debug("Using principal={}", principal.getName());
         } else {
             logger.warn("Both username and principal are null. Aborting submission");
-            return;
+            return null;
         }
 
         String referrer = request.getHeader("referer");
@@ -207,15 +207,17 @@ public class SubmissionUtils {
 
             //Build collection and serialize to the current session
             storeCollection(session, vcBuilder.build());
-        } catch(VirtualCollectionRegistryUsageException ex) {
+        } catch(VirtualCollectionRegistryUsageException | IllegalArgumentException ex) {
             logger.error("Failed to build virtual collection", ex);
+            return ex.getMessage();
         }
+        return null;
     }
 
     private static VirtualCollection.Reproducibility getReproducibilityFromParams(IRequestParameters params, String paramName) {
         VirtualCollection.Reproducibility result = DEFAULT_REPRODUCIBILITY;
         String val = params.getParameterValue(paramName).toString();
-        if(val != null && !val.isEmpty()) {
+        if (val != null && !val.isEmpty()) {
             result = VirtualCollection.Reproducibility.valueOf(val);
         }
         return result;
@@ -224,7 +226,7 @@ public class SubmissionUtils {
     private static VirtualCollection.Purpose getPurposeFromParams(IRequestParameters params, String paramName) {
         VirtualCollection.Purpose result = DEFAULT_PURPOSE;
         String val = params.getParameterValue(paramName).toString();
-        if(val != null && !val.isEmpty()) {
+        if (val != null && !val.isEmpty()) {
             result = VirtualCollection.Purpose.valueOf(val);
         }
         return result;
