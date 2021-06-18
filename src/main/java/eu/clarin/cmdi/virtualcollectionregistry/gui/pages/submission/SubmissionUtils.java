@@ -157,8 +157,16 @@ public class SubmissionUtils {
             return;
         }
 
-        URI uri = URI.create(request.getHeader("referer"));
-        String originUrl = String.format("%s://%s%s", uri.getScheme(), uri.getHost(), uri.getPort() != -1 ? ":"+uri.getPort() : "");
+        String referrer = request.getHeader("referer");
+        String originUrl = null;
+        if(referrer != null) {
+            try {
+                URI uri = URI.create(referrer);
+                originUrl = String.format("%s://%s%s", uri.getScheme(), uri.getHost(), uri.getPort() != -1 ? ":"+uri.getPort() : "");
+            } catch (NullPointerException | IllegalArgumentException ex) {
+                logger.warn("Failed to parse referer header value (="+referrer+") as URI.", ex);
+            }
+        }
 
         try {
             //Add shared fields to builder
