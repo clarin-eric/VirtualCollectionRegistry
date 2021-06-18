@@ -46,6 +46,26 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
+    <!--
+        CORS
+        References:
+        - https://tomcat.apache.org/tomcat-9.0-doc/config/filter.html#CORS_Filter
+        - https://tomcat.apache.org/tomcat-8.0-doc/images/cors-flowchart.png
+    -->
+    <filter>
+        <filter-name>CorsFilter</filter-name>
+        <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+        <init-param>
+            <param-name>cors.allowed.origins</param-name>
+            <param-value>*</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>CorsFilter</filter-name>
+        <url-pattern>/swagger.json</url-pattern>
+        <url-pattern>/service/*</url-pattern>
+    </filter-mapping>
+
     <!-- Webapp -->
     <filter>
         <filter-name>VirtualCollectionRegistryApplication</filter-name>
