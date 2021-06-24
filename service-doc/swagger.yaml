@@ -26,9 +26,9 @@ paths:
             text/xml: {}
   /my-virtualcollections:
     get:
-      summary: Get the list of private collections
-      description: Get the list of private collections for the user identified via
-        the supplied API key.
+      summary: Retrieve a list of private collections
+      description: Retrieve a list of private collections for the user identified
+        via the supplied API key.
       operationId: getMyVirtualCollections
       parameters:
       - name: q
@@ -65,8 +65,8 @@ paths:
       - apiKey: []
   /v1/collections:
     get:
-      summary: Get the list of public collections
-      description: Get the list of public collections.
+      summary: Retrieve a list of public collections
+      description: Retrieve a list of public collections.
       operationId: getVirtualCollections
       parameters:
       - name: q
@@ -128,9 +128,7 @@ paths:
       - apiKey: []
   /v1/collections/{id}:
     get:
-      summary: Retrieve a virtual collection
-      description: The virtual collection referenced by the URI will be retrieved.
-      operationId: getVirtualCollection
+      operationId: getVirtualCollectionDetailsRedirect
       parameters:
       - name: id
         in: path
@@ -139,19 +137,10 @@ paths:
           type: integer
           format: int64
       responses:
-        "404":
-          description: Not found.
+        default:
+          description: default response
           content:
             text/html: {}
-        "500":
-          description: Unexpected server side error.
-          content:
-            text/html: {}
-        "200":
-          description: Representation of the requested collection.
-          content:
-            application/json: {}
-            application/xml: {}
     put:
       summary: 'Update a virtual collection '
       description: "The virtual collection identified by the URI will be updated,\
@@ -220,6 +209,9 @@ paths:
       - apiKey: []
   /v1/collections/{id}/state:
     get:
+      summary: Retrieve virtual collection publication state.
+      description: Retrieve the publication state of the virtual collection referenced
+        by the URI .
       operationId: getVirtualCollectionState
       parameters:
       - name: id
@@ -236,6 +228,9 @@ paths:
             application/xml: {}
             application/json: {}
     post:
+      summary: Update virtual collection publication state.
+      description: Update the publication state of the virtual collection referenced
+        by the URI .
       operationId: setVirtualCollectionState
       parameters:
       - name: id

@@ -50,10 +50,21 @@ import org.slf4j.LoggerFactory;
                             "VirtualCollection$State.PUBLIC " +
                             "ORDER BY c.id"),
         @NamedQuery(name = "VirtualCollection.countAllPublic",
-                    query = "SELECT COUNT(c) FROM VirtualCollection c " +
-                            "WHERE c.state = eu.clarin.cmdi." +
-                            "virtualcollectionregistry.model." +
-                            "VirtualCollection$State.PUBLIC"),
+                    query = "SELECT COUNT(c) "+
+                            "FROM VirtualCollection c " +
+                            "WHERE "+
+                                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State.PUBLIC"+
+                                " OR "+
+                                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State.PUBLIC_FROZEN"),
+        @NamedQuery(name = "VirtualCollection.findAllPublicOrigins",
+                    query = "SELECT DISTINCT(c.origin) "+
+                           "FROM VirtualCollection c " +
+                            "WHERE ("+
+                                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State.PUBLIC" +
+                                " OR " +
+                                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State.PUBLIC_FROZEN" +
+                                ") AND " +
+                                "c.origin IS NOT NULL"),
         @NamedQuery(name = "VirtualCollection.findByOwner",
                     query = "SELECT c FROM VirtualCollection c " +
                             "WHERE c.owner = :owner ORDER BY c.id"),

@@ -54,6 +54,8 @@ public interface VirtualCollectionRegistry {
     int getVirtualCollectionCount(QueryOptions options)
             throws VirtualCollectionRegistryException;
 
+    List<String> getOrigins();
+
     List<User> getUsers();
 
     List<VirtualCollection> getVirtualCollections(
