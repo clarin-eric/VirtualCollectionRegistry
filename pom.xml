@@ -737,7 +737,7 @@
                             </excludes>
                         </resource>
                         <resource>
-                            <directory>swagger-ui-3.44.0/dist</directory>
+                            <directory>swagger-ui/dist</directory>
                             <targetPath>service-doc</targetPath>
                         </resource>
                         <!-- Include proper shhaa config based on selected profile -->
