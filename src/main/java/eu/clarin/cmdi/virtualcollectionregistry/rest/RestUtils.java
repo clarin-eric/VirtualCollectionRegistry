@@ -30,6 +30,11 @@ public final class RestUtils {
         WILDCARD_ACCEPTABLE_TYPE_SINGLETON_LIST = Collections.singletonList(MediaTypes.WILDCARD_ACCEPTABLE_TYPE);
     }
 
+    public static class ClarinMediaType extends MediaType {
+        public static final String APPLICATION_CMDI_XML = "application/x-cmdi+xml";
+        public static final MediaType APPLICATION_CMDI_XML_TYPE = new MediaType("application", "x-cmdi+xml");
+    }
+
     /**
      *
      * @param headers
@@ -91,7 +96,8 @@ public final class RestUtils {
         }
 
         if (type.isCompatible(MediaType.APPLICATION_XML_TYPE)
-                || type.isCompatible(MediaType.TEXT_XML_TYPE)) {
+                || type.isCompatible(MediaType.TEXT_XML_TYPE)
+                || type.isCompatible(ClarinMediaType.APPLICATION_CMDI_XML_TYPE)) {
             return Format.XML;
         }
         if (type.isCompatible(MediaType.APPLICATION_JSON_TYPE)) {
