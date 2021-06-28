@@ -27,8 +27,8 @@ public class PidProviderServiceImpl implements PidProviderService {
     @Value("${eu.clarin.cmdi.virtualcollectionregistry.pidprovider.basedir:.}")
     private String baseDir;
 
-    @Value("${eu.clarin.cmdi.virtualcollectionregistry.base_uri}")
-    private String baseUri;
+    //@Value("${eu.clarin.cmdi.virtualcollectionregistry.base_uri}")
+    //private String baseUri;
 
     public final static String DEFAULT_INFIX = "VC-";
 
@@ -112,7 +112,7 @@ public class PidProviderServiceImpl implements PidProviderService {
         Configuration config = new Configuration(baseUrl, prefix, username, password);
         EPICPersistentIdentifierProvider provider =
             new EPICPersistentIdentifierProvider(new PidWriterImpl(), config);
-        provider.setBaseUri(baseUri);
+        //provider.setBaseUri(baseUri);
         provider.setInfix(infix);
         provider.setPrimaryProvider(Boolean.valueOf(primary));
         providers.add(provider);
@@ -144,7 +144,7 @@ public class PidProviderServiceImpl implements PidProviderService {
         Configuration config = new Configuration(baseUrl, prefix, username, password);
         DoiPersistentIdentifierProvider provider = new DoiPersistentIdentifierProvider(new DoiPidWriter(), config);
         provider.setPrimaryProvider(Boolean.valueOf(primary));
-        provider.setBaseUri(baseUri);
+        //provider.setBaseUri(baseUri);
         provider.setInfix(infix);
         providers.add(provider);
     }

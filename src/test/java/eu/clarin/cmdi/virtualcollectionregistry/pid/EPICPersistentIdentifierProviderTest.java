@@ -3,10 +3,13 @@ package eu.clarin.cmdi.virtualcollectionregistry.pid;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.Configuration;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.HandleField;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidWriter;
+import eu.clarin.cmdi.virtualcollectionregistry.*;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier.Type;
 import static org.hamcrest.Matchers.*;
+
+import org.apache.wicket.util.tester.WicketTester;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;
@@ -18,19 +21,24 @@ import org.junit.Test;
  *
  * @author twagoo
  */
+//@ContextConfiguration(locations = {"/applicationContextTest.xml"})
+//@RunWith(SpringJUnit4ClassRunner.class)
 public class EPICPersistentIdentifierProviderTest {
 
     private final Mockery context = new JUnit4Mockery();
-    private final Configuration pidConfig = new Configuration("http://epic/server", "9999", "user", "password");
+    private final Configuration pidConfig =
+        new Configuration("http://epic/server", "9999", "user", "password");
     private EPICPersistentIdentifierProvider instance;
     private PidWriter pidWriter;
+
+    private WicketTester tester;
 
     @Before
     public void setUp() {
         pidWriter = context.mock(PidWriter.class);
         instance = new EPICPersistentIdentifierProvider(pidWriter, pidConfig);
-        instance.setBaseUri("http://vcr");
         instance.setInfix("VCR-test-");
+        tester = new WicketTester(new TestApplication());
     }
 
     /**
@@ -51,9 +59,10 @@ public class EPICPersistentIdentifierProviderTest {
                 exactly(1).of(equal(pidWriter)).method("registerNewPID").with(
                         equal(pidConfig),
                         allOf(
-                                hasEntry(HandleField.URL, "http://vcr/service/virtualcollections/123"),
-                                hasEntry(HandleField.TITLE, "VC Name"),
-                                hasEntry(HandleField.CREATOR, "Joe, Unit")
+                            hasEntry(HandleField.URL,
+                                String.format("%s/service/virtualcollections/123", TestApplication.BASE_URI)),
+                            hasEntry(HandleField.TITLE, "VC Name"),
+                            hasEntry(HandleField.CREATOR, "Joe, Unit")
                         ),
                         equalTo("VCR-test-123")
                 );

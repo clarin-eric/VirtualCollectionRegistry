@@ -16,6 +16,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Type;
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.RestUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
+import eu.clarin.cmdi.virtualcollectionregistry.wicket.DetailsStructuredMeatadataHeaderBehavior;
 import eu.clarin.cmdi.wicket.components.citation.CitationPanelFactory;
 import eu.clarin.cmdi.wicket.components.panel.BootstrapDropdown;
 import eu.clarin.cmdi.wicket.components.panel.BootstrapDropdown.DropdownMenuItem;
@@ -235,6 +236,8 @@ public class VirtualCollectionDetailsPage extends BasePage {
                 .setBody(new GeneratedByPanel("body", model))
                 .setVisible(model.getObject().getType() == Type.INTENSIONAL)
                 .build());
+
+        add(new DetailsStructuredMeatadataHeaderBehavior(model));
     }
 
 

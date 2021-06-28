@@ -47,8 +47,8 @@ public class VcrConfigImpl implements VcrConfig {
     
     @Value("${eu.clarin.cmdi.vcr.locale:en-GB}")
     private String locale;
-    
-    @Override
+
+        @Override
     public String getSwitchboardEndpoint() {
         if (lrsEndpoint.endsWith("/")) {
             return lrsEndpoint.substring(0, lrsEndpoint.length()-1);
@@ -84,6 +84,10 @@ public class VcrConfigImpl implements VcrConfig {
     
     @Override
     public Locale getLocale() {
+        if(getLocaleString() == null) {
+            logger.warn("No locale string available");
+            return Locale.getDefault();
+        }
         return new Locale(getLocaleString());
     }
     
