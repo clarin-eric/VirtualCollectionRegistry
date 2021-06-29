@@ -128,7 +128,9 @@ paths:
       - apiKey: []
   /v1/collections/{id}:
     get:
-      operationId: getVirtualCollectionDetailsRedirect
+      summary: Retrieve a virtual collection
+      description: The virtual collection referenced by the URI will be retrieved.
+      operationId: getVirtualCollection
       parameters:
       - name: id
         in: path
@@ -137,10 +139,19 @@ paths:
           type: integer
           format: int64
       responses:
-        default:
-          description: default response
+        "404":
+          description: Not found.
           content:
             text/html: {}
+        "500":
+          description: Unexpected server side error.
+          content:
+            text/html: {}
+        "200":
+          description: Representation of the requested collection.
+          content:
+            application/json: {}
+            application/xml: {}
     put:
       summary: 'Update a virtual collection '
       description: "The virtual collection identified by the URI will be updated,\

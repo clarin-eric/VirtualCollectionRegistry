@@ -184,6 +184,14 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         this.problemDetails = problemDetails;
     }
 
+    public Date getDatePublished() {
+        return datePublished;
+    }
+
+    public void setDatePublished(Date datePublished) {
+        this.datePublished = datePublished;
+    }
+
     public static enum State {
         PRIVATE,
         PUBLIC_PENDING,
@@ -321,6 +329,11 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     @Version
     @Column(name = "modified", nullable = false)
     private Date dateModified;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Version
+    @Column(name = "published", nullable = true)
+    private Date datePublished;
 
     public VirtualCollection() {
         super();

@@ -12,11 +12,14 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 
+import java.text.SimpleDateFormat;
 import java.util.Collection;
+import java.util.Date;
 import java.util.LinkedList;
 
 public class DetailsStructuredMeatadataHeaderBehavior extends JsonLdHeaderBehavior {
 
+    public final static SimpleDateFormat SDF_ISO_8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
     public static final int DESCRIPTION_MIN_LENGTH = 50;
     public static final int DESCRIPTION_MAX_LENGTH = 5000;
 
@@ -52,8 +55,8 @@ public class DetailsStructuredMeatadataHeaderBehavior extends JsonLdHeaderBehavi
             }
         }
 
-        private DataSet createDataSetForDocument(IModel<VirtualCollection> collectionModel) {
-            final DataSet dataSet = new DataSet();
+        private JsonLdCollection createDataSetForDocument(IModel<VirtualCollection> collectionModel) {
+            final JsonLdCollection dataSet = new JsonLdCollection();
 
             dataSet.setUrl(Application.get().getPermaLinkService().getCollectionUrl(collectionModel.getObject()));
             dataSet.setName(collectionModel.getObject().getName());
@@ -73,9 +76,18 @@ public class DetailsStructuredMeatadataHeaderBehavior extends JsonLdHeaderBehavi
                 dataSet.addHasPart(new CreativeWork(r.getRef(), r.getLabel(), r.getDescription()));
             }
 
+            dataSet.setDateCreated(formatTimestamp(collectionModel.getObject().getCreationDate()));
+            dataSet.setDateModified(formatTimestamp(collectionModel.getObject().getDateModified()));
+            dataSet.setDatePublished(formatTimestamp(collectionModel.getObject().getDatePublished()));
             return dataSet;
         }
 
+        private String formatTimestamp(Date d) {
+            if(d == null) {
+                return null;
+            }
+            return SDF_ISO_8601.format(d);
+        }
         /**
          * Ensures value validity for description; if necessary transforms the
          * string to meet string length requirements
@@ -103,7 +115,7 @@ public class DetailsStructuredMeatadataHeaderBehavior extends JsonLdHeaderBehavi
             }
         }
     }
-
+/*
     //https://schema.org/Dataset
     private static class DataSet extends JsonLdModel.JsonLdObject {
         private String url;
@@ -114,9 +126,29 @@ public class DetailsStructuredMeatadataHeaderBehavior extends JsonLdHeaderBehavi
         private Collection<Person> creator;
         //https://schema.org/hasPart
         private Collection<CreativeWork> hasPart;
+        private String dateCreated;
+        private String dateModified;
+        private String datePublished;
 
         public DataSet() {
             super("https://schema.org", "DataSet");
+        }
+*/
+    private static class JsonLdCollection extends JsonLdModel.JsonLdObject {
+        private String url;
+        private String name;
+        private String description;
+        private Collection<String> identifier;
+        private DataCatalog includedInDataCatalog;
+        private Collection<Person> creator;
+        //https://schema.org/hasPart
+        private Collection<CreativeWork> hasPart;
+        private String dateCreated;
+        private String dateModified;
+        private String datePublished;
+
+        public JsonLdCollection() {
+            super("https://schema.org", "Collection");
         }
 
         public String getUrl() {
@@ -194,6 +226,30 @@ public class DetailsStructuredMeatadataHeaderBehavior extends JsonLdHeaderBehavi
                 this.hasPart = new LinkedList<>();
             }
             this.hasPart.add(work);
+        }
+
+        public String getDateCreated() {
+            return dateCreated;
+        }
+
+        public String getDatePublished() {
+            return datePublished;
+        }
+
+        public void setDateCreated(String dateCreated) {
+            this.dateCreated = dateCreated;
+        }
+
+        public void setDatePublished(String datePublished) {
+            this.datePublished = datePublished;
+        }
+
+        public String getDateModified() {
+            return dateModified;
+        }
+
+        public void setDateModified(String dateModified) {
+            this.dateModified = dateModified;
         }
     }
 
