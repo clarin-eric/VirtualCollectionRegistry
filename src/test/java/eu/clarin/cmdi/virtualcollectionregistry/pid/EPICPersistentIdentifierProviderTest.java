@@ -21,9 +21,7 @@ import org.junit.Test;
  *
  * @author twagoo
  */
-//@ContextConfiguration(locations = {"/applicationContextTest.xml"})
-//@RunWith(SpringJUnit4ClassRunner.class)
-public class EPICPersistentIdentifierProviderTest {
+public class EPICPersistentIdentifierProviderTest extends WicketTesterEnabledTest {
 
     private final Mockery context = new JUnit4Mockery();
     private final Configuration pidConfig =
@@ -31,14 +29,12 @@ public class EPICPersistentIdentifierProviderTest {
     private EPICPersistentIdentifierProvider instance;
     private PidWriter pidWriter;
 
-    private WicketTester tester;
-
     @Before
     public void setUp() {
+        super.setUp();
         pidWriter = context.mock(PidWriter.class);
         instance = new EPICPersistentIdentifierProvider(pidWriter, pidConfig);
         instance.setInfix("VCR-test-");
-        tester = new WicketTester(new TestApplication());
     }
 
     /**
