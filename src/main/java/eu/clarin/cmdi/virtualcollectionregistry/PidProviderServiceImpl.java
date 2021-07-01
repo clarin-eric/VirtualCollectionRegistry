@@ -144,7 +144,6 @@ public class PidProviderServiceImpl implements PidProviderService {
         Configuration config = new Configuration(baseUrl, prefix, username, password);
         DoiPersistentIdentifierProvider provider = new DoiPersistentIdentifierProvider(new DoiPidWriter(), config);
         provider.setPrimaryProvider(Boolean.valueOf(primary));
-        //provider.setBaseUri(baseUri);
         provider.setInfix(infix);
         providers.add(provider);
     }
