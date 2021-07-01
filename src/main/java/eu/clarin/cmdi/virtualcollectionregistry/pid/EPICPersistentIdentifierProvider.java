@@ -126,15 +126,15 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
         return new PublicConfiguration() {
             @Override
             public String getBaseUrl() {
-                return configuration.getServiceBaseURL();
+                return configuration != null ? configuration.getServiceBaseURL() : "";
             }
             @Override
             public String getPrefix() {
-                return configuration.getHandlePrefix();
+                return configuration != null ? configuration.getHandlePrefix() : "";
             }
             @Override
             public String getUsername() {
-                return configuration.getUser();
+                return configuration != null ? configuration.getUser() : "";
             }
         };
     }
