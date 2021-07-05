@@ -48,6 +48,9 @@ public class VcrConfigImpl implements VcrConfig {
     @Value("${eu.clarin.cmdi.vcr.locale:en-GB}")
     private String locale;
 
+    @Value("${eu.clarin.cmdi.vcr.forking.enabled:false}")
+    private boolean forkingEnabled;
+
         @Override
     public String getSwitchboardEndpoint() {
         if (lrsEndpoint.endsWith("/")) {
@@ -90,7 +93,12 @@ public class VcrConfigImpl implements VcrConfig {
         }
         return new Locale(getLocaleString());
     }
-    
+
+    @Override
+    public boolean isForkingEnabled() {
+        return forkingEnabled;
+    }
+
     @Override
     public void logConfig() {
         logger.info("Configuration:");

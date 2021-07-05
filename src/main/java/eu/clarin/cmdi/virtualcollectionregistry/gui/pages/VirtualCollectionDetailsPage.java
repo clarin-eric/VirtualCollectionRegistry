@@ -33,6 +33,8 @@ import org.apache.http.HttpRequest;
 import org.apache.wicket.Component;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authorization.UnauthorizedActionException;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
@@ -247,6 +249,14 @@ public class VirtualCollectionDetailsPage extends BasePage {
             super(id, new CompoundPropertyModel<VirtualCollection>(model));
             add(new Label("name"));
             add(CitationPanelFactory.getCitationPanel("citation", model));
+            AjaxLink btnFork = new AjaxLink("btn_fork", new Model<String>("Cite")) {
+                @Override
+                public void onClick(AjaxRequestTarget target) {
+
+                }
+            } ;
+            btnFork.setVisible(Application.get().getConfig().isForkingEnabled());
+            add(btnFork);
         }    
     }
     
