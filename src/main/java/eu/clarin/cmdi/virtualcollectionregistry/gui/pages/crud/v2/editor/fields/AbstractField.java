@@ -261,7 +261,7 @@ public abstract class AbstractField extends Panel implements Field {
         if(message != null) {
             lblErrorMessage.setVisible(true);
             errorMessageModel.setObject(message);
-            logger.info("Validation failed for field with label = {}, message = {}", label, message);
+            logger.debug("Validation failed for field with label = {}, message = {}", label, message);
             return false;
         }
 
@@ -269,9 +269,6 @@ public abstract class AbstractField extends Panel implements Field {
         errorMessageModel.setObject("");
         return true;
     }
-
-
-
 
     private final List<Listener> actionListeners = new ArrayList<>();
 

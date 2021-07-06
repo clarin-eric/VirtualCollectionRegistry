@@ -28,6 +28,8 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
     private final static Logger logger = LoggerFactory.getLogger(Resource.class);
     private static final long serialVersionUID = 1L;
 
+    private transient boolean merged = false;
+
     public static enum Type {
         METADATA,
         RESOURCE;
@@ -47,10 +49,12 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
      * @param mimeType the mimeType to set
      */
     public void setMimetype(String mimeType) {
-        if (mimeType.equalsIgnoreCase("application/x-cmdi+xml")) {
-            setType(Resource.Type.METADATA);
-        } else {
-            setType(Resource.Type.RESOURCE);
+        if(mimeType != null) {
+            if (mimeType.equalsIgnoreCase("application/x-cmdi+xml")) {
+                setType(Resource.Type.METADATA);
+            } else {
+                setType(Resource.Type.RESOURCE);
+            }
         }
         this.mimeType = mimeType;
     }
@@ -87,12 +91,18 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
     @Column(name = "label", nullable = true, length = 255)
     private String label;
     
-    @Lob
+    //@Lob
     @Column(name = "description", length = 8192)
     private String description;
 
     @Column(name = "display_order", nullable = false)
     private Long displayOrder;
+
+    @Column(name = "origin", nullable = true)
+    private String origin;
+
+    @Column(name = "original_query", nullable = true)
+    private String originalQuery;
 
     public Resource() {
         super();
@@ -275,4 +285,29 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
         }
         return 0;
     }
+
+    public void setMerged() {
+        this.merged = true;
+    }
+
+    public boolean isMerged() {
+        return this.merged;
+    }
+
+    public String getOrigin() {
+        return origin;
+    }
+
+    public void setOrigin(String origin) {
+        this.origin = origin;
+    }
+
+    public String getOriginalQuery() {
+        return originalQuery;
+    }
+
+    public void setOriginalQuery(String originalQuery) {
+        this.originalQuery = originalQuery;
+    }
+
 } // class Resource

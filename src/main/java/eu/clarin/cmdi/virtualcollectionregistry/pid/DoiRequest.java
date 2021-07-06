@@ -54,7 +54,6 @@ public class DoiRequest implements PidRequest {
             this.request.data.attributes.creators = new LinkedList<>();
         }
 
-
         Creator c = new Creator();
         c.familyName = familyName;
         c.givenName = givenName;

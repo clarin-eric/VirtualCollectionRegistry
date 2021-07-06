@@ -3,6 +3,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.rest;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
+import eu.clarin.cmdi.virtualcollectionregistry.rest.auth.Secured;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -21,15 +22,35 @@ import javax.ws.rs.core.Response;
 import javax.ws.rs.core.SecurityContext;
 import javax.ws.rs.core.StreamingOutput;
 import javax.ws.rs.core.UriInfo;
+
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
+import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
+import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+import io.swagger.v3.oas.annotations.security.SecurityRequirements;
+import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Autowired;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.media.Content;
 
 /**
  * REST resource representing the collection of the user's virtual collections
  * (public or private)
  *
+ * https://github.com/swagger-api/swagger-core/wiki/Swagger-2.X---Annotations
+ *
  * @author twagoo
  */
 @Path("/my-virtualcollections")
+@SecurityScheme(
+    name = "apiKey",
+    type = SecuritySchemeType.APIKEY,
+    in = SecuritySchemeIn.HEADER,
+    paramName = HttpHeaders.AUTHORIZATION
+)
 public class MyVirtualCollectionsResource {
 
     @Autowired
@@ -59,11 +80,38 @@ public class MyVirtualCollectionsResource {
      * VirtualCollectionRegistry#getVirtualCollections(java.security.Principal,
      * java.lang.String, int, int)
      */
+    @Secured
     @GET
-    @Produces({MediaType.TEXT_XML,
-        MediaType.APPLICATION_XML,
-        MediaType.APPLICATION_JSON})
-    public Response getMyVirtualCollections(@QueryParam("q") String query,
+    @Produces({MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Operation(
+        security = { @SecurityRequirement(name = "apiKey") },
+        summary = "Retrieve a list of private collections",
+        description = "Retrieve a list of private collections for the user identified via the supplied API key.")
+    @Parameters( value = {
+        @Parameter(name = "query", description = "Query to filter specific collections"),
+        @Parameter(name = "offset", description = "Start with this index. Default = 0"),
+        @Parameter(name = "count", description = "Include this many results. Use -1 for all results.")
+    })
+    @ApiResponses(
+            value = {
+                    @ApiResponse(
+                            responseCode = "401",
+                            description = "Missing or invalid API key in "+HttpHeaders.AUTHORIZATION+" header.",
+                            content = @Content(mediaType = "text/html")
+                    ),
+                    @ApiResponse(
+                            responseCode = "500",
+                            description = "Unexpected server side error.",
+                            content = {@Content(mediaType = "text/html")}
+                    ),
+                    @ApiResponse(
+                            responseCode = "200",
+                            description = "List of all collections for the authenticated user.",
+                            content = {@Content(mediaType = "application/json"), @Content(mediaType = "application/xml")}
+                    )
+            })
+    public Response getMyVirtualCollections(
+            @QueryParam("q") String query,
             @DefaultValue("0") @QueryParam("offset") int offset,
             @DefaultValue("-1") @QueryParam("count") int count)
             throws VirtualCollectionRegistryException {

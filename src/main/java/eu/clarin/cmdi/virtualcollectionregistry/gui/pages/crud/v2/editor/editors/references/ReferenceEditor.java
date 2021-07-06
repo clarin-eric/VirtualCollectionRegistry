@@ -66,13 +66,11 @@ public class ReferenceEditor extends Panel {
         wrapper.add(new AjaxFallbackLink("save") {
             @Override
             public void onClick(AjaxRequestTarget target) {
+                data.setRef(urlModel.getObject());
                 data.setLabel(titleModel.getObject());
                 data.setDescription( descriptionModel.getObject());
                 reset();
                 saveEventHandler.handleSaveEvent(target);
-                /*if (target != null) {
-                    target.add(componentToUpdate);
-                }*/
             }
         });
         wrapper.add(new AjaxFallbackLink("cancel") {
@@ -80,9 +78,6 @@ public class ReferenceEditor extends Panel {
             public void onClick(AjaxRequestTarget target) {
                 reset();
                 cancelEventHandler.handleCancelEvent(target);
-                /*if (target != null) {
-                    target.add(componentToUpdate);
-                }*/
             }
         });
         

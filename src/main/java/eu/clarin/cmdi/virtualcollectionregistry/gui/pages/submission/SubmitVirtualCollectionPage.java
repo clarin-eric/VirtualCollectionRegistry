@@ -17,10 +17,10 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BasePage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.CreateAndEditVirtualCollectionPageV2;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.request.http.WebRequest;
@@ -35,15 +35,24 @@ import org.slf4j.LoggerFactory;
 public class SubmitVirtualCollectionPage extends BasePage {
     
     private static final Logger logger = LoggerFactory.getLogger(SubmitVirtualCollectionPage.class);
-    
+
+    public class ErrorPanel extends Panel {
+        public ErrorPanel(String id, String errorMessage) {
+            super(id);
+            add(new Label("error", errorMessage));
+        }
+    }
+
     public SubmitVirtualCollectionPage() {}
-    
+
     @Override
     protected void onBeforeRender() {     
         VirtualCollection vc = SubmissionUtils.retrieveCollection(getSession());
         if(vc != null) {        
             logger.info("Collection stored in session, redirect to edit page");
-            throw new RestartResponseException(CreateAndEditVirtualCollectionPageV2.class);
+            //Class target = CreateAndEditVirtualCollectionPageV2.class;
+            Class target = MergeCollectionsPage.class;
+            throw new RestartResponseException(target);
         }
         
         logger.debug("No collection stored in session");
@@ -60,16 +69,25 @@ public class SubmitVirtualCollectionPage extends BasePage {
         }
 
         if (type != null) {
-            SubmissionUtils.checkSubmission( (WebRequest)RequestCycle.get().getRequest(), (WebResponse)RequestCycle.get().getResponse(), getSession(), type);     
-            if(!isSignedIn()) {
+            String submissionError = SubmissionUtils.checkSubmission(
+                    (WebRequest)RequestCycle.get().getRequest(),
+                    (WebResponse)RequestCycle.get().getResponse(),
+                    getSession(),
+                    type
+            );
+
+            if(submissionError != null) {
+                add(new Label("type", new Model(type.toString()+" Collection Submission")));
+                add(new ErrorPanel("panel", "Submitted collection is not valid: "+submissionError));
+            } else if(!isSignedIn()) {
                 //Set proper content panel based on      
-                add(new Label("type", new Model(type.toString())));
+                add(new Label("type", new Model(type.toString()+" Collection Submission")));
                 add(new LoginPanel("panel"));
             } else {
                 //Already logged in, so redirect to creation page
                 //TODO: show choice to add to an existing collection or create a new collection
                 logger.info("Redirect logged in");
-                throw new RestartResponseException(CreateAndEditVirtualCollectionPageV2.class);
+                throw new RestartResponseException(MergeCollectionsPage.class);
             }
         }
 

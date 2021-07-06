@@ -3,12 +3,10 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui;
 import de.agilecoders.wicket.core.Bootstrap;
 import de.agilecoders.wicket.core.settings.BootstrapSettings;
 import de.agilecoders.wicket.core.settings.SingleThemeProvider;
-import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
-import eu.clarin.cmdi.virtualcollectionregistry.DataStore;
-import eu.clarin.cmdi.virtualcollectionregistry.JavaScriptResources;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
+import eu.clarin.cmdi.virtualcollectionregistry.*;
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.*;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin.AdminPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.CreateAndEditVirtualCollectionPageV2;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmitVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LoginPage;
@@ -35,17 +33,34 @@ public class Application extends AuthenticatedWebApplication {
 
     public final static StringValidator MAX_LENGTH_VALIDATOR = 
         new StringValidator(null, 255);
-    
+
+    public final static Class HOME_PAGE_CLASS = BrowsePublicCollectionsPage.class;
+
     @Autowired
     private VirtualCollectionRegistry registry;
+
     @Autowired
     private DataStore dataStore;
+
     @Autowired
     private AdminUsersService adminUsersService;
 
     @Autowired
     private VcrConfig vcrConfig;
-    
+
+    @Autowired
+    private PermaLinkService permaLinkService;
+
+    public Application() {}
+
+    public Application(VirtualCollectionRegistry registry, DataStore dataStore, AdminUsersService adminUsersService, VcrConfig vcrConfig, PermaLinkService permaLinkService) {
+        this.registry = registry;
+        this.dataStore = dataStore;
+        this.adminUsersService = adminUsersService;
+        this.vcrConfig = vcrConfig;
+        this.permaLinkService = permaLinkService;
+    }
+
     @Override
     protected void init() {
         super.init();
@@ -67,9 +82,10 @@ public class Application extends AuthenticatedWebApplication {
             logger.error("Failed to inject VcrConfig");
             throw new RuntimeException("Failed to start the Virtual Collection Registry. Failed to inject VCR configuration");
         }
-        
-        getComponentInstantiationListeners().add(new SpringComponentInjector(this));
 
+        initSpring();
+
+        getApplicationSettings().setPageExpiredErrorPage(HOME_PAGE_CLASS);
         getMarkupSettings().setDefaultMarkupEncoding("utf-8");
         getRequestCycleSettings().setResponseRequestEncoding("utf-8");
 
@@ -93,9 +109,13 @@ public class Application extends AuthenticatedWebApplication {
         mountPage("/profile", UserProfilePage.class);
     }
 
+    protected void initSpring() {
+        getComponentInstantiationListeners().add(new SpringComponentInjector(this));
+    }
+
     @Override
     public Class<? extends Page> getHomePage() {
-        return BrowsePublicCollectionsPage.class;
+        return HOME_PAGE_CLASS;
     }
 
     @Override
@@ -140,6 +160,8 @@ public class Application extends AuthenticatedWebApplication {
 
     public VcrConfig getConfig() {
         return vcrConfig;
-    }   
+    }
+
+    public PermaLinkService getPermaLinkService() { return permaLinkService; }
     
 } // class Application

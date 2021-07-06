@@ -89,4 +89,14 @@ public class MultiPersistentIdentifierProvider implements PersistentIdentifierPr
 
     @Override
     public void setPrimaryProvider(boolean primary) { }
+
+    @Override
+    public String getInfix() {
+        return null;
+    }
+
+    @Override
+    public PublicConfiguration getPublicConfiguration() {
+        return null;
+    }
 }

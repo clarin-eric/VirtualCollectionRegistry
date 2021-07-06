@@ -56,7 +56,17 @@ public class VirtualCollectionBuilder {
         }
         return this;
     }
-    
+
+    public VirtualCollectionBuilder setOrigin(String origin) throws VirtualCollectionRegistryUsageException {
+        logger.info("Setting origin to: {}", origin);
+        if(origin == null || origin.isEmpty()) {
+            this.vc.setOrigin(null);
+        } else {
+            this.vc.setOrigin(origin);
+        }
+        return this;
+    }
+
     public VirtualCollectionBuilder setName(String name) throws VirtualCollectionRegistryUsageException {
         if (name == null) {
             throw new VirtualCollectionRegistryUsageException("No name specified for collection");
@@ -151,87 +161,70 @@ public class VirtualCollectionBuilder {
      public  static class ResourceInput {
          private String uri;
          private String description;
-         private String label;
+         private String label;;
 
-        /**
-         * @return the uri
-         */
         public String getUri() {
             return uri;
         }
-
-        /**
-         * @param uri the uri to set
-         */
         public void setUri(String uri) {
             this.uri = uri;
         }
-
-        /**
-         * @return the Description
-         */
         public String getDescription() {
             return description;
         }
-
-        /**
-         * @param Description the Description to set
-         */
         public void setDescription(String description) {
             this.description = description;
         }
-
-        /**
-         * @return the label
-         */
         public String getLabel() {
             return label;
         }
-
-        /**
-         * @param label the label to set
-         */
         public void setLabel(String label) {
             this.label = label;
         }
      }
      
-     private void addResource(Resource.Type type, String uri) {
+     private void addResource(Resource.Type type, String uri, String originUrl, String originalQuery) {
          logger.debug("Resource input: "+uri);
          try {
                 ResourceInput input = mapper.readValue(uri, ResourceInput.class);
-                logger.debug("Parsed JSON input: uri="+input.getUri()+", label="+input.getLabel()+", description="+input.getDescription());
+                logger.debug("Parsed JSON input: uri="+input.getUri()+
+                        ", label="+input.getLabel()+
+                        ", description="+input.getDescription());
                 Resource r = new Resource(type, input.getUri());
                 r.setDescription(input.getDescription());
                 r.setLabel(input.label);
-                
+                r.setOrigin(originUrl);
+                r.setOriginalQuery(originalQuery);
                 this.vc.getResources().add(r);
             } catch(IOException ex) {
                 logger.debug("Failed to unmarshal resource json: "+ex.getMessage()+", falling back to add as plain url with value="+uri);
-                this.vc.getResources().add(new Resource(type, uri));
+                Resource r = new Resource(type, uri);
+                r.setOrigin(this.vc.getOrigin());
+                r.setOriginalQuery(originalQuery);
+                this.vc.getResources().add(r);
             }
      }
      
-    public VirtualCollectionBuilder addMetadataResource(String uri) {
-        this.addResource(Resource.Type.METADATA, uri);
+    public VirtualCollectionBuilder addMetadataResource(String uri, String originUrl, String originalQuery) {
+        this.addResource(Resource.Type.METADATA, uri, originUrl, originalQuery);
         return this;
     }
     
-    public VirtualCollectionBuilder addMetadataResources(List<String> metadataUris) {
+    public VirtualCollectionBuilder addMetadataResources(List<String> metadataUris, String originUrl, String originalQuery) {
         for(String uri : metadataUris) {
-            addMetadataResource(uri);
+            addMetadataResource(uri, originUrl, originalQuery);
         }
         return this;
     }
     
-    public VirtualCollectionBuilder addResourceResource(String uri) {
-        this.addResource(Resource.Type.RESOURCE, uri);
+    public VirtualCollectionBuilder addResourceResource(String uri, String originUrl, String originalQuery) {
+        this.addResource(Resource.Type.RESOURCE, uri, originUrl,originalQuery);
         return this;
     }
 
-    public VirtualCollectionBuilder addResourceResources(List<String> resourceUris) {
+    public VirtualCollectionBuilder addResourceResources(List<String> resourceUris, String originUrl, String originalQuery) {
         for(String uri : resourceUris) {
-            this.addResourceResource(uri);
+            this.addResourceResource(uri, originUrl, originalQuery);
         }
         return this;
     }
@@ -240,16 +233,16 @@ public class VirtualCollectionBuilder {
     
     public VirtualCollectionBuilder setIntenstionalQuery(String description, String uri, String profile, String value) throws VirtualCollectionRegistryUsageException {
         if(!isValid(description)) {
-            throw new VirtualCollectionRegistryUsageException("Intensional description is reqiured");
+            throw new VirtualCollectionRegistryUsageException("Intensional description is required");
         }
         if(!isValid(uri)) {
-            throw new VirtualCollectionRegistryUsageException("Intensional uri is reqiured");
+            throw new VirtualCollectionRegistryUsageException("Intensional uri is required");
         }
         if(!isValid(profile)) {
-            throw new VirtualCollectionRegistryUsageException("Intensional query profile is reqiured");
+            throw new VirtualCollectionRegistryUsageException("Intensional query profile is required");
         }
         if(!isValid(value)) {
-            throw new VirtualCollectionRegistryUsageException("Intensional query value is reqiured");
+            throw new VirtualCollectionRegistryUsageException("Intensional query value is required");
         }        
         GeneratedBy gen = new GeneratedBy();
         gen.setDescription(description);

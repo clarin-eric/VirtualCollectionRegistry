@@ -1,7 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.table;
 
 import eu.clarin.cmdi.virtualcollectionregistry.QueryOptions;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.AdminPage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin.AdminPage;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.util.LinkedList;

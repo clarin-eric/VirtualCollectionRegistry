@@ -49,6 +49,7 @@ public class BaseInfoDialog extends ModalWindow {
     private final class Content extends Panel {
         public Content(String id, String title, Component body, List<DialogButton> buttons, CheckBox cb) {
             super(id);
+            showUnloadConfirmation(false);
 
             add(new Label("title", new Model(title)));            
             add(new AjaxLink( "closeButtonTop", new Model<String>("X") ){ 

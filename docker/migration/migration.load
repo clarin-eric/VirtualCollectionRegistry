@@ -1,0 +1,9 @@
+LOAD DATABASE
+     FROM     mysql://vcruser:vcrpassword@database:3306/vcr
+     INTO     pgsql://vcruser:vcrpassword@databasepg:5432/vcr
+
+ WITH include drop, create tables, no truncate,
+      create indexes, reset sequences, foreign keys
+
+ALTER SCHEMA 'source_db' RENAME TO 'public'
+;

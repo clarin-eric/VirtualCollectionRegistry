@@ -1,11 +1,14 @@
-package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
+package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin;
 
 import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.PidProviderService;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BasePage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowseEditableCollectionsPanel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.AdminCollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifierProvider;
@@ -48,33 +51,29 @@ public class AdminPage extends BasePage {
     public AdminPage() {
         super();
 
-        ListView authorsListview = new ListView("admin_list", adminUsersService.getAdminUsers()) {
-            @Override
-            protected void populateItem(ListItem item) {
-                item.add(new Label("admin_list_item", Model.of(item.getModel().getObject().toString())));
-            }
-        };
-        add(authorsListview);
+        final List<User> users = vc.getUsers();
+
+        add(new Label("lbl_server_config", Model.of("Server Configuration")));
+        add(new AdminPanel("pnl_admins", adminUsersService));
 
         ListView pidProvidersListview = new ListView("pid_list", pidProviderService.getProviders()) {
             @Override
             protected void populateItem(ListItem item) {
                 PersistentIdentifierProvider provider = (PersistentIdentifierProvider)item.getModel().getObject();
-                String value = provider.getId();
-                if(provider.isPrimaryProvider()){
-                    value += " (primary)";
-                }
-                item.add(new Label("pid_list_item", Model.of(value)));
+                item.add(new PidProviderPanel("pid_list_item", provider));
             }
         };
         add(pidProvidersListview);
+
+        add(new Label("lbl_pnl_database", Model.of("Database")));
+        add(new DatabasePanel("pnl_database", vc));
 
         // user model shared between spaces form and the table's provider
         final IModel<User> userModel = new Model<>(null);
 
         // create form that allows admin to select a space
         final Form spaceSelectForm = new Form("spaceSelectForm");
-        final DropDownChoice<User> spacesDropDown = createSpacesDropDown("space", userModel);
+        final DropDownChoice<User> spacesDropDown = createSpacesDropDown("space", userModel, users);
         spaceSelectForm.add(spacesDropDown);
         add(spaceSelectForm);
 
@@ -83,12 +82,10 @@ public class AdminPage extends BasePage {
         add(new BrowseEditableCollectionsPanel("collections", provider, true, getPageReference()));
     }
 
-    private DropDownChoice<User> createSpacesDropDown(String id, final IModel<User> userModel) {
+    private DropDownChoice<User> createSpacesDropDown(String id, final IModel<User> userModel, final List<User> users) {
         final IModel<List<User>> usersModel = new LoadableDetachableModel<List<User>>() {
-
             @Override
             protected List<User> load() {
-                final List<User> users = vc.getUsers();
                 final List<User> spaces = new ArrayList<>(users.size() + 1);
                 spaces.add(PUBLIC_USER);
                 spaces.addAll(users);

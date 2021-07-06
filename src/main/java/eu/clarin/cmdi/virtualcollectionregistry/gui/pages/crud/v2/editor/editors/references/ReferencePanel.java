@@ -81,13 +81,6 @@ public class ReferencePanel extends Panel {
         }
         editorWrapper.add(new Label("value", urlValue));
 
-/*
-        WebMarkupContainer alert = new WebMarkupContainer("alert");
-        Label lblRecommendation = new Label("lbl_recommendation", Model.of("We recommend to use persistent identifiers (DOI, Handle, ...) instead of direct URLs to improve stability."));
-        alert.add(lblRecommendation);
-        alert.setVisible(!HandleLinkModel.isSupportedPersistentIdentifier(ref.getReference().getRef()));
-        editorWrapper.add(alert);
-*/
         Label lblWaiting = new Label("lbl_waiting", "Waiting on analysis");
         lblWaiting.setVisible(analysing);
         editorWrapper.add(lblWaiting);
@@ -102,6 +95,10 @@ public class ReferencePanel extends Panel {
         Label lblTitle = new Label("title", titleModel);
         lblTitle.setVisible(!analysing);
         editorWrapper.add(lblTitle);
+
+        Label lblMerged = new Label("merged", "This resource was merged from the submitted collection.");
+        lblMerged.setVisible(ref.getReference().isMerged());
+        editorWrapper.add(lblMerged);
 
         String htmlValue = "";
         if(descriptionModel.getObject() != null) {
@@ -170,7 +167,7 @@ public class ReferencePanel extends Panel {
                 }
             }
         };
-        btnEdit.setEnabled(ref.getState() == ReferencesEditor.State.DONE);
+        btnEdit.setEnabled(getButtonState(ref.getState()));
         btnEdit.setVisible(!analysing);
         editorWrapper.add(btnEdit);
         
@@ -182,7 +179,7 @@ public class ReferencePanel extends Panel {
                 }
             }
         };
-        btnRemove.setEnabled(ref.getState() == ReferencesEditor.State.DONE);
+        btnRemove.setEnabled(getButtonState(ref.getState()));
         btnRemove.setVisible(!analysing);
         editorWrapper.add(btnRemove);
 
@@ -192,7 +189,11 @@ public class ReferencePanel extends Panel {
 
         add(editorWrapper);
     }
-    
+
+    private boolean getButtonState(ReferencesEditor.State state) {
+        return state != ReferencesEditor.State.INITIALIZED && state != ReferencesEditor.State.ANALYZING;
+    }
+
     public void addEventHandler(EventHandler handler) {
         this.eventHandlers.add(handler);
     }

@@ -9,10 +9,7 @@ import org.apache.wicket.extensions.markup.html.form.DateTextField;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.IFilterStateLocator;
 import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.form.DropDownChoice;
-import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
-import org.apache.wicket.markup.html.form.Form;
-import org.apache.wicket.markup.html.form.TextField;
+import org.apache.wicket.markup.html.form.*;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
@@ -23,7 +20,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.util.ArrayList;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.ListMultipleChoice;
 
 @SuppressWarnings("serial")
 public class FilterForm extends Panel {
@@ -46,10 +42,11 @@ public class FilterForm extends Panel {
                 QueryOptions.Relation.GE,
                 QueryOptions.Relation.GT);
 
-    public FilterForm(String id, IFilterStateLocator<FilterState> locator,
+    public FilterForm(String id, IFilterStateLocator<FilterState> locator, List<String> originValues,
             final DataTable<VirtualCollection, String> table, boolean privateMode, boolean isAdmin) {
         super(id);
         //setRenderBodyOnly(true);
+
 
         List<VirtualCollection.State> states = new ArrayList<>();
         states.addAll(STATE_VALUES);
@@ -89,6 +86,14 @@ public class FilterForm extends Panel {
         createdRelationChoice.setEscapeModelStrings(false);
         form.add(createdRelationChoice);
         form.add(new DateTextField("created", "yyyy-MM-dd"));
+
+        form.add(new DropDownChoice<String>("origin", originValues, new ChoiceRenderer<String>() {
+            @Override
+            public Object getDisplayValue(String value)
+            {
+                return value;
+            }
+        }));
 
         final AjaxButton goButton = new AjaxButton("filter",
                 new ResourceModel("button.filter")) {

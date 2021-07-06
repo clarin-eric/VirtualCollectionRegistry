@@ -4,8 +4,7 @@
          xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
          id="WebApp_ID" version="2.5">
     <display-name>CLARIN Virtual Collection Registry</display-name>
-       
-    
+
     <!-- Shibboleth -->
     <context-param>
         <param-name>ShhaaConfigLocation</param-name>
@@ -28,7 +27,16 @@
             org.springframework.web.context.ContextLoaderListener
         </listener-class>
     </listener>
-    
+    <!-- required to fix issue:
+        java.lang.IllegalStateException: Cannot initialize context because there is already a root
+            application context present - check whether you have multiple ContextLoader* definitions in
+            your web.xml!
+    -->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:applicationContext.xml</param-value>
+    </context-param>
+
     <context-param>
         <param-name>spring.profiles.active</param-name>
         <param-value>vcr.pid.dummy</param-value>

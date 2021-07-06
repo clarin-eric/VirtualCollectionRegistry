@@ -63,10 +63,10 @@ public abstract class VirtualCollectionTable extends Panel {
         table.addBottomToolbar(new AjaxNavigationToolbar(table));
 
         final FilterForm form =
-            new FilterForm("filterForm", provider, table, showState, isAdmin);
+            new FilterForm("filterForm", provider, provider.getOrigins(), table, showState, isAdmin);
         add(form);
         add(table);
-
+/*
         add(new AbstractAjaxTimerBehavior(Duration.seconds(1)) {
             @Override
             protected void onTimer(AjaxRequestTarget target) {
@@ -75,6 +75,7 @@ public abstract class VirtualCollectionTable extends Panel {
                 }
             }
         });
+*/
     }
 
     @Override

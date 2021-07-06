@@ -88,6 +88,9 @@ public class ReferencesEditor extends ComposedField{
     private final int workerSleepTime = 1000;
     private final int uiRefreshTimeInSeconds = 1;
 
+    private boolean currentValidation = false;
+    private boolean previousValidation = false;
+
     public class Validator implements InputValidator, Serializable {
         private String message = "";
             
@@ -166,12 +169,15 @@ public class ReferencesEditor extends ComposedField{
         editor = new ReferenceEditor("ref_editor", this, new SaveEventHandler() {
             @Override
             public void handleSaveEvent(AjaxRequestTarget target) {
+                //Reset state so this reference is rescanned
+                references.get(edit_index).setState(State.INITIALIZED);
                 edit_index = -1;
                 editor.setVisible(false);
                 listview.setVisible(true);
                 if(target != null) {
                     target.add(componentToUpdate);
                 }
+
             }
         }, new CancelEventHandler() {
             @Override
@@ -272,11 +278,14 @@ public class ReferencesEditor extends ComposedField{
         ajaxWrapper.add(new AbstractAjaxTimerBehavior(Duration.seconds(uiRefreshTimeInSeconds)) {
             @Override
             protected void onTimer(AjaxRequestTarget target) {
+                //validate(); //make sure this validation is up to date before re rendering the component
                 if(target != null) {
                     target.add(ajaxWrapper);
                 }
+                fireEvent(new CustomDataUpdateEvent(target));
             }
         });
+
         ajaxWrapper.add(listview);
 
         lblNoReferences.setVisible(references.isEmpty());
@@ -295,8 +304,13 @@ public class ReferencesEditor extends ComposedField{
         AbstractField f2 = new VcrTextFieldWithoutLabel("reference_title", "Set a title for this new reference", mdlReferenceTitle, this,null);
         f2.setCompleteSubmitOnUpdate(true);
         f2.setRequired(true);
-        //f2.addValidator(new Validator());
         add(f2);
+    }
+
+    public static class CustomDataUpdateEvent extends DataUpdatedEvent {
+        public CustomDataUpdateEvent(AjaxRequestTarget target) {
+            super(target);
+        }
     }
     
     @Override
@@ -310,7 +324,7 @@ public class ReferencesEditor extends ComposedField{
         String value = data.getObject();
         String title = mdlReferenceTitle.getObject();
 
-        logger.info("Completing reference submit: value="+value+",title="+title);
+        logger.debug("Completing reference submit: value="+value+",title="+title);
 
         if(value != null && !value.isEmpty() && title != null && !title.isEmpty()) {
             if(handleUrl(value)) {
@@ -333,7 +347,7 @@ public class ReferencesEditor extends ComposedField{
                 worker = new Worker();
                 worker.start();
                 new Thread(worker).start();
-                logger.info("Worker thread started");
+                logger.trace("Worker thread started");
             }
 
             fireEvent(new DataUpdatedEvent(target));
@@ -383,7 +397,7 @@ public class ReferencesEditor extends ComposedField{
     }
     
     public void setData(List<Resource> data) {
-        logger.info("Set resource data: {} reference", data.size());
+        logger.trace("Set resource data: {} reference", data.size());
         for(Resource r : data) {
             this.references.add(new ReferenceJob(r));
         }
@@ -394,7 +408,7 @@ public class ReferencesEditor extends ComposedField{
             worker = new Worker();
             worker.start();
             new Thread(worker).start();
-            logger.info("Worker thread started");
+            logger.trace("Worker thread started");
         }
     }
     
@@ -464,26 +478,29 @@ public class ReferencesEditor extends ComposedField{
                     for(ReferenceJob job : references) {
                         if(job.getState() == State.INITIALIZED) {
                             job.setState(State.ANALYZING);
+                            //fireEvent(new DataUpdatedEvent(null));
                             try {
                                 analyze(job);
                                 job.setState(State.DONE);
+                                //fireEvent(new DataUpdatedEvent(null));
                             } catch(Exception ex) {
                                 job.setState(State.FAILED);
+                                //fireEvent(new DataUpdatedEvent(null));
                             }   
                         }
                     }
                 }
             }
-            logger.info("Worker thread finished");
+            logger.trace("Worker thread finished");
         }
 
         private void analyze(final ReferenceJob job) throws IOException {
-            logger.debug("Analyzing: {}", job.getReference().getRef());
+            logger.trace("Analyzing: {}", job.getReference().getRef());
             
             CloseableHttpClient httpclient = HttpClients.createDefault();
             try {
                 HttpGet httpget = new HttpGet(job.getReference().getRef());
-                logger.debug("Executing request " + httpget.getRequestLine());
+                logger.trace("Executing request " + httpget.getRequestLine());
 
                 // Create a custom response handler
                 ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
@@ -497,13 +514,13 @@ public class ReferencesEditor extends ComposedField{
                             String[] parts = h.getValue().split(";");
                             String mediaType = parts[0];
                             
-                            logger.debug("Media-Type="+mediaType);
+                            logger.trace("Media-Type="+mediaType);
                             if(parts.length > 1) {
                                 String p = parts[1].trim();
                                 if(p.startsWith("charset=")) {
-                                    logger.debug("Charset="+p.replaceAll("charset=", ""));
+                                    logger.trace("Charset="+p.replaceAll("charset=", ""));
                                 } else if(p.startsWith("boundary=")) {
-                                    logger.debug("Boundary="+p.replaceAll("boundary=", ""));
+                                    logger.trace("Boundary="+p.replaceAll("boundary=", ""));
                                 }
                             }
 
@@ -556,7 +573,7 @@ public class ReferencesEditor extends ComposedField{
     }
 
     private void parseCmdi(final String xml, final ReferenceJob job) throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
-        logger.info("Parsing CMDI");
+        logger.trace("Parsing CMDI");
 
         DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
         factory.setNamespaceAware(true);
@@ -564,11 +581,11 @@ public class ReferencesEditor extends ComposedField{
         Document doc = builder.parse(new java.io.ByteArrayInputStream(xml.getBytes()));
 
         String profile = getValueForXPath(doc, "//default:CMD/default:Header/default:MdProfile/text()");
-        logger.info("CMDI profile = " + profile);
+        logger.trace("CMDI profile = " + profile);
         
         String name = getValueForXPath(doc, "//default:CMD/default:Components/default:lat-session/default:Name/text()");
         String description = getValueForXPath(doc, "//default:CMD/default:Components/default:lat-session/default:descriptions/default:Description[lang('eng')]/text()");
-        logger.info("Name = " + name + ", description = " + description);
+        logger.trace("Name = " + name + ", description = " + description);
         
         if(name != null) {
             job.getReference().setLabel(name);
@@ -639,14 +656,42 @@ public class ReferencesEditor extends ComposedField{
         return result;
     }
 
+    /**
+     * If one or more validators failed, set error message and return false otherwise reset error message and return
+     * true.
+     *
+     * @return false if one or more validators failed, true otherwise
+     */
     @Override
     public boolean validate() {
+        previousValidation = currentValidation;
+
         //Check for value if required == true
         if(required && references.isEmpty()) {
-            return setError("Required field.");
+            currentValidation = setError("Required field.");
+            return currentValidation;
         }
-        //All validators passed, reset error message and return true
-        return setError(null);
+
+        //Check if any resource was not valid
+        long errorCount = 0;
+        for(ReferenceJob job : references) {
+            if(job.getState() != State.DONE) {
+                errorCount++;
+            }
+        }
+
+        if(errorCount > 0) {
+            String prefix = errorCount == 1 ? "One resource " : errorCount+ " resources ";
+            currentValidation = setError(prefix + "failed to validate");
+            return currentValidation;
+        }
+
+        currentValidation = setError(null);
+        return currentValidation;
+    }
+
+    public boolean didValidationStateChange() {
+        return currentValidation != previousValidation;
     }
 
     protected void move(int direction, Long id) {

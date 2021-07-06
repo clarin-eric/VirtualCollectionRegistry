@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl;
+import eu.clarin.cmdi.virtualcollectionregistry.rest.RestUtils;
 import eu.clarin.cmdi.wicket.components.citation.CitationPanelFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.PublishedCollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
@@ -8,6 +9,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -16,6 +18,8 @@ import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
 
 @SuppressWarnings("serial")
 public class BrowsePublicCollectionsPage extends BasePage {
@@ -36,23 +40,17 @@ public class BrowsePublicCollectionsPage extends BasePage {
             AjaxLink lrsLink = UIUtils.getLrsRedirectAjaxLink("lrs", model, vcrConfig.getSwitchboardEndpoint());
             lrsLink.setVisible(vcrConfig.isSwitchboardEnabledForCollections());
             add(lrsLink);
-            /*
-            final AjaxLink<VirtualCollection> detailsLink
-                    = new AjaxLink<VirtualCollection>("details", model) {
-                        @Override
-                        public void onClick(AjaxRequestTarget target) {
-                            doDetails(target, getModel());
-                        }
-                    };
-            UIUtils.addTooltip(detailsLink, "View collection details");
-            add(detailsLink);    
-            */
         }
         
     } // class BrowsePublicCollectionsPage.ActionsPanel
 
     public BrowsePublicCollectionsPage() {
         super();
+
+        //Enable content negotiation based redirect
+        String redirectLocation = "/service/v1/collections/";
+        RestUtils.checkRestApiRedirection((HttpServletRequest)getRequest().getContainerRequest(), redirectLocation);
+
         final PageReference reference = getPageReference();
         final VirtualCollectionTable table
                 = new VirtualCollectionTable("collectionsTable", new PublishedCollectionsProvider(), false, false) {

@@ -5,6 +5,7 @@ import de.uni_leipzig.asv.clarin.webservices.pidservices2.HandleField;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidWriter;
 import eu.clarin.cmdi.virtualcollectionregistry.PidProviderServiceImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
 import java.io.Serializable;
@@ -33,15 +34,14 @@ import org.springframework.stereotype.Service;
 public class EPICPersistentIdentifierProvider implements PersistentIdentifierProvider, Serializable {
 
     private static final Logger logger = LoggerFactory.getLogger(EPICPersistentIdentifierProvider.class);
-    private final PidWriter pidWriter;
-    private final Configuration configuration;
+    private final transient PidWriter pidWriter;
+    private final transient Configuration configuration;
 
     private final String id = "EPIC";
 
     private boolean primary = false;
 
     private String infix;
-    private String baseUri;
 
     /**
      *
@@ -74,7 +74,8 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
 
     private Map<HandleField, String> createPIDFieldMap(VirtualCollection vc) {
         final Map<HandleField, String> pidMap = new EnumMap<>(HandleField.class);
-        pidMap.put(HandleField.URL, makeCollectionURI(vc, baseUri));
+        final String url = Application.get().getPermaLinkService().getCollectionUrl(vc);
+        pidMap.put(HandleField.URL, url);
         pidMap.put(HandleField.TITLE, vc.getName());
         if (!vc.getCreators().isEmpty()) {
             pidMap.put(HandleField.CREATOR, vc.getCreators().get(0).getPerson());
@@ -92,27 +93,13 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    public static String makeCollectionURI(VirtualCollection vc, String base) {
-        //String base = getBaseUri();
-        if(base == null) {
-            throw new RuntimeException("baseUri cannot be null");
-        }
-        if(base.endsWith("/")) {
-            base = base.substring(0, base.length()-1);
-        }
-        return String.format("%s/service/virtualcollections/%d", base, vc.getId());
-    }
-
-    public void setBaseUri(String baseUri) {
-        this.baseUri = baseUri;
-    }
-
     public void setInfix(String infix) {
         this.infix = infix;
     }
 
     //Make sure we return the default infix value if an empty infix has been set
-    protected String getInfix() {
+    @Override
+    public String getInfix() {
         if(this.infix == null || this.infix.isEmpty()) {
             return PidProviderServiceImpl.DEFAULT_INFIX;
         }
@@ -134,7 +121,21 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
         this.primary = primary;
     }
 
-    public String getBaseUri() {
-        return baseUri;
+    @Override
+    public PublicConfiguration getPublicConfiguration() {
+        return new PublicConfiguration() {
+            @Override
+            public String getBaseUrl() {
+                return configuration != null ? configuration.getServiceBaseURL() : "";
+            }
+            @Override
+            public String getPrefix() {
+                return configuration != null ? configuration.getHandlePrefix() : "";
+            }
+            @Override
+            public String getUsername() {
+                return configuration != null ? configuration.getUser() : "";
+            }
+        };
     }
 }

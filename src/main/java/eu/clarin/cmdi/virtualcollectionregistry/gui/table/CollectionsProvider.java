@@ -33,20 +33,22 @@ public abstract class CollectionsProvider extends
     }
 
     @Override
-    public void setFilterState(FilterState state) {
-        this.filterstate = state;
-    }
+    public void setFilterState(FilterState state) { this.filterstate = state; }
 
     @Override
     public IModel<VirtualCollection> model(VirtualCollection vc) {
         return new DetachableVirtualCollectionModel(vc);
     }
 
+    public List<String> getOrigins() {
+        final VirtualCollectionRegistry vcr = Application.get().getRegistry();
+        return vcr.getOrigins();
+    }
+
     @Override
     public long size() {
         try {
-            final VirtualCollectionRegistry vcr
-                    = Application.get().getRegistry();
+            final VirtualCollectionRegistry vcr = Application.get().getRegistry();
             return vcr.getVirtualCollectionCount(getFilter());
         } catch (VirtualCollectionRegistryException e) {
             throw new WicketRuntimeException(e);
@@ -110,6 +112,11 @@ public abstract class CollectionsProvider extends
             filter.add(QueryOptions.Property.VC_CREATION_DATE,
                     filterstate.getCreatedRelation(),
                     filterstate.getCreated());
+        }
+        if (filterstate.hasOrigin()) {
+            filter.add(Property.VC_ORIGIN,
+                    QueryOptions.Relation.EQ,
+                    filterstate.getOrigin());
         }
         options.setFilter(filter);
 

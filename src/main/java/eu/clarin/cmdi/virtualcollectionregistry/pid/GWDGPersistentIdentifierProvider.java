@@ -325,4 +325,14 @@ public class GWDGPersistentIdentifierProvider implements
         this.primary = primary;
     }
 
+    @Override
+    public String getInfix() {
+        return null;
+    }
+
+    @Override
+    public PublicConfiguration getPublicConfiguration() {
+        return null;
+    }
+
 } // class GWDGPersistentIdentifierProvider

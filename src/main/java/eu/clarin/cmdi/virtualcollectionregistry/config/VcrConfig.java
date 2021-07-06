@@ -31,4 +31,5 @@ public interface VcrConfig {
     public String getLocaleString();
     public Locale getLocale();
     public void logConfig();
+    public boolean isForkingEnabled();
 }

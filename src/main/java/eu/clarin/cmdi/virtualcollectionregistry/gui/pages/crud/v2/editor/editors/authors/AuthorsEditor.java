@@ -369,8 +369,16 @@ import org.slf4j.LoggerFactory;
                                  logger.trace("Removing author with id = {}", a.getId());
                                  int idx = -1;
                                  for(int i = 0; i < authors.size(); i++) {
-                                     if(authors.get(i).data.getId() == a.getId()) {
-                                         idx = i;
+                                     Creator existingAuthor = authors.get(i).data;
+                                     if(existingAuthor.getId() == null && a.getId() == null) {
+                                         if (existingAuthor.getFamilyName().equalsIgnoreCase(a.getFamilyName()) &&
+                                             existingAuthor.getGivenName().equalsIgnoreCase(a.getGivenName())) {
+                                             idx = i;
+                                         }
+                                     } else if(existingAuthor.getId() != null && a.getId() != null) {
+                                         if (existingAuthor.getId() == a.getId()) {
+                                             idx = i;
+                                         }
                                      }
                                  }
                                  if(idx >= 0) {

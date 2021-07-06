@@ -16,7 +16,7 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 public class GeneratedBy implements Serializable {
     private static final long serialVersionUID = 1L;
 
-    @Lob
+    //@Lob
     @Basic(fetch = FetchType.EAGER)
     @Column(name = "generatedby_description", length = 8192)
     private String description;
