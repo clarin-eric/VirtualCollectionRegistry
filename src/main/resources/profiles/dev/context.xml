@@ -151,4 +151,8 @@
     <Parameter name="eu.clarin.cmdi.vcr.mode" 
                value="alpha" 
                override="false" />
+
+    <Parameter name="eu.clarin.cmdi.vcr.forking.enabled"
+               value="true"
+               override="false" />
 </Context>

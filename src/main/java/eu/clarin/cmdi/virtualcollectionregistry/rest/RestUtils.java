@@ -31,6 +31,7 @@ public final class RestUtils {
     }
 
     public static class ClarinMediaType extends MediaType {
+        //CMDI mimetype: https://www.clarin.eu/faq/what-mimetype-should-i-use-cmdi-files
         public static final String APPLICATION_CMDI_XML = "application/x-cmdi+xml";
         public static final MediaType APPLICATION_CMDI_XML_TYPE = new MediaType("application", "x-cmdi+xml");
     }
