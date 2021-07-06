@@ -59,7 +59,7 @@ public class VirtualCollectionBuilder {
 
     public VirtualCollectionBuilder setOrigin(String origin) throws VirtualCollectionRegistryUsageException {
         logger.info("Setting origin to: {}", origin);
-        if(origin.isEmpty()) {
+        if(origin == null || origin.isEmpty()) {
             this.vc.setOrigin(null);
         } else {
             this.vc.setOrigin(origin);

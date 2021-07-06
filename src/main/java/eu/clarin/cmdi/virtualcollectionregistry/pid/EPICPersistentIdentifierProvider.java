@@ -5,6 +5,7 @@ import de.uni_leipzig.asv.clarin.webservices.pidservices2.HandleField;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidWriter;
 import eu.clarin.cmdi.virtualcollectionregistry.PidProviderServiceImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
 import java.io.Serializable;
@@ -41,7 +42,6 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
     private boolean primary = false;
 
     private String infix;
-    private String baseUri;
 
     /**
      *
@@ -74,7 +74,8 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
 
     private Map<HandleField, String> createPIDFieldMap(VirtualCollection vc) {
         final Map<HandleField, String> pidMap = new EnumMap<>(HandleField.class);
-        pidMap.put(HandleField.URL, makeCollectionURI(vc, baseUri));
+        final String url = Application.get().getPermaLinkService().getCollectionUrl(vc);
+        pidMap.put(HandleField.URL, url);
         pidMap.put(HandleField.TITLE, vc.getName());
         if (!vc.getCreators().isEmpty()) {
             pidMap.put(HandleField.CREATOR, vc.getCreators().get(0).getPerson());
@@ -90,21 +91,6 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
     @Override
     public void deleteIdentifier(String pid) throws VirtualCollectionRegistryException {
         throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    public static String makeCollectionURI(VirtualCollection vc, String base) {
-        //String base = getBaseUri();
-        if(base == null) {
-            throw new RuntimeException("baseUri cannot be null");
-        }
-        if(base.endsWith("/")) {
-            base = base.substring(0, base.length()-1);
-        }
-        return String.format("%s/service/virtualcollections/%d", base, vc.getId());
-    }
-
-    public void setBaseUri(String baseUri) {
-        this.baseUri = baseUri;
     }
 
     public void setInfix(String infix) {
@@ -135,24 +121,20 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
         this.primary = primary;
     }
 
-    public String getBaseUri() {
-        return baseUri;
-    }
-
     @Override
     public PublicConfiguration getPublicConfiguration() {
         return new PublicConfiguration() {
             @Override
             public String getBaseUrl() {
-                return configuration.getServiceBaseURL();
+                return configuration != null ? configuration.getServiceBaseURL() : "";
             }
             @Override
             public String getPrefix() {
-                return configuration.getHandlePrefix();
+                return configuration != null ? configuration.getHandlePrefix() : "";
             }
             @Override
             public String getUsername() {
-                return configuration.getUser();
+                return configuration != null ? configuration.getUser() : "";
             }
         };
     }

@@ -294,8 +294,6 @@ public class BasePage extends WebPage {
     }
 
     protected void checkReadAccess(final VirtualCollection vc) throws VirtualCollectionRegistryPermissionException {
-        checkAccess(vc);
-
         boolean isPublic = vc.getState() == VirtualCollection.State.PUBLIC || vc.getState() == VirtualCollection.State.PUBLIC_FROZEN;
         if(!isPublic
                 && !isUserAdmin()

@@ -7,8 +7,15 @@
     <body>
         <wicket:panel>
             <div class="row details-header">
-                <div wicket:id="name" class="col-sm-11 details-title">[title]</div>
-                <div wicket:id="citation" class="col-sm-1">[citation button]</div>
+                <div wicket:id="name" class="col-sm-10 details-title">[title]</div>
+                <div class="col-sm-1">
+                    <button wicket:id="btn_fork" type="button" class="btn btn-primary">
+                        <span class="fa fa-code-fork"></span>
+                    </button>
+                </div>
+                <div class="col-sm-1">
+                    <div wicket:id="citation">[citation button]</div>
+                </div>
             </div>
         </wicket:panel>
     </body>

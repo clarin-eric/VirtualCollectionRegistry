@@ -23,6 +23,7 @@ final class FilterState implements Serializable {
     private List<VirtualCollection.State> state = new LinkedList<>();
     private QueryOptions.Relation createdRelation;
     private Date created;
+    private String origin;
 
     public FilterState() {
         clear();
@@ -105,6 +106,11 @@ final class FilterState implements Serializable {
     public String getDescriptionWithWildcard() {
         return addWildcards(description, descriptionMode);
     }
+
+    public boolean hasOrigin() { return origin != null; }
+    public String getOrigin() { return origin; }
+
+    public void setOrigin(String origin) { this.origin = origin; }
 
     public QueryOptions.Relation getCreatedRelation() {
         return createdRelation;

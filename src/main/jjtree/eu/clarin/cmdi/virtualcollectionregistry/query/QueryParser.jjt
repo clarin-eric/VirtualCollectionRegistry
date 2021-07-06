@@ -24,6 +24,7 @@ PARSER_END(QueryParser)
   (vc.)created:        ISO-DATE (EQ, NE, GT, GE, LT, LE)
   {vc.}modified:       ISO-DATE (EQ, NE, GT, GE, LT, LE)
   {vc.}owner           STRING (EQ, NE)
+  {vc.}origin          STRING (EQ, NE)
   (cr.)creator:        STRING (EQ, NE)
   {cr.}email:          STRING (EQ, NE)
   {cr.}organization:   STRING (EQ, NE)
@@ -43,6 +44,7 @@ TOKEN: {
     | <VC_PURPOSE: "purpose">
     | <VC_REPRODUCIBILITY: "reproducibility">
     | <VC_OWNER: "owner">
+    | <VC_ORIGIN: "origin">
     | <CR_PERSON: "person">
     | <CR_ORGANIZATION: "organization">
     | <CR_EMAIL: "email">
@@ -107,6 +109,7 @@ private void predicate() #Predicate : {
      ( ( attribute = <VC_NAME>
        | attribute = <VC_DESC>
        | attribute = <VC_OWNER>
+       | attribute = <VC_ORIGIN>
        | attribute = <CR_PERSON>
        | attribute = <CR_ORGANIZATION>
        | attribute = <CR_EMAIL> )

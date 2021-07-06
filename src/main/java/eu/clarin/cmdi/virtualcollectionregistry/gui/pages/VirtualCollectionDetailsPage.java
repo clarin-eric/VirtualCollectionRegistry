@@ -14,6 +14,9 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Type;
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
+import eu.clarin.cmdi.virtualcollectionregistry.rest.RestUtils;
+import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
+import eu.clarin.cmdi.virtualcollectionregistry.wicket.DetailsStructuredMeatadataHeaderBehavior;
 import eu.clarin.cmdi.wicket.components.citation.CitationPanelFactory;
 import eu.clarin.cmdi.wicket.components.panel.BootstrapDropdown;
 import eu.clarin.cmdi.wicket.components.panel.BootstrapDropdown.DropdownMenuItem;
@@ -22,15 +25,16 @@ import eu.clarin.cmdi.wicket.components.pid.PersistentIdentifieable;
 import eu.clarin.cmdi.wicket.components.pid.PidPanel;
 import java.io.Serializable;
 import java.sql.Date;
-import java.util.ArrayList;
-import java.util.Collection;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
-import java.util.Locale;
+import java.text.ParseException;
+import java.util.*;
+import java.util.stream.Collectors;
+
+import org.apache.http.HttpRequest;
 import org.apache.wicket.Component;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authorization.UnauthorizedActionException;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
@@ -57,18 +61,28 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.flow.RedirectToUrlException;
 import org.apache.wicket.request.mapper.parameter.INamedParameters.NamedPair;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.string.Strings;
+import org.glassfish.jersey.message.internal.AcceptableMediaType;
+import org.glassfish.jersey.message.internal.HeaderUtils;
+import org.glassfish.jersey.message.internal.HttpHeaderReader;
+import org.glassfish.jersey.message.internal.MediaTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.data.MutableDataSet;
+
+import javax.servlet.http.HttpServletRequest;
+import javax.ws.rs.core.Context;
+import javax.ws.rs.core.HttpHeaders;
+import javax.ws.rs.core.MediaType;
 
 @SuppressWarnings("serial")
 public class VirtualCollectionDetailsPage extends BasePage {
@@ -85,7 +99,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
     
     @SpringBean
     private VcrConfigImpl vcrConfig;
-    
+
     private static final IConverter convEnum = new IConverter() {
         @Override
         public String convertToString(Object o, Locale locale) {
@@ -171,7 +185,11 @@ public class VirtualCollectionDetailsPage extends BasePage {
         super(new CompoundPropertyModel<VirtualCollection>(model));
         //setPageStateless(true);
         this.params = params;
-        
+
+        //Enable content negotiation based redirect
+        String redirectLocation = "/service/v1/collections/" + model.getObject().getId();
+        RestUtils.checkRestApiRedirection((HttpServletRequest)getRequest().getContainerRequest(), redirectLocation);
+
         //Redirect to homepage if the model is not set
         if (model == null) {
             setResponsePage(Application.get().getHomePage());
@@ -220,13 +238,25 @@ public class VirtualCollectionDetailsPage extends BasePage {
                 .setBody(new GeneratedByPanel("body", model))
                 .setVisible(model.getObject().getType() == Type.INTENSIONAL)
                 .build());
+
+        add(new DetailsStructuredMeatadataHeaderBehavior(model));
     }
-    
+
+
+
     private  class HeaderPanel extends Panel {
         public HeaderPanel(String id, final IModel<VirtualCollection> model) {
             super(id, new CompoundPropertyModel<VirtualCollection>(model));
             add(new Label("name"));
             add(CitationPanelFactory.getCitationPanel("citation", model));
+            AjaxLink btnFork = new AjaxLink("btn_fork", new Model<String>("Cite")) {
+                @Override
+                public void onClick(AjaxRequestTarget target) {
+
+                }
+            } ;
+            btnFork.setVisible(Application.get().getConfig().isForkingEnabled());
+            add(btnFork);
         }    
     }
     
@@ -286,13 +316,22 @@ public class VirtualCollectionDetailsPage extends BasePage {
         }
     }
     
-    private class BasicLinkPanel extends Panel {
-        public BasicLinkPanel(String id, String label, IModel<String> model) {
+    private class BasicLinkPanelPopup extends Panel {
+        public BasicLinkPanelPopup(String id, String label, IModel<String> model) {
             super(id);
             add(new Label("label", label));
             add(new ExternalLink("value",  model, model)
                     .setPopupSettings(new PopupSettings())
                     .add(hideIfEmpty));            
+        }
+    }
+
+    private class BasicLinkPanel extends Panel {
+        public BasicLinkPanel(String id, String label, IModel<String> model) {
+            super(id);
+            add(new Label("label", label));
+            add(new ExternalLink("value",  model, model)
+                    .add(hideIfEmpty));
         }
     }
     
@@ -336,7 +375,8 @@ public class VirtualCollectionDetailsPage extends BasePage {
                     item.add(new BasicTextPanel("organisation", "Organisation", new Model(creator.getOrganisation())).add(hideIfEmpty)); 
                     item.add(new BasicTextPanel("email", "Email", new Model(creator.getEMail())).add(hideIfEmpty));
                     item.add(new BasicTextPanel("telephone", "Telephone", new Model(creator.getTelephone())).add(hideIfEmpty));
-                    item.add(new BasicTextPanel("website", "Website", new Model(creator.getWebsite())).add(hideIfEmpty));
+                    //item.add(new BasicTextPanel("website", "Website", new Model(creator.getWebsite())).add(hideIfEmpty));
+                    item.add(new BasicLinkPanel("website", "Website", new Model(creator.getWebsite())).add(hideIfEmpty));
                     item.add(new BasicTextPanel("role", "Role", new Model(creator.getRole())).add(hideIfEmpty));
                 }
 

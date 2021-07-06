@@ -25,7 +25,8 @@ public class QueryOptions implements Serializable {
         VC_TYPE,
         VC_STATE,
         VC_DESCRIPTION,
-        VC_CREATION_DATE
+        VC_CREATION_DATE,
+        VC_ORIGIN
     } // enum QueryOptions.Property
 
     public enum Relation {
@@ -73,7 +74,8 @@ public class QueryOptions implements Serializable {
                 new PropertyImplType(),
                 new PropertyImplState(),
                 new PropertyImplDescription(),
-                new PropertyImplCreationDate()
+                new PropertyImplCreationDate(),
+                new PropertyImplOrigin()
         );
     private Filter filter;
     private List<OrderBy> orderByItems;
@@ -447,11 +449,30 @@ public class QueryOptions implements Serializable {
     } // class QueryOptions.PropertyImplName
 
 
+    private static final class PropertyImplOrigin extends AbstractPropertyImpl {
+        @Override
+        public Property getProperty() { return Property.VC_ORIGIN; }
+
+        @Override
+        public byte getValidRelationMask() {
+            return RELATIONS_EQ_NE;
+        }
+
+        @Override
+        public Expression<String> getExpression(Root<VirtualCollection> root) {
+            return root.get(VirtualCollection_.origin);
+        }
+
+        @Override
+        public Predicate getPredicate(CriteriaBuilder cb, CriteriaQuery<?> cq,
+                                      Root<VirtualCollection> root, byte relation, Object value) {
+            final Expression<String> expr = getExpression(root);
+            return makePredicate(cb, expr, relation, value);
+        }
+    }
     private static final class PropertyImplType extends AbstractPropertyImpl {
         @Override
-        public Property getProperty() {
-            return Property.VC_TYPE;
-        }
+        public Property getProperty() { return Property.VC_TYPE; }
 
         @Override
         public byte getValidRelationMask() {

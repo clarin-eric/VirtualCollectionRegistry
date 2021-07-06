@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl;
+import eu.clarin.cmdi.virtualcollectionregistry.rest.RestUtils;
 import eu.clarin.cmdi.wicket.components.citation.CitationPanelFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.PublishedCollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
@@ -17,6 +18,8 @@ import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import javax.servlet.http.HttpServletRequest;
 
 @SuppressWarnings("serial")
 public class BrowsePublicCollectionsPage extends BasePage {
@@ -43,6 +46,11 @@ public class BrowsePublicCollectionsPage extends BasePage {
 
     public BrowsePublicCollectionsPage() {
         super();
+
+        //Enable content negotiation based redirect
+        String redirectLocation = "/service/v1/collections/";
+        RestUtils.checkRestApiRedirection((HttpServletRequest)getRequest().getContainerRequest(), redirectLocation);
+
         final PageReference reference = getPageReference();
         final VirtualCollectionTable table
                 = new VirtualCollectionTable("collectionsTable", new PublishedCollectionsProvider(), false, false) {
