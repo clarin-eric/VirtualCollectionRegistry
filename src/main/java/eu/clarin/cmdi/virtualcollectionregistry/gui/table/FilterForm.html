@@ -22,32 +22,35 @@
                 
                     <div class="panel-body">
                         <div class="row">
-                        <div class="col-sm-3"><label class="filter">Name</label></div>
-                        <div class="col-sm-4"><select wicket:id="nameMode" class="filter"></select></div>
-                        <div class="col-sm-5"><input wicket:id="name" type="text" class="name filter" size="64" maxlength="255"/></div>
+                            <div class="col-sm-3"><label class="filter">Name</label></div>
+                            <div class="col-sm-4"><select wicket:id="nameMode" class="filter"></select></div>
+                            <div class="col-sm-5"><input wicket:id="name" type="text" class="name filter" size="64" maxlength="255"/></div>
                         </div>
                         <div class="row">
-                        <div class="col-sm-3"><label class="filter">Description</label></div>
-                        <div class="col-sm-4"><select wicket:id="descriptionMode" class="filter"></select></div>
-                        <div class="col-sm-5"><input wicket:id="description" type="text" class="desc filter"
-                               accept="" size="64" maxlength="255" /></div>
+                            <div class="col-sm-3"><label class="filter">Description</label></div>
+                            <div class="col-sm-4"><select wicket:id="descriptionMode" class="filter"></select></div>
+                            <div class="col-sm-5"><input wicket:id="description" type="text" class="desc filter"
+                                   accept="" size="64" maxlength="255" /></div>
                         </div>
                         <div class="row">
-                        <div wicket:id="state">
-                            <div class="col-sm-3"><label class="filter">State</label></div>
-                            <div class="col-sm-4"><select wicket:id="state" class="filter"></select></div>
+                            <div wicket:id="state">
+                                <div class="col-sm-3"><label class="filter">State</label></div>
+                                <div class="col-sm-4"><select wicket:id="state" class="filter"></select></div>
+                                <div class="col-sm-5">&nbsp;</div>
+                            </div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3"><label class="filter">Type</label></div>
+                            <div class="col-sm-4"><select wicket:id="type" class="filter"></select></div>
                             <div class="col-sm-5">&nbsp;</div>
                         </div>
-                        </div>
                         <div class="row">
-                        <div class="col-sm-3"><label class="filter">Type</label></div>
-                        <div class="col-sm-4"><select wicket:id="type" class="filter"></select></div>
-                        <div class="col-sm-5">&nbsp;</div>
-                        </div>
-                        <div class="row">
-                            <div class="col-sm-3"><label class="filter">Created</label></div>
                             <div class="col-sm-4"><select wicket:id="createdRelation" class="filter"></select></div>
                             <div class="col-sm-5"><input wicket:id="created" type="text" size="11" class="filter"/></div>
+                        </div>
+                        <div class="row">
+                            <div class="col-sm-3"><label class="filter">Origin</label></div>
+                            <div class="col-sm-9"><select wicket:id="origin" class="filter"></select></div>
                         </div>
                     </div>
                     <div class="panel-footer">

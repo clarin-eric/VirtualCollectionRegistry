@@ -7,6 +7,7 @@ before_install:
 - unset GEM_PATH
 - echo "MAVEN_OPTS='-Xmx2g -XX:MaxPermSize=512m'" > ~/.mavenrc
 script:
+- git submodule update --init --recursive
 - bash -c 'if [ "${TRAVIS_TAG}" ]; then mvn versions:set -DnewVersion=${TRAVIS_TAG} versions:commit; fi'
 - mvn install -DskipTests=true -Dmaven.javadoc.skip=true -B -V
 - mvn test -B

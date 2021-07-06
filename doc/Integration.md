@@ -53,15 +53,6 @@ Notes:
   * JSON format: `{"uri": "", "label": "", "description": ""}`
   * As a list of fields: `metadataUri={"uri": "", "label": "", "description": ""}&metadataUri={"uri": "", "label": "", "description": ""}&...`
 * For extenstional collections the `original_query` field can be used to link the submitted resources to the query used to generate this collection.
-### Examples
-Curl example (against a local instance (http://localhost:8080/vcr)with basic authentication (user1:user1)):
-
-```
-curl -v \
--u user1:user1 \
--d 'name=test&metadataUri=http://www.clarin.eu/1&metadataUri=http://www.clarin.eu/2&resourceUri=http://www.clarin.eu/&&description=test-collection&keyword=&purpose=&reproducibility=' \
-       http://localhost:8080/vcr/service/submit/extensional
-```
 
 ## Workflow
 
@@ -109,8 +100,8 @@ This is an example of how one could implement a form, served by an external appl
 <form id="virtualCollectionForm" method="post" enctype="application/x-www-form-urlencoded" name="vcrForm" action="https://collections.clarin.eu/submit/extensional"> 
     <input id="collectionName" type="text" name="name" value="Your collection name">
     <input id="collectionDescription" type="text" name="description" value="Your collection description">
-    <input type="hidden" name="metadataUri" value="{&quot;uri&quot;:&quot;https://1.uri.com&quot;,&quot;label&quot;:&quot;uri 1&quot;,&quot;description&quot;:null}">         
-    <input type="hidden" name="metadataUri" value="{&quot;uri&quot;:&quot;https://2.uri.com&quot;,&quot;label&quot;:&quot;uri 2&quot;,&quot;description&quot;:null}">
+    <input type="hidden" name="metadataUri" value="{&quot;uri&quot;:&quot;https://1.uri.com&quot;,&quot;label&quot;:&quot;uri 1&quot;,&quot;description&quot;}">         
+    <input type="hidden" name="metadataUri" value="{&quot;uri&quot;:&quot;https://2.uri.com&quot;,&quot;label&quot;:&quot;uri 2&quot;,&quot;description&quot;}">
     ...             
     <input type="submit" value="Submit">
 </form>

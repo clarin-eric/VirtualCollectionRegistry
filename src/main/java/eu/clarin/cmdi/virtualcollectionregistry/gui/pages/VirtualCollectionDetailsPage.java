@@ -16,6 +16,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Type;
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.RestUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
+import eu.clarin.cmdi.virtualcollectionregistry.wicket.DetailsStructuredMeatadataHeaderBehavior;
 import eu.clarin.cmdi.wicket.components.citation.CitationPanelFactory;
 import eu.clarin.cmdi.wicket.components.panel.BootstrapDropdown;
 import eu.clarin.cmdi.wicket.components.panel.BootstrapDropdown.DropdownMenuItem;
@@ -32,6 +33,8 @@ import org.apache.http.HttpRequest;
 import org.apache.wicket.Component;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authorization.UnauthorizedActionException;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
@@ -235,6 +238,8 @@ public class VirtualCollectionDetailsPage extends BasePage {
                 .setBody(new GeneratedByPanel("body", model))
                 .setVisible(model.getObject().getType() == Type.INTENSIONAL)
                 .build());
+
+        add(new DetailsStructuredMeatadataHeaderBehavior(model));
     }
 
 
@@ -244,6 +249,14 @@ public class VirtualCollectionDetailsPage extends BasePage {
             super(id, new CompoundPropertyModel<VirtualCollection>(model));
             add(new Label("name"));
             add(CitationPanelFactory.getCitationPanel("citation", model));
+            AjaxLink btnFork = new AjaxLink("btn_fork", new Model<String>("Cite")) {
+                @Override
+                public void onClick(AjaxRequestTarget target) {
+
+                }
+            } ;
+            btnFork.setVisible(Application.get().getConfig().isForkingEnabled());
+            add(btnFork);
         }    
     }
     
@@ -303,13 +316,22 @@ public class VirtualCollectionDetailsPage extends BasePage {
         }
     }
     
-    private class BasicLinkPanel extends Panel {
-        public BasicLinkPanel(String id, String label, IModel<String> model) {
+    private class BasicLinkPanelPopup extends Panel {
+        public BasicLinkPanelPopup(String id, String label, IModel<String> model) {
             super(id);
             add(new Label("label", label));
             add(new ExternalLink("value",  model, model)
                     .setPopupSettings(new PopupSettings())
                     .add(hideIfEmpty));            
+        }
+    }
+
+    private class BasicLinkPanel extends Panel {
+        public BasicLinkPanel(String id, String label, IModel<String> model) {
+            super(id);
+            add(new Label("label", label));
+            add(new ExternalLink("value",  model, model)
+                    .add(hideIfEmpty));
         }
     }
     
@@ -353,7 +375,8 @@ public class VirtualCollectionDetailsPage extends BasePage {
                     item.add(new BasicTextPanel("organisation", "Organisation", new Model(creator.getOrganisation())).add(hideIfEmpty)); 
                     item.add(new BasicTextPanel("email", "Email", new Model(creator.getEMail())).add(hideIfEmpty));
                     item.add(new BasicTextPanel("telephone", "Telephone", new Model(creator.getTelephone())).add(hideIfEmpty));
-                    item.add(new BasicTextPanel("website", "Website", new Model(creator.getWebsite())).add(hideIfEmpty));
+                    //item.add(new BasicTextPanel("website", "Website", new Model(creator.getWebsite())).add(hideIfEmpty));
+                    item.add(new BasicLinkPanel("website", "Website", new Model(creator.getWebsite())).add(hideIfEmpty));
                     item.add(new BasicTextPanel("role", "Role", new Model(creator.getRole())).add(hideIfEmpty));
                 }
 

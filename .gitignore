@@ -21,3 +21,4 @@ docker/vcr/
 docker/webapps
 tmp
 service-doc
+service-doc/swagger.yaml

@@ -24,6 +24,8 @@ import org.apache.wicket.request.resource.ContextRelativeResource;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
+import javax.servlet.ServletContext;
+
 /**
  *
  * @author twagoo
@@ -34,9 +36,9 @@ public class HelpPage extends BasePage {
 
     private static Logger logger = LoggerFactory.getLogger(HelpPage.class);
 
-    public HelpPage() {
-        String baseUri = WebApplication.get().getServletContext().getInitParameter(BASE_URI);
-        String contextPath = WebApplication.get().getServletContext().getContextPath();
+    public static String getBaseUri(ServletContext ctxt) {
+        String baseUri = ctxt.getInitParameter(BASE_URI);
+        String contextPath = ctxt.getContextPath();
         if(baseUri.endsWith("/")) {
             baseUri = baseUri.substring(0, baseUri.length()-1);
         }
@@ -44,6 +46,11 @@ public class HelpPage extends BasePage {
         if(baseUri.endsWith("/")) {
             baseUri = baseUri.substring(0, baseUri.length()-1);
         }
+        return baseUri;
+    }
+
+    public HelpPage() {
+        String baseUri= getBaseUri(WebApplication.get().getServletContext());
 
         final String serviceBaseUri = String.format("%s/service/", baseUri);
         add(new ExternalLink("restLink", serviceBaseUri)

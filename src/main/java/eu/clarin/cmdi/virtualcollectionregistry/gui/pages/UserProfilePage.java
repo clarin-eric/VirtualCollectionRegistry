@@ -21,6 +21,7 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.*;
+import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -86,11 +87,12 @@ public class UserProfilePage extends BasePage {
 
         try {
             final Principal principal = getUser();
-            if(principal == null) {
 
-            }
             final String username = principal.getName();
             User user = apiKeyService.getUser(username);
+
+            String baseUri = HelpPage.getBaseUri(WebApplication.get().getServletContext());
+            add(new Label("curl_example", String.format("curl -H \"Authorization: [api key goes here]\" %s[path to api endpoint]", baseUri)));
 
             keys = new LinkedList<>(user.getApiKeys());
             Collections.sort(keys);
@@ -137,11 +139,10 @@ public class UserProfilePage extends BasePage {
             btnSave.setEnabled(false);
             add(btnSave);
 
-            logger.debug("Redirecting to login page", ex);
+            logger.warn("No principal found. Redirecting to login page", ex);
             throw new RestartResponseException(LoginPage.class);
         }
     }
-
 
     public abstract class BasicColumn extends AbstractColumn<ApiKey, String> {
 

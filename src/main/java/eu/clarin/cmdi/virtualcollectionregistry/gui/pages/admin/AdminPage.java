@@ -8,6 +8,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowseEditableCollecti
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.AdminCollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import java.util.ArrayList;
+import java.util.LinkedList;
 import java.util.List;
 
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifierProvider;
@@ -50,6 +51,8 @@ public class AdminPage extends BasePage {
     public AdminPage() {
         super();
 
+        final List<User> users = vc.getUsers();
+
         add(new Label("lbl_server_config", Model.of("Server Configuration")));
         add(new AdminPanel("pnl_admins", adminUsersService));
 
@@ -70,7 +73,7 @@ public class AdminPage extends BasePage {
 
         // create form that allows admin to select a space
         final Form spaceSelectForm = new Form("spaceSelectForm");
-        final DropDownChoice<User> spacesDropDown = createSpacesDropDown("space", userModel);
+        final DropDownChoice<User> spacesDropDown = createSpacesDropDown("space", userModel, users);
         spaceSelectForm.add(spacesDropDown);
         add(spaceSelectForm);
 
@@ -79,12 +82,10 @@ public class AdminPage extends BasePage {
         add(new BrowseEditableCollectionsPanel("collections", provider, true, getPageReference()));
     }
 
-    private DropDownChoice<User> createSpacesDropDown(String id, final IModel<User> userModel) {
+    private DropDownChoice<User> createSpacesDropDown(String id, final IModel<User> userModel, final List<User> users) {
         final IModel<List<User>> usersModel = new LoadableDetachableModel<List<User>>() {
-
             @Override
             protected List<User> load() {
-                final List<User> users = vc.getUsers();
                 final List<User> spaces = new ArrayList<>(users.size() + 1);
                 spaces.add(PUBLIC_USER);
                 spaces.addAll(users);

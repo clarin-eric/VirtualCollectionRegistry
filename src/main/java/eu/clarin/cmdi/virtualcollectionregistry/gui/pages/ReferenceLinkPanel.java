@@ -43,7 +43,21 @@ public class ReferenceLinkPanel extends Panel {
     
     public ReferenceLinkPanel(String id, IModel<Resource> model) {
         super(id, model);
-        
+
+        Label lblOrigin = new Label("origin", "Original data catalogue: "+model.getObject().getOrigin());
+        lblOrigin.setVisible( model.getObject().getOrigin() != null && ! model.getObject().getOrigin().isEmpty());
+        add(lblOrigin);
+
+        boolean originVisibility = model.getObject().getOriginalQuery() != null && ! model.getObject().getOriginalQuery().isEmpty();
+        Label labelOriginalQuery = new Label("originalQueryLinkLabel", "Original query:");
+        labelOriginalQuery.setVisible(originVisibility);
+        add(labelOriginalQuery);
+
+        ExternalLink linkOriginalQuery = new ExternalLink("originalQueryLink", model.getObject().getOriginalQuery());
+        linkOriginalQuery.add(new Label("originalQueryLinkValue", model.getObject().getOriginalQuery()));
+        linkOriginalQuery.setVisible(originVisibility);
+        add(linkOriginalQuery);
+
         final PropertyModel<String> refModel = new PropertyModel<>(model, "ref");
         add(new LinkPanel("link", refModel,  new ReferenceLabelModel(model)));
 
