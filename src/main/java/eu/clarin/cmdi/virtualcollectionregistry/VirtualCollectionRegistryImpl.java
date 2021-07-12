@@ -40,6 +40,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
 
     @Autowired
     private DataStore datastore; //TODO: replace with Spring managed EM?
+
     @Autowired
     @Qualifier("creation")
     private VirtualCollectionValidator validator;
@@ -742,20 +743,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         EntityManager em = datastore.getEntityManager();
         try {
             em.getTransaction().begin();
-
-            // setup queries
             TypedQuery<String> q = em.createNamedQuery("VirtualCollection.findAllPublicOrigins", String.class);
-
             origins = q.getResultList();
-
-/*
-        for(VirtualCollection vc : results) {
-            logger.info("Authors for "+vc.getName());
-            for(String a : vc.getAuthors()) {
-                logger.info("\tAuthor: "+a);
-            }
-        }
-  */
         } catch (Exception e) {
             logger.error("error while enumerating virtual collections to get all origins", e);
         } finally {
