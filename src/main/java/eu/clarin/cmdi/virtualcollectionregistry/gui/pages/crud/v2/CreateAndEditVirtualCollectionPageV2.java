@@ -165,6 +165,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
                             }
                         } catch(VirtualCollectionRegistryException ex) {
                             logger.error("Failed to persist collect. Error: {}", ex.toString());
+                            throw new RuntimeException("Failed to persist collection", ex);
                         }
                         throw new RestartResponseException(BrowsePrivateCollectionsPage.class);
                     case CANCEL:

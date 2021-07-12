@@ -4,6 +4,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionValidationException;
 import eu.clarin.cmdi.virtualcollectionregistry.feedback.IValidationFailedMessage;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Purpose;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Reproducibility;
@@ -302,13 +303,10 @@ public class VirtualCollectionFormSubmissionResource {
             html += "</div>\n";
             html += "</header>\n";
 
-            if(piwikConfig != null) {
-                String mode = piwikConfig.getMode();
-                if(mode.equalsIgnoreCase("alpha")) {
-                    html += "<div class=\"vcr-badge alpha\"></div>\n";
-                } else if(mode.equalsIgnoreCase("beta")) {
-                    html += "<div class=\"vcr-badge beta\"></div>\n";
-                }
+            if(Application.get().getConfig().isAlphaMode()) {
+                html += "<div class=\"vcr-badge alpha\"></div>\n";
+            } else if(Application.get().getConfig().isBetaMode()) {
+                html += "<div class=\"vcr-badge beta\"></div>\n";
             }
             
             html += "<div class=\"container-fluid\" id=\"content\">\n";           

@@ -32,4 +32,9 @@ public interface VcrConfig {
     public Locale getLocale();
     public void logConfig();
     public boolean isForkingEnabled();
+
+    public String getMode();
+    public boolean isProductionMode();
+    public boolean isBetaMode();
+    public boolean isAlphaMode();
 }

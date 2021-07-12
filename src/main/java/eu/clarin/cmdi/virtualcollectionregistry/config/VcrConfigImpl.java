@@ -29,7 +29,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class VcrConfigImpl implements VcrConfig {
     private final static Logger logger = LoggerFactory.getLogger(VcrConfigImpl.class);
-    
+
+    public final static String MODE_PRODUCTION = "prod";
+    public final static String MODE_BETA = "beta";
+    public final static String MODE_ALPHA = "alpha";
+
     @Value("${eu.clarin.cmdi.vcr.lrs.endpoint:https://switchboard.clarin.eu/#/vcr}")
     private String lrsEndpoint;
     
@@ -50,6 +54,10 @@ public class VcrConfigImpl implements VcrConfig {
 
     @Value("${eu.clarin.cmdi.vcr.forking.enabled:false}")
     private boolean forkingEnabled;
+
+    @Value("${eu.clarin.cmdi.vcr.mode:alpha}")
+    private String mode;
+
 
         @Override
     public String getSwitchboardEndpoint() {
@@ -98,6 +106,18 @@ public class VcrConfigImpl implements VcrConfig {
     public boolean isForkingEnabled() {
         return forkingEnabled;
     }
+
+    @Override
+    public String getMode() { return mode; }
+
+    @Override
+    public boolean isProductionMode() { return mode != null && mode.equalsIgnoreCase(MODE_PRODUCTION); }
+
+    @Override
+    public boolean isBetaMode() { return mode != null && mode.equalsIgnoreCase(MODE_BETA); }
+
+    @Override
+    public boolean isAlphaMode() { return mode != null && mode.equalsIgnoreCase(MODE_ALPHA); }
 
     @Override
     public void logConfig() {

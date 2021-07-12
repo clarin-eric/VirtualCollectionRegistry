@@ -27,5 +27,4 @@ public interface PiwikConfig {
     public String getDomains();
     public String getSnippetSurvey();
     public String getSnippetCredits();
-    public String getMode();
 }

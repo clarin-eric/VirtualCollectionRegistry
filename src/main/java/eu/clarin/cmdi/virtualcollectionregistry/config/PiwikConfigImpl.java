@@ -48,9 +48,6 @@ public class PiwikConfigImpl implements PiwikConfig {
     @Value("${eu.clarin.cmdi.vcr.snippet.credits:credits.html}")
     private String snippetCredits;
     
-    @Value("${eu.clarin.cmdi.vcr.mode:alpha}")
-    private String mode;
-    
     @Override
     public boolean isEnabled() {
         return enabled;
@@ -79,10 +76,5 @@ public class PiwikConfigImpl implements PiwikConfig {
     @Override
     public String getSnippetCredits() {
         return snippetCredits;
-    }
-
-    @Override
-    public String getMode() {
-        return mode;
     }
 }
