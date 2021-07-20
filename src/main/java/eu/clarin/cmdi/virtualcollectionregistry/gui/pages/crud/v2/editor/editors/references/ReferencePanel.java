@@ -35,8 +35,9 @@ public class ReferencePanel extends Panel {
      * @param id    The wicket component id
      * @param ref 
      */
-    public ReferencePanel(String id, final ReferencesEditor.ReferenceJob ref, Model<Boolean> advancedEditorMode, boolean moveActionsEnabled) {
+    public ReferencePanel(String id, final ReferencesEditor.ReferenceJob ref, Model<Boolean> advancedEditorMode, long maxDisplayOrder) {
         super(id);
+        long displayOrder = ref.getReference().getDisplayOrder();
 
         Model titleModel = Model.of("<required>");
         if(ref.getReference().getLabel() != null) {
@@ -48,8 +49,6 @@ public class ReferencePanel extends Panel {
         }
         
         WebMarkupContainer editorWrapper = new WebMarkupContainer("wrapper");
-
-        //String check = ref.getReference().getCheck();
 
         boolean analysing = false;
         if(ref.getState() == ReferencesEditor.State.INITIALIZED || ref.getState() == ReferencesEditor.State.ANALYZING) {
@@ -118,45 +117,57 @@ public class ReferencePanel extends Panel {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 for(MoveListEventHandler handler : moveListEventHandlers) {
-                    handler.handleMoveTop(ref.getReference().getId(), target);
+                    handler.handleMoveTop(ref.getReference().getDisplayOrder(), target);
                 }
             }
         };
         orderTopButton.setVisible(!analysing);
-        orderTopButton.setEnabled(moveActionsEnabled);
+        if(displayOrder == 0) {
+            orderTopButton.setEnabled(false);
+            orderTopButton.add(new AttributeAppender("class", " disabled"));
+        }
         editorWrapper.add(orderTopButton);
         AjaxFallbackLink orderUpButton = new AjaxFallbackLink("btn_order_up") {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 for(MoveListEventHandler handler : moveListEventHandlers) {
-                    handler.handleMoveUp(ref.getReference().getId(), target);
+                    handler.handleMoveUp(ref.getReference().getDisplayOrder(), target);
                 }
             }
         };
         orderUpButton.setVisible(!analysing);
-        orderUpButton.setEnabled(moveActionsEnabled);
+        if(displayOrder == 0) {
+            orderUpButton.setEnabled(false);
+            orderUpButton.add(new AttributeAppender("class", " disabled"));
+        }
         editorWrapper.add(orderUpButton);
         AjaxFallbackLink orderDownButton = new AjaxFallbackLink("btn_order_down") {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 for(MoveListEventHandler handler : moveListEventHandlers) {
-                    handler.handleMoveDown(ref.getReference().getId(), target);
+                    handler.handleMoveDown(ref.getReference().getDisplayOrder(), target);
                 }
             }
         };
         orderDownButton.setVisible(!analysing);
-        orderDownButton.setEnabled(moveActionsEnabled);
+        if(displayOrder == maxDisplayOrder) {
+            orderDownButton.setEnabled(false);
+            orderDownButton.add(new AttributeAppender("class", " disabled"));
+        }
         editorWrapper.add(orderDownButton);
         AjaxFallbackLink orderBottomButton = new AjaxFallbackLink("btn_order_bottom") {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 for(MoveListEventHandler handler : moveListEventHandlers) {
-                    handler.handleMoveEnd(ref.getReference().getId(), target);
+                    handler.handleMoveEnd(ref.getReference().getDisplayOrder(), target);
                 }
             }
         };
         orderBottomButton.setVisible(!analysing);
-        orderBottomButton.setEnabled(moveActionsEnabled);
+        if(displayOrder == maxDisplayOrder) {
+            orderBottomButton.setEnabled(false);
+            orderBottomButton.add(new AttributeAppender("class", " disabled"));
+        }
         editorWrapper.add(orderBottomButton);
 
         AjaxFallbackLink btnEdit = new AjaxFallbackLink("btn_edit") {
