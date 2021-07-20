@@ -201,32 +201,32 @@ public class ReferencesEditor extends ComposedField{
             @Override
             protected void populateItem(ListItem item) {
                 ReferenceJob ref = (ReferenceJob)item.getModel().getObject();
-                ReferencePanel c = new ReferencePanel("pnl_reference", ref, advancedEditorMode, references.size() > 1);
+                ReferencePanel c = new ReferencePanel("pnl_reference", ref, advancedEditorMode, getMaxDisplayOrder());
                 c.addMoveListEventHandler(new MoveListEventHandler() {
                     @Override
-                    public void handleMoveUp(Long id, AjaxRequestTarget target) {
-                        move(0, id);
+                    public void handleMoveUp(Long displayOrder, AjaxRequestTarget target) {
+                        move(-1, displayOrder);
                         if (target != null) {
                             target.add(componentToUpdate);
                         }
                     }
                     @Override
-                    public void handleMoveDown(Long id, AjaxRequestTarget target) {
-                        move(1, id);
+                    public void handleMoveDown(Long displayOrder, AjaxRequestTarget target) {
+                        move(1, displayOrder);
                         if (target != null) {
                             target.add(componentToUpdate);
                         }
                     }
                     @Override
-                    public void handleMoveTop(Long id, AjaxRequestTarget target) {
-                        move(-1, id);
+                    public void handleMoveTop(Long displayOrder, AjaxRequestTarget target) {
+                        move(0, displayOrder);
                         if (target != null) {
                             target.add(componentToUpdate);
                         }
                     }
                     @Override
-                    public void handleMoveEnd(Long id, AjaxRequestTarget target) {
-                        move(references.size()-1, id);
+                    public void handleMoveEnd(Long displayOrder, AjaxRequestTarget target) {
+                        move(references.size()-1, displayOrder);
                         if (target != null) {
                             target.add(componentToUpdate);
                         }
@@ -307,6 +307,23 @@ public class ReferencesEditor extends ComposedField{
         add(f2);
     }
 
+    private long getMaxDisplayOrder() {
+        long max = 0;
+        for(ReferenceJob job : references) {
+            if(job.getReference().getDisplayOrder() > max) {
+                max = job.getReference().getDisplayOrder();
+            }
+        }
+        return max;
+    }
+
+    private long getNextDisplayOrder() {
+        if(references.size() <= 0) {
+            return 0L;
+        }
+        return getMaxDisplayOrder() + 1;
+    }
+
     public static class CustomDataUpdateEvent extends DataUpdatedEvent {
         public CustomDataUpdateEvent(AjaxRequestTarget target) {
             super(target);
@@ -325,15 +342,18 @@ public class ReferencesEditor extends ComposedField{
         String title = mdlReferenceTitle.getObject();
 
         logger.debug("Completing reference submit: value="+value+",title="+title);
-
         if(value != null && !value.isEmpty() && title != null && !title.isEmpty()) {
             if(handleUrl(value)) {
-                references.add(new ReferenceJob(new Resource(Resource.Type.RESOURCE, value, title)));
+                Resource r = new Resource(Resource.Type.RESOURCE, value, title);
+                r.setDisplayOrder(getNextDisplayOrder());
+                references.add(new ReferenceJob(r));
                 data.setObject("");
                 mdlReferenceTitle.setObject("");
             } else if(handlePid(value)) {
                 String actionableValue = HandleLinkModel.getActionableUri(value);
-                references.add(new ReferenceJob(new Resource(Resource.Type.RESOURCE, actionableValue, title)));
+                Resource r = new Resource(Resource.Type.RESOURCE, actionableValue, title);
+                r.setDisplayOrder(getNextDisplayOrder());
+                references.add(new ReferenceJob(r));
                 data.setObject("");
                 mdlReferenceTitle.setObject("");
             } else {
@@ -694,7 +714,7 @@ public class ReferencesEditor extends ComposedField{
         return currentValidation != previousValidation;
     }
 
-    protected void move(int direction, Long id) {
+    protected void move(int direction, Long displayOrder) {
         //Abort on invalid direction
         if(direction < -1 || direction >= references.size()) {
             logger.warn("References list move: invalid direction={}, references size={}.", direction, references.size());
@@ -704,28 +724,26 @@ public class ReferencesEditor extends ComposedField{
         //Find index of specified (by id) collection
         int idx = -1;
         for(int i = 0; i < references.size() && idx == -1; i++) {
-            if(references.get(i).getReference().getId() == id) {
+            if(references.get(i).getReference().getDisplayOrder() == displayOrder) {
                 idx = i;
             }
         }
 
+        logger.info("direction={}, idx={}", direction, idx);
+
         //Abort if the collection was not found
         if(idx == -1) {
-            logger.warn("References list move: reference with id = {} not found.", id);
+            logger.warn("References list move: reference with displayOrder = {} not found.", displayOrder);
             return;
         }
 
         //Swap the collection with the collection at the specified destination (up=1, down=-1, beginning=0 or end=i)
-        if (direction == -1) {
-            if(idx > 0) {
-                references.get(idx).getReference().setDisplayOrder(new Long(idx - 1));
-                references.get(idx - 1).getReference().setDisplayOrder(new Long(idx));
-            }
-        } else if(direction == 1) {
-            if( idx < references.size()-1) {
-                references.get(idx).getReference().setDisplayOrder(new Long(idx + 1));
-                references.get(idx + 1).getReference().setDisplayOrder(new Long(idx));
-            }
+        if (direction == -1 && idx > 0) {
+            references.get(idx).getReference().setDisplayOrder(new Long(idx - 1));
+            references.get(idx - 1).getReference().setDisplayOrder(new Long(idx));
+        } else if(direction == 1 && idx < references.size()-1) {
+            references.get(idx).getReference().setDisplayOrder(new Long(idx + 1));
+            references.get(idx + 1).getReference().setDisplayOrder(new Long(idx));
         } else {
             references.get(idx).getReference().setDisplayOrder(new Long(direction));
             references.get(direction).getReference().setDisplayOrder(new Long(idx));
