@@ -15,7 +15,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Type;
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.RestUtils;
-import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
 import eu.clarin.cmdi.virtualcollectionregistry.wicket.DetailsStructuredMeatadataHeaderBehavior;
 import eu.clarin.cmdi.wicket.components.citation.CitationPanelFactory;
 import eu.clarin.cmdi.wicket.components.panel.BootstrapDropdown;
@@ -35,6 +34,7 @@ import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.authorization.UnauthorizedActionException;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
@@ -61,28 +61,19 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
-import org.apache.wicket.request.flow.RedirectToUrlException;
 import org.apache.wicket.request.mapper.parameter.INamedParameters.NamedPair;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.string.Strings;
-import org.glassfish.jersey.message.internal.AcceptableMediaType;
-import org.glassfish.jersey.message.internal.HeaderUtils;
-import org.glassfish.jersey.message.internal.HttpHeaderReader;
-import org.glassfish.jersey.message.internal.MediaTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.data.MutableDataSet;
-
 import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
 
 @SuppressWarnings("serial")
 public class VirtualCollectionDetailsPage extends BasePage {
@@ -94,9 +85,12 @@ public class VirtualCollectionDetailsPage extends BasePage {
     //private static final String CSS_CLASS = "collectionDetails";
     private static final IConverter convDate = new DateConverter();
     private final HideIfEmptyBehavior hideIfEmpty = new HideIfEmptyBehavior();
+    private final HideIfShowAdvancedDisabled hideIfShowAdvancedDisabled = new HideIfShowAdvancedDisabled();
 
     private final PageParameters params;
-    
+
+    private IModel<Boolean> showAdvancedFields = Model.of(false);
+
     @SpringBean
     private VcrConfigImpl vcrConfig;
 
@@ -147,10 +141,25 @@ public class VirtualCollectionDetailsPage extends BasePage {
                     }
                 }
             }
-            
+        }
+    } // class VirtualCollectionDetailsPage.HideIfEmptyBehavior
+
+    private static final class HideIfShowAdvancedDisabled extends Behavior {
+
+        private final List<Component> components = new LinkedList<Component>();
+
+        @Override
+        public void bind(Component component) {
+            super.bind(component);
+            components.add(component);
         }
 
-    } // class VirtualCollectionDetailsPage.HideIfEmptyBehavior
+        public void hideIfShowAdvancedDisabled(boolean showAdvanced) {
+            for (Component component : components) {
+                component.setVisible(showAdvanced);
+            }
+        }
+    }
 
     private static class CustomLabel<C> extends Label {
 
@@ -185,6 +194,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
         super(new CompoundPropertyModel<VirtualCollection>(model));
         //setPageStateless(true);
         this.params = params;
+        setOutputMarkupId(true);
 
         //Enable content negotiation based redirect
         String redirectLocation = "/service/v1/collections/" + model.getObject().getId();
@@ -212,7 +222,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
         };
         
         add(backLink);
-        add(new HeaderPanel("vc_header", model));
+        add(new HeaderPanel("vc_header", model, this));
         add(BootstrapPanelBuilder
                 .createCollapsiblePanel("general")
                 .setTitle("General")
@@ -242,12 +252,22 @@ public class VirtualCollectionDetailsPage extends BasePage {
         add(new DetailsStructuredMeatadataHeaderBehavior(model));
     }
 
-
-
     private  class HeaderPanel extends Panel {
-        public HeaderPanel(String id, final IModel<VirtualCollection> model) {
+        public HeaderPanel(String id, final IModel<VirtualCollection> model, Component componentToUpdate) {
             super(id, new CompoundPropertyModel<VirtualCollection>(model));
             add(new Label("name"));
+
+            //Toggle editor mode checkbox
+            add(new AjaxCheckBox("btn_editor_mode", showAdvancedFields) {
+                @Override
+                public void onUpdate(AjaxRequestTarget target) {
+                    if (target != null) {
+                        target.add(componentToUpdate);
+                    }
+                }
+            });
+            add(new Label("btn_editor_mode_label", Model.of("Show advanced fields")));
+
             add(CitationPanelFactory.getCitationPanel("citation", model));
             AjaxLink btnFork = new AjaxLink("btn_fork", new Model<String>("Cite")) {
                 @Override
@@ -338,13 +358,14 @@ public class VirtualCollectionDetailsPage extends BasePage {
     private class GeneralPanel extends Panel {
         public GeneralPanel(String id, final IModel<VirtualCollection> model) {
             super(id);
+
             add(new BasicTextPanel("name", "Name", new Model(model.getObject().getName())));
-            add(new BasicTextPanel("type", "Type", new Model(model.getObject().getType())));            
+            add(new BasicTextPanel("type", "Type", new Model(model.getObject().getType())).add(hideIfShowAdvancedDisabled));
             add(new BasicTextPanel("creationDate", "Creation date", new Model(model.getObject().getCreationDate())));
             add(new BasicTextPanel("description", "Description", new Model(model.getObject().getDescription()), true, true).add(hideIfEmpty));
-            add(new BasicTextPanel("purpose", "Purpose", new Model(model.getObject().getPurpose())).add(hideIfEmpty));
-            add(new BasicTextPanel("reproducibility", "Reproducibility", new Model(model.getObject().getReproducibility())).add(hideIfEmpty));
-            add(new BasicTextPanel("reproducibilityNotice", "Reproducibility notice", new Model(model.getObject().getReproducibilityNotice()), true, true).add(hideIfEmpty));
+            add(new BasicTextPanel("purpose", "Purpose", new Model(model.getObject().getPurpose())).add(hideIfEmpty, hideIfShowAdvancedDisabled));
+            add(new BasicTextPanel("reproducibility", "Reproducibility", new Model(model.getObject().getReproducibility())).add(hideIfEmpty, hideIfShowAdvancedDisabled));
+            add(new BasicTextPanel("reproducibilityNotice", "Reproducibility notice", new Model(model.getObject().getReproducibilityNotice()), true, true).add(hideIfEmpty, hideIfShowAdvancedDisabled));
 
             List<PersistentIdentifier> pidList = new LinkedList<>();
             for(PersistentIdentifier pid : model.getObject().getIdentifiers()) {
@@ -584,6 +605,8 @@ public class VirtualCollectionDetailsPage extends BasePage {
     @Override
     protected void onBeforeRender() {
         super.onBeforeRender();
+        //Order is important
+        hideIfShowAdvancedDisabled.hideIfShowAdvancedDisabled(showAdvancedFields.getObject());
         hideIfEmpty.hideEmptyComponents();
     }
     
