@@ -95,6 +95,7 @@ Curl example (against a local instance (http://localhost:8080/vcr) with basic au
 curl -v \
      -u user1:user1 \
      -H 'Content-Type: application/x-www-form-urlencoded' \
+     -H 'Referer: https://your.host.name/' \
      -d 'name=test&metadataUri=http://www.clarin.eu/1&metadataUri=http://www.clarin.eu/2&resourceUri=http://www.clarin.eu/&&description=test-collection&keyword=&purpose=&reproducibility=' \
      http://localhost:8080/vcr/submit/extensional
 ```
@@ -105,6 +106,7 @@ Request:
 ```
 curl -v \
      -H 'Content-Type: application/x-www-form-urlencoded' \
+     -H 'Referer: https://your.host.name/' \
      -d 'name=test&metadataUri=http://www.clarin.eu/1&metadataUri=http://www.clarin.eu/2&resourceUri=http://www.clarin.eu/&&description=test-collection&keyword=&purpose=&reproducibility=' \
      https://beta-collections.clarin.eu/submit/extensional
 ```
