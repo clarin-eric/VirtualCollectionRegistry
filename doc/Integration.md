@@ -80,6 +80,8 @@ Notes:
   * JSON format: `{"uri": "", "label": "", "description": ""}`
   * As a list of fields: `metadataUri={"uri": "", "label": "", "description": ""}&metadataUri={"uri": "", "label": "", "description": ""}&...`
 * For extenstional collections the `original_query` field can be used to link the submitted resources to the query used to generate this collection.
+* Referrer information is used to keep track of the origin of submissions. If you want this to be tracked for resources 
+submitted via your repository make sure to properly send the `Referer` header. Curl header example: ` -H 'Referer: https://your.host.name/'`
 
 ### Examples
 
