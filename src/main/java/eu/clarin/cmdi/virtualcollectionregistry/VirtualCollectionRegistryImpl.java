@@ -6,6 +6,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidator;
 import java.nio.charset.Charset;
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.concurrent.Executors;
@@ -35,7 +36,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry, InitializingBean, DisposableBean {
 
-    private final static String REQUIRED_DB_VERSION = "1.4.0";
+    private final static String REQUIRED_DB_VERSION = "1.5.0";
 
     @Autowired
     private DataStore datastore; //TODO: replace with Spring managed EM?
@@ -732,6 +733,39 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                 tx.commit();
             }
         }
+    }
+
+    @Override
+    public List<String> getOrigins() {
+        List<String> origins = new ArrayList<>();
+
+        EntityManager em = datastore.getEntityManager();
+        try {
+            em.getTransaction().begin();
+
+            // setup queries
+            TypedQuery<String> q = em.createNamedQuery("VirtualCollection.findAllPublicOrigins", String.class);
+
+            origins = q.getResultList();
+
+/*
+        for(VirtualCollection vc : results) {
+            logger.info("Authors for "+vc.getName());
+            for(String a : vc.getAuthors()) {
+                logger.info("\tAuthor: "+a);
+            }
+        }
+  */
+        } catch (Exception e) {
+            logger.error("error while enumerating virtual collections to get all origins", e);
+        } finally {
+            EntityTransaction tx = em.getTransaction();
+            if ((tx != null) && !tx.getRollbackOnly()) {
+                tx.commit();
+            }
+        }
+
+        return origins;
     }
 
     @Override

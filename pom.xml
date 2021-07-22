@@ -316,7 +316,13 @@
             <artifactId>wicket-spring</artifactId>
             <version>${wicket.version}</version>
         </dependency>
-        
+
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-test</artifactId>
+            <version>4.3.20.RELEASE</version>
+            </dependency>
+
         <dependency>
             <groupId>mysql</groupId>
             <artifactId>mysql-connector-java</artifactId>
@@ -526,8 +532,13 @@
             <version>2.12.0</version>
             <scope>test</scope>
         </dependency>
-        
-        
+
+        <dependency>
+            <groupId>com.google.code.gson</groupId>
+            <artifactId>gson</artifactId>
+            <version>2.8.6</version>
+        </dependency>
+
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
@@ -737,7 +748,7 @@
                             </excludes>
                         </resource>
                         <resource>
-                            <directory>swagger-ui-3.44.0/dist</directory>
+                            <directory>swagger-ui/dist</directory>
                             <targetPath>service-doc</targetPath>
                         </resource>
                         <!-- Include proper shhaa config based on selected profile -->
