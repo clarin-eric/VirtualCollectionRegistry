@@ -9,30 +9,57 @@ Send a POST request, with form urlencoded parameters, to any of the following tw
 * `https://<domain_name>/<context_path>/submit/extensional`, to submit an extensional collection
 * `https://<domain_name>/<context_path>/submit/intensional`, to submit an intensional1 collection
 
+### Alpha / development instance
+An alpha/development instance of the virtual collection registry is available at https://alpha-collections.clarin.eu, 
+with an empty context path, resulting in the following endpoint URLs:
+* `http://alpha-collections.clarin.eu/submit/extensional` 
+* `http://alpha-collections.clarin.eu/submit/intensional`
+
+This instance is used for testing development releases and should be considered unstable.
+Any collections created in this instance can be removed without notice.
+
 ### Beta instance
-A beta instance of the virtual collection registry is available at https://collections.clarin-dev.eu, with an empty context path, resulting in the following endpoint URLs:
-* `http://collections.clarin-dev.eu/submit/extensional` 
-* `http://collections.clarin-dev.eu/submit/intensional` 
+A beta instance of the virtual collection registry is available at https://beta-collections.clarin.eu, with an empty 
+context path, resulting in the following endpoint URLs:
+* `http://beta-collections.clarin.eu/submit/extensional` 
+* `http://beta-collections.clarin.eu/submit/intensional` 
+
+This instance is used for testing staging releases before they are deployed in production. This instance can be considered 
+relatively stable and should be used to develop and test against for third party integrations.
+Any collections in this instance can be removed without notice, however this should not happen regularly.
 
 ### Production instance
-The virtual collection registry production instance is available at https://collections.clarin.eu, with an empty context path, resulting in the following endpoint URLs:
+The virtual collection registry production instance is available at https://collections.clarin.eu, with an empty context 
+path, resulting in the following endpoint URLs:
 * `http://collections.clarin.eu/submit/extensional` 
 * `http://collections.clarin.eu/submit/intensional`
 
+This is the stable production instance and should not be used for testing.
+
 ### Parameters
-The following parameters are supported and should be sent in form urlencoded form:
+The following parameters are supported on both endpoints and should be sent in form urlencoded form:
 
 | Name | Type | Required | Endpoints |
 |------|------|----------|-----------|
-| name  | String | Yes | Extensional + Intensional |
-| description | String | Yes |Extensional + Intensional |
-| original_query | String | No |Extensional |
-| keyword | List&lt;String&gt; | No | Extensional + Intensional |
-| purpose | Controlled Vocabulary | No | Extensional + Intensional |
-| reproducibility | Controlled Vocabulary | No | Extensional + Intensional |
-| reproducibilityNotice | String | No | Extensional + Intensional |
+| name  | String | Recommended | Extensional + Intensional |
+| description | String | Recommended |Extensional + Intensional |
+| original_query | String | Optional |Extensional |
+| keyword | List&lt;String&gt; | Optional | Extensional + Intensional |
+| purpose | Controlled Vocabulary | Optional | Extensional + Intensional |
+| reproducibility | Controlled Vocabulary | Optional | Extensional + Intensional |
+| reproducibilityNotice | String | Optional | Extensional + Intensional |
+
+The following parameters are supported in the extensional endpoint and should be sent in form urlencoded form:
+
+| Name | Type | Required | Endpoints |
+|------|------|----------|-----------|
 | metadataUri | List&lt;String&gt; or List&lt;JSON&gt; | Yes | Extensional |
 | resourceUri | List&lt;String&gt; or List&lt;JSON&gt; | Yes | Extensional |
+
+The following parameters are supported in the intensional endpoint and should be sent in form urlencoded form:
+
+| Name | Type | Required | Endpoints |
+|------|------|----------|-----------|
 | queryDescription | String | Yes | Intensional |
 | queryUri | String | Yes | Intensional |
 | queryProfile | String | Yes | Intensional |
@@ -53,14 +80,52 @@ Notes:
   * JSON format: `{"uri": "", "label": "", "description": ""}`
   * As a list of fields: `metadataUri={"uri": "", "label": "", "description": ""}&metadataUri={"uri": "", "label": "", "description": ""}&...`
 * For extenstional collections the `original_query` field can be used to link the submitted resources to the query used to generate this collection.
+
 ### Examples
-Curl example (against a local instance (http://localhost:8080/vcr)with basic authentication (user1:user1)):
+
+The workflow assumes an interactive, javascript enabled, user-agent. Curl can be used to demonstrate some basic requests.
+Since the response HTML/Javascript is not properly rendered, this example does not really show the workflow as it is 
+intended.
+
+Curl example (against a local instance (http://localhost:8080/vcr) with basic authentication (user1:user1)):
 
 ```
 curl -v \
--u user1:user1 \
--d 'name=test&metadataUri=http://www.clarin.eu/1&metadataUri=http://www.clarin.eu/2&resourceUri=http://www.clarin.eu/&&description=test-collection&keyword=&purpose=&reproducibility=' \
-       http://localhost:8080/vcr/service/submit/extensional
+     -u user1:user1 \
+     -H 'Content-Type: application/x-www-form-urlencoded' \
+     -d 'name=test&metadataUri=http://www.clarin.eu/1&metadataUri=http://www.clarin.eu/2&resourceUri=http://www.clarin.eu/&&description=test-collection&keyword=&purpose=&reproducibility=' \
+     http://localhost:8080/vcr/submit/extensional
+```
+
+Curl example against beta instance with shibboleth authentication:
+
+Request:
+```
+curl -v \
+     -H 'Content-Type: application/x-www-form-urlencoded' \
+     -d 'name=test&metadataUri=http://www.clarin.eu/1&metadataUri=http://www.clarin.eu/2&resourceUri=http://www.clarin.eu/&&description=test-collection&keyword=&purpose=&reproducibility=' \
+     https://beta-collections.clarin.eu/submit/extensional
+```
+
+Response:
+```
+< HTTP/1.1 302
+< Server: nginx
+< ...
+< Location: https://beta-collections.clarin.eu/submit/extensional;jsessionid=<some session id>?0
+
+> GET /submit/extensional;jsessionid=<some session id>?0 HTTP/1.1
+> Host: beta-collections.clarin.eu
+> User-Agent: curl/7.54.0
+> Accept: */*
+> Content-Type: application/x-www-form-urlencoded
+
+< HTTP/1.1 200
+< Server: nginx
+< ...
+< Content-Type: text/html;charset=utf-8
+
+<html body>
 ```
 
 ## Workflow
