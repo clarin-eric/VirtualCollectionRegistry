@@ -276,6 +276,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
                 }
             } ;
             btnFork.setVisible(Application.get().getConfig().isForkingEnabled());
+            UIUtils.addTooltip(btnFork, "Fork this collection");
             add(btnFork);
         }    
     }
