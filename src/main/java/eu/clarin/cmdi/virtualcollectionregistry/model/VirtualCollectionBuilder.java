@@ -68,10 +68,13 @@ public class VirtualCollectionBuilder {
     }
 
     public VirtualCollectionBuilder setName(String name) throws VirtualCollectionRegistryUsageException {
+        /*
         if (name == null) {
             throw new VirtualCollectionRegistryUsageException("No name specified for collection");
+        }*/
+        if (name != null && !name.isEmpty()) {
+            this.vc.setName(name);
         }
-        this.vc.setName(name);
         return this;
     }
 
@@ -84,17 +87,23 @@ public class VirtualCollectionBuilder {
     }
 
     public VirtualCollectionBuilder setDescription(String description) {
-        this.vc.setDescription(description);
+        if(description != null && !description.isEmpty()) {
+            this.vc.setDescription(description);
+        }
         return this;
     }
 
     public VirtualCollectionBuilder setPurpose(VirtualCollection.Purpose purpose) {
-        this.vc.setPurpose(purpose);
+        if(purpose != null) {
+            this.vc.setPurpose(purpose);
+        }
         return this;
     }
 
     public VirtualCollectionBuilder setReproducibility(VirtualCollection.Reproducibility reproducability) {
-        this.vc.setReproducibility(reproducability);
+        if(reproducability != null) {
+            this.vc.setReproducibility(reproducability);
+        }
         return this;
     }
 
@@ -106,23 +115,29 @@ public class VirtualCollectionBuilder {
     }
 
     public VirtualCollectionBuilder setReproducibilityNotice(String notice) {
-        this.vc.setReproducibilityNotice(notice);
+        if(notice != null && !notice.isEmpty()) {
+            this.vc.setReproducibilityNotice(notice);
+        }
         return this;
     }
 
     public VirtualCollectionBuilder addKeyword(String keyword) {
-        final String trimmed = keyword.trim();
-        if (!trimmed.isEmpty()) {
-            this.vc.getKeywords().add(trimmed);
+        if(keyword != null && !keyword.isEmpty()) {
+            final String trimmed = keyword.trim();
+            if (!trimmed.isEmpty()) {
+                this.vc.getKeywords().add(trimmed);
+            }
         }
         return this;
     }
     
     public VirtualCollectionBuilder addKeywords(List<String> keywords) {
-        for(String keyword : keywords) {
-            final String trimmed = keyword.trim();
-            if (!trimmed.isEmpty()) {
-                this.vc.getKeywords().add(trimmed);
+        if(keywords != null) {
+            for (String keyword : keywords) {
+                final String trimmed = keyword.trim();
+                if (!trimmed.isEmpty()) {
+                    this.vc.getKeywords().add(trimmed);
+                }
             }
         }
         return this;

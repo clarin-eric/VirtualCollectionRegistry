@@ -38,6 +38,8 @@ import java.util.*;
 
 public class MergeCollectionsPage extends BasePage {
 
+    private final static String MESSAGE_SUBMISSION_NO_TITLE = "Please select a collection first.";
+    private final static String MESSAGE_SUBMISSION_NO_DESCRIPTION = "Please select a collection first.";
     private final static String MESSAGE_MERGE_NO_COLLECTION = "Please select a collection first.";
     private final static String MESSAGE_MERGE_WITH_COLLECTION = "Merging with collection: %s%s";
     private final static String MESSAGE_MERGE_WITH_COLLECTION_NO_DUPLICATES = " (All references will be merged)";
@@ -116,16 +118,19 @@ public class MergeCollectionsPage extends BasePage {
         addField(this, "val_origin", submitted_vc.getOrigin());
         addLabel(this, "lbl_origin");
 
-        addLabel(this, "lbl_query");
+
         String qry = "";
         if(submitted_vc.getResources().size() > 0) {
             qry = submitted_vc.getResources().get(0).getOriginalQuery();
         }
+        addLabel(this, "lbl_query", qry != null && !qry.isEmpty());
         addField(this, "val_query", qry);
 
         //Submission summary
-        addField(this, "submitted_title", submitted_vc.getTitle());
-        addField(this, "submitted_description", submitted_vc.getDescription());
+        addField(this, "submitted_title",
+                submitted_vc.getTitle() != null && !submitted_vc.getTitle().isEmpty() ? submitted_vc.getTitle() : MESSAGE_SUBMISSION_NO_TITLE);
+        addField(this, "submitted_description",
+                submitted_vc.getDescription() != null && !submitted_vc.getDescription().isEmpty() ? submitted_vc.getDescription() : MESSAGE_SUBMISSION_NO_DESCRIPTION);
         addField(this, "submitted_resources", submitted_vc.getResources().size());
 
         long collectionCount = 0;
@@ -244,12 +249,20 @@ public class MergeCollectionsPage extends BasePage {
     }
 
     private void addField(MarkupContainer c, String id, String value) {
-        c.add(new Label(id, Model.of(value)));
+        Label lbl = new Label(id, Model.of(value));
+        lbl.setVisible(value != null && !value.isEmpty());
+        c.add(lbl);
     }
 
     private void addLabel(MarkupContainer c, String id) {
-        String lbl = labels.getProperty(id);
-        c.add(new Label(id, Model.of(lbl)));
+        addLabel(c, id, true);
+    }
+
+    private void addLabel(MarkupContainer c, String id, boolean visible) {
+        String lblValue = labels.getProperty(id);
+        Label lbl = new Label(id, Model.of(lblValue));
+        lbl.setVisible(visible);
+        c.add(lbl);
     }
 
     @Override
