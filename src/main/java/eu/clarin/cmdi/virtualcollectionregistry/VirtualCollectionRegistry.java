@@ -90,4 +90,7 @@ public interface VirtualCollectionRegistry {
     User createUserIfNotExists(Principal principal)  throws VirtualCollectionRegistryException;
 
     String getDbVersion() throws VirtualCollectionRegistryException;
+
+    VirtualCollectionRegistryReferenceValidator getReferenceValidator();
+
 } // interface VirtualCollectionRegistry

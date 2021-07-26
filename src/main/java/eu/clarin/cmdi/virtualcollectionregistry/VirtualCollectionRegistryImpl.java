@@ -46,10 +46,14 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
     private VirtualCollectionValidator validator;
     @Autowired
     private AdminUsersService adminUsersService;
+
     @Autowired
     private VirtualCollectionRegistryMaintenanceImpl maintenance;
     @Autowired
-    private VirtualCollectionRegistryReferenceCheckImpl referenceCheck;
+    private VirtualCollectionRegistryReferenceCheckImpl referenceCheck; //Checks collections for invalid references
+    @Autowired
+    private VirtualCollectionRegistryReferenceValidator referenceValidator; //Checks references for validity and gathers additional info for the reference
+
     @Autowired
     private CreatorService creatorService;
     
@@ -90,7 +94,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             long t2 = System.nanoTime();
             double tDelta = (t2-t1)/1000000.0;
             logger.debug(String.format("Initialized CreatorService in %.2fms; loaded %d creators.", tDelta, creatorService.getSize()));
-            
+            //Initialise schedulers
             maintenanceExecutor.scheduleWithFixedDelay(new Runnable() {
                 @Override
                 public void run() {
@@ -104,6 +108,14 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                     referenceCheck.perform(new Date().getTime());
                 }
             }, 1, 1, TimeUnit.DAYS);
+            maintenanceExecutor.scheduleWithFixedDelay(new Runnable() {
+                @Override
+                public void run() {
+                    logger.info("Running reference validation");
+                    referenceValidator.perform(new Date().getTime());
+                }
+            }, 1, 1, TimeUnit.SECONDS);
+
             this.intialized.set(true);
             logger.info("virtual collection registry successfully intialized");
         } catch (RuntimeException e) {
@@ -892,4 +904,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         return this.creatorService;
     }
 
+    @Override
+    public VirtualCollectionRegistryReferenceValidator getReferenceValidator() {
+        return referenceValidator;
+    }
 } // class VirtualCollectionRegistry

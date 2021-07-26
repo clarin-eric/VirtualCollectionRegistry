@@ -1,32 +1,19 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.references;
 
-import java.io.IOException;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
-import java.util.Iterator;
-
 import java.util.List;
 import java.util.concurrent.CopyOnWriteArrayList;
-import javax.xml.namespace.NamespaceContext;
-import javax.xml.parsers.DocumentBuilder;
-import javax.xml.parsers.DocumentBuilderFactory;
-import javax.xml.parsers.ParserConfigurationException;
-import javax.xml.xpath.XPath;
-import javax.xml.xpath.XPathConstants;
-import javax.xml.xpath.XPathExpression;
-import javax.xml.xpath.XPathExpressionException;
-import javax.xml.xpath.XPathFactory;
-
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryReferenceValidationJob;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.CreateAndEditPanel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.CancelEventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.EventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.MoveListEventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.SaveEventHandler;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.authors.AuthorsEditor;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.dialogs.ModalConfirmAction;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.dialogs.ModalConfirmDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.DataUpdatedEvent;
@@ -34,17 +21,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.EventType;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.Listener;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.*;
-import eu.clarin.cmdi.virtualcollectionregistry.model.OrderableComparator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -55,37 +32,30 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.time.Duration;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.w3c.dom.Document;
-import org.w3c.dom.Node;
-import org.w3c.dom.NodeList;
-import org.xml.sax.SAXException;
+import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * @author wilelb
  */
-public class ReferencesEditor extends ComposedField{
+public class ReferencesEditor extends ComposedField {
     private static Logger logger = LoggerFactory.getLogger(ReferencesEditor.class);
-    
-    private final List<ReferenceJob> references = new CopyOnWriteArrayList<>();
+
+    private final List<VirtualCollectionRegistryReferenceValidationJob> references = new CopyOnWriteArrayList<>();
     private IModel<String> data = new Model<>();
     private IModel<String> mdlReferenceTitle = new Model<>();
     
     final Label lblNoReferences;
     final ListView listview;
-    
-    private transient Worker worker = new Worker();
-    
+
     private int edit_index = -1;
     
     private final ReferenceEditor editor;
 
     private final ModalConfirmDialog localDialog;
     
-    private final int workerSleepTime = 1000;
     private final int uiRefreshTimeInSeconds = 1;
 
     private boolean currentValidation = false;
@@ -125,9 +95,12 @@ public class ReferencesEditor extends ComposedField{
             return message;
         }
     }
-    
-    public ReferencesEditor(String id, String label, Model<Boolean> advancedEditorMode, VisabilityUpdater updater) {
+
+    private final VirtualCollectionRegistry registry;
+
+    public ReferencesEditor(VirtualCollectionRegistry registry, String id, String label, Model<Boolean> advancedEditorMode, VisabilityUpdater updater) {
         super(id, "References", null, updater);
+        this.registry = registry;
         setOutputMarkupId(true);
         Component componentToUpdate = this;
 
@@ -200,7 +173,8 @@ public class ReferencesEditor extends ComposedField{
         listview = new ListView("listview", references) {
             @Override
             protected void populateItem(ListItem item) {
-                ReferenceJob ref = (ReferenceJob)item.getModel().getObject();
+                VirtualCollectionRegistryReferenceValidationJob ref =
+                        (VirtualCollectionRegistryReferenceValidationJob)item.getModel().getObject();
                 ReferencePanel c = new ReferencePanel("pnl_reference", ref, advancedEditorMode, getMaxDisplayOrder());
                 c.addMoveListEventHandler(new MoveListEventHandler() {
                     @Override
@@ -309,7 +283,7 @@ public class ReferencesEditor extends ComposedField{
 
     private long getMaxDisplayOrder() {
         long max = 0;
-        for(ReferenceJob job : references) {
+        for(VirtualCollectionRegistryReferenceValidationJob job : references) {
             if(job.getReference().getDisplayOrder() > max) {
                 max = job.getReference().getDisplayOrder();
             }
@@ -333,7 +307,9 @@ public class ReferencesEditor extends ComposedField{
     @Override
     protected void onRemove() {
         logger.info("Removing Reference editor");
-        worker.stop();
+        for(VirtualCollectionRegistryReferenceValidationJob job : references) {
+            registry.getReferenceValidator().removeReferenceValidationJob(job);
+        }
     }
 
     @Override
@@ -346,14 +322,14 @@ public class ReferencesEditor extends ComposedField{
             if(handleUrl(value)) {
                 Resource r = new Resource(Resource.Type.RESOURCE, value, title);
                 r.setDisplayOrder(getNextDisplayOrder());
-                references.add(new ReferenceJob(r));
+                addReferenceJob(r);
                 data.setObject("");
                 mdlReferenceTitle.setObject("");
             } else if(handlePid(value)) {
                 String actionableValue = HandleLinkModel.getActionableUri(value);
                 Resource r = new Resource(Resource.Type.RESOURCE, actionableValue, title);
                 r.setDisplayOrder(getNextDisplayOrder());
-                references.add(new ReferenceJob(r));
+                addReferenceJob(r);
                 data.setObject("");
                 mdlReferenceTitle.setObject("");
             } else {
@@ -361,13 +337,6 @@ public class ReferencesEditor extends ComposedField{
                 logger.warn("Unhandled reference (not url AND not pid)");
                 fireEvent(new DataUpdatedEvent(target)); //Is this required?
                 return false;
-            }
-
-            if(worker == null || !worker.isRunning()) {
-                worker = new Worker();
-                worker.start();
-                new Thread(worker).start();
-                logger.trace("Worker thread started");
             }
 
             fireEvent(new DataUpdatedEvent(target));
@@ -379,6 +348,12 @@ public class ReferencesEditor extends ComposedField{
             }
         }
         return false;
+    }
+
+    private void addReferenceJob(Resource r) {
+        VirtualCollectionRegistryReferenceValidationJob job = new VirtualCollectionRegistryReferenceValidationJob(r);
+        references.add(job);
+        registry.getReferenceValidator().addReferenceValidationJob(job);
     }
     
     private boolean handleUrl(String value) {
@@ -410,7 +385,7 @@ public class ReferencesEditor extends ComposedField{
     
     public List<Resource> getData() {
         List<Resource> result = new ArrayList<>();
-        for(ReferenceJob job : references) {
+        for(VirtualCollectionRegistryReferenceValidationJob job : references) {
             result.add(job.getReference());
         }
         return result;
@@ -419,261 +394,10 @@ public class ReferencesEditor extends ComposedField{
     public void setData(List<Resource> data) {
         logger.trace("Set resource data: {} reference", data.size());
         for(Resource r : data) {
-            this.references.add(new ReferenceJob(r));
+            addReferenceJob(r);
         }
         lblNoReferences.setVisible(references.isEmpty());
         listview.setVisible(!references.isEmpty());
-
-        if(worker == null || !worker.isRunning()) {
-            worker = new Worker();
-            worker.start();
-            new Thread(worker).start();
-            logger.trace("Worker thread started");
-        }
-    }
-    
-    public class ReferenceJob implements Serializable, Comparable{
-        private Resource ref;
-        private State state;
-        
-        public ReferenceJob(Resource ref) {
-            this.ref = ref;
-            this.state = State.INITIALIZED;
-        }
-        
-        public State getState() {
-            return this.state;
-        }
-        
-        public synchronized void setState(State newState){
-            this.state = newState;
-        }
-        
-        public Resource getReference() {
-            return this.ref;
-        }
-
-        @Override
-        public int compareTo(@NotNull Object o) {
-            if( o == null) return 0;
-            if(o instanceof ReferenceJob) {
-                return OrderableComparator.compare(
-                        getReference(),
-                        ((ReferenceJob) o).getReference());
-            }
-            return 0;
-        }
-    }
-    
-    public class Worker implements Runnable {
-
-        private final Logger logger = LoggerFactory.getLogger(Worker.class);
-        
-        private boolean running = false;
-        
-        public Worker() {}
-        
-        public void start() {
-            this.running = true;
-        }
-        
-        public synchronized void stop() {
-            this.running = false;
-        }
-        
-        public boolean isRunning() {
-            return this.running;
-        }
-        
-        @Override
-        public void run() {
-            while(running) {
-                try {
-                    Thread.sleep(workerSleepTime);
-                } catch(InterruptedException ex) {
-                    logger.error("", ex);
-                }
-                
-                synchronized(this){
-                    for(ReferenceJob job : references) {
-                        if(job.getState() == State.INITIALIZED) {
-                            job.setState(State.ANALYZING);
-                            //fireEvent(new DataUpdatedEvent(null));
-                            try {
-                                analyze(job);
-                                job.setState(State.DONE);
-                                //fireEvent(new DataUpdatedEvent(null));
-                            } catch(Exception ex) {
-                                job.setState(State.FAILED);
-                                //fireEvent(new DataUpdatedEvent(null));
-                            }   
-                        }
-                    }
-                }
-            }
-            logger.trace("Worker thread finished");
-        }
-
-        private void analyze(final ReferenceJob job) throws IOException {
-            logger.trace("Analyzing: {}", job.getReference().getRef());
-            
-            CloseableHttpClient httpclient = HttpClients.createDefault();
-            try {
-                HttpGet httpget = new HttpGet(job.getReference().getRef());
-                logger.trace("Executing request " + httpget.getRequestLine());
-
-                // Create a custom response handler
-                ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-
-                    @Override
-                    public String handleResponse(
-                            final HttpResponse response) throws ClientProtocolException, IOException {
-                        for(Header h : response.getHeaders("Content-Type")) {
-                            logger.debug(h.getName() + " - " + h.getValue());
-                            
-                            String[] parts = h.getValue().split(";");
-                            String mediaType = parts[0];
-                            
-                            logger.trace("Media-Type="+mediaType);
-                            if(parts.length > 1) {
-                                String p = parts[1].trim();
-                                if(p.startsWith("charset=")) {
-                                    logger.trace("Charset="+p.replaceAll("charset=", ""));
-                                } else if(p.startsWith("boundary=")) {
-                                    logger.trace("Boundary="+p.replaceAll("boundary=", ""));
-                                }
-                            }
-
-                            job.getReference().setMimetype(mediaType);
-                        }
-                        for(Header h : response.getHeaders("Content-Length")) {
-                            logger.debug(h.getName() + " - " + h.getValue());
-                        }
-                        int status = response.getStatusLine().getStatusCode();
-                        if (status >= 200 && status < 300) {
-                            HttpEntity entity = response.getEntity();
-                            job.getReference().setCheck("HTTP "+status+"/"+response.getStatusLine().getReasonPhrase());
-                            String body = entity != null ? EntityUtils.toString(entity) : null;
-                            
-                            if(body != null) {
-                                String type = job.getReference().getMimetype();
-                                if(type.equalsIgnoreCase("application/x-cmdi+xml")) {
-                                    try {
-                                        parseCmdi(body, job);
-                                    } catch(IOException | ParserConfigurationException | XPathExpressionException | SAXException ex) {
-                                        logger.error("Failed to parse CMDI", ex);
-                                    }
-                                } else if(job.getReference().getMimetype().equalsIgnoreCase("text/xml") &&
-                                    body.contains("xmlns=\"http://www.clarin.eu/cmd/\"")) {
-                                    try {
-                                        parseCmdi(body, job);
-                                    } catch(IOException | ParserConfigurationException | XPathExpressionException | SAXException ex) {
-                                        logger.error("Failed to parse CMDI", ex);
-                                    }
-                                }
-                            }
-                            return body;
-                        } else {
-                            throw new ClientProtocolException("Unexpected response status: " + status);
-                        }
-                    }
-
-                };
-                String responseBody = httpclient.execute(httpget, responseHandler);
-            } finally {
-                httpclient.close();
-            }
-        
-            try {
-                    Thread.sleep(1000);
-                } catch(InterruptedException ex) {
-                    logger.error("", ex);
-                }
-        }
-    }
-
-    private void parseCmdi(final String xml, final ReferenceJob job) throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
-        logger.trace("Parsing CMDI");
-
-        DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-        factory.setNamespaceAware(true);
-        DocumentBuilder builder = factory.newDocumentBuilder();
-        Document doc = builder.parse(new java.io.ByteArrayInputStream(xml.getBytes()));
-
-        String profile = getValueForXPath(doc, "//default:CMD/default:Header/default:MdProfile/text()");
-        logger.trace("CMDI profile = " + profile);
-        
-        String name = getValueForXPath(doc, "//default:CMD/default:Components/default:lat-session/default:Name/text()");
-        String description = getValueForXPath(doc, "//default:CMD/default:Components/default:lat-session/default:descriptions/default:Description[lang('eng')]/text()");
-        logger.trace("Name = " + name + ", description = " + description);
-        
-        if(name != null) {
-            job.getReference().setLabel(name);
-        }
-        if(description != null) {
-            job.getReference().setDescription(description);
-        }
-    }
-    
-    /**
-     * Return the first value of the xpath query result, or null if the result is
-     * empty
-     * 
-     * @param doc
-     * @param xpathQuery
-     * @return 
-     */
-    private String getValueForXPath(Document doc, String xpathQuery) {
-        List<String> result = getValuesForXPath(doc, xpathQuery);
-        if(result.isEmpty()) {
-            return null;
-        }
-        return result.get(0);
-    }
-    
-    /**
-     * Return all values for the xpath query
-     * 
-     * @param doc
-     * @param xpathQuery
-     * @return 
-     */
-    private List<String> getValuesForXPath(Document doc, String xpathQuery) {
-        final XPath xpath = XPathFactory.newInstance().newXPath();
-        xpath.setNamespaceContext(new NamespaceContext() {
-            @Override
-            public String getNamespaceURI(String prefix) {
-                return prefix.equals("default") ? "http://www.clarin.eu/cmd/" : null;
-            }
-
-            @Override
-            public Iterator<String> getPrefixes(String val) {
-                return null;
-            }
-
-            @Override
-            public String getPrefix(String uri) {
-                return null;
-            }
-        });
-        
-        List<String> result = new ArrayList<>();
-        
-        try {
-            XPathExpression expr = xpath.compile(xpathQuery);
-            Object xpathResult = expr.evaluate(doc, XPathConstants.NODESET);
-            NodeList nodes = (NodeList) xpathResult;
-            logger.trace("XPatch query = ["+xpathQuery+"], result nodelist.getLength() = "+nodes.getLength());
-            for (int i = 0; i < nodes.getLength(); i++) {
-                Node currentItem = nodes.item(i);
-                logger.trace("found node -> " + currentItem.getLocalName() + " (namespace: " + currentItem.getNamespaceURI() + "), value = " + currentItem.getNodeValue());
-                result.add(currentItem.getNodeValue());
-            }
-        } catch(XPathExpressionException ex) {
-            logger.error("XPath query ["+xpathQuery+"] failed.", ex);
-        }
-        
-        return result;
     }
 
     /**
@@ -694,7 +418,7 @@ public class ReferencesEditor extends ComposedField{
 
         //Check if any resource was not valid
         long errorCount = 0;
-        for(ReferenceJob job : references) {
+        for(VirtualCollectionRegistryReferenceValidationJob job : references) {
             if(job.getState() != State.DONE) {
                 errorCount++;
             }

@@ -7,6 +7,7 @@ import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.data.MutableDataSet;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryReferenceValidationJob;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.EventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.MoveListEventHandler;
@@ -35,7 +36,7 @@ public class ReferencePanel extends Panel {
      * @param id    The wicket component id
      * @param ref 
      */
-    public ReferencePanel(String id, final ReferencesEditor.ReferenceJob ref, Model<Boolean> advancedEditorMode, long maxDisplayOrder) {
+    public ReferencePanel(String id, final VirtualCollectionRegistryReferenceValidationJob ref, Model<Boolean> advancedEditorMode, long maxDisplayOrder) {
         super(id);
         long displayOrder = ref.getReference().getDisplayOrder();
 
