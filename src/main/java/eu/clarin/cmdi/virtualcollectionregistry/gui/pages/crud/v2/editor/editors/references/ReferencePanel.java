@@ -11,6 +11,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryReferen
 import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.EventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.MoveListEventHandler;
+import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -36,30 +37,30 @@ public class ReferencePanel extends Panel {
      * @param id    The wicket component id
      * @param ref 
      */
-    public ReferencePanel(String id, final VirtualCollectionRegistryReferenceValidationJob ref, Model<Boolean> advancedEditorMode, long maxDisplayOrder) {
+    public ReferencePanel(String id, final Resource ref, final ReferencesEditor.State state, Model<Boolean> advancedEditorMode, long maxDisplayOrder) {
         super(id);
-        long displayOrder = ref.getReference().getDisplayOrder();
+        long displayOrder = ref.getDisplayOrder();
 
         Model titleModel = Model.of("<required>");
-        if(ref.getReference().getLabel() != null) {
-            titleModel.setObject(ref.getReference().getLabel());
+        if(ref.getLabel() != null) {
+            titleModel.setObject(ref.getLabel());
         }
         Model descriptionModel = Model.of("<required>");
-        if(ref.getReference().getDescription() != null) {
-            descriptionModel.setObject(ref.getReference().getDescription());
+        if(ref.getDescription() != null) {
+            descriptionModel.setObject(ref.getDescription());
         }
         
         WebMarkupContainer editorWrapper = new WebMarkupContainer("wrapper");
 
         boolean analysing = false;
-        if(ref.getState() == ReferencesEditor.State.INITIALIZED || ref.getState() == ReferencesEditor.State.ANALYZING) {
+        if(state == ReferencesEditor.State.INITIALIZED || state == ReferencesEditor.State.ANALYZING) {
             analysing = true;
         }
 
         WebMarkupContainer stateIcon = new WebMarkupContainer("state");
-        switch(ref.getState()) {
+        switch(state) {
             case DONE:
-                if(HandleLinkModel.isSupportedPersistentIdentifier(ref.getReference().getRef())) {
+                if(HandleLinkModel.isSupportedPersistentIdentifier(ref.getRef())) {
                     stateIcon.add(new AttributeAppender("class", "fa fa-check-circle-o icon icon-success"));
                 } else {
                     stateIcon.add(new AttributeAppender("class", "fa fa-check-circle-o icon icon-passed"));
@@ -75,9 +76,9 @@ public class ReferencePanel extends Panel {
         }
         editorWrapper.add(stateIcon);
 
-        String urlValue = ref.getReference().getRef();
+        String urlValue = ref.getRef();
         if(!titleModel.getObject().toString().isEmpty()) {
-            urlValue = "("+ref.getReference().getRef()+")";
+            urlValue = "("+ref.getRef()+")";
         }
         editorWrapper.add(new Label("value", urlValue));
 
@@ -88,7 +89,7 @@ public class ReferencePanel extends Panel {
         Label lblTypeLabel = new Label("lbl_type", "Type:");
         lblTypeLabel.setVisible(!analysing && advancedEditorMode.getObject());
         editorWrapper.add(lblTypeLabel);
-        Label lblType = new Label("type", ref.getReference().getType());
+        Label lblType = new Label("type", ref.getType());
         lblType.setVisible(!analysing && advancedEditorMode.getObject());
         editorWrapper.add(lblType);
 
@@ -97,7 +98,7 @@ public class ReferencePanel extends Panel {
         editorWrapper.add(lblTitle);
 
         Label lblMerged = new Label("merged", "This resource was merged from the submitted collection.");
-        lblMerged.setVisible(ref.getReference().isMerged());
+        lblMerged.setVisible(ref.isMerged());
         editorWrapper.add(lblMerged);
 
         String htmlValue = "";
@@ -118,7 +119,7 @@ public class ReferencePanel extends Panel {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 for(MoveListEventHandler handler : moveListEventHandlers) {
-                    handler.handleMoveTop(ref.getReference().getDisplayOrder(), target);
+                    handler.handleMoveTop(ref.getDisplayOrder(), target);
                 }
             }
         };
@@ -132,7 +133,7 @@ public class ReferencePanel extends Panel {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 for(MoveListEventHandler handler : moveListEventHandlers) {
-                    handler.handleMoveUp(ref.getReference().getDisplayOrder(), target);
+                    handler.handleMoveUp(ref.getDisplayOrder(), target);
                 }
             }
         };
@@ -146,7 +147,7 @@ public class ReferencePanel extends Panel {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 for(MoveListEventHandler handler : moveListEventHandlers) {
-                    handler.handleMoveDown(ref.getReference().getDisplayOrder(), target);
+                    handler.handleMoveDown(ref.getDisplayOrder(), target);
                 }
             }
         };
@@ -160,7 +161,7 @@ public class ReferencePanel extends Panel {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 for(MoveListEventHandler handler : moveListEventHandlers) {
-                    handler.handleMoveEnd(ref.getReference().getDisplayOrder(), target);
+                    handler.handleMoveEnd(ref.getDisplayOrder(), target);
                 }
             }
         };
@@ -175,11 +176,11 @@ public class ReferencePanel extends Panel {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 for(EventHandler handler : eventHandlers) {
-                    handler.handleEditEvent(ref.getReference(), target);
+                    handler.handleEditEvent(ref, target);
                 }
             }
         };
-        btnEdit.setEnabled(getButtonState(ref.getState()));
+        btnEdit.setEnabled(getButtonState(state));
         btnEdit.setVisible(!analysing);
         editorWrapper.add(btnEdit);
         
@@ -187,11 +188,11 @@ public class ReferencePanel extends Panel {
             @Override
             public void onClick(AjaxRequestTarget target) {
                 for(EventHandler handler : eventHandlers) {
-                    handler.handleRemoveEvent(ref.getReference(), target);
+                    handler.handleRemoveEvent(ref, target);
                 }
             }
         };
-        btnRemove.setEnabled(getButtonState(ref.getState()));
+        btnRemove.setEnabled(getButtonState(state));
         btnRemove.setVisible(!analysing);
         editorWrapper.add(btnRemove);
 

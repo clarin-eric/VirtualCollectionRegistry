@@ -307,6 +307,21 @@ table.collectionsTable td.name {
     min-width: 200px;
 }
 
+table.validators {
+    max-width: 100%;
+    margin-bottom: 20px;
+}
+
+table.validators td.ref {
+    width: 100%;
+    min-width: 200px;
+}
+
+table.validators td {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
 .collapsing {
     -webkit-transition: none;
     transition: none;

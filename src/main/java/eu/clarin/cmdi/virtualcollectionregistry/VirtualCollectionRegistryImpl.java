@@ -111,7 +111,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             maintenanceExecutor.scheduleWithFixedDelay(new Runnable() {
                 @Override
                 public void run() {
-                    logger.info("Running reference validation");
+                    logger.trace("Running reference validation");
                     referenceValidator.perform(new Date().getTime());
                 }
             }, 1, 1, TimeUnit.SECONDS);

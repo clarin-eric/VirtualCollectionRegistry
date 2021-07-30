@@ -3,12 +3,8 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editor
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
-import java.util.ArrayList;
-import java.util.Collections;
-import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
+import java.util.*;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryReferenceValidationJob;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.CancelEventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.EventHandler;
@@ -34,7 +30,6 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.util.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
@@ -43,12 +38,12 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class ReferencesEditor extends ComposedField {
     private static Logger logger = LoggerFactory.getLogger(ReferencesEditor.class);
 
-    private final List<VirtualCollectionRegistryReferenceValidationJob> references = new CopyOnWriteArrayList<>();
     private IModel<String> data = new Model<>();
     private IModel<String> mdlReferenceTitle = new Model<>();
     
-    final Label lblNoReferences;
-    final ListView listview;
+    private final Label lblNoReferences;
+    private final List<EditableResource> references = new LinkedList<>();
+    private final ListView<EditableResource> listview;
 
     private int edit_index = -1;
     
@@ -60,6 +55,10 @@ public class ReferencesEditor extends ComposedField {
 
     private boolean currentValidation = false;
     private boolean previousValidation = false;
+
+    private final VirtualCollectionRegistry registry;
+
+    private final String editorId = UUID.randomUUID().toString();
 
     public class Validator implements InputValidator, Serializable {
         private String message = "";
@@ -96,7 +95,27 @@ public class ReferencesEditor extends ComposedField {
         }
     }
 
-    private final VirtualCollectionRegistry registry;
+    public static class EditableResource extends Resource {
+        private final String internalId = UUID.randomUUID().toString();
+
+        private static EditableResource fromResource(Resource r) {
+            EditableResource result = new EditableResource();
+            result.setCheck(r.getCheck());
+            result.setDescription(r.getDescription());
+            result.setDisplayOrder(r.getDisplayOrder());
+            result.setLabel(r.getLabel());
+            result.setMimetype(r.getMimetype());
+            result.setOrigin(r.getOrigin());
+            result.setOriginalQuery(r.getOriginalQuery());
+            result.setRef(r.getRef());
+            result.setType(r.getType());
+            return result;
+        }
+
+        public String getInternalId() {
+            return internalId;
+        }
+    }
 
     public ReferencesEditor(VirtualCollectionRegistry registry, String id, String label, Model<Boolean> advancedEditorMode, VisabilityUpdater updater) {
         super(id, "References", null, updater);
@@ -123,7 +142,7 @@ public class ReferencesEditor extends ComposedField {
                                 Resource r = (Resource)event.getData();
                                 logger.trace("Removing reference: {}", r.getRef());
                                 for(int i = 0; i < references.size(); i++) {
-                                    String value = references.get(i).getReference().getRef();
+                                    String value = references.get(i).getRef();
                                     if(value.equalsIgnoreCase(r.getRef())) {
                                         references.remove(i);
                                         event.getAjaxRequestTarget().add(ajaxWrapper);
@@ -143,7 +162,7 @@ public class ReferencesEditor extends ComposedField {
             @Override
             public void handleSaveEvent(AjaxRequestTarget target) {
                 //Reset state so this reference is rescanned
-                references.get(edit_index).setState(State.INITIALIZED);
+                registry.getReferenceValidator().setState(references.get(edit_index).getInternalId(), State.INITIALIZED);
                 edit_index = -1;
                 editor.setVisible(false);
                 listview.setVisible(true);
@@ -173,9 +192,9 @@ public class ReferencesEditor extends ComposedField {
         listview = new ListView("listview", references) {
             @Override
             protected void populateItem(ListItem item) {
-                VirtualCollectionRegistryReferenceValidationJob ref =
-                        (VirtualCollectionRegistryReferenceValidationJob)item.getModel().getObject();
-                ReferencePanel c = new ReferencePanel("pnl_reference", ref, advancedEditorMode, getMaxDisplayOrder());
+                EditableResource ref = (EditableResource)item.getModel().getObject();
+                State state = registry.getReferenceValidator().getState(ref.getInternalId());
+                ReferencePanel c = new ReferencePanel("pnl_reference", ref, state, advancedEditorMode, getMaxDisplayOrder());
                 c.addMoveListEventHandler(new MoveListEventHandler() {
                     @Override
                     public void handleMoveUp(Long displayOrder, AjaxRequestTarget target) {
@@ -212,7 +231,7 @@ public class ReferencesEditor extends ComposedField {
                         logger.trace("Edit reference: {}", t.getRef());
                         edit_index = -1;
                         for(int i = 0; i < references.size(); i++) {
-                            String value = references.get(i).getReference().getRef();
+                            String value = references.get(i).getRef();
                             if(value.equalsIgnoreCase(t.getRef())) {
                                 edit_index = i;
                                 break;
@@ -224,7 +243,7 @@ public class ReferencesEditor extends ComposedField {
                             editor.reset();
                             listview.setVisible(true);
                         } else {
-                            editor.setReference(references.get(edit_index).getReference());
+                            editor.setReference(references.get(edit_index));
                             editor.setVisible(true);
                             listview.setVisible(false);
                         }
@@ -283,9 +302,9 @@ public class ReferencesEditor extends ComposedField {
 
     private long getMaxDisplayOrder() {
         long max = 0;
-        for(VirtualCollectionRegistryReferenceValidationJob job : references) {
-            if(job.getReference().getDisplayOrder() > max) {
-                max = job.getReference().getDisplayOrder();
+        for(Resource r : references) {
+            if(r.getDisplayOrder() > max) {
+                max = r.getDisplayOrder();
             }
         }
         return max;
@@ -307,8 +326,8 @@ public class ReferencesEditor extends ComposedField {
     @Override
     protected void onRemove() {
         logger.info("Removing Reference editor");
-        for(VirtualCollectionRegistryReferenceValidationJob job : references) {
-            registry.getReferenceValidator().removeReferenceValidationJob(job);
+        for(EditableResource r : references) {
+            registry.getReferenceValidator().removeReferenceValidationJob(r.getInternalId());
         }
     }
 
@@ -322,14 +341,14 @@ public class ReferencesEditor extends ComposedField {
             if(handleUrl(value)) {
                 Resource r = new Resource(Resource.Type.RESOURCE, value, title);
                 r.setDisplayOrder(getNextDisplayOrder());
-                addReferenceJob(r);
+                addReferenceJob(EditableResource.fromResource(r));
                 data.setObject("");
                 mdlReferenceTitle.setObject("");
             } else if(handlePid(value)) {
                 String actionableValue = HandleLinkModel.getActionableUri(value);
                 Resource r = new Resource(Resource.Type.RESOURCE, actionableValue, title);
                 r.setDisplayOrder(getNextDisplayOrder());
-                addReferenceJob(r);
+                addReferenceJob(EditableResource.fromResource(r));
                 data.setObject("");
                 mdlReferenceTitle.setObject("");
             } else {
@@ -350,21 +369,19 @@ public class ReferencesEditor extends ComposedField {
         return false;
     }
 
-    private void addReferenceJob(Resource r) {
-        VirtualCollectionRegistryReferenceValidationJob job = new VirtualCollectionRegistryReferenceValidationJob(r);
-        references.add(job);
-        registry.getReferenceValidator().addReferenceValidationJob(job);
+    private void addReferenceJob(EditableResource r) {
+        references.add(r);
+        registry.getReferenceValidator().addReferenceValidationJob(r.getInternalId(), r);
     }
     
     private boolean handleUrl(String value) {
-        boolean result = false;
         try {
-            URL url = new URL(value);
-            result = true;
+            new URL(value);
         } catch(MalformedURLException ex) {
             logger.debug("Failed to parse value: "+value+" as url", ex);
+            return false;
         }
-        return result;
+        return true;
     }
     
     private boolean handlePid(String value) {
@@ -384,9 +401,9 @@ public class ReferencesEditor extends ComposedField {
     }
     
     public List<Resource> getData() {
-        List<Resource> result = new ArrayList<>();
-        for(VirtualCollectionRegistryReferenceValidationJob job : references) {
-            result.add(job.getReference());
+        List<Resource> result = new LinkedList<>();
+        for(EditableResource r : references) {
+            result.add((Resource)r);
         }
         return result;
     }
@@ -394,7 +411,7 @@ public class ReferencesEditor extends ComposedField {
     public void setData(List<Resource> data) {
         logger.trace("Set resource data: {} reference", data.size());
         for(Resource r : data) {
-            addReferenceJob(r);
+            addReferenceJob(EditableResource.fromResource(r));
         }
         lblNoReferences.setVisible(references.isEmpty());
         listview.setVisible(!references.isEmpty());
@@ -418,8 +435,9 @@ public class ReferencesEditor extends ComposedField {
 
         //Check if any resource was not valid
         long errorCount = 0;
-        for(VirtualCollectionRegistryReferenceValidationJob job : references) {
-            if(job.getState() != State.DONE) {
+        for(EditableResource r : references) {
+            State state = registry.getReferenceValidator().getState(r.getInternalId());
+            if(state != State.DONE) {
                 errorCount++;
             }
         }
@@ -448,7 +466,7 @@ public class ReferencesEditor extends ComposedField {
         //Find index of specified (by id) collection
         int idx = -1;
         for(int i = 0; i < references.size() && idx == -1; i++) {
-            if(references.get(i).getReference().getDisplayOrder() == displayOrder) {
+            if(references.get(i).getDisplayOrder() == displayOrder) {
                 idx = i;
             }
         }
@@ -463,14 +481,14 @@ public class ReferencesEditor extends ComposedField {
 
         //Swap the collection with the collection at the specified destination (up=1, down=-1, beginning=0 or end=i)
         if (direction == -1 && idx > 0) {
-            references.get(idx).getReference().setDisplayOrder(new Long(idx - 1));
-            references.get(idx - 1).getReference().setDisplayOrder(new Long(idx));
+            references.get(idx).setDisplayOrder(new Long(idx - 1));
+            references.get(idx - 1).setDisplayOrder(new Long(idx));
         } else if(direction == 1 && idx < references.size()-1) {
-            references.get(idx).getReference().setDisplayOrder(new Long(idx + 1));
-            references.get(idx + 1).getReference().setDisplayOrder(new Long(idx));
+            references.get(idx).setDisplayOrder(new Long(idx + 1));
+            references.get(idx + 1).setDisplayOrder(new Long(idx));
         } else {
-            references.get(idx).getReference().setDisplayOrder(new Long(direction));
-            references.get(direction).getReference().setDisplayOrder(new Long(idx));
+            references.get(idx).setDisplayOrder(new Long(direction));
+            references.get(direction).setDisplayOrder(new Long(idx));
         }
 
         //Resort list based on new sort order

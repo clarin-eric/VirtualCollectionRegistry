@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.references.ReferencesEditor;
+import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -24,20 +25,19 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.*;
 import java.io.IOException;
-import java.util.ArrayList;
-import java.util.Iterator;
-import java.util.LinkedList;
-import java.util.List;
+import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
 public class VirtualCollectionRegistryReferenceValidatorImpl implements VirtualCollectionRegistryReferenceValidator {
 
-    private static Logger logger = LoggerFactory.getLogger(VirtualCollectionRegistryReferenceValidatorImpl.class);
+    private final static Logger logger = LoggerFactory.getLogger(VirtualCollectionRegistryReferenceValidatorImpl.class);
 
-    private final List<VirtualCollectionRegistryReferenceValidationJob> jobs = new CopyOnWriteArrayList<>();
+    private final transient List<VirtualCollectionRegistryReferenceValidationJob> jobs = new CopyOnWriteArrayList<>();
 
-    private final List<ReferenceParser> parsers = new LinkedList<>();
+    private final transient List<ReferenceParser> parsers = new LinkedList<>();
+
+    private boolean running = false;
 
     public VirtualCollectionRegistryReferenceValidatorImpl() {
         parsers.add(new CmdiReferenceParserImpl());
@@ -45,28 +45,56 @@ public class VirtualCollectionRegistryReferenceValidatorImpl implements VirtualC
 
     @Override
     public void perform(long now) {
-        for(VirtualCollectionRegistryReferenceValidationJob job : jobs) {
-            if(job.getState() == ReferencesEditor.State.INITIALIZED) {
-                job.setState(ReferencesEditor.State.ANALYZING);
-                try {
-                    analyze(job);
-                    job.setState(ReferencesEditor.State.DONE);
-                } catch(Exception ex) {
-                    job.setState(ReferencesEditor.State.FAILED);
+        if(!running) {
+            running = true;
+            for (VirtualCollectionRegistryReferenceValidationJob job : jobs) {
+                if (job.getState().getState() == ReferencesEditor.State.INITIALIZED) {
+                    job.setState(ReferencesEditor.State.ANALYZING);
+                    try {
+                        analyze(job);
+                        job.setState(ReferencesEditor.State.DONE);
+                    } catch (Exception ex) {
+                        job.setState(ReferencesEditor.State.FAILED);
+                    }
                 }
+            }
+            running = false;
+        }
+    }
+
+    @Override
+    public ReferencesEditor.State getState(String id) {
+        for(VirtualCollectionRegistryReferenceValidationJob job : jobs) {
+            if(job.getId().equalsIgnoreCase(id)) {
+                return job.getState().getState();
+            }
+        }
+        return ReferencesEditor.State.FAILED;
+    }
+
+    @Override
+    public void setState(String id, ReferencesEditor.State state) {
+        for(VirtualCollectionRegistryReferenceValidationJob job : jobs) {
+            if(job.getId().equalsIgnoreCase(id)) {
+                job.setState(state);
             }
         }
     }
 
     @Override
-    public void addReferenceValidationJob(VirtualCollectionRegistryReferenceValidationJob job) {
+    public void addReferenceValidationJob(String id, Resource r) {
+        VirtualCollectionRegistryReferenceValidationJob job = new VirtualCollectionRegistryReferenceValidationJob(r, id);
         jobs.add(job);
     }
 
     @Override
-    public void removeReferenceValidationJob(VirtualCollectionRegistryReferenceValidationJob job) {
-        //TODO: implement
-        throw new RuntimeException("Not yet implemented");
+    public void removeReferenceValidationJob(String id) {
+        for(int i = 0; i < jobs.size(); i++) {
+            VirtualCollectionRegistryReferenceValidationJob job = jobs.get(i);
+            if(job.getId().equalsIgnoreCase(id)) {
+                jobs.remove(i);
+            }
+        }
     }
 
     @Override
@@ -109,6 +137,9 @@ public class VirtualCollectionRegistryReferenceValidatorImpl implements VirtualC
                     for(Header h : response.getHeaders("Content-Length")) {
                         logger.trace(h.getName() + " - " + h.getValue());
                     }
+
+                    job.setHttpResponseReason(response.getStatusLine().getReasonPhrase());
+                    job.setHttpResponseCode(response.getStatusLine().getStatusCode());
 
                     int status = response.getStatusLine().getStatusCode();
                     if (status >= 200 && status < 300) {

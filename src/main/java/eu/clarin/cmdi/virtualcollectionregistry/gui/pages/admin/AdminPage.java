@@ -12,6 +12,8 @@ import java.util.LinkedList;
 import java.util.List;
 
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifierProvider;
+import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeAction;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeInstantiation;
@@ -25,6 +27,7 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
+import org.apache.wicket.util.time.Duration;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -38,7 +41,7 @@ import org.springframework.beans.factory.annotation.Autowired;
 public class AdminPage extends BasePage {
 
     @SpringBean
-    private VirtualCollectionRegistry vc;
+    private VirtualCollectionRegistry vcr;
 
     @SpringBean
     private AdminUsersService adminUsersService;
@@ -46,12 +49,14 @@ public class AdminPage extends BasePage {
     @SpringBean
     private PidProviderService pidProviderService;
 
+    private final int uiRefreshTimeInSeconds = 1;
+
     public final static User PUBLIC_USER = new User("___PUBLIC___",  "Published collections");
     
     public AdminPage() {
         super();
 
-        final List<User> users = vc.getUsers();
+        final List<User> users = vcr.getUsers();
 
         add(new Label("lbl_server_config", Model.of("Server Configuration")));
         add(new AdminPanel("pnl_admins", adminUsersService));
@@ -66,7 +71,7 @@ public class AdminPage extends BasePage {
         add(pidProvidersListview);
 
         add(new Label("lbl_pnl_database", Model.of("Database")));
-        add(new DatabasePanel("pnl_database", vc));
+        add(new DatabasePanel("pnl_database", vcr));
 
         // user model shared between spaces form and the table's provider
         final IModel<User> userModel = new Model<>(null);
@@ -80,6 +85,20 @@ public class AdminPage extends BasePage {
         // create table showing the collections in the space
         final AdminCollectionsProvider provider = new AdminCollectionsProvider(userModel);
         add(new BrowseEditableCollectionsPanel("collections", provider, true, getPageReference()));
+
+        ReferenceValidationPanel pnl = new ReferenceValidationPanel("pnl_reference_validation", vcr.getReferenceValidator());
+        pnl.setOutputMarkupId(true);
+        add(pnl);
+
+        add(new AbstractAjaxTimerBehavior(Duration.seconds(uiRefreshTimeInSeconds)) {
+            @Override
+            protected void onTimer(AjaxRequestTarget target) {
+                pnl.update(vcr.getReferenceValidator());
+                if(target != null) {
+                    target.add(pnl);
+                }
+            }
+        });
     }
 
     private DropDownChoice<User> createSpacesDropDown(String id, final IModel<User> userModel, final List<User> users) {
