@@ -99,7 +99,12 @@ public class SubmissionUtils {
         
         return username;
     }
-    
+
+    public static boolean hasPostParameters(WebRequest request) {
+        final IRequestParameters params = request.getPostParameters();
+        return params.getParameterNames() != null && !params.getParameterNames().isEmpty();
+    }
+
     /**
      * Supported input
      * //required params

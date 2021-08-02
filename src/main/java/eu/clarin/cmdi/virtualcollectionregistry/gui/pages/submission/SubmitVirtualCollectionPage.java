@@ -46,16 +46,23 @@ public class SubmitVirtualCollectionPage extends BasePage {
     public SubmitVirtualCollectionPage() {}
 
     @Override
-    protected void onBeforeRender() {     
-        VirtualCollection vc = SubmissionUtils.retrieveCollection(getSession());
-        if(vc != null) {        
+    protected void onBeforeRender() {
+        boolean hasPostParameters = SubmissionUtils.hasPostParameters((WebRequest)RequestCycle.get().getRequest());
+        VirtualCollection cachedVc = SubmissionUtils.retrieveCollection(getSession());
+
+        if(!hasPostParameters && cachedVc != null) {
+            //No data submitted in request and collection loaded from cache, redirect to edit page to process cached data
             logger.info("Collection stored in session, redirect to edit page");
-            //Class target = CreateAndEditVirtualCollectionPageV2.class;
-            Class target = MergeCollectionsPage.class;
-            throw new RestartResponseException(target);
+            throw new RestartResponseException(MergeCollectionsPage.class);
         }
-        
-        logger.debug("No collection stored in session");
+
+        if(hasPostParameters && cachedVc != null) {
+            //Data submitted in request and collection loaded from cache, clear cached data to allow processing of new data
+            logger.info("Received new post data while collection was already cached. Clearing collection from cache.");
+            SubmissionUtils.clearCollectionFromSession(getSession());
+        }
+
+        //No collection stored in session, process submitted data
         
         //Derivate type from page parameter
         String type_string = getPageParameters().get("type").toString();
