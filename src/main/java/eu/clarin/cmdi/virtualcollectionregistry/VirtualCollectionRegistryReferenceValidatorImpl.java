@@ -16,6 +16,8 @@ import org.apache.http.util.EntityUtils;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.beans.factory.InitializingBean;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Component;
 import org.w3c.dom.Document;
 import org.w3c.dom.Node;
@@ -32,7 +34,7 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
-public class VirtualCollectionRegistryReferenceValidatorImpl implements VirtualCollectionRegistryReferenceValidator {
+public class VirtualCollectionRegistryReferenceValidatorImpl implements VirtualCollectionRegistryReferenceValidator, InitializingBean {
 
     private final static Logger logger = LoggerFactory.getLogger(VirtualCollectionRegistryReferenceValidatorImpl.class);
 
@@ -43,9 +45,10 @@ public class VirtualCollectionRegistryReferenceValidatorImpl implements VirtualC
     private boolean running = false;
 
     private final CloseableHttpClient httpclient;
-    private final RequestConfig requestConfig;
+    private RequestConfig requestConfig;
 
-    @SpringBean
+    //@SpringBean
+    @Autowired
     private VcrConfig vcrConfig;
 
     public VirtualCollectionRegistryReferenceValidatorImpl() {
@@ -53,9 +56,19 @@ public class VirtualCollectionRegistryReferenceValidatorImpl implements VirtualC
         this.httpclient = HttpClients.createDefault();
         this.requestConfig = RequestConfig
                                 .custom()
-                                .setConnectionRequestTimeout(vcrConfig == null ? 1000 : vcrConfig.getHttpTimeout())
-                                .setMaxRedirects(vcrConfig == null ? 1 : vcrConfig.getHttpRedirects())
+                                .setConnectionRequestTimeout(1000)
+                                .setMaxRedirects(1)
                                 .build();
+    }
+
+    // called by Spring directly after Bean construction
+    @Override
+    public void afterPropertiesSet() {
+        this.requestConfig = RequestConfig
+                .custom()
+                .setConnectionRequestTimeout(vcrConfig.getHttpTimeout())
+                .setMaxRedirects(vcrConfig.getHttpRedirects())
+                .build();
     }
 
     @Override

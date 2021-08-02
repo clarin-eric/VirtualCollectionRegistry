@@ -44,13 +44,16 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
     @Autowired
     @Qualifier("creation")
     private VirtualCollectionValidator validator;
+
     @Autowired
     private AdminUsersService adminUsersService;
 
     @Autowired
     private VirtualCollectionRegistryMaintenanceImpl maintenance;
+
     @Autowired
     private VirtualCollectionRegistryReferenceCheckImpl referenceCheck; //Checks collections for invalid references
+
     @Autowired
     private VirtualCollectionRegistryReferenceValidator referenceValidator; //Checks references for validity and gathers additional info for the reference
 
