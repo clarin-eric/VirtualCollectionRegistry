@@ -22,7 +22,7 @@ package eu.clarin.cmdi.virtualcollectionregistry;
  */
 public interface VirtualCollectionRegistryReferenceCheck {
     /**
-     * Perform validy check on resources
+     * Perform validity check on resources of collections
      * 
      * @param now 
      */
