@@ -7,11 +7,32 @@
 <body>
 
 <wicket:panel>
+    <div class="row" style="margin: 2px;">
+        <div class="col-xs-4">
+            <div class="panel panel-default">
+                <div class="panel-heading"><h3 wicket:id="num_jobs_lbl"></h3></div>
+                <div class="panel-body">
+                    <div class="row">
+                        <div class="col-xs-12 pull-right"><h1 wicket:id="num_jobs" class="pull-right main-stat"></h1></div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-4 col-xs-offset-4" wicket:id="num_waiting_jobs_lbl">Waiting:</div>
+                        <div class="col-xs-2 pull-right" wicket:id="num_waiting_jobs"></div>
+                        <div class="col-xs-2 pull-right">(<span wicket:id="num_waiting_jobs_pct"></span>%)</div>
+                    </div>
+                    <div class="row">
+                        <div class="col-xs-4 col-xs-offset-4" wicket:id="num_finished_jobs_lbl">Waiting:</div>
+                        <div class="col-xs-2 pull-right" wicket:id="num_finished_jobs"></div>
+                        <div class="col-xs-2 pull-right">(<span wicket:id="num_finished_jobs_pct"></span>%)</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
     <div class="row" style="margin: 2px; border: #000000 solid 1px;">
-        <div><span wicket:id="num_jobs_lbl">Jobs:</span><span wicket:id="num_jobs"></span></div>
-        <div><span wicket:id="num_waiting_jobs_lbl">Waiting:</span><span wicket:id="num_waiting_jobs"></span>(<span wicket:id="num_waiting_jobs_pct"></span>%)</div>
-        <div><span wicket:id="num_finished_jobs_lbl">Finished:</span><span wicket:id="num_finished_jobs"></span>(<span wicket:id="num_finished_jobs_pct"></span>%)</div>
-        <table wicket:id="validation_job_table" class="validators">[validation jobs]</table>
+        <div class="col-xs-12">
+            <table wicket:id="validation_job_table" class="validators">[validation jobs]</table>
+        </div>
     </div>
 </wicket:panel>
 

@@ -3,6 +3,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin;
 import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.PidProviderService;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
+import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BasePage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowseEditableCollectionsPanel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.AdminCollectionsProvider;
@@ -49,6 +50,9 @@ public class AdminPage extends BasePage {
     @SpringBean
     private PidProviderService pidProviderService;
 
+    @SpringBean
+    private VcrConfig vcrConfig;
+
     private final int uiRefreshTimeInSeconds = 1;
 
     public final static User PUBLIC_USER = new User("___PUBLIC___",  "Published collections");
@@ -72,6 +76,7 @@ public class AdminPage extends BasePage {
 
         add(new Label("lbl_pnl_database", Model.of("Database")));
         add(new DatabasePanel("pnl_database", vcr));
+        add(new ConfigPanel("pnl_config", vcrConfig));
 
         // user model shared between spaces form and the table's provider
         final IModel<User> userModel = new Model<>(null);

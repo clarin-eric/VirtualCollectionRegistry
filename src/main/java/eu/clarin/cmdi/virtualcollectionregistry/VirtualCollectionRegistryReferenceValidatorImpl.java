@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
+import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.references.ReferencesEditor;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import org.apache.http.Header;
@@ -7,10 +8,12 @@ import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
+import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.stereotype.Component;
@@ -39,8 +42,20 @@ public class VirtualCollectionRegistryReferenceValidatorImpl implements VirtualC
 
     private boolean running = false;
 
+    private final CloseableHttpClient httpclient;
+    private final RequestConfig requestConfig;
+
+    @SpringBean
+    private VcrConfig vcrConfig;
+
     public VirtualCollectionRegistryReferenceValidatorImpl() {
-        parsers.add(new CmdiReferenceParserImpl());
+        this.parsers.add(new CmdiReferenceParserImpl());
+        this.httpclient = HttpClients.createDefault();
+        this.requestConfig = RequestConfig
+                                .custom()
+                                .setConnectionRequestTimeout(vcrConfig == null ? 1000 : vcrConfig.getHttpTimeout())
+                                .setMaxRedirects(vcrConfig == null ? 1 : vcrConfig.getHttpRedirects())
+                                .build();
     }
 
     @Override
@@ -105,16 +120,16 @@ public class VirtualCollectionRegistryReferenceValidatorImpl implements VirtualC
     private void analyze(final VirtualCollectionRegistryReferenceValidationJob job) throws IOException {
         logger.trace("Analyzing: {}", job.getReference().getRef());
 
-        CloseableHttpClient httpclient = HttpClients.createDefault();
         try {
             HttpGet httpget = new HttpGet(job.getReference().getRef());
+            httpget.setConfig(requestConfig);
+
             logger.trace("Executing request " + httpget.getRequestLine());
 
             // Create a custom response handler
             ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
                 @Override
-                public String handleResponse(
-                        final HttpResponse response) throws ClientProtocolException, IOException {
+                public String handleResponse(final HttpResponse response) throws ClientProtocolException, IOException {
                     for(Header h : response.getHeaders("Content-Type")) {
                         logger.trace(h.getName() + " - " + h.getValue());
 
@@ -161,6 +176,7 @@ public class VirtualCollectionRegistryReferenceValidatorImpl implements VirtualC
                     }
                 }
             };
+
             String responseBody = httpclient.execute(httpget, responseHandler);
         } finally {
             httpclient.close();

@@ -461,7 +461,6 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
     }
 
     public String getDbVersion() throws VirtualCollectionRegistryException {
-        logger.info("getDbVersion()");
         String dbVersion = null;
         EntityManager em = datastore.getEntityManager();
         try {

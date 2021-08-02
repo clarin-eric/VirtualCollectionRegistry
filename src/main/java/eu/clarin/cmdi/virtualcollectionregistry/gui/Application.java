@@ -88,7 +88,7 @@ public class Application extends AuthenticatedWebApplication {
     
         logger.info("Initialising VCR web application");
         if (vcrConfig != null) {
-            vcrConfig.logConfig(); //write current configuration to logger
+            logger.info(vcrConfig.logConfig()); //write current configuration to logger
         } else {
             logger.error("Failed to inject VcrConfig");
             throw new RuntimeException("Failed to start the Virtual Collection Registry. Failed to inject VCR configuration");

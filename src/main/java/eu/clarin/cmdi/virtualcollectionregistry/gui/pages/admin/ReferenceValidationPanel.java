@@ -34,7 +34,7 @@ public class ReferenceValidationPanel extends Panel {
     private ValidationJobProvider provider;
     //private final transient VirtualCollectionRegistryReferenceValidator validator;
 
-    private final static String LBL_NUM_JOBS = "Number of validation jobs:";
+    private final static String LBL_NUM_JOBS = "Number of validation jobs";
     private final static String LBL_NUM_WAITING_JOBS = " Waiting:";
     private final static String LBL_NUM_FINISHED_JOBS = "Finished:";
 

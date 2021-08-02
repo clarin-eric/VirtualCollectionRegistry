@@ -24,11 +24,7 @@ import eu.clarin.cmdi.wicket.components.pid.PersistentIdentifieable;
 import eu.clarin.cmdi.wicket.components.pid.PidPanel;
 import java.io.Serializable;
 import java.sql.Date;
-import java.text.ParseException;
 import java.util.*;
-import java.util.stream.Collectors;
-
-import org.apache.http.HttpRequest;
 import org.apache.wicket.Component;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
