@@ -192,6 +192,14 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         this.datePublished = datePublished;
     }
 
+    public VirtualCollection getForkedFrom() {
+        return forkedFrom;
+    }
+
+    public void setForkedFrom(VirtualCollection forkedFrom) {
+        this.forkedFrom = forkedFrom;
+    }
+
     public static enum State {
         PRIVATE,
         PUBLIC_PENDING,
@@ -333,6 +341,13 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "published", nullable = true)
     private Date datePublished;
+
+    @OneToOne(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            orphanRemoval = true,
+            optional = true)
+    @JoinColumn(name = "forked_from", nullable = true)
+    private VirtualCollection forkedFrom;
 
     public VirtualCollection() {
         super();
@@ -554,6 +569,67 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
             throw new NullPointerException("dateModified == null");
         }
         this.dateModified = dateModified;
+    }
+
+    /**
+     * Return a new collection with all fields, including the id, state and persistent identifiers deep copied.
+     * @return
+     */
+    public VirtualCollection clone(User user) {
+        VirtualCollection clone = fork(user);
+        clone.setId(getId());
+        clone.setState(getState());
+        clone.setOwner(getOwner());
+        for(PersistentIdentifier id : getIdentifiers()) {
+            PersistentIdentifier clonedId = new PersistentIdentifier(clone, id.getType(), id.getPrimary(), id.getIdentifier());
+            clone.identifiers.add(clonedId);
+        }
+        return clone;
+    }
+
+    /**
+     * Return a new collection with all fields except the id and persistent identifiers deep copied. State will be PRIVATE.
+     * @return
+     */
+    public VirtualCollection fork(User user) {
+        VirtualCollection newCollection = new VirtualCollection();
+        newCollection.setType(getType());
+        newCollection.setDatePublished(null);
+        newCollection.setOrigin(getOrigin());
+        newCollection.setState(State.PRIVATE);
+        newCollection.setCreationDate(new Date());
+        newCollection.setOwner(user);
+        newCollection.setReproducibilityNotice(getReproducibilityNotice());
+        newCollection.setReproducibility(getReproducibility());
+        newCollection.setPurpose(getPurpose());
+        newCollection.setDescription(getDescription());
+        newCollection.setName(getName());
+
+        if(getGeneratedBy() == null) {
+            newCollection.setGeneratedBy(null);
+        } else {
+            GeneratedBy newGeneratedBy = new GeneratedBy();
+            newGeneratedBy.setURI(getGeneratedBy().getURI());
+            newGeneratedBy.setQuery(getGeneratedBy().getQuery());
+            newGeneratedBy.setDescription(getGeneratedBy().getDescription());
+            newCollection.setGeneratedBy(newGeneratedBy);
+        }
+
+        for(String keyword : getKeywords()) {
+            newCollection.getKeywords().add(keyword);
+        }
+
+        for(Creator c : getCreators()) {
+            newCollection.getCreators().add(c.fork());
+        }
+
+        for(Resource r : getResources()) {
+            newCollection.getResources().add(r.fork());
+        }
+
+        newCollection.setForkedFrom(this);
+
+        return newCollection;
     }
 
     public void updateFrom(VirtualCollection vc) {

@@ -98,7 +98,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
             VirtualCollection submitted_vc = SubmissionUtils.retrieveCollection(getSession());
             Long mergeWithCollectionId = SubmissionUtils.retrieveCollectionMergeId(getSession());
             if(submitted_vc != null) {
-                logger.info("Processing submitted collection. id="+submitted_vc.getId());
+                logger.info("Processing cached collection. id="+submitted_vc.getId());
                 if(mergeWithCollectionId == null) {
                     logger.info("New collection");
                     vc = submitted_vc;

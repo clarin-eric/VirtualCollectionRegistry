@@ -13,7 +13,6 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.impl.client.HttpClients;
 import org.apache.http.util.EntityUtils;
-import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -47,7 +46,6 @@ public class VirtualCollectionRegistryReferenceValidatorImpl implements VirtualC
     private final CloseableHttpClient httpclient;
     private RequestConfig requestConfig;
 
-    //@SpringBean
     @Autowired
     private VcrConfig vcrConfig;
 
@@ -57,7 +55,7 @@ public class VirtualCollectionRegistryReferenceValidatorImpl implements VirtualC
         this.requestConfig = RequestConfig
                                 .custom()
                                 .setConnectionRequestTimeout(1000)
-                                .setMaxRedirects(1)
+                                .setMaxRedirects(5)
                                 .build();
     }
 
@@ -82,7 +80,7 @@ public class VirtualCollectionRegistryReferenceValidatorImpl implements VirtualC
                         analyze(job);
                         job.setState(ReferencesEditor.State.DONE);
                     } catch (Exception ex) {
-                        job.setState(ReferencesEditor.State.FAILED);
+                        job.setState(ReferencesEditor.State.FAILED, ex.getMessage());
                     }
                 }
             }
@@ -133,67 +131,64 @@ public class VirtualCollectionRegistryReferenceValidatorImpl implements VirtualC
     private void analyze(final VirtualCollectionRegistryReferenceValidationJob job) throws IOException {
         logger.trace("Analyzing: {}", job.getReference().getRef());
 
-        try {
-            HttpGet httpget = new HttpGet(job.getReference().getRef());
-            httpget.setConfig(requestConfig);
+        HttpGet httpget = new HttpGet(job.getReference().getRef());
+        httpget.setConfig(requestConfig);
 
-            logger.trace("Executing request " + httpget.getRequestLine());
+        logger.trace("Executing request " + httpget.getRequestLine());
 
-            // Create a custom response handler
-            ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-                @Override
-                public String handleResponse(final HttpResponse response) throws ClientProtocolException, IOException {
-                    for(Header h : response.getHeaders("Content-Type")) {
-                        logger.trace(h.getName() + " - " + h.getValue());
+        // Create a custom response handler
+        ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+            @Override
+            public String handleResponse(final HttpResponse response) throws ClientProtocolException, IOException {
+                for(Header h : response.getHeaders("Content-Type")) {
+                    logger.trace(h.getName() + " - " + h.getValue());
 
-                        String[] parts = h.getValue().split(";");
-                        String mediaType = parts[0];
+                    String[] parts = h.getValue().split(";");
+                    String mediaType = parts[0];
 
-                        logger.trace("Media-Type="+mediaType);
-                        if(parts.length > 1) {
-                            String p = parts[1].trim();
-                            if(p.startsWith("charset=")) {
-                                logger.trace("Charset="+p.replaceAll("charset=", ""));
-                            } else if(p.startsWith("boundary=")) {
-                                logger.trace("Boundary="+p.replaceAll("boundary=", ""));
-                            }
+                    logger.trace("Media-Type="+mediaType);
+                    if(parts.length > 1) {
+                        String p = parts[1].trim();
+                        if(p.startsWith("charset=")) {
+                            logger.trace("Charset="+p.replaceAll("charset=", ""));
+                        } else if(p.startsWith("boundary=")) {
+                            logger.trace("Boundary="+p.replaceAll("boundary=", ""));
                         }
-
-                        job.getReference().setMimetype(mediaType);
                     }
 
-                    for(Header h : response.getHeaders("Content-Length")) {
-                        logger.trace(h.getName() + " - " + h.getValue());
-                    }
-
-                    job.setHttpResponseReason(response.getStatusLine().getReasonPhrase());
-                    job.setHttpResponseCode(response.getStatusLine().getStatusCode());
-
-                    int status = response.getStatusLine().getStatusCode();
-                    if (status >= 200 && status < 300) {
-                        HttpEntity entity = response.getEntity();
-                        job.getReference().setCheck("HTTP "+status+"/"+response.getStatusLine().getReasonPhrase());
-                        String body = entity != null ? EntityUtils.toString(entity) : null;
-
-                        if(body != null) {
-                            for(ReferenceParser parser : parsers) {
-                                if(parser.parse(body, job)) {
-                                    break; //exit loop if the parser processed the reference
-                                }
-                            }
-                        }
-
-                        return body;
-                    } else {
-                        throw new ClientProtocolException("Unexpected response status: " + status);
-                    }
+                    job.getReference().setMimetype(mediaType);
                 }
-            };
 
-            String responseBody = httpclient.execute(httpget, responseHandler);
-        } finally {
-            httpclient.close();
-        }
+                for(Header h : response.getHeaders("Content-Length")) {
+                    logger.trace(h.getName() + " - " + h.getValue());
+                }
+
+                job.setHttpResponseReason(response.getStatusLine().getReasonPhrase());
+                job.setHttpResponseCode(response.getStatusLine().getStatusCode());
+
+                int status = response.getStatusLine().getStatusCode();
+                if (status >= 200 && status < 300) {
+                    HttpEntity entity = response.getEntity();
+                    job.getReference().setCheck("HTTP "+status+"/"+response.getStatusLine().getReasonPhrase());
+                    String body = entity != null ? EntityUtils.toString(entity) : null;
+
+                    if(body != null) {
+                        for(ReferenceParser parser : parsers) {
+                            if(parser.parse(body, job)) {
+                                break; //exit loop if the parser processed the reference
+                            }
+                        }
+                    }
+
+                    return body;
+                } else {
+                    throw new ClientProtocolException("Unexpected response status: HTTP " + status + " - " + response.getStatusLine().getReasonPhrase());
+                }
+            }
+        };
+
+        //String responseBody = httpclient.execute(httpget, responseHandler);
+        httpclient.execute(httpget, responseHandler);
     }
 
     public interface ReferenceParser {

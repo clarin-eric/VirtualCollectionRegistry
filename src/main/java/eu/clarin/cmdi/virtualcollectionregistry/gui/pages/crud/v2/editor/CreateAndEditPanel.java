@@ -503,6 +503,8 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
             return;
         }
 
+        //TODO: migrate this logic into VirtualCollection. Maybe re-use fork() or clone()?
+
         VirtualCollection newCollection = new VirtualCollection();
         newCollection.setCreationDate(new Date()); // FIXME: get date from GUI?
 
@@ -543,6 +545,8 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
             genBy.setQuery(new GeneratedByQuery(intQueryProfile.getObject(), intQueryParameters.getObject()));
             newCollection.setGeneratedBy(genBy);
         }
+
+        newCollection.setForkedFrom(this.originalCollection.getForkedFrom());
 
         fireEvent(
                 new AbstractEvent<VirtualCollection>(

@@ -17,6 +17,9 @@ import org.jetbrains.annotations.NotNull;
 @Table(name = "creator")
 public class Creator implements Serializable, IdentifiedEntity, Orderable, Comparable {
 
+    private final static String UNKOWN_FAMILY_NAME = "Unkown";
+    private final static String UNKOWN_GIVEN_NAME = "Unkown";
+
     private static final long serialVersionUID = 1L;
 
     @Id
@@ -169,6 +172,41 @@ public class Creator implements Serializable, IdentifiedEntity, Orderable, Compa
         role = other.getRole();
         telephone = other.getTelephone();
         website = other.getWebsite();
+    }
+
+    /**
+     * Return a new creator with all fields, including the id deep copied
+     * @return
+     */
+    public Creator clone() {
+        Creator copy = fork();
+        copy.id = getId();
+        return copy;
+    }
+
+    /**
+     * Return a new creator with all fields except the id deep copied
+     * @return
+     */
+    public Creator fork() {
+        final Creator copy = new Creator();
+        if(getFamilyName() == null) {
+            copy.setFamilyName(UNKOWN_FAMILY_NAME);
+        } else {
+            copy.setFamilyName(getFamilyName());
+        }
+        if(getGivenName() == null) {
+            copy.setGivenName(UNKOWN_GIVEN_NAME);
+        } else {
+            copy.setGivenName(getGivenName());
+        }
+        copy.setTelephone(getTelephone());
+        copy.setRole(getRole());
+        copy.setAddress(getAddress());
+        copy.setEMail(getEMail());
+        copy.setDisplayOrder(getDisplayOrder());
+        copy.setWebsite(getWebsite());
+        return copy;
     }
 
     /**

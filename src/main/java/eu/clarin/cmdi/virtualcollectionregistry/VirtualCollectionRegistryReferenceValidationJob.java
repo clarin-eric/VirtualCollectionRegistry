@@ -78,6 +78,10 @@ public class VirtualCollectionRegistryReferenceValidationJob implements Serializ
         states.add(new JobState(newState));
     }
 
+    public synchronized void setState(ReferencesEditor.State newState, String data){
+        states.add(new JobState(newState, data));
+    }
+
     public Resource getReference() {
         return this.ref;
     }

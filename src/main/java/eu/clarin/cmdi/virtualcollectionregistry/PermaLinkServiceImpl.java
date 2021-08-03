@@ -35,4 +35,20 @@ public class PermaLinkServiceImpl implements PermaLinkService {
         }
         return String.format("%s/service/virtualcollections/%d", baseUri, collectionId);
     }
+
+    @Override
+    public String getCollectionDetailsUrl(VirtualCollection collection) {
+        return getCollectionDetailsUrl(collection.getId());
+    }
+
+    @Override
+    public String getCollectionDetailsUrl(Long collectionId) {
+        if(baseUri == null) {
+            throw new RuntimeException("baseUri cannot be null");
+        }
+        if(baseUri.endsWith("/")) {
+            baseUri = baseUri.substring(0, baseUri.length()-1);
+        }
+        return String.format("%s/details/%d", baseUri, collectionId);
+    }
 }

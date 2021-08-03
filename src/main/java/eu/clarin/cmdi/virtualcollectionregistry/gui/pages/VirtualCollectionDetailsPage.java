@@ -3,15 +3,11 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 import com.google.common.collect.Lists;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermissionException;
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.DateConverter;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.DetachableVirtualCollectionModel;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.*;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin.AdminPage;
-import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
-import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
-import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.CreateAndEditVirtualCollectionPageV2;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmissionUtils;
+import eu.clarin.cmdi.virtualcollectionregistry.model.*;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Type;
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.RestUtils;
@@ -32,6 +28,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.authorization.UnauthorizedActionException;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
@@ -40,6 +37,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.DataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.IColumn;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.markup.ComponentTag;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.link.AbstractLink;
@@ -248,10 +246,38 @@ public class VirtualCollectionDetailsPage extends BasePage {
         add(new DetailsStructuredMeatadataHeaderBehavior(model));
     }
 
+    private User owner = null;
+
     private  class HeaderPanel extends Panel {
         public HeaderPanel(String id, final IModel<VirtualCollection> model, Component componentToUpdate) {
             super(id, new CompoundPropertyModel<VirtualCollection>(model));
             add(new Label("name"));
+
+
+
+            WebMarkupContainer icon = new WebMarkupContainer("name_icon");
+            icon.add(new AttributeAppender("class", "fa fa-code-fork"));
+            add(icon);
+
+            ExternalLink forkedLink = new ExternalLink("forked_link", "#");
+
+            VirtualCollection forkedFrom = model.getObject().getForkedFrom();
+            IModel mdlForkedFrom = Model.of("");
+            if(forkedFrom != null) {
+                mdlForkedFrom.setObject(forkedFrom.getName());
+                String url = Application.get().getPermaLinkService().getCollectionDetailsUrl(forkedFrom);
+                forkedLink = new ExternalLink("forked_link", url);
+            }
+            forkedLink.add(new Label("forked_lbl_value", mdlForkedFrom));
+
+
+            WebMarkupContainer forked = new WebMarkupContainer("forked_container");
+            forked.add(new Label("forked_lbl","Forked from " ));
+            forked.add(forkedLink);
+            forked.setVisible(forkedFrom != null);
+            add(forked);
+
+            icon.setVisible(forkedFrom != null);
 
             //Toggle editor mode checkbox
             add(new AjaxCheckBox("btn_editor_mode", showAdvancedFields) {
@@ -264,17 +290,32 @@ public class VirtualCollectionDetailsPage extends BasePage {
             });
             add(new Label("btn_editor_mode_label", Model.of("Show advanced fields")));
 
+
+            try {
+                owner = new User(getUser());
+            } catch(Exception ex) {}
             add(CitationPanelFactory.getCitationPanel("citation", model));
             AjaxLink btnFork = new AjaxLink("btn_fork", new Model<String>("Cite")) {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
-
+                    VirtualCollection forkedCollection = model.getObject().fork(owner);
+                    SubmissionUtils.storeCollection((ApplicationSession)getSession(), forkedCollection);
+                    setResponsePage(CreateAndEditVirtualCollectionPageV2.class);
                 }
             } ;
-            btnFork.setVisible(Application.get().getConfig().isForkingEnabled());
+            btnFork.setVisible(Application.get().getConfig().isForkingEnabled() && owner != null);
+            btnFork.setEnabled(Application.get().getConfig().isForkingEnabled() && owner != null);
             UIUtils.addTooltip(btnFork, "Fork this collection");
             add(btnFork);
-        }    
+        }
+
+        protected PageParameters buildParamsFromMap(Map<String, Long> map) {
+            PageParameters params = new PageParameters();
+            for(String key : map.keySet()) {
+                params.add(key, map.get(key));
+            }
+            return params;
+        }
     }
     
     private class BasicTextPanel extends Panel {

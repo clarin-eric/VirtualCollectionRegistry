@@ -416,7 +416,7 @@ import org.slf4j.LoggerFactory;
                                      Creator existingAuthor = authors.get(i).data;
                                      if(existingAuthor.getId() == null && a.getId() == null) {
                                          if (existingAuthor.getFamilyName().equalsIgnoreCase(a.getFamilyName()) &&
-                                             existingAuthor.getGivenName().equalsIgnoreCase(a.getGivenName())) {
+                                             (existingAuthor.getGivenName() == null || existingAuthor.getGivenName().equalsIgnoreCase(a.getGivenName()))) {
                                              idx = i;
                                          }
                                      } else if(existingAuthor.getId() != null && a.getId() != null) {

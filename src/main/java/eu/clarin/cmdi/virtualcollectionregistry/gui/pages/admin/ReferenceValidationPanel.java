@@ -65,6 +65,7 @@ public class ReferenceValidationPanel extends Panel {
         columns.add(new ColumnHttpStatus(new Model("Response"), "httpResponseCode", "httpResponseCode"));
         columns.add(new PropertyColumn(new Model("State"), "state.state", "state.state"));
         columns.add(new ColumnTimestamp(new Model("Timestamp"), "state.timestamp", "state.timestamp"));
+        columns.add(new PropertyColumn(new Model("Data"), "state.data", "state.data"));
 
         provider = new ValidationJobProvider(validator);
         final DataTable<VirtualCollectionRegistryReferenceValidationJob, String> table =

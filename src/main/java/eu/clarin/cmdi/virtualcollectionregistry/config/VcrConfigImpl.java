@@ -37,7 +37,7 @@ public class VcrConfigImpl implements VcrConfig {
     @Value("${eu.clarin.cmdi.vcr.validators.http.timeout:5000}")
     private int httpTimeout;
 
-    @Value("${eu.clarin.cmdi.vcr.validators.http.redirects:1}")
+    @Value("${eu.clarin.cmdi.vcr.validators.http.redirects:5}")
     private int httpRedirects;
 
     @Value("${eu.clarin.cmdi.vcr.lrs.endpoint:https://switchboard.clarin.eu/#/vcr}")

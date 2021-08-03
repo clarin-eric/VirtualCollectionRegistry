@@ -36,7 +36,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry, InitializingBean, DisposableBean {
 
-    private final static String REQUIRED_DB_VERSION = "1.5.0";
+    private final static String REQUIRED_DB_VERSION = "1.6.0";
 
     @Autowired
     private DataStore datastore; //TODO: replace with Spring managed EM?
@@ -182,13 +182,19 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             // fetch user, if user does not exist create new
             User user = fetchUser(em, principal);
             if (user == null) {
-                user = new User(principal.getName());
+                user = new User(principal);
                 em.persist(user);
             }
             vc.setOwner(user);
 
             // force new collection to be private
             vc.setState(VirtualCollection.State.PRIVATE);
+
+            // force forked from collection to be in managed state
+            if(vc.getForkedFrom() != null) {
+                VirtualCollection forkedFromVc = retrieveVirtualCollection(vc.getForkedFrom().getId());
+                vc.setForkedFrom(forkedFromVc);
+            }
 
             // store virtual collection
             logger.debug("persisting new virtual collection (id={})", vc.getId());
@@ -441,22 +447,32 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
 
         logger.trace("retrieve virtual collection (id={})", id);
 
+        boolean closeTransaction = false; //If this is set to true, this method will fully manage the transaction cycle (open and commit or rollback)
         EntityManager em = datastore.getEntityManager();
-        try {            
-            em.getTransaction().begin();
+        try {
+            if(!em.getTransaction().isActive()) {
+                em.getTransaction().begin();
+                closeTransaction = true;
+            }
             VirtualCollection vc
                     = em.find(VirtualCollection.class, Long.valueOf(id));
-            em.getTransaction().commit();
+            if(closeTransaction) {
+                em.getTransaction().commit();
+            }
             if ((vc == null) || vc.isDeleted()) {
                 logger.debug("virtual collection (id={}) not found", id);
                 throw new VirtualCollectionNotFoundException(id);
             }
             return vc;
         } catch (VirtualCollectionRegistryException e) {
-            em.getTransaction().rollback();
+            if(closeTransaction) {
+                em.getTransaction().rollback();
+            }
             throw e;
         } catch (Exception e) {
-            em.getTransaction().rollback();
+            if(closeTransaction) {
+                em.getTransaction().rollback();
+            }
             logger.error("error while retrieving virtual collection", e);
             throw new VirtualCollectionRegistryException(
                     "error while retrieving virtual collection", e);
@@ -910,4 +926,5 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
     public VirtualCollectionRegistryReferenceValidator getReferenceValidator() {
         return referenceValidator;
     }
+
 } // class VirtualCollectionRegistry
