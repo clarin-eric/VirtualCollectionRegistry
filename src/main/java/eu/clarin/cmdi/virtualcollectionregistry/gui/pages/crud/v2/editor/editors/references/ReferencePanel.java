@@ -54,9 +54,14 @@ public class ReferencePanel extends Panel {
         divReason.add(new Label("reason_lbl", Model.of(reason == null ? "" : "Validation failed: "+reason)));
         divReason.setVisible(reason != null);
 
-
         WebMarkupContainer editorWrapper = new WebMarkupContainer("wrapper");
         editorWrapper.add(divReason);
+
+        if(state == ReferencesEditor.State.FAILED) {
+            editorWrapper.add(new AttributeAppender("class", "row reference-row failed-border"));
+        } else {
+            editorWrapper.add(new AttributeAppender("class", "row reference-row"));
+        }
 
         boolean analysing = false;
         if(state == ReferencesEditor.State.INITIALIZED || state == ReferencesEditor.State.ANALYZING) {
