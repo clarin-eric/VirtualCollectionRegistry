@@ -89,11 +89,20 @@ public class VirtualCollectionRegistryReferenceValidatorImpl implements VirtualC
     }
 
     @Override
-    public ReferencesEditor.State getState(String id) {
+    public VirtualCollectionRegistryReferenceValidationJob getJob(String id) {
         for(VirtualCollectionRegistryReferenceValidationJob job : jobs) {
             if(job.getId().equalsIgnoreCase(id)) {
-                return job.getState().getState();
+                return job;
             }
+        }
+        return null;
+    }
+
+    @Override
+    public ReferencesEditor.State getState(String id) {
+        VirtualCollectionRegistryReferenceValidationJob job = getJob(id);
+        if(job != null) {
+            return job.getState().getState();
         }
         return ReferencesEditor.State.FAILED;
     }

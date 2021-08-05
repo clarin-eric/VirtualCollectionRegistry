@@ -37,7 +37,7 @@ public class ReferencePanel extends Panel {
      * @param id    The wicket component id
      * @param ref 
      */
-    public ReferencePanel(String id, final Resource ref, final ReferencesEditor.State state, Model<Boolean> advancedEditorMode, long maxDisplayOrder) {
+    public ReferencePanel(String id, final Resource ref, final ReferencesEditor.State state, String reason, Model<Boolean> advancedEditorMode, long maxDisplayOrder) {
         super(id);
         long displayOrder = ref.getDisplayOrder();
 
@@ -49,8 +49,14 @@ public class ReferencePanel extends Panel {
         if(ref.getDescription() != null) {
             descriptionModel.setObject(ref.getDescription());
         }
-        
+
+        WebMarkupContainer divReason = new WebMarkupContainer("reason");
+        divReason.add(new Label("reason_lbl", Model.of(reason == null ? "" : "Validation failed: "+reason)));
+        divReason.setVisible(reason != null);
+
+
         WebMarkupContainer editorWrapper = new WebMarkupContainer("wrapper");
+        editorWrapper.add(divReason);
 
         boolean analysing = false;
         if(state == ReferencesEditor.State.INITIALIZED || state == ReferencesEditor.State.ANALYZING) {

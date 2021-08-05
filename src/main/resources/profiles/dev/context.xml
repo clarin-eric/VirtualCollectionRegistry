@@ -152,6 +152,7 @@
                value="alpha" 
                override="false" />
 
+    <!-- 1.7.0 -->
     <Parameter name="eu.clarin.cmdi.vcr.forking.enabled"
                value="true"
                override="false" />

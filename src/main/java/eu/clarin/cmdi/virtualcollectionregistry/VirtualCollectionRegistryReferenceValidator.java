@@ -12,4 +12,5 @@ public interface VirtualCollectionRegistryReferenceValidator {
     ReferencesEditor.State getState(String id);
     void setState(String id, ReferencesEditor.State state);
     List<VirtualCollectionRegistryReferenceValidationJob> getJobs();
+    VirtualCollectionRegistryReferenceValidationJob getJob(String id);
 }

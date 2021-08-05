@@ -232,7 +232,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         this.authorsEditor = new AuthorsEditor("authors", "Authors");
         addRequiredField(this.authorsEditor, new Mode[]{Mode.SIMPLE, Mode.ADVANCED});
 
-        this.referencesEditor = new ReferencesEditor(registry,"references", "Resources", advancedEditorModeModel, vExtensional);
+        this.referencesEditor = new ReferencesEditor("references", "Resources", advancedEditorModeModel, vExtensional);
         addRequiredField(this.referencesEditor, new Mode[]{Mode.SIMPLE, Mode.ADVANCED});
 
         addOptionalField(

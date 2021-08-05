@@ -5,6 +5,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryReferenceValidationJob;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.CancelEventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.EventHandler;
@@ -55,8 +57,6 @@ public class ReferencesEditor extends ComposedField {
 
     private boolean currentValidation = false;
     private boolean previousValidation = false;
-
-    private final VirtualCollectionRegistry registry;
 
     private final String editorId = UUID.randomUUID().toString();
 
@@ -117,9 +117,8 @@ public class ReferencesEditor extends ComposedField {
         }
     }
 
-    public ReferencesEditor(VirtualCollectionRegistry registry, String id, String label, Model<Boolean> advancedEditorMode, VisabilityUpdater updater) {
+    public ReferencesEditor(String id, String label, Model<Boolean> advancedEditorMode, VisabilityUpdater updater) {
         super(id, "References", null, updater);
-        this.registry = registry;
         setOutputMarkupId(true);
         Component componentToUpdate = this;
 
@@ -162,6 +161,7 @@ public class ReferencesEditor extends ComposedField {
             @Override
             public void handleSaveEvent(AjaxRequestTarget target) {
                 //Reset state so this reference is rescanned
+                VirtualCollectionRegistry registry = Application.get().getRegistry();
                 registry.getReferenceValidator().setState(references.get(edit_index).getInternalId(), State.INITIALIZED);
                 edit_index = -1;
                 editor.setVisible(false);
@@ -193,8 +193,19 @@ public class ReferencesEditor extends ComposedField {
             @Override
             protected void populateItem(ListItem item) {
                 EditableResource ref = (EditableResource)item.getModel().getObject();
+                final VirtualCollectionRegistry registry = Application.get().getRegistry();
+                VirtualCollectionRegistryReferenceValidationJob job =
+                        registry.getReferenceValidator().getJob(ref.getInternalId());
                 State state = registry.getReferenceValidator().getState(ref.getInternalId());
-                ReferencePanel c = new ReferencePanel("pnl_reference", ref, state, advancedEditorMode, getMaxDisplayOrder());
+                String reason = null;
+                if(job != null && state == State.FAILED) {
+                    reason = job.getState().getData();
+                    logger.info("Reason: {}", reason);
+                } else {
+                    logger.info("No issue. job="+job+", state="+state);
+                }
+
+                ReferencePanel c = new ReferencePanel("pnl_reference", ref, state, reason, advancedEditorMode, getMaxDisplayOrder());
                 c.addMoveListEventHandler(new MoveListEventHandler() {
                     @Override
                     public void handleMoveUp(Long displayOrder, AjaxRequestTarget target) {
@@ -326,6 +337,7 @@ public class ReferencesEditor extends ComposedField {
     @Override
     protected void onRemove() {
         logger.info("Removing Reference editor");
+        VirtualCollectionRegistry registry = Application.get().getRegistry();
         for(EditableResource r : references) {
             registry.getReferenceValidator().removeReferenceValidationJob(r.getInternalId());
         }
@@ -371,6 +383,7 @@ public class ReferencesEditor extends ComposedField {
 
     private void addReferenceJob(EditableResource r) {
         references.add(r);
+        final VirtualCollectionRegistry registry = Application.get().getRegistry();
         registry.getReferenceValidator().addReferenceValidationJob(r.getInternalId(), r);
     }
     
@@ -435,6 +448,7 @@ public class ReferencesEditor extends ComposedField {
 
         //Check if any resource was not valid
         long errorCount = 0;
+        VirtualCollectionRegistry registry = Application.get().getRegistry();
         for(EditableResource r : references) {
             State state = registry.getReferenceValidator().getState(r.getInternalId());
             if(state != State.DONE) {
