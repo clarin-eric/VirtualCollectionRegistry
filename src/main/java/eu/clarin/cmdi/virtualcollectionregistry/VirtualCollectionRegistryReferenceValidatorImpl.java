@@ -128,6 +128,16 @@ public class VirtualCollectionRegistryReferenceValidatorImpl implements VirtualC
         return jobs;
     }
 
+    /**
+     * Try to fetch the reference via HTTP and set it's state based on the response.
+     *
+     * TODO: currently this runs in one thread, so resource validation might impact creation of collections (collection
+     * can only be saved  after validating all resources). Consider alternative approach with multiple threads doing the
+     * work in the background.
+     *
+     * @param job
+     * @throws IOException
+     */
     private void analyze(final VirtualCollectionRegistryReferenceValidationJob job) throws IOException {
         logger.trace("Analyzing: {}", job.getReference().getRef());
 
