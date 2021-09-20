@@ -1,5 +1,6 @@
 #!/usr/bin/env bash
 
+local_instance="http://localhost:8080/vcr"
 alpha_instance="https://alpha-collections.clarin.eu"
 beta_instance="https://beta-collections.clarin.eu"
 prod_instance="https://collections.clarin.eu"
@@ -107,6 +108,7 @@ function test {
   assertHttpStatusCodeFollowRedirect "${instance}" "/service/v1/collections/1005" "application/json" "403"
 }
 
+local=0
 alpha=0
 beta=0
 production=0
@@ -121,6 +123,9 @@ case $key in
     -b|--beta)
         beta=1
         ;;
+    -l|--local)
+        local=1
+        ;;
     -p|--production)
         production=1
         ;;
@@ -132,6 +137,9 @@ esac
 shift # past argument or value
 done
 
+if [ "${local}" == "1" ]; then
+  test "${local_instance}"
+fi
 if [ "${alpha}" == "1" ]; then
   test "${alpha_instance}"
 fi

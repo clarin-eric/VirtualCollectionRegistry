@@ -50,9 +50,9 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
 
     private final ModalConfirmDialog modal;
 
-//    private final PrivateCollectionsManager provider;
-
     private VirtualCollection vc = null;;
+
+    private Long originalCollectionId;
 
     /**
      * Create a new virtual collection
@@ -73,9 +73,6 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
         this(params.get(PARAM_VC_ID).toLong(), null);
     }
 
-    private Long originalCollectionId;
-
-
     /**
      * Based on the supplied id either create a new collection (id = null or id does not return a collection)
      * or edit an existing collection.
@@ -85,22 +82,46 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
      * @throws VirtualCollectionRegistryException
      */
     public CreateAndEditVirtualCollectionPageV2(Long id, final Page previousPage) throws VirtualCollectionRegistryException {
-        this.originalCollectionId = id; //if null we are creating a new collection, otherwise an existing collection is being updated
-        logger.info("Collection id = {}", id);
+        this.originalCollectionId = id;
+
+        //if null we are creating a new collection, otherwise an existing collection is being editing (might require a new version)
+        logger.debug(id == null ? "Creating a new collection (id is null)" : "Editing collection with id = {}", id);
         if(id != null) {
-            vc = vcr.retrieveVirtualCollection(id);
-            if (vc != null) {
-                this.checkAccess(vc);
+            //Editing existing collection
+            VirtualCollection existingCollection = vcr.retrieveVirtualCollection(id);
+            if (existingCollection != null) {
+                this.checkAccess(existingCollection);
+            }
+
+            //Bump version if this is a public collection
+            VirtualCollection.State state = existingCollection.getState();
+            if (state == VirtualCollection.State.PUBLIC || state == VirtualCollection.State.PUBLIC_PENDING ||
+                state == VirtualCollection.State.PUBLIC_FROZEN || state == VirtualCollection.State.PUBLIC_FROZEN_PENDING) {
+                logger.debug("Editing a public collection, rolling over to a new version");
+                //Create a new version
+                VirtualCollection newVersionCollection = existingCollection.clone(existingCollection.getOwner());
+                newVersionCollection.setState(VirtualCollection.State.PRIVATE);
+                newVersionCollection.setParent(existingCollection);
+                vcr.createVirtualCollection(getUser(), newVersionCollection);
+
+                //Update the parent
+                existingCollection.setChild(newVersionCollection);
+                vcr.updateVirtualCollection(getUser(), originalCollectionId, existingCollection);
+
+                vc = newVersionCollection; //Activate the new version
+            } else {
+                vc = existingCollection; //Activate the existing collection
             }
         }
 
+        //Not editing a collection, check if a submitted collection is available
         if(vc == null) {
             VirtualCollection submitted_vc = SubmissionUtils.retrieveCollection(getSession());
             Long mergeWithCollectionId = SubmissionUtils.retrieveCollectionMergeId(getSession());
             if(submitted_vc != null) {
-                logger.info("Processing cached collection. id="+submitted_vc.getId());
+                logger.debug("Processing cached collection. id="+submitted_vc.getId());
                 if(mergeWithCollectionId == null) {
-                    logger.info("New collection");
+                    logger.debug("New collection");
                     vc = submitted_vc;
                     //Check if any of the properties require updating
                     if(vc.getOwner() == null) {
@@ -109,13 +130,11 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
                         vc.getCreators().add(new Creator(p.getName(), ""));
                     }
                 } else {
-                    logger.info("Merge with collection id =" +mergeWithCollectionId);
+                    logger.debug("Merge with collection id =" +mergeWithCollectionId);
                     vc = vcr.retrieveVirtualCollection(mergeWithCollectionId);
                     vc.merge(submitted_vc);
                     originalCollectionId = vc.getId();
                 }
-
-                //this.submissionMode = true;
             }
         }
 

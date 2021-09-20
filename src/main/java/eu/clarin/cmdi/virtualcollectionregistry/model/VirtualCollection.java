@@ -200,6 +200,22 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         this.forkedFrom = forkedFrom;
     }
 
+    public VirtualCollection getParent() {
+        return parent;
+    }
+
+    public void setParent(VirtualCollection parent) {
+        this.parent = parent;
+    }
+
+    public VirtualCollection getChild() {
+        return child;
+    }
+
+    public void setChild(VirtualCollection child) {
+        this.child = child;
+    }
+
     public static enum State {
         PRIVATE,
         PUBLIC_PENDING,
@@ -348,6 +364,20 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
             optional = true)
     @JoinColumn(name = "forked_from", nullable = true)
     private VirtualCollection forkedFrom;
+
+    @OneToOne(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            orphanRemoval = true,
+            optional = true)
+    @JoinColumn(name = "parent", nullable = true)
+    private VirtualCollection parent;
+
+    @OneToOne(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            orphanRemoval = true,
+            optional = true)
+    @JoinColumn(name = "child", nullable = true)
+    private VirtualCollection child;
 
     public VirtualCollection() {
         super();
@@ -577,6 +607,9 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
      */
     public VirtualCollection clone(User user) {
         VirtualCollection clone = fork(user);
+        if(clone.identifiers == null) {
+            clone.identifiers = new HashSet<>();
+        }
         clone.setId(getId());
         clone.setState(getState());
         clone.setOwner(getOwner());
