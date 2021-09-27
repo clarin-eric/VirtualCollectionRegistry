@@ -51,7 +51,7 @@ public class VcrConfigImpl implements VcrConfig {
     @Value("${eu.clarin.cmdi.vcr.forking.enabled:false}")
     private boolean forkingEnabled;
 
-        @Override
+    @Override
     public String getSwitchboardEndpoint() {
         if (lrsEndpoint.endsWith("/")) {
             return lrsEndpoint.substring(0, lrsEndpoint.length()-1);

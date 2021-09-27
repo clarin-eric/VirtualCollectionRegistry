@@ -1,6 +1,6 @@
 docker/vcr_mysql_dump.sql
-docker/ca
-docker/cert
+docker/bak/ca
+docker/bak/cert
 *.iml
 .idea
 nbactions.xml
@@ -18,7 +18,7 @@ nbactions.xml
 docker/server.jks
 docker/vcr-admin.conf
 docker/vcr/
-docker/webapps
+docker/bak/webapps
 tmp
 service-doc
 service-doc/swagger.yaml
