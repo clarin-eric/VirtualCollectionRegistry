@@ -40,7 +40,7 @@
                value="CLARIN Virtual Collection Registry" />
 
     <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.base_uri"
-               value="http://localhost:8080/"
+               value="http://localhost:8080/vcr"
                override="false"/>
 
     <!-- Configure pid providers configuration -->
@@ -152,7 +152,9 @@
                value="alpha" 
                override="false" />
 
+    <!-- 1.7.0 -->
     <Parameter name="eu.clarin.cmdi.vcr.forking.enabled"
                value="true"
                override="false" />
+
 </Context>

@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields;
 
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 

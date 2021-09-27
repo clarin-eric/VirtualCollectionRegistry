@@ -2,6 +2,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermissionException;
+import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin.AdminPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1.CreateAndEditVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.CreateAndEditVirtualCollectionPageV2;
@@ -122,12 +123,11 @@ public class BasePage extends WebPage {
             add(new Include("creditsSnippet", piwikConfig.getSnippetCredits()));
         }
         
-        String mode = piwikConfig.getMode();
         WebMarkupContainer badge = new WebMarkupContainer("badge");
-        badge.setVisible(mode.equalsIgnoreCase("beta") || mode.equalsIgnoreCase("alpha"));
-        if (mode.equalsIgnoreCase("beta")) {
+        badge.setVisible(!vcrConfig.isProductionMode());
+        if (vcrConfig.isBetaMode()) {
             badge.add(new AttributeModifier("class", "vcr-badge beta"));
-        } else if(mode.equalsIgnoreCase("alpha")) {
+        } else if(vcrConfig.isAlphaMode()) {
             badge.add(new AttributeModifier("class", "vcr-badge alpha"));
         }
         add(badge);
@@ -285,7 +285,9 @@ public class BasePage extends WebPage {
                 && ( //only allow editing of private & public
                 !(vc.getState() == VirtualCollection.State.PRIVATE || vc.getState() == VirtualCollection.State.PUBLIC)
                 // only allow editing by the owner
-                || vc.getOwner() == null || !(vc.getOwner().equalsPrincipal(getUser()) || vc.getOwner().getName().equalsIgnoreCase("anonymous")) )) {
+                || vc.getOwner() == null || !(vc.getOwner().equalsPrincipal(getUser()) || vc.getOwner().getName().equalsIgnoreCase("anonymous")) )
+
+        ) {
             logger.warn("User {} attempts to edit virtual collection {} with state {} owned by {}", new Object[]{getUser().getName(), vc.getId(), vc.getState(), vc.getOwner().getName()});
             throw new UnauthorizedInstantiationException(CreateAndEditVirtualCollectionPage.class);
         }

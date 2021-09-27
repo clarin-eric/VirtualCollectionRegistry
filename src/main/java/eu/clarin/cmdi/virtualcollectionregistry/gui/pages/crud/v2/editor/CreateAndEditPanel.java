@@ -2,6 +2,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor;
 
 import java.util.*;
 
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.ActionablePanel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.authors.AuthorsEditor;
@@ -83,8 +84,8 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
      * @param id 
      * @param dialog 
      */
-    public CreateAndEditPanel(String id, ModalConfirmDialog dialog) {
-        this(id, null, dialog);
+    public CreateAndEditPanel(VirtualCollectionRegistry registry, String id, ModalConfirmDialog dialog) {
+        this(registry, id, null, dialog);
     }
     
     /**
@@ -95,7 +96,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
      * @param collection 
      * @param dialog 
      */
-    public CreateAndEditPanel(String id, VirtualCollection collection, ModalConfirmDialog dialog) {
+    public CreateAndEditPanel(VirtualCollectionRegistry registry, String id, VirtualCollection collection, ModalConfirmDialog dialog) {
         super(id);
         //this.dialog = dialog;
         this.setOutputMarkupId(true);
@@ -502,6 +503,8 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
             return;
         }
 
+        //TODO: migrate this logic into VirtualCollection. Maybe re-use fork() or clone()?
+
         VirtualCollection newCollection = new VirtualCollection();
         newCollection.setCreationDate(new Date()); // FIXME: get date from GUI?
 
@@ -542,6 +545,8 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
             genBy.setQuery(new GeneratedByQuery(intQueryProfile.getObject(), intQueryParameters.getObject()));
             newCollection.setGeneratedBy(genBy);
         }
+
+        newCollection.setForkedFrom(this.originalCollection.getForkedFrom());
 
         fireEvent(
                 new AbstractEvent<VirtualCollection>(

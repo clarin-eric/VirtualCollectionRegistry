@@ -3,6 +3,8 @@ package eu.clarin.cmdi.virtualcollectionregistry;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
+import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD;
+
 import java.security.Principal;
 import java.util.List;
 
@@ -90,4 +92,7 @@ public interface VirtualCollectionRegistry {
     User createUserIfNotExists(Principal principal)  throws VirtualCollectionRegistryException;
 
     String getDbVersion() throws VirtualCollectionRegistryException;
+
+    VirtualCollectionRegistryReferenceValidator getReferenceValidator();
+
 } // interface VirtualCollectionRegistry

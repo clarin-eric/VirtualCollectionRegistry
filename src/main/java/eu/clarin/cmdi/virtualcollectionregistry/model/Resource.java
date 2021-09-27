@@ -203,18 +203,37 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
         label = resource.getLabel();
         description = resource.getDescription();
     }
-    
-    public Resource getCopy() {
-        final Resource copy = new Resource();
-        copy.id = id;
-        copy.setRef(ref);
-        copy.setType(type);
-        copy.setLabel(label);
-        copy.setDescription(description);
+
+    /**
+     * Return a new resource with all fields, including the id deep copied
+     * @return
+     */
+    public Resource clone() {
+        final Resource copy = fork();
+        copy.id = getId();
         return copy;
     }
-    
-    
+
+    /**
+     * Return a new resource with all fields except the id deep copied
+     * @return
+     */
+    public Resource fork() {
+        final Resource copy = new Resource();
+        copy.setMimetype(getMimetype());
+        copy.setCheck(getCheck());
+        copy.setType(getType());
+        copy.setRef(getRef());
+        copy.setLabel(getLabel());
+        copy.setDescription(getDescription());
+        copy.setDisplayOrder(getDisplayOrder());
+        copy.setOrigin(getOrigin());
+        copy.setOriginalQuery(getOriginalQuery());
+        if(merged) {
+            copy.setMerged();
+        }
+        return copy;
+    }
     
     
     @Override
@@ -310,4 +329,7 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
         this.originalQuery = originalQuery;
     }
 
+    public void setValuesFrom(Resource other) {
+
+    }
 } // class Resource

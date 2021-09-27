@@ -307,6 +307,25 @@ table.collectionsTable td.name {
     min-width: 200px;
 }
 
+table.validators {
+    max-width: 100%;
+    margin-bottom: 20px;
+}
+
+table.validators td.ref {
+    width: 100%;
+    min-width: 200px;
+}
+
+table.validators td {
+    padding-left: 5px;
+    padding-right: 5px;
+}
+
+h1.main-stat {
+    size: 2em;
+}
+
 .collapsing {
     -webkit-transition: none;
     transition: none;
@@ -327,7 +346,10 @@ table.collectionsTable td.name {
     margin-bottom: 2px;
 }
 
-
+.btngroup-spacing-horizontal {
+    margin-left: 2px;
+    margin-right: 2px;
+}
 
 
 
@@ -369,7 +391,9 @@ td.reference div div {
 
 
 
-
+.details-subtitle {
+    size: 0.8em;
+}
 
 .normal-font {
     
@@ -533,6 +557,10 @@ lds-dual-ring {
     color: #721c24;
 }
 
+.failed-border {
+    border-color: #721c24;
+}
+
 .icon-waiting {
     color: #383d41;
 }
@@ -598,4 +626,8 @@ h1, h2, h3, h4, h5, h6 {
 .api-key-table-cell-padding {
     padding-left: 10px;
     padding-right: 10px;
+}
+
+.stacktrace {
+    list-style-type: none;
 }

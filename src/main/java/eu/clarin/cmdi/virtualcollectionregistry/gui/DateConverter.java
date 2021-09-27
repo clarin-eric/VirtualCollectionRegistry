@@ -5,7 +5,6 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
-import java.sql.Date;
 import java.text.ParseException;
 import java.util.Locale;
 
@@ -24,9 +23,24 @@ public class DateConverter implements IConverter {
     private final static Logger logger = LoggerFactory.getLogger(DateConverter.class);
     private static final FastDateFormat DF = FastDateFormat.getInstance("yyyy-MM-dd");
 
+    public static final FastDateFormat DF_TIMESTAMP = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
+
+    private final FastDateFormat activeDf;
+
+    public DateConverter() {
+        activeDf = DF;
+    }
+
+    public DateConverter(FastDateFormat customDf) {
+        activeDf = customDf;
+    }
+
     @Override
     public String convertToString(Object o, Locale locale) {
-        return DF.format((Date) o);
+        if(o instanceof java.sql.Date) {
+            return DF.format((java.util.Date) o);
+        }
+        return DF.format(o);
     }
 
     @Override

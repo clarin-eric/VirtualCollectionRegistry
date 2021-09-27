@@ -10,6 +10,8 @@ INSERT INTO `config` (`key`, `value`) VALUES ('db_version_check', @current_value
 
 -- Apply updates
 ALTER TABLE virtualcollection ADD COLUMN `published` datetime NULL;
+-- ALTER TABLE virtualcollection MODIFY `published` datetime;
+
 
 -- Update current database config value
 UPDATE `config` SET `value` = '1.5.0' WHERE `key` = 'db_version';

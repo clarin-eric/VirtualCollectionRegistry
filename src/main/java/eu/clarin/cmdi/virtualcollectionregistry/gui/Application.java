@@ -17,8 +17,19 @@ import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebApplication;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
+import org.apache.wicket.core.request.handler.PageProvider;
+import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
+import org.apache.wicket.request.IRequestHandler;
+import org.apache.wicket.request.Request;
+import org.apache.wicket.request.Response;
+import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
+import org.apache.wicket.request.cycle.IRequestCycleListener;
+import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.cycle.RequestCycleListenerCollection;
+import org.apache.wicket.request.http.WebRequest;
+import org.apache.wicket.request.http.WebResponse;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.apache.wicket.validation.validator.StringValidator;
 import org.slf4j.Logger;
@@ -77,7 +88,7 @@ public class Application extends AuthenticatedWebApplication {
     
         logger.info("Initialising VCR web application");
         if (vcrConfig != null) {
-            vcrConfig.logConfig(); //write current configuration to logger
+            logger.info(vcrConfig.logConfig()); //write current configuration to logger
         } else {
             logger.error("Failed to inject VcrConfig");
             throw new RuntimeException("Failed to start the Virtual Collection Registry. Failed to inject VCR configuration");
@@ -85,6 +96,23 @@ public class Application extends AuthenticatedWebApplication {
 
         initSpring();
 
+        getRequestCycleListeners().add(new AbstractRequestCycleListener() {
+            public IRequestHandler onException(RequestCycle cycle, Exception ex) {
+                //return null;
+
+                /*
+                Optional<AjaxRequestTarget> target = cycle.find(AjaxRequestTarget.class);
+                //this part stopped working since it return Optional.empty(), because active RequestHandler
+                //and RequestHandlerScheduledAfterCurrent are both null
+                if (target.isPresent()) {
+                    return target.get();
+                }
+                */
+                //IPageRequestHandler last = PageRequestHandlerTracker.getLastHandler(RequestCycle.get());
+                //WebPage page = (WebPage) (last.getPage());
+                return new RenderPageRequestHandler(new PageProvider(new ErrorPage(ex)));
+            }
+        });
         getApplicationSettings().setPageExpiredErrorPage(HOME_PAGE_CLASS);
         getMarkupSettings().setDefaultMarkupEncoding("utf-8");
         getRequestCycleSettings().setResponseRequestEncoding("utf-8");
@@ -163,5 +191,6 @@ public class Application extends AuthenticatedWebApplication {
     }
 
     public PermaLinkService getPermaLinkService() { return permaLinkService; }
-    
+
+
 } // class Application

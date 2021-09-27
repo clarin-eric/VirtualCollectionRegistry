@@ -36,19 +36,27 @@ import org.springframework.stereotype.Service;
 @Service
 public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry, InitializingBean, DisposableBean {
 
-    private final static String REQUIRED_DB_VERSION = "1.5.0";
+    private final static String REQUIRED_DB_VERSION = "1.6.0";
 
     @Autowired
     private DataStore datastore; //TODO: replace with Spring managed EM?
+
     @Autowired
     @Qualifier("creation")
     private VirtualCollectionValidator validator;
+
     @Autowired
     private AdminUsersService adminUsersService;
+
     @Autowired
     private VirtualCollectionRegistryMaintenanceImpl maintenance;
+
     @Autowired
-    private VirtualCollectionRegistryReferenceCheckImpl referenceCheck;
+    private VirtualCollectionRegistryReferenceCheckImpl referenceCheck; //Checks collections for invalid references
+
+    @Autowired
+    private VirtualCollectionRegistryReferenceValidator referenceValidator; //Checks references for validity and gathers additional info for the reference
+
     @Autowired
     private CreatorService creatorService;
     
@@ -89,7 +97,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             long t2 = System.nanoTime();
             double tDelta = (t2-t1)/1000000.0;
             logger.debug(String.format("Initialized CreatorService in %.2fms; loaded %d creators.", tDelta, creatorService.getSize()));
-            
+            //Initialise schedulers
             maintenanceExecutor.scheduleWithFixedDelay(new Runnable() {
                 @Override
                 public void run() {
@@ -103,6 +111,14 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                     referenceCheck.perform(new Date().getTime());
                 }
             }, 1, 1, TimeUnit.DAYS);
+            maintenanceExecutor.scheduleWithFixedDelay(new Runnable() {
+                @Override
+                public void run() {
+                    logger.trace("Running reference validation");
+                    referenceValidator.perform(new Date().getTime());
+                }
+            }, 1, 1, TimeUnit.SECONDS);
+
             this.intialized.set(true);
             logger.info("virtual collection registry successfully intialized");
         } catch (RuntimeException e) {
@@ -166,13 +182,19 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             // fetch user, if user does not exist create new
             User user = fetchUser(em, principal);
             if (user == null) {
-                user = new User(principal.getName());
+                user = new User(principal);
                 em.persist(user);
             }
             vc.setOwner(user);
 
             // force new collection to be private
             vc.setState(VirtualCollection.State.PRIVATE);
+
+            // force forked from collection to be in managed state
+            if(vc.getForkedFrom() != null) {
+                VirtualCollection forkedFromVc = retrieveVirtualCollection(vc.getForkedFrom().getId());
+                vc.setForkedFrom(forkedFromVc);
+            }
 
             // store virtual collection
             logger.debug("persisting new virtual collection (id={})", vc.getId());
@@ -425,22 +447,32 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
 
         logger.trace("retrieve virtual collection (id={})", id);
 
+        boolean closeTransaction = false; //If this is set to true, this method will fully manage the transaction cycle (open and commit or rollback)
         EntityManager em = datastore.getEntityManager();
-        try {            
-            em.getTransaction().begin();
+        try {
+            if(!em.getTransaction().isActive()) {
+                em.getTransaction().begin();
+                closeTransaction = true;
+            }
             VirtualCollection vc
                     = em.find(VirtualCollection.class, Long.valueOf(id));
-            em.getTransaction().commit();
+            if(closeTransaction) {
+                em.getTransaction().commit();
+            }
             if ((vc == null) || vc.isDeleted()) {
                 logger.debug("virtual collection (id={}) not found", id);
                 throw new VirtualCollectionNotFoundException(id);
             }
             return vc;
         } catch (VirtualCollectionRegistryException e) {
-            em.getTransaction().rollback();
+            if(closeTransaction) {
+                em.getTransaction().rollback();
+            }
             throw e;
         } catch (Exception e) {
-            em.getTransaction().rollback();
+            if(closeTransaction) {
+                em.getTransaction().rollback();
+            }
             logger.error("error while retrieving virtual collection", e);
             throw new VirtualCollectionRegistryException(
                     "error while retrieving virtual collection", e);
@@ -448,7 +480,6 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
     }
 
     public String getDbVersion() throws VirtualCollectionRegistryException {
-        logger.info("getDbVersion()");
         String dbVersion = null;
         EntityManager em = datastore.getEntityManager();
         try {
@@ -742,20 +773,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         EntityManager em = datastore.getEntityManager();
         try {
             em.getTransaction().begin();
-
-            // setup queries
             TypedQuery<String> q = em.createNamedQuery("VirtualCollection.findAllPublicOrigins", String.class);
-
             origins = q.getResultList();
-
-/*
-        for(VirtualCollection vc : results) {
-            logger.info("Authors for "+vc.getName());
-            for(String a : vc.getAuthors()) {
-                logger.info("\tAuthor: "+a);
-            }
-        }
-  */
         } catch (Exception e) {
             logger.error("error while enumerating virtual collections to get all origins", e);
         } finally {
@@ -901,6 +920,11 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
     
     public CreatorService getCreatorService() {
         return this.creatorService;
+    }
+
+    @Override
+    public VirtualCollectionRegistryReferenceValidator getReferenceValidator() {
+        return referenceValidator;
     }
 
 } // class VirtualCollectionRegistry

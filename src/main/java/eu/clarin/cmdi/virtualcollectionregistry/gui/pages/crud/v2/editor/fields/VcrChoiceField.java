@@ -5,12 +5,8 @@ import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormChoiceComponentUpdatingBehavior;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.markup.html.WebMarkupContainer;
-import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.RadioChoice;
 import org.apache.wicket.model.IModel;
-import org.apache.wicket.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,7 +33,7 @@ public class VcrChoiceField extends AbstractField {
     }
         
     @Override
-    protected AjaxFormComponentUpdatingBehavior getOnBlurUpdatingBehavior(final FieldComposition parent, final Component t) {
+    protected AjaxFormChoiceComponentUpdatingBehavior getOnBlurUpdatingBehavior(final FieldComposition parent, final Component t) {
         return new AjaxFormChoiceComponentUpdatingBehavior() {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {

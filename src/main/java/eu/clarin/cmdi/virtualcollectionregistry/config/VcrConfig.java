@@ -30,6 +30,15 @@ public interface VcrConfig {
     public boolean isLogoutEnabled();
     public String getLocaleString();
     public Locale getLocale();
-    public void logConfig();
+    public String logConfig();
     public boolean isForkingEnabled();
+
+    public String getMode();
+    public boolean isProductionMode();
+    public boolean isBetaMode();
+    public boolean isAlphaMode();
+
+    public int getHttpTimeout();
+    public int getHttpRedirects();
+
 }

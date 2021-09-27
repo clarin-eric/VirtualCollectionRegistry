@@ -36,8 +36,7 @@ import org.springframework.stereotype.Component;
  */
 @Component
 public class VirtualCollectionRegistryReferenceCheckImpl implements VirtualCollectionRegistryReferenceCheck{
-    private static final Logger logger
-            = LoggerFactory.getLogger(VirtualCollectionRegistryReferenceCheckImpl.class);
+    private static final Logger logger = LoggerFactory.getLogger(VirtualCollectionRegistryReferenceCheckImpl.class);
     
     private final static String name = "Reference Link validity check";
     

@@ -416,7 +416,7 @@ import org.slf4j.LoggerFactory;
                                      Creator existingAuthor = authors.get(i).data;
                                      if(existingAuthor.getId() == null && a.getId() == null) {
                                          if (existingAuthor.getFamilyName().equalsIgnoreCase(a.getFamilyName()) &&
-                                             existingAuthor.getGivenName().equalsIgnoreCase(a.getGivenName())) {
+                                             (existingAuthor.getGivenName() == null || existingAuthor.getGivenName().equalsIgnoreCase(a.getGivenName()))) {
                                              idx = i;
                                          }
                                      } else if(existingAuthor.getId() != null && a.getId() != null) {
@@ -442,7 +442,7 @@ import org.slf4j.LoggerFactory;
              @Override
              protected void populateItem(ListItem item) {
                  Editable<Creator> object = (Editable<Creator>) item.getModel().getObject();
-                 logger.info("Authors ListView: {}, id={}, display order={}",
+                 logger.trace("Authors ListView: {}, id={}, display order={}",
                          object.getData().getPerson(),
                          object.getData().getId(),
                          object.getData().getDisplayOrder());

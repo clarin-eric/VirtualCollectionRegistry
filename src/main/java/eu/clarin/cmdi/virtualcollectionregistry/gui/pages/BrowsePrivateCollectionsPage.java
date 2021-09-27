@@ -12,6 +12,7 @@ public class BrowsePrivateCollectionsPage extends BasePage {
     private final static Logger logger = LoggerFactory.getLogger(BrowsePrivateCollectionsPage.class);
 
     public BrowsePrivateCollectionsPage() {
+
         final BrowseEditableCollectionsPanel pnl =
                 new BrowseEditableCollectionsPanel("collections", new PrivateCollectionsProvider(), getPageReference());
         pnl.setOutputMarkupId(true);

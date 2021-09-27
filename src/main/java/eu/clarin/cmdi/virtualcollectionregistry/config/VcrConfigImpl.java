@@ -29,7 +29,17 @@ import org.springframework.stereotype.Component;
 @Component
 public class VcrConfigImpl implements VcrConfig {
     private final static Logger logger = LoggerFactory.getLogger(VcrConfigImpl.class);
-    
+
+    public final static String MODE_PRODUCTION = "prod";
+    public final static String MODE_BETA = "beta";
+    public final static String MODE_ALPHA = "alpha";
+
+    @Value("${eu.clarin.cmdi.vcr.validators.http.timeout:5000}")
+    private int httpTimeout;
+
+    @Value("${eu.clarin.cmdi.vcr.validators.http.redirects:5}")
+    private int httpRedirects;
+
     @Value("${eu.clarin.cmdi.vcr.lrs.endpoint:https://switchboard.clarin.eu/#/vcr}")
     private String lrsEndpoint;
     
@@ -51,7 +61,9 @@ public class VcrConfigImpl implements VcrConfig {
     @Value("${eu.clarin.cmdi.vcr.forking.enabled:false}")
     private boolean forkingEnabled;
 
-    @Override
+    @Value("${eu.clarin.cmdi.vcr.mode:alpha}")
+    private String mode;
+
     public String getSwitchboardEndpoint() {
         if (lrsEndpoint.endsWith("/")) {
             return lrsEndpoint.substring(0, lrsEndpoint.length()-1);
@@ -100,13 +112,59 @@ public class VcrConfigImpl implements VcrConfig {
     }
 
     @Override
-    public void logConfig() {
+    public String getMode() { return mode; }
+
+    @Override
+    public boolean isProductionMode() { return mode != null && mode.equalsIgnoreCase(MODE_PRODUCTION); }
+
+    @Override
+    public boolean isBetaMode() { return mode != null && mode.equalsIgnoreCase(MODE_BETA); }
+
+    @Override
+    public boolean isAlphaMode() { return mode != null && mode.equalsIgnoreCase(MODE_ALPHA); }
+
+    @Override
+    public String logConfig() {
+            /*
         logger.info("Configuration:");
-        logger.info("  lrsEndpoint:          {}", lrsEndpoint);
-        logger.info("  lrsEnableResources:   {}", lrsEnableResources);
-        logger.info("  lrsEnableCollections: {}", lrsEnableCollections);
-        logger.info("  logoutMode:           {}", logoutMode);
-        logger.info("  logoutEnabled:        {}", logoutEnabled);
-        logger.info("  locale:               {}", locale);
+        logger.info("  logoutMode:             {}", logoutMode);
+        logger.info("  logoutEnabled:          {}", logoutEnabled);
+        logger.info("  locale:                 {}", locale);
+        logger.info("  mode:                   {}", mode);
+        logger.info("  forking enabled:        {}", forkingEnabled);
+        logger.info("  Switchboard integration:");
+        logger.info("    lrsEndpoint:          {}", lrsEndpoint);
+        logger.info("    lrsEnableResources:   {}", lrsEnableResources);
+        logger.info("    lrsEnableCollections: {}", lrsEnableCollections);
+        logger.info("  Validators");
+        logger.info("    http timeout:         {}", httpTimeout);
+        logger.info("    http redirects:       {}", httpRedirects);
+
+             */
+        StringBuilder result = new StringBuilder();
+        result.append("Configuration:\n");
+        result.append("  logoutMode:             "+logoutMode+"\n");
+        result.append("  logoutEnabled:          "+logoutEnabled+"\n");
+        result.append("  locale:                 "+locale+"\n");
+        result.append("  mode:                   "+mode+"\n");
+        result.append("  forking enabled:        "+forkingEnabled+"\n");
+        result.append("  Switchboard integration:\n");
+        result.append("    lrsEndpoint:          "+lrsEndpoint+"\n");
+        result.append("    lrsEnableResources:   "+lrsEnableResources+"\n");
+        result.append("    lrsEnableCollections: "+lrsEnableCollections+"\n");
+        result.append("  Validators\n");
+        result.append("    http timeout:         "+httpTimeout+"\n");
+        result.append("    http redirects:       "+httpRedirects+"\n");
+        return result.toString();
+    }
+
+    @Override
+    public int getHttpTimeout() {
+        return httpTimeout;
+    }
+
+    @Override
+    public int getHttpRedirects() {
+        return httpRedirects;
     }
 }
