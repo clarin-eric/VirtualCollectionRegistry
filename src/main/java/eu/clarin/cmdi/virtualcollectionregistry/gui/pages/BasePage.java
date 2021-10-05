@@ -3,9 +3,11 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermissionException;
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin.AdminPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1.CreateAndEditVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.CreateAndEditVirtualCollectionPageV2;
+import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.wicket.ClipboardJs;
 import eu.clarin.cmdi.wicket.PiwikTracker;
@@ -70,6 +72,8 @@ public class BasePage extends WebPage {
     private final static JavaScriptResourceReference INIT_JAVASCRIPT_REFERENCE = new JavaScriptResourceReference(BasePage.class, "BasePage.js");
 
     protected FeedbackPanel feedback;
+
+    protected User loggedInUser;
 
     protected BasePage(IModel<?> model) {
         super(model);
@@ -212,6 +216,10 @@ public class BasePage extends WebPage {
             AuthenticationHandler.handleAuthentication(getSession());
             //AuthenticationHandler.handleOptionalLogin(getSession(), this);
         }
+
+        loggedInUser = getDbUser();
+        logger.info("Logged in user="+loggedInUser);
+
         super.onBeforeRender();
     }
     
@@ -227,6 +235,21 @@ public class BasePage extends WebPage {
                 }
             }
         });
+    }
+
+    protected User getDbUser() {
+        Principal principal = getSession().getPrincipal();
+        if(principal == null) {
+            return null;
+        }
+
+        User user = null;
+        try {
+            user = Application.get().getRegistry().fetchUser(principal);
+        } catch(Exception ex) {
+            logger.error("Failed to fetch user for principal="+principal, ex);
+        }
+        return user;
     }
 
     protected boolean isSignedIn() {

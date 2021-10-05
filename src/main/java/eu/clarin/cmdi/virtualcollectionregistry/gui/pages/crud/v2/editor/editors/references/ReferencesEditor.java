@@ -201,9 +201,9 @@ public class ReferencesEditor extends ComposedField {
                 String reason = null;
                 if(job != null && state == State.FAILED) {
                     reason = job.getState().getData();
-                    logger.info("Reason: {}", reason);
+                    logger.trace("Reason: {}", reason);
                 } else {
-                    logger.info("No issue. job="+job+", state="+state);
+                    logger.trace("No issue. job="+job+", state="+state);
                 }
 
                 ReferencePanel c = new ReferencePanel("pnl_reference", ref, state, reason, advancedEditorMode, getMaxDisplayOrder());
@@ -337,7 +337,6 @@ public class ReferencesEditor extends ComposedField {
     
     @Override
     protected void onRemove() {
-        logger.info("Removing Reference editor");
         VirtualCollectionRegistry registry = Application.get().getRegistry();
         for(EditableResource r : references) {
             registry.getReferenceValidator().removeReferenceValidationJob(r.getInternalId());
@@ -486,7 +485,7 @@ public class ReferencesEditor extends ComposedField {
             }
         }
 
-        logger.info("direction={}, idx={}", direction, idx);
+        logger.trace("direction={}, idx={}", direction, idx);
 
         //Abort if the collection was not found
         if(idx == -1) {

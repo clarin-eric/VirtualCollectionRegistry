@@ -53,7 +53,7 @@ CREATE TABLE `config` (
 
 LOCK TABLES `config` WRITE;
 /*!40000 ALTER TABLE `config` DISABLE KEYS */;
-INSERT INTO `config` VALUES ('db_version','1.5.0'),('db_version_check','1.4.0');
+INSERT INTO `config` VALUES ('db_version','1.6.0'),('db_version_check','1.5.0');
 /*!40000 ALTER TABLE `config` ENABLE KEYS */;
 UNLOCK TABLES;
 

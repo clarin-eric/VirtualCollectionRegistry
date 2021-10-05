@@ -20,6 +20,8 @@ public interface VirtualCollectionRegistry {
      * @return identifier of the persisted collection
      * @throws VirtualCollectionRegistryException
      */
+    long createVirtualCollection(User user, VirtualCollection vc) throws VirtualCollectionRegistryException;
+
     long createVirtualCollection(Principal principal,
             VirtualCollection vc) throws VirtualCollectionRegistryException;
 
@@ -28,6 +30,9 @@ public interface VirtualCollectionRegistry {
 
     long deleteVirtualCollection(Principal principal, long id)
             throws VirtualCollectionRegistryException;
+
+    long newVirtualCollectionVersion(Principal principal, long parentId,
+            VirtualCollection newVersion) throws VirtualCollectionRegistryException;
 
     VirtualCollection.State getVirtualCollectionState(long id)
             throws VirtualCollectionRegistryException;

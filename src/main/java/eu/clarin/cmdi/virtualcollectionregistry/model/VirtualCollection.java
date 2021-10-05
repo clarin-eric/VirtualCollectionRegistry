@@ -43,40 +43,44 @@ import org.slf4j.LoggerFactory;
 @Entity
 @Table(name = "virtualcollection")
 @NamedQueries({
-        @NamedQuery(name = "VirtualCollection.findAllPublic",
-                    query = "SELECT c FROM VirtualCollection c " +
-                            "WHERE c.state = eu.clarin.cmdi." +
-                            "virtualcollectionregistry.model." +
-                            "VirtualCollection$State.PUBLIC " +
-                            "ORDER BY c.id"),
-        @NamedQuery(name = "VirtualCollection.countAllPublic",
-                    query = "SELECT COUNT(c) "+
-                            "FROM VirtualCollection c " +
-                            "WHERE "+
-                                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State.PUBLIC"+
-                                " OR "+
-                                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State.PUBLIC_FROZEN"),
-        @NamedQuery(name = "VirtualCollection.findAllPublicOrigins",
-                    query = "SELECT DISTINCT(c.origin) "+
-                           "FROM VirtualCollection c " +
-                            "WHERE ("+
-                                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State.PUBLIC" +
-                                " OR " +
-                                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State.PUBLIC_FROZEN" +
-                                ") AND " +
-                                "c.origin IS NOT NULL"),
-        @NamedQuery(name = "VirtualCollection.findByOwner",
-                    query = "SELECT c FROM VirtualCollection c " +
-                            "WHERE c.owner = :owner ORDER BY c.id"),
-        @NamedQuery(name = "VirtualCollection.countByOwner",
-                    query = "SELECT COUNT(c) FROM VirtualCollection c " +
-                            "WHERE c.owner = :owner"),
-        @NamedQuery(name = "VirtualCollection.findAllByState",
-                    query = "SELECT c FROM VirtualCollection c " +
-                            "WHERE c.state = :state AND c.dateModified < :date"),
-        @NamedQuery(name = "VirtualCollection.findAllByStates",
-                    query = "SELECT c FROM VirtualCollection c " +
-                            "WHERE c.state IN :states AND c.dateModified < :date")
+    @NamedQuery(name = "VirtualCollection.findAllPublic",
+        query =
+            "SELECT c FROM VirtualCollection c " +
+            "WHERE "+
+                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State.PUBLIC " +
+                " OR " +
+                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State.PUBLIC_FROZEN " +
+            "ORDER BY c.id"),
+    @NamedQuery(name = "VirtualCollection.countAllPublic",
+        query =
+            "SELECT COUNT(c) "+
+            "FROM VirtualCollection c " +
+            "WHERE "+
+                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State.PUBLIC"+
+                " OR "+
+                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State.PUBLIC_FROZEN"),
+    @NamedQuery(name = "VirtualCollection.findAllPublicOrigins",
+        query =
+            "SELECT DISTINCT(c.origin) "+
+            "FROM VirtualCollection c " +
+            "WHERE ("+
+                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State.PUBLIC" +
+                " OR " +
+                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State.PUBLIC_FROZEN" +
+                ") AND " +
+                "c.origin IS NOT NULL"),
+    @NamedQuery(name = "VirtualCollection.findByOwner",
+        query = "SELECT c FROM VirtualCollection c " +
+                "WHERE c.owner = :owner ORDER BY c.id"),
+    @NamedQuery(name = "VirtualCollection.countByOwner",
+        query = "SELECT COUNT(c) FROM VirtualCollection c " +
+                "WHERE c.owner = :owner"),
+    @NamedQuery(name = "VirtualCollection.findAllByState",
+        query = "SELECT c FROM VirtualCollection c " +
+                "WHERE c.state = :state AND c.dateModified < :date"),
+    @NamedQuery(name = "VirtualCollection.findAllByStates",
+        query = "SELECT c FROM VirtualCollection c " +
+                "WHERE c.state IN :states AND c.dateModified < :date")
 })
 public class VirtualCollection implements Serializable, IdentifiedEntity, PersistentIdentifieable, Citable {
     private static final long serialVersionUID = 1L;
@@ -605,18 +609,51 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
      * Return a new collection with all fields, including the id, state and persistent identifiers deep copied.
      * @return
      */
-    public VirtualCollection clone(User user) {
-        VirtualCollection clone = fork(user);
-        if(clone.identifiers == null) {
-            clone.identifiers = new HashSet<>();
-        }
-        clone.setId(getId());
+    public VirtualCollection clone() {
+        VirtualCollection clone = new VirtualCollection();
+
+        clone.setType(getType());
+        clone.setDatePublished(getDatePublished());
+        clone.setOrigin(getOrigin());
         clone.setState(getState());
+        clone.setCreationDate(new Date());
         clone.setOwner(getOwner());
+        clone.setReproducibilityNotice(getReproducibilityNotice());
+        clone.setReproducibility(getReproducibility());
+        clone.setPurpose(getPurpose());
+        clone.setDescription(getDescription());
+        clone.setName(getName());
+        clone.setParent(getParent());
+        clone.setChild(getChild());
+
+        if(getGeneratedBy() == null) {
+            clone.setGeneratedBy(null);
+        } else {
+            GeneratedBy newGeneratedBy = new GeneratedBy();
+            newGeneratedBy.setURI(getGeneratedBy().getURI());
+            newGeneratedBy.setQuery(getGeneratedBy().getQuery());
+            newGeneratedBy.setDescription(getGeneratedBy().getDescription());
+            clone.setGeneratedBy(newGeneratedBy);
+        }
+
+        for(String keyword : getKeywords()) {
+            clone.getKeywords().add(keyword);
+        }
+
+        for(Creator c : getCreators()) {
+            clone.getCreators().add(c.fork());
+        }
+
+        for(Resource r : getResources()) {
+            clone.getResources().add(r.fork());
+        }
+
+        /*
         for(PersistentIdentifier id : getIdentifiers()) {
             PersistentIdentifier clonedId = new PersistentIdentifier(clone, id.getType(), id.getPrimary(), id.getIdentifier());
             clone.identifiers.add(clonedId);
         }
+         */
         return clone;
     }
 
@@ -625,44 +662,21 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
      * @return
      */
     public VirtualCollection fork(User user) {
-        VirtualCollection newCollection = new VirtualCollection();
-        newCollection.setType(getType());
-        newCollection.setDatePublished(null);
-        newCollection.setOrigin(getOrigin());
-        newCollection.setState(State.PRIVATE);
-        newCollection.setCreationDate(new Date());
-        newCollection.setOwner(user);
-        newCollection.setReproducibilityNotice(getReproducibilityNotice());
-        newCollection.setReproducibility(getReproducibility());
-        newCollection.setPurpose(getPurpose());
-        newCollection.setDescription(getDescription());
-        newCollection.setName(getName());
+        VirtualCollection fork = clone();
 
-        if(getGeneratedBy() == null) {
-            newCollection.setGeneratedBy(null);
-        } else {
-            GeneratedBy newGeneratedBy = new GeneratedBy();
-            newGeneratedBy.setURI(getGeneratedBy().getURI());
-            newGeneratedBy.setQuery(getGeneratedBy().getQuery());
-            newGeneratedBy.setDescription(getGeneratedBy().getDescription());
-            newCollection.setGeneratedBy(newGeneratedBy);
-        }
+        //Clear pids
+        fork.identifiers = new HashSet<>();
+        //Revert state to private
+        fork.setState(State.PRIVATE);
+        fork.setDatePublished(null);
+        //Update timestamps
+        fork.setCreationDate(new Date());
+        fork.setDateModified(new Date());
+        //Update other fields
+        fork.setOwner(user);
+        fork.setForkedFrom(this);
 
-        for(String keyword : getKeywords()) {
-            newCollection.getKeywords().add(keyword);
-        }
-
-        for(Creator c : getCreators()) {
-            newCollection.getCreators().add(c.fork());
-        }
-
-        for(Resource r : getResources()) {
-            newCollection.getResources().add(r.fork());
-        }
-
-        newCollection.setForkedFrom(this);
-
-        return newCollection;
+        return fork;
     }
 
     public void updateFrom(VirtualCollection vc) {
@@ -753,6 +767,9 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
                 this.generatedBy.setQuery(query);
             }
         }
+
+        this.child = vc.getChild();
+        this.parent = vc.getParent();
     }
 
     @Override

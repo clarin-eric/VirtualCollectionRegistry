@@ -79,6 +79,9 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     private Model<Boolean> advancedEditorModeModel = Model.of(false);
     private Model<Boolean> toggleHelpModeModel = Model.of(false);
 
+    IModel<String> lbl = Model.of("");
+    WebMarkupContainer pnlVersion;
+
     /**
      * Create a new virtual collection
      * @param id 
@@ -159,6 +162,17 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
                 componentToUpdate.setVisible(visible);
             };
         };
+
+
+        pnlVersion = new WebMarkupContainer("pnl-version");
+        pnlVersion.add(new Label("pnl-version-lbl", lbl));
+        if(collection != null && collection.getParent() != null) {
+            lbl.setObject("This is a new version of "+collection.getParent().getName());
+            pnlVersion.setVisible(true);
+        } else {
+            pnlVersion.setVisible(false);
+        }
+        add(pnlVersion);
 
         addRequiredField(
             new VcrTextField("name", "Name", "New collection name", nameModel, v),
@@ -443,6 +457,12 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
             intDescription.setObject(c.getGeneratedBy().getDescription());
         }
 
+
+        if(c.getParent() != null) {
+            lbl.setObject("This is a new version of "+c.getParent().getName());
+            pnlVersion.setVisible(true);
+        }
+
         //redo initial validation
         validate();
     }
@@ -546,7 +566,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
             newCollection.setGeneratedBy(genBy);
         }
 
-        newCollection.setForkedFrom(this.originalCollection.getForkedFrom());
+        newCollection.setForkedFrom(this.originalCollection != null ? this.originalCollection.getForkedFrom() : null);
 
         fireEvent(
                 new AbstractEvent<VirtualCollection>(

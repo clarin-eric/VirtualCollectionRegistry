@@ -53,6 +53,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
     private VirtualCollection vc = null;;
 
     private Long originalCollectionId;
+    private Long parentCollectionId;
 
     /**
      * Create a new virtual collection
@@ -84,6 +85,9 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
     public CreateAndEditVirtualCollectionPageV2(Long id, final Page previousPage) throws VirtualCollectionRegistryException {
         this.originalCollectionId = id;
 
+        loggedInUser = getDbUser();
+        logger.info("Logged in user="+loggedInUser);
+
         //if null we are creating a new collection, otherwise an existing collection is being editing (might require a new version)
         logger.debug(id == null ? "Creating a new collection (id is null)" : "Editing collection with id = {}", id);
         if(id != null) {
@@ -99,16 +103,12 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
                 state == VirtualCollection.State.PUBLIC_FROZEN || state == VirtualCollection.State.PUBLIC_FROZEN_PENDING) {
                 logger.debug("Editing a public collection, rolling over to a new version");
                 //Create a new version
-                VirtualCollection newVersionCollection = existingCollection.clone(existingCollection.getOwner());
+                VirtualCollection newVersionCollection = existingCollection.clone();
                 newVersionCollection.setState(VirtualCollection.State.PRIVATE);
                 newVersionCollection.setParent(existingCollection);
-                vcr.createVirtualCollection(getUser(), newVersionCollection);
-
-                //Update the parent
-                existingCollection.setChild(newVersionCollection);
-                vcr.updateVirtualCollection(getUser(), originalCollectionId, existingCollection);
 
                 vc = newVersionCollection; //Activate the new version
+                parentCollectionId = existingCollection.getId();
             } else {
                 vc = existingCollection; //Activate the existing collection
             }
@@ -171,12 +171,17 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
                     case SAVE:
                         logger.trace("Saving collection, mode="+originalCollectionId==null ? "create" : "update");
                         try {
-                            if(originalCollectionId == null) {
+                            if(originalCollectionId == null && parentCollectionId == null) { //create
                                 Application
-                                    .get()
-                                    .getRegistry()
-                                    .createVirtualCollection(event.getPrincipal(), event.getData());
-                            } else {
+                                        .get()
+                                        .getRegistry()
+                                        .createVirtualCollection(event.getPrincipal(), event.getData());
+                            } else if(originalCollectionId != null && parentCollectionId != null) { //new version
+                                Application
+                                        .get()
+                                        .getRegistry()
+                                        .newVirtualCollectionVersion(event.getPrincipal(), parentCollectionId, event.getData());
+                            } else { //edit / update
                                 Application
                                     .get()
                                     .getRegistry()
