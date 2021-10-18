@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.table.CollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.RestUtils;
 import eu.clarin.cmdi.wicket.components.citation.CitationPanelFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.PublishedCollectionsProvider;
@@ -52,26 +53,31 @@ public class BrowsePublicCollectionsPage extends BasePage {
         RestUtils.checkRestApiRedirection((HttpServletRequest)getRequest().getContainerRequest(), redirectLocation);
 
         final PageReference reference = getPageReference();
-        final VirtualCollectionTable table
-                = new VirtualCollectionTable("collectionsTable", new PublishedCollectionsProvider(), false, false) {
-                    @Override
-                    protected Panel createActionColumn(String componentId,
-                            IModel<VirtualCollection> model) {
-                        return new ActionsPanel(componentId, model);
-                    }
+        final CollectionsProvider provider = new PublishedCollectionsProvider();
+        if(provider.size() <= 0) {
+            add(new NoCollectionsPanel("collectionsTable"));
+        } else {
+            final VirtualCollectionTable table
+                    = new VirtualCollectionTable("collectionsTable", provider, false, false) {
+                @Override
+                protected Panel createActionColumn(String componentId,
+                                                   IModel<VirtualCollection> model) {
+                    return new ActionsPanel(componentId, model);
+                }
 
-                    @Override
-                    protected Panel createActionPanel(String componentId,
-                            IModel<VirtualCollection> model) {
-                        return new ActionsPanel(componentId, model);
-                    }
-                    
-                    @Override
-                    protected PageReference getPageReference() {
-                        return reference;
-                    }
-                };
-        add(table);
+                @Override
+                protected Panel createActionPanel(String componentId,
+                                                  IModel<VirtualCollection> model) {
+                    return new ActionsPanel(componentId, model);
+                }
+
+                @Override
+                protected PageReference getPageReference() {
+                    return reference;
+                }
+            };
+            add(table);
+        }
     }
 
     private void doDetails(AjaxRequestTarget target, IModel<VirtualCollection> vc) {
