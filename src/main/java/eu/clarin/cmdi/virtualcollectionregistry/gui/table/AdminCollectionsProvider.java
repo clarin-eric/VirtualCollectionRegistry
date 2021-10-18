@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.table;
 
+import eu.clarin.cmdi.virtualcollectionregistry.QueryFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.QueryOptions;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin.AdminPage;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
@@ -27,7 +28,7 @@ public class AdminCollectionsProvider extends CollectionsProvider {
     }
 
     @Override
-    protected void addSpaceFilter(QueryOptions.Filter filter) {
+    protected void addSpaceFilter(QueryFactory factory) {
         User user = userModel.getObject();
         if (user == null || user.getName().equalsIgnoreCase(AdminPage.PUBLIC_USER.getName())) {
             List<VirtualCollection.State> states = new LinkedList<>();
@@ -35,16 +36,10 @@ public class AdminCollectionsProvider extends CollectionsProvider {
             states.add(VirtualCollection.State.PUBLIC_FROZEN);
             states.add(VirtualCollection.State.ERROR);
             // select public collections
-            filter.add(QueryOptions.Property.VC_STATE,
-                    QueryOptions.Relation.IN,
-                    states);
-
+            factory.and(QueryOptions.Property.VC_STATE, QueryOptions.Relation.IN, states);
         } else {
             // select selected user collections
-            filter.add(QueryOptions.Property.VC_OWNER,
-                    QueryOptions.Relation.EQ,
-                    user.getName());
-
+            factory.and(QueryOptions.Property.VC_OWNER, QueryOptions.Relation.EQ, user.getName());
         }
     }
 

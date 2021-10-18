@@ -39,10 +39,43 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
+//"((c.parent IS NULL AND c.child is NULL) OR (c.parent IS NOT NULL AND c.child is NULL)) " +
+/*
+SELECT c.id,c.parent,c.child FROM virtualcollection c
+WHERE c.id IN (
+        SELECT c2.id FROM virtualcollection c2 WHERE c2.state IN (0,2,4) AND c2.owner_id = 28
+    )
+ORDER BY c.id
+ */
 @Entity
 @Table(name = "virtualcollection")
 @NamedQueries({
+    @NamedQuery(name = "VirtualCollection.find",
+        query =
+            "SELECT c FROM VirtualCollection c " +
+            "WHERE " +
+                "c.id IN ("+
+                    "SELECT max(c2.id) FROM VirtualCollection c2 WHERE c2.state IN (:vc_state) AND c2.owner.name LIKE :vc_owner GROUP BY c2.root"+
+                ")" +
+            "ORDER BY c.id"
+    ),
+    @NamedQuery(name = "VirtualCollection.findCount",
+        query =
+            "SELECT COUNT(c) FROM VirtualCollection c " +
+            "WHERE "+
+                "c.id IN ("+
+                    "SELECT max(c2.id) FROM VirtualCollection c2 WHERE c2.state IN (:vc_state) AND c2.owner.name LIKE :vc_owner GROUP BY c2.root"+
+                ")" +
+            "ORDER BY c.id"
+    ),
+    @NamedQuery(name = "VirtualCollection.findOrigins",
+        query =
+            "SELECT DISTINCT(c.origin) FROM VirtualCollection c " +
+            "WHERE "+
+                "c.id IN ("+
+                    "SELECT max(c2.id) FROM VirtualCollection c2 WHERE c2.state IN (:vc_state) AND c2.owner.name LIKE :vc_owner GROUP BY c2.root"+
+                ") AND " +
+                "c.origin IS NOT NULL"),
     @NamedQuery(name = "VirtualCollection.findAllPublic",
         query =
             "SELECT c FROM VirtualCollection c " +
@@ -220,6 +253,14 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         this.child = child;
     }
 
+    public VirtualCollection getRoot() {
+        return root;
+    }
+
+    public void setRoot(VirtualCollection root) {
+        this.root = root;
+    }
+
     public static enum State {
         PRIVATE,
         PUBLIC_PENDING,
@@ -382,6 +423,13 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
             optional = true)
     @JoinColumn(name = "child", nullable = true)
     private VirtualCollection child;
+
+    @OneToOne(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            orphanRemoval = true,
+            optional = true)
+    @JoinColumn(name = "original", nullable = true)
+    private VirtualCollection root;
 
     public VirtualCollection() {
         super();
@@ -625,6 +673,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         clone.setName(getName());
         clone.setParent(getParent());
         clone.setChild(getChild());
+        clone.setRoot(getRoot());
 
         if(getGeneratedBy() == null) {
             clone.setGeneratedBy(null);
@@ -918,4 +967,17 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         this.origin = origin;
     }
 
+    public List<VirtualCollection> getParentsAsList() {
+        List<VirtualCollection> parents = new ArrayList<>();
+        addParentToList(parents, this);
+        return parents;
+    }
+
+    private void addParentToList( List<VirtualCollection> parents, VirtualCollection vc) {
+        VirtualCollection parent = vc.getParent();
+        if(parent != null) {
+            parents.add(parent);
+            addParentToList(parents, parent);
+        }
+    }
 } // class VirtualCollection

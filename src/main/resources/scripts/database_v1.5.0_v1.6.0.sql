@@ -12,6 +12,7 @@ INSERT INTO `config` (`key`, `value`) VALUES ('db_version_check', @current_value
 ALTER TABLE virtualcollection ADD COLUMN `parent` bigint(20) NULL;
 ALTER TABLE virtualcollection ADD COLUMN `child` bigint(20) NULL;
 ALTER TABLE virtualcollection ADD COLUMN `latest` bigint(20) NULL;
+ALTER TABLE virtualcollection ADD COLUMN `original` bigint(20) NULL;
 ALTER TABLE virtualcollection ADD COLUMN `forked_from` bigint(20) NULL;
 
 -- Update current database config value

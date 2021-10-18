@@ -85,8 +85,8 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
     public CreateAndEditVirtualCollectionPageV2(Long id, final Page previousPage) throws VirtualCollectionRegistryException {
         this.originalCollectionId = id;
 
-        loggedInUser = getDbUser();
-        logger.info("Logged in user="+loggedInUser);
+//        loggedInUser = getDbUser();
+//        logger.info("Logged in user="+loggedInUser);
 
         //if null we are creating a new collection, otherwise an existing collection is being editing (might require a new version)
         logger.debug(id == null ? "Creating a new collection (id is null)" : "Editing collection with id = {}", id);
@@ -106,6 +106,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
                 VirtualCollection newVersionCollection = existingCollection.clone();
                 newVersionCollection.setState(VirtualCollection.State.PRIVATE);
                 newVersionCollection.setParent(existingCollection);
+                newVersionCollection.setRoot(existingCollection.getRoot());
 
                 vc = newVersionCollection; //Activate the new version
                 parentCollectionId = existingCollection.getId();

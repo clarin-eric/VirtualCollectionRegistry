@@ -42,7 +42,8 @@ public abstract class VirtualCollectionTable extends Panel {
             columns.add(new ColumnProcessing(this));
         }
         columns.add(new ColumnType(this));
-        columns.add(new ColumnCreated(this));
+        columns.add(new ColumnCreated(this, "column.created", "Created", "created", "dateCreated"));
+        columns.add(new ColumnCreated(this, "column.modified", "Modified", "modified", "dateModified"));
         columns.add(new ColumnActions(this));
 
         // setup table

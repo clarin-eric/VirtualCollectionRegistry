@@ -6,6 +6,8 @@ import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulato
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
@@ -15,20 +17,24 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.link.AbstractLink;
 import org.apache.wicket.model.Model;
-
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.data.MutableDataSet;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
+import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.List;
 import java.util.Map;
 
 @SuppressWarnings("serial")
 final class ColumnName extends AbstractColumn<VirtualCollection, String> {
-    
+
+    private static Logger logger = LoggerFactory.getLogger(ColumnName.class);
+
     private final VirtualCollectionTable table;
 
     private final Map<Long, Boolean> collapsedState= new HashMap<>();
@@ -107,13 +113,47 @@ final class ColumnName extends AbstractColumn<VirtualCollection, String> {
                 }
             };
             citeButton.add(new Label("label", vc.getName()));
-            
+
+            VersionPanel pnlVersion = new VersionPanel("pnl_versions", vc);
+            pnlVersion.setVisible(vc.getParent() != null);
+            nameColumn.add(pnlVersion);
             nameColumn.add(toggleLink);
             nameColumn.add(citeButton);            
             nameColumn.add(details);
             add(nameColumn);
         }
     } // class ColumnName.ItemCell
+
+    private final class VersionPanel extends Panel {
+        public VersionPanel(String id, VirtualCollection vc) {
+            super(id);
+
+            final List<VirtualCollection> parents = vc.getParentsAsList();
+            ListView<VirtualCollection> versionListview = new ListView<VirtualCollection>("version_list", parents) {
+                @Override
+                protected void populateItem(ListItem<VirtualCollection> item) {
+                    final VirtualCollection vc = item.getModel().getObject();
+
+                    AjaxLink versionDetailsButton = new AjaxLink( "version_link", new Model<String>("") ){
+                        @Override
+                        public void onClick( AjaxRequestTarget target ) {
+                            if(vc.getState() != VirtualCollection.State.DELETED) {
+                                setResponsePage(
+                                        VirtualCollectionDetailsPage.class,
+                                        VirtualCollectionDetailsPage.createPageParameters(
+                                                vc,
+                                                table.getPageReference(),
+                                                VirtualCollectionDetailsPage.BackPage.PUBLIC_LISTING));
+                            }
+                        }
+                    };
+                    versionDetailsButton.add(new Label("version_link_label", vc.getName()));
+                    item.add(versionDetailsButton);
+                }
+            };
+            add(versionListview);
+        }
+    }
 
     ColumnName(VirtualCollectionTable table) {
         super(new ResourceModel("column.name", "Name"), "name");
@@ -131,4 +171,5 @@ final class ColumnName extends AbstractColumn<VirtualCollection, String> {
     public String getCssClass() {
         return "name";
     }
+
 } // class ColumnName

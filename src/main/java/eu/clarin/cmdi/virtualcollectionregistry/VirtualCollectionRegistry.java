@@ -58,17 +58,14 @@ public interface VirtualCollectionRegistry {
             String query, int offset, int count)
             throws VirtualCollectionRegistryException;
 
-    int getVirtualCollectionCount(QueryOptions options)
-            throws VirtualCollectionRegistryException;
+    int getVirtualCollectionCount(QueryFactory qryFactory) throws VirtualCollectionRegistryException;
+
+    List<VirtualCollection> getVirtualCollections(int first, int count, QueryFactory qryFactory) throws VirtualCollectionRegistryException;
 
     List<String> getOrigins();
 
     List<User> getUsers();
 
-    List<VirtualCollection> getVirtualCollections(
-            int first, int count, QueryOptions options)
-            throws VirtualCollectionRegistryException;
-    
     CreatorService getCreatorService();
 
 

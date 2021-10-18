@@ -1,9 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.table;
 
-import eu.clarin.cmdi.virtualcollectionregistry.QueryOptions;
+import eu.clarin.cmdi.virtualcollectionregistry.*;
 import eu.clarin.cmdi.virtualcollectionregistry.QueryOptions.Property;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.DetachableVirtualCollectionModel;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
@@ -49,7 +47,7 @@ public abstract class CollectionsProvider extends
     public long size() {
         try {
             final VirtualCollectionRegistry vcr = Application.get().getRegistry();
-            return vcr.getVirtualCollectionCount(getFilter());
+            return vcr.getVirtualCollectionCount(getQueryFactory());
         } catch (VirtualCollectionRegistryException e) {
             throw new WicketRuntimeException(e);
         }
@@ -60,7 +58,7 @@ public abstract class CollectionsProvider extends
             final VirtualCollectionRegistry vcr
                     = Application.get().getRegistry();
             final List<VirtualCollection> results
-                    = vcr.getVirtualCollections(0, (int)size(), getFilter());
+                    = vcr.getVirtualCollections(0, (int)size(), getQueryFactory());
             return results;
         } catch (VirtualCollectionRegistryException e) {
             throw new WicketRuntimeException(e);
@@ -74,79 +72,90 @@ public abstract class CollectionsProvider extends
             final VirtualCollectionRegistry vcr
                     = Application.get().getRegistry();
             final List<VirtualCollection> results
-                    = vcr.getVirtualCollections((int)first, (int)count, getFilter());
+                    = vcr.getVirtualCollections((int)first, (int)count, getQueryFactory());
             return results.iterator();
         } catch (VirtualCollectionRegistryException e) {
             throw new WicketRuntimeException(e);
         }
     }
 
-    private QueryOptions getFilter() {
-        QueryOptions options = new QueryOptions();
+    private QueryFactory getQueryFactory() {
+        QueryFactory factory = new QueryFactory();
 
-        QueryOptions.Filter filter = options.and();
         // add the filter that selects the public or private space
-        addSpaceFilter(filter);
+        addSpaceFilter(factory);
+
         // apply the filter state
         if (filterstate.hasName()) {
-            filter.add(QueryOptions.Property.VC_NAME,
+            /*filter.add(QueryOptions.Property.VC_NAME,
                     QueryOptions.Relation.EQ,
-                    filterstate.getNameWithWildcard());
+                    filterstate.getNameWithWildcard());*/
+            factory.and(QueryOptions.Property.VC_NAME, QueryOptions.Relation.EQ, filterstate.getNameWithWildcard());
         }
         if (filterstate.hasType()) {
-            filter.add(QueryOptions.Property.VC_TYPE,
+            /*filter.add(QueryOptions.Property.VC_TYPE,
                     QueryOptions.Relation.EQ,
-                    filterstate.getType());
+                    filterstate.getType());*/
+            factory.and(QueryOptions.Property.VC_TYPE, QueryOptions.Relation.EQ, filterstate.getType());
         }
         if (filterstate.hasState()) {
-            filter.add(QueryOptions.Property.VC_STATE,
+            /*filter.add(QueryOptions.Property.VC_STATE,
                     QueryOptions.Relation.IN,
-                    filterstate.getState());
+                    filterstate.getState());*/
+            factory.and(QueryOptions.Property.VC_STATE, QueryOptions.Relation.IN, filterstate.getState());
         }
         if (filterstate.hasDescription()) {
-            filter.add(QueryOptions.Property.VC_DESCRIPTION,
+            /*filter.add(QueryOptions.Property.VC_DESCRIPTION,
                     QueryOptions.Relation.EQ,
-                    filterstate.getDescriptionWithWildcard());
+                    filterstate.getDescriptionWithWildcard());*/
+            factory.and(QueryOptions.Property.VC_DESCRIPTION, QueryOptions.Relation.EQ, filterstate.getDescriptionWithWildcard());
         }
         if (filterstate.hasCreated()) {
-            filter.add(QueryOptions.Property.VC_CREATION_DATE,
+            /*filter.add(QueryOptions.Property.VC_CREATION_DATE,
                     filterstate.getCreatedRelation(),
-                    filterstate.getCreated());
+                    filterstate.getCreated());*/
+            factory.and(QueryOptions.Property.VC_CREATION_DATE, filterstate.getCreatedRelation(), filterstate.getCreated());
         }
         if (filterstate.hasOrigin()) {
-            filter.add(Property.VC_ORIGIN,
+            /*filter.add(Property.VC_ORIGIN,
                     QueryOptions.Relation.EQ,
-                    filterstate.getOrigin());
+                    filterstate.getOrigin());*/
+            factory.and(QueryOptions.Property.VC_ORIGIN, QueryOptions.Relation.EQ, filterstate.getOrigin());
         }
-        options.setFilter(filter);
 
         final SortParam<String> s = getSort();
         if (s != null) {
             final String p = s.getProperty();
-            Property property = null;
+            //Property property = null;
             if ("name".equals(p)) {
-                property = Property.VC_NAME;
+                //property = Property.VC_NAME;
+                factory.addSortProperty(Property.VC_NAME, s.isAscending());
             } else if ("type".equals(p)) {
-                property = Property.VC_TYPE;
+                //property = Property.VC_TYPE;
+                factory.addSortProperty(Property.VC_TYPE, s.isAscending());
             } else if ("state".equals(p)) {
-                property = Property.VC_STATE;
+                //property = Property.VC_STATE;
+                factory.addSortProperty(Property.VC_STATE, s.isAscending());
             } else if ("description".equals(p)) {
-                property = Property.VC_DESCRIPTION;
+                //property = Property.VC_DESCRIPTION;
+                factory.addSortProperty(Property.VC_DESCRIPTION, s.isAscending());
             } else if ("created".equals(p)) {
-                property = Property.VC_CREATION_DATE;
+                //property = Property.VC_CREATION_DATE;
+                factory.addSortProperty(Property.VC_CREATION_DATE, s.isAscending());
             }
-            if (property != null) {
-                options.addSortProperty(property, s.isAscending());
-            }
+            //if (property != null) {
+            //    options.addSortProperty(property, s.isAscending());
+            //}
         }
-        return options;
+
+        return factory;
     }
 
     /**
      * Adds a filter that limits the results to a specific collections space
      * ({@lit i.e.} the public space or a user's private work space
-     * @param filter 
+     * @param factory
      */
-    protected abstract void addSpaceFilter(QueryOptions.Filter filter);
+    protected abstract void addSpaceFilter(QueryFactory factory);
 
 } // class VirtualCollectionProvider

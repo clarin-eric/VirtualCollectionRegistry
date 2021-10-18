@@ -4,11 +4,11 @@ import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulato
 import org.apache.wicket.extensions.markup.html.repeater.data.table.HeaderlessColumn;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
-
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
 @SuppressWarnings("serial")
 final class ColumnActions extends HeaderlessColumn<VirtualCollection, String> {
+
     private final VirtualCollectionTable table;
 
     public ColumnActions(VirtualCollectionTable table) {
@@ -17,8 +17,7 @@ final class ColumnActions extends HeaderlessColumn<VirtualCollection, String> {
     }
 
     @Override
-    public void populateItem(Item<ICellPopulator<VirtualCollection>> item,
-            String componentId, IModel<VirtualCollection> model) {
+    public void populateItem(Item<ICellPopulator<VirtualCollection>> item, String componentId, IModel<VirtualCollection> model) {
         item.add(table.createActionColumn(componentId, model));
     }
 

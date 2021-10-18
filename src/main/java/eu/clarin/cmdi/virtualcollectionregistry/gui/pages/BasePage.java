@@ -217,7 +217,7 @@ public class BasePage extends WebPage {
             //AuthenticationHandler.handleOptionalLogin(getSession(), this);
         }
 
-        loggedInUser = getDbUser();
+        //loggedInUser = getDbUser();
         logger.info("Logged in user="+loggedInUser);
 
         super.onBeforeRender();

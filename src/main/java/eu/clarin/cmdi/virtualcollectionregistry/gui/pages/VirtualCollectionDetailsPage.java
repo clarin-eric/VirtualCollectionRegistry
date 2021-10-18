@@ -220,7 +220,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
         add(BootstrapPanelBuilder
                 .createCollapsiblePanel("general")
                 .setTitle("General")
-                .setBody(new GeneralPanel("body", model))
+                .setBody(new GeneralPanel("body", model, getPageReference()))
                 .build());
         
         add(BootstrapPanelBuilder
@@ -247,6 +247,35 @@ public class VirtualCollectionDetailsPage extends BasePage {
     }
 
     private User owner = null;
+
+    private final class VersionPanel extends Panel {
+        public VersionPanel(String id, List<VirtualCollection> parents, final PageReference reference) {
+            super(id);
+
+            add(new Label("label", Model.of("Other versions")));
+            ListView<VirtualCollection> versionListview = new ListView<VirtualCollection>("version_list", parents) {
+                @Override
+                protected void populateItem(ListItem<VirtualCollection> item) {
+                    final VirtualCollection vc = item.getModel().getObject();
+
+                    AjaxLink versionDetailsButton = new AjaxLink( "version_link", new Model<String>("") ){
+                        @Override
+                        public void onClick( AjaxRequestTarget target ) {
+                            if(vc.getState() != VirtualCollection.State.DELETED) {
+                                setResponsePage(
+                                        VirtualCollectionDetailsPage.class,
+                                        VirtualCollectionDetailsPage.createPageParameters(
+                                                vc, reference, VirtualCollectionDetailsPage.BackPage.PUBLIC_LISTING));
+                            }
+                        }
+                    };
+                    versionDetailsButton.add(new Label("version_link_label", vc.getName()));
+                    item.add(versionDetailsButton);
+                }
+            };
+            add(versionListview);
+        }
+    }
 
     private  class HeaderPanel extends Panel {
         public HeaderPanel(String id, final IModel<VirtualCollection> model, Component componentToUpdate) {
@@ -394,7 +423,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
     }
     
     private class GeneralPanel extends Panel {
-        public GeneralPanel(String id, final IModel<VirtualCollection> model) {
+        public GeneralPanel(String id, final IModel<VirtualCollection> model, final PageReference reference) {
             super(id);
 
             add(new BasicTextPanel("name", "Name", new Model(model.getObject().getName())));
@@ -419,6 +448,11 @@ public class VirtualCollectionDetailsPage extends BasePage {
             add(pidsListView);
 
             add(new BasicListPanel("keywords", "Keywords", model.getObject().getKeywords()).add(hideIfEmpty));
+
+            final List<VirtualCollection> parents = model.getObject().getParentsAsList();
+            VersionPanel pnl = new VersionPanel("versions", parents, reference);
+            pnl.setVisible(!parents.isEmpty());
+            add(pnl);
         }
     }
 

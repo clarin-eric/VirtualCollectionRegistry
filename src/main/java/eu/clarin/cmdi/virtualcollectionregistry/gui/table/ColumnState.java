@@ -6,17 +6,44 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColu
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
+import java.util.Date;
+import java.util.List;
+
 @SuppressWarnings("serial")
 final class ColumnState extends AbstractColumn<VirtualCollection, String> {
     private final EnumChoiceRenderer<VirtualCollection.State> renderer;
+
+    private final class ItemCell extends Panel {
+        public ItemCell(String id, IModel<VirtualCollection> model) {
+            super(id);
+
+            final VirtualCollection.State state = model.getObject().getState();
+            final String label = renderer.getDisplayValue(state).toString();
+            add(new Label("lbl_state", ColumnType.capitaliseFirstLetter(label)));
+
+            final List<VirtualCollection> parents = model.getObject().getParentsAsList();
+            add(new ListView<VirtualCollection>("list", parents) {
+                @Override
+                protected void populateItem(ListItem<VirtualCollection> item) {
+                    final VirtualCollection.State parentState = item.getModel().getObject().getState();
+                    final String parentLabel = renderer.getDisplayValue(parentState).toString();
+                    item.add(new Label("lbl_parent_state", ColumnType.capitaliseFirstLetter(parentLabel)));
+                }
+            });
+        }
+    }
+
 
     public static class StatePanel extends Panel {
         public StatePanel(String id, final String labelText, final String problemText) {
@@ -32,6 +59,8 @@ final class ColumnState extends AbstractColumn<VirtualCollection, String> {
             icon.add(new AttributeModifier("data-placement", "bottom"));
             icon.add(new AttributeModifier("title", Model.of(problemText)));
             add(icon);
+
+
         }
     }
 
@@ -50,8 +79,7 @@ final class ColumnState extends AbstractColumn<VirtualCollection, String> {
         if(state == VirtualCollection.State.ERROR) {
             item.add(new StatePanel(componentId, label, model.getObject().getProblem().toString()));
         } else {
-            Label lbl = new Label(componentId, label);
-            item.add(lbl);
+            item.add(new ItemCell(componentId, model));
         }
     }
 

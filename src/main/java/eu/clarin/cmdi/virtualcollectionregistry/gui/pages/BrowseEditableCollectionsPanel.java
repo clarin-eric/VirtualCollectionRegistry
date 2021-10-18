@@ -20,14 +20,14 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
 import org.apache.wicket.WicketRuntimeException;
-import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.migrate.StringResourceModelMigration;
 import org.apache.wicket.model.IModel;
@@ -35,7 +35,6 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.util.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -185,6 +184,21 @@ public class BrowseEditableCollectionsPanel extends Panel {
                     || editLink.isVisible() || publishLink.isVisible()
                     || deleteLink.isVisible();
             setVisible(isVisible);
+
+            final List<VirtualCollection> parents = model.getObject().getParentsAsList();
+            add(new ListView<VirtualCollection>("list", parents) {
+                @Override
+                protected void populateItem(ListItem<VirtualCollection> item) {
+                    final AjaxLink<VirtualCollection> detailsLink = new AjaxLink<VirtualCollection>("list_details", model) {
+                        @Override
+                        public void onClick(AjaxRequestTarget target) {
+                            doDetails(target, item.getModel());
+                        }
+                    };
+                    UIUtils.addTooltip(detailsLink, "View collection details");
+                    item.add(detailsLink);
+                }
+            });
         }
     } // class BrowsePrivateCollectionsPage.ActionsPanel
 

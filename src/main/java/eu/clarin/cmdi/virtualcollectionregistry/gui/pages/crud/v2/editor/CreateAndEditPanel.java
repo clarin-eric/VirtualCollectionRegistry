@@ -430,7 +430,6 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     }
 
     public void editCollection(VirtualCollection c) {
-        logger.info("edit collection: {}", c.getId());
         this.originalCollection = c; //TODO: deep clone?
         nameModel.setObject(c.getName());
         descriptionModel.setObject(c.getDescription());
@@ -490,7 +489,6 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     }
 
     private boolean validate() {
-        logger.debug("Validating collection");
         boolean valid = true;
         for(Field f : fields) {
             if(!f.validate()) {
@@ -500,11 +498,9 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
 
         //Update buttons
         if(valid) {
-            //enableSaveButton();
             btnSave.setEnabled(true);
             btnSave.add(AttributeModifier.remove("disabled"));
         } else {
-            //disableSaveButton();
             btnSave.setEnabled(false);
             btnSave.add(new AttributeModifier("disabled", "true"));
         }
@@ -567,6 +563,12 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         }
 
         newCollection.setForkedFrom(this.originalCollection != null ? this.originalCollection.getForkedFrom() : null);
+
+        if(originalCollection != null && originalCollection.getParent() != null) {
+            newCollection.setOwner(originalCollection.getOwner());
+            newCollection.setParent(originalCollection.getParent());
+            newCollection.setRoot(originalCollection.getRoot());
+        }
 
         fireEvent(
                 new AbstractEvent<VirtualCollection>(
