@@ -156,27 +156,45 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
      */
     @Override
     public long createVirtualCollection(Principal principal, VirtualCollection vc) throws VirtualCollectionRegistryException {
-        // fetch user
-        User user = null;
+        long result = -1;
         try {
-            user = fetchUser(principal);
-            //if user does not exist create new user
-            if (user == null) {
-                user = new User(principal);
-                EntityManager em = datastore.getEntityManager();
-                try {
-                    em.getTransaction().begin();
-                    em.persist(user);
-                    em.getTransaction().commit();
-                } catch(Exception ex) {
-                    em.getTransaction().rollback();
-                }
-            }
-        } catch (Exception ex) {
-            logger.error("Failed to fetch user for principal="+ principal.getName()+".", ex);
+            beginTransaction();
+            User user = getOrCreateUser(principal);
+            result = createVirtualCollection(user, vc);
+        } catch(Exception ex) {
+            rollbackActiveTransaction("Failed to fetch or create user for principal="+ principal.getName()+".", ex);
+        } finally {
+            commitActiveTransaction();
         }
+        return result;
+    }
 
-        return createVirtualCollection(user, vc);
+    private void trace(StackTraceElement[] trace) {
+        String msg = String.format("%s %s:%d",trace[1].getClassName(), trace[1].getMethodName(), trace[1].getLineNumber());
+        logger.trace(msg);
+    }
+
+    private void beginTransaction() {
+        final EntityManager em = datastore.getEntityManager();
+        trace(new Exception().getStackTrace());
+        if(!em.getTransaction().isActive()) {
+            em.getTransaction().begin();
+        }
+    }
+
+    private void commitActiveTransaction() {
+        final EntityManager em = datastore.getEntityManager();
+        if(em.getTransaction().isActive()) {
+            em.getTransaction().commit();
+        }
+    }
+
+    private void rollbackActiveTransaction(String msg, Exception cause) throws VirtualCollectionRegistryException {
+        final EntityManager em = datastore.getEntityManager();
+        if(em.getTransaction().isActive()) {
+            em.getTransaction().rollback();
+        }
+        throw new VirtualCollectionRegistryException(msg, cause);
     }
 
     public long createVirtualCollection(User user, VirtualCollection vc) throws VirtualCollectionRegistryException {
@@ -186,19 +204,19 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
 
         logger.debug("creating virtual collection");
 
-        EntityManager em = datastore.getEntityManager();
+        final EntityManager em = datastore.getEntityManager();
+        long result = -1;
         try {            
-            em.getTransaction().begin();
+            beginTransaction();
             createCollection(em, vc, user);
-            em.getTransaction().commit();
             logger.debug("virtual collection created (id={})", vc.getId());
-            return vc.getId();
+            result = vc.getId();
         } catch (Exception e) {
-            em.getTransaction().rollback();
-            logger.error("error while creating virtual collection", e);
-            throw new VirtualCollectionRegistryException(
-                    "error while creating virtual collection", e);
+            rollbackActiveTransaction("error while creating virtual collection", e);
+        } finally {
+            commitActiveTransaction();
         }
+        return result;
     }
 
     private long createCollection(EntityManager em, VirtualCollection vc, User user) throws VirtualCollectionRegistryException {
@@ -246,8 +264,9 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         return vc.getId();
     }
 
-    private User getOrCreateUser(EntityManager em, Principal principal) throws VirtualCollectionRegistryException {
-        User user = fetchUser(em, principal.getName());
+    private User getOrCreateUser(Principal principal) throws VirtualCollectionRegistryException {
+        final EntityManager em = datastore.getEntityManager();
+        User user = fetchUser(principal.getName());
         if (user == null) {
             user = new User(principal);
             em.persist(user);
@@ -280,8 +299,9 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
 
         EntityManager em = datastore.getEntityManager();
         try {
-            em.getTransaction().begin();
-            User user = getOrCreateUser(em, principal);
+            //em.getTransaction().begin();
+            beginTransaction();
+            User user = getOrCreateUser(principal);
             VirtualCollection newVersionClone = newVersion.clone();
             long newVcId = createCollection(em, newVersionClone, user);
             updateCollectionWithChild(em, principal, parentId, newVcId);
@@ -368,7 +388,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
 
         EntityManager em = datastore.getEntityManager();
         try {
-            em.getTransaction().begin();
+            //em.getTransaction().begin();
+            beginTransaction();
 
             if (!isAllowedToModify(principal, vc)) {
                 throw new VirtualCollectionRegistryPermissionException(
@@ -407,7 +428,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
 
         EntityManager em = datastore.getEntityManager();
         try {            
-            em.getTransaction().begin();
+            //em.getTransaction().begin();
+            beginTransaction();
             VirtualCollection vc = em.find(VirtualCollection.class,
                     Long.valueOf(id), LockModeType.PESSIMISTIC_WRITE);
             if ((vc == null) || vc.isDeleted()) {
@@ -456,7 +478,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
 
         EntityManager em = datastore.getEntityManager();
         try {            
-            em.getTransaction().begin();
+            //em.getTransaction().begin();
+            beginTransaction();
             VirtualCollection vc
                     = em.find(VirtualCollection.class, Long.valueOf(id));
             em.getTransaction().commit();
@@ -503,7 +526,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
 
         EntityManager em = datastore.getEntityManager();
         try {            
-            em.getTransaction().begin();
+            //em.getTransaction().begin();
+            beginTransaction();
             VirtualCollection vc = em.find(VirtualCollection.class,
                     Long.valueOf(id), LockModeType.PESSIMISTIC_WRITE);
             if ((vc == null) || vc.isDeleted()) {
@@ -573,7 +597,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         EntityManager em = datastore.getEntityManager();
         try {
             if(!em.getTransaction().isActive()) {
-                em.getTransaction().begin();
+                //em.getTransaction().begin();
+                beginTransaction();
                 closeTransaction = true;
             }
             VirtualCollection vc
@@ -605,7 +630,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         String dbVersion = null;
         EntityManager em = datastore.getEntityManager();
         try {
-            em.getTransaction().begin();
+            //em.getTransaction().begin();
+            beginTransaction();
             TypedQuery<DbConfig> q = em.createNamedQuery("DbConfig.findByKey", DbConfig.class);
             q.setParameter("keyName", "db_version");
             DbConfig result = q.getSingleResult();
@@ -647,7 +673,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         
         EntityManager em = datastore.getEntityManager();
         try {
-            em.getTransaction().begin();
+            //em.getTransaction().begin();
+            beginTransaction();
 
             // setup queries
             TypedQuery<Long> cq = null;
@@ -719,13 +746,14 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             List<VirtualCollection> results = null;
             long totalCount = 0;
 
-            em.getTransaction().begin();
+            //em.getTransaction().begin();
+            beginTransaction();
 
             /*
              * fetch user. if user is not found, he has not yet registered any
              * virtual collections, so just return an empty list
              */
-            User user = fetchUser(em, principal.getName());
+            User user = fetchUser(principal.getName());
             if (user != null) {
                 // setup queries
                 TypedQuery<Long> cq = null;
@@ -792,8 +820,9 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         logger.trace("getAllVirtualCollections()");
         EntityManager em = datastore.getEntityManager();
         try {
-            em.getTransaction().begin();
-                    
+            //em.getTransaction().begin();
+            beginTransaction();
+
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<VirtualCollection> cq = cb.createQuery(VirtualCollection.class);
             Root<VirtualCollection> rootEntry = cq.from(VirtualCollection.class);
@@ -821,6 +850,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         EntityTransaction tx = em.getTransaction();
         try {
             tx.begin();
+
             qryFactory.addParam("vc_owner", "%%");
             return vcDao.getVirtualCollectionCount(em, qryFactory);
         } catch(Exception ex) {
@@ -863,7 +893,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         List<String> origins = new ArrayList<>();
         EntityManager em = datastore.getEntityManager();
         try {
-            em.getTransaction().begin();
+            //em.getTransaction().begin();
+            beginTransaction();
             TypedQuery<String> q = em.createNamedQuery("VirtualCollection.findAllPublicOrigins", String.class);
             origins = q.getResultList();
         } catch (Exception e) {
@@ -891,7 +922,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                     cb.asc(root.get(User_.displayName)),
                     cb.asc(root.get(User_.name)));
 
-            em.getTransaction().begin();
+            //em.getTransaction().begin();
+            beginTransaction();
             final TypedQuery<User> query = em.createQuery(cq);
             return query.getResultList();
         } finally {
@@ -901,7 +933,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             }
         }
     }
-
+/*
     public User createUser(Principal principal) throws VirtualCollectionRegistryException {
         return null;
     }
@@ -909,35 +941,29 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
     public User createUserIfNotExists(Principal principal) throws VirtualCollectionRegistryException {
         return null;
     }
-
+*/
     public User fetchUser(Principal principal) throws VirtualCollectionRegistryException {
         if(principal == null) {
             throw new VirtualCollectionRegistryException("Principal is required");
         }
 
-        Exception ex = new Exception();
-        logger.info("Trace", ex);
-
         User user = null;
-        EntityManager em = datastore.getEntityManager();
         try {
-            em.getTransaction().begin();
-            user = fetchUser(em, principal.getName());
-            //em.getTransaction().commit();
+            beginTransaction();
+            user = fetchUser(principal.getName());
         } catch (Exception e) {
-            em.getTransaction().rollback();
-            logger.error("error while querying user with name="+principal.toString(), e);
-            throw new VirtualCollectionRegistryException(
-                    "error while querying user with name="+principal.toString(), e);
+            rollbackActiveTransaction("error while querying user with name="+principal.toString(), e);
+        } finally {
+            //commitActiveTransaction();
         }
         return user;
     }
 
-    private User fetchUser(EntityManager em, String username) {
+    private User fetchUser(String username) {
+        final EntityManager em = datastore.getEntityManager();
         User user = null;
         try {
-            TypedQuery<User> q
-                    = em.createNamedQuery("User.findByName", User.class);
+            TypedQuery<User> q = em.createNamedQuery("User.findByName", User.class);
             q.setParameter("name", username);
             user = q.getSingleResult();
         } catch (NoResultException ex) {

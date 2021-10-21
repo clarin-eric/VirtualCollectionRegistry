@@ -329,7 +329,6 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
         this.originalQuery = originalQuery;
     }
 
-    public void setValuesFrom(Resource other) {
+    public void setValuesFrom(Resource other) { }
 
-    }
 } // class Resource

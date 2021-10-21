@@ -131,6 +131,14 @@ public class GWDGPersistentIdentifierProvider implements
     @Override
     public PersistentIdentifier createIdentifier(VirtualCollection vc)
             throws VirtualCollectionRegistryException {
+        return createIdentifier(vc, "");
+    }
+
+    @Override
+    public PersistentIdentifier createIdentifier(VirtualCollection vc, String suffix)
+            throws VirtualCollectionRegistryException {
+        throw new RuntimeException("Not supported");
+        /*
         if (vc == null) {
             throw new NullPointerException("vc == null");
         }
@@ -147,13 +155,14 @@ public class GWDGPersistentIdentifierProvider implements
             if (pid == null) {
                 throw new VirtualCollectionRegistryException(
                         "no handle returned");
-            }
-            logger.info("created handle \"{}\" for virtual collection \"{}\"",
+            }            logger.info("created handle \"{}\" for virtual collection \"{}\"",
                     pid, vc.getId());
+            //TODO: make use of suffix
             return new PersistentIdentifier(vc, PersistentIdentifier.Type.HANDLE, primary, pid);
         } catch (VirtualCollectionRegistryException e) {
             throw new RuntimeException("failed to create handle", e);
         }
+         */
     }
 
     @Override

@@ -5,11 +5,13 @@ import java.net.URI;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
-public abstract interface PersistentIdentifierProvider {
+public interface PersistentIdentifierProvider {
 
     String getId();
 
     PersistentIdentifier createIdentifier(VirtualCollection vc) throws VirtualCollectionRegistryException;
+
+    PersistentIdentifier createIdentifier(VirtualCollection vc, String suffix) throws VirtualCollectionRegistryException;
 
     void updateIdentifier(String pid, URI target) throws VirtualCollectionRegistryException;
 

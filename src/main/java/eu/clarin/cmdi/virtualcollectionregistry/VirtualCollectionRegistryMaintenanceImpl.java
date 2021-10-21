@@ -23,6 +23,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifierProvider
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Set;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.TypedQuery;
@@ -88,7 +89,6 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
      * @param nowDateAlloc
      */
     protected void allocatePersistentIdentifiers(EntityManager em, final Date nowDateAlloc) {
-        em.getTransaction().begin();
         TypedQuery<VirtualCollection> q
                 = em.createNamedQuery("VirtualCollection.findAllByStates",
                         VirtualCollection.class);
@@ -99,14 +99,23 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
         q.setParameter("date", nowDateAlloc);
         q.setLockMode(LockModeType.PESSIMISTIC_WRITE);
 
+        em.getTransaction().begin();
         List<VirtualCollection> collectionsToUpdate = q.getResultList();
+        em.getTransaction().commit();
+
         if(collectionsToUpdate.size() > 0) {
             logger.info("Assigning pid to #{} collections", collectionsToUpdate.size());
             for (VirtualCollection vc : collectionsToUpdate) {
-                allocatePersistentIdentifier(em, vc);
+                try {
+                    em.getTransaction().begin();
+                    allocatePersistentIdentifier(em, vc);
+                } catch(Exception ex) {
+                    em.getTransaction().rollback();
+                } finally {
+                    em.getTransaction().commit();
+                }
             }
         }
-        em.getTransaction().commit();
     }   
     
     /**
@@ -116,7 +125,9 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
      * @param vc 
      */
     protected void allocatePersistentIdentifier(EntityManager em, VirtualCollection vc) {
-        VirtualCollection.State currentState = vc.getState();
+        //VirtualCollection.State currentState = vc.getState();
+
+       // VirtualCollection parent = null;
 
         if(!vc.hasPersistentIdentifier()) {
             try {
@@ -124,6 +135,20 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
                 List<PersistentIdentifier> pids = pidProviderService.createIdentifiers(vc);
                 for(PersistentIdentifier pid : pids) {
                     vc.setPersistentIdentifier(pid);
+                }
+
+                if(vc.getParent() == null) {
+                    //new collection, mint new latest pid
+                    List<PersistentIdentifier> latestPids = pidProviderService.createLatestIdentifiers(vc);
+                    for(PersistentIdentifier latestPid : latestPids) {
+                        vc.setPersistentIdentifier(latestPid);
+                    }
+                } else {
+                    //update latest pid to point to this collection
+                    Set<PersistentIdentifier> latestPids = vc.getParent().getLatestIdentifiers();
+                    for(PersistentIdentifier latestPid : latestPids) {
+                        latestPid.setVirtualCollection(vc);
+                    }
                 }
 
                 //If no errors occured, update collection state
@@ -173,7 +198,10 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
             }
         }
 
-        em.persist(vc); //update collection
+        //em.persist(vc); //update collection
+        //if(parent != null) {
+        //    em.merge(parent);
+        //}
 
         if(vc.hasPersistentIdentifier()) {
             logger.info("assigned pid (identifer='{}') to virtual"

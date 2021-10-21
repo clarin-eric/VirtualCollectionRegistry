@@ -76,9 +76,15 @@ public class DoiPersistentIdentifierProvider implements PersistentIdentifierProv
 
     @Override
     public PersistentIdentifier createIdentifier(VirtualCollection vc) throws VirtualCollectionRegistryException {
+        return createIdentifier(vc, "");
+    }
+
+    @Override
+    public PersistentIdentifier createIdentifier(VirtualCollection vc, String suffix)
+            throws VirtualCollectionRegistryException {
         logger.debug("creating doi for virtual collection \"{}\"", vc.getId());
         try {
-            final String requestedPid = String.format("%s%d", getInfix(), vc.getId());
+            final String requestedPid = String.format("%s%d%s", getInfix(), vc.getId(), suffix);
             DoiRequest req =
                     DoiRequestBuilder.createGenerateDoiRequest(configuration.getHandlePrefix(), requestedPid, vc);
             final String pid = pidWriter.registerNewPID(configuration, req);

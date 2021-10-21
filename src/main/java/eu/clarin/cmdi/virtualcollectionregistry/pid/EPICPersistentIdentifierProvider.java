@@ -61,10 +61,16 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
     
     @Override
     public PersistentIdentifier createIdentifier(VirtualCollection vc) throws VirtualCollectionRegistryException {
+        return createIdentifier(vc, "");
+    }
+
+    @Override
+    public PersistentIdentifier createIdentifier(VirtualCollection vc, String suffix)
+            throws VirtualCollectionRegistryException {
         logger.debug("creating handle for virtual collection \"{}\"", vc.getId());
         final Map<HandleField, String> fieldMap = createPIDFieldMap(vc);
         try {
-            final String requestedPid = String.format("%s%d", getInfix(), vc.getId());
+            final String requestedPid = String.format("%s%d%s", getInfix(), vc.getId(), suffix);
             final String pid = pidWriter.registerNewPID(configuration, fieldMap, requestedPid);
             return new PersistentIdentifier(vc, PersistentIdentifier.Type.HANDLE, primary, pid);
         } catch (HttpException ex) {

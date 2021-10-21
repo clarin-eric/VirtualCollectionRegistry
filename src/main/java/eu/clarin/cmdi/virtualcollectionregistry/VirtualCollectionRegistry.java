@@ -83,7 +83,7 @@ public interface VirtualCollectionRegistry {
      * @return the created User object. Can be null in case of an error.
      * @throws VirtualCollectionRegistryException
      */
-    User createUser(Principal principal)  throws VirtualCollectionRegistryException;
+    //User createUser(Principal principal)  throws VirtualCollectionRegistryException;
 
     /**
      * Create a new uer for the given principal if it does not already exist
@@ -91,7 +91,7 @@ public interface VirtualCollectionRegistry {
      * @return the created or existing User object. Can be null in case of an error.
      * @throws VirtualCollectionRegistryException
      */
-    User createUserIfNotExists(Principal principal)  throws VirtualCollectionRegistryException;
+    //User createUserIfNotExists(Principal principal)  throws VirtualCollectionRegistryException;
 
     String getDbVersion() throws VirtualCollectionRegistryException;
 

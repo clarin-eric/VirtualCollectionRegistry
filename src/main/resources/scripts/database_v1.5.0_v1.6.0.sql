@@ -14,6 +14,8 @@ ALTER TABLE virtualcollection ADD COLUMN `child` bigint(20) NULL;
 ALTER TABLE virtualcollection ADD COLUMN `latest` bigint(20) NULL;
 ALTER TABLE virtualcollection ADD COLUMN `original` bigint(20) NULL;
 ALTER TABLE virtualcollection ADD COLUMN `forked_from` bigint(20) NULL;
+ALTER TABLE pid ADD COLUMN `is_latest` bool default false;
+--ALTER TABLE pid MODIFY COLUMN vc_id bigint(20) NULL;
 
 -- Update current database config value
 UPDATE `config` SET `value` = '1.6.0' WHERE `key` = 'db_version';

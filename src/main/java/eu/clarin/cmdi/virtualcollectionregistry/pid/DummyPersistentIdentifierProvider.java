@@ -25,14 +25,21 @@ public class DummyPersistentIdentifierProvider implements
         return id;
     }
 
+
     @Override
     public PersistentIdentifier createIdentifier(VirtualCollection vc)
+            throws VirtualCollectionRegistryException {
+        return createIdentifier(vc, "");
+    }
+
+    @Override
+    public PersistentIdentifier createIdentifier(VirtualCollection vc, String suffix)
             throws VirtualCollectionRegistryException {
         try {
             Thread.sleep(10000);
         } catch(InterruptedException ex) {}
         return new PersistentIdentifier(vc, PersistentIdentifier.Type.DUMMY, primary,
-                "dummy-" + Long.toString(vc.getId()));
+                "dummy-" + Long.toString(vc.getId())+suffix);
     }
 
     @Override

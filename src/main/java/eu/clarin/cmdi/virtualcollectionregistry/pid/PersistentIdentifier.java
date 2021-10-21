@@ -17,14 +17,6 @@ public class PersistentIdentifier implements PersistentIdentifieable, Serializab
 
     private static final long serialVersionUID = 1L;
 
-    public Boolean getPrimary() {
-        return primary;
-    }
-
-    public void setPrimary(Boolean primary) {
-        this.primary = primary;
-    }
-
     public static enum Type {
         DUMMY, HANDLE, DOI;
     }
@@ -55,14 +47,20 @@ public class PersistentIdentifier implements PersistentIdentifieable, Serializab
     @Column(name = "is_primary", columnDefinition = "TINYINT", length = 1)
     private Boolean primary;
 
-    protected PersistentIdentifier() {
-    }
+    @Column(name = "is_latest", columnDefinition = "TINYINT", length = 1)
+    private Boolean latest;
+
+    protected PersistentIdentifier() { }
 
     public PersistentIdentifier(VirtualCollection vc, Type type, String identifier) {
-        this(vc, type, true, identifier);
+        this(vc, type, true, false, identifier);
     }
 
     public PersistentIdentifier(VirtualCollection vc, Type type, boolean primary, String identifier) {
+        this(vc, type, primary, false, identifier);
+    }
+
+    public PersistentIdentifier(VirtualCollection vc, Type type, boolean primary, boolean latest, String identifier) {
         if (vc == null) {
             throw new NullArgumentException("vc == null");
         }
@@ -80,6 +78,7 @@ public class PersistentIdentifier implements PersistentIdentifieable, Serializab
         this.type = type;
         this.identifier = identifier;
         this.primary = primary;
+        this.latest = latest;
     }
 
     public Long getId() {
@@ -116,6 +115,26 @@ public class PersistentIdentifier implements PersistentIdentifieable, Serializab
     @Override
     public boolean hasPersistentIdentifier() {
         return true;
+    }
+
+    public Boolean getPrimary() {
+        return primary;
+    }
+
+    public void setPrimary(Boolean primary) {
+        this.primary = primary;
+    }
+
+    public Boolean getLatest() {
+        return latest;
+    }
+
+    public void setLatest(Boolean latest) {
+        this.latest = latest;
+    }
+
+    public void setVirtualCollection(VirtualCollection vc) {
+        this.vc = vc;
     }
 
     /**

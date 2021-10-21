@@ -23,9 +23,8 @@ public class QueryFactory implements Serializable {
     }
 
     public void applyParamsToQuery(TypedQuery query) {
-            for(Parameter p : query.getParameters()) {
-            logger.info("Param name={}, type={}, position={}", p.getName(), p.getParameterType().toString(), p.getPosition());
-
+        for(Parameter p : query.getParameters()) {
+            logger.trace("Param name={}, type={}, position={}", p.getName(), p.getParameterType().toString(), p.getPosition());
             if(!params.containsKey(p.getName())) {
                 throw new RuntimeException("Missing query parameter: "+p.getName());
             }
@@ -35,7 +34,6 @@ public class QueryFactory implements Serializable {
         for(String key: params.keySet()) {
             query.setParameter(key, params.get(key));
         }
-
         */
     }
 

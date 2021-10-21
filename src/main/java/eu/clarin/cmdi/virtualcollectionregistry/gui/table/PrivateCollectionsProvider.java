@@ -26,6 +26,7 @@ public class PrivateCollectionsProvider extends CollectionsProvider {
         states.add(VirtualCollection.State.PUBLIC_FROZEN);
         states.add(VirtualCollection.State.PUBLIC_FROZEN_PENDING);
         states.add(VirtualCollection.State.PRIVATE);
+        states.add(VirtualCollection.State.ERROR);
         factory.and(QueryOptions.Property.VC_STATE, QueryOptions.Relation.IN, states);
     }
 /*

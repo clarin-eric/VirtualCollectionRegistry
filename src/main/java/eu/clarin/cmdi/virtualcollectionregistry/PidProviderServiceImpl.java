@@ -37,6 +37,8 @@ public class PidProviderServiceImpl implements PidProviderService {
 
     private List<PersistentIdentifierProvider> providers = new LinkedList<>();
 
+    private final static String LATEST_SUFFIX = "-latest";
+
     public PidProviderServiceImpl() {}
 
     @PostConstruct
@@ -164,6 +166,25 @@ public class PidProviderServiceImpl implements PidProviderService {
         List<PersistentIdentifier> pids = new LinkedList<>();
         for(PersistentIdentifierProvider provider : providers) {
             pids.add(provider.createIdentifier(vc));
+
+        }
+        return pids;
+    }
+
+    /**
+     * Use each provider to create a latest pid and return the pid created by the primary provider.
+     *
+     * @param vc
+     * @return
+     * @throws VirtualCollectionRegistryException
+     */
+    public List<PersistentIdentifier> createLatestIdentifiers(VirtualCollection vc) throws VirtualCollectionRegistryException {
+        List<PersistentIdentifier> pids = new LinkedList<>();
+        for(PersistentIdentifierProvider provider : providers) {
+            PersistentIdentifier pid = provider.createIdentifier(vc, LATEST_SUFFIX);
+            pid.setPrimary(false);
+            pid.setLatest(true);
+            pids.add(pid);
 
         }
         return pids;

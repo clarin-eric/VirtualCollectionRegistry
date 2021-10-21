@@ -125,10 +125,27 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     public static final Reproducibility DEFAULT_REPRODUCIBILIY_VALUE = Reproducibility.INTENDED;
 
     public Set<PersistentIdentifier> getIdentifiers() {
-        if(identifiers == null) {
-            return new HashSet<>();
+        Set<PersistentIdentifier> ids = new HashSet<>();
+        if(identifiers != null) {
+            for (PersistentIdentifier id : identifiers) {
+                if (!id.getLatest()) {
+                    ids.add(id);
+                }
+            }
         }
-        return identifiers;
+        return ids;
+    }
+
+    public Set<PersistentIdentifier> getLatestIdentifiers() {
+        Set<PersistentIdentifier> ids = new HashSet<>();
+        if(identifiers != null) {
+            for (PersistentIdentifier id : identifiers) {
+                if (id.getLatest()) {
+                    ids.add(id);
+                }
+            }
+        }
+        return ids;
     }
     
     @Override
@@ -157,7 +174,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
 
     public PersistentIdentifier getPrimaryIdentifier() {
         for (PersistentIdentifier id : getIdentifiers()) {
-            if (id.getPrimary()) {
+            if (id.getPrimary() && !id.getLatest()) {
                 return id;
             }
         }
@@ -468,6 +485,13 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     public boolean hasPersistentIdentifier() {
         PersistentIdentifier primaryId = getPrimaryIdentifier();
         return primaryId != null;
+    }
+
+    public void removePersistentIdentiefer(PersistentIdentifier pid) {
+        if (pid == null) {
+            throw new NullPointerException("pid == null");
+        }
+        this.identifiers.remove(pid);
     }
 
     public void setPersistentIdentifier(PersistentIdentifier persistentId) {

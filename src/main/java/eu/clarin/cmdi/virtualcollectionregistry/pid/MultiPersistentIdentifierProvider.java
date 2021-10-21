@@ -44,6 +44,11 @@ public class MultiPersistentIdentifierProvider implements PersistentIdentifierPr
 
     @Override
     public PersistentIdentifier createIdentifier(VirtualCollection vc) throws VirtualCollectionRegistryException {
+        return createIdentifier(vc, "");
+    }
+
+    @Override
+    public PersistentIdentifier createIdentifier(VirtualCollection vc, String suffix) throws VirtualCollectionRegistryException {
         PersistentIdentifier primaryId = null;
         for(PersistentIdentifierProvider provider : providers) {
             PersistentIdentifier id = provider.createIdentifier(vc);

@@ -218,7 +218,7 @@ public class BasePage extends WebPage {
         }
 
         //loggedInUser = getDbUser();
-        logger.info("Logged in user="+loggedInUser);
+        //logger.trace("Logged in user="+loggedInUser);
 
         super.onBeforeRender();
     }
