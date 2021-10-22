@@ -38,7 +38,9 @@ final class ColumnName extends AbstractColumn<VirtualCollection, String> {
     private final VirtualCollectionTable table;
 
     private final Map<Long, Boolean> collapsedState= new HashMap<>();
-    
+
+    private final IModel<Boolean> showVersionsModel;
+
     private final class ItemCell extends Panel {
         private final WebMarkupContainer nameColumn;
 
@@ -115,7 +117,8 @@ final class ColumnName extends AbstractColumn<VirtualCollection, String> {
             citeButton.add(new Label("label", vc.getName()));
 
             VersionPanel pnlVersion = new VersionPanel("pnl_versions", vc);
-            pnlVersion.setVisible(vc.getParent() != null);
+            pnlVersion.setVisible(vc.getParent() != null && showVersionsModel.getObject());
+
             nameColumn.add(pnlVersion);
             nameColumn.add(toggleLink);
             nameColumn.add(citeButton);            
@@ -155,10 +158,11 @@ final class ColumnName extends AbstractColumn<VirtualCollection, String> {
         }
     }
 
-    ColumnName(VirtualCollectionTable table) {
+    ColumnName(VirtualCollectionTable table, IModel<Boolean> showVersionsModel) {
         super(new ResourceModel("column.name", "Name"), "name");
         this.table = table;
         this.table.setOutputMarkupId(true);
+        this.showVersionsModel = showVersionsModel;
     }
 
     @Override

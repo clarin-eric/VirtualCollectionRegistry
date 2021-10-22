@@ -55,8 +55,8 @@ public class BrowseEditableCollectionsPanel extends Panel {
 
     @SpringBean
     private AdminUsersService adminUsersService;
-    
-    private abstract class PanelWithUserInformation extends Panel {        
+
+    private abstract class PanelWithUserInformation extends Panel {
         public PanelWithUserInformation(String id, IModel<VirtualCollection> model) {
             super(id, model);            
         }
@@ -106,7 +106,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
         }
     }
     private class ActionsPanel extends PanelWithUserInformation {
-        public ActionsPanel(String id, IModel<VirtualCollection> model) {
+        public ActionsPanel(String id, IModel<VirtualCollection> model, final IModel<Boolean> showVersionsModel) {
             super(id, model);
             setRenderBodyOnly(true);
 
@@ -186,7 +186,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
             setVisible(isVisible);
 
             final List<VirtualCollection> parents = model.getObject().getParentsAsList();
-            add(new ListView<VirtualCollection>("list", parents) {
+            ListView list = new ListView<VirtualCollection>("list", parents) {
                 @Override
                 protected void populateItem(ListItem<VirtualCollection> item) {
                     final AjaxLink<VirtualCollection> detailsLink = new AjaxLink<VirtualCollection>("list_details", model) {
@@ -198,7 +198,9 @@ public class BrowseEditableCollectionsPanel extends Panel {
                     UIUtils.addTooltip(detailsLink, "View collection details");
                     item.add(detailsLink);
                 }
-            });
+            };
+            list.setVisible(!parents.isEmpty() && showVersionsModel.getObject());
+            add(list);
         }
     } // class BrowsePrivateCollectionsPage.ActionsPanel
 
@@ -249,7 +251,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
                             IModel<VirtualCollection> model) {
                         State state = model.getObject().getState();
                         if(state == State.PUBLIC_FROZEN || state == State.PUBLIC || state == State.PRIVATE || isAdmin) {
-                            return new ActionsPanel(componentId, model);
+                            return new ActionsPanel(componentId, model, this.toggleShowVersionsModel);
                         } else if(state == State.ERROR) {
                             return new ActionsErrorPanel(componentId, model);
                         } else {
@@ -262,7 +264,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
                             IModel<VirtualCollection> model) {
                         State state = model.getObject().getState();
                         if(state == State.PUBLIC_FROZEN || state == State.PUBLIC || state == State.PRIVATE || isAdmin) {
-                            return new ActionsPanel(componentId, model);
+                            return new ActionsPanel(componentId, model, this.toggleShowVersionsModel);
                         } else if(state == State.ERROR) {
                             return new ActionsErrorPanel(componentId, model);
                         } else {

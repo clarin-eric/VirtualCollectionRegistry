@@ -24,6 +24,8 @@ import java.util.List;
 final class ColumnState extends AbstractColumn<VirtualCollection, String> {
     private final EnumChoiceRenderer<VirtualCollection.State> renderer;
 
+    private final IModel<Boolean> showVersionsModel;
+
     private final class ItemCell extends Panel {
         public ItemCell(String id, IModel<VirtualCollection> model) {
             super(id);
@@ -33,17 +35,18 @@ final class ColumnState extends AbstractColumn<VirtualCollection, String> {
             add(new Label("lbl_state", ColumnType.capitaliseFirstLetter(label)));
 
             final List<VirtualCollection> parents = model.getObject().getParentsAsList();
-            add(new ListView<VirtualCollection>("list", parents) {
+            ListView list = new ListView<VirtualCollection>("list", parents) {
                 @Override
                 protected void populateItem(ListItem<VirtualCollection> item) {
                     final VirtualCollection.State parentState = item.getModel().getObject().getState();
                     final String parentLabel = renderer.getDisplayValue(parentState).toString();
                     item.add(new Label("lbl_parent_state", ColumnType.capitaliseFirstLetter(parentLabel)));
                 }
-            });
+            };
+            list.setVisible(!parents.isEmpty() && showVersionsModel.getObject());
+            add(list);
         }
     }
-
 
     public static class StatePanel extends Panel {
         public StatePanel(String id, final String labelText, final String problemText) {
@@ -64,9 +67,10 @@ final class ColumnState extends AbstractColumn<VirtualCollection, String> {
         }
     }
 
-    ColumnState(VirtualCollectionTable table) {
+    ColumnState(VirtualCollectionTable table, IModel<Boolean> showVersionsModel) {
         super(new ResourceModel("column.state", "State"), "state");
         this.renderer = new EnumChoiceRenderer<VirtualCollection.State>(table);
+        this.showVersionsModel = showVersionsModel;
     }
 
     @Override

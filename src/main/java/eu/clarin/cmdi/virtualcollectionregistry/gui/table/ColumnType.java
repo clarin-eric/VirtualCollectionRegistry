@@ -21,6 +21,8 @@ import java.util.List;
 final class ColumnType extends AbstractColumn<VirtualCollection, String> {
     private final EnumChoiceRenderer<VirtualCollection.Type> renderer;
 
+    private final IModel<Boolean> showVersionsModel;
+
     public final static String capitaliseFirstLetter(String input) {
         if(input == null) {
             return null;
@@ -40,20 +42,23 @@ final class ColumnType extends AbstractColumn<VirtualCollection, String> {
             add(new Label("lbl_type", capitaliseFirstLetter(label)));
 
             final List<VirtualCollection> parents = model.getObject().getParentsAsList();
-            add(new ListView<VirtualCollection>("list", parents) {
+            ListView list = new ListView<VirtualCollection>("list", parents) {
                 @Override
                 protected void populateItem(ListItem<VirtualCollection> item) {
                     final VirtualCollection.Type parentType = item.getModel().getObject().getType();
                     final String parentLabel = renderer.getDisplayValue(parentType).toString();
                     item.add(new Label("lbl_parent_type", capitaliseFirstLetter(parentLabel)));
                 }
-            });
+            };
+            list.setVisible(!parents.isEmpty() && showVersionsModel.getObject());
+            add(list);
         }
     }
 
-    ColumnType(VirtualCollectionTable table) {
+    ColumnType(VirtualCollectionTable table, IModel<Boolean> showVersionsModel) {
         super(new ResourceModel("column.type", "Type"), "type");
         this.renderer = new EnumChoiceRenderer<VirtualCollection.Type>(table);
+        this.showVersionsModel = showVersionsModel;
     }
 
     @Override

@@ -163,7 +163,6 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
             };
         };
 
-
         pnlVersion = new WebMarkupContainer("pnl-version");
         pnlVersion.add(new Label("pnl-version-lbl", lbl));
         if(collection != null && collection.getParent() != null) {

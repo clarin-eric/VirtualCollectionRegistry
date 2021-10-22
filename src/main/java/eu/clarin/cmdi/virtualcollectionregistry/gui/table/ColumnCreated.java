@@ -29,6 +29,8 @@ final class ColumnCreated extends AbstractColumn<VirtualCollection, String> {
 
     private final String columnPropertyExpression;
 
+    private final IModel<Boolean> showVersionsModel;
+
     public static class DateLabel extends Label {
         public DateLabel(final String id, final IModel<Date> model) {
             super(id, model);
@@ -51,20 +53,23 @@ final class ColumnCreated extends AbstractColumn<VirtualCollection, String> {
             add(new DateLabel("lbl_name", new PropertyModel<Date>(model, columnPropertyExpression)));
 
             final List<VirtualCollection> parents = model.getObject().getParentsAsList();
-            add(new ListView<VirtualCollection>("list", parents) {
+            ListView list = new ListView<VirtualCollection>("list", parents) {
                 @Override
                 protected void populateItem(ListItem<VirtualCollection> item) {
                     final VirtualCollection vc = item.getModel().getObject();
                     item.add(new DateLabel("lbl_timestamp",  new PropertyModel<Date>(Model.of(vc), columnPropertyExpression)));
                 }
-            });
+            };
+            list.setVisible(!parents.isEmpty() && showVersionsModel.getObject());
+            add(list);
         }
     }
 
-    ColumnCreated(VirtualCollectionTable table, String columnResourceKey, String columnDefaultValue, String columnSortProperty, String columnPropertyExpression) {
+    ColumnCreated(VirtualCollectionTable table, String columnResourceKey, String columnDefaultValue, String columnSortProperty, String columnPropertyExpression, IModel<Boolean> showVersionsModel) {
         //super(new ResourceModel("column.created", "Created"), "created");
         super(new ResourceModel(columnResourceKey, columnDefaultValue), columnSortProperty);
         this.columnPropertyExpression = columnPropertyExpression;
+        this.showVersionsModel = showVersionsModel;
     }
 
     @Override
