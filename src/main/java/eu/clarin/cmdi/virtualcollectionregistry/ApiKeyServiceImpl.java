@@ -14,32 +14,17 @@ import java.security.Principal;
 import java.util.Date;
 
 @Component
-public class ApiKeyServiceImpl implements ApiKeyService {
+public class ApiKeyServiceImpl extends TxManager implements ApiKeyService {
     private final static Logger logger = LoggerFactory.getLogger(ApiKeyServiceImpl.class);
 
     @Autowired
     private VirtualCollectionRegistry registry;
 
-    @Autowired
-    private DataStore datastore; //TODO: replace with Spring managed EM?
-
     private final ApiKeyGenerator generator = new ApiKeyGenerator();
 
-    @Override
-    public User getUser(String username) {
-        User user = null;
-        EntityManager em = datastore.getEntityManager();
-        try {
-            //Query user
-            TypedQuery<User> q
-                    = em.createNamedQuery("User.findByName", User.class);
-            q.setParameter("name", username);
-            user = q.getSingleResult();
-        } catch (Exception e) {
-            em.getTransaction().rollback();
-            logger.error("error while querying user with name="+username, e);
-        }
-        return user;
+    @Autowired
+    public ApiKeyServiceImpl(DataStore datastore) {
+        super(datastore);
     }
 
     @Override
@@ -53,6 +38,9 @@ public class ApiKeyServiceImpl implements ApiKeyService {
             q.setParameter("name", username);
             User user = q.getSingleResult();
 
+            if(user == null) {
+
+            }
             //Generate new api key and associate with the user
             ApiKey key = new ApiKey();
             key.setValue(generator.newToken());

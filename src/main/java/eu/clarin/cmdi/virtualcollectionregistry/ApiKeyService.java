@@ -7,7 +7,6 @@ import java.security.Principal;
 import java.util.Set;
 
 public interface ApiKeyService {
-    public User getUser(String username);
     public void generateNewKeyForUser(String username);
     public void revokeKey(String key);
     User getUserForApiKey(String key) throws ApiKeyNotFoundException, ApiKeyRevokedException, ApiKeyException;

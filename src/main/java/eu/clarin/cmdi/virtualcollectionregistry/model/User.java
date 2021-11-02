@@ -65,7 +65,7 @@ public class User implements Serializable, IdentifiedEntity {
     }
 
     public User(Principal principal) {
-        this(principal == null ? "unknown" : principal.getName(), null);
+        this(principal == null ? "unknown" : principal.getName());
     }
 
     public User(String name) {

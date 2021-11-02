@@ -5,6 +5,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD;
 
+import javax.persistence.EntityManager;
 import java.security.Principal;
 import java.util.List;
 
@@ -62,9 +63,12 @@ public interface VirtualCollectionRegistry {
 
     List<VirtualCollection> getVirtualCollections(int first, int count, QueryFactory qryFactory) throws VirtualCollectionRegistryException;
 
-    List<String> getOrigins();
+    List<String> getOrigins() throws VirtualCollectionRegistryException;
 
     List<User> getUsers();
+
+    User getOrCreateUser(String username) throws VirtualCollectionRegistryException;
+    User getOrCreateUser(Principal principal) throws VirtualCollectionRegistryException;
 
     CreatorService getCreatorService();
 

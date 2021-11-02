@@ -5,6 +5,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.QueryOptions.Property;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.DetachableVirtualCollectionModel;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+
+import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.List;
 import org.apache.wicket.WicketRuntimeException;
@@ -13,11 +15,15 @@ import org.apache.wicket.extensions.markup.html.repeater.data.table.filter.IFilt
 import org.apache.wicket.extensions.markup.html.repeater.util.SortParam;
 import org.apache.wicket.extensions.markup.html.repeater.util.SortableDataProvider;
 import org.apache.wicket.model.IModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("serial")
 public abstract class CollectionsProvider extends
         SortableDataProvider<VirtualCollection, String> implements
         IFilterStateLocator<FilterState> {
+
+    private final static Logger logger = LoggerFactory.getLogger(CollectionsProvider.class);
 
     private FilterState filterstate = new FilterState();
 
@@ -40,7 +46,13 @@ public abstract class CollectionsProvider extends
 
     public List<String> getOrigins() {
         final VirtualCollectionRegistry vcr = Application.get().getRegistry();
-        return vcr.getOrigins();
+        List<String> origins = new ArrayList<>();
+        try {
+            origins = vcr.getOrigins();
+        } catch(VirtualCollectionRegistryException ex) {
+            logger.error("", ex);
+        }
+        return origins;
     }
 
     @Override

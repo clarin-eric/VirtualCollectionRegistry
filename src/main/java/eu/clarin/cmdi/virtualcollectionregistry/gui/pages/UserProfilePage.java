@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
 import eu.clarin.cmdi.virtualcollectionregistry.ApiKeyService;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LoginPage;
 import eu.clarin.cmdi.virtualcollectionregistry.model.ApiKey;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
@@ -89,13 +90,15 @@ public class UserProfilePage extends BasePage {
             final Principal principal = getUser();
 
             final String username = principal.getName();
-            User user = apiKeyService.getUser(username);
+            User user = Application.get().getRegistry().getOrCreateUser(username);
+            //User user = apiKeyService.getUser(username);
+            if(user != null) {
+                keys = new LinkedList<>(user.getApiKeys());
+            }
+            Collections.sort(keys);
 
             String baseUri = HelpPage.getBaseUri(WebApplication.get().getServletContext());
             add(new Label("curl_example", String.format("curl -H \"Authorization: [api key goes here]\" %s[path to api endpoint]", baseUri)));
-
-            keys = new LinkedList<>(user.getApiKeys());
-            Collections.sort(keys);
 
             lblNoKeys = new Label("no_api_keys", i18n.getProperty("msg_no_api_keys"));
             lblNoKeys.setVisible(keys.isEmpty());
@@ -120,7 +123,6 @@ public class UserProfilePage extends BasePage {
 
             //add(new ClipboardJsBehavior());
 
-
             AjaxFallbackLink btnSave = new AjaxFallbackLink("btn_new_api_key") {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
@@ -132,6 +134,7 @@ public class UserProfilePage extends BasePage {
             };
             btnSave.add(new Label("btn_new_api_key_label", i18n.getProperty("btn_new_label")));
             btnSave.add(new AttributeModifier("title", i18n.getProperty("btn_new_tooltip")));
+            btnSave.setEnabled(user != null);
             add(btnSave);
         } catch(Exception ex) {
             add(new Label("api_keys", i18n.getProperty("msg_null_principal")));
@@ -229,16 +232,20 @@ public class UserProfilePage extends BasePage {
     protected void onBeforeRender() {
         final Principal principal = getUser();
         if(principal != null) {
-            User user = apiKeyService.getUser(principal.getName());
-            keys.clear();
-            if (!user.getApiKeys().isEmpty()) {
-                keys.addAll(user.getApiKeys());
-                Collections.sort(keys);
-            }
+            try {
+                User user = Application.get().getRegistry().getOrCreateUser(principal.getName());
+                keys.clear();
+                if (user != null && !user.getApiKeys().isEmpty()) {
+                    keys.addAll(user.getApiKeys());
+                    Collections.sort(keys);
+                }
 
-            //Update UI component visability
-            lblNoKeys.setVisible(keys.isEmpty());
-            table.setVisible(!keys.isEmpty());
+                //Update UI component visability
+                lblNoKeys.setVisible(keys.isEmpty());
+                table.setVisible(!keys.isEmpty());
+            } catch(Exception ex) {
+                logger.error("Failed to get or create user", ex);
+            }
         }
         super.onBeforeRender();
     }

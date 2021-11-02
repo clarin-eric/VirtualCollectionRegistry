@@ -9,7 +9,7 @@ public class TestApplication extends Application  {
 
     public TestApplication() {
         this(
-            new VirtualCollectionRegistryImpl(),
+            new VirtualCollectionRegistryImpl(null),
             null, //new DataStore(),
             new AdminUsersServiceImpl(),
             new VcrConfigImpl(),

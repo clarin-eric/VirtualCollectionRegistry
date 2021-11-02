@@ -193,6 +193,7 @@ public class ErrorPage extends BasePage {
     public class ExceptionPanel extends Panel {
         public ExceptionPanel(String id, Throwable ex, int index) {
             super(id);
+
             add(new Label("ex_message", String.format("%s%s", index > 0 ? "  Caused by: ": "", ex.getMessage())));
 
             List<StackTraceElement> stacktrace = Arrays.asList(ex.getStackTrace());
