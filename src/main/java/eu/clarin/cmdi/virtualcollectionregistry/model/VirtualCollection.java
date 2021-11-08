@@ -124,6 +124,10 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     public static final Purpose DEFAULT_PURPOSE_VALUE = Purpose.REFERENCE;
     public static final Reproducibility DEFAULT_REPRODUCIBILIY_VALUE = Reproducibility.INTENDED;
 
+    public Set<PersistentIdentifier> getAllIdentifiers() {
+        return identifiers;
+    }
+
     public Set<PersistentIdentifier> getIdentifiers() {
         Set<PersistentIdentifier> ids = new HashSet<>();
         if(identifiers != null) {
@@ -137,14 +141,17 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     }
 
     public Set<PersistentIdentifier> getLatestIdentifiers() {
+        boolean includePrivate = false; //private collections don't get a PID assigned
+        VirtualCollection mostRecentVersion = getAllVersions(includePrivate).get(0);
         Set<PersistentIdentifier> ids = new HashSet<>();
-        if(identifiers != null) {
-            for (PersistentIdentifier id : identifiers) {
+        if(mostRecentVersion.getAllIdentifiers() != null) {
+            for (PersistentIdentifier id : mostRecentVersion.getAllIdentifiers()) {
                 if (id.getLatest()) {
                     ids.add(id);
                 }
             }
         }
+
         return ids;
     }
     
@@ -991,6 +998,24 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         this.origin = origin;
     }
 
+    public List<VirtualCollection> getAllVersions() {
+        return getAllVersions(false);
+    }
+
+    public List<VirtualCollection> getAllVersions(boolean includePrivate) {
+        List<VirtualCollection> versions = getChildrenAsList(includePrivate);
+        Collections.reverse(versions); //Make sure the list is ordered from new --> old
+        versions.add(this);
+        versions.addAll(getParentsAsList());
+        return versions;
+    }
+
+    public List<VirtualCollection> getChildrenAsList(boolean includePrivate) {
+        List<VirtualCollection> children = new ArrayList<>();
+        addChildrenToList(children, this, includePrivate);
+        return children;
+    }
+
     public List<VirtualCollection> getParentsAsList() {
         List<VirtualCollection> parents = new ArrayList<>();
         addParentToList(parents, this);
@@ -1002,6 +1027,17 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         if(parent != null) {
             parents.add(parent);
             addParentToList(parents, parent);
+        }
+    }
+
+    private void addChildrenToList(List<VirtualCollection> children, VirtualCollection vc, boolean includePrivate) {
+        VirtualCollection child = vc.getChild();
+        if(child != null) {
+            boolean isPublic = child.getState() == State.PUBLIC || child.getState() == State.PUBLIC_FROZEN;
+            if ((includePrivate) || (!includePrivate && isPublic)) {
+                children.add(child);
+            }
+            addChildrenToList(children, child, includePrivate);
         }
     }
 } // class VirtualCollection

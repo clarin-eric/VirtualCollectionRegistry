@@ -7,6 +7,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.*;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin.AdminPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.CreateAndEditVirtualCollectionPageV2;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmissionUtils;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.panels.versions.VersionsDropDownPanel;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.panels.versions.VersionsPanel;
 import eu.clarin.cmdi.virtualcollectionregistry.model.*;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Type;
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
@@ -87,6 +89,8 @@ public class VirtualCollectionDetailsPage extends BasePage {
 
     @SpringBean
     private VcrConfigImpl vcrConfig;
+
+    private User owner = null;
 
     private static final IConverter convEnum = new IConverter() {
         @Override
@@ -216,7 +220,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
         };
         
         add(backLink);
-        add(new HeaderPanel("vc_header", model, this));
+        add(new HeaderPanel("vc_header", model, getPageReference(), this));
         add(BootstrapPanelBuilder
                 .createCollapsiblePanel("general")
                 .setTitle("General")
@@ -246,43 +250,10 @@ public class VirtualCollectionDetailsPage extends BasePage {
         add(new DetailsStructuredMeatadataHeaderBehavior(model));
     }
 
-    private User owner = null;
-
-    private final class VersionPanel extends Panel {
-        public VersionPanel(String id, List<VirtualCollection> parents, final PageReference reference) {
-            super(id);
-
-            add(new Label("label", Model.of("Other versions")));
-            ListView<VirtualCollection> versionListview = new ListView<VirtualCollection>("version_list", parents) {
-                @Override
-                protected void populateItem(ListItem<VirtualCollection> item) {
-                    final VirtualCollection vc = item.getModel().getObject();
-
-                    AjaxLink versionDetailsButton = new AjaxLink( "version_link", new Model<String>("") ){
-                        @Override
-                        public void onClick( AjaxRequestTarget target ) {
-                            if(vc.getState() != VirtualCollection.State.DELETED) {
-                                setResponsePage(
-                                        VirtualCollectionDetailsPage.class,
-                                        VirtualCollectionDetailsPage.createPageParameters(
-                                                vc, reference, VirtualCollectionDetailsPage.BackPage.PUBLIC_LISTING));
-                            }
-                        }
-                    };
-                    versionDetailsButton.add(new Label("version_link_label", vc.getName()));
-                    item.add(versionDetailsButton);
-                }
-            };
-            add(versionListview);
-        }
-    }
-
     private  class HeaderPanel extends Panel {
-        public HeaderPanel(String id, final IModel<VirtualCollection> model, Component componentToUpdate) {
+        public HeaderPanel(String id, final IModel<VirtualCollection> model, final PageReference reference, Component componentToUpdate) {
             super(id, new CompoundPropertyModel<VirtualCollection>(model));
             add(new Label("name"));
-
-
 
             WebMarkupContainer icon = new WebMarkupContainer("name_icon");
             icon.add(new AttributeAppender("class", "fa fa-code-fork"));
@@ -299,14 +270,15 @@ public class VirtualCollectionDetailsPage extends BasePage {
             }
             forkedLink.add(new Label("forked_lbl_value", mdlForkedFrom));
 
-
             WebMarkupContainer forked = new WebMarkupContainer("forked_container");
             forked.add(new Label("forked_lbl","Forked from " ));
             forked.add(forkedLink);
             forked.setVisible(forkedFrom != null);
             add(forked);
-
             icon.setVisible(forkedFrom != null);
+
+            //add(new VersionsPanel("versions", model, reference));
+            add(new VersionsDropDownPanel("versions", model, reference));
 
             //Toggle editor mode checkbox
             add(new AjaxCheckBox("btn_editor_mode", showAdvancedFields) {
@@ -434,6 +406,22 @@ public class VirtualCollectionDetailsPage extends BasePage {
             add(new BasicTextPanel("reproducibility", "Reproducibility", new Model(model.getObject().getReproducibility())).add(hideIfEmpty, hideIfShowAdvancedDisabled));
             add(new BasicTextPanel("reproducibilityNotice", "Reproducibility notice", new Model(model.getObject().getReproducibilityNotice()), true, true).add(hideIfEmpty, hideIfShowAdvancedDisabled));
 
+            //boolean includePrivate = false;
+            List<PersistentIdentifier> latestPidList = new LinkedList<>();
+            //VirtualCollection mostRecentVersion = model.getObject().getAllVersions(includePrivate).get(0);
+            for(PersistentIdentifier pid : model.getObject().getLatestIdentifiers()) {
+                latestPidList.add(pid);
+            }
+            ListView latestPidsListView = new ListView("latest_pids", latestPidList) {
+                @Override
+                protected void populateItem(ListItem item) {
+                    PersistentIdentifier p = (PersistentIdentifier)item.getModel().getObject();
+                    item.add(new BasicPidPanel("latest_pid", "Latest Persistent identifier", new Model(p)));
+                }
+            };
+            latestPidsListView.setVisible(!latestPidList.isEmpty());
+            add(latestPidsListView);
+
             List<PersistentIdentifier> pidList = new LinkedList<>();
             for(PersistentIdentifier pid : model.getObject().getIdentifiers()) {
                 pidList.add(pid);
@@ -448,11 +436,6 @@ public class VirtualCollectionDetailsPage extends BasePage {
             add(pidsListView);
 
             add(new BasicListPanel("keywords", "Keywords", model.getObject().getKeywords()).add(hideIfEmpty));
-
-            final List<VirtualCollection> parents = model.getObject().getParentsAsList();
-            VersionPanel pnl = new VersionPanel("versions", parents, reference);
-            pnl.setVisible(!parents.isEmpty());
-            add(pnl);
         }
     }
 
@@ -649,8 +632,12 @@ public class VirtualCollectionDetailsPage extends BasePage {
     }
 
     public static PageParameters createPageParameters(VirtualCollection vc, PageReference pageReference, BackPage backPage) {
+        return createPageParameters(vc.getId(), pageReference, backPage);
+    }
+
+    public static PageParameters createPageParameters(Long vcId, PageReference pageReference, BackPage backPage) {
         final PageParameters params = new PageParameters();
-        params.set(VirtualCollectionDetailsPage.PARAM_VC_ID, vc.getId());
+        params.set(VirtualCollectionDetailsPage.PARAM_VC_ID, vcId);
         params.set(VirtualCollectionDetailsPage.PARAM_BACK_PAGE, backPage.intValue());
         if (pageReference != null) {
             Session.get().setAttribute("reference", pageReference);
