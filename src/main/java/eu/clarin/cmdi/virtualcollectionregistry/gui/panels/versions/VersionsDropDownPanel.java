@@ -57,7 +57,7 @@ public class VersionsDropDownPanel extends Panel {
         ChoiceRenderer choiceRenderer = new ChoiceRenderer("value", "id");
 
         DropDownChoice<IdValueOption> dropdown = new DropDownChoice("cb_versions", model,versionListOptions, choiceRenderer);
-        dropdown.add(new AjaxFormComponentUpdatingBehavior("onchange") {
+        dropdown.add(new AjaxFormComponentUpdatingBehavior("change") {
             @Override
             protected void onUpdate(AjaxRequestTarget target) {
                 final IdValueOption IdValueOption = dropdown.getModelObject();

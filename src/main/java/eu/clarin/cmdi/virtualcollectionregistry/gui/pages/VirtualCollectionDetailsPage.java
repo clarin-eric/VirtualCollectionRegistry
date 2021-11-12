@@ -406,9 +406,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
             add(new BasicTextPanel("reproducibility", "Reproducibility", new Model(model.getObject().getReproducibility())).add(hideIfEmpty, hideIfShowAdvancedDisabled));
             add(new BasicTextPanel("reproducibilityNotice", "Reproducibility notice", new Model(model.getObject().getReproducibilityNotice()), true, true).add(hideIfEmpty, hideIfShowAdvancedDisabled));
 
-            //boolean includePrivate = false;
             List<PersistentIdentifier> latestPidList = new LinkedList<>();
-            //VirtualCollection mostRecentVersion = model.getObject().getAllVersions(includePrivate).get(0);
             for(PersistentIdentifier pid : model.getObject().getLatestIdentifiers()) {
                 latestPidList.add(pid);
             }

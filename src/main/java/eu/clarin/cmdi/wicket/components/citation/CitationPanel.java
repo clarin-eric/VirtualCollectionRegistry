@@ -30,14 +30,20 @@ import org.apache.wicket.model.Model;
  */
 public class CitationPanel extends Panel {
 
+    /*
     public CitationPanel(String id, final IModel<Citable> model) {
         this(id,  model, false);
     }
-    
+    */
+
     public CitationPanel(String id, final IModel<Citable> model, boolean small) {
+        this(id, model, null, small);
+    }
+
+    public CitationPanel(String id, final IModel<Citable> model, final IModel<Citable> latest, boolean small) {
         super(id);
     
-        final CitationDialog citationDialog = new CitationDialog("citationDialog", model);
+        final CitationDialog citationDialog = new CitationDialog("citationDialog", model, latest);
 
         AjaxLink citeButton = new AjaxLink( "citeButton", new Model<String>("Cite") ){ 
             @Override
@@ -49,8 +55,7 @@ public class CitationPanel extends Panel {
         citeButton.add(new AttributeModifier("class", small ? "btn btn-primary btn-xs" : "btn btn-primary btn-lg"));
         
         UIUtils.addTooltip(citeButton, "Cite this collection");
-        
-        
+
         add(citeButton);
         add(citationDialog);
     }

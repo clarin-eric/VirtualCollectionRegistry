@@ -20,13 +20,17 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author wilelb
  */
 public class CitationPanelFactory {
-    
+
+    private static Logger logger = LoggerFactory.getLogger(CitationPanelFactory.class);
+
     public static Panel getCitationPanel(final String componentId, final IModel<VirtualCollection> model) {
         return getCitationPanel(componentId, model, false);
     }
@@ -40,10 +44,16 @@ public class CitationPanelFactory {
      * @return 
      */
     public static Panel getCitationPanel(final String componentId, final IModel<VirtualCollection> model, boolean small) {
-        if(model.getObject().isCiteable()) {
-            return (new eu.clarin.cmdi.wicket.components.citation.CitationPanel(componentId, new Model(model.getObject()), small));
+        VirtualCollection vc = model.getObject();
+        if(vc.isCiteable()) {
+            VirtualCollection latest = vc.getAllVersions().get(0);
+            logger.info("current={}, latest={}", vc.getId(), latest.getId());
+            if(latest.getId() != vc.getId() && latest.isCiteable()) {
+                return new CitationPanel(componentId, new Model(vc), new Model(latest), small);
+            }
+            return new CitationPanel(componentId, new Model(vc), small);
         } else {
-            return (new EmptyCitePanel(componentId));
+            return new EmptyCitePanel(componentId);
         }
     }
     

@@ -24,23 +24,36 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author wilelb
  */
 public class CitationDialog extends BaseInfoDialog {
-    
+
+    private Logger logger = LoggerFactory.getLogger(CitationDialog.class);
+
     private final static String TITLE = "Citation information";
     
     private final IModel<Citable> model;
-    
+    private final IModel<Citable> latestModel;
+
     public CitationDialog(String id, final IModel<Citable> model) {
         super(id, TITLE);
         this.model = model;
+        this.latestModel = null;
         this.build();
     }
-    
+
+    public CitationDialog(String id, final IModel<Citable> model, final IModel<Citable> latestModel) {
+        super(id, TITLE);
+        this.model = model;
+        this.latestModel = latestModel;
+        this.build();
+    }
+
     private void build() {
         List<DialogButton> buttons = Arrays.asList(
                 new DialogButton("Close") {
@@ -49,13 +62,24 @@ public class CitationDialog extends BaseInfoDialog {
                         CitationDialog.this.close(target);
                     }
                 });
-        buildContent(TITLE, new Body(getContentWicketId()), buttons, null);
+        if(latestModel == null) {
+            buildContent(TITLE, new Body(getContentWicketId(), model.getObject()), buttons, null);
+        } else {
+            buildContent(TITLE, new VersionsBody(getContentWicketId(), model.getObject(), latestModel.getObject()), buttons, null);
+        }
     }
-    
-    private class Body extends Panel {
-        public Body(String id) {
+
+    private class VersionsBody extends Panel {
+        public VersionsBody(String id, Citable cite, Citable latest) {
             super(id);
-            Citable cite = model.getObject();
+            add(new Body("current", cite));
+            add(new Body("latest", latest));
+        }
+    }
+
+    private class Body extends Panel {
+        public Body(String id, Citable cite) {
+            super(id);
             add(new Label("title", cite.getTitle()));
             add(new Label("authors", getAuthorsString(cite)));
             add(new Label("year", cite.getYear()));
@@ -76,8 +100,9 @@ public class CitationDialog extends BaseInfoDialog {
         }
         
         private String getBibTexString(Citable cite) {
+            String id ="<put your id here>";
             String bib = "";
-            bib += String.format("@misc{Rub1,\n"); //TODO: how to generate this id?
+            bib += String.format("@misc{%s,\n", id);
                 bib += String.format("author = {%s},\n", getAuthorsString(cite));
                 bib += String.format("title = {%s},\n", cite.getTitle());
                 bib += String.format("url = {%s},\n", cite.getUri());
@@ -87,5 +112,4 @@ public class CitationDialog extends BaseInfoDialog {
         }
         
     }
-    
 }
