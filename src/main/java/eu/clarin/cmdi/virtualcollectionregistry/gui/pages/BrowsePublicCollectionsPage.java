@@ -3,13 +3,18 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.CollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.RestUtils;
+import eu.clarin.cmdi.wicket.components.CMDIExplorerLink;
+import eu.clarin.cmdi.wicket.components.LanguageResourceSwitchboardLink;
 import eu.clarin.cmdi.wicket.components.citation.CitationPanelFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.PublishedCollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
+import org.apache.wicket.core.util.string.JavaScriptUtils;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -38,11 +43,11 @@ public class BrowsePublicCollectionsPage extends BasePage {
             
             add(CitationPanelFactory.getCitationPanel("cite", model, true));
             
-            AjaxLink lrsLink = UIUtils.getLrsRedirectAjaxLink("lrs", model, vcrConfig.getProcessEndpoint());
+            final AjaxFallbackLink lrsLink = LanguageResourceSwitchboardLink.forCollection("lrs", model.getObject());
             lrsLink.setVisible(vcrConfig.isProcessEnabledForCollections());
             add(lrsLink);
 
-            AjaxLink downloadLink = UIUtils.getCmdiExplorerRedirectAjaxLink("download", model, vcrConfig.getDownloadEndpoint());
+            final AjaxFallbackLink downloadLink = CMDIExplorerLink.forCollection("download", model.getObject());
             downloadLink.setVisible(vcrConfig.isDownloadEnabledForCollections());
             add(downloadLink);
         }

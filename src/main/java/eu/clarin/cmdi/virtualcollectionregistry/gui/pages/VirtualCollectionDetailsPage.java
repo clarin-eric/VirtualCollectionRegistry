@@ -14,6 +14,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Type;
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.RestUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.wicket.DetailsStructuredMeatadataHeaderBehavior;
+import eu.clarin.cmdi.wicket.components.CMDIExplorerLink;
+import eu.clarin.cmdi.wicket.components.LanguageResourceSwitchboardLink;
 import eu.clarin.cmdi.wicket.components.citation.CitationPanelFactory;
 import eu.clarin.cmdi.wicket.components.panel.BootstrapDropdown;
 import eu.clarin.cmdi.wicket.components.panel.BootstrapDropdown.DropdownMenuItem;
@@ -27,6 +29,7 @@ import org.apache.wicket.Component;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.authorization.UnauthorizedActionException;
@@ -296,11 +299,11 @@ public class VirtualCollectionDetailsPage extends BasePage {
                 owner = new User(getUser());
             } catch(Exception ex) {}
 
-            AjaxLink lrsLink = UIUtils.getLrsRedirectAjaxLink("process", model, vcrConfig.getProcessEndpoint());
+            final AjaxFallbackLink lrsLink = LanguageResourceSwitchboardLink.forCollection("lrs", model.getObject());
             lrsLink.setVisible(vcrConfig.isProcessEnabledForCollections());
             add(lrsLink);
 
-            AjaxLink downloadLink = UIUtils.getCmdiExplorerRedirectAjaxLink("download", model, vcrConfig.getDownloadEndpoint());
+            final  AjaxFallbackLink downloadLink = CMDIExplorerLink.forCollection("download", model.getObject());
             downloadLink.setVisible(vcrConfig.isDownloadEnabledForCollections());
             add(downloadLink);
 
@@ -553,8 +556,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
             Lists.newArrayList(new DropdownMenuItem("Process with Language Resource Switchboard", "glyphicon glyphicon-open-file") {
                 @Override
                 protected AbstractLink getLink(String id) {
-                    AbstractLink link = UIUtils.getLrsRedirectAjaxLinkForResource(id, model, vcrConfig.getProcessEndpoint());
-                    return link;
+                    return LanguageResourceSwitchboardLink.forResource("lrs", model.getObject());
                 }
             });                
          
@@ -654,7 +656,6 @@ public class VirtualCollectionDetailsPage extends BasePage {
 
     /**
      *
-     * @param vc collection to check for
      * @throws UnauthorizedActionException if the VC is private and the current
      * user is not the owner
      */

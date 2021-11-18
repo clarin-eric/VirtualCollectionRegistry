@@ -39,10 +39,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 public class UIUtils {
     
     private static Logger logger = LoggerFactory.getLogger(UIUtils.class);
-    
-    private final static String TOOLTIP_COLLECTION_TEXT = "Process this collection with the language resource switchboard";
-    private final static String TOOLTIP_RESOURCE_TEXT = "Process this resource with the language resource switchboard";
-    private final static String TOOLTIP_DOWNLOAD_TEXT = "Download this collection with the CMDI explorer";
 
     public final static String DEFAULT_TOOLTIP_DATA_PLACEMENT = "bottom";
     
@@ -66,80 +62,5 @@ public class UIUtils {
             comp.add(new AttributeAppender("data-container", Model.of(viewport)));
         }
         return comp;
-    }
-            
-    public static AjaxLink getLrsRedirectAjaxLink(String id, IModel<VirtualCollection> model, String endpoint) {
-        final AjaxLink<VirtualCollection> lrsLink
-            = new AjaxLink<VirtualCollection>(id, model) {
-                @Override
-                public void onClick(AjaxRequestTarget target) {
-                    throw new RedirectToUrlException(UIUtils.getLanguageSwitchboardUrl(model.getObject(), endpoint));
-                }
-        };
-        //lrsLink.add(new AttributeModifier("class", "btn btn-xs btn-default"));
-        UIUtils.addTooltip(lrsLink, TOOLTIP_COLLECTION_TEXT);
-        return lrsLink;
-    }
-
-    public static AjaxLink getCmdiExplorerRedirectAjaxLink(String id, IModel<VirtualCollection> model, String endpoint) {
-        final AjaxLink<VirtualCollection> lrsLink
-                = new AjaxLink<VirtualCollection>(id, model) {
-            @Override
-            public void onClick(AjaxRequestTarget target) {
-                throw new RedirectToUrlException(UIUtils.getCmdiExplorerUrl(model.getObject(), endpoint));
-            }
-        };
-        //lrsLink.add(new AttributeModifier("class", "btn btn-xs btn-default"));
-        UIUtils.addTooltip(lrsLink, TOOLTIP_DOWNLOAD_TEXT);
-        return lrsLink;
-    }
-
-    public static AjaxLink getLrsRedirectAjaxLinkForResource(String id, IModel<Resource> model, String endpoint) {
-        final AjaxLink<Resource> lrsLink
-            = new AjaxLink<Resource>(id, model) {
-                @Override
-                public void onClick(AjaxRequestTarget target) {                    
-                    throw new RedirectToUrlException(UIUtils.getLanguageSwitchboardUrlForResource(model.getObject(), endpoint));
-                }
-        };
-        //UIUtils.addTooltip(lrsLink, TOOLTIP_RESOURCE_TEXT);
-        return lrsLink;
-    }
-    
-    public static String getLanguageSwitchboardUrl(VirtualCollection vc, String endpoint) {
-        final String href = vc.getPrimaryIdentifier().getActionableURI();
-        return buildSwitchboardUrl(endpoint, href, "application/xml", "en");
-    }
-
-    public static String getCmdiExplorerUrl(VirtualCollection vc, String endpoint) {
-        try {
-            String encodedUrl = URLEncoder.encode(vc.getPrimaryIdentifier().getActionableURI(), "UTF-8");
-            return String.format("%s/%s", endpoint, encodedUrl);
-        } catch (UnsupportedEncodingException ex) {
-            logger.error("Error while creating cmdi explorer link", ex);
-            return null;
-        }
-    }
-
-    public static String getLanguageSwitchboardUrlForResource(Resource r, String endpoint) {
-        String ref = r.getRef();
-        if (r.hasPersistentIdentifier()) {
-            ref = r.getPidUri();
-        }
-        String url = buildSwitchboardUrl(endpoint, ref, "application/xml", "en");        
-        return url;
-    }
-    
-    public static String buildSwitchboardUrl(String switchboardEndpoint, String href, String mimeType, String languageCode) {
-        try {
-            return String.format("%s/%s/%s/%s",
-                    switchboardEndpoint,
-                    URLEncoder.encode(href, "UTF-8"),
-                    URLEncoder.encode(mimeType, "UTF-8"), 
-                    languageCode);
-        } catch (UnsupportedEncodingException ex) {
-            logger.error("Error while creating switchboard link", ex);
-            return null;
-        }
     }
 }

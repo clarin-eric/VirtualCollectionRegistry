@@ -71,6 +71,7 @@ public class BasePage extends WebPage {
     
     public static final String BETA_MODE = "eu.clarin.cmdi.virtualcollectionregistry.beta_mode";
 
+    //private final static ResourceReference SWITCHBOARD_JAVASCRIPT_REFERENCE = new ContextRelativeResourceReference("https://switchboard.clarin.eu/popup/switchboardpopup.js");
     private final static ResourceReference CLIPBOARD_JAVASCRIPT_REFERENCE = new ContextRelativeResourceReference("script/clipboard.js");
     private final static JavaScriptResourceReference INIT_JAVASCRIPT_REFERENCE = new JavaScriptResourceReference(BasePage.class, "BasePage.js");
 
@@ -94,6 +95,7 @@ public class BasePage extends WebPage {
         response.render(JavaScriptHeaderItem.forReference(getApplication().getJavaScriptLibrarySettings().getJQueryReference()));  //Ensure jquery is loaded before custom script
         response.render(JavaScriptReferenceHeaderItem.forReference(INIT_JAVASCRIPT_REFERENCE));
         response.render(JavaScriptReferenceHeaderItem.forReference(CLIPBOARD_JAVASCRIPT_REFERENCE));
+        // response.render(JavaScriptReferenceHeaderItem.forReference(SWITCHBOARD_JAVASCRIPT_REFERENCE));
     }
     
     private void addComponents() {
