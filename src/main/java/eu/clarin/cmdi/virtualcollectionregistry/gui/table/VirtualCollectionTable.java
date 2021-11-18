@@ -107,9 +107,9 @@ public abstract class VirtualCollectionTable extends Panel {
 
     protected abstract Panel createActionColumn(String componentId,
             IModel<VirtualCollection> model);
-
+/*
     protected abstract Panel createActionPanel(String componentId,
             IModel<VirtualCollection> model);
-
+*/
     protected abstract PageReference getPageReference();
 } // class VirtualCollectionTable

@@ -29,7 +29,7 @@ public class BrowsePublicCollectionsPage extends BasePage {
     
     @SpringBean
     private VcrConfigImpl vcrConfig;
-    
+
     private class ActionsPanel extends Panel {
 
         public ActionsPanel(String id, IModel<VirtualCollection> model) {
@@ -38,9 +38,13 @@ public class BrowsePublicCollectionsPage extends BasePage {
             
             add(CitationPanelFactory.getCitationPanel("cite", model, true));
             
-            AjaxLink lrsLink = UIUtils.getLrsRedirectAjaxLink("lrs", model, vcrConfig.getSwitchboardEndpoint());
-            lrsLink.setVisible(vcrConfig.isSwitchboardEnabledForCollections());
+            AjaxLink lrsLink = UIUtils.getLrsRedirectAjaxLink("lrs", model, vcrConfig.getProcessEndpoint());
+            lrsLink.setVisible(vcrConfig.isProcessEnabledForCollections());
             add(lrsLink);
+
+            AjaxLink downloadLink = UIUtils.getCmdiExplorerRedirectAjaxLink("download", model, vcrConfig.getDownloadEndpoint());
+            downloadLink.setVisible(vcrConfig.isDownloadEnabledForCollections());
+            add(downloadLink);
         }
         
     } // class BrowsePublicCollectionsPage.ActionsPanel
@@ -64,13 +68,13 @@ public class BrowsePublicCollectionsPage extends BasePage {
                                                    IModel<VirtualCollection> model) {
                     return new ActionsPanel(componentId, model);
                 }
-
+/*
                 @Override
                 protected Panel createActionPanel(String componentId,
                                                   IModel<VirtualCollection> model) {
                     return new ActionsPanel(componentId, model);
                 }
-
+*/
                 @Override
                 protected PageReference getPageReference() {
                     return reference;
@@ -79,7 +83,7 @@ public class BrowsePublicCollectionsPage extends BasePage {
             add(table);
         }
     }
-
+/*
     private void doDetails(AjaxRequestTarget target, IModel<VirtualCollection> vc) {
         setResponsePage(
             VirtualCollectionDetailsPage.class, 
@@ -88,7 +92,7 @@ public class BrowsePublicCollectionsPage extends BasePage {
                 getPageReference(), 
                 VirtualCollectionDetailsPage.BackPage.PUBLIC_LISTING));
     }
-
+*/
     @Override
     public IModel<String> getCanonicalUrlModel() {
         final CharSequence url = RequestCycle.get().urlFor(getClass(), null);

@@ -34,21 +34,27 @@ public class VcrConfigImpl implements VcrConfig {
     public final static String MODE_BETA = "beta";
     public final static String MODE_ALPHA = "alpha";
 
+    public final static String ACTION_ENABLE_COLLECTIONS = "COLLECTIONS";
+    public final static String ACTION_ENABLE_RESOURCES = "RESOURCES";
+
     @Value("${eu.clarin.cmdi.vcr.validators.http.timeout:5000}")
     private int httpTimeout;
 
     @Value("${eu.clarin.cmdi.vcr.validators.http.redirects:5}")
     private int httpRedirects;
 
-    @Value("${eu.clarin.cmdi.vcr.lrs.endpoint:https://switchboard.clarin.eu/#/vcr}")
-    private String lrsEndpoint;
-    
-    @Value("${eu.clarin.cmdi.vcr.lrs.enable_for_resources:true}")
-    private boolean lrsEnableResources;
-    
-    @Value("${eu.clarin.cmdi.vcr.lrs.enable_for_collections:false}")
-    private boolean lrsEnableCollections;
-    
+    @Value("${eu.clarin.cmdi.vcr.process.endpoint:https://switchboard.clarin.eu/#/vcr}")
+    private String processEndpoint;
+
+    @Value("${eu.clarin.cmdi.vcr.process.enable:COLLECTIONS,RESOURCES}")
+    private String processEnable;
+
+    @Value("${eu.clarin.cmdi.vcr.download.endpoint:https://weblicht.sfs.uni-tuebingen.de/CMDIExplorer/input/#/vcr}")
+    private String downloadEndpoint;
+
+    @Value("${eu.clarin.cmdi.vcr.download.enable:COLLECTIONS}")
+    private String downloadEnable;
+
     @Value("${eu.clarin.cmdi.vcr.logout_mode:basic}")
     private String logoutMode;
     
@@ -64,28 +70,44 @@ public class VcrConfigImpl implements VcrConfig {
     @Value("${eu.clarin.cmdi.vcr.mode:alpha}")
     private String mode;
 
-    public String getSwitchboardEndpoint() {
-        if (lrsEndpoint.endsWith("/")) {
-            return lrsEndpoint.substring(0, lrsEndpoint.length()-1);
+    private String getEndpointWithoutTrailingSlash(String endpoint) {
+        if(endpoint == null) {
+            return null;
         }
-        return lrsEndpoint;
+        if (endpoint.endsWith("/")) {
+            return endpoint.substring(0, endpoint.length()-1);
+        }
+        return endpoint;
     }
+
+    @Override
+    public String getProcessEndpoint() { return getEndpointWithoutTrailingSlash(processEndpoint); }
+
+    @Override
+    public String getDownloadEndpoint() { return getEndpointWithoutTrailingSlash(downloadEndpoint); }
+
+    private boolean hasConfig(String input, String config) {
+        for(String s : input.split(",")) {
+            if(s.trim().equalsIgnoreCase(config)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    @Override
+    public boolean isProcessEnabledForResources() { return hasConfig(processEnable, ACTION_ENABLE_RESOURCES); }
     
     @Override
-    public boolean isSwitchboardEnabledForResources() {
-        return lrsEnableResources;
-    }
-    
+    public boolean isProcessEnabledForCollections() { return hasConfig(processEnable, ACTION_ENABLE_COLLECTIONS); }
+
     @Override
-    public boolean isSwitchboardEnabledForCollections() {
-        return lrsEnableCollections;
-    }
-    
+    public boolean isDownloadEnabledForCollections() { return hasConfig(downloadEnable, ACTION_ENABLE_COLLECTIONS); }
+
     @Override
     public boolean isLogoutEnabled() {
         return logoutEnabled;
     }
-    
     
     @Override
     public String getLogoutMode() {
@@ -125,22 +147,6 @@ public class VcrConfigImpl implements VcrConfig {
 
     @Override
     public String logConfig() {
-            /*
-        logger.info("Configuration:");
-        logger.info("  logoutMode:             {}", logoutMode);
-        logger.info("  logoutEnabled:          {}", logoutEnabled);
-        logger.info("  locale:                 {}", locale);
-        logger.info("  mode:                   {}", mode);
-        logger.info("  forking enabled:        {}", forkingEnabled);
-        logger.info("  Switchboard integration:");
-        logger.info("    lrsEndpoint:          {}", lrsEndpoint);
-        logger.info("    lrsEnableResources:   {}", lrsEnableResources);
-        logger.info("    lrsEnableCollections: {}", lrsEnableCollections);
-        logger.info("  Validators");
-        logger.info("    http timeout:         {}", httpTimeout);
-        logger.info("    http redirects:       {}", httpRedirects);
-
-             */
         StringBuilder result = new StringBuilder();
         result.append("Configuration:\n");
         result.append("  logoutMode:             "+logoutMode+"\n");
@@ -148,10 +154,12 @@ public class VcrConfigImpl implements VcrConfig {
         result.append("  locale:                 "+locale+"\n");
         result.append("  mode:                   "+mode+"\n");
         result.append("  forking enabled:        "+forkingEnabled+"\n");
-        result.append("  Switchboard integration:\n");
-        result.append("    lrsEndpoint:          "+lrsEndpoint+"\n");
-        result.append("    lrsEnableResources:   "+lrsEnableResources+"\n");
-        result.append("    lrsEnableCollections: "+lrsEnableCollections+"\n");
+        result.append("  Process integration:\n");
+        result.append("    processEndpoint:          "+processEndpoint+"\n");
+        result.append("    processEnable:   "+processEnable+"\n");
+        result.append("  Download integration:\n");
+        result.append("    downloadEndpoint: "+downloadEndpoint+"\n");
+        result.append("    downloadEnable: "+downloadEnable+"\n");
         result.append("  Validators\n");
         result.append("    http timeout:         "+httpTimeout+"\n");
         result.append("    http redirects:       "+httpRedirects+"\n");

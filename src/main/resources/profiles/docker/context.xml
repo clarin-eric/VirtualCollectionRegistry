@@ -59,7 +59,16 @@
     <Parameter name="eu.clarin.cmdi.vcr.lrs.endpoint" 
                value="https://switchboard.clarin.eu/#/xyz" 
                override="false"/>
-    
+
+    <!-- Download endpoint -->
+    <Parameter name="eu.clarin.cmdi.vcr.download.endpoint"
+               value="https://weblicht.sfs.uni-tuebingen.de/CMDIExplorer/input/#/vcr"
+               override="false"/>
+
+    <Parameter name="eu.clarin.cmdi.vcr.download.enable_for_collections"
+               value="false"
+               override="false"/>
+
     <!-- Enable switchboard ingegration for resources -->
     <Parameter name="eu.clarin.cmdi.vcr.lrs.enable_for_resources" 
                value="true" 
@@ -67,7 +76,7 @@
     
     <!-- Enable switchboard ingegration for collections -->
     <Parameter name="eu.clarin.cmdi.vcr.lrs.enable_for_collections" 
-               value="false"
+               value="true"
                override="false" />
     
     <!--

@@ -258,7 +258,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
                             return new EmptyPanel(componentId, model);
                         }
                     }
-
+/*
                     @Override
                     protected Panel createActionPanel(String componentId,
                             IModel<VirtualCollection> model) {
@@ -271,7 +271,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
                             return new EmptyPanel(componentId, model);
                         }
                     }
-                    
+  */
                     @Override
                     protected PageReference getPageReference() {
                         return reference;

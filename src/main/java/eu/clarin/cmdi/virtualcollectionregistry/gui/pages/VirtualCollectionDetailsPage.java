@@ -295,6 +295,15 @@ public class VirtualCollectionDetailsPage extends BasePage {
             try {
                 owner = new User(getUser());
             } catch(Exception ex) {}
+
+            AjaxLink lrsLink = UIUtils.getLrsRedirectAjaxLink("process", model, vcrConfig.getProcessEndpoint());
+            lrsLink.setVisible(vcrConfig.isProcessEnabledForCollections());
+            add(lrsLink);
+
+            AjaxLink downloadLink = UIUtils.getCmdiExplorerRedirectAjaxLink("download", model, vcrConfig.getDownloadEndpoint());
+            downloadLink.setVisible(vcrConfig.isDownloadEnabledForCollections());
+            add(downloadLink);
+
             add(CitationPanelFactory.getCitationPanel("citation", model));
             AjaxLink btnFork = new AjaxLink("btn_fork", new Model<String>("Cite")) {
                 @Override
@@ -502,7 +511,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
 
             //Make sure to check all possible actions. Only add action column if there
             //is more than one action enabled.
-            if (vcrConfig.isSwitchboardEnabledForResources()) {     
+            if (vcrConfig.isProcessEnabledForResources()) {
                 cols.add(new AbstractColumn<Resource, String>(Model.of("Actions")) {
                     @Override
                     public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> rowModel) {
@@ -544,7 +553,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
             Lists.newArrayList(new DropdownMenuItem("Process with Language Resource Switchboard", "glyphicon glyphicon-open-file") {
                 @Override
                 protected AbstractLink getLink(String id) {
-                    AbstractLink link = UIUtils.getLrsRedirectAjaxLinkForResource(id, model, vcrConfig.getSwitchboardEndpoint());
+                    AbstractLink link = UIUtils.getLrsRedirectAjaxLinkForResource(id, model, vcrConfig.getProcessEndpoint());
                     return link;
                 }
             });                
