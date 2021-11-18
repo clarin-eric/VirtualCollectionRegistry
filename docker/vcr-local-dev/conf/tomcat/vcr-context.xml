@@ -53,20 +53,23 @@
                value="vcr.pid.multi"
                override="false"/>
 
-    <!-- Switchboard endpoint -->
-    <Parameter name="eu.clarin.cmdi.vcr.lrs.endpoint"
+    <!-- Process endpoint -->
+    <Parameter name="eu.clarin.cmdi.vcr.process.endpoint"
                value="https://switchboard.clarin.eu/#/xyz"
                override="false"/>
 
-    <!-- Enable switchboard ingegration for resources -->
-    <Parameter name="eu.clarin.cmdi.vcr.lrs.enable_for_resources"
-               value="true"
+    <Parameter name="eu.clarin.cmdi.vcr.process.enable"
+               value="COLLECTIONS,RESOURCES"
                override="false" />
 
-    <!-- Enable switchboard ingegration for collections -->
-    <Parameter name="eu.clarin.cmdi.vcr.lrs.enable_for_collections"
-               value="false"
-               override="false" />
+    <!-- Download endpoint -->
+    <Parameter name="eu.clarin.cmdi.vcr.download.endpoint"
+               value="https://weblicht.sfs.uni-tuebingen.de/CMDIExplorer/input/#/vcr"
+               override="false"/>
+
+    <Parameter name="eu.clarin.cmdi.vcr.download.enable"
+               value="COLLECTIONS"
+               override="false"/>
 
     <!--
     <Parameter name="eu.clarin.cmdi.vcr.piwik.enableTracker"
