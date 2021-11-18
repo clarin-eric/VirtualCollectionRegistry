@@ -20,7 +20,11 @@ import eu.clarin.cmdi.wicket.components.BaseInfoDialog;
 import eu.clarin.cmdi.wicket.components.DialogButton;
 import java.util.Arrays;
 import java.util.List;
+
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -83,8 +87,16 @@ public class CitationDialog extends BaseInfoDialog {
             add(new Label("title", cite.getTitle()));
             add(new Label("authors", getAuthorsString(cite)));
             add(new Label("year", cite.getYear()));
-            add(new Label("link", cite.getUri()));
+            Label lblUri = new Label("link", cite.getUri());
+            lblUri.setOutputMarkupId(true);
+            add(lblUri);
             add(new Label("bibtex", getBibTexString(cite)));
+
+            WebMarkupContainer btn = new WebMarkupContainer("btnClipboard");
+            btn.add(new AttributeModifier("data-clipboard-target", "#"+lblUri.getMarkupId()));
+            btn.add(new AttributeModifier("title", "Copy to clipboard..."));
+            btn.add(new AttributeModifier("data-original-title", "Copied!!"));
+            add(btn);
         }
         
         private String getAuthorsString(Citable cite) {

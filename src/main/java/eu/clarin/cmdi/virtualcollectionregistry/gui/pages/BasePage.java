@@ -48,7 +48,9 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
+import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
+import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.string.Strings;
 import org.slf4j.Logger;
@@ -68,7 +70,8 @@ public class BasePage extends WebPage {
     private VcrConfig vcrConfig;
     
     public static final String BETA_MODE = "eu.clarin.cmdi.virtualcollectionregistry.beta_mode";
-    
+
+    private final static ResourceReference CLIPBOARD_JAVASCRIPT_REFERENCE = new ContextRelativeResourceReference("script/clipboard.js");
     private final static JavaScriptResourceReference INIT_JAVASCRIPT_REFERENCE = new JavaScriptResourceReference(BasePage.class, "BasePage.js");
 
     protected FeedbackPanel feedback;
@@ -90,6 +93,7 @@ public class BasePage extends WebPage {
         //TODO: check if https://ci.apache.org/projects/wicket/apidocs/6.x/org/apache/wicket/markup/head/OnLoadHeaderItem.html is a better alternative
         response.render(JavaScriptHeaderItem.forReference(getApplication().getJavaScriptLibrarySettings().getJQueryReference()));  //Ensure jquery is loaded before custom script
         response.render(JavaScriptReferenceHeaderItem.forReference(INIT_JAVASCRIPT_REFERENCE));
+        response.render(JavaScriptReferenceHeaderItem.forReference(CLIPBOARD_JAVASCRIPT_REFERENCE));
     }
     
     private void addComponents() {

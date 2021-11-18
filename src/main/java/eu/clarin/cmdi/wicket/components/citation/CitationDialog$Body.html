@@ -18,7 +18,10 @@
                 <div class="col-sm-10"><span wicket:id="year"></span></div>
 
                 <div class="col-sm-2">Link</div>
-                <div class="col-sm-10"><span wicket:id="link"></span></div>
+                <div class="col-sm-10">
+                    <span wicket:id="link" id="pidInputField"></span>
+                    <button class="btn btn-default clipboard" data-clipboard-target="#pidInputField" type="button" title="Copy to clipboard" data-original-title="Copied!" wicket:id="btnClipboard"><i class="fa fa-copy"></i></button>
+                </div>
             
                 <div class="col-sm-12 bibtex">
                     <h4>BibTeX</h4>
