@@ -299,7 +299,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
                 owner = new User(getUser());
             } catch(Exception ex) {}
 
-            final AjaxFallbackLink lrsLink = LanguageResourceSwitchboardLink.forCollection("lrs", model.getObject());
+            final AjaxFallbackLink lrsLink = LanguageResourceSwitchboardLink.forCollection("process", model.getObject());
             lrsLink.setVisible(vcrConfig.isProcessEnabledForCollections());
             add(lrsLink);
 
@@ -556,7 +556,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
             Lists.newArrayList(new DropdownMenuItem("Process with Language Resource Switchboard", "glyphicon glyphicon-open-file") {
                 @Override
                 protected AbstractLink getLink(String id) {
-                    return LanguageResourceSwitchboardLink.forResource("lrs", model.getObject());
+                    return LanguageResourceSwitchboardLink.forResource("link", model.getObject());
                 }
             });                
          

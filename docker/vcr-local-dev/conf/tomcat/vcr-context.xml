@@ -62,6 +62,10 @@
                value="COLLECTIONS,RESOURCES"
                override="false" />
 
+    <Parameter name="eu.clarin.cmdi.vcr.process.popup"
+               value="true"
+               override="false" />
+
     <!-- Download endpoint -->
     <Parameter name="eu.clarin.cmdi.vcr.download.endpoint"
                value="https://weblicht.sfs.uni-tuebingen.de/CMDIExplorer/input/#/vcr"

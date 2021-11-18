@@ -25,6 +25,7 @@ import java.util.Locale;
 public interface VcrConfig {
     public String getDownloadEndpoint();
     public String getProcessEndpoint();
+    public boolean isProcessPopupEnabled();
     public boolean isProcessEnabledForResources();
     public boolean isProcessEnabledForCollections();
     public boolean isDownloadEnabledForCollections();

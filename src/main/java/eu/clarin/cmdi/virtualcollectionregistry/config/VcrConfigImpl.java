@@ -49,6 +49,9 @@ public class VcrConfigImpl implements VcrConfig {
     @Value("${eu.clarin.cmdi.vcr.process.enable:COLLECTIONS,RESOURCES}")
     private String processEnable;
 
+    @Value("${eu.clarin.cmdi.vcr.process.popup:true}")
+    private boolean processPopup;
+
     @Value("${eu.clarin.cmdi.vcr.download.endpoint:https://weblicht.sfs.uni-tuebingen.de/CMDIExplorer/input/#/vcr}")
     private String downloadEndpoint;
 
@@ -93,6 +96,11 @@ public class VcrConfigImpl implements VcrConfig {
             }
         }
         return false;
+    }
+
+    @Override
+    public boolean isProcessPopupEnabled() {
+        return processPopup;
     }
 
     @Override

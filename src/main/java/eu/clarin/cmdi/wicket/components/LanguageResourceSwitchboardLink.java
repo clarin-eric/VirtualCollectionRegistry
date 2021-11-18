@@ -93,7 +93,7 @@ public class LanguageResourceSwitchboardLink extends AjaxFallbackLink<String> {
     }
 
     protected boolean isPopupEnabled() {
-        return true;
+        return vcrConfig.isProcessPopupEnabled();
     }
 
     public static String buildSwitchboardUrl(String switchboardEndpoint, String href, String mimeType, String languageCode) {
