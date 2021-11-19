@@ -58,6 +58,7 @@
                value="https://switchboard.clarin.eu/#/xyz"
                override="false"/>
 
+    <!-- Allowed values: "COLLECTIONS", "RESOURCES". To disable processing set value="" -->
     <Parameter name="eu.clarin.cmdi.vcr.process.enable"
                value="COLLECTIONS,RESOURCES"
                override="false" />
@@ -71,8 +72,9 @@
                value="https://weblicht.sfs.uni-tuebingen.de/CMDIExplorer/input/#/vcr"
                override="false"/>
 
+    <!-- Allowed values: "COLLECTIONS", "RESOURCES". To disable downloading set value="" -->
     <Parameter name="eu.clarin.cmdi.vcr.download.enable"
-               value="COLLECTIONS"
+               value=""
                override="false"/>
 
     <!--
