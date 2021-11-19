@@ -55,6 +55,9 @@ public class VcrConfigImpl implements VcrConfig {
     @Value("${eu.clarin.cmdi.vcr.download.endpoint:https://weblicht.sfs.uni-tuebingen.de/CMDIExplorer/input/#/vcr}")
     private String downloadEndpoint;
 
+    @Value("${eu.clarin.cmdi.vcr.download.prefered_pid_type:HDL}")
+    private String getDownloadEndpointPreferedPidType;
+
     @Value("${eu.clarin.cmdi.vcr.download.enable:COLLECTIONS}")
     private String downloadEnable;
 
@@ -97,6 +100,9 @@ public class VcrConfigImpl implements VcrConfig {
         }
         return false;
     }
+
+    @Override
+    public String getDownloadEndpointPreferedPidType() {return getDownloadEndpointPreferedPidType; }
 
     @Override
     public boolean isProcessPopupEnabled() {

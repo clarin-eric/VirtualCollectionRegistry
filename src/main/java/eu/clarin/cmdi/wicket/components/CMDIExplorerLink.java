@@ -3,6 +3,8 @@ package eu.clarin.cmdi.wicket.components;
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.UIUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
+import eu.clarin.cmdi.wicket.components.pid.PidType;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.model.IModel;
@@ -26,8 +28,21 @@ public class CMDIExplorerLink extends AjaxFallbackLink<String> {
 
     private final IModel<String> urlModel;
 
-    public static CMDIExplorerLink forCollection(String id, VirtualCollection vc) {
-        final String href = vc.getPrimaryIdentifier().getActionableURI();
+    public static CMDIExplorerLink forCollection(String id, VirtualCollection vc, String preferidPidType) {
+        String href = vc.getPrimaryIdentifier().getActionableURI();
+        if(!preferidPidType.equalsIgnoreCase("primary")) {
+            logger.info("Select pid of preferred type = {}", preferidPidType);
+            boolean found = false;
+            for (PersistentIdentifier pid : vc.getAllIdentifiers()) {
+                if(pid.getPidType() == PidType.fromString(preferidPidType)) {
+                    href = pid.getActionableURI();
+                    found = true;
+                }
+            }
+            if(!found) {
+                logger.warn("Did not find PID of prefered type = {} for collection with id = {}", preferidPidType, vc.getId());
+            }
+        }
         CMDIExplorerLink link = new CMDIExplorerLink(id, Model.of(href));
         UIUtils.addTooltip(link, TOOLTIP_DOWNLOAD_TEXT);
         return link;

@@ -69,6 +69,11 @@
                value="false"
                override="false"/>
 
+    <!-- Allowed values: "HDL", "DOI", "primary", ... -->
+    <Parameter name="eu.clarin.cmdi.vcr.download.prefered_pid_type"
+               value="HDL"
+               override="false"/>
+
     <!-- Enable switchboard ingegration for resources -->
     <Parameter name="eu.clarin.cmdi.vcr.lrs.enable_for_resources" 
                value="true" 

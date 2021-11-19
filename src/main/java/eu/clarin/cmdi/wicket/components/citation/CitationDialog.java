@@ -28,6 +28,7 @@ import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -81,9 +82,24 @@ public class CitationDialog extends BaseInfoDialog {
         }
     }
 
+    private final static String LBL_TITLE_DETAILS = "Details:";
+    private final static String LBL_TITLE_BIBTEXT = "Bibtex:";
+    private final static String LBL_TITLE = "Title:";
+    private final static String LBL_AUTHORS = "Authors:";
+    private final static String LBL_YEAR = "Year:";
+    private final static String LBL_LINK = "Link:";
+
     private class Body extends Panel {
         public Body(String id, Citable cite) {
             super(id);
+
+            add(new Label("title_details", Model.of(LBL_TITLE_DETAILS)));
+            add(new Label("title_bibtext", Model.of(LBL_TITLE_BIBTEXT)));
+            add(new Label("lbl_title", Model.of(LBL_TITLE)));
+            add(new Label("lbl_authors", Model.of(LBL_AUTHORS)));
+            add(new Label("lbl_year", Model.of(LBL_YEAR)));
+            add(new Label("lbl_link", Model.of(LBL_LINK)));
+
             add(new Label("title", cite.getTitle()));
             add(new Label("authors", getAuthorsString(cite)));
             add(new Label("year", cite.getYear()));

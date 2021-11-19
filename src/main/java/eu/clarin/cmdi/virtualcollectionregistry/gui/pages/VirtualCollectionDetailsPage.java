@@ -303,7 +303,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
             lrsLink.setVisible(vcrConfig.isProcessEnabledForCollections());
             add(lrsLink);
 
-            final  AjaxFallbackLink downloadLink = CMDIExplorerLink.forCollection("download", model.getObject());
+            final  AjaxFallbackLink downloadLink = CMDIExplorerLink.forCollection("download", model.getObject(), vcrConfig.getDownloadEndpointPreferedPidType());
             downloadLink.setVisible(vcrConfig.isDownloadEnabledForCollections());
             add(downloadLink);
 
