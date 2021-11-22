@@ -51,6 +51,9 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
     @Autowired
     private PidProviderService pidProviderService;
 
+    @Autowired
+    private PermaLinkService permaLinkService;
+
     @Override
     public void perform(long now) {
         if(!maintenance_enabled) {
@@ -125,21 +128,17 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
      * @param vc 
      */
     protected void allocatePersistentIdentifier(EntityManager em, VirtualCollection vc) {
-        //VirtualCollection.State currentState = vc.getState();
-
-       // VirtualCollection parent = null;
-
         if(!vc.hasPersistentIdentifier()) {
             try {
                 //Mint identifiers and update collection
-                List<PersistentIdentifier> pids = pidProviderService.createIdentifiers(vc);
+                List<PersistentIdentifier> pids = pidProviderService.createIdentifiers(vc, permaLinkService);
                 for(PersistentIdentifier pid : pids) {
                     vc.setPersistentIdentifier(pid);
                 }
 
                 if(vc.getParent() == null) {
                     //new collection, mint new latest pid
-                    List<PersistentIdentifier> latestPids = pidProviderService.createLatestIdentifiers(vc);
+                    List<PersistentIdentifier> latestPids = pidProviderService.createLatestIdentifiers(vc, permaLinkService);
                     for(PersistentIdentifier latestPid : latestPids) {
                         vc.setPersistentIdentifier(latestPid);
                     }

@@ -8,6 +8,6 @@ import java.util.List;
 
 public interface PidProviderService {
     public List<PersistentIdentifierProvider> getProviders();
-    public List<PersistentIdentifier> createIdentifiers(VirtualCollection vc) throws VirtualCollectionRegistryException;
-    public List<PersistentIdentifier> createLatestIdentifiers(VirtualCollection vc) throws VirtualCollectionRegistryException;
+    public List<PersistentIdentifier> createIdentifiers(VirtualCollection vc, PermaLinkService permaLinkService) throws VirtualCollectionRegistryException;
+    public List<PersistentIdentifier> createLatestIdentifiers(VirtualCollection vc, PermaLinkService permaLinkService) throws VirtualCollectionRegistryException;
 }

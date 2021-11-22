@@ -162,10 +162,10 @@ public class PidProviderServiceImpl implements PidProviderService {
      * @return
      * @throws VirtualCollectionRegistryException
      */
-    public List<PersistentIdentifier> createIdentifiers(VirtualCollection vc) throws VirtualCollectionRegistryException {
+    public List<PersistentIdentifier> createIdentifiers(VirtualCollection vc, PermaLinkService permaLinkService) throws VirtualCollectionRegistryException {
         List<PersistentIdentifier> pids = new LinkedList<>();
         for(PersistentIdentifierProvider provider : providers) {
-            pids.add(provider.createIdentifier(vc));
+            pids.add(provider.createIdentifier(vc, permaLinkService));
 
         }
         return pids;
@@ -178,10 +178,10 @@ public class PidProviderServiceImpl implements PidProviderService {
      * @return
      * @throws VirtualCollectionRegistryException
      */
-    public List<PersistentIdentifier> createLatestIdentifiers(VirtualCollection vc) throws VirtualCollectionRegistryException {
+    public List<PersistentIdentifier> createLatestIdentifiers(VirtualCollection vc, PermaLinkService permaLinkService) throws VirtualCollectionRegistryException {
         List<PersistentIdentifier> pids = new LinkedList<>();
         for(PersistentIdentifierProvider provider : providers) {
-            PersistentIdentifier pid = provider.createIdentifier(vc, LATEST_SUFFIX);
+            PersistentIdentifier pid = provider.createIdentifier(vc, LATEST_SUFFIX, permaLinkService);
             pid.setPrimary(false);
             pid.setLatest(true);
             pids.add(pid);

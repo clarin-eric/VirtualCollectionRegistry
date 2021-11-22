@@ -33,9 +33,9 @@ public abstract class TxManager {
     }
 
     protected void printTxStack(String prefix) {
-        logger.info("{} (size={})", prefix, txStack.size());
+        logger.trace("{} (size={})", prefix, txStack.size());
         for(String s : txStack) {
-            logger.info("   {}", s);
+            logger.trace("   {}", s);
         }
     }
 
@@ -58,7 +58,7 @@ public abstract class TxManager {
             final EntityManager em = datastore.getEntityManager();
             if (em.getTransaction().isActive() && txStack.isEmpty()) {
                 em.getTransaction().commit();
-                logger.info("Performing commit");
+                logger.trace("Performing commit");
             }
         }
     }

@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.pid;
 
+import eu.clarin.cmdi.virtualcollectionregistry.PermaLinkService;
 import eu.clarin.cmdi.virtualcollectionregistry.ServletUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
@@ -129,13 +130,13 @@ public class GWDGPersistentIdentifierProvider implements
     }
 
     @Override
-    public PersistentIdentifier createIdentifier(VirtualCollection vc)
+    public PersistentIdentifier createIdentifier(VirtualCollection vc, PermaLinkService permaLinkService)
             throws VirtualCollectionRegistryException {
-        return createIdentifier(vc, "");
+        return createIdentifier(vc, "", permaLinkService);
     }
 
     @Override
-    public PersistentIdentifier createIdentifier(VirtualCollection vc, String suffix)
+    public PersistentIdentifier createIdentifier(VirtualCollection vc, String suffix, PermaLinkService permaLinkService)
             throws VirtualCollectionRegistryException {
         throw new RuntimeException("Not supported");
         /*

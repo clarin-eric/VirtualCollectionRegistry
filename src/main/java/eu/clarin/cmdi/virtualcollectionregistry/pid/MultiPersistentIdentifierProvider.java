@@ -2,6 +2,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.pid;
 
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.impl.PidWriterImpl;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidWriter;
+import eu.clarin.cmdi.virtualcollectionregistry.PermaLinkService;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -43,15 +44,15 @@ public class MultiPersistentIdentifierProvider implements PersistentIdentifierPr
     }
 
     @Override
-    public PersistentIdentifier createIdentifier(VirtualCollection vc) throws VirtualCollectionRegistryException {
-        return createIdentifier(vc, "");
+    public PersistentIdentifier createIdentifier(VirtualCollection vc, PermaLinkService permaLinkService) throws VirtualCollectionRegistryException {
+        return createIdentifier(vc, "", permaLinkService);
     }
 
     @Override
-    public PersistentIdentifier createIdentifier(VirtualCollection vc, String suffix) throws VirtualCollectionRegistryException {
+    public PersistentIdentifier createIdentifier(VirtualCollection vc, String suffix, PermaLinkService permaLinkService) throws VirtualCollectionRegistryException {
         PersistentIdentifier primaryId = null;
         for(PersistentIdentifierProvider provider : providers) {
-            PersistentIdentifier id = provider.createIdentifier(vc);
+            PersistentIdentifier id = provider.createIdentifier(vc, permaLinkService);
             if(provider.isPrimaryProvider()) {
                 primaryId = id;
             }

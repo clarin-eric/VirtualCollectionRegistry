@@ -3,6 +3,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.pid;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.Configuration;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.HandleField;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidWriter;
+import eu.clarin.cmdi.virtualcollectionregistry.PermaLinkService;
 import eu.clarin.cmdi.virtualcollectionregistry.PidProviderServiceImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
@@ -60,15 +61,15 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
     }
     
     @Override
-    public PersistentIdentifier createIdentifier(VirtualCollection vc) throws VirtualCollectionRegistryException {
-        return createIdentifier(vc, "");
+    public PersistentIdentifier createIdentifier(VirtualCollection vc, PermaLinkService permaLinkService) throws VirtualCollectionRegistryException {
+        return createIdentifier(vc, "", permaLinkService);
     }
 
     @Override
-    public PersistentIdentifier createIdentifier(VirtualCollection vc, String suffix)
+    public PersistentIdentifier createIdentifier(VirtualCollection vc, String suffix, PermaLinkService permaLinkService)
             throws VirtualCollectionRegistryException {
         logger.debug("creating handle for virtual collection \"{}\"", vc.getId());
-        final Map<HandleField, String> fieldMap = createPIDFieldMap(vc);
+        final Map<HandleField, String> fieldMap = createPIDFieldMap(vc, permaLinkService);
         try {
             final String requestedPid = String.format("%s%d%s", getInfix(), vc.getId(), suffix);
             final String pid = pidWriter.registerNewPID(configuration, fieldMap, requestedPid);
@@ -78,9 +79,9 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
         }
     }
 
-    private Map<HandleField, String> createPIDFieldMap(VirtualCollection vc) {
+    private Map<HandleField, String> createPIDFieldMap(VirtualCollection vc, PermaLinkService permaLinkService) {
         final Map<HandleField, String> pidMap = new EnumMap<>(HandleField.class);
-        final String url = Application.get().getPermaLinkService().getCollectionUrl(vc);
+        final String url = permaLinkService.getCollectionUrl(vc);
         pidMap.put(HandleField.URL, url);
         pidMap.put(HandleField.TITLE, vc.getName());
         if (!vc.getCreators().isEmpty()) {

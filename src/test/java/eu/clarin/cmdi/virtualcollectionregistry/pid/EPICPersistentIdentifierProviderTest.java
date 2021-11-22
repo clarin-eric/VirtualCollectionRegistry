@@ -28,6 +28,7 @@ public class EPICPersistentIdentifierProviderTest extends WicketTesterEnabledTes
         new Configuration("http://epic/server", "9999", "user", "password");
     private EPICPersistentIdentifierProvider instance;
     private PidWriter pidWriter;
+    private PermaLinkService permaLinkService;
 
     @Before
     public void setUp() {
@@ -35,6 +36,7 @@ public class EPICPersistentIdentifierProviderTest extends WicketTesterEnabledTes
         pidWriter = context.mock(PidWriter.class);
         instance = new EPICPersistentIdentifierProvider(pidWriter, pidConfig);
         instance.setInfix("VCR-test-");
+        permaLinkService = new PermaLinkServiceImpl();
     }
 
     /**
@@ -66,7 +68,7 @@ public class EPICPersistentIdentifierProviderTest extends WicketTesterEnabledTes
             }
         });
 
-        PersistentIdentifier result = instance.createIdentifier(vc);
+        PersistentIdentifier result = instance.createIdentifier(vc, permaLinkService);
         assertEquals("9999/VCR-test-123", result.getIdentifier());
         assertEquals(Type.HANDLE, result.getType());
     }
