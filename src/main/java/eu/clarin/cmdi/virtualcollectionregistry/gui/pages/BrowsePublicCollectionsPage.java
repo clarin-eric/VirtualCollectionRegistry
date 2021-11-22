@@ -43,7 +43,7 @@ public class BrowsePublicCollectionsPage extends BasePage {
             
             add(CitationPanelFactory.getCitationPanel("cite", model, true));
             
-            final AjaxFallbackLink lrsLink = LanguageResourceSwitchboardLink.forCollection("lrs", model.getObject());
+            final AjaxFallbackLink lrsLink = LanguageResourceSwitchboardLink.forCollection("lrs", model.getObject(), vcrConfig.getProcessEndpointPreferedPidType());
             lrsLink.setVisible(vcrConfig.isProcessEnabledForCollections());
             add(lrsLink);
 

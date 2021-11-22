@@ -299,7 +299,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
                 owner = new User(getUser());
             } catch(Exception ex) {}
 
-            final AjaxFallbackLink lrsLink = LanguageResourceSwitchboardLink.forCollection("process", model.getObject());
+            final AjaxFallbackLink lrsLink = LanguageResourceSwitchboardLink.forCollection("process", model.getObject(), vcrConfig.getProcessEndpointPreferedPidType());
             lrsLink.setVisible(vcrConfig.isProcessEnabledForCollections());
             add(lrsLink);
 

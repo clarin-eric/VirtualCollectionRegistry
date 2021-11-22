@@ -30,8 +30,8 @@ public class CMDIExplorerLink extends AjaxFallbackLink<String> {
 
     public static CMDIExplorerLink forCollection(String id, VirtualCollection vc, String preferidPidType) {
         String href = vc.getPrimaryIdentifier().getActionableURI();
+        logger.info("Select pid of preferred type = {}", preferidPidType);
         if(!preferidPidType.equalsIgnoreCase("primary")) {
-            logger.info("Select pid of preferred type = {}", preferidPidType);
             boolean found = false;
             for (PersistentIdentifier pid : vc.getAllIdentifiers()) {
                 if(pid.getPidType() == PidType.fromString(preferidPidType)) {

@@ -49,6 +49,9 @@ public class VcrConfigImpl implements VcrConfig {
     @Value("${eu.clarin.cmdi.vcr.process.enable:COLLECTIONS,RESOURCES}")
     private String processEnable;
 
+    @Value("${eu.clarin.cmdi.vcr.process.prefered_pid_type:HDL}")
+    private String processEndpointPreferedPidType;
+
     @Value("${eu.clarin.cmdi.vcr.process.popup:true}")
     private boolean processPopup;
 
@@ -56,7 +59,7 @@ public class VcrConfigImpl implements VcrConfig {
     private String downloadEndpoint;
 
     @Value("${eu.clarin.cmdi.vcr.download.prefered_pid_type:HDL}")
-    private String getDownloadEndpointPreferedPidType;
+    private String downloadEndpointPreferedPidType;
 
     @Value("${eu.clarin.cmdi.vcr.download.enable:COLLECTIONS}")
     private String downloadEnable;
@@ -102,7 +105,10 @@ public class VcrConfigImpl implements VcrConfig {
     }
 
     @Override
-    public String getDownloadEndpointPreferedPidType() {return getDownloadEndpointPreferedPidType; }
+    public String getDownloadEndpointPreferedPidType() {return downloadEndpointPreferedPidType; }
+
+    @Override
+    public String getProcessEndpointPreferedPidType() {return processEndpointPreferedPidType; }
 
     @Override
     public boolean isProcessPopupEnabled() {

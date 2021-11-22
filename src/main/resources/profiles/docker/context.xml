@@ -60,6 +60,11 @@
                value="https://switchboard.clarin.eu/#/xyz" 
                override="false"/>
 
+    <!-- Allowed values: "HDL", "DOI", "primary", ... -->
+    <Parameter name="eu.clarin.cmdi.vcr.process.prefered_pid_type"
+               value="HDL"
+               override="false"/>
+
     <!-- Download endpoint -->
     <Parameter name="eu.clarin.cmdi.vcr.download.endpoint"
                value="https://weblicht.sfs.uni-tuebingen.de/CMDIExplorer/input/#/vcr"
