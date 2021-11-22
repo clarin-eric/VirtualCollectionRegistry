@@ -26,7 +26,7 @@ public class DoiPersistentIdentifierProviderTest extends WicketTesterEnabledTest
 
     private static String prefix = "10.5438";
 
-    private PermaLinkService permaLinkService = new PermaLinkServiceImpl();
+    private PermaLinkService permaLinkService = new PermaLinkServiceImpl(TestApplication.BASE_URI);
 
     @Test
     public void testCreate() throws JsonProcessingException, UnsupportedEncodingException {

@@ -36,7 +36,7 @@ public class EPICPersistentIdentifierProviderTest extends WicketTesterEnabledTes
         pidWriter = context.mock(PidWriter.class);
         instance = new EPICPersistentIdentifierProvider(pidWriter, pidConfig);
         instance.setInfix("VCR-test-");
-        permaLinkService = new PermaLinkServiceImpl();
+        permaLinkService = new PermaLinkServiceImpl(TestApplication.BASE_URI);
     }
 
     /**
