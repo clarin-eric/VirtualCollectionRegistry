@@ -53,19 +53,27 @@
                 <div class="col-xs-12 field-row" wicket:id="int_query_parameters">[INT QUERY PARAMETERS]</div>
             </div>
 
-            <!-- Button row -->
-            <div class="row" style="margin-top: 25px">
+            <!-- Error message(s) row -->
+            <!--
+            <div class="row" style="margin-bottom: 50px;">
+                <div class="col-xs-12" style="text-align: center">
+                    <span wicket:id="error_message" class="error-message"></span>
+                </div>
+            </div>
+            -->
+
+            <!-- Button and error messages row, floating controlled by javascript if enabled -->
+            <div class="crud-action-buttons" id="crud-action-buttons">
+                <!-- Error message(s) -->
+                <div class="col-xs-12" style="text-align: center">
+                    <span wicket:id="error_message" class="error-message"></span>
+                </div>
+                <!-- Action buttons -->
                 <div class="col-xs-6" style="text-align: right;">
                     <a class="btn btn-sm btn-primary" wicket:id="btn_save">Save Collection</a>
                 </div>
                 <div class="col-xs-6">
                     <a class="btn btn-sm btn-default" wicket:id="btn_cancel">Cancel</a>
-                </div>
-            </div>
-
-            <div class="row">
-                <div class="col-xs-12" style="text-align: center">
-                    <span wicket:id="error_message" class="error-message"></span>
                 </div>
             </div>
 

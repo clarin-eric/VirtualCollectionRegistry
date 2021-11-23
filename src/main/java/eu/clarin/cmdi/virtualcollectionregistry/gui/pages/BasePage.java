@@ -29,6 +29,8 @@ import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
 import javax.servlet.ServletContext;
+
+import eu.clarin.cmdi.wicket.ScrollTracker;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
@@ -141,6 +143,8 @@ public class BasePage extends WebPage {
             badge.add(new AttributeModifier("class", "vcr-badge alpha"));
         }
         add(badge);
+
+        add(new ScrollTracker("scroll"));
     }
     
     private Component createHeaderMenu(String id) {
