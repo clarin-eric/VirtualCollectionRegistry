@@ -13,9 +13,8 @@ public class ScrollTracker extends WebComponent {
                 + "<!-- Scroll Tracker -->\n"
                 + "<script type=\"text/javascript\">\n"
                 + "let el = document.querySelector('#crud-action-buttons');\n"
-                + "console.log('El:', el);\n"
                 + "if(el) {\n"
-                + "console.log('Enabling scrolling');\n"
+                + "console.debug('Enabling scrolling');\n"
                 + "let elFooter = document.querySelector('#footer');\n"
                 + "function checkFooterVisibility() {\n"
                 + "const rect = elFooter.getBoundingClientRect();\n"
@@ -36,6 +35,7 @@ public class ScrollTracker extends WebComponent {
                 + "//Register event listeners\n"
                 + "window.addEventListener('resize', function (e) { checkFooterVisibility(); });\n"
                 + "document.addEventListener('scroll', function (e) { checkFooterVisibility(); });\n"
+                + "checkFooterVisibility(); //Run once on page loaded\n"
                 + "}\n"
                 + "</script>\n"
                 + "<!-- End Scroll Tracker -->");

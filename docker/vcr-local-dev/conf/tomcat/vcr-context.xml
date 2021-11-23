@@ -74,7 +74,7 @@
 
     <!-- Allowed values: "COLLECTIONS", "RESOURCES". To disable downloading set value="" -->
     <Parameter name="eu.clarin.cmdi.vcr.download.enable"
-               value=""
+               value="COLLECTIONS"
                override="false"/>
 
     <!--

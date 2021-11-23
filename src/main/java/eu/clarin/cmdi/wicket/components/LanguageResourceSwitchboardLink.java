@@ -7,8 +7,10 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
 import eu.clarin.cmdi.wicket.components.pid.PidType;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
+import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.flow.RedirectToUrlException;
@@ -33,7 +35,7 @@ public class LanguageResourceSwitchboardLink extends AjaxFallbackLink<String> {
     private final IModel<String> mimeTypeModel;
     private final IModel<String> languageCodeModel;
 
-    public static LanguageResourceSwitchboardLink forResource(String id, Resource resource) {
+    public static Component forResource(String id, Resource resource) {
         String ref = resource.getRef();
         if (resource.hasPersistentIdentifier()) {
             ref = resource.getPidUri();
@@ -47,19 +49,24 @@ public class LanguageResourceSwitchboardLink extends AjaxFallbackLink<String> {
         return link;
     }
 
-    public static LanguageResourceSwitchboardLink forCollection(String id, VirtualCollection vc, String preferidPidType) {
+    public static Component forCollection(String id, VirtualCollection vc, VcrConfig vcrConfig) {
+        if(vc.getPrimaryIdentifier() == null) {
+            WebMarkupContainer container = new WebMarkupContainer(id);
+            container.setVisible(false);
+            return container;
+        }
         String href = vc.getPrimaryIdentifier().getActionableURI();
-        logger.info("Select pid of preferred type = {}", preferidPidType);
-        if(!preferidPidType.equalsIgnoreCase("primary")) {
+        logger.info("Select pid of preferred type = {}", vcrConfig.getProcessEndpointPreferedPidType());
+        if(!vcrConfig.getProcessEndpointPreferedPidType().equalsIgnoreCase("primary")) {
             boolean found = false;
             for (PersistentIdentifier pid : vc.getAllIdentifiers()) {
-                if(pid.getPidType() == PidType.fromString(preferidPidType)) {
+                if(pid.getPidType() == PidType.fromString(vcrConfig.getProcessEndpointPreferedPidType())) {
                     href = pid.getActionableURI();
                     found = true;
                 }
             }
             if(!found) {
-                logger.warn("Did not find PID of prefered type = {} for collection with id = {}", preferidPidType, vc.getId());
+                logger.warn("Did not find PID of prefered type = {} for collection with id = {}", vcrConfig.getProcessEndpointPreferedPidType(), vc.getId());
             }
         }
 
@@ -69,6 +76,7 @@ public class LanguageResourceSwitchboardLink extends AjaxFallbackLink<String> {
                 Model.of("application/xml"),
                 Model.of("en"));
         UIUtils.addTooltip(link, TOOLTIP_RESOURCE_TEXT);
+        link.setVisible(vcrConfig.isProcessEnabledForCollections());
         return link;
     }
 

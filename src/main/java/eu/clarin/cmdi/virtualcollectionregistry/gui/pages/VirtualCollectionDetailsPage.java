@@ -299,13 +299,8 @@ public class VirtualCollectionDetailsPage extends BasePage {
                 owner = new User(getUser());
             } catch(Exception ex) {}
 
-            final AjaxFallbackLink lrsLink = LanguageResourceSwitchboardLink.forCollection("process", model.getObject(), vcrConfig.getProcessEndpointPreferedPidType());
-            lrsLink.setVisible(vcrConfig.isProcessEnabledForCollections());
-            add(lrsLink);
-
-            final  AjaxFallbackLink downloadLink = CMDIExplorerLink.forCollection("download", model.getObject(), vcrConfig.getDownloadEndpointPreferedPidType());
-            downloadLink.setVisible(vcrConfig.isDownloadEnabledForCollections());
-            add(downloadLink);
+            add(LanguageResourceSwitchboardLink.forCollection("process", model.getObject(), vcrConfig));
+            add(CMDIExplorerLink.forCollection("download", model.getObject(), vcrConfig));
 
             add(CitationPanelFactory.getCitationPanel("citation", model));
             AjaxLink btnFork = new AjaxLink("btn_fork", new Model<String>("Cite")) {
@@ -556,7 +551,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
             Lists.newArrayList(new DropdownMenuItem("Process with Language Resource Switchboard", "glyphicon glyphicon-open-file") {
                 @Override
                 protected AbstractLink getLink(String id) {
-                    return LanguageResourceSwitchboardLink.forResource("link", model.getObject());
+                    return (AbstractLink)LanguageResourceSwitchboardLink.forResource("link", model.getObject());
                 }
             });                
          

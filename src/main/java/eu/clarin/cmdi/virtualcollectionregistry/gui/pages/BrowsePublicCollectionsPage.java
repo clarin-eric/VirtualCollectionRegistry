@@ -10,6 +10,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.table.PublishedCollectionsPr
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
@@ -40,16 +41,9 @@ public class BrowsePublicCollectionsPage extends BasePage {
         public ActionsPanel(String id, IModel<VirtualCollection> model) {
             super(id, model);
             setRenderBodyOnly(true);
-            
             add(CitationPanelFactory.getCitationPanel("cite", model, true));
-            
-            final AjaxFallbackLink lrsLink = LanguageResourceSwitchboardLink.forCollection("lrs", model.getObject(), vcrConfig.getProcessEndpointPreferedPidType());
-            lrsLink.setVisible(vcrConfig.isProcessEnabledForCollections());
-            add(lrsLink);
-
-            final AjaxFallbackLink downloadLink = CMDIExplorerLink.forCollection("download", model.getObject(), vcrConfig.getDownloadEndpointPreferedPidType());
-            downloadLink.setVisible(vcrConfig.isDownloadEnabledForCollections());
-            add(downloadLink);
+            add(LanguageResourceSwitchboardLink.forCollection("lrs", model.getObject(), vcrConfig));
+            add(CMDIExplorerLink.forCollection("download", model.getObject(), vcrConfig));
         }
         
     } // class BrowsePublicCollectionsPage.ActionsPanel
