@@ -415,7 +415,9 @@ public class VirtualCollectionDetailsPage extends BasePage {
 
             List<PersistentIdentifier> latestPidList = new LinkedList<>();
             for(PersistentIdentifier pid : model.getObject().getLatestIdentifiers()) {
-                latestPidList.add(pid);
+                if((!showAdvancedFields.getObject() && pid.getPrimary()) || showAdvancedFields.getObject()) {
+                    latestPidList.add(pid);
+                }
             }
             ListView latestPidsListView = new ListView("latest_pids", latestPidList) {
                 @Override
@@ -429,7 +431,9 @@ public class VirtualCollectionDetailsPage extends BasePage {
 
             List<PersistentIdentifier> pidList = new LinkedList<>();
             for(PersistentIdentifier pid : model.getObject().getIdentifiers()) {
-                pidList.add(pid);
+                if((!showAdvancedFields.getObject() && pid.getPrimary()) || showAdvancedFields.getObject()) {
+                    pidList.add(pid);
+                }
             }
             ListView pidsListView = new ListView("pids", pidList) {
                 @Override
