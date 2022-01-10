@@ -47,7 +47,7 @@
         <maven.compiler.target>1.8</maven.compiler.target>
         <!-- dependency versions -->
         <slf4j.version>1.7.30</slf4j.version>
-        <log4j.version>2.16.0</log4j.version>
+        <log4j.version>2.17.1</log4j.version>
         <hibernate.version>5.4.24.Final</hibernate.version>
         <hibernate.jpaVersion>1.0.0.Final</hibernate.jpaVersion>
         <jersey.version>2.32</jersey.version>
