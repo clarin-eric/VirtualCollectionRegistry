@@ -29,6 +29,8 @@ public class EPICPersistentIdentifierProviderTest extends WicketTesterEnabledTes
     private EPICPersistentIdentifierProvider instance;
     private PidWriter pidWriter;
 
+    private PermaLinkService permaLinkService = new PermaLinkServiceImpl(TestApplication.BASE_URI);
+
     @Before
     public void setUp() {
         super.setUp();
@@ -66,7 +68,7 @@ public class EPICPersistentIdentifierProviderTest extends WicketTesterEnabledTes
             }
         });
 
-        PersistentIdentifier result = instance.createIdentifier(vc);
+        PersistentIdentifier result = instance.createIdentifier(vc, permaLinkService);
         assertEquals("9999/VCR-test-123", result.getIdentifier());
         assertEquals(Type.HANDLE, result.getType());
     }
