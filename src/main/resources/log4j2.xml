@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout>
+                <Pattern>%d %p [%c#%M:%L] - %m%n</Pattern>
+            </PatternLayout>
+        </Console>
+        <RollingFile
+                name="File"
+                fileName="${sys:catalina.base}/logs/vcr.log"
+                filePattern="${sys:catalina.base}/logs/vcr.%i.log.gz"
+                ignoreExceptions="false">
+            <PatternLayout>
+                <Pattern>%d %p [%c#%M:%L] - %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="5" />
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Logger name="eu.clarin.cmdi.virtualcollectionregistry" level="DEBUG" />
+        <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui" level="INFO" />
+        <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth" level="INFO" />
+        <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui.CharacterEncodingFilter" level="INFO" />
+        <Logger name="eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryMaintenanceImpl" level="INFO" />
+        <Logger name="eu.clarin.cmdi.virtualcollectionregistry.AdminUsersServiceImpl" level="WARN" />
+        <Logger name="eu.clarin.cmdi.virtualcollectionregistry.ServletUtils" level="WARN" />
+
+        <Logger name="de.mpg.aai.shhaa.authn" level="INFO" />
+        <Logger name="de.mpg.aai.shhaa.resolver" level="INFO" />
+
+        <Logger name="org.jboss" level="WARN" />
+        <Logger name="org.glassfish.jersey" level="WARN" />
+        <Logger name="org.springframework" level="WARN" />
+        <Logger name="org.hibernate" level="INFO" />
+        <!--
+        <Logger name="org.hibernate.SQL" level="DEBUG" />
+        <Logger name="org.hibernate.type" level="TRACE" />
+        -->
+        <Logger name="org.apache.wicket" level="WARN" />
+        <Logger name="org.apache.wicket.resource" level="WARN" />
+        <Logger name="org.apache.http" level="WARN" />
+        <Logger name="de.agilecoders.wicket" level="WARN" />
+        <Logger name="wicket-webjars" level="WARN" />
+        <Logger name="net.bull.javamelody" level="WARN" />
+
+        <Root level="trace">
+            <AppenderRef ref="File"/>
+            <!--AppenderRef ref="Console"/-->
+        </Root>
+    </Loggers>
+</Configuration>
