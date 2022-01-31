@@ -16,9 +16,36 @@ along with this program.  If not, see <http://www.gnu.org/licenses/>.
 */
 
 
+.toggle-filter {
+    color: #00406f;
+}
+
+.filter-row {
+    margin: 2px;
+}
+
+label.filter {
+    font-size: 1em;
+    min-height: 25px;
+}
+
+select.filter {
+    width: 100%;
+    font-size: 1em;
+    min-height: 25px;
+}
+
+input.filter {
+    width: 100%;
+    font-size: 1em;
+    min-height: 25px;
+}
+
 form.filterForm {
     margin: 0;
     padding: 0;
+    position: absolute;
+    z-index: 1;
 
     fieldset {
         padding: 0;

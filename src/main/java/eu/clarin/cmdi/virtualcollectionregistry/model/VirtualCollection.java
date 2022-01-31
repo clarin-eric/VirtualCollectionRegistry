@@ -50,6 +50,7 @@ ORDER BY c.id
 @Entity
 @Table(name = "virtualcollection")
 @NamedQueries({
+        /*
     @NamedQuery(name = "VirtualCollection.find",
         query =
             "SELECT c FROM VirtualCollection c " +
@@ -65,8 +66,7 @@ ORDER BY c.id
             "WHERE "+
                 "c.id IN ("+
                     "SELECT max(c2.id) FROM VirtualCollection c2 WHERE c2.state IN (:vc_state) AND c2.owner.name LIKE :vc_owner GROUP BY c2.root"+
-                ")" +
-            "ORDER BY c.id"
+                ")"
     ),
     @NamedQuery(name = "VirtualCollection.findOrigins",
         query =
@@ -76,6 +76,7 @@ ORDER BY c.id
                     "SELECT max(c2.id) FROM VirtualCollection c2 WHERE c2.state IN (:vc_state) AND c2.owner.name LIKE :vc_owner GROUP BY c2.root"+
                 ") AND " +
                 "c.origin IS NOT NULL"),
+                */
     @NamedQuery(name = "VirtualCollection.findAllPublic",
         query =
             "SELECT c FROM VirtualCollection c " +

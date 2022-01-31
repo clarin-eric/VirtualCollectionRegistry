@@ -22,7 +22,9 @@ final class FilterState implements Serializable {
     private VirtualCollection.Type type;
     private List<VirtualCollection.State> state = new LinkedList<>();
     private QueryOptions.Relation createdRelation;
+    private QueryOptions.Relation modifiedRelation;
     private Date created;
+    private Date modified;
     private String origin;
 
     public FilterState() {
@@ -123,6 +125,17 @@ final class FilterState implements Serializable {
         this.createdRelation = createdRelation;
     }
 
+    public QueryOptions.Relation getModifiedRelation() {
+        return modifiedRelation;
+    }
+
+    public void setModifiedRelation(QueryOptions.Relation modifiedRelation) {
+        if (modifiedRelation == null) {
+            throw new IllegalArgumentException("createdRelation == null");
+        }
+        this.modifiedRelation = modifiedRelation;
+    }
+
     public Date getCreated() {
         return created;
     }
@@ -135,6 +148,18 @@ final class FilterState implements Serializable {
         return created != null;
     }
 
+    public Date getModified() {
+        return modified;
+    }
+
+    public void setModified(Date modified) {
+        this.modified = modified;
+    }
+
+    public boolean hasModified() {
+        return modified != null;
+    }
+
     public void clear() {
         nameMode = SearchMode.CONTAINS;
         name = null;
@@ -144,6 +169,20 @@ final class FilterState implements Serializable {
         state = new LinkedList<>();
         createdRelation = QueryOptions.Relation.EQ;
         created = null;
+        modifiedRelation = QueryOptions.Relation.EQ;
+        modified = null;
+        origin = null;
+    }
+
+    public boolean isCleared() {
+        return
+            name == null &&
+            description == null &&
+            type == null &&
+            state.isEmpty() &&
+            created == null &&
+            modified == null &&
+            origin == null;
     }
 
     private static String addWildcards(String s, SearchMode mode) {

@@ -35,7 +35,7 @@ public class VirtualCollectionDaoImplNamedQuery implements VirtualCollectionDao 
         if (first > -1) {
             q.setFirstResult(first);
         }
-        if (count > 0) {
+        if (count >= 0) {
             q.setMaxResults(count);
         }
         return q.getResultList();

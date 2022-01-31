@@ -20,6 +20,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmissionU
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionFactory;
 import eu.clarin.cmdi.wicket.components.panel.EmptyPanel;
 import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
@@ -102,13 +103,18 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
             if (state == VirtualCollection.State.PUBLIC || state == VirtualCollection.State.PUBLIC_PENDING ||
                 state == VirtualCollection.State.PUBLIC_FROZEN || state == VirtualCollection.State.PUBLIC_FROZEN_PENDING) {
                 logger.debug("Editing a public collection, rolling over to a new version");
+
+
                 //Create a new version
+                /*
                 VirtualCollection newVersionCollection = existingCollection.clone();
                 newVersionCollection.setState(VirtualCollection.State.PRIVATE);
                 newVersionCollection.setParent(existingCollection);
                 newVersionCollection.setRoot(existingCollection.getRoot());
 
                 vc = newVersionCollection; //Activate the new version
+                 */
+                vc = VirtualCollectionFactory.fromExisting(existingCollection).getNewCollectionVersion().getCollection();
                 parentCollectionId = existingCollection.getId();
             } else {
                 vc = existingCollection; //Activate the existing collection

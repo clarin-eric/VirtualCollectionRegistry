@@ -1,0 +1,563 @@
+2022-01-31 12:15:03,578 INFO [eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionDaoTest#setUp:94] - Starting in-memory HSQL database for unit tests
+2022-01-31 12:15:03,948 INFO [eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionDaoTest#setUp:98] - Building JPA EntityManager for unit tests
+2022-01-31 12:15:04,083 INFO [org.hibernate.jpa.internal.util.LogHelper#logPersistenceUnitInformation:31] - HHH000204: Processing PersistenceUnitInfo [name: VirtualCollectionStoreTest]
+2022-01-31 12:15:04,182 INFO [org.hibernate.Version#logVersion:44] - HHH000412: Hibernate ORM core version 5.4.24.Final
+2022-01-31 12:15:04,490 INFO [org.hibernate.annotations.common.Version#<clinit>:56] - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2022-01-31 12:15:04,557 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration boolean -> org.hibernate.type.BooleanType@784c5ef5
+2022-01-31 12:15:04,558 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration boolean -> org.hibernate.type.BooleanType@784c5ef5
+2022-01-31 12:15:04,558 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.lang.Boolean -> org.hibernate.type.BooleanType@784c5ef5
+2022-01-31 12:15:04,559 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration numeric_boolean -> org.hibernate.type.NumericBooleanType@6401d0a0
+2022-01-31 12:15:04,560 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration true_false -> org.hibernate.type.TrueFalseType@61f80d55
+2022-01-31 12:15:04,561 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration yes_no -> org.hibernate.type.YesNoType@30501e60
+2022-01-31 12:15:04,563 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration byte -> org.hibernate.type.ByteType@2dddc1b9
+2022-01-31 12:15:04,563 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration byte -> org.hibernate.type.ByteType@2dddc1b9
+2022-01-31 12:15:04,564 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.lang.Byte -> org.hibernate.type.ByteType@2dddc1b9
+2022-01-31 12:15:04,565 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration character -> org.hibernate.type.CharacterType@1fcf9739
+2022-01-31 12:15:04,566 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration char -> org.hibernate.type.CharacterType@1fcf9739
+2022-01-31 12:15:04,566 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.lang.Character -> org.hibernate.type.CharacterType@1fcf9739
+2022-01-31 12:15:04,568 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration short -> org.hibernate.type.ShortType@2bef09c0
+2022-01-31 12:15:04,569 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration short -> org.hibernate.type.ShortType@2bef09c0
+2022-01-31 12:15:04,569 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.lang.Short -> org.hibernate.type.ShortType@2bef09c0
+2022-01-31 12:15:04,571 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration integer -> org.hibernate.type.IntegerType@69e49a81
+2022-01-31 12:15:04,572 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration int -> org.hibernate.type.IntegerType@69e49a81
+2022-01-31 12:15:04,572 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.lang.Integer -> org.hibernate.type.IntegerType@69e49a81
+2022-01-31 12:15:04,574 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration long -> org.hibernate.type.LongType@1b7cae6f
+2022-01-31 12:15:04,575 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration long -> org.hibernate.type.LongType@1b7cae6f
+2022-01-31 12:15:04,575 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.lang.Long -> org.hibernate.type.LongType@1b7cae6f
+2022-01-31 12:15:04,577 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration float -> org.hibernate.type.FloatType@309028af
+2022-01-31 12:15:04,577 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration float -> org.hibernate.type.FloatType@309028af
+2022-01-31 12:15:04,578 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.lang.Float -> org.hibernate.type.FloatType@309028af
+2022-01-31 12:15:04,580 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration double -> org.hibernate.type.DoubleType@15f2eda3
+2022-01-31 12:15:04,580 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration double -> org.hibernate.type.DoubleType@15f2eda3
+2022-01-31 12:15:04,581 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.lang.Double -> org.hibernate.type.DoubleType@15f2eda3
+2022-01-31 12:15:04,583 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration big_decimal -> org.hibernate.type.BigDecimalType@f1a45f8
+2022-01-31 12:15:04,583 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.math.BigDecimal -> org.hibernate.type.BigDecimalType@f1a45f8
+2022-01-31 12:15:04,585 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration big_integer -> org.hibernate.type.BigIntegerType@75798d03
+2022-01-31 12:15:04,586 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.math.BigInteger -> org.hibernate.type.BigIntegerType@75798d03
+2022-01-31 12:15:04,587 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration string -> org.hibernate.type.StringType@3ae2ed38
+2022-01-31 12:15:04,588 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.lang.String -> org.hibernate.type.StringType@3ae2ed38
+2022-01-31 12:15:04,589 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration nstring -> org.hibernate.type.StringNVarcharType@12b5454f
+2022-01-31 12:15:04,590 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration ncharacter -> org.hibernate.type.CharacterNCharType@c808207
+2022-01-31 12:15:04,595 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration url -> org.hibernate.type.UrlType@62628e78
+2022-01-31 12:15:04,595 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.net.URL -> org.hibernate.type.UrlType@62628e78
+2022-01-31 12:15:04,597 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration Duration -> org.hibernate.type.DurationType@6ac0b715
+2022-01-31 12:15:04,598 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.time.Duration -> org.hibernate.type.DurationType@6ac0b715
+2022-01-31 12:15:04,611 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration Instant -> org.hibernate.type.InstantType@4d178d55
+2022-01-31 12:15:04,612 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.time.Instant -> org.hibernate.type.InstantType@4d178d55
+2022-01-31 12:15:04,615 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration LocalDateTime -> org.hibernate.type.LocalDateTimeType@68c7ef83
+2022-01-31 12:15:04,616 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.time.LocalDateTime -> org.hibernate.type.LocalDateTimeType@68c7ef83
+2022-01-31 12:15:04,619 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration LocalDate -> org.hibernate.type.LocalDateType@6c1832aa
+2022-01-31 12:15:04,620 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.time.LocalDate -> org.hibernate.type.LocalDateType@6c1832aa
+2022-01-31 12:15:04,622 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration LocalTime -> org.hibernate.type.LocalTimeType@6be7bf6d
+2022-01-31 12:15:04,623 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.time.LocalTime -> org.hibernate.type.LocalTimeType@6be7bf6d
+2022-01-31 12:15:04,625 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration OffsetDateTime -> org.hibernate.type.OffsetDateTimeType@12010fd1
+2022-01-31 12:15:04,626 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.time.OffsetDateTime -> org.hibernate.type.OffsetDateTimeType@12010fd1
+2022-01-31 12:15:04,628 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration OffsetTime -> org.hibernate.type.OffsetTimeType@7318daf8
+2022-01-31 12:15:04,628 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.time.OffsetTime -> org.hibernate.type.OffsetTimeType@7318daf8
+2022-01-31 12:15:04,633 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration ZonedDateTime -> org.hibernate.type.ZonedDateTimeType@6601cc93
+2022-01-31 12:15:04,633 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.time.ZonedDateTime -> org.hibernate.type.ZonedDateTimeType@6601cc93
+2022-01-31 12:15:04,636 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration date -> org.hibernate.type.DateType@365a6a43
+2022-01-31 12:15:04,636 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.sql.Date -> org.hibernate.type.DateType@365a6a43
+2022-01-31 12:15:04,638 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration time -> org.hibernate.type.TimeType@128c502c
+2022-01-31 12:15:04,638 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.sql.Time -> org.hibernate.type.TimeType@128c502c
+2022-01-31 12:15:04,640 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration timestamp -> org.hibernate.type.TimestampType@5e5073ab
+2022-01-31 12:15:04,640 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.sql.Timestamp -> org.hibernate.type.TimestampType@5e5073ab
+2022-01-31 12:15:04,641 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.util.Date -> org.hibernate.type.TimestampType@5e5073ab
+2022-01-31 12:15:04,642 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration dbtimestamp -> org.hibernate.type.DbTimestampType@6d5037a9
+2022-01-31 12:15:04,644 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration calendar -> org.hibernate.type.CalendarType@10c2064a
+2022-01-31 12:15:04,644 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.util.Calendar -> org.hibernate.type.CalendarType@10c2064a
+2022-01-31 12:15:04,644 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.util.GregorianCalendar -> org.hibernate.type.CalendarType@10c2064a
+2022-01-31 12:15:04,645 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration calendar_date -> org.hibernate.type.CalendarDateType@5f9b6ae7
+2022-01-31 12:15:04,646 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration calendar_time -> org.hibernate.type.CalendarTimeType@3b90a30a
+2022-01-31 12:15:04,647 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration locale -> org.hibernate.type.LocaleType@71f96dfb
+2022-01-31 12:15:04,648 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.util.Locale -> org.hibernate.type.LocaleType@71f96dfb
+2022-01-31 12:15:04,651 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration currency -> org.hibernate.type.CurrencyType@4315e9af
+2022-01-31 12:15:04,651 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.util.Currency -> org.hibernate.type.CurrencyType@4315e9af
+2022-01-31 12:15:04,653 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration timezone -> org.hibernate.type.TimeZoneType@7159a5cd
+2022-01-31 12:15:04,654 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.util.TimeZone -> org.hibernate.type.TimeZoneType@7159a5cd
+2022-01-31 12:15:04,655 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration class -> org.hibernate.type.ClassType@7c853486
+2022-01-31 12:15:04,655 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.lang.Class -> org.hibernate.type.ClassType@7c853486
+2022-01-31 12:15:04,656 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration uuid-binary -> org.hibernate.type.UUIDBinaryType@68f32020
+2022-01-31 12:15:04,657 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.util.UUID -> org.hibernate.type.UUIDBinaryType@68f32020
+2022-01-31 12:15:04,657 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration uuid-char -> org.hibernate.type.UUIDCharType@53dad875
+2022-01-31 12:15:04,659 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration binary -> org.hibernate.type.BinaryType@771d1ffb
+2022-01-31 12:15:04,659 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration byte[] -> org.hibernate.type.BinaryType@771d1ffb
+2022-01-31 12:15:04,660 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration [B -> org.hibernate.type.BinaryType@771d1ffb
+2022-01-31 12:15:04,661 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration wrapper-binary -> org.hibernate.type.WrapperBinaryType@7e1f584d
+2022-01-31 12:15:04,661 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration Byte[] -> org.hibernate.type.WrapperBinaryType@7e1f584d
+2022-01-31 12:15:04,661 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration [Ljava.lang.Byte; -> org.hibernate.type.WrapperBinaryType@7e1f584d
+2022-01-31 12:15:04,663 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration row_version -> org.hibernate.type.RowVersionType@4d6ee47
+2022-01-31 12:15:04,664 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration image -> org.hibernate.type.ImageType@8b91134
+2022-01-31 12:15:04,665 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration characters -> org.hibernate.type.CharArrayType@736048ed
+2022-01-31 12:15:04,666 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration char[] -> org.hibernate.type.CharArrayType@736048ed
+2022-01-31 12:15:04,666 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration [C -> org.hibernate.type.CharArrayType@736048ed
+2022-01-31 12:15:04,668 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration wrapper-characters -> org.hibernate.type.CharacterArrayType@162b3d47
+2022-01-31 12:15:04,669 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration [Ljava.lang.Character; -> org.hibernate.type.CharacterArrayType@162b3d47
+2022-01-31 12:15:04,669 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration Character[] -> org.hibernate.type.CharacterArrayType@162b3d47
+2022-01-31 12:15:04,670 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration text -> org.hibernate.type.TextType@46d567cb
+2022-01-31 12:15:04,671 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration ntext -> org.hibernate.type.NTextType@2e23c180
+2022-01-31 12:15:04,673 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration blob -> org.hibernate.type.BlobType@7fb33394
+2022-01-31 12:15:04,674 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.sql.Blob -> org.hibernate.type.BlobType@7fb33394
+2022-01-31 12:15:04,675 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration materialized_blob -> org.hibernate.type.MaterializedBlobType@373f7450
+2022-01-31 12:15:04,677 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration clob -> org.hibernate.type.ClobType@7c447c76
+2022-01-31 12:15:04,677 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.sql.Clob -> org.hibernate.type.ClobType@7c447c76
+2022-01-31 12:15:04,679 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration nclob -> org.hibernate.type.NClobType@4aaae508
+2022-01-31 12:15:04,679 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.sql.NClob -> org.hibernate.type.NClobType@4aaae508
+2022-01-31 12:15:04,680 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration materialized_clob -> org.hibernate.type.MaterializedClobType@6869a3b3
+2022-01-31 12:15:04,680 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration materialized_nclob -> org.hibernate.type.MaterializedNClobType@431f1eaf
+2022-01-31 12:15:04,682 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration serializable -> org.hibernate.type.SerializableType@1aac188d
+2022-01-31 12:15:04,688 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration object -> org.hibernate.type.ObjectType@30e6a763
+2022-01-31 12:15:04,689 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration java.lang.Object -> org.hibernate.type.ObjectType@30e6a763
+2022-01-31 12:15:04,690 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration imm_date -> org.hibernate.type.AdaptedImmutableType@3d6a6bee
+2022-01-31 12:15:04,690 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration imm_time -> org.hibernate.type.AdaptedImmutableType@36ddaebf
+2022-01-31 12:15:04,690 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration imm_timestamp -> org.hibernate.type.AdaptedImmutableType@213c3543
+2022-01-31 12:15:04,690 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration imm_dbtimestamp -> org.hibernate.type.AdaptedImmutableType@9d7ccfe
+2022-01-31 12:15:04,691 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration imm_calendar -> org.hibernate.type.AdaptedImmutableType@670ce331
+2022-01-31 12:15:04,691 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration imm_calendar_date -> org.hibernate.type.AdaptedImmutableType@3cff0139
+2022-01-31 12:15:04,691 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration imm_binary -> org.hibernate.type.AdaptedImmutableType@7c29adc8
+2022-01-31 12:15:04,692 DEBUG [org.hibernate.type.BasicTypeRegistry#register:157] - Adding type registration imm_serializable -> org.hibernate.type.AdaptedImmutableType@4b2e3e8f
+2022-01-31 12:15:05,175 INFO [org.hibernate.dialect.Dialect#<init>:175] - HHH000400: Using dialect: org.hibernate.dialect.HSQLDialect
+2022-01-31 12:15:05,211 DEBUG [org.hibernate.type.spi.TypeConfiguration$Scope#scope:152] - Scoping TypeConfiguration [org.hibernate.type.spi.TypeConfiguration@26d41711] to MetadataBuildingContext [org.hibernate.boot.internal.MetadataBuildingContextRootImpl@298f0a0b]
+2022-01-31 12:15:05,508 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Problem
+2022-01-31 12:15:05,510 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Purpose
+2022-01-31 12:15:05,510 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Reproducibility
+2022-01-31 12:15:05,510 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State
+2022-01-31 12:15:05,511 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Type
+2022-01-31 12:15:05,511 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.Resource$Type
+2022-01-31 12:15:05,511 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier$Type
+2022-01-31 12:15:05,602 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Problem
+2022-01-31 12:15:05,603 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Purpose
+2022-01-31 12:15:05,603 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Reproducibility
+2022-01-31 12:15:05,604 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State
+2022-01-31 12:15:05,604 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Type
+2022-01-31 12:15:05,605 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.Resource$Type
+2022-01-31 12:15:05,607 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier$Type
+2022-01-31 12:15:05,648 DEBUG [org.hibernate.type.spi.TypeConfiguration$Scope#scope:157] - Scoping TypeConfiguration [org.hibernate.type.spi.TypeConfiguration@26d41711] to SessionFactoryImpl [org.hibernate.internal.SessionFactoryImpl@56846330]
+2022-01-31 12:15:06,076 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Problem
+2022-01-31 12:15:06,077 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Problem
+2022-01-31 12:15:06,078 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Purpose
+2022-01-31 12:15:06,078 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Purpose
+2022-01-31 12:15:06,078 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Reproducibility
+2022-01-31 12:15:06,078 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Reproducibility
+2022-01-31 12:15:06,079 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State
+2022-01-31 12:15:06,079 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State
+2022-01-31 12:15:06,079 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Type
+2022-01-31 12:15:06,080 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Type
+2022-01-31 12:15:06,218 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Problem
+2022-01-31 12:15:06,218 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Problem
+2022-01-31 12:15:06,219 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Purpose
+2022-01-31 12:15:06,219 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Purpose
+2022-01-31 12:15:06,220 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Reproducibility
+2022-01-31 12:15:06,220 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Reproducibility
+2022-01-31 12:15:06,221 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State
+2022-01-31 12:15:06,221 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State
+2022-01-31 12:15:06,221 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Type
+2022-01-31 12:15:06,221 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Type
+2022-01-31 12:15:06,223 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.Resource$Type
+2022-01-31 12:15:06,223 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.Resource$Type
+2022-01-31 12:15:06,276 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.Resource$Type
+2022-01-31 12:15:06,286 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.Resource$Type
+2022-01-31 12:15:06,344 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier$Type
+2022-01-31 12:15:06,345 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier$Type
+2022-01-31 12:15:06,377 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier$Type
+2022-01-31 12:15:06,379 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier$Type
+2022-01-31 12:15:06,654 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Problem
+2022-01-31 12:15:06,654 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Problem
+2022-01-31 12:15:06,655 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Problem
+2022-01-31 12:15:06,659 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Purpose
+2022-01-31 12:15:06,660 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Purpose
+2022-01-31 12:15:06,661 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Purpose
+2022-01-31 12:15:06,661 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Reproducibility
+2022-01-31 12:15:06,662 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Reproducibility
+2022-01-31 12:15:06,662 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Reproducibility
+2022-01-31 12:15:06,663 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State
+2022-01-31 12:15:06,664 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State
+2022-01-31 12:15:06,665 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State
+2022-01-31 12:15:06,665 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Type
+2022-01-31 12:15:06,666 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Type
+2022-01-31 12:15:06,666 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Type
+2022-01-31 12:15:06,668 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.Resource$Type
+2022-01-31 12:15:06,669 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.Resource$Type
+2022-01-31 12:15:06,669 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.Resource$Type
+2022-01-31 12:15:06,671 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier$Type
+2022-01-31 12:15:06,672 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier$Type
+2022-01-31 12:15:06,673 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier$Type
+2022-01-31 12:15:06,678 WARN [org.hibernate.orm.connections.pooling#configure:72] - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+2022-01-31 12:15:06,680 INFO [org.hibernate.orm.connections.pooling#buildCreator:115] - HHH10001005: using driver [org.hsqldb.jdbcDriver] at URL [jdbc:hsqldb:mem:unit-testing-jpa]
+2022-01-31 12:15:06,681 INFO [org.hibernate.orm.connections.pooling#buildCreator:124] - HHH10001001: Connection properties: {password=****, user=sa}
+2022-01-31 12:15:06,682 INFO [org.hibernate.orm.connections.pooling#buildCreator:129] - HHH10001003: Autocommit mode: false
+2022-01-31 12:15:06,687 INFO [org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl#<init>:259] - HHH000115: Hibernate connection pool size: 20 (min=1)
+2022-01-31 12:15:06,720 DEBUG [org.hibernate.SQL#logStatement:144] - drop table if exists api_key CASCADE 
+2022-01-31 12:15:06,728 INFO [org.hibernate.orm.connections.access#getIsolatedConnection:47] - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@1d283d1] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+2022-01-31 12:15:06,733 DEBUG [org.hibernate.SQL#logStatement:144] - drop table if exists config CASCADE 
+2022-01-31 12:15:06,736 DEBUG [org.hibernate.SQL#logStatement:144] - drop table if exists creator CASCADE 
+2022-01-31 12:15:06,736 DEBUG [org.hibernate.SQL#logStatement:144] - drop table if exists keyword CASCADE 
+2022-01-31 12:15:06,736 DEBUG [org.hibernate.SQL#logStatement:144] - drop table if exists pid CASCADE 
+2022-01-31 12:15:06,737 DEBUG [org.hibernate.SQL#logStatement:144] - drop table if exists resource CASCADE 
+2022-01-31 12:15:06,737 DEBUG [org.hibernate.SQL#logStatement:144] - drop table if exists vcr_user CASCADE 
+2022-01-31 12:15:06,737 DEBUG [org.hibernate.SQL#logStatement:144] - drop table if exists virtualcollection CASCADE 
+2022-01-31 12:15:06,744 DEBUG [org.hibernate.SQL#logStatement:144] - create table api_key (id bigint generated by default as identity (start with 1), created_at timestamp not null, last_used_at timestamp, revoked_at timestamp, value varchar(255) not null, user_id bigint not null, primary key (id))
+2022-01-31 12:15:06,744 INFO [org.hibernate.orm.connections.access#getIsolatedConnection:47] - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@3302035b] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+2022-01-31 12:15:06,745 DEBUG [org.hibernate.SQL#logStatement:144] - create table config (key varchar(255) not null, value varchar(255), primary key (key))
+2022-01-31 12:15:06,748 DEBUG [org.hibernate.SQL#logStatement:144] - create table creator (id bigint generated by default as identity (start with 1), address varchar(255), display_order bigint not null, email varchar(255), family_name varchar(255) not null, given_name varchar(255) not null, organisation varchar(255), role varchar(255), telephone varchar(255), website varchar(255), vc_id bigint not null, primary key (id))
+2022-01-31 12:15:06,750 DEBUG [org.hibernate.SQL#logStatement:144] - create table keyword (vc_id bigint not null, keywords varchar(255))
+2022-01-31 12:15:06,777 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier$Type
+2022-01-31 12:15:06,778 DEBUG [org.hibernate.SQL#logStatement:144] - create table pid (id bigint generated by default as identity (start with 1), identifier varchar(255) not null, is_latest TINYINT, is_primary TINYINT, type integer, vc_id bigint not null, primary key (id))
+2022-01-31 12:15:06,779 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.Resource$Type
+2022-01-31 12:15:06,780 DEBUG [org.hibernate.SQL#logStatement:144] - create table resource (id bigint generated by default as identity (start with 1), checked varchar(255), description varchar(8192), display_order bigint not null, label varchar(255), mimetype varchar(255), origin varchar(255), original_query varchar(255), ref varchar(255) not null, type integer not null, vc_id bigint not null, resources_ORDER integer not null, primary key (id))
+2022-01-31 12:15:06,782 DEBUG [org.hibernate.SQL#logStatement:144] - create table vcr_user (id bigint generated by default as identity (start with 1), display_name varchar(255), name varchar(255) not null, primary key (id))
+2022-01-31 12:15:06,783 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Problem
+2022-01-31 12:15:06,784 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Purpose
+2022-01-31 12:15:06,784 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Reproducibility
+2022-01-31 12:15:06,785 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State
+2022-01-31 12:15:06,785 DEBUG [org.hibernate.type.EnumType#setParameterValues:126] - Using ORDINAL-based conversion for Enum eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$Type
+2022-01-31 12:15:06,785 DEBUG [org.hibernate.SQL#logStatement:144] - create table virtualcollection (id bigint generated by default as identity (start with 1), creation_date date, created timestamp not null, modified timestamp not null, published timestamp, description varchar(8192), generatedby_description varchar(8192), generatedby_query_profile varchar(255), generatedby_query_value varchar(8192), generatedby_uri varchar(255), name varchar(255) not null, origin varchar(255), problem integer, problem_details varchar(255), purpose integer, reproducibility integer, reproducibility_notice varchar(8192), state integer not null, type integer not null, child bigint, forked_from bigint, owner_id bigint not null, parent bigint, original bigint, primary key (id))
+2022-01-31 12:15:06,794 DEBUG [org.hibernate.SQL#logStatement:144] - alter table api_key add constraint UK_giy6my6lrwgi53ov72oid3emn unique (value)
+2022-01-31 12:15:06,801 DEBUG [org.hibernate.SQL#logStatement:144] - alter table pid add constraint UK_pp2030yek6lwpje2s5g2gvxts unique (identifier)
+2022-01-31 12:15:06,805 DEBUG [org.hibernate.SQL#logStatement:144] - alter table vcr_user add constraint UK_h1namnahgf465j46hrv52915o unique (name)
+2022-01-31 12:15:06,806 DEBUG [org.hibernate.SQL#logStatement:144] - alter table api_key add constraint FKjqcb1olvetrga90nc4renb3tu foreign key (user_id) references vcr_user
+2022-01-31 12:15:06,808 DEBUG [org.hibernate.SQL#logStatement:144] - alter table creator add constraint FK6d6dan03kiyep01q00xi2w9ii foreign key (vc_id) references virtualcollection
+2022-01-31 12:15:06,810 DEBUG [org.hibernate.SQL#logStatement:144] - alter table keyword add constraint FK5fpbjswhpcacbyc9ni46w6y4f foreign key (vc_id) references virtualcollection
+2022-01-31 12:15:06,815 DEBUG [org.hibernate.SQL#logStatement:144] - alter table pid add constraint FKlp5wux78rbp720n62l5t6kcqd foreign key (vc_id) references virtualcollection
+2022-01-31 12:15:06,817 DEBUG [org.hibernate.SQL#logStatement:144] - alter table resource add constraint FK48uogg5g5c68xvtmelwmdrct5 foreign key (vc_id) references virtualcollection
+2022-01-31 12:15:06,820 DEBUG [org.hibernate.SQL#logStatement:144] - alter table virtualcollection add constraint FKrojh2rxm1xpia1v64tdquhylo foreign key (child) references virtualcollection
+2022-01-31 12:15:06,822 DEBUG [org.hibernate.SQL#logStatement:144] - alter table virtualcollection add constraint FKtjvx294od3jg4gq9aso6sirxh foreign key (forked_from) references virtualcollection
+2022-01-31 12:15:06,824 DEBUG [org.hibernate.SQL#logStatement:144] - alter table virtualcollection add constraint FK8xdcamfyohqmxcuqd20xnyodm foreign key (owner_id) references vcr_user
+2022-01-31 12:15:06,825 DEBUG [org.hibernate.SQL#logStatement:144] - alter table virtualcollection add constraint FKqkfp1y23r1vluhs27x2iwonkn foreign key (parent) references virtualcollection
+2022-01-31 12:15:06,827 DEBUG [org.hibernate.SQL#logStatement:144] - alter table virtualcollection add constraint FKg9027n9841cjt1soiake8oqil foreign key (original) references virtualcollection
+2022-01-31 12:15:06,847 INFO [org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator#initiateService:52] - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2022-01-31 12:15:07,289 TRACE [org.hibernate.type.spi.TypeConfiguration$Scope#sessionFactoryCreated:205] - Handling #sessionFactoryCreated from [org.hibernate.internal.SessionFactoryImpl@56846330] for TypeConfiguration
+2022-01-31 12:15:07,415 INFO [eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionDaoTest#setUp:102] - Initialising database with data
+2022-01-31 12:15:07,468 DEBUG [org.hibernate.SQL#logStatement:144] - insert into vcr_user (id, display_name, name) values (default, ?, ?)
+2022-01-31 12:15:07,480 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [1] as [VARCHAR] - [Display as tést owner 1]
+2022-01-31 12:15:07,480 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [2] as [VARCHAR] - [test1]
+2022-01-31 12:15:07,485 DEBUG [org.hibernate.SQL#logStatement:144] - call identity()
+2022-01-31 12:15:07,503 DEBUG [org.hibernate.SQL#logStatement:144] - insert into virtualcollection (id, child, creation_date, created, modified, published, description, forked_from, generatedby_description, generatedby_query_profile, generatedby_query_value, generatedby_uri, name, origin, owner_id, parent, problem, problem_details, purpose, reproducibility, reproducibility_notice, original, state, type) values (default, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2022-01-31 12:15:07,505 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [1] as [BIGINT] - [null]
+2022-01-31 12:15:07,517 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [2] as [DATE] - [Mon Jan 31 12:15:07 CET 2022]
+2022-01-31 12:15:07,519 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [3] as [TIMESTAMP] - [Mon Jan 31 12:15:07 CET 2022]
+2022-01-31 12:15:07,519 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [4] as [TIMESTAMP] - [Mon Jan 31 12:15:07 CET 2022]
+2022-01-31 12:15:07,520 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [5] as [TIMESTAMP] - [null]
+2022-01-31 12:15:07,520 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [6] as [VARCHAR] - [This is the tést collection description]
+2022-01-31 12:15:07,521 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [7] as [BIGINT] - [null]
+2022-01-31 12:15:07,521 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [8] as [VARCHAR] - [null]
+2022-01-31 12:15:07,521 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [9] as [VARCHAR] - [null]
+2022-01-31 12:15:07,521 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [10] as [VARCHAR] - [null]
+2022-01-31 12:15:07,522 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [11] as [VARCHAR] - [null]
+2022-01-31 12:15:07,522 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [12] as [VARCHAR] - [Private Tést Collection 1]
+2022-01-31 12:15:07,522 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [13] as [VARCHAR] - [null]
+2022-01-31 12:15:07,523 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [14] as [BIGINT] - [1]
+2022-01-31 12:15:07,523 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [15] as [BIGINT] - [null]
+2022-01-31 12:15:07,523 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [16] as [INTEGER] - [null]
+2022-01-31 12:15:07,523 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [17] as [VARCHAR] - [null]
+2022-01-31 12:15:07,524 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [18] as [INTEGER] - [1]
+2022-01-31 12:15:07,524 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [19] as [INTEGER] - [0]
+2022-01-31 12:15:07,524 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [20] as [VARCHAR] - [null]
+2022-01-31 12:15:07,524 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [21] as [BIGINT] - [null]
+2022-01-31 12:15:07,525 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [22] as [INTEGER] - [0]
+2022-01-31 12:15:07,525 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [23] as [INTEGER] - [0]
+2022-01-31 12:15:07,526 DEBUG [org.hibernate.SQL#logStatement:144] - call identity()
+2022-01-31 12:15:07,531 DEBUG [org.hibernate.SQL#logStatement:144] - insert into virtualcollection (id, child, creation_date, created, modified, published, description, forked_from, generatedby_description, generatedby_query_profile, generatedby_query_value, generatedby_uri, name, origin, owner_id, parent, problem, problem_details, purpose, reproducibility, reproducibility_notice, original, state, type) values (default, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2022-01-31 12:15:07,533 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [1] as [BIGINT] - [null]
+2022-01-31 12:15:07,534 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [2] as [DATE] - [Mon Jan 31 12:15:07 CET 2022]
+2022-01-31 12:15:07,534 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [3] as [TIMESTAMP] - [Mon Jan 31 12:15:07 CET 2022]
+2022-01-31 12:15:07,534 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [4] as [TIMESTAMP] - [Mon Jan 31 12:15:07 CET 2022]
+2022-01-31 12:15:07,535 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [5] as [TIMESTAMP] - [null]
+2022-01-31 12:15:07,535 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [6] as [VARCHAR] - [This is the tést collection description]
+2022-01-31 12:15:07,535 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [7] as [BIGINT] - [null]
+2022-01-31 12:15:07,535 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [8] as [VARCHAR] - [null]
+2022-01-31 12:15:07,536 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [9] as [VARCHAR] - [null]
+2022-01-31 12:15:07,537 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [10] as [VARCHAR] - [null]
+2022-01-31 12:15:07,537 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [11] as [VARCHAR] - [null]
+2022-01-31 12:15:07,537 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [12] as [VARCHAR] - [Public Tést Collection 2]
+2022-01-31 12:15:07,537 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [13] as [VARCHAR] - [null]
+2022-01-31 12:15:07,538 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [14] as [BIGINT] - [1]
+2022-01-31 12:15:07,538 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [15] as [BIGINT] - [null]
+2022-01-31 12:15:07,538 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [16] as [INTEGER] - [null]
+2022-01-31 12:15:07,539 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [17] as [VARCHAR] - [null]
+2022-01-31 12:15:07,541 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [18] as [INTEGER] - [1]
+2022-01-31 12:15:07,541 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [19] as [INTEGER] - [0]
+2022-01-31 12:15:07,542 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [20] as [VARCHAR] - [null]
+2022-01-31 12:15:07,542 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [21] as [BIGINT] - [null]
+2022-01-31 12:15:07,543 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [22] as [INTEGER] - [2]
+2022-01-31 12:15:07,543 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [23] as [INTEGER] - [0]
+2022-01-31 12:15:07,545 DEBUG [org.hibernate.SQL#logStatement:144] - call identity()
+2022-01-31 12:15:07,547 DEBUG [org.hibernate.SQL#logStatement:144] - insert into vcr_user (id, display_name, name) values (default, ?, ?)
+2022-01-31 12:15:07,548 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [1] as [VARCHAR] - [Display as tést owner 2]
+2022-01-31 12:15:07,549 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [2] as [VARCHAR] - [test2]
+2022-01-31 12:15:07,550 DEBUG [org.hibernate.SQL#logStatement:144] - call identity()
+2022-01-31 12:15:07,551 DEBUG [org.hibernate.SQL#logStatement:144] - insert into virtualcollection (id, child, creation_date, created, modified, published, description, forked_from, generatedby_description, generatedby_query_profile, generatedby_query_value, generatedby_uri, name, origin, owner_id, parent, problem, problem_details, purpose, reproducibility, reproducibility_notice, original, state, type) values (default, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2022-01-31 12:15:07,553 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [1] as [BIGINT] - [null]
+2022-01-31 12:15:07,553 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [2] as [DATE] - [Mon Jan 31 12:15:07 CET 2022]
+2022-01-31 12:15:07,553 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [3] as [TIMESTAMP] - [Mon Jan 31 12:15:07 CET 2022]
+2022-01-31 12:15:07,554 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [4] as [TIMESTAMP] - [Mon Jan 31 12:15:07 CET 2022]
+2022-01-31 12:15:07,554 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [5] as [TIMESTAMP] - [null]
+2022-01-31 12:15:07,556 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [6] as [VARCHAR] - [This is the tést collection description]
+2022-01-31 12:15:07,556 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [7] as [BIGINT] - [null]
+2022-01-31 12:15:07,556 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [8] as [VARCHAR] - [null]
+2022-01-31 12:15:07,557 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [9] as [VARCHAR] - [null]
+2022-01-31 12:15:07,557 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [10] as [VARCHAR] - [null]
+2022-01-31 12:15:07,557 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [11] as [VARCHAR] - [null]
+2022-01-31 12:15:07,557 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [12] as [VARCHAR] - [Public Tést Collection 3]
+2022-01-31 12:15:07,557 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [13] as [VARCHAR] - [null]
+2022-01-31 12:15:07,558 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [14] as [BIGINT] - [2]
+2022-01-31 12:15:07,558 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [15] as [BIGINT] - [null]
+2022-01-31 12:15:07,559 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [16] as [INTEGER] - [null]
+2022-01-31 12:15:07,559 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [17] as [VARCHAR] - [null]
+2022-01-31 12:15:07,559 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [18] as [INTEGER] - [1]
+2022-01-31 12:15:07,559 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [19] as [INTEGER] - [0]
+2022-01-31 12:15:07,560 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [20] as [VARCHAR] - [null]
+2022-01-31 12:15:07,560 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [21] as [BIGINT] - [null]
+2022-01-31 12:15:07,560 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [22] as [INTEGER] - [2]
+2022-01-31 12:15:07,560 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [23] as [INTEGER] - [0]
+2022-01-31 12:15:07,561 DEBUG [org.hibernate.SQL#logStatement:144] - call identity()
+2022-01-31 12:15:07,562 DEBUG [org.hibernate.SQL#logStatement:144] - insert into virtualcollection (id, child, creation_date, created, modified, published, description, forked_from, generatedby_description, generatedby_query_profile, generatedby_query_value, generatedby_uri, name, origin, owner_id, parent, problem, problem_details, purpose, reproducibility, reproducibility_notice, original, state, type) values (default, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2022-01-31 12:15:07,563 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [1] as [BIGINT] - [null]
+2022-01-31 12:15:07,563 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [2] as [DATE] - [Mon Jan 31 12:15:07 CET 2022]
+2022-01-31 12:15:07,564 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [3] as [TIMESTAMP] - [Mon Jan 31 12:15:07 CET 2022]
+2022-01-31 12:15:07,564 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [4] as [TIMESTAMP] - [Mon Jan 31 12:15:07 CET 2022]
+2022-01-31 12:15:07,565 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [5] as [TIMESTAMP] - [null]
+2022-01-31 12:15:07,568 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [6] as [VARCHAR] - [This is the tést collection description]
+2022-01-31 12:15:07,569 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [7] as [BIGINT] - [null]
+2022-01-31 12:15:07,569 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [8] as [VARCHAR] - [null]
+2022-01-31 12:15:07,569 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [9] as [VARCHAR] - [null]
+2022-01-31 12:15:07,569 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [10] as [VARCHAR] - [null]
+2022-01-31 12:15:07,570 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [11] as [VARCHAR] - [null]
+2022-01-31 12:15:07,570 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [12] as [VARCHAR] - [Public Tést Collection 3]
+2022-01-31 12:15:07,571 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [13] as [VARCHAR] - [null]
+2022-01-31 12:15:07,571 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [14] as [BIGINT] - [2]
+2022-01-31 12:15:07,571 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [15] as [BIGINT] - [3]
+2022-01-31 12:15:07,571 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [16] as [INTEGER] - [null]
+2022-01-31 12:15:07,572 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [17] as [VARCHAR] - [null]
+2022-01-31 12:15:07,572 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [18] as [INTEGER] - [1]
+2022-01-31 12:15:07,572 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [19] as [INTEGER] - [0]
+2022-01-31 12:15:07,572 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [20] as [VARCHAR] - [null]
+2022-01-31 12:15:07,573 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [21] as [BIGINT] - [null]
+2022-01-31 12:15:07,573 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [22] as [INTEGER] - [2]
+2022-01-31 12:15:07,573 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [23] as [INTEGER] - [0]
+2022-01-31 12:15:07,573 DEBUG [org.hibernate.SQL#logStatement:144] - call identity()
+2022-01-31 12:15:07,575 DEBUG [org.hibernate.SQL#logStatement:144] - insert into virtualcollection (id, child, creation_date, created, modified, published, description, forked_from, generatedby_description, generatedby_query_profile, generatedby_query_value, generatedby_uri, name, origin, owner_id, parent, problem, problem_details, purpose, reproducibility, reproducibility_notice, original, state, type) values (default, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?, ?)
+2022-01-31 12:15:07,576 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [1] as [BIGINT] - [null]
+2022-01-31 12:15:07,576 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [2] as [DATE] - [Mon Jan 31 12:15:07 CET 2022]
+2022-01-31 12:15:07,577 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [3] as [TIMESTAMP] - [Mon Jan 31 12:15:07 CET 2022]
+2022-01-31 12:15:07,578 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [4] as [TIMESTAMP] - [Mon Jan 31 12:15:07 CET 2022]
+2022-01-31 12:15:07,578 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [5] as [TIMESTAMP] - [null]
+2022-01-31 12:15:07,578 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [6] as [VARCHAR] - [This is the tést collection description]
+2022-01-31 12:15:07,579 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [7] as [BIGINT] - [null]
+2022-01-31 12:15:07,579 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [8] as [VARCHAR] - [null]
+2022-01-31 12:15:07,579 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [9] as [VARCHAR] - [null]
+2022-01-31 12:15:07,579 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [10] as [VARCHAR] - [null]
+2022-01-31 12:15:07,579 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [11] as [VARCHAR] - [null]
+2022-01-31 12:15:07,580 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [12] as [VARCHAR] - [Public Tést Collection 3]
+2022-01-31 12:15:07,580 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [13] as [VARCHAR] - [null]
+2022-01-31 12:15:07,580 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [14] as [BIGINT] - [2]
+2022-01-31 12:15:07,580 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [15] as [BIGINT] - [4]
+2022-01-31 12:15:07,581 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [16] as [INTEGER] - [null]
+2022-01-31 12:15:07,581 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [17] as [VARCHAR] - [null]
+2022-01-31 12:15:07,582 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [18] as [INTEGER] - [1]
+2022-01-31 12:15:07,582 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [19] as [INTEGER] - [0]
+2022-01-31 12:15:07,583 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [20] as [VARCHAR] - [null]
+2022-01-31 12:15:07,583 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:52] - binding parameter [21] as [BIGINT] - [null]
+2022-01-31 12:15:07,583 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [22] as [INTEGER] - [0]
+2022-01-31 12:15:07,583 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [23] as [INTEGER] - [0]
+2022-01-31 12:15:07,584 DEBUG [org.hibernate.SQL#logStatement:144] - call identity()
+2022-01-31 12:15:07,708 DEBUG [org.hibernate.SQL#logStatement:144] - select virtualcol0_.id as id1_7_, virtualcol0_.child as child20_7_, virtualcol0_.creation_date as creation2_7_, virtualcol0_.created as created3_7_, virtualcol0_.modified as modified4_7_, virtualcol0_.published as publishe5_7_, virtualcol0_.description as descript6_7_, virtualcol0_.forked_from as forked_21_7_, virtualcol0_.generatedby_description as generate7_7_, virtualcol0_.generatedby_query_profile as generate8_7_, virtualcol0_.generatedby_query_value as generate9_7_, virtualcol0_.generatedby_uri as generat10_7_, virtualcol0_.name as name11_7_, virtualcol0_.origin as origin12_7_, virtualcol0_.owner_id as owner_i22_7_, virtualcol0_.parent as parent23_7_, virtualcol0_.problem as problem13_7_, virtualcol0_.problem_details as problem14_7_, virtualcol0_.purpose as purpose15_7_, virtualcol0_.reproducibility as reprodu16_7_, virtualcol0_.reproducibility_notice as reprodu17_7_, virtualcol0_.original as origina24_7_, virtualcol0_.state as state18_7_, virtualcol0_.type as type19_7_ from virtualcollection virtualcol0_ where (virtualcol0_.child is null) and (virtualcol0_.state in (? , ?))
+2022-01-31 12:15:07,717 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [1] as [INTEGER] - [2]
+2022-01-31 12:15:07,717 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [2] as [INTEGER] - [4]
+2022-01-31 12:15:07,724 TRACE [org.hibernate.type.descriptor.sql.BasicExtractor#extract:60] - extracted value ([id1_7_] : [BIGINT]) - [2]
+2022-01-31 12:15:07,724 TRACE [org.hibernate.type.descriptor.sql.BasicExtractor#extract:60] - extracted value ([id1_7_] : [BIGINT]) - [3]
+2022-01-31 12:15:07,725 TRACE [org.hibernate.type.descriptor.sql.BasicExtractor#extract:60] - extracted value ([id1_7_] : [BIGINT]) - [4]
+2022-01-31 12:15:07,759 DEBUG [org.hibernate.SQL#logStatement:144] - select virtualcol0_.id as id1_7_, virtualcol0_.child as child20_7_, virtualcol0_.creation_date as creation2_7_, virtualcol0_.created as created3_7_, virtualcol0_.modified as modified4_7_, virtualcol0_.published as publishe5_7_, virtualcol0_.description as descript6_7_, virtualcol0_.forked_from as forked_21_7_, virtualcol0_.generatedby_description as generate7_7_, virtualcol0_.generatedby_query_profile as generate8_7_, virtualcol0_.generatedby_query_value as generate9_7_, virtualcol0_.generatedby_uri as generat10_7_, virtualcol0_.name as name11_7_, virtualcol0_.origin as origin12_7_, virtualcol0_.owner_id as owner_i22_7_, virtualcol0_.parent as parent23_7_, virtualcol0_.problem as problem13_7_, virtualcol0_.problem_details as problem14_7_, virtualcol0_.purpose as purpose15_7_, virtualcol0_.reproducibility as reprodu16_7_, virtualcol0_.reproducibility_notice as reprodu17_7_, virtualcol0_.original as origina24_7_, virtualcol0_.state as state18_7_, virtualcol0_.type as type19_7_ from virtualcollection virtualcol0_ cross join vcr_user user1_ where virtualcol0_.owner_id=user1_.id and (virtualcol0_.child is null) and (user1_.name like ?) and (virtualcol0_.state in (? , ? , ? , ? , ? , ?))
+2022-01-31 12:15:07,768 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [1] as [VARCHAR] - [test1]
+2022-01-31 12:15:07,769 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [2] as [INTEGER] - [2]
+2022-01-31 12:15:07,769 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [3] as [INTEGER] - [1]
+2022-01-31 12:15:07,770 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [4] as [INTEGER] - [4]
+2022-01-31 12:15:07,770 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [5] as [INTEGER] - [3]
+2022-01-31 12:15:07,770 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [6] as [INTEGER] - [0]
+2022-01-31 12:15:07,771 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [7] as [INTEGER] - [7]
+2022-01-31 12:15:07,772 TRACE [org.hibernate.type.descriptor.sql.BasicExtractor#extract:60] - extracted value ([id1_7_] : [BIGINT]) - [1]
+2022-01-31 12:15:07,772 TRACE [org.hibernate.type.descriptor.sql.BasicExtractor#extract:60] - extracted value ([id1_7_] : [BIGINT]) - [2]
+2022-01-31 12:15:07,779 DEBUG [org.hibernate.SQL#logStatement:144] - select virtualcol0_.id as id1_7_, virtualcol0_.child as child20_7_, virtualcol0_.creation_date as creation2_7_, virtualcol0_.created as created3_7_, virtualcol0_.modified as modified4_7_, virtualcol0_.published as publishe5_7_, virtualcol0_.description as descript6_7_, virtualcol0_.forked_from as forked_21_7_, virtualcol0_.generatedby_description as generate7_7_, virtualcol0_.generatedby_query_profile as generate8_7_, virtualcol0_.generatedby_query_value as generate9_7_, virtualcol0_.generatedby_uri as generat10_7_, virtualcol0_.name as name11_7_, virtualcol0_.origin as origin12_7_, virtualcol0_.owner_id as owner_i22_7_, virtualcol0_.parent as parent23_7_, virtualcol0_.problem as problem13_7_, virtualcol0_.problem_details as problem14_7_, virtualcol0_.purpose as purpose15_7_, virtualcol0_.reproducibility as reprodu16_7_, virtualcol0_.reproducibility_notice as reprodu17_7_, virtualcol0_.original as origina24_7_, virtualcol0_.state as state18_7_, virtualcol0_.type as type19_7_ from virtualcollection virtualcol0_ cross join vcr_user user1_ where virtualcol0_.owner_id=user1_.id and (virtualcol0_.child is null) and (user1_.name like ?) and (virtualcol0_.state in (? , ? , ? , ? , ? , ?))
+2022-01-31 12:15:07,780 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [1] as [VARCHAR] - [test2]
+2022-01-31 12:15:07,781 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [2] as [INTEGER] - [2]
+2022-01-31 12:15:07,781 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [3] as [INTEGER] - [1]
+2022-01-31 12:15:07,781 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [4] as [INTEGER] - [4]
+2022-01-31 12:15:07,781 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [5] as [INTEGER] - [3]
+2022-01-31 12:15:07,782 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [6] as [INTEGER] - [0]
+2022-01-31 12:15:07,782 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [7] as [INTEGER] - [7]
+2022-01-31 12:15:07,783 TRACE [org.hibernate.type.descriptor.sql.BasicExtractor#extract:60] - extracted value ([id1_7_] : [BIGINT]) - [3]
+2022-01-31 12:15:07,783 TRACE [org.hibernate.type.descriptor.sql.BasicExtractor#extract:60] - extracted value ([id1_7_] : [BIGINT]) - [4]
+2022-01-31 12:15:07,783 TRACE [org.hibernate.type.descriptor.sql.BasicExtractor#extract:60] - extracted value ([id1_7_] : [BIGINT]) - [5]
+2022-01-31 12:15:07,792 DEBUG [org.hibernate.SQL#logStatement:144] - select virtualcol0_.id as id1_7_, virtualcol0_.child as child20_7_, virtualcol0_.creation_date as creation2_7_, virtualcol0_.created as created3_7_, virtualcol0_.modified as modified4_7_, virtualcol0_.published as publishe5_7_, virtualcol0_.description as descript6_7_, virtualcol0_.forked_from as forked_21_7_, virtualcol0_.generatedby_description as generate7_7_, virtualcol0_.generatedby_query_profile as generate8_7_, virtualcol0_.generatedby_query_value as generate9_7_, virtualcol0_.generatedby_uri as generat10_7_, virtualcol0_.name as name11_7_, virtualcol0_.origin as origin12_7_, virtualcol0_.owner_id as owner_i22_7_, virtualcol0_.parent as parent23_7_, virtualcol0_.problem as problem13_7_, virtualcol0_.problem_details as problem14_7_, virtualcol0_.purpose as purpose15_7_, virtualcol0_.reproducibility as reprodu16_7_, virtualcol0_.reproducibility_notice as reprodu17_7_, virtualcol0_.original as origina24_7_, virtualcol0_.state as state18_7_, virtualcol0_.type as type19_7_ from virtualcollection virtualcol0_ where (virtualcol0_.child is null) and (virtualcol0_.state in (? , ?)) limit ?
+2022-01-31 12:15:07,793 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [1] as [INTEGER] - [2]
+2022-01-31 12:15:07,793 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [2] as [INTEGER] - [4]
+2022-01-31 12:15:07,794 TRACE [org.hibernate.type.descriptor.sql.BasicExtractor#extract:60] - extracted value ([id1_7_] : [BIGINT]) - [2]
+2022-01-31 12:15:07,805 DEBUG [org.hibernate.SQL#logStatement:144] - select virtualcol0_.id as id1_7_, virtualcol0_.child as child20_7_, virtualcol0_.creation_date as creation2_7_, virtualcol0_.created as created3_7_, virtualcol0_.modified as modified4_7_, virtualcol0_.published as publishe5_7_, virtualcol0_.description as descript6_7_, virtualcol0_.forked_from as forked_21_7_, virtualcol0_.generatedby_description as generate7_7_, virtualcol0_.generatedby_query_profile as generate8_7_, virtualcol0_.generatedby_query_value as generate9_7_, virtualcol0_.generatedby_uri as generat10_7_, virtualcol0_.name as name11_7_, virtualcol0_.origin as origin12_7_, virtualcol0_.owner_id as owner_i22_7_, virtualcol0_.parent as parent23_7_, virtualcol0_.problem as problem13_7_, virtualcol0_.problem_details as problem14_7_, virtualcol0_.purpose as purpose15_7_, virtualcol0_.reproducibility as reprodu16_7_, virtualcol0_.reproducibility_notice as reprodu17_7_, virtualcol0_.original as origina24_7_, virtualcol0_.state as state18_7_, virtualcol0_.type as type19_7_ from virtualcollection virtualcol0_ where (virtualcol0_.child is null) and (virtualcol0_.state in (? , ?)) limit ?
+2022-01-31 12:15:07,806 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [1] as [INTEGER] - [2]
+2022-01-31 12:15:07,807 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [2] as [INTEGER] - [4]
+2022-01-31 12:15:07,807 TRACE [org.hibernate.type.descriptor.sql.BasicExtractor#extract:60] - extracted value ([id1_7_] : [BIGINT]) - [2]
+2022-01-31 12:15:07,807 TRACE [org.hibernate.type.descriptor.sql.BasicExtractor#extract:60] - extracted value ([id1_7_] : [BIGINT]) - [3]
+2022-01-31 12:15:07,808 TRACE [org.hibernate.type.descriptor.sql.BasicExtractor#extract:60] - extracted value ([id1_7_] : [BIGINT]) - [4]
+2022-01-31 12:15:07,823 DEBUG [org.hibernate.SQL#logStatement:144] - select count(virtualcol0_.id) as col_0_0_ from virtualcollection virtualcol0_ where (virtualcol0_.child is null) and (virtualcol0_.state in (? , ?))
+2022-01-31 12:15:07,824 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [1] as [INTEGER] - [2]
+2022-01-31 12:15:07,824 TRACE [org.hibernate.type.descriptor.sql.BasicBinder#bind:64] - binding parameter [2] as [INTEGER] - [4]
+2022-01-31 12:15:07,826 TRACE [org.hibernate.type.descriptor.sql.BasicExtractor#extract:60] - extracted value ([col_0_0_] : [BIGINT]) - [3]
+2022-01-31 12:15:07,829 INFO [eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionDaoTest#tearDown:108] - Shuting down Hibernate JPA layer.
+2022-01-31 12:15:07,831 INFO [org.hibernate.tool.schema.internal.SchemaDropperImpl$DelayedDropActionImpl#perform:526] - HHH000477: Starting delayed evictData of schema as part of SessionFactory shut-down'
+2022-01-31 12:15:07,832 DEBUG [org.hibernate.SQL#logStatement:144] - drop table if exists api_key CASCADE 
+2022-01-31 12:15:07,832 INFO [org.hibernate.orm.connections.access#getIsolatedConnection:47] - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@5d01b0d8] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+2022-01-31 12:15:07,833 DEBUG [org.hibernate.SQL#logStatement:144] - drop table if exists config CASCADE 
+2022-01-31 12:15:07,834 DEBUG [org.hibernate.SQL#logStatement:144] - drop table if exists creator CASCADE 
+2022-01-31 12:15:07,836 DEBUG [org.hibernate.SQL#logStatement:144] - drop table if exists keyword CASCADE 
+2022-01-31 12:15:07,838 DEBUG [org.hibernate.SQL#logStatement:144] - drop table if exists pid CASCADE 
+2022-01-31 12:15:07,840 DEBUG [org.hibernate.SQL#logStatement:144] - drop table if exists resource CASCADE 
+2022-01-31 12:15:07,841 DEBUG [org.hibernate.SQL#logStatement:144] - drop table if exists vcr_user CASCADE 
+2022-01-31 12:15:07,843 DEBUG [org.hibernate.SQL#logStatement:144] - drop table if exists virtualcollection CASCADE 
+2022-01-31 12:15:07,843 TRACE [org.hibernate.type.spi.TypeConfiguration$Scope#sessionFactoryClosed:211] - Handling #sessionFactoryClosed from [org.hibernate.internal.SessionFactoryImpl@56846330] for TypeConfiguration
+2022-01-31 12:15:07,844 DEBUG [org.hibernate.type.spi.TypeConfiguration$Scope#unsetSessionFactory:350] - Un-scoping TypeConfiguration [org.hibernate.type.spi.TypeConfiguration$Scope@c94bd18] from SessionFactory [org.hibernate.internal.SessionFactoryImpl@56846330]
+2022-01-31 12:15:07,844 INFO [org.hibernate.orm.connections.pooling#stop:428] - HHH10001008: Cleaning up connection pool [jdbc:hsqldb:mem:unit-testing-jpa]
+2022-01-31 12:15:07,847 INFO [eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionDaoTest#tearDown:115] - Stopping in-memory HSQL database.
+2022-01-31 12:15:08,494 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@39a865c1
+2022-01-31 12:15:08,519 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:89] - Initialising VCR web application
+2022-01-31 12:15:08,519 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:91] - Configuration:
+  logoutMode:             null
+  logoutEnabled:          false
+  locale:                 null
+  mode:                   null
+  forking enabled:        false
+  Process integration:
+    processEndpoint:          null
+    processEnable:   null
+  Download integration:
+    downloadEndpoint: null
+    downloadEnable: null
+  Validators
+    http timeout:         0
+    http redirects:       0
+
+2022-01-31 12:15:08,520 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:121] - Web application configured for development
+2022-01-31 12:15:08,564 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:145] - No locale string available
+2022-01-31 12:15:08,613 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.pid.EPICPersistentIdentifierProvider#createIdentifier:71] - creating handle for virtual collection "123"
+2022-01-31 12:15:08,625 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@5b5b8730
+2022-01-31 12:15:08,626 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:89] - Initialising VCR web application
+2022-01-31 12:15:08,626 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:91] - Configuration:
+  logoutMode:             null
+  logoutEnabled:          false
+  locale:                 null
+  mode:                   null
+  forking enabled:        false
+  Process integration:
+    processEndpoint:          null
+    processEnable:   null
+  Download integration:
+    downloadEndpoint: null
+    downloadEnable: null
+  Validators
+    http timeout:         0
+    http redirects:       0
+
+2022-01-31 12:15:08,626 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:121] - Web application configured for development
+2022-01-31 12:15:08,627 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:145] - No locale string available
+2022-01-31 12:15:08,698 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:45] - Json={"data":{"type":"dois","attributes":{"event":"publish","prefix":"10.5438","url":"http://vcr/service/virtualcollections/1","creators":[{"nameType":"Personal","givenName":" Person","familyName":"Test","affiliation":[{"name":"Test Org"}]}],"titles":[{"title":"Test VC éë"}],"publisher":"CLARIN","publicationYear":"2022","types":{"resourceType":"Virtual Collection","resourceTypeGeneral":"Collection"}}}}
+2022-01-31 12:15:08,708 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:48] - entity content type=Content-Type: text/plain; charset=UTF-8
+2022-01-31 12:15:08,714 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel#getActionableUri:74] - Failed to make actionable URI for unkown PID type: Something else
+2022-01-31 12:15:08,718 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-01-31 12:15:09,041 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-01-31 12:15:09,053 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-01-31 12:15:09,379 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:61] - Constructing CMDI structure
+2022-01-31 12:15:09,379 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDICreatorImpl#createMetadataStructure:86] - Creating CMD root
+2022-01-31 12:15:09,387 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:64] - Marshalling CMD
+2022-01-31 12:15:10,437 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/metedata/1
+2022-01-31 12:15:10,445 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-01-31 12:15:10,445 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/resource/1
+2022-01-31 12:15:10,446 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-01-31 12:15:10,459 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/metedata/1
+2022-01-31 12:15:10,460 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-01-31 12:15:10,460 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/resource/1
+2022-01-31 12:15:10,460 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-01-31 12:17:25,557 INFO [eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionDaoTest#setUp:94] - Starting in-memory HSQL database for unit tests
+2022-01-31 12:17:25,960 INFO [eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionDaoTest#setUp:98] - Building JPA EntityManager for unit tests
+2022-01-31 12:17:26,099 INFO [org.hibernate.jpa.internal.util.LogHelper#logPersistenceUnitInformation:31] - HHH000204: Processing PersistenceUnitInfo [name: VirtualCollectionStoreTest]
+2022-01-31 12:17:26,200 INFO [org.hibernate.Version#logVersion:44] - HHH000412: Hibernate ORM core version 5.4.24.Final
+2022-01-31 12:17:26,449 INFO [org.hibernate.annotations.common.Version#<clinit>:56] - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2022-01-31 12:17:26,889 INFO [org.hibernate.dialect.Dialect#<init>:175] - HHH000400: Using dialect: org.hibernate.dialect.HSQLDialect
+2022-01-31 12:17:28,040 WARN [org.hibernate.orm.connections.pooling#configure:72] - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+2022-01-31 12:17:28,041 INFO [org.hibernate.orm.connections.pooling#buildCreator:115] - HHH10001005: using driver [org.hsqldb.jdbcDriver] at URL [jdbc:hsqldb:mem:unit-testing-jpa]
+2022-01-31 12:17:28,041 INFO [org.hibernate.orm.connections.pooling#buildCreator:124] - HHH10001001: Connection properties: {password=****, user=sa}
+2022-01-31 12:17:28,042 INFO [org.hibernate.orm.connections.pooling#buildCreator:129] - HHH10001003: Autocommit mode: false
+2022-01-31 12:17:28,045 INFO [org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl#<init>:259] - HHH000115: Hibernate connection pool size: 20 (min=1)
+2022-01-31 12:17:28,070 INFO [org.hibernate.orm.connections.access#getIsolatedConnection:47] - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@70c491b8] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+2022-01-31 12:17:28,077 INFO [org.hibernate.orm.connections.access#getIsolatedConnection:47] - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@61808ecd] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+2022-01-31 12:17:28,107 INFO [org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator#initiateService:52] - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2022-01-31 12:17:28,337 INFO [eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionDaoTest#setUp:102] - Initialising database with data
+2022-01-31 12:17:28,527 INFO [eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionDaoTest#tearDown:108] - Shuting down Hibernate JPA layer.
+2022-01-31 12:17:28,528 INFO [org.hibernate.tool.schema.internal.SchemaDropperImpl$DelayedDropActionImpl#perform:526] - HHH000477: Starting delayed evictData of schema as part of SessionFactory shut-down'
+2022-01-31 12:17:28,529 INFO [org.hibernate.orm.connections.access#getIsolatedConnection:47] - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@4b32465] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+2022-01-31 12:17:28,535 INFO [org.hibernate.orm.connections.pooling#stop:428] - HHH10001008: Cleaning up connection pool [jdbc:hsqldb:mem:unit-testing-jpa]
+2022-01-31 12:17:28,537 INFO [eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionDaoTest#tearDown:115] - Stopping in-memory HSQL database.
+2022-01-31 12:17:28,944 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@556aed22
+2022-01-31 12:17:28,966 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:89] - Initialising VCR web application
+2022-01-31 12:17:28,966 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:91] - Configuration:
+  logoutMode:             null
+  logoutEnabled:          false
+  locale:                 null
+  mode:                   null
+  forking enabled:        false
+  Process integration:
+    processEndpoint:          null
+    processEnable:   null
+  Download integration:
+    downloadEndpoint: null
+    downloadEnable: null
+  Validators
+    http timeout:         0
+    http redirects:       0
+
+2022-01-31 12:17:28,967 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:121] - Web application configured for development
+2022-01-31 12:17:29,010 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:145] - No locale string available
+2022-01-31 12:17:29,038 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.pid.EPICPersistentIdentifierProvider#createIdentifier:71] - creating handle for virtual collection "123"
+2022-01-31 12:17:29,050 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@1ab268bd
+2022-01-31 12:17:29,051 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:89] - Initialising VCR web application
+2022-01-31 12:17:29,051 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:91] - Configuration:
+  logoutMode:             null
+  logoutEnabled:          false
+  locale:                 null
+  mode:                   null
+  forking enabled:        false
+  Process integration:
+    processEndpoint:          null
+    processEnable:   null
+  Download integration:
+    downloadEndpoint: null
+    downloadEnable: null
+  Validators
+    http timeout:         0
+    http redirects:       0
+
+2022-01-31 12:17:29,051 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:121] - Web application configured for development
+2022-01-31 12:17:29,052 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:145] - No locale string available
+2022-01-31 12:17:29,120 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:45] - Json={"data":{"type":"dois","attributes":{"event":"publish","prefix":"10.5438","url":"http://vcr/service/virtualcollections/1","creators":[{"nameType":"Personal","givenName":" Person","familyName":"Test","affiliation":[{"name":"Test Org"}]}],"titles":[{"title":"Test VC éë"}],"publisher":"CLARIN","publicationYear":"2022","types":{"resourceType":"Virtual Collection","resourceTypeGeneral":"Collection"}}}}
+2022-01-31 12:17:29,128 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:48] - entity content type=Content-Type: text/plain; charset=UTF-8
+2022-01-31 12:17:29,135 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel#getActionableUri:74] - Failed to make actionable URI for unkown PID type: Something else
+2022-01-31 12:17:29,139 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-01-31 12:17:29,455 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-01-31 12:17:29,462 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-01-31 12:17:29,763 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:61] - Constructing CMDI structure
+2022-01-31 12:17:29,763 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDICreatorImpl#createMetadataStructure:86] - Creating CMD root
+2022-01-31 12:17:29,770 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:64] - Marshalling CMD
+2022-01-31 12:17:30,808 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/metedata/1
+2022-01-31 12:17:30,817 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-01-31 12:17:30,817 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/resource/1
+2022-01-31 12:17:30,818 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-01-31 12:17:30,827 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/metedata/1
+2022-01-31 12:17:30,827 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-01-31 12:17:30,827 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/resource/1
+2022-01-31 12:17:30,827 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1

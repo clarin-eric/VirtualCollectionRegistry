@@ -64,8 +64,8 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
     
     private final AtomicBoolean intialized = new AtomicBoolean(false);
 
-    // private final VirtualCollectionDao vcDao = new VirtualCollectionDaoImpl();
-    private final VirtualCollectionDao vcDao = new VirtualCollectionDaoImplNamedQuery();
+    private final VirtualCollectionDao vcDao = new VirtualCollectionDaoImpl();
+    //private final VirtualCollectionDao vcDao = new VirtualCollectionDaoImplNamedQuery();
 
     @Autowired
     public VirtualCollectionRegistryImpl(DataStore datastore) {

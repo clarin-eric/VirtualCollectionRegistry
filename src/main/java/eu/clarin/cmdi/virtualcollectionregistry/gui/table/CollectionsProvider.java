@@ -94,70 +94,59 @@ public abstract class CollectionsProvider extends
     private QueryFactory getQueryFactory() {
         QueryFactory factory = new QueryFactory();
 
-        // add the filter that selects the public or private space
+        //Add filter to only query collections without a child, i.e. "latest" versions
+        /*
+        id      | root   | parent | child | state   | ...
+        ----------------------------
+        0       | 0      | NULL   | NULL  | public  | ...
+
+        1       | 1      | NULL   | 2     | public  | ...
+        2       | 1      | 1      | 3     | public  | ...
+        3       | 1      | 2      | NULL  | public  | ...
+
+        4       | 1      | NULL   | 5     | public  | ...
+        5       | 1      | 4      | 6     | public  | ...
+        6       | 1      | 6      | NULL  | private | ...
+         */
+        factory.andIsNull(QueryOptions.Property.VC_CHILD);
+
+        // add the filter that selects the public or private space (overridden)
         addSpaceFilter(factory);
 
         // apply the filter state
         if (filterstate.hasName()) {
-            /*filter.add(QueryOptions.Property.VC_NAME,
-                    QueryOptions.Relation.EQ,
-                    filterstate.getNameWithWildcard());*/
             factory.and(QueryOptions.Property.VC_NAME, QueryOptions.Relation.EQ, filterstate.getNameWithWildcard());
         }
         if (filterstate.hasType()) {
-            /*filter.add(QueryOptions.Property.VC_TYPE,
-                    QueryOptions.Relation.EQ,
-                    filterstate.getType());*/
             factory.and(QueryOptions.Property.VC_TYPE, QueryOptions.Relation.EQ, filterstate.getType());
         }
         if (filterstate.hasState()) {
-            /*filter.add(QueryOptions.Property.VC_STATE,
-                    QueryOptions.Relation.IN,
-                    filterstate.getState());*/
             factory.and(QueryOptions.Property.VC_STATE, QueryOptions.Relation.IN, filterstate.getState());
         }
         if (filterstate.hasDescription()) {
-            /*filter.add(QueryOptions.Property.VC_DESCRIPTION,
-                    QueryOptions.Relation.EQ,
-                    filterstate.getDescriptionWithWildcard());*/
             factory.and(QueryOptions.Property.VC_DESCRIPTION, QueryOptions.Relation.EQ, filterstate.getDescriptionWithWildcard());
         }
         if (filterstate.hasCreated()) {
-            /*filter.add(QueryOptions.Property.VC_CREATION_DATE,
-                    filterstate.getCreatedRelation(),
-                    filterstate.getCreated());*/
             factory.and(QueryOptions.Property.VC_CREATION_DATE, filterstate.getCreatedRelation(), filterstate.getCreated());
         }
         if (filterstate.hasOrigin()) {
-            /*filter.add(Property.VC_ORIGIN,
-                    QueryOptions.Relation.EQ,
-                    filterstate.getOrigin());*/
             factory.and(QueryOptions.Property.VC_ORIGIN, QueryOptions.Relation.EQ, filterstate.getOrigin());
         }
 
         final SortParam<String> s = getSort();
         if (s != null) {
             final String p = s.getProperty();
-            //Property property = null;
             if ("name".equals(p)) {
-                //property = Property.VC_NAME;
                 factory.addSortProperty(Property.VC_NAME, s.isAscending());
             } else if ("type".equals(p)) {
-                //property = Property.VC_TYPE;
                 factory.addSortProperty(Property.VC_TYPE, s.isAscending());
             } else if ("state".equals(p)) {
-                //property = Property.VC_STATE;
                 factory.addSortProperty(Property.VC_STATE, s.isAscending());
             } else if ("description".equals(p)) {
-                //property = Property.VC_DESCRIPTION;
                 factory.addSortProperty(Property.VC_DESCRIPTION, s.isAscending());
             } else if ("created".equals(p)) {
-                //property = Property.VC_CREATION_DATE;
                 factory.addSortProperty(Property.VC_CREATION_DATE, s.isAscending());
             }
-            //if (property != null) {
-            //    options.addSortProperty(property, s.isAscending());
-            //}
         }
 
         return factory;

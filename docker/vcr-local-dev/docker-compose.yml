@@ -1,7 +1,7 @@
 version: '3'
 services:
   webapp  :
-    image: registry.gitlab.com/clarin-eric/docker-alpine-supervisor-java-tomcat-base:2.0.3
+    image: registry.gitlab.com/clarin-eric/docker-alpine-supervisor-java-tomcat-base:2.1.2
     environment:
       - "CATALINA_OPTS=-Djava.security.egd=file:/dev/urandom -agentlib:jdwp=transport=dt_socket,address=*:8000,server=y,suspend=n"
     ports:

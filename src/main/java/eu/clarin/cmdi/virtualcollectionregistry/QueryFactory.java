@@ -25,16 +25,15 @@ public class QueryFactory implements Serializable {
     public void applyParamsToQuery(TypedQuery query) {
         for(Parameter p : query.getParameters()) {
             logger.trace("Param name={}, type={}, position={}", p.getName(), p.getParameterType().toString(), p.getPosition());
-            if(!params.containsKey(p.getName())) {
+            if(params.containsKey(p.getName())) {
+                query.setParameter(p.getName(), params.get(p.getName()));
+            } else if (p.getParameterType() == String.class) {
+                logger.trace("Using wildcard (%) for unspecified string parameter with name="+p.getName());
+                query.setParameter(p.getName(), "%");
+            } else {
                 throw new RuntimeException("Missing query parameter: "+p.getName());
             }
-            query.setParameter(p.getName(), params.get(p.getName()));
         }
-        /*
-        for(String key: params.keySet()) {
-            query.setParameter(key, params.get(key));
-        }
-        */
     }
 
     public void addParam(String key, Object value) {
@@ -46,6 +45,18 @@ public class QueryFactory implements Serializable {
     public QueryFactory and(QueryOptions.Property property, QueryOptions.Relation relation, Object value) {
         addParam(property.toString().toLowerCase(), value);
         andFilter.add(property, relation, value);
+        options.setFilter(andFilter);
+        return this;
+    }
+
+    public QueryFactory andIsNull(QueryOptions.Property property) {
+        andFilter.addIsNull(property);
+        options.setFilter(andFilter);
+        return this;
+    }
+
+    public QueryFactory andIsNotNull(QueryOptions.Property property) {
+        andFilter.addIsNotNull(property);
         options.setFilter(andFilter);
         return this;
     }

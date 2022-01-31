@@ -46,7 +46,7 @@
         <maven.compiler.source>1.8</maven.compiler.source>
         <maven.compiler.target>1.8</maven.compiler.target>
         <!-- dependency versions -->
-        <slf4j.version>1.7.30</slf4j.version>
+        <slf4j.version>1.7.35</slf4j.version>
         <log4j.version>2.17.1</log4j.version>
         <hibernate.version>5.4.24.Final</hibernate.version>
         <hibernate.jpaVersion>1.0.0.Final</hibernate.jpaVersion>
@@ -129,11 +129,13 @@
             <artifactId>log4j-slf4j-impl</artifactId>
             <version>${log4j.version}</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-1.2-api</artifactId>
             <version>${log4j.version}</version>
         </dependency>
+        -->
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
@@ -198,7 +200,7 @@
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-server</artifactId>
-            <version>2.31</version>
+            <version>${jersey.version}</version>
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
@@ -358,6 +360,12 @@
             <groupId>de.mpg.mpgaai</groupId>
             <artifactId>mpgaai-shhaa</artifactId>
             <version>1.0.13</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <!--
         <dependency>
@@ -474,6 +482,12 @@
             <groupId>com.vladsch.flexmark</groupId>
             <artifactId>flexmark-all</artifactId>
             <version>0.62.2</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         <dependency>
             <!-- jsoup HTML parser library @ https://jsoup.org/ -->
@@ -499,6 +513,12 @@
             <artifactId>httpclient</artifactId>
             <version>4.5.13</version>
             <type>jar</type>
+            <exclusions>
+                <exclusion>
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
 
         <dependency>
@@ -535,7 +555,6 @@
             <artifactId>Saxon-HE</artifactId>
             <version>10.6</version>
             <scope>runtime</scope>
-            <classifier>compressed</classifier>
         </dependency>
         
         <dependency>
@@ -623,19 +642,25 @@
             <version>${hibernate.version}</version>
             <scope>test</scope>
         </dependency>
+<!--
+        <dependency>
+
+                    <groupId>org.jboss.logging</groupId>
+                    <artifactId>jboss-logging</artifactId>
+            <version>3.4.1.Final</version>
+            <scope>test</scope>
+        </dependency>
+    -->
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
             <version>5.4.24.Final</version>
             <scope>compile</scope>
         </dependency>
-
-
     </dependencies>
 
     <build>
         <finalName>vcr-${project.version}</finalName>
-        
         <resources>
             <resource>
                 <filtering>true</filtering>

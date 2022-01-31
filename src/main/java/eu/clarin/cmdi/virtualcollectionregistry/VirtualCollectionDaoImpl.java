@@ -30,6 +30,36 @@ public class VirtualCollectionDaoImpl implements VirtualCollectionDao {
                 cq.orderBy(order);
             }
         }
+
+
+        /*
+        CriteriaBuilder cb = em.getCriteriaBuilder();
+        CriteriaQuery<VirtualCollection> cq = cb.createQuery(VirtualCollection.class);
+        Root<VirtualCollection> root = cq.from(VirtualCollection.class);
+
+        //Build subquery
+        Subquery sub = cq.subquery(Long.class);
+        Root subRoot = sub.from(VirtualCollection.class);
+        sub.select(cb.max(subRoot.get("id"))); //Select max (aka latest) id. TODO: requires better approach to filter on latest version
+        if(factory.getQueryOptions() != null) { //Apply any filter parameters to the subquery
+            final Predicate where = factory.getQueryOptions().getWhere(cb, sub, subRoot);
+            if (where != null) {
+                sub.where(where);
+            }
+        }
+        sub.groupBy(subRoot.get("root")); //Group by root column
+
+        //Query collections where id's exist in the subquery result
+        cq.where(cb.in(root.get("id")).value(sub));
+
+        //Order main query result
+        if(factory.getQueryOptions() != null) {
+            final Order[] order = factory.getQueryOptions().getOrderBy(cb, root);
+            if (order != null) {
+                cq.orderBy(order);
+            }
+        }
+*/
         return  em.createQuery(cq.select(root));
     }
 
@@ -46,7 +76,7 @@ public class VirtualCollectionDaoImpl implements VirtualCollectionDao {
         if (first > -1) {
             query.setFirstResult(first);
         }
-        if (count > 0) {
+        if (count >= 0) {
             query.setMaxResults(count);
         }
         return query.getResultList();

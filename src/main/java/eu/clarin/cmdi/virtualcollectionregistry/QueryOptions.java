@@ -6,12 +6,7 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.criteria.CriteriaBuilder;
-import javax.persistence.criteria.CriteriaQuery;
-import javax.persistence.criteria.Expression;
-import javax.persistence.criteria.Order;
-import javax.persistence.criteria.Predicate;
-import javax.persistence.criteria.Root;
+import javax.persistence.criteria.*;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.User_;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
@@ -141,7 +136,7 @@ public class QueryOptions implements Serializable {
         return new ExpressionFilter(impl, relation.getCode(), value);
     }
 
-    Predicate getWhere(CriteriaBuilder cb, CriteriaQuery<?> cq,
+    Predicate getWhere(CriteriaBuilder cb, AbstractQuery<?> cq,
             Root<VirtualCollection> root) {
         if (filter != null) {
             return filter.makePredicate(cb, cq, root);
@@ -216,7 +211,7 @@ public class QueryOptions implements Serializable {
         protected abstract void doAdd(Filter filter);
 
         protected abstract Predicate makePredicate(CriteriaBuilder cb,
-                CriteriaQuery<?> cq, Root<VirtualCollection> root);
+                                                   AbstractQuery<?> cq, Root<VirtualCollection> root);
 
         public Property getProperty() {
             return property;
@@ -261,7 +256,7 @@ public class QueryOptions implements Serializable {
 
         @Override
         protected Predicate makePredicate(CriteriaBuilder cb,
-                CriteriaQuery<?> cq, Root<VirtualCollection> root) {
+                                          AbstractQuery<?> cq, Root<VirtualCollection> root) {
             Predicate[] preds = new Predicate[items.size()];
             int i = 0;
             for (Filter filter : items) {
@@ -302,7 +297,7 @@ public class QueryOptions implements Serializable {
 
         @Override
         protected Predicate makePredicate(CriteriaBuilder cb,
-                CriteriaQuery<?> cq, Root<VirtualCollection> root) {
+                                          AbstractQuery<?> cq, Root<VirtualCollection> root) {
             Predicate[] preds = new Predicate[items.size()];
             int i = 0;
             for (Filter filter : items) {
@@ -336,7 +331,7 @@ public class QueryOptions implements Serializable {
         }
 
         @Override
-        public Predicate makePredicate(CriteriaBuilder cb, CriteriaQuery<?> cq,
+        public Predicate makePredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                                        Root<VirtualCollection> root) {
             return property.getNullPredicate(cb, cq, root);
         }
@@ -365,7 +360,7 @@ public class QueryOptions implements Serializable {
         }
 
         @Override
-        public Predicate makePredicate(CriteriaBuilder cb, CriteriaQuery<?> cq,
+        public Predicate makePredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                                        Root<VirtualCollection> root) {
             return property.getNotNullPredicate(cb, cq, root);
         }
@@ -399,7 +394,7 @@ public class QueryOptions implements Serializable {
         }
 
         @Override
-        public Predicate makePredicate(CriteriaBuilder cb, CriteriaQuery<?> cq,
+        public Predicate makePredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                 Root<VirtualCollection> root) {
             return property.getPredicate(cb, cq, root, relation, value);
         }
@@ -437,7 +432,7 @@ public class QueryOptions implements Serializable {
                 Root<VirtualCollection> root);
 
         public abstract Predicate getPredicate(CriteriaBuilder cb,
-                CriteriaQuery<?> cq, Root<VirtualCollection> root,
+                                               AbstractQuery<?> cq, Root<VirtualCollection> root,
                 byte relation, Object value);
 
         public final boolean matchProperty(Property property) {
@@ -448,11 +443,11 @@ public class QueryOptions implements Serializable {
             return (getValidRelationMask() & relation.getCode()) > 0;
         }
 
-        public Predicate getNullPredicate(CriteriaBuilder cb, CriteriaQuery<?> cq, Root<VirtualCollection> root) {
+        public Predicate getNullPredicate(CriteriaBuilder cb, AbstractQuery<?> cq, Root<VirtualCollection> root) {
             throw new RuntimeException("not permitted");
         }
 
-        public Predicate getNotNullPredicate(CriteriaBuilder cb, CriteriaQuery<?> cq, Root<VirtualCollection> root) {
+        public Predicate getNotNullPredicate(CriteriaBuilder cb, AbstractQuery<?> cq, Root<VirtualCollection> root) {
             throw new RuntimeException("not permitted");
         }
 
@@ -532,7 +527,7 @@ public class QueryOptions implements Serializable {
         }
 
         @Override
-        public Predicate getPredicate(CriteriaBuilder cb, CriteriaQuery<?> cq,
+        public Predicate getPredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                 Root<VirtualCollection> root, byte relation, Object value) {
             final Expression<String> expr = getExpression(root);
             return makeStringPredicate(cb, expr, relation, (String) value);
@@ -558,7 +553,7 @@ public class QueryOptions implements Serializable {
         }
 
         @Override
-        public Predicate getPredicate(CriteriaBuilder cb, CriteriaQuery<?> cq,
+        public Predicate getPredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                 Root<VirtualCollection> root, byte relation, Object value) {
             final Expression<String> expr = getExpression(root);
             return makeStringPredicate(cb, expr, relation, (String) value);
@@ -581,7 +576,7 @@ public class QueryOptions implements Serializable {
         }
 
         @Override
-        public Predicate getPredicate(CriteriaBuilder cb, CriteriaQuery<?> cq,
+        public Predicate getPredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                                       Root<VirtualCollection> root, byte relation, Object value) {
             final Expression<String> expr = getExpression(root);
             return makePredicate(cb, expr, relation, value);
@@ -605,20 +600,20 @@ public class QueryOptions implements Serializable {
         }
 
         @Override
-        public Predicate getPredicate(CriteriaBuilder cb, CriteriaQuery<?> cq,
+        public Predicate getPredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                                       Root<VirtualCollection> root, byte relation, Object value) {
             final Expression<VirtualCollection> expr = getExpression(root);
             return makePredicate(cb, expr, relation, value);
         }
 
         @Override
-        public Predicate getNullPredicate(CriteriaBuilder cb, CriteriaQuery<?> cq, Root<VirtualCollection> root) {
+        public Predicate getNullPredicate(CriteriaBuilder cb, AbstractQuery<?> cq, Root<VirtualCollection> root) {
             final Expression<VirtualCollection> expr = getExpression(root);
             return cb.isNull(expr);
         }
 
         @Override
-        public Predicate getNotNullPredicate(CriteriaBuilder cb, CriteriaQuery<?> cq, Root<VirtualCollection> root) {
+        public Predicate getNotNullPredicate(CriteriaBuilder cb, AbstractQuery<?> cq, Root<VirtualCollection> root) {
             final Expression<VirtualCollection> expr = getExpression(root);
             return cb.isNotNull(expr);
         }
@@ -641,20 +636,20 @@ public class QueryOptions implements Serializable {
         }
 
         @Override
-        public Predicate getPredicate(CriteriaBuilder cb, CriteriaQuery<?> cq,
+        public Predicate getPredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                                       Root<VirtualCollection> root, byte relation, Object value) {
             final Expression<VirtualCollection> expr = getExpression(root);
             return makePredicate(cb, expr, relation, value);
         }
 
         @Override
-        public Predicate getNullPredicate(CriteriaBuilder cb, CriteriaQuery<?> cq, Root<VirtualCollection> root) {
+        public Predicate getNullPredicate(CriteriaBuilder cb, AbstractQuery<?> cq, Root<VirtualCollection> root) {
             final Expression<VirtualCollection> expr = getExpression(root);
             return cb.isNull(expr);
         }
 
         @Override
-        public Predicate getNotNullPredicate(CriteriaBuilder cb, CriteriaQuery<?> cq, Root<VirtualCollection> root) {
+        public Predicate getNotNullPredicate(CriteriaBuilder cb, AbstractQuery<?> cq, Root<VirtualCollection> root) {
             final Expression<VirtualCollection> expr = getExpression(root);
             return cb.isNotNull(expr);
         }
@@ -676,7 +671,7 @@ public class QueryOptions implements Serializable {
         }
 
         @Override
-        public Predicate getPredicate(CriteriaBuilder cb, CriteriaQuery<?> cq,
+        public Predicate getPredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                 Root<VirtualCollection> root, byte relation, Object value) {
             final Expression<VirtualCollection.Type> expr =
                 getExpression(root);
@@ -703,7 +698,7 @@ public class QueryOptions implements Serializable {
         }
 
         @Override
-        public Predicate getPredicate(CriteriaBuilder cb, CriteriaQuery<?> cq,
+        public Predicate getPredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                 Root<VirtualCollection> root, byte relation, Object value) {
             final Expression<VirtualCollection.State> expr =
                 getExpression(root);
@@ -729,7 +724,7 @@ public class QueryOptions implements Serializable {
         }
 
         @Override
-        public Predicate getPredicate(CriteriaBuilder cb, CriteriaQuery<?> cq,
+        public Predicate getPredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                 Root<VirtualCollection> root, byte relation, Object value) {
             final Expression<String> expr =
                 getExpression(root);
@@ -755,7 +750,7 @@ public class QueryOptions implements Serializable {
         }
 
         @Override
-        public Predicate getPredicate(CriteriaBuilder cb, CriteriaQuery<?> cq,
+        public Predicate getPredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                 Root<VirtualCollection> root, byte relation, Object value) {
             final Expression<Date> expr = getExpression(root);
             return makeDatePredicate(cb, expr, relation, (Date) value);

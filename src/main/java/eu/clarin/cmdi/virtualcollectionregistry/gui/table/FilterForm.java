@@ -3,6 +3,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.table;
 import java.util.Arrays;
 import java.util.List;
 
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.form.DateTextField;
@@ -47,6 +48,14 @@ public class FilterForm extends Panel {
         super(id);
         //setRenderBodyOnly(true);
 
+        WebMarkupContainer btnToggle = new WebMarkupContainer("btn-toggle-filter");
+        btnToggle.setOutputMarkupId(true);
+        if(locator.getFilterState().isCleared()) {
+            btnToggle.add(new AttributeModifier("class", "btn btn-default toggle-filter"));
+        } else {
+            btnToggle.add(new AttributeModifier("class", "btn btn-primary"));
+        }
+        add(btnToggle);
 
         List<VirtualCollection.State> states = new ArrayList<>();
         states.addAll(STATE_VALUES);
@@ -59,41 +68,78 @@ public class FilterForm extends Panel {
         final Form<FilterState> form = new Form<FilterState>("form", model);
         form.setOutputMarkupId(true);
 
+        //Name
+        final WebMarkupContainer containerName = new WebMarkupContainer("c_name");
+        containerName.add(new Label("lbl-name", "Name"));
         final EnumChoiceRenderer<FilterState.SearchMode> searchModeRenderer =
             new EnumChoiceRenderer<FilterState.SearchMode>(this);
-        form.add(new DropDownChoice<FilterState.SearchMode>("nameMode",
+        containerName.add(new DropDownChoice<FilterState.SearchMode>("nameMode",
                 MODE_VALUES, searchModeRenderer));
-        form.add(new TextField<String>("name")
+        containerName.add(new TextField<String>("name")
                 .add(Application.MAX_LENGTH_VALIDATOR));
-        form.add(new DropDownChoice<FilterState.SearchMode>("descriptionMode",
+        form.add(containerName);
+
+        //Description
+        final WebMarkupContainer containerDescription = new WebMarkupContainer("c_description");
+        containerDescription.add(new Label("lbl-description", "Description"));
+        containerDescription.add(new DropDownChoice<FilterState.SearchMode>("descriptionMode",
                 MODE_VALUES, searchModeRenderer));
-        form.add(new TextField<String>("description")
+        containerDescription.add(new TextField<String>("description")
                 .add(Application.MAX_LENGTH_VALIDATOR));
-        
-        final WebMarkupContainer state = new WebMarkupContainer("state");
-        state.setRenderBodyOnly(true);
-        state.add(new ListMultipleChoice("state", states));
-        state.setVisible(privateMode);
-        form.add(state);
-        
-        form.add(new DropDownChoice<VirtualCollection.Type>("type",
+        form.add(containerDescription);
+
+        //State
+        final WebMarkupContainer containerState = new WebMarkupContainer("state");
+        containerState.add(new Label("lbl-state", "State"));
+        containerState.setRenderBodyOnly(true);
+        containerState.add(new ListMultipleChoice("state", states));
+        containerState.setVisible(privateMode);
+        form.add(containerState);
+
+        //Type
+        WebMarkupContainer containerType = new WebMarkupContainer("c_type");
+        containerType.add(new Label("lbl-type", "Type"));
+        containerType.add(new DropDownChoice<VirtualCollection.Type>("type",
                 TYPE_VALUES,
                 new EnumChoiceRenderer<VirtualCollection.Type>(this)));
+        form.add(containerType);
+
+        //Created
+        WebMarkupContainer containerCreated = new WebMarkupContainer("c_created");
+        containerCreated.add(new Label("lbl-created", "Created"));
         final DropDownChoice<QueryOptions.Relation> createdRelationChoice =
             new DropDownChoice<QueryOptions.Relation>("createdRelation",
                     CREATED_RELATIONS,
                     new EnumChoiceRenderer<QueryOptions.Relation>(this));
         createdRelationChoice.setEscapeModelStrings(false);
-        form.add(createdRelationChoice);
-        form.add(new DateTextField("created", "yyyy-MM-dd"));
+        containerCreated.add(createdRelationChoice);
+        containerCreated.add(new DateTextField("created", "yyyy-MM-dd"));
+        form.add(containerCreated);
 
-        form.add(new DropDownChoice<String>("origin", originValues, new ChoiceRenderer<String>() {
+        //Modified
+        WebMarkupContainer containerModified = new WebMarkupContainer("c_modified");
+        containerModified.add(new Label("lbl-modified", "Modified"));
+        final DropDownChoice<QueryOptions.Relation> modifiedRelationChoice =
+                new DropDownChoice<QueryOptions.Relation>("modifiedRelation",
+                        CREATED_RELATIONS,
+                        new EnumChoiceRenderer<QueryOptions.Relation>(this));
+        modifiedRelationChoice.setEscapeModelStrings(false);
+        containerModified.add(modifiedRelationChoice);
+        containerModified.add(new DateTextField("modified", "yyyy-MM-dd"));
+        form.add(containerModified);
+
+        //Origin
+        WebMarkupContainer containerOrigin = new WebMarkupContainer("origin");
+        containerOrigin.add(new Label("lbl-origin", "Origin"));
+        containerOrigin.add(new DropDownChoice<String>("input-origin", originValues, new ChoiceRenderer<String>() {
             @Override
             public Object getDisplayValue(String value)
             {
                 return value;
             }
         }));
+        containerOrigin.setVisible(!originValues.isEmpty());
+        form.add(containerOrigin);
 
         final AjaxButton goButton = new AjaxButton("filter",
                 new ResourceModel("button.filter")) {
@@ -101,12 +147,14 @@ public class FilterForm extends Panel {
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 target.add(form);
                 target.add(table);
+                target.add(btnToggle);
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
                 super.onError(target, form);
                 target.add(form);
+                target.add(btnToggle);
             }
         };
         form.add(goButton);
