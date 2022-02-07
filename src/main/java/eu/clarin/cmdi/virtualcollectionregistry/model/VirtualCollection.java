@@ -456,6 +456,9 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     @JoinColumn(name = "original", nullable = true)
     private VirtualCollection root;
 
+    @Column(name = "public_leaf")
+    private Boolean publicLeaf;
+
     public VirtualCollection() {
         super();
         this.setState(VirtualCollection.State.PRIVATE);
@@ -1040,5 +1043,13 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
             }
             addChildrenToList(children, child, includePrivate);
         }
+    }
+
+    public boolean isPublicLeaf() {
+        return publicLeaf;
+    }
+
+    public void setPublicLeaf(boolean publicLeaf) {
+        this.publicLeaf = publicLeaf;
     }
 } // class VirtualCollection

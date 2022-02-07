@@ -23,7 +23,8 @@ public class QueryOptions implements Serializable {
         VC_CREATION_DATE,
         VC_ORIGIN,
         VC_PARENT,
-        VC_CHILD
+        VC_CHILD,
+        VC_PUBLIC_LEAF
     } // enum QueryOptions.Property
 
     public enum Relation {
@@ -75,7 +76,8 @@ public class QueryOptions implements Serializable {
                 new PropertyImplCreationDate(),
                 new PropertyImplOrigin(),
                 new PropertyImplParent(),
-                new PropertyImplChild()
+                new PropertyImplChild(),
+                new PropertyImplPublicLeaf()
         );
     private Filter filter;
     private List<OrderBy> orderByItems;
@@ -754,6 +756,30 @@ public class QueryOptions implements Serializable {
                 Root<VirtualCollection> root, byte relation, Object value) {
             final Expression<Date> expr = getExpression(root);
             return makeDatePredicate(cb, expr, relation, (Date) value);
+        }
+    }
+
+    private static final class PropertyImplPublicLeaf extends AbstractPropertyImpl {
+        @Override
+        public Property getProperty() {
+            return Property.VC_PUBLIC_LEAF;
+        }
+
+        @Override
+        public byte getValidRelationMask() {
+            return RELATIONS_EQ_NE;
+        }
+
+        @Override
+        public Expression<Boolean> getExpression(Root<VirtualCollection> root) {
+            return root.get(VirtualCollection_.publicLeaf);
+        }
+
+        @Override
+        public Predicate getPredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
+                                      Root<VirtualCollection> root, byte relation, Object value) {
+            final Expression expr = getExpression(root);
+            return makePredicate(cb, expr, relation, value);
         }
     }
 

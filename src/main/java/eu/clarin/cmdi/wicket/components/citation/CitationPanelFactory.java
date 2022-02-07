@@ -47,7 +47,6 @@ public class CitationPanelFactory {
         VirtualCollection vc = model.getObject();
         if(vc.isCiteable()) {
             VirtualCollection latest = vc.getAllVersions().get(0);
-            logger.info("current={}, latest={}", vc.getId(), latest.getId());
             if(latest.getId() != vc.getId() && latest.isCiteable()) {
                 return new CitationPanel(componentId, new Model(vc), new Model(latest), small);
             }

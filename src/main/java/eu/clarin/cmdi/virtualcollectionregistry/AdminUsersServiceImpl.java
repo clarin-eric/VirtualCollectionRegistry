@@ -29,7 +29,15 @@ public class AdminUsersServiceImpl implements AdminUsersService {
 
     @Value("${eu.clarin.cmdi.virtualcollectionregistry.admindb.basedir:.}")
     private String adminDbBaseDir;
-            
+
+    public AdminUsersServiceImpl() {}
+
+    public AdminUsersServiceImpl(String adminDbBaseDir, String adminDb) {
+        this.adminDbBaseDir = adminDbBaseDir;
+        this.adminDb = adminDb;
+        init();
+    }
+
     @Override
     public final boolean isAdmin(String user) {
         logger.debug("Checking admin rights of {}", user);
@@ -38,10 +46,15 @@ public class AdminUsersServiceImpl implements AdminUsersService {
 
     @PostConstruct
     protected final void init() {
+        logger.info("adminDbBaseDir={}, adminDb={}", adminDbBaseDir, adminDb);
         if (adminDb != null && !adminDb.isEmpty()) {
             logger.info("Reading admin user database");
             try {
-                loadAdminDatabase(adminDb);
+                Path filenameWithPath = Paths.get(adminDbBaseDir, adminDb);
+                String absolutePath = filenameWithPath.toAbsolutePath().toString();
+                logger.info("filenameWithPath: "+absolutePath);
+
+                loadAdminDatabase(absolutePath);
             } catch (IOException e) {
                 throw new RuntimeException("Could not load admin user database. Dir"+adminDbBaseDir+", file="+adminDb, e);
             }
@@ -53,30 +66,16 @@ public class AdminUsersServiceImpl implements AdminUsersService {
         }
     }
 
-    private void loadAdminDatabase(String filename) throws IOException {
+    /**
+     * Load file from disk and read each line as a single admin user. Lines starting with a hash (#) are skipped as
+     * comments.
+     *
+     * @param absolute_path_to_filename
+     * @throws IOException
+     */
+    private void loadAdminDatabase(String absolute_path_to_filename) throws IOException {
         adminUsers.clear();
-     /*
-        if(adminDbBaseDir == null || adminDbBaseDir.isEmpty()) {
-            adminDbBaseDir = System.getProperty("user.home");
-            logger.debug("eu.clarin.cmdi.virtualcollectionregistry.admindb.basedir not set, using home directory: "+adminDbBaseDir);
-        }
-       */
-        /*
-        String filenameWithPath = filename;
-        if(adminDbBaseDir.endsWith("/") && filename.startsWith("/")) {
-            filenameWithPath = adminDbBaseDir + filename.substring(1);
-        } else if(!adminDbBaseDir.endsWith("/") && !filename.startsWith("/")) {
-            filenameWithPath = adminDbBaseDir + "/" + filename;
-        } else {
-            filenameWithPath = adminDbBaseDir + filename;
-        }
-        */
-        Path filenameWithPath = Paths.get(adminDbBaseDir, filename);
-
-        logger.info("filenameWithPath: "+filenameWithPath.toAbsolutePath().toString());
-        
-        try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-                new FileInputStream(filenameWithPath.toAbsolutePath().toString())))) {
+        try (BufferedReader reader = new BufferedReader(new InputStreamReader(new FileInputStream(absolute_path_to_filename)))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 line = line.trim();
@@ -84,10 +83,9 @@ public class AdminUsersServiceImpl implements AdminUsersService {
                     continue;
                 }
                 adminUsers.add(line);
-            } // while
+            }
         }
     }
-
 
     public List<String> getAdminUsers() {
         List<String> admins = new LinkedList<>();
@@ -97,5 +95,4 @@ public class AdminUsersServiceImpl implements AdminUsersService {
         Collections.sort(admins);
         return admins;
     }
-
 }

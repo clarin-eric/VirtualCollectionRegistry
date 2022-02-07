@@ -37,16 +37,20 @@ public class CreatorServiceImpl implements CreatorService {
     private static final Logger logger = LoggerFactory.getLogger(CreatorServiceImpl.class);
     
     private final Set<Creator> creators;
-    private boolean initialized = false;
+    private boolean initialized;
     
     public CreatorServiceImpl() {
         creators = new HashSet<>();
         initialized = false;
     }
-    
+
+    public boolean isInitialized() {
+        return initialized;
+    }
+
     @Override
     public synchronized void initialize(List<VirtualCollection> collections) {
-        if(!initialized) {
+        if(!initialized && collections != null) {
             for(VirtualCollection vc : collections) {
                 if(vc.isPublic()) {
                     for(Creator c: vc.getCreators()) {

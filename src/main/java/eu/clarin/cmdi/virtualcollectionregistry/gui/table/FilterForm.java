@@ -4,6 +4,7 @@ import java.util.Arrays;
 import java.util.List;
 
 import org.apache.wicket.AttributeModifier;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.extensions.markup.html.form.DateTextField;
@@ -21,9 +22,14 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.util.ArrayList;
 import org.apache.wicket.markup.html.basic.Label;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 @SuppressWarnings("serial")
 public class FilterForm extends Panel {
+
+    private final static Logger logger = LoggerFactory.getLogger(FilterForm.class);
+
     private static final List<FilterState.SearchMode> MODE_VALUES =
         Arrays.asList(FilterState.SearchMode.values());
     private static final List<VirtualCollection.State> STATE_VALUES =
@@ -43,18 +49,23 @@ public class FilterForm extends Panel {
                 QueryOptions.Relation.GE,
                 QueryOptions.Relation.GT);
 
+    private final WebMarkupContainer btnToggle;
+    private final IFilterStateLocator<FilterState> locator;
+
+    private final AttributeModifier toggleOnBehavior = new AttributeModifier("class", "btn btn-primary");
+    private final AttributeModifier toggleOffBehavior = new AttributeModifier("class", "btn btn-default toggle-filter");
+    private boolean wasCleared;
+
     public FilterForm(String id, IFilterStateLocator<FilterState> locator, List<String> originValues,
             final DataTable<VirtualCollection, String> table, boolean privateMode, boolean isAdmin) {
         super(id);
+        this.locator = locator;
         //setRenderBodyOnly(true);
+        setOutputMarkupId(true);
 
-        WebMarkupContainer btnToggle = new WebMarkupContainer("btn-toggle-filter");
-        btnToggle.setOutputMarkupId(true);
-        if(locator.getFilterState().isCleared()) {
-            btnToggle.add(new AttributeModifier("class", "btn btn-default toggle-filter"));
-        } else {
-            btnToggle.add(new AttributeModifier("class", "btn btn-primary"));
-        }
+        wasCleared = !locator.getFilterState().isCleared();
+        btnToggle = new WebMarkupContainer("btn-toggle-filter");
+        btnToggle.add(toggleOnBehavior);
         add(btnToggle);
 
         List<VirtualCollection.State> states = new ArrayList<>();
@@ -141,20 +152,21 @@ public class FilterForm extends Panel {
         containerOrigin.setVisible(!originValues.isEmpty());
         form.add(containerOrigin);
 
+        Component c = this;
         final AjaxButton goButton = new AjaxButton("filter",
                 new ResourceModel("button.filter")) {
             @Override
             protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
                 target.add(form);
                 target.add(table);
-                target.add(btnToggle);
+                target.add(c);
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
                 super.onError(target, form);
                 target.add(form);
-                target.add(btnToggle);
+                target.add(c);
             }
         };
         form.add(goButton);
@@ -168,25 +180,33 @@ public class FilterForm extends Panel {
                 state.clear();
                 target.add(form);
                 target.add(table);
+                target.add(c);
             }
 
             @Override
             protected void onError(AjaxRequestTarget target, Form<?> form) {
                 super.onError(target, form);
                 target.add(form);
+                target.add(c);
             }
         };
         form.add(clearButton);
         add(form);
-        //form.add(new Label("title", "Filter"));
-        /*
-        TODO: switch to using BootstrapPanelBuilder:
-        add(BootstrapPanelBuilder
-                .createCollapsiblePanel("general")
-                .setTitle("General")
-                .setBody(new GeneralPanel("body", model))
-                .build());
-        */
+    }
+
+    @Override
+    protected void onBeforeRender() {
+        if(!locator.getFilterState().isCleared() && wasCleared) {
+                btnToggle.remove(toggleOffBehavior);
+                btnToggle.add(toggleOnBehavior);
+
+        } else if(locator.getFilterState().isCleared() && !wasCleared) {
+            btnToggle.remove(toggleOnBehavior);
+            btnToggle.add(toggleOffBehavior);
+        }
+        wasCleared = locator.getFilterState().isCleared();
+
+        super.onBeforeRender();
     }
 
 } // class FilterForm

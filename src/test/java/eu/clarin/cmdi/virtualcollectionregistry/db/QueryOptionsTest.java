@@ -1,4 +1,4 @@
-package eu.clarin.cmdi.virtualcollectionregistry;
+package eu.clarin.cmdi.virtualcollectionregistry.db;
 
 import org.junit.Test;
 

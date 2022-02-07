@@ -22,6 +22,9 @@ public class PermaLinkServiceImpl implements PermaLinkService {
 
     @Override
     public String getCollectionUrl(VirtualCollection collection) {
+        if(collection == null) {
+            throw new RuntimeException("collection cannot be null");
+        }
         return getCollectionUrl(collection.getId());
     }
 
@@ -33,11 +36,17 @@ public class PermaLinkServiceImpl implements PermaLinkService {
         if(baseUri.endsWith("/")) {
             baseUri = baseUri.substring(0, baseUri.length()-1);
         }
+        if(collectionId == null) {
+            throw new RuntimeException("collectionId cannot be null");
+        }
         return String.format("%s/service/virtualcollections/%d", baseUri, collectionId);
     }
 
     @Override
     public String getCollectionDetailsUrl(VirtualCollection collection) {
+        if(collection == null) {
+            throw new RuntimeException("collection cannot be null");
+        }
         return getCollectionDetailsUrl(collection.getId());
     }
 
@@ -48,6 +57,9 @@ public class PermaLinkServiceImpl implements PermaLinkService {
         }
         if(baseUri.endsWith("/")) {
             baseUri = baseUri.substring(0, baseUri.length()-1);
+        }
+        if(collectionId == null) {
+            throw new RuntimeException("collectionId cannot be null");
         }
         return String.format("%s/details/%d", baseUri, collectionId);
     }

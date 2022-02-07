@@ -12,6 +12,25 @@ import java.util.List;
 public class VirtualCollectionDaoImpl implements VirtualCollectionDao {
     private Logger logger = LoggerFactory.getLogger(VirtualCollectionDaoImpl.class);
 
+    /**
+     *
+     * id       root    parent  child   state       public_leaf
+     * 0        NULL    NULL    NULL    *           true                //unversioned
+     *
+     * 1        1       NULL    2       public      false               //versioned
+     * 2        1       1       NULL    public      true                //versioned
+     *
+     * 3        3       NULL    4       public      true                //versioned
+     * 4        3       3       NULL    private     false               //versioned
+     *
+     * 5        5       NULL    6       public      false               //versioned
+     * 6        5       5       7       public      true                //versioned         child is null does not work for public collections
+     * 7        5       6       NULL    private     false               //versioned
+     *
+     * @param em
+     * @param factory
+     * @return
+     */
     private TypedQuery<VirtualCollection> getCollectionsQuery(EntityManager em, QueryFactory factory) {
         if(!em.getTransaction().isActive()) {
             throw new RuntimeException("Active transaction is requied");
@@ -30,7 +49,6 @@ public class VirtualCollectionDaoImpl implements VirtualCollectionDao {
                 cq.orderBy(order);
             }
         }
-
 
         /*
         CriteriaBuilder cb = em.getCriteriaBuilder();
@@ -60,7 +78,7 @@ public class VirtualCollectionDaoImpl implements VirtualCollectionDao {
             }
         }
 */
-        return  em.createQuery(cq.select(root));
+        return em.createQuery(cq.select(root));
     }
 
     public List<VirtualCollection> getVirtualCollections(EntityManager em, QueryFactory factory) {

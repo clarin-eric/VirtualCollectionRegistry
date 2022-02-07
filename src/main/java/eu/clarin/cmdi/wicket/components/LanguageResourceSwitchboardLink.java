@@ -56,7 +56,6 @@ public class LanguageResourceSwitchboardLink extends AjaxFallbackLink<String> {
             return container;
         }
         String href = vc.getPrimaryIdentifier().getActionableURI();
-        logger.info("Select pid of preferred type = {}", vcrConfig.getProcessEndpointPreferedPidType());
         if(!vcrConfig.getProcessEndpointPreferedPidType().equalsIgnoreCase("primary")) {
             boolean found = false;
             for (PersistentIdentifier pid : vc.getAllIdentifiers()) {
@@ -66,7 +65,7 @@ public class LanguageResourceSwitchboardLink extends AjaxFallbackLink<String> {
                 }
             }
             if(!found) {
-                logger.warn("Did not find PID of prefered type = {} for collection with id = {}", vcrConfig.getProcessEndpointPreferedPidType(), vc.getId());
+                logger.debug("Did not find PID of prefered type = {} for collection with id = {}", vcrConfig.getProcessEndpointPreferedPidType(), vc.getId());
             }
         }
 

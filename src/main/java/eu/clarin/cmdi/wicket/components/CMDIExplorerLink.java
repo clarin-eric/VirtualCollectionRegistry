@@ -38,7 +38,6 @@ public class CMDIExplorerLink extends AjaxFallbackLink<String> {
         }
 
         String href = vc.getPrimaryIdentifier().getActionableURI();
-        logger.info("Select pid of preferred type = {}", vcrConfig.getDownloadEndpointPreferedPidType());
         if(!vcrConfig.getDownloadEndpointPreferedPidType().equalsIgnoreCase("primary")) {
             boolean found = false;
             for (PersistentIdentifier pid : vc.getAllIdentifiers()) {
@@ -48,7 +47,7 @@ public class CMDIExplorerLink extends AjaxFallbackLink<String> {
                 }
             }
             if(!found) {
-                logger.warn("Did not find PID of prefered type = {} for collection with id = {}", vcrConfig.getDownloadEndpointPreferedPidType(), vc.getId());
+                logger.debug("Did not find PID of prefered type = {} for collection with id = {}", vcrConfig.getDownloadEndpointPreferedPidType(), vc.getId());
             }
         }
         CMDIExplorerLink link = new CMDIExplorerLink(id, Model.of(href));

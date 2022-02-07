@@ -12,7 +12,6 @@ public class VirtualCollectionFactory {
         return new VirtualCollectionFactory(vc);
     }
 
-
     private VirtualCollection c;
 
     private VirtualCollectionFactory(User owner, String name, String description) {
@@ -65,6 +64,9 @@ public class VirtualCollectionFactory {
         newVersion.setState(VirtualCollection.State.PRIVATE);
         newVersion.setParent(c);
         newVersion.setRoot(c.getRoot());
+
+        c.setChild(newVersion);
+
         return fromExisting(newVersion);
     }
 
@@ -74,9 +76,21 @@ public class VirtualCollectionFactory {
         return this;
     }
 
+    public VirtualCollectionFactory addCreator(Creator e) {
+        if(e == null) {
+            throw new NullPointerException("Creator cannot be null");
+        }
+        c.getCreators().add(e);
+        return this;
+    }
+
     public VirtualCollectionFactory publish() {
         c.getIdentifiers();//.add();
         c.setState(VirtualCollection.State.PUBLIC);
+        c.setPublicLeaf(true);
+        if(c.getParent() != null) {
+            c.getParent().setPublicLeaf(false);
+        }
         return this;
     }
 
