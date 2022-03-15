@@ -6,6 +6,7 @@ import java.net.URL;
 import java.util.*;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryReferenceValidationJob;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryReferenceValidator;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.CancelEventHandler;
@@ -20,14 +21,20 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.Listener;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.*;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
+import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormChoiceComponentUpdatingBehavior;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.EnumChoiceRenderer;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.util.time.Duration;
 import org.slf4j.Logger;
@@ -117,16 +124,22 @@ public class ReferencesEditor extends ComposedField {
         }
     }
 
+    private final Component componentToUpdate;
+    private final Filter f;
+
     public ReferencesEditor(String id, String label, Model<Boolean> advancedEditorMode, VisabilityUpdater updater) {
         super(id, "References", null, updater);
         setOutputMarkupId(true);
-        Component componentToUpdate = this;
+        componentToUpdate = this;
 
         final WebMarkupContainer editorWrapper = new WebMarkupContainer("ref_editor_wrapper");
         editorWrapper.setOutputMarkupId(true);
 
         final WebMarkupContainer ajaxWrapper = new WebMarkupContainer("ajaxwrapper");
         ajaxWrapper.setOutputMarkupId(true);
+
+        f = new Filter("filter", Application.get().getRegistry().getReferenceValidator());
+        add(f);
 
         localDialog = new ModalConfirmDialog("references_modal");
         localDialog.addListener(new Listener() {
@@ -165,6 +178,7 @@ public class ReferencesEditor extends ComposedField {
                 registry.getReferenceValidator().setState(references.get(edit_index).getInternalId(), State.INITIALIZED);
                 edit_index = -1;
                 editor.setVisible(false);
+                listview.setModelObject(f.apply(references));
                 listview.setVisible(true);
                 if(target != null) {
                     target.add(componentToUpdate);
@@ -176,6 +190,7 @@ public class ReferencesEditor extends ComposedField {
             public void handleCancelEvent(AjaxRequestTarget target) {
                 edit_index = -1;
                 editor.setVisible(false);
+                listview.setModelObject(f.apply(references));
                 listview.setVisible(true);
                 if(target != null) {
                     target.add(componentToUpdate);
@@ -189,7 +204,7 @@ public class ReferencesEditor extends ComposedField {
         lblNoReferences = new Label("lbl_no_references", "No references found.<br />Please add one or more members that make up this virtual collection by means of a (persistent) reference. ");
         lblNoReferences.setEscapeModelStrings(false);
 
-        listview = new ListView("listview", references) {
+        listview = new ListView("listview", f.apply(references)) {
             @Override
             protected void populateItem(ListItem item) {
 
@@ -250,6 +265,7 @@ public class ReferencesEditor extends ComposedField {
                             }
                         }
 
+                        listview.setModelObject(f.apply(references));
                         if(edit_index < 0) {
                             editor.setVisible(false);
                             editor.reset();
@@ -285,6 +301,7 @@ public class ReferencesEditor extends ComposedField {
             protected void onTimer(AjaxRequestTarget target) {
                 //validate(); //make sure this validation is up to date before re rendering the component
                 if(target != null) {
+                    logger.trace("Update references editor timer");
                     target.add(ajaxWrapper);
                 }
                 fireEvent(new CustomDataUpdateEvent(target));
@@ -310,6 +327,57 @@ public class ReferencesEditor extends ComposedField {
         f2.setCompleteSubmitOnUpdate(true);
         f2.setRequired(true);
         add(f2);
+    }
+
+    public class Filter extends WebMarkupContainer {
+        private final IModel<String> filterState = new Model<>("ALL");
+
+        private transient final VirtualCollectionRegistryReferenceValidator validator;
+
+        public Filter(String id, VirtualCollectionRegistryReferenceValidator validator) {
+            super(id);
+            this.validator = validator;
+
+            DropDownChoice choice = new DropDownChoice<String>(
+                    "cb_filter",
+                    filterState,
+                    new LoadableDetachableModel<List<String>>() {
+                        @Override
+                        protected List<String> load() {
+                            List<String> filterableState = new ArrayList<>();
+                            filterableState.add("ALL");
+                            filterableState.add(State.FAILED.toString());
+                            filterableState.add(State.ANALYZING.toString());
+                            filterableState.add(State.DONE.toString());
+                            return filterableState;
+                        }
+                    });
+
+            choice.add(new AjaxFormComponentUpdatingBehavior("change") {
+                @Override
+                protected void onUpdate(final AjaxRequestTarget target) {
+                    listview.setModelObject(apply(references));
+                    target.add(componentToUpdate);
+                }
+            });
+
+            Label lblPrefix = new Label("lbl_filter_prefix", "Filter references: ");
+            add(lblPrefix);
+            add(choice);
+            Label lblPostfix = new Label("lbl_filter_postfix", "");
+            add(lblPostfix);
+        }
+
+        public List<EditableResource> apply(List<EditableResource> references) {
+            List<EditableResource> filtered = new ArrayList<>();
+            for(EditableResource r : references) {
+                State state = validator.getState(r.getInternalId());
+                if(filterState.getObject() == "ALL" || filterState.getObject() == state.toString()) {
+                    filtered.add(r);
+                }
+            }
+            return filtered;
+        }
     }
 
     private long getMaxDisplayOrder() {
@@ -374,6 +442,7 @@ public class ReferencesEditor extends ComposedField {
             
             if(target != null) {
                 lblNoReferences.setVisible(references.isEmpty());
+                listview.setModelObject(f.apply(references));
                 listview.setVisible(!references.isEmpty());
                 target.add(this);
             }
@@ -406,6 +475,7 @@ public class ReferencesEditor extends ComposedField {
         editor.reset();
         references.clear();
         lblNoReferences.setVisible(references.isEmpty());
+        listview.setModelObject(f.apply(references));
         listview.setVisible(!references.isEmpty());
     }
     
@@ -427,6 +497,7 @@ public class ReferencesEditor extends ComposedField {
             addReferenceJob(EditableResource.fromResource(r));
         }
         lblNoReferences.setVisible(references.isEmpty());
+        listview.setModelObject(f.apply(references));
         listview.setVisible(!references.isEmpty());
     }
 
