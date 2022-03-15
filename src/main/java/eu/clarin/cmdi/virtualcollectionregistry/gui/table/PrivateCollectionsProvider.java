@@ -18,6 +18,7 @@ public class PrivateCollectionsProvider extends CollectionsProvider {
     @Override
     protected void addSpaceFilter(QueryFactory factory) {
         ApplicationSession session = ApplicationSession.get();
+        factory.andIsNull(QueryOptions.Property.VC_CHILD);
         factory.and(QueryOptions.Property.VC_OWNER, QueryOptions.Relation.EQ, session.getUser());
 
         List<VirtualCollection.State> states = new LinkedList<>();
@@ -29,11 +30,5 @@ public class PrivateCollectionsProvider extends CollectionsProvider {
         states.add(VirtualCollection.State.ERROR);
         factory.and(QueryOptions.Property.VC_STATE, QueryOptions.Relation.IN, states);
     }
-/*
-    protected void addTypeFilter(QueryOptions.Filter filter, VirtualCollection.Type type) {
-        filter.add(QueryOptions.Property.VC_TYPE,
-                QueryOptions.Relation.EQ,
-                type);
-    }
-*/
+
 }

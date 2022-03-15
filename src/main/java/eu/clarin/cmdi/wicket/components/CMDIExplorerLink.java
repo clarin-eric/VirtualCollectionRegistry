@@ -46,9 +46,11 @@ public class CMDIExplorerLink extends AjaxFallbackLink<String> {
                     found = true;
                 }
             }
+            /*
             if(!found) {
-                logger.debug("Did not find PID of prefered type = {} for collection with id = {}", vcrConfig.getDownloadEndpointPreferedPidType(), vc.getId());
+                logger.trace("Did not find PID of prefered type = {} for collection with id = {}", vcrConfig.getDownloadEndpointPreferedPidType(), vc.getId());
             }
+             */
         }
         CMDIExplorerLink link = new CMDIExplorerLink(id, Model.of(href));
         UIUtils.addTooltip(link, TOOLTIP_DOWNLOAD_TEXT);

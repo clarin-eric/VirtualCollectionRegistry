@@ -67,7 +67,7 @@
 
     <!-- Download endpoint -->
     <Parameter name="eu.clarin.cmdi.vcr.download.endpoint"
-               value="https://weblicht.sfs.uni-tuebingen.de/CMDIExplorer/input/#/vcr"
+               value="https://weblicht.sfs.uni-tuebingen.de/CMDIExplorer/#/vcr"
                override="false"/>
 
     <Parameter name="eu.clarin.cmdi.vcr.download.enable_for_collections"

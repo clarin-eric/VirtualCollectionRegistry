@@ -29,6 +29,8 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.time.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -40,6 +42,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 @AuthorizeInstantiation(Roles.ADMIN)
 @AuthorizeAction(action = "ENABLE", roles = {Roles.ADMIN})
 public class AdminPage extends BasePage {
+
+    private final static Logger logger = LoggerFactory.getLogger(AdminPage.class);
 
     @SpringBean
     private VirtualCollectionRegistry vcr;
@@ -89,7 +93,7 @@ public class AdminPage extends BasePage {
 
         // create table showing the collections in the space
         final AdminCollectionsProvider provider = new AdminCollectionsProvider(userModel);
-        add(new BrowseEditableCollectionsPanel("collections", provider, true, getPageReference()));
+        add(new BrowseEditableCollectionsPanel("collections", provider, true, getPageReference(), timerManager));
 
         ReferenceValidationPanel pnl = new ReferenceValidationPanel("pnl_reference_validation", vcr.getReferenceValidator());
         pnl.setOutputMarkupId(true);
@@ -100,6 +104,7 @@ public class AdminPage extends BasePage {
             protected void onTimer(AjaxRequestTarget target) {
                 pnl.update(vcr.getReferenceValidator());
                 if(target != null) {
+                    logger.info("Update admin page timer");
                     target.add(pnl);
                 }
             }

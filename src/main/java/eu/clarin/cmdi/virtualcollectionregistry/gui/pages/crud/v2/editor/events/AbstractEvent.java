@@ -16,22 +16,31 @@ public class AbstractEvent<T> implements Event<T> {
     private final T data;
     protected final AjaxRequestTarget target;
     private final Principal principal;
+    private Exception ex;
 
     public AbstractEvent(EventType type, AjaxRequestTarget target) {
-        this(type, null, target);
+        this(type, null, null, target);
     }
 
     public AbstractEvent(EventType type, T data, AjaxRequestTarget target) {
-        this(type, null, data, target);
+        this(type, null, data, null, target);
     }
 
-    public AbstractEvent(EventType type, Principal p, T data, AjaxRequestTarget target) {
+    public AbstractEvent(EventType type, Principal p, T data, AjaxRequestTarget target) { this(type, p, data, null, target); }
+
+    public AbstractEvent(EventType type, Principal p, T data, Exception ex, AjaxRequestTarget target) {
         this.type = type;
         this.data = data;
+        this.ex = ex;
         this.target = target;
         this.principal = p;
     }
-    
+
+    @Override
+    public Exception getException() {
+        return ex;
+    }
+
     @Override
     public EventType getType() {
         return this.type;

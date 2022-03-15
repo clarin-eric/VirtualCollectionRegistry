@@ -24,11 +24,36 @@ public class DataStore implements DisposableBean {
         this(ServletUtils.createParameterMap(servletContext));
     }
 
-    public DataStore(Map<String, String> config)
-            throws VirtualCollectionRegistryException {
+    public DataStore(Map<String, String> config) throws VirtualCollectionRegistryException {
+        this(Persistence.createEntityManagerFactory("VirtualCollectionStore", config));
+        /*
         try {
             emf = Persistence.createEntityManagerFactory(
                     "VirtualCollectionStore", config);
+            em = new ThreadLocal<EntityManager>() {
+                @Override
+                protected EntityManager initialValue() {
+                    if (emf == null) {
+                        throw new InternalError(
+                                "JPA not initalizied correctly");
+                    }
+                    if (logger.isDebugEnabled()) {
+                        logger.trace("Creating new thread local entity manager in thread {}", Thread.currentThread().getName());
+                    }
+                    return emf.createEntityManager();
+                }
+            };
+        } catch (Exception e) {
+            logger.error("error initializing data store", e);
+            throw new VirtualCollectionRegistryException(
+                    "error initializing", e);
+        }
+        */
+    }
+
+    public DataStore(EntityManagerFactory emf) throws VirtualCollectionRegistryException {
+        this.emf = emf;
+        try {
             em = new ThreadLocal<EntityManager>() {
                 @Override
                 protected EntityManager initialValue() {

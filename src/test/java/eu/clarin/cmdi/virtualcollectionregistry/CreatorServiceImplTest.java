@@ -1,10 +1,13 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
+import eu.clarin.cmdi.virtualcollectionregistry.db.DbEnvironment;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionFactory;
+import org.junit.After;
 import org.junit.Assert;
+import org.junit.Before;
 import org.junit.Test;
 
 import java.util.ArrayList;
@@ -14,16 +17,19 @@ public class CreatorServiceImplTest {
 
     private final CreatorServiceImpl service = new CreatorServiceImpl();
 
-    public CreatorServiceImplTest() {
+    public CreatorServiceImplTest() throws Exception {
+        DbEnvironment db = DbEnvironment.initialize();
         List<VirtualCollection> collections = new ArrayList<>();
         collections.add(
             VirtualCollectionFactory
                 .createNew(new User("test user"), "Test", "Test")
                 .addCreator(new Creator("creatorFamilyName", "creatorGivenName"))
-                .publish()
+                .startPublish(db.getVirtualCollectionDao())
+                .finishPublish(db.getVirtualCollectionDao())
                 .getCollection()
         );
         service.initialize(collections);
+        db.destroy();
     }
 
     @Test

@@ -140,6 +140,7 @@ public class FilterForm extends Panel {
         form.add(containerModified);
 
         //Origin
+        /*
         WebMarkupContainer containerOrigin = new WebMarkupContainer("origin");
         containerOrigin.add(new Label("lbl-origin", "Origin"));
         containerOrigin.add(new DropDownChoice<String>("input-origin", originValues, new ChoiceRenderer<String>() {
@@ -151,7 +152,7 @@ public class FilterForm extends Panel {
         }));
         containerOrigin.setVisible(!originValues.isEmpty());
         form.add(containerOrigin);
-
+*/
         Component c = this;
         final AjaxButton goButton = new AjaxButton("filter",
                 new ResourceModel("button.filter")) {

@@ -38,7 +38,7 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
     private final static String REQUIRED_DB_VERSION = "1.6.0";
 
    //@Autowired
-   // private final DataStore datastore; //TODO: replace with Spring managed EM?
+    private final DataStore datastore; //TODO: replace with Spring managed EM?
 
     @Autowired
     @Qualifier("creation")
@@ -64,12 +64,12 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
     
     private final AtomicBoolean intialized = new AtomicBoolean(false);
 
-    private final VirtualCollectionDao vcDao = new VirtualCollectionDaoImpl();
-    //private final VirtualCollectionDao vcDao = new VirtualCollectionDaoImplNamedQuery();
+    private final VirtualCollectionDao vcDao;
 
     @Autowired
     public VirtualCollectionRegistryImpl(DataStore datastore) {
-        super(datastore);
+        this.datastore = datastore;
+        this.vcDao = new VirtualCollectionDaoImpl(datastore);
     }
 
     /**
@@ -163,13 +163,13 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
     public long createVirtualCollection(Principal principal, VirtualCollection vc) throws VirtualCollectionRegistryException {
         long result = -1;
         try {
-            beginTransaction();
+            beginTransaction(datastore.getEntityManager());
             User user = getOrCreateUser(principal);
             result = createVirtualCollection(user, vc);
         } catch(Exception ex) {
-            rollbackActiveTransaction("Failed to fetch or create user for principal="+ principal.getName()+".", ex);
+            rollbackActiveTransaction(datastore.getEntityManager(),"Failed to fetch or create user for principal="+ principal.getName()+".", ex);
         } finally {
-            commitActiveTransaction();
+            commitActiveTransaction(datastore.getEntityManager());
         }
         return result;
     }
@@ -184,14 +184,14 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
         final EntityManager em = datastore.getEntityManager();
         long result = -1;
         try {            
-            beginTransaction();
+            beginTransaction(datastore.getEntityManager());
             createCollection(em, vc, user);
             logger.debug("virtual collection created (id={})", vc.getId());
             result = vc.getId();
         } catch (Exception e) {
-            rollbackActiveTransaction("error while creating virtual collection", e);
+            rollbackActiveTransaction(datastore.getEntityManager(), "error while creating virtual collection", e);
         } finally {
-            commitActiveTransaction();
+            commitActiveTransaction(datastore.getEntityManager());
         }
         return result;
     }
@@ -283,16 +283,16 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
         long result = -1;
         EntityManager em = datastore.getEntityManager();
         try {
-            beginTransaction();
+            beginTransaction(datastore.getEntityManager());
             User user = getOrCreateUser(principal);
             VirtualCollection newVersionClone = newVersion.clone();
             long newVcId = createCollection(em, newVersionClone, user);
             updateCollectionWithChild(em, principal, parentId, newVcId);
             result = newVcId;
         } catch(Exception ex) {
-            rollbackActiveTransaction("Failed to create new version", ex);
+            rollbackActiveTransaction(datastore.getEntityManager(),"Failed to create new version", ex);
         } finally {
-            commitActiveTransaction();
+            commitActiveTransaction(datastore.getEntityManager());
         }
         return result;
     }
@@ -367,7 +367,7 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
         long result = -1;
         EntityManager em = datastore.getEntityManager();
         try {
-            beginTransaction();
+            beginTransaction(datastore.getEntityManager());
 
             if (!isAllowedToModify(principal, vc)) {
                 throw new VirtualCollectionRegistryPermissionException(
@@ -377,11 +377,11 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
             result = updateCollection(em, id, vc);
         } catch (VirtualCollectionRegistryException e) {
             em.getTransaction().rollback();
-            rollbackActiveTransaction("failed to update virtual collecion (id="+id+"): "+e.getMessage(),e);
+            rollbackActiveTransaction(datastore.getEntityManager(),"failed to update virtual collecion (id="+id+"): "+e.getMessage(),e);
         } catch (Exception e) {
-            rollbackActiveTransaction("error while updating virtual collection", e);
+            rollbackActiveTransaction(datastore.getEntityManager(),"error while updating virtual collection", e);
         } finally {
-            commitActiveTransaction();
+            commitActiveTransaction(datastore.getEntityManager());
         }
         return result;
     }
@@ -400,7 +400,7 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
         long result = -1;
         EntityManager em = datastore.getEntityManager();
         try {
-            beginTransaction();
+            beginTransaction(datastore.getEntityManager());
             VirtualCollection vc = em.find(VirtualCollection.class,
                     Long.valueOf(id), LockModeType.PESSIMISTIC_WRITE);
             if ((vc == null) || vc.isDeleted()) {
@@ -425,11 +425,11 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
             vc.setState(VirtualCollection.State.DELETED);
             result = vc.getId();
         } catch (VirtualCollectionRegistryException e) {
-            rollbackActiveTransaction("failed deleting virtual collecion (id="+id+"): "+e.getMessage(), e);
+            rollbackActiveTransaction(datastore.getEntityManager(),"failed deleting virtual collecion (id="+id+"): "+e.getMessage(), e);
         } catch (Exception e) {
-            rollbackActiveTransaction("error while deleting virtual collection", e);
+            rollbackActiveTransaction(datastore.getEntityManager(),"error while deleting virtual collection", e);
         } finally {
-            commitActiveTransaction();
+            commitActiveTransaction(datastore.getEntityManager());
         }
         return result;
     }
@@ -445,7 +445,7 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
         VirtualCollection.State result = null;
         EntityManager em = datastore.getEntityManager();
         try {
-            beginTransaction();
+            beginTransaction(datastore.getEntityManager());
             VirtualCollection vc
                     = em.find(VirtualCollection.class, Long.valueOf(id));
             if ((vc == null) || vc.isDeleted()) {
@@ -454,11 +454,11 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
             }
             result = vc.getState();
         } catch (VirtualCollectionRegistryException e) {
-            rollbackActiveTransaction("", e);
+            rollbackActiveTransaction(datastore.getEntityManager(),"", e);
         } catch (Exception e) {
-            rollbackActiveTransaction("error while retrieving state of virtual collection", e);
+            rollbackActiveTransaction(datastore.getEntityManager(),"error while retrieving state of virtual collection", e);
         } finally {
-            commitActiveTransaction();
+            commitActiveTransaction(datastore.getEntityManager());
         }
         return result;
     }
@@ -489,7 +489,7 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
 
         EntityManager em = datastore.getEntityManager();
         try {
-            beginTransaction();
+            beginTransaction(datastore.getEntityManager());
             VirtualCollection vc = em.find(VirtualCollection.class,
                     Long.valueOf(id), LockModeType.PESSIMISTIC_WRITE);
             if ((vc == null) || vc.isDeleted()) {
@@ -527,11 +527,11 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
                 em.persist(vc);
             }
         } catch (VirtualCollectionRegistryException e) {
-            rollbackActiveTransaction("", e);
+            rollbackActiveTransaction(datastore.getEntityManager(),"", e);
         } catch (Exception e) {
-            rollbackActiveTransaction("error while setting state of virtual collection", e);
+            rollbackActiveTransaction(datastore.getEntityManager(),"error while setting state of virtual collection", e);
         } finally {
-            commitActiveTransaction();
+            commitActiveTransaction(datastore.getEntityManager());
         }
     }
 
@@ -554,7 +554,7 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
         VirtualCollection vc = null;
         EntityManager em = datastore.getEntityManager();
         try {
-            beginTransaction();
+            beginTransaction(datastore.getEntityManager());
             vc = em.find(VirtualCollection.class, Long.valueOf(id));
             if ((vc == null) || vc.isDeleted()) {
                 logger.debug("virtual collection (id={}) not found", id);
@@ -562,11 +562,11 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
             }
             return vc;
         } catch (VirtualCollectionRegistryException e) {
-            rollbackActiveTransaction("", e);
+            rollbackActiveTransaction(datastore.getEntityManager(),"", e);
         } catch (Exception e) {
-            rollbackActiveTransaction("error while retrieving virtual collection", e);
+            rollbackActiveTransaction(datastore.getEntityManager(),"error while retrieving virtual collection", e);
         } finally {
-            commitActiveTransaction();
+            commitActiveTransaction(datastore.getEntityManager());
         }
         return vc;
     }
@@ -575,17 +575,17 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
         String dbVersion = null;
         final EntityManager em = datastore.getEntityManager();
         try {
-            beginTransaction();
+            beginTransaction(datastore.getEntityManager());
             TypedQuery<DbConfig> q = em.createNamedQuery("DbConfig.findByKey", DbConfig.class);
             q.setParameter("keyName", "db_version");
             DbConfig result = q.getSingleResult();
             dbVersion = result.getValue();
         } catch(NoResultException e) {
-            rollbackActiveTransaction("No db_version key found in config table", e);
+            rollbackActiveTransaction(datastore.getEntityManager(),"No db_version key found in config table", e);
         } catch (Exception e) {
-            rollbackActiveTransaction("error while verifying database version", e);
+            rollbackActiveTransaction(datastore.getEntityManager(),"error while verifying database version", e);
         } finally {
-            commitActiveTransaction();
+            commitActiveTransaction(datastore.getEntityManager());
         }
         return dbVersion;
     }
@@ -610,7 +610,7 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
         long totalCount = 0;
         EntityManager em = datastore.getEntityManager();
         try {
-            beginTransaction();
+            beginTransaction(datastore.getEntityManager());
 
             // setup queries
             TypedQuery<Long> cq = null;
@@ -655,9 +655,9 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
                 }
             }
         } catch (Exception e) {
-            rollbackActiveTransaction("error while enumerating virtual collections", e);
+            rollbackActiveTransaction(datastore.getEntityManager(),"error while enumerating virtual collections", e);
         } finally {
-            commitActiveTransaction();
+            commitActiveTransaction(datastore.getEntityManager());
         }
         return new VirtualCollectionList(results, offset, (int) totalCount);
     }
@@ -674,7 +674,7 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
         long totalCount = 0;
         final EntityManager em = datastore.getEntityManager();
         try {
-            beginTransaction();
+            beginTransaction(datastore.getEntityManager());
             /*
              * fetch user. if user is not found, he has not yet registered any
              * virtual collections, so just return an empty list
@@ -731,9 +731,9 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
 */
 
         } catch (Exception e) {
-            rollbackActiveTransaction("error while enumerating virtual collections", e);
+            rollbackActiveTransaction(datastore.getEntityManager(),"error while enumerating virtual collections", e);
         } finally {
-            commitActiveTransaction();
+            commitActiveTransaction(datastore.getEntityManager());
         }
         return new VirtualCollectionList(results, offset, (int) totalCount);
     }
@@ -743,7 +743,7 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
         List<VirtualCollection> results = new ArrayList<>();
         final EntityManager em = datastore.getEntityManager();
         try {
-            beginTransaction();
+            beginTransaction(datastore.getEntityManager());
             CriteriaBuilder cb = em.getCriteriaBuilder();
             CriteriaQuery<VirtualCollection> cq = cb.createQuery(VirtualCollection.class);
             Root<VirtualCollection> rootEntry = cq.from(VirtualCollection.class);
@@ -751,9 +751,9 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
             TypedQuery<VirtualCollection> allQuery = em.createQuery(all);
             results = allQuery.getResultList();
         } catch (Exception e) {
-            rollbackActiveTransaction("error while enumerating virtual collections", e);
+            rollbackActiveTransaction(datastore.getEntityManager(),"error while enumerating virtual collections", e);
         } finally {
-            commitActiveTransaction();
+            commitActiveTransaction(datastore.getEntityManager());
         }
         return new VirtualCollectionList(results, 0, results.size());
     }
@@ -761,33 +761,35 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
     @Override
     public int getVirtualCollectionCount(QueryFactory qryFactory) throws VirtualCollectionRegistryException {
         logger.trace("getVirtualCollectionCount()");
-        int result = -1;
-        try {
-            beginTransaction();
+        //int result = -1;
+        //try {
+          //  beginTransaction(datastore.getEntityManager());
             qryFactory.addParam("vc_owner", "%%");
-            result = vcDao.getVirtualCollectionCount(datastore.getEntityManager(), qryFactory);
-        } catch(Exception ex) {
-            rollbackActiveTransaction("error while fetching virtual collections", ex);
-        } finally {
-            commitActiveTransaction();
-        }
-        return result;
+            //result = vcDao.getVirtualCollectionCount(qryFactory);
+            return vcDao.getVirtualCollectionCount(qryFactory);
+        //} catch(Exception ex) {
+         //   rollbackActiveTransaction(datastore.getEntityManager(),"error while fetching virtual collections", ex);
+        //} finally {
+         //   commitActiveTransaction(datastore.getEntityManager());
+       // }
+       // return result;
     }
 
     @Override
     public List<VirtualCollection> getVirtualCollections(int first, int count, QueryFactory qryFactory) throws VirtualCollectionRegistryException {
         logger.trace("getVirtualCollections()");
-        List<VirtualCollection> result = new LinkedList<>();
-        try {
-            beginTransaction();
+        //List<VirtualCollection> result = new LinkedList<>();
+        //try {
+            //beginTransaction(datastore.getEntityManager());
             qryFactory.addParam("vc_owner", "%%");
-            result = vcDao.getVirtualCollections(datastore.getEntityManager(), first, count, qryFactory);
-        } catch(Exception ex) {
-            rollbackActiveTransaction("error while fetching virtual collections", ex);
-        } finally {
-            commitActiveTransaction();
-        }
-        return result;
+            //result = vcDao.getVirtualCollections(first, count, qryFactory);
+        return vcDao.getVirtualCollections(first, count, qryFactory);
+       // } catch(Exception ex) {
+        //    rollbackActiveTransaction(datastore.getEntityManager(),"error while fetching virtual collections", ex);
+        //} finally {
+         //   commitActiveTransaction(datastore.getEntityManager());
+       // }
+        //return result;
     }
 
     @Override
@@ -795,13 +797,13 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
         List<String> origins = new ArrayList<>();
         EntityManager em = datastore.getEntityManager();
         try {
-            beginTransaction();
+            beginTransaction(datastore.getEntityManager());
             TypedQuery<String> q = em.createNamedQuery("VirtualCollection.findAllPublicOrigins", String.class);
             origins = q.getResultList();
         } catch (Exception e) {
-            rollbackActiveTransaction("error while enumerating virtual collections to get all origins", e);
+            rollbackActiveTransaction(datastore.getEntityManager(),"error while enumerating virtual collections to get all origins", e);
         } finally {
-            commitActiveTransaction();
+            commitActiveTransaction(datastore.getEntityManager());
         }
         return origins;
     }
@@ -820,11 +822,11 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
                     cb.asc(root.get(User_.displayName)),
                     cb.asc(root.get(User_.name)));
 
-            beginTransaction();
+            beginTransaction(datastore.getEntityManager());
             final TypedQuery<User> query = em.createQuery(cq);
             return query.getResultList();
         } finally {
-            commitActiveTransaction();
+            commitActiveTransaction(datastore.getEntityManager());
         }
     }
 /*
@@ -843,28 +845,32 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
 
         User user = null;
         try {
-            beginTransaction();
+            beginTransaction(datastore.getEntityManager());
             user = fetchUser(principal.getName());
         } catch (Exception e) {
-            rollbackActiveTransaction("error while querying user with name="+principal.toString(), e);
+            rollbackActiveTransaction(datastore.getEntityManager(), "error while querying user with name="+principal.toString(), e);
         } finally {
-            commitActiveTransaction();
+            commitActiveTransaction(datastore.getEntityManager());
         }
         return user;
+    }
+
+    public VirtualCollectionDao getVirtualCollectionDao() {
+        return vcDao;//new VirtualCollectionDaoImpl(datastore);
     }
 
     private User fetchUser(String username) {
         final EntityManager em = datastore.getEntityManager();
         User user = null;
         try {
-            beginTransaction();
+            beginTransaction(datastore.getEntityManager());
             TypedQuery<User> q = em.createNamedQuery("User.findByName", User.class);
             q.setParameter("name", username);
             user = q.getSingleResult();
         } catch (NoResultException ex) {
             /* IGNORE */
         } finally {
-            commitActiveTransaction();
+            commitActiveTransaction(datastore.getEntityManager());
         }
         return user;
     }

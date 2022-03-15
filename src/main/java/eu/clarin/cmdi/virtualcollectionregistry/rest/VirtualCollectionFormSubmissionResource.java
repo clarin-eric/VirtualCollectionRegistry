@@ -5,11 +5,10 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryExcepti
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionValidationException;
 import eu.clarin.cmdi.virtualcollectionregistry.feedback.IValidationFailedMessage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.*;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Purpose;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Reproducibility;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Type;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder;
 import eu.clarin.cmdi.wicket.PiwikConfig;
 import java.net.URI;
 import java.security.Principal;
@@ -151,6 +150,24 @@ public class VirtualCollectionFormSubmissionResource {
 
         try {
             // construct a proto-VC from the form parameters
+
+            VirtualCollectionFactory vcf =
+                VirtualCollectionFactory
+                    .createNew(new User(principal.getName()), name, description)
+                    .setType(Type.EXTENSIONAL)
+                    .addCreator(new Creator(principal.getName(), ""))
+                    .addAllKeywords(keywords)
+                    .setPurpose(purpose)
+                    .setReproducibility(reproducibility, reproducibilityNotice);
+
+            for(String uri : metadataUris) {
+                vcf.addResource(Resource.Type.METADATA, uri, null, null);
+            }
+            for(String uri : resourceUris) {
+                vcf.addResource(Resource.Type.RESOURCE, uri, null, null);
+            }
+
+            /*
             final VirtualCollection vc = new VirtualCollectionBuilder()
                 .setName(name)
                 .setType(VirtualCollection.Type.EXTENSIONAL)
@@ -164,9 +181,12 @@ public class VirtualCollectionFormSubmissionResource {
                 .setReproducibilityNotice(reproducibilityNotice)
                 .setCreationDate(creationDate)                
                 .build();
-            
+            */
+
             // create the VC in the registry (persist)
-            long id = registry.createVirtualCollection(principal, vc);
+            long id = vcf.getPersistedCollection(registry.getVirtualCollectionDao()).getId();
+
+//            long id = registry.createVirtualCollection(principal, vc);
 
             // respond with redirect to editor
             final URI uri = uriInfo.getBaseUriBuilder()
@@ -222,6 +242,7 @@ public class VirtualCollectionFormSubmissionResource {
 
         try {
             // construct a proto-VC from the form parameters
+            /*
             final VirtualCollection vc = new VirtualCollectionBuilder()
                 .setName(name)
                 .setType(VirtualCollection.Type.INTENSIONAL)
@@ -234,9 +255,20 @@ public class VirtualCollectionFormSubmissionResource {
                 .setCreationDate(creationDate)
                 .setIntenstionalQuery(intensionalDescription, intensionalUri, intensionalQueryProfile, intensionalQueryValue)
                 .build();
-            
+            */
+            VirtualCollectionFactory vcf =
+                    VirtualCollectionFactory
+                            .createNew(new User(principal.getName()), name, description)
+                            .setType(Type.INTENSIONAL)
+                            .addCreator(new Creator(principal.getName(), ""))
+                            .addAllKeywords(keywords)
+                            .setPurpose(purpose)
+                            .setReproducibility(reproducibility, reproducibilityNotice)
+                            .setGeneratedBy(intensionalDescription, intensionalUri, intensionalQueryProfile, intensionalQueryValue);
+
             // create the VC in the registry (persist)
-            long id = registry.createVirtualCollection(principal, vc);
+            //long id = registry.createVirtualCollection(principal, vc);
+            long id = vcf.getPersistedCollection(registry.getVirtualCollectionDao()).getId();
 
             // respond with redirect to editor
             final URI uri = uriInfo.getBaseUriBuilder()

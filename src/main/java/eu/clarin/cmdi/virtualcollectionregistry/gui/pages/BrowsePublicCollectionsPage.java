@@ -61,7 +61,7 @@ public class BrowsePublicCollectionsPage extends BasePage {
             add(new NoCollectionsPanel("collectionsTable"));
         } else {
             final VirtualCollectionTable table
-                    = new VirtualCollectionTable("collectionsTable", provider, false, false) {
+                    = new VirtualCollectionTable("collectionsTable", provider, false, false, timerManager) {
                 @Override
                 protected Panel createActionColumn(String componentId,
                                                    IModel<VirtualCollection> model) {

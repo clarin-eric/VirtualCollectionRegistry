@@ -112,6 +112,7 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
                 try {
                     em.getTransaction().begin();
                     allocatePersistentIdentifier(em, vc);
+                    em.merge(vc);
                 } catch(Exception ex) {
                     em.getTransaction().rollback();
                 } finally {
@@ -152,8 +153,20 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
 
                 //If no errors occured, update collection state
                 switch(vc.getState()) {
-                    case PUBLIC_PENDING: vc.setState(VirtualCollection.State.PUBLIC); break;
-                    case PUBLIC_FROZEN_PENDING: vc.setState(VirtualCollection.State.PUBLIC_FROZEN); break;
+                    case PUBLIC_PENDING:
+                        vc.setState(VirtualCollection.State.PUBLIC);
+                        vc.setPublicLeaf(true);
+                        if(vc.getParent() != null) {
+                            vc.getParent().setPublicLeaf(false);
+                        }
+                        break;
+                    case PUBLIC_FROZEN_PENDING:
+                        vc.setState(VirtualCollection.State.PUBLIC_FROZEN);
+                        vc.setPublicLeaf(true);
+                        if(vc.getParent() != null) {
+                            vc.getParent().setPublicLeaf(false);
+                        }
+                        break;
                     default: throw new VirtualCollectionRegistryException("Invalid state transition: "+vc.getState()+" --> PUBLIC or PUBLIC_FROZEN");
                 }
 

@@ -19,6 +19,11 @@ public class DataUpdatedEvent implements Event {
     }
 
     @Override
+    public Exception getException() {
+        return null;
+    }
+
+    @Override
     public Object getData() {
         return null;
     }

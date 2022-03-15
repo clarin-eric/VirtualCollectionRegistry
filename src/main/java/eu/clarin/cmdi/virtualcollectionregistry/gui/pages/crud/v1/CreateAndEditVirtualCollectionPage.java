@@ -20,10 +20,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1.forms.KeywordI
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1.forms.QueryInput;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1.forms.ResourceInput;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmissionUtils;
-import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
-import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
-import eu.clarin.cmdi.virtualcollectionregistry.model.User;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.*;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Purpose;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Reproducibility;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Type;
@@ -434,41 +431,47 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
         List<Creator> creators =  (ArrayList)(new ArrayList(authorsModel.getObject()).clone());
         List<Resource> resources = (ArrayList)(new ArrayList(resourceModel.getObject()).clone());
         
-        VirtualCollection new_vc = new VirtualCollection();
-        if(this.vc != null) {
-            new_vc = this.vc;
-        }
-        new_vc.setName(name);
-        new_vc.setDescription(description);                
-        new_vc.setPurpose(purpose);
-        new_vc.setReproducibility(reproducibility);
-        new_vc.setReproducibilityNotice(repoducibilityNotice);
-        
+        //VirtualCollection new_vc = new VirtualCollection();
+        VirtualCollectionFactory vcf = VirtualCollectionFactory
+                .createNew(vc.getOwner(), name, description);
+        //if(this.vc != null) {
+        //    new_vc = this.vc;
+        //}
+        //new_vc.setName(name);
+        //new_vc.setDescription(description);
+        vcf.setPurpose(purpose);//new_vc.setPurpose(purpose);
+        vcf.setReproducibility(reproducibility, repoducibilityNotice);//new_vc.setReproducibility(reproducibility);//        new_vc.setReproducibilityNotice(repoducibilityNotice);
+        /*
         if(editMode) {
             new_vc.getKeywords().clear();
             new_vc.getCreators().clear();
             new_vc.getResources().clear();
         }
-        
-        new_vc.getKeywords().addAll(keywords);                
-        new_vc.getCreators().addAll(creators);                
+        */
+        vcf.addAllKeywords(keywords);//new_vc.getKeywords().addAll(keywords);
+        vcf.addAllCreators(creators);//new_vc.getCreators().addAll(creators);
         
         Type type = null;
         if( typeModel.getObject() != null) {
-            type = typeModel.getObject();
+            //type = typeModel.getObject();
+            vcf.setType(typeModel.getObject());
         }                
-        new_vc.setType(type);
+        //new_vc.setType(type);
         //Set extensional or intensional values based on collection type
-        if (type == Type.EXTENSIONAL) {            
-            new_vc.getResources().addAll(resources);
-            new_vc.setGeneratedBy(null);
+        if (type == Type.EXTENSIONAL) {
+            vcf.addAllResources(resources);//new_vc.getResources().addAll(resources);
+            vcf.setGeneratedBy(null);// new_vc.setGeneratedBy(null);
         } else if( type == Type.INTENSIONAL) {
-            new_vc.setGeneratedBy(queryModel.getObject().convertToGeneratedBy());
+            vcf.setGeneratedBy(queryModel.getObject().convertToGeneratedBy());//new_vc.setGeneratedBy(queryModel.getObject().convertToGeneratedBy());
             //new_vc.getResources().clear(); //TODO: why is this not checked in the validator
         }
 
         try {
+            vcf.persist(vcr.getVirtualCollectionDao());
+
+
             ApplicationSession session = (ApplicationSession) getSession();
+            /*
             Principal principal = session.getPrincipal();
             if (principal == null) {                
                 throw new WicketRuntimeException("principal == null"); // XXX: security issue?
@@ -482,7 +485,7 @@ public class CreateAndEditVirtualCollectionPage extends BasePage {
                 logger.trace("Updating existing virtual collection with id: {}", new_vc.getId());
                 vcr.updateVirtualCollection(principal, new_vc.getId(), new_vc);
             }
-            
+            */
             SubmissionUtils.clearCollectionFromSession(session);
             
             //TODO: dynamically fetch context path

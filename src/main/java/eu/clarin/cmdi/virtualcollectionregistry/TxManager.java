@@ -12,10 +12,10 @@ public abstract class TxManager {
 
     private final Deque<String> txStack = new ArrayDeque<>();
 
-    protected final DataStore datastore;
+    private boolean txEnabled = true;
 
-    public TxManager(DataStore datastore) {
-        this.datastore = datastore;
+    public void setTxEnable(boolean txEnabled) {
+        this.txEnabled = txEnabled;
     }
 
     protected String getNewStackTraceLine(Exception ex) {
@@ -39,23 +39,32 @@ public abstract class TxManager {
         }
     }
 
-    protected void beginTransaction() {
+    protected void beginTransaction(final EntityManager em) {
+        logger.debug("Current thread = {}", Thread.currentThread().getName());
+
+        if(!txEnabled) {
+            return;
+        }
+
         txStack.push(getNewStackTraceLine(new Exception()));
         printTxStack("Begin tx");
 
-        final EntityManager em = datastore.getEntityManager();
         logger.trace(getNewStackTraceLine(new Exception()));
         if(!em.getTransaction().isActive()) {
             em.getTransaction().begin();
         }
     }
 
-    protected void commitActiveTransaction() {
+    protected void commitActiveTransaction(final EntityManager em) {
+        logger.debug("Current thread = {}", Thread.currentThread().getName());
+        if(!txEnabled) {
+            return;
+        }
+
         if(!txStack.isEmpty()) {
             txStack.pop();
             printTxStack("Commit tx");
 
-            final EntityManager em = datastore.getEntityManager();
             if (em.getTransaction().isActive() && txStack.isEmpty()) {
                 em.getTransaction().commit();
                 logger.trace("Performing commit");
@@ -63,10 +72,15 @@ public abstract class TxManager {
         }
     }
 
-    protected void rollbackActiveTransaction(String msg, Exception cause) throws VirtualCollectionRegistryException {
+    protected void rollbackActiveTransaction(final EntityManager em, String msg, Exception cause) throws VirtualCollectionRegistryException {
+        logger.debug("Current thread = {}", Thread.currentThread().getName());
+
+        if(!txEnabled) {
+            return;
+        }
+
         printTxStack("Rollback tx");
 
-        final EntityManager em = datastore.getEntityManager();
         if (em.getTransaction().isActive()) {
             em.getTransaction().rollback();
         }

@@ -6,6 +6,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events
  */
 public enum EventType {
     SAVE,
+    SAVE_FAILED,
     EDIT,
     DELETE,
     CONFIRMED_DELETE,

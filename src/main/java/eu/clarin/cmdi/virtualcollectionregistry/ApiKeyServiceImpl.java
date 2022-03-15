@@ -22,9 +22,11 @@ public class ApiKeyServiceImpl extends TxManager implements ApiKeyService {
 
     private final ApiKeyGenerator generator = new ApiKeyGenerator();
 
+    private final DataStore datastore;
+
     @Autowired
     public ApiKeyServiceImpl(DataStore datastore) {
-        super(datastore);
+        this.datastore = datastore;
     }
 
     @Override

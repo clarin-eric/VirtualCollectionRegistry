@@ -2,7 +2,10 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor;
 
 import java.util.*;
 
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionDao;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.ActionablePanel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.authors.AuthorsEditor;
@@ -13,10 +16,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.EventType;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.Listener;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.*;
-import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
-import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
-import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedByQuery;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.*;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -38,8 +38,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     
     private final static Logger logger = LoggerFactory.getLogger(CreateAndEditPanel.class);
 
-    //Keep track of the original collection, used to detect changes and reset the form
-    private VirtualCollection originalCollection;
+    private VirtualCollectionFactory vcf;
     
     private final IModel<String> nameModel = Model.of("");
     private final IModel<String> descriptionModel= Model.of("");
@@ -65,8 +64,6 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     //Map of field id to support editor modes for that field
     private final Map<String, Mode[]> fieldMode = new HashMap<>();
 
-    //private final ModalConfirmDialog dialog;
-
     private final AjaxFallbackLink btnSave;
     private final WebMarkupContainer cbHelpLabel;
 
@@ -87,21 +84,20 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
      * @param id 
      * @param dialog 
      */
-    public CreateAndEditPanel(VirtualCollectionRegistry registry, String id, ModalConfirmDialog dialog) {
-        this(registry, id, null, dialog);
-    }
+//    public CreateAndEditPanel(VirtualCollectionRegistry registry, String id, ModalConfirmDialog dialog) {
+//        this(registry, id, null, dialog);
+//    }
     
     /**
      * Edit the supplied virtual collection or create a new virtual collection if
      * the supplied collection is null
      * 
      * @param id
-     * @param collection 
-     * @param dialog 
+     * @param vcf
      */
-    public CreateAndEditPanel(VirtualCollectionRegistry registry, String id, VirtualCollection collection, ModalConfirmDialog dialog) {
+    public CreateAndEditPanel(String id, VirtualCollectionFactory vcf) {//}, ModalConfirmDialog dialog) {
         super(id);
-        //this.dialog = dialog;
+        this.vcf = vcf;
         this.setOutputMarkupId(true);
         
         final Component ajax_update_component = this;
@@ -144,7 +140,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
             };
         };
 
-        //Updater to onlu show fields if the collection type is intensional
+        //Updater to only show fields if the collection type is intensional
         VisabilityUpdater vIntensional = new VisabilityUpdater() {
             @Override
             public void updateVisability(Component componentToUpdate) {
@@ -165,8 +161,9 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
 
         pnlVersion = new WebMarkupContainer("pnl-version");
         pnlVersion.add(new Label("pnl-version-lbl", lbl));
-        if(collection != null && collection.getParent() != null) {
-            lbl.setObject("This is a new version of "+collection.getParent().getName());
+
+        if(vcf.isNewVersion()) {
+            lbl.setObject("This is a new version of "+vcf.getCollection().getParent().getName());
             pnlVersion.setVisible(true);
         } else {
             pnlVersion.setVisible(false);
@@ -358,6 +355,10 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
 
         //Initial validation to trigger update of UI buttons
         validate();
+
+        if(vcf.isEditing()) {
+            editCollection();
+        }
     }
 
     private void toggleHelpMode() {
@@ -428,8 +429,8 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         fieldMode.put(c.getId(), modes);
     }
 
-    public void editCollection(VirtualCollection c) {
-        this.originalCollection = c; //TODO: deep clone?
+    private void editCollection() {
+        VirtualCollection c = vcf.getCollection();
         nameModel.setObject(c.getName());
         descriptionModel.setObject(c.getDescription());
         typeModel.setObject(c.getType().toString());
@@ -455,8 +456,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
             intDescription.setObject(c.getGeneratedBy().getDescription());
         }
 
-
-        if(c.getParent() != null) {
+        if(vcf.isNewVersion()) {
             lbl.setObject("This is a new version of "+c.getParent().getName());
             pnlVersion.setVisible(true);
         }
@@ -466,7 +466,6 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     }
 
     private void reset() {
-        this.originalCollection = null;
         nameModel.setObject("");
         descriptionModel.setObject("");
         keywordsModel.setObject("");
@@ -484,7 +483,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     }
 
     public boolean isEditing() {
-        return this.originalCollection != null;
+        return vcf.isEditing();
     }
 
     private boolean validate() {
@@ -518,62 +517,35 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
             return;
         }
 
-        //TODO: migrate this logic into VirtualCollection. Maybe re-use fork() or clone()?
+        vcf.setName(nameModel.getObject())
+           .setDescription(descriptionModel.getObject())
+           .setType(VirtualCollection.Type.valueOf(typeModel.getObject()))
+           .setPurpose(VirtualCollection.Purpose.valueOf(purposeModel.getObject()))
+           .setReproducibility(VirtualCollection.Reproducibility.valueOf(reproModel.getObject()), reproNoticeModel.getObject());
 
-        VirtualCollection newCollection = new VirtualCollection();
-        newCollection.setCreationDate(new Date()); // FIXME: get date from GUI?
-
-        if (this.originalCollection != null && this.originalCollection.getId() != null) {
-            newCollection = originalCollection;
-        } else if(this.originalCollection != null) {
-            newCollection.setOrigin(originalCollection.getOrigin());
-        }
-
-        newCollection.setDateModified(new Date());
-        newCollection.setName(nameModel.getObject());
-        newCollection.setDescription(descriptionModel.getObject());
-        newCollection.setType(VirtualCollection.Type.valueOf(typeModel.getObject()));
-        newCollection.setPurpose(VirtualCollection.Purpose.valueOf(purposeModel.getObject()));
-        newCollection.setReproducibility(VirtualCollection.Reproducibility.valueOf(reproModel.getObject()));
-        newCollection.setReproducibilityNotice(reproNoticeModel.getObject());
-        //newCollection.setOwner();
-
-        List<String> keywords = new ArrayList<>();
         StringTokenizer tokens = new StringTokenizer(keywordsModel.getObject(), " \t\n\r\f,;");
         while (tokens.hasMoreTokens()) {
-            keywords.add(tokens.nextToken().trim());
+            vcf.addKeyword(tokens.nextToken().trim());
         }
-        newCollection.getKeywords().clear();
-        newCollection.getKeywords().addAll(keywords);
 
-        newCollection.getCreators().clear();
-        newCollection.getCreators().addAll(authorsEditor.getData());
+        vcf.addAllCreators(authorsEditor.getData());
 
         VirtualCollection.Type t = VirtualCollection.Type.valueOf(typeModel.getObject());
         if(t == VirtualCollection.Type.EXTENSIONAL) {
-            newCollection.getResources().clear();
-            newCollection.getResources().addAll(referencesEditor.getData());
+            vcf.addAllResources(referencesEditor.getData());
         } else if(t == VirtualCollection.Type.INTENSIONAL) {
             GeneratedBy genBy = new GeneratedBy();
             genBy.setDescription(intDescription.getObject());
             genBy.setURI(intQueryUri.getObject());
             genBy.setQuery(new GeneratedByQuery(intQueryProfile.getObject(), intQueryParameters.getObject()));
-            newCollection.setGeneratedBy(genBy);
-        }
-
-        newCollection.setForkedFrom(this.originalCollection != null ? this.originalCollection.getForkedFrom() : null);
-
-        if(originalCollection != null && originalCollection.getParent() != null) {
-            newCollection.setOwner(originalCollection.getOwner());
-            newCollection.setParent(originalCollection.getParent());
-            newCollection.setRoot(originalCollection.getRoot());
+            vcf.setGeneratedBy(genBy);
         }
 
         fireEvent(
                 new AbstractEvent<VirtualCollection>(
                         EventType.SAVE,
                         session.getPrincipal(),
-                        newCollection,
+                        vcf.getCollection(),
                         target));
     }
 }

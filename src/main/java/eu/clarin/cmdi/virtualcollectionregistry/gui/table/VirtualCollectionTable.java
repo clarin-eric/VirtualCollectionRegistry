@@ -3,7 +3,9 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.table;
 import java.util.ArrayList;
 import java.util.List;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.TimerManager;
 import org.apache.wicket.Component;
+import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxCheckBox;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -24,6 +26,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.PackageResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
 
+import org.apache.wicket.util.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -37,17 +40,32 @@ public abstract class VirtualCollectionTable extends Panel {
 
     protected Model<Boolean> toggleShowVersionsModel = Model.of(false);
 
-    public VirtualCollectionTable(String id, CollectionsProvider provider, final boolean showState, final boolean isAdmin) {
+    private TimerManager timerManager;
+
+    final private  CollectionsProvider provider;
+    final private DataTable<VirtualCollection, String> table;
+    final private ColumnProcessing processing;
+    final private List<VirtualCollection.State> publishing_states = new ArrayList<>();
+
+    public VirtualCollectionTable(String id, CollectionsProvider provider, final boolean showState, final boolean isAdmin, TimerManager timerManager) {
         super(id);
+        this.timerManager = timerManager;
+        this.provider = provider;
         setOutputMarkupId(true);
         final Component componentToUpdate = this;
+
+        publishing_states.add(VirtualCollection.State.PUBLIC_PENDING);
+        publishing_states.add(VirtualCollection.State.PUBLIC_FROZEN_PENDING);
 
         // setup table provider
         List<IColumn<VirtualCollection, String>> columns = new ArrayList<>();
         columns.add(new ColumnName(this, toggleShowVersionsModel));
         if (showState) {
             columns.add(new ColumnState(this, toggleShowVersionsModel));
-            columns.add(new ColumnProcessing(this));
+            processing = new ColumnProcessing(this);
+            columns.add(processing);
+        } else {
+            processing = null;
         }
         columns.add(new ColumnType(this, toggleShowVersionsModel));
         columns.add(new ColumnCreated(this, "column.created", "Created", "created", "dateCreated", toggleShowVersionsModel));
@@ -55,7 +73,7 @@ public abstract class VirtualCollectionTable extends Panel {
         columns.add(new ColumnActions(this));
 
         // setup table
-        final DataTable<VirtualCollection, String> table =
+        table =
             new AjaxFallbackDefaultDataTable<>("table",
                 columns, provider, 30);
         
@@ -86,17 +104,56 @@ public abstract class VirtualCollectionTable extends Panel {
         };
         cbShowVersions.add(cb);
         add(cbShowVersions);
-
 /*
-        add(new AbstractAjaxTimerBehavior(Duration.seconds(1)) {
+        final List<VirtualCollection.State> publishing_states = new ArrayList<>();
+        publishing_states.add(VirtualCollection.State.PUBLIC_PENDING);
+        publishing_states.add(VirtualCollection.State.PUBLIC_FROZEN_PENDING);
+        timerManager.addTarget(new TimerManager.Update() {
             @Override
-            protected void onTimer(AjaxRequestTarget target) {
-                if(target != null) {
-                    target.add(table);
-                }
+            public boolean onUpdate() {
+                return provider.countCollectionsWithStates(publishing_states) > 0;
+            }
+
+            @Override
+            public List<Component> getComponent() {
+                return table;
             }
         });
 */
+        /*
+        add(new AbstractAjaxTimerBehavior(Duration.seconds(1)) {
+            private boolean update_state_active = false;
+
+            @Override
+            protected void onTimer(AjaxRequestTarget target) {
+                if(target != null && update_state_active) {
+                    logger.info("Update virtual collection table timer");
+                    target.add(table);
+                }
+                update_state_active = provider.countCollectionsWithStates(publishing_states) > 0;
+            }
+        });
+
+         */
+    }
+
+    public void triggerUpdateTimer(AjaxRequestTarget target) {
+        timerManager.addTarget(target, new TimerManager.Update() {
+            @Override
+            public boolean onUpdate() {
+                return provider.countCollectionsWithStates(publishing_states) > 0;
+            }
+
+            @Override
+            public List<Component> getComponents() {
+                List<Component> result = new ArrayList<>();
+                result.add(table);
+                for(Component c : processing.getItems()) {
+                    result.add(c);
+                }
+                return result;
+            }
+        });
     }
 
     @Override
