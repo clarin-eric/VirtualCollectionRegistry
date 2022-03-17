@@ -4871,3 +4871,495 @@
 2022-02-04 20:34:52,601 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/resource/1
 2022-02-04 20:34:52,601 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
  at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-02-07 11:20:19,187 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@4a907e5a
+2022-02-07 11:20:19,221 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:89] - Initialising VCR web application
+2022-02-07 11:20:19,221 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:91] - Configuration:
+  logoutMode:             null
+  logoutEnabled:          false
+  locale:                 null
+  mode:                   null
+  forking enabled:        false
+  Process integration:
+    processEndpoint:          null
+    processEnable:   null
+  Download integration:
+    downloadEndpoint: null
+    downloadEnable: null
+  Validators
+    http timeout:         0
+    http redirects:       0
+
+2022-02-07 11:20:19,222 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:121] - Web application configured for development
+2022-02-07 11:20:19,280 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:145] - No locale string available
+2022-02-07 11:20:19,317 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.pid.EPICPersistentIdentifierProvider#createIdentifier:71] - creating handle for virtual collection "123"
+2022-02-07 11:20:19,330 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@3b5299a3
+2022-02-07 11:20:19,330 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:89] - Initialising VCR web application
+2022-02-07 11:20:19,331 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:91] - Configuration:
+  logoutMode:             null
+  logoutEnabled:          false
+  locale:                 null
+  mode:                   null
+  forking enabled:        false
+  Process integration:
+    processEndpoint:          null
+    processEnable:   null
+  Download integration:
+    downloadEndpoint: null
+    downloadEnable: null
+  Validators
+    http timeout:         0
+    http redirects:       0
+
+2022-02-07 11:20:19,331 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:121] - Web application configured for development
+2022-02-07 11:20:19,331 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:145] - No locale string available
+2022-02-07 11:20:19,429 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:45] - Json={"data":{"type":"dois","attributes":{"event":"publish","prefix":"10.5438","url":"http://vcr/service/virtualcollections/1","creators":[{"nameType":"Personal","givenName":" Person","familyName":"Test","affiliation":[{"name":"Test Org"}]}],"titles":[{"title":"Test VC éë"}],"publisher":"CLARIN","publicationYear":"2022","types":{"resourceType":"Virtual Collection","resourceTypeGeneral":"Collection"}}}}
+2022-02-07 11:20:19,440 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:48] - entity content type=Content-Type: text/plain; charset=UTF-8
+2022-02-07 11:20:19,447 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel#getActionableUri:74] - Failed to make actionable URI for unkown PID type: Something else
+2022-02-07 11:20:19,452 INFO [eu.clarin.cmdi.virtualcollectionregistry.db.VirtualCollectionDaoTest#setUp:47] - Starting in-memory HSQL database for unit tests
+2022-02-07 11:20:20,110 INFO [eu.clarin.cmdi.virtualcollectionregistry.db.VirtualCollectionDaoTest#setUp:51] - Building JPA EntityManager for unit tests
+2022-02-07 11:20:20,348 INFO [org.hibernate.jpa.internal.util.LogHelper#logPersistenceUnitInformation:31] - HHH000204: Processing PersistenceUnitInfo [name: VirtualCollectionStoreTest]
+2022-02-07 11:20:20,491 INFO [org.hibernate.Version#logVersion:44] - HHH000412: Hibernate ORM core version 5.4.24.Final
+2022-02-07 11:20:20,824 INFO [org.hibernate.annotations.common.Version#<clinit>:56] - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2022-02-07 11:20:21,371 INFO [org.hibernate.dialect.Dialect#<init>:175] - HHH000400: Using dialect: org.hibernate.dialect.HSQLDialect
+2022-02-07 11:20:22,752 WARN [org.hibernate.orm.connections.pooling#configure:72] - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+2022-02-07 11:20:22,753 INFO [org.hibernate.orm.connections.pooling#buildCreator:115] - HHH10001005: using driver [org.hsqldb.jdbcDriver] at URL [jdbc:hsqldb:mem:unit-testing-jpa]
+2022-02-07 11:20:22,754 INFO [org.hibernate.orm.connections.pooling#buildCreator:124] - HHH10001001: Connection properties: {password=****, user=sa}
+2022-02-07 11:20:22,754 INFO [org.hibernate.orm.connections.pooling#buildCreator:129] - HHH10001003: Autocommit mode: false
+2022-02-07 11:20:22,757 INFO [org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl#<init>:259] - HHH000115: Hibernate connection pool size: 20 (min=1)
+2022-02-07 11:20:22,788 INFO [org.hibernate.orm.connections.access#getIsolatedConnection:47] - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@4c8082b7] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+2022-02-07 11:20:22,799 INFO [org.hibernate.orm.connections.access#getIsolatedConnection:47] - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@22cc14bf] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+2022-02-07 11:20:22,825 INFO [org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator#initiateService:52] - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2022-02-07 11:20:23,132 INFO [eu.clarin.cmdi.virtualcollectionregistry.db.VirtualCollectionDaoTest#tearDown:60] - Shuting down Hibernate JPA layer.
+2022-02-07 11:20:23,133 INFO [org.hibernate.tool.schema.internal.SchemaDropperImpl$DelayedDropActionImpl#perform:526] - HHH000477: Starting delayed evictData of schema as part of SessionFactory shut-down'
+2022-02-07 11:20:23,134 INFO [org.hibernate.orm.connections.access#getIsolatedConnection:47] - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@438b76dc] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+2022-02-07 11:20:23,139 INFO [org.hibernate.orm.connections.pooling#stop:428] - HHH10001008: Cleaning up connection pool [jdbc:hsqldb:mem:unit-testing-jpa]
+2022-02-07 11:20:23,141 INFO [eu.clarin.cmdi.virtualcollectionregistry.db.VirtualCollectionDaoTest#tearDown:67] - Stopping in-memory HSQL database.
+2022-02-07 11:20:23,158 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-02-07 11:20:23,557 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-02-07 11:20:23,564 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-02-07 11:20:23,957 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:61] - Constructing CMDI structure
+2022-02-07 11:20:23,958 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDICreatorImpl#createMetadataStructure:86] - Creating CMD root
+2022-02-07 11:20:23,968 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:64] - Marshalling CMD
+2022-02-07 11:20:25,139 INFO [eu.clarin.cmdi.virtualcollectionregistry.CreatorServiceImpl#getCreators:69] - Clarin user email = current@user.nl
+2022-02-07 11:20:25,161 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/metedata/1
+2022-02-07 11:20:25,173 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-02-07 11:20:25,173 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/resource/1
+2022-02-07 11:20:25,173 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-02-07 11:20:25,189 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/metedata/1
+2022-02-07 11:20:25,189 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-02-07 11:20:25,189 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/resource/1
+2022-02-07 11:20:25,190 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-02-07 13:11:58,314 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@4a907e5a
+2022-02-07 13:11:58,358 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:89] - Initialising VCR web application
+2022-02-07 13:11:58,359 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:91] - Configuration:
+  logoutMode:             null
+  logoutEnabled:          false
+  locale:                 null
+  mode:                   null
+  forking enabled:        false
+  Process integration:
+    processEndpoint:          null
+    processEnable:   null
+  Download integration:
+    downloadEndpoint: null
+    downloadEnable: null
+  Validators
+    http timeout:         0
+    http redirects:       0
+
+2022-02-07 13:11:58,360 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:121] - Web application configured for development
+2022-02-07 13:11:58,419 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:145] - No locale string available
+2022-02-07 13:11:58,464 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.pid.EPICPersistentIdentifierProvider#createIdentifier:71] - creating handle for virtual collection "123"
+2022-02-07 13:11:58,478 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@3b5299a3
+2022-02-07 13:11:58,480 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:89] - Initialising VCR web application
+2022-02-07 13:11:58,480 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:91] - Configuration:
+  logoutMode:             null
+  logoutEnabled:          false
+  locale:                 null
+  mode:                   null
+  forking enabled:        false
+  Process integration:
+    processEndpoint:          null
+    processEnable:   null
+  Download integration:
+    downloadEndpoint: null
+    downloadEnable: null
+  Validators
+    http timeout:         0
+    http redirects:       0
+
+2022-02-07 13:11:58,480 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:121] - Web application configured for development
+2022-02-07 13:11:58,481 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:145] - No locale string available
+2022-02-07 13:11:58,594 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:45] - Json={"data":{"type":"dois","attributes":{"event":"publish","prefix":"10.5438","url":"http://vcr/service/virtualcollections/1","creators":[{"nameType":"Personal","givenName":" Person","familyName":"Test","affiliation":[{"name":"Test Org"}]}],"titles":[{"title":"Test VC éë"}],"publisher":"CLARIN","publicationYear":"2022","types":{"resourceType":"Virtual Collection","resourceTypeGeneral":"Collection"}}}}
+2022-02-07 13:11:58,606 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:48] - entity content type=Content-Type: text/plain; charset=UTF-8
+2022-02-07 13:11:58,614 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel#getActionableUri:74] - Failed to make actionable URI for unkown PID type: Something else
+2022-02-07 13:11:58,619 INFO [eu.clarin.cmdi.virtualcollectionregistry.db.VirtualCollectionDaoTest#setUp:47] - Starting in-memory HSQL database for unit tests
+2022-02-07 13:11:59,230 INFO [eu.clarin.cmdi.virtualcollectionregistry.db.VirtualCollectionDaoTest#setUp:51] - Building JPA EntityManager for unit tests
+2022-02-07 13:11:59,420 INFO [org.hibernate.jpa.internal.util.LogHelper#logPersistenceUnitInformation:31] - HHH000204: Processing PersistenceUnitInfo [name: VirtualCollectionStoreTest]
+2022-02-07 13:11:59,546 INFO [org.hibernate.Version#logVersion:44] - HHH000412: Hibernate ORM core version 5.4.24.Final
+2022-02-07 13:11:59,830 INFO [org.hibernate.annotations.common.Version#<clinit>:56] - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2022-02-07 13:12:00,388 INFO [org.hibernate.dialect.Dialect#<init>:175] - HHH000400: Using dialect: org.hibernate.dialect.HSQLDialect
+2022-02-07 13:12:02,123 WARN [org.hibernate.orm.connections.pooling#configure:72] - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+2022-02-07 13:12:02,125 INFO [org.hibernate.orm.connections.pooling#buildCreator:115] - HHH10001005: using driver [org.hsqldb.jdbcDriver] at URL [jdbc:hsqldb:mem:unit-testing-jpa]
+2022-02-07 13:12:02,125 INFO [org.hibernate.orm.connections.pooling#buildCreator:124] - HHH10001001: Connection properties: {password=****, user=sa}
+2022-02-07 13:12:02,126 INFO [org.hibernate.orm.connections.pooling#buildCreator:129] - HHH10001003: Autocommit mode: false
+2022-02-07 13:12:02,130 INFO [org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl#<init>:259] - HHH000115: Hibernate connection pool size: 20 (min=1)
+2022-02-07 13:12:02,170 INFO [org.hibernate.orm.connections.access#getIsolatedConnection:47] - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@4c8082b7] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+2022-02-07 13:12:02,184 INFO [org.hibernate.orm.connections.access#getIsolatedConnection:47] - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@22cc14bf] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+2022-02-07 13:12:02,218 INFO [org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator#initiateService:52] - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2022-02-07 13:12:02,534 INFO [eu.clarin.cmdi.virtualcollectionregistry.db.VirtualCollectionDaoTest#tearDown:60] - Shuting down Hibernate JPA layer.
+2022-02-07 13:12:02,535 INFO [org.hibernate.tool.schema.internal.SchemaDropperImpl$DelayedDropActionImpl#perform:526] - HHH000477: Starting delayed evictData of schema as part of SessionFactory shut-down'
+2022-02-07 13:12:02,536 INFO [org.hibernate.orm.connections.access#getIsolatedConnection:47] - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@438b76dc] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+2022-02-07 13:12:02,544 INFO [org.hibernate.orm.connections.pooling#stop:428] - HHH10001008: Cleaning up connection pool [jdbc:hsqldb:mem:unit-testing-jpa]
+2022-02-07 13:12:02,546 INFO [eu.clarin.cmdi.virtualcollectionregistry.db.VirtualCollectionDaoTest#tearDown:67] - Stopping in-memory HSQL database.
+2022-02-07 13:12:02,565 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-02-07 13:12:02,956 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-02-07 13:12:02,965 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-02-07 13:12:03,330 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:61] - Constructing CMDI structure
+2022-02-07 13:12:03,330 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDICreatorImpl#createMetadataStructure:86] - Creating CMD root
+2022-02-07 13:12:03,341 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:64] - Marshalling CMD
+2022-02-07 13:12:04,480 INFO [eu.clarin.cmdi.virtualcollectionregistry.CreatorServiceImpl#getCreators:69] - Clarin user email = current@user.nl
+2022-02-07 13:12:04,497 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/metedata/1
+2022-02-07 13:12:04,510 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-02-07 13:12:04,510 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/resource/1
+2022-02-07 13:12:04,510 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-02-07 13:12:04,524 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/metedata/1
+2022-02-07 13:12:04,525 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-02-07 13:12:04,525 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/resource/1
+2022-02-07 13:12:04,525 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-02-07 13:16:04,159 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@4a907e5a
+2022-02-07 13:16:04,186 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:89] - Initialising VCR web application
+2022-02-07 13:16:04,186 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:91] - Configuration:
+  logoutMode:             null
+  logoutEnabled:          false
+  locale:                 null
+  mode:                   null
+  forking enabled:        false
+  Process integration:
+    processEndpoint:          null
+    processEnable:   null
+  Download integration:
+    downloadEndpoint: null
+    downloadEnable: null
+  Validators
+    http timeout:         0
+    http redirects:       0
+
+2022-02-07 13:16:04,187 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:121] - Web application configured for development
+2022-02-07 13:16:04,239 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:145] - No locale string available
+2022-02-07 13:16:04,276 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.pid.EPICPersistentIdentifierProvider#createIdentifier:71] - creating handle for virtual collection "123"
+2022-02-07 13:16:04,289 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@3b5299a3
+2022-02-07 13:16:04,290 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:89] - Initialising VCR web application
+2022-02-07 13:16:04,290 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:91] - Configuration:
+  logoutMode:             null
+  logoutEnabled:          false
+  locale:                 null
+  mode:                   null
+  forking enabled:        false
+  Process integration:
+    processEndpoint:          null
+    processEnable:   null
+  Download integration:
+    downloadEndpoint: null
+    downloadEnable: null
+  Validators
+    http timeout:         0
+    http redirects:       0
+
+2022-02-07 13:16:04,290 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:121] - Web application configured for development
+2022-02-07 13:16:04,291 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:145] - No locale string available
+2022-02-07 13:16:04,383 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:45] - Json={"data":{"type":"dois","attributes":{"event":"publish","prefix":"10.5438","url":"http://vcr/service/virtualcollections/1","creators":[{"nameType":"Personal","givenName":" Person","familyName":"Test","affiliation":[{"name":"Test Org"}]}],"titles":[{"title":"Test VC éë"}],"publisher":"CLARIN","publicationYear":"2022","types":{"resourceType":"Virtual Collection","resourceTypeGeneral":"Collection"}}}}
+2022-02-07 13:16:04,394 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:48] - entity content type=Content-Type: text/plain; charset=UTF-8
+2022-02-07 13:16:04,402 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel#getActionableUri:74] - Failed to make actionable URI for unkown PID type: Something else
+2022-02-07 13:16:04,407 INFO [eu.clarin.cmdi.virtualcollectionregistry.db.VirtualCollectionDaoTest#setUp:47] - Starting in-memory HSQL database for unit tests
+2022-02-07 13:16:05,068 INFO [eu.clarin.cmdi.virtualcollectionregistry.db.VirtualCollectionDaoTest#setUp:51] - Building JPA EntityManager for unit tests
+2022-02-07 13:16:05,240 INFO [org.hibernate.jpa.internal.util.LogHelper#logPersistenceUnitInformation:31] - HHH000204: Processing PersistenceUnitInfo [name: VirtualCollectionStoreTest]
+2022-02-07 13:16:05,343 INFO [org.hibernate.Version#logVersion:44] - HHH000412: Hibernate ORM core version 5.4.24.Final
+2022-02-07 13:16:05,658 INFO [org.hibernate.annotations.common.Version#<clinit>:56] - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2022-02-07 13:16:06,276 INFO [org.hibernate.dialect.Dialect#<init>:175] - HHH000400: Using dialect: org.hibernate.dialect.HSQLDialect
+2022-02-07 13:16:07,811 WARN [org.hibernate.orm.connections.pooling#configure:72] - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+2022-02-07 13:16:07,814 INFO [org.hibernate.orm.connections.pooling#buildCreator:115] - HHH10001005: using driver [org.hsqldb.jdbcDriver] at URL [jdbc:hsqldb:mem:unit-testing-jpa]
+2022-02-07 13:16:07,814 INFO [org.hibernate.orm.connections.pooling#buildCreator:124] - HHH10001001: Connection properties: {password=****, user=sa}
+2022-02-07 13:16:07,814 INFO [org.hibernate.orm.connections.pooling#buildCreator:129] - HHH10001003: Autocommit mode: false
+2022-02-07 13:16:07,818 INFO [org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl#<init>:259] - HHH000115: Hibernate connection pool size: 20 (min=1)
+2022-02-07 13:16:07,850 INFO [org.hibernate.orm.connections.access#getIsolatedConnection:47] - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@4c8082b7] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+2022-02-07 13:16:07,861 INFO [org.hibernate.orm.connections.access#getIsolatedConnection:47] - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@22cc14bf] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+2022-02-07 13:16:07,895 INFO [org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator#initiateService:52] - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2022-02-07 13:16:08,556 INFO [eu.clarin.cmdi.virtualcollectionregistry.db.VirtualCollectionDaoTest#tearDown:60] - Shuting down Hibernate JPA layer.
+2022-02-07 13:16:08,558 INFO [org.hibernate.tool.schema.internal.SchemaDropperImpl$DelayedDropActionImpl#perform:526] - HHH000477: Starting delayed evictData of schema as part of SessionFactory shut-down'
+2022-02-07 13:16:08,559 INFO [org.hibernate.orm.connections.access#getIsolatedConnection:47] - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@526ca52f] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+2022-02-07 13:16:08,568 INFO [org.hibernate.orm.connections.pooling#stop:428] - HHH10001008: Cleaning up connection pool [jdbc:hsqldb:mem:unit-testing-jpa]
+2022-02-07 13:16:08,569 INFO [eu.clarin.cmdi.virtualcollectionregistry.db.VirtualCollectionDaoTest#tearDown:67] - Stopping in-memory HSQL database.
+2022-02-07 13:16:08,583 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-02-07 13:16:08,985 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-02-07 13:16:08,997 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-02-07 13:16:09,412 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:61] - Constructing CMDI structure
+2022-02-07 13:16:09,413 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDICreatorImpl#createMetadataStructure:86] - Creating CMD root
+2022-02-07 13:16:09,424 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:64] - Marshalling CMD
+2022-02-07 13:16:10,571 INFO [eu.clarin.cmdi.virtualcollectionregistry.CreatorServiceImpl#getCreators:69] - Clarin user email = current@user.nl
+2022-02-07 13:16:10,594 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/metedata/1
+2022-02-07 13:16:10,609 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-02-07 13:16:10,610 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/resource/1
+2022-02-07 13:16:10,610 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-02-07 13:16:10,627 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/metedata/1
+2022-02-07 13:16:10,628 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-02-07 13:16:10,628 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/resource/1
+2022-02-07 13:16:10,628 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-02-07 13:20:57,136 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@4a907e5a
+2022-02-07 13:20:57,172 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:89] - Initialising VCR web application
+2022-02-07 13:20:57,173 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:91] - Configuration:
+  logoutMode:             null
+  logoutEnabled:          false
+  locale:                 null
+  mode:                   null
+  forking enabled:        false
+  Process integration:
+    processEndpoint:          null
+    processEnable:   null
+  Download integration:
+    downloadEndpoint: null
+    downloadEnable: null
+  Validators
+    http timeout:         0
+    http redirects:       0
+
+2022-02-07 13:20:57,174 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:121] - Web application configured for development
+2022-02-07 13:20:57,235 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:145] - No locale string available
+2022-02-07 13:20:57,283 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.pid.EPICPersistentIdentifierProvider#createIdentifier:71] - creating handle for virtual collection "123"
+2022-02-07 13:20:57,298 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@3b5299a3
+2022-02-07 13:20:57,299 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:89] - Initialising VCR web application
+2022-02-07 13:20:57,300 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:91] - Configuration:
+  logoutMode:             null
+  logoutEnabled:          false
+  locale:                 null
+  mode:                   null
+  forking enabled:        false
+  Process integration:
+    processEndpoint:          null
+    processEnable:   null
+  Download integration:
+    downloadEndpoint: null
+    downloadEnable: null
+  Validators
+    http timeout:         0
+    http redirects:       0
+
+2022-02-07 13:20:57,300 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:121] - Web application configured for development
+2022-02-07 13:20:57,301 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:145] - No locale string available
+2022-02-07 13:20:57,422 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:45] - Json={"data":{"type":"dois","attributes":{"event":"publish","prefix":"10.5438","url":"http://vcr/service/virtualcollections/1","creators":[{"nameType":"Personal","givenName":" Person","familyName":"Test","affiliation":[{"name":"Test Org"}]}],"titles":[{"title":"Test VC éë"}],"publisher":"CLARIN","publicationYear":"2022","types":{"resourceType":"Virtual Collection","resourceTypeGeneral":"Collection"}}}}
+2022-02-07 13:20:57,435 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:48] - entity content type=Content-Type: text/plain; charset=UTF-8
+2022-02-07 13:20:57,445 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel#getActionableUri:74] - Failed to make actionable URI for unkown PID type: Something else
+2022-02-07 13:20:57,453 INFO [eu.clarin.cmdi.virtualcollectionregistry.db.VirtualCollectionDaoTest#setUp:47] - Starting in-memory HSQL database for unit tests
+2022-02-07 13:20:58,194 INFO [eu.clarin.cmdi.virtualcollectionregistry.db.VirtualCollectionDaoTest#setUp:51] - Building JPA EntityManager for unit tests
+2022-02-07 13:20:58,383 INFO [org.hibernate.jpa.internal.util.LogHelper#logPersistenceUnitInformation:31] - HHH000204: Processing PersistenceUnitInfo [name: VirtualCollectionStoreTest]
+2022-02-07 13:20:58,499 INFO [org.hibernate.Version#logVersion:44] - HHH000412: Hibernate ORM core version 5.4.24.Final
+2022-02-07 13:20:58,816 INFO [org.hibernate.annotations.common.Version#<clinit>:56] - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2022-02-07 13:20:59,416 INFO [org.hibernate.dialect.Dialect#<init>:175] - HHH000400: Using dialect: org.hibernate.dialect.HSQLDialect
+2022-02-07 13:21:00,898 WARN [org.hibernate.orm.connections.pooling#configure:72] - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+2022-02-07 13:21:00,899 INFO [org.hibernate.orm.connections.pooling#buildCreator:115] - HHH10001005: using driver [org.hsqldb.jdbcDriver] at URL [jdbc:hsqldb:mem:unit-testing-jpa]
+2022-02-07 13:21:00,899 INFO [org.hibernate.orm.connections.pooling#buildCreator:124] - HHH10001001: Connection properties: {password=****, user=sa}
+2022-02-07 13:21:00,900 INFO [org.hibernate.orm.connections.pooling#buildCreator:129] - HHH10001003: Autocommit mode: false
+2022-02-07 13:21:00,904 INFO [org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl#<init>:259] - HHH000115: Hibernate connection pool size: 20 (min=1)
+2022-02-07 13:21:00,937 INFO [org.hibernate.orm.connections.access#getIsolatedConnection:47] - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@4c8082b7] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+2022-02-07 13:21:00,947 INFO [org.hibernate.orm.connections.access#getIsolatedConnection:47] - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@22cc14bf] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+2022-02-07 13:21:00,980 INFO [org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator#initiateService:52] - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2022-02-07 13:21:01,648 INFO [eu.clarin.cmdi.virtualcollectionregistry.db.VirtualCollectionDaoTest#tearDown:60] - Shuting down Hibernate JPA layer.
+2022-02-07 13:21:01,650 INFO [org.hibernate.tool.schema.internal.SchemaDropperImpl$DelayedDropActionImpl#perform:526] - HHH000477: Starting delayed evictData of schema as part of SessionFactory shut-down'
+2022-02-07 13:21:01,651 INFO [org.hibernate.orm.connections.access#getIsolatedConnection:47] - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@6cdece0c] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+2022-02-07 13:21:01,661 INFO [org.hibernate.orm.connections.pooling#stop:428] - HHH10001008: Cleaning up connection pool [jdbc:hsqldb:mem:unit-testing-jpa]
+2022-02-07 13:21:01,662 INFO [eu.clarin.cmdi.virtualcollectionregistry.db.VirtualCollectionDaoTest#tearDown:67] - Stopping in-memory HSQL database.
+2022-02-07 13:21:01,676 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-02-07 13:21:02,089 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-02-07 13:21:02,099 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-02-07 13:21:02,471 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:61] - Constructing CMDI structure
+2022-02-07 13:21:02,472 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDICreatorImpl#createMetadataStructure:86] - Creating CMD root
+2022-02-07 13:21:02,483 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:64] - Marshalling CMD
+2022-02-07 13:21:03,533 INFO [eu.clarin.cmdi.virtualcollectionregistry.CreatorServiceImpl#getCreators:69] - Clarin user email = current@user.nl
+2022-02-07 13:21:03,549 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/metedata/1
+2022-02-07 13:21:03,562 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-02-07 13:21:03,562 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/resource/1
+2022-02-07 13:21:03,563 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-02-07 13:21:03,576 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/metedata/1
+2022-02-07 13:21:03,577 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-02-07 13:21:03,577 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/resource/1
+2022-02-07 13:21:03,577 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-02-07 13:22:17,286 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@4a907e5a
+2022-02-07 13:22:17,331 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:89] - Initialising VCR web application
+2022-02-07 13:22:17,332 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:91] - Configuration:
+  logoutMode:             null
+  logoutEnabled:          false
+  locale:                 null
+  mode:                   null
+  forking enabled:        false
+  Process integration:
+    processEndpoint:          null
+    processEnable:   null
+  Download integration:
+    downloadEndpoint: null
+    downloadEnable: null
+  Validators
+    http timeout:         0
+    http redirects:       0
+
+2022-02-07 13:22:17,333 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:121] - Web application configured for development
+2022-02-07 13:22:17,384 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:145] - No locale string available
+2022-02-07 13:22:17,423 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.pid.EPICPersistentIdentifierProvider#createIdentifier:71] - creating handle for virtual collection "123"
+2022-02-07 13:22:17,435 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@3b5299a3
+2022-02-07 13:22:17,435 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:89] - Initialising VCR web application
+2022-02-07 13:22:17,436 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:91] - Configuration:
+  logoutMode:             null
+  logoutEnabled:          false
+  locale:                 null
+  mode:                   null
+  forking enabled:        false
+  Process integration:
+    processEndpoint:          null
+    processEnable:   null
+  Download integration:
+    downloadEndpoint: null
+    downloadEnable: null
+  Validators
+    http timeout:         0
+    http redirects:       0
+
+2022-02-07 13:22:17,437 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:121] - Web application configured for development
+2022-02-07 13:22:17,438 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:145] - No locale string available
+2022-02-07 13:22:17,541 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:45] - Json={"data":{"type":"dois","attributes":{"event":"publish","prefix":"10.5438","url":"http://vcr/service/virtualcollections/1","creators":[{"nameType":"Personal","givenName":" Person","familyName":"Test","affiliation":[{"name":"Test Org"}]}],"titles":[{"title":"Test VC éë"}],"publisher":"CLARIN","publicationYear":"2022","types":{"resourceType":"Virtual Collection","resourceTypeGeneral":"Collection"}}}}
+2022-02-07 13:22:17,550 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:48] - entity content type=Content-Type: text/plain; charset=UTF-8
+2022-02-07 13:22:17,557 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel#getActionableUri:74] - Failed to make actionable URI for unkown PID type: Something else
+2022-02-07 13:22:17,562 INFO [eu.clarin.cmdi.virtualcollectionregistry.db.VirtualCollectionDaoTest#setUp:47] - Starting in-memory HSQL database for unit tests
+2022-02-07 13:22:18,258 INFO [eu.clarin.cmdi.virtualcollectionregistry.db.VirtualCollectionDaoTest#setUp:51] - Building JPA EntityManager for unit tests
+2022-02-07 13:22:18,443 INFO [org.hibernate.jpa.internal.util.LogHelper#logPersistenceUnitInformation:31] - HHH000204: Processing PersistenceUnitInfo [name: VirtualCollectionStoreTest]
+2022-02-07 13:22:18,561 INFO [org.hibernate.Version#logVersion:44] - HHH000412: Hibernate ORM core version 5.4.24.Final
+2022-02-07 13:22:18,847 INFO [org.hibernate.annotations.common.Version#<clinit>:56] - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2022-02-07 13:22:19,328 INFO [org.hibernate.dialect.Dialect#<init>:175] - HHH000400: Using dialect: org.hibernate.dialect.HSQLDialect
+2022-02-07 13:22:20,605 WARN [org.hibernate.orm.connections.pooling#configure:72] - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+2022-02-07 13:22:20,607 INFO [org.hibernate.orm.connections.pooling#buildCreator:115] - HHH10001005: using driver [org.hsqldb.jdbcDriver] at URL [jdbc:hsqldb:mem:unit-testing-jpa]
+2022-02-07 13:22:20,607 INFO [org.hibernate.orm.connections.pooling#buildCreator:124] - HHH10001001: Connection properties: {password=****, user=sa}
+2022-02-07 13:22:20,607 INFO [org.hibernate.orm.connections.pooling#buildCreator:129] - HHH10001003: Autocommit mode: false
+2022-02-07 13:22:20,612 INFO [org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl#<init>:259] - HHH000115: Hibernate connection pool size: 20 (min=1)
+2022-02-07 13:22:20,641 INFO [org.hibernate.orm.connections.access#getIsolatedConnection:47] - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@4c8082b7] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+2022-02-07 13:22:20,652 INFO [org.hibernate.orm.connections.access#getIsolatedConnection:47] - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@22cc14bf] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+2022-02-07 13:22:20,676 INFO [org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator#initiateService:52] - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2022-02-07 13:22:20,972 INFO [eu.clarin.cmdi.virtualcollectionregistry.db.VirtualCollectionDaoTest#tearDown:60] - Shuting down Hibernate JPA layer.
+2022-02-07 13:22:20,973 INFO [org.hibernate.tool.schema.internal.SchemaDropperImpl$DelayedDropActionImpl#perform:526] - HHH000477: Starting delayed evictData of schema as part of SessionFactory shut-down'
+2022-02-07 13:22:20,974 INFO [org.hibernate.orm.connections.access#getIsolatedConnection:47] - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@63a0fe9b] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+2022-02-07 13:22:20,979 INFO [org.hibernate.orm.connections.pooling#stop:428] - HHH10001008: Cleaning up connection pool [jdbc:hsqldb:mem:unit-testing-jpa]
+2022-02-07 13:22:20,980 INFO [eu.clarin.cmdi.virtualcollectionregistry.db.VirtualCollectionDaoTest#tearDown:67] - Stopping in-memory HSQL database.
+2022-02-07 13:22:20,995 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-02-07 13:22:21,388 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-02-07 13:22:21,401 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-02-07 13:22:21,889 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:61] - Constructing CMDI structure
+2022-02-07 13:22:21,889 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDICreatorImpl#createMetadataStructure:86] - Creating CMD root
+2022-02-07 13:22:21,908 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:64] - Marshalling CMD
+2022-02-07 13:22:22,979 INFO [eu.clarin.cmdi.virtualcollectionregistry.CreatorServiceImpl#getCreators:69] - Clarin user email = current@user.nl
+2022-02-07 13:22:22,997 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/metedata/1
+2022-02-07 13:22:23,011 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-02-07 13:22:23,011 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/resource/1
+2022-02-07 13:22:23,011 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-02-07 13:22:23,028 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/metedata/1
+2022-02-07 13:22:23,029 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-02-07 13:22:23,029 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/resource/1
+2022-02-07 13:22:23,029 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-02-07 13:34:55,940 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@4a907e5a
+2022-02-07 13:34:55,973 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:89] - Initialising VCR web application
+2022-02-07 13:34:55,973 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:91] - Configuration:
+  logoutMode:             null
+  logoutEnabled:          false
+  locale:                 null
+  mode:                   null
+  forking enabled:        false
+  Process integration:
+    processEndpoint:          null
+    processEnable:   null
+  Download integration:
+    downloadEndpoint: null
+    downloadEnable: null
+  Validators
+    http timeout:         0
+    http redirects:       0
+
+2022-02-07 13:34:55,974 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:121] - Web application configured for development
+2022-02-07 13:34:56,030 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:145] - No locale string available
+2022-02-07 13:34:56,068 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.pid.EPICPersistentIdentifierProvider#createIdentifier:71] - creating handle for virtual collection "123"
+2022-02-07 13:34:56,083 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@3b5299a3
+2022-02-07 13:34:56,084 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:89] - Initialising VCR web application
+2022-02-07 13:34:56,084 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:91] - Configuration:
+  logoutMode:             null
+  logoutEnabled:          false
+  locale:                 null
+  mode:                   null
+  forking enabled:        false
+  Process integration:
+    processEndpoint:          null
+    processEnable:   null
+  Download integration:
+    downloadEndpoint: null
+    downloadEnable: null
+  Validators
+    http timeout:         0
+    http redirects:       0
+
+2022-02-07 13:34:56,085 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:121] - Web application configured for development
+2022-02-07 13:34:56,086 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:145] - No locale string available
+2022-02-07 13:34:56,203 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:45] - Json={"data":{"type":"dois","attributes":{"event":"publish","prefix":"10.5438","url":"http://vcr/service/virtualcollections/1","creators":[{"nameType":"Personal","givenName":" Person","familyName":"Test","affiliation":[{"name":"Test Org"}]}],"titles":[{"title":"Test VC éë"}],"publisher":"CLARIN","publicationYear":"2022","types":{"resourceType":"Virtual Collection","resourceTypeGeneral":"Collection"}}}}
+2022-02-07 13:34:56,215 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:48] - entity content type=Content-Type: text/plain; charset=UTF-8
+2022-02-07 13:34:56,224 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel#getActionableUri:74] - Failed to make actionable URI for unkown PID type: Something else
+2022-02-07 13:34:56,230 INFO [eu.clarin.cmdi.virtualcollectionregistry.db.VirtualCollectionDaoTest#setUp:47] - Starting in-memory HSQL database for unit tests
+2022-02-07 13:34:56,902 INFO [eu.clarin.cmdi.virtualcollectionregistry.db.VirtualCollectionDaoTest#setUp:51] - Building JPA EntityManager for unit tests
+2022-02-07 13:34:57,073 INFO [org.hibernate.jpa.internal.util.LogHelper#logPersistenceUnitInformation:31] - HHH000204: Processing PersistenceUnitInfo [name: VirtualCollectionStoreTest]
+2022-02-07 13:34:57,164 INFO [org.hibernate.Version#logVersion:44] - HHH000412: Hibernate ORM core version 5.4.24.Final
+2022-02-07 13:34:57,483 INFO [org.hibernate.annotations.common.Version#<clinit>:56] - HCANN000001: Hibernate Commons Annotations {5.1.2.Final}
+2022-02-07 13:34:58,025 INFO [org.hibernate.dialect.Dialect#<init>:175] - HHH000400: Using dialect: org.hibernate.dialect.HSQLDialect
+2022-02-07 13:34:59,623 WARN [org.hibernate.orm.connections.pooling#configure:72] - HHH10001002: Using Hibernate built-in connection pool (not for production use!)
+2022-02-07 13:34:59,624 INFO [org.hibernate.orm.connections.pooling#buildCreator:115] - HHH10001005: using driver [org.hsqldb.jdbcDriver] at URL [jdbc:hsqldb:mem:unit-testing-jpa]
+2022-02-07 13:34:59,625 INFO [org.hibernate.orm.connections.pooling#buildCreator:124] - HHH10001001: Connection properties: {password=****, user=sa}
+2022-02-07 13:34:59,625 INFO [org.hibernate.orm.connections.pooling#buildCreator:129] - HHH10001003: Autocommit mode: false
+2022-02-07 13:34:59,628 INFO [org.hibernate.engine.jdbc.connections.internal.DriverManagerConnectionProviderImpl#<init>:259] - HHH000115: Hibernate connection pool size: 20 (min=1)
+2022-02-07 13:34:59,657 INFO [org.hibernate.orm.connections.access#getIsolatedConnection:47] - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@4c8082b7] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+2022-02-07 13:34:59,668 INFO [org.hibernate.orm.connections.access#getIsolatedConnection:47] - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@22cc14bf] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+2022-02-07 13:34:59,693 INFO [org.hibernate.engine.transaction.jta.platform.internal.JtaPlatformInitiator#initiateService:52] - HHH000490: Using JtaPlatform implementation: [org.hibernate.engine.transaction.jta.platform.internal.NoJtaPlatform]
+2022-02-07 13:35:00,001 INFO [eu.clarin.cmdi.virtualcollectionregistry.db.VirtualCollectionDaoTest#tearDown:60] - Shuting down Hibernate JPA layer.
+2022-02-07 13:35:00,002 INFO [org.hibernate.tool.schema.internal.SchemaDropperImpl$DelayedDropActionImpl#perform:526] - HHH000477: Starting delayed evictData of schema as part of SessionFactory shut-down'
+2022-02-07 13:35:00,004 INFO [org.hibernate.orm.connections.access#getIsolatedConnection:47] - HHH10001501: Connection obtained from JdbcConnectionAccess [org.hibernate.engine.jdbc.env.internal.JdbcEnvironmentInitiator$ConnectionProviderJdbcConnectionAccess@6db3676] for (non-JTA) DDL execution was not in auto-commit mode; the Connection 'local transaction' will be committed and the Connection will be set into auto-commit mode.
+2022-02-07 13:35:00,013 INFO [org.hibernate.orm.connections.pooling#stop:428] - HHH10001008: Cleaning up connection pool [jdbc:hsqldb:mem:unit-testing-jpa]
+2022-02-07 13:35:00,014 INFO [eu.clarin.cmdi.virtualcollectionregistry.db.VirtualCollectionDaoTest#tearDown:67] - Stopping in-memory HSQL database.
+2022-02-07 13:35:00,032 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-02-07 13:35:00,447 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-02-07 13:35:00,456 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-02-07 13:35:00,879 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:61] - Constructing CMDI structure
+2022-02-07 13:35:00,879 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDICreatorImpl#createMetadataStructure:86] - Creating CMD root
+2022-02-07 13:35:00,900 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:64] - Marshalling CMD
+2022-02-07 13:35:02,915 INFO [eu.clarin.cmdi.virtualcollectionregistry.CreatorServiceImpl#getCreators:69] - Clarin user email = current@user.nl
+2022-02-07 13:35:02,940 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/metedata/1
+2022-02-07 13:35:02,964 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-02-07 13:35:02,965 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/resource/1
+2022-02-07 13:35:02,965 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-02-07 13:35:02,983 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/metedata/1
+2022-02-07 13:35:02,983 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-02-07 13:35:02,984 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:202] - Resource input: https://www.clarin.eu/resource/1
+2022-02-07 13:35:02,984 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:215] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
