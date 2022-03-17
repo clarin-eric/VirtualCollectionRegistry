@@ -33,7 +33,7 @@ public class TimerManagerImpl implements TimerManager, Serializable {
                             target.add(c);
                         }
 
-                        if(!targets.get(i).onUpdate()) {
+                        if(!targets.get(i).onUpdate(target)) {
                             idxToRemove.add(i);
                         }
                     }

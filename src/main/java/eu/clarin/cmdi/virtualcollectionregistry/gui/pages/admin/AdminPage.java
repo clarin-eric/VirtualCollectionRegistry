@@ -6,6 +6,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BasePage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowseEditableCollectionsPanel;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.TimerManager;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.AdminCollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import java.util.ArrayList;
@@ -13,6 +14,7 @@ import java.util.LinkedList;
 import java.util.List;
 
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifierProvider;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
@@ -98,7 +100,7 @@ public class AdminPage extends BasePage {
         ReferenceValidationPanel pnl = new ReferenceValidationPanel("pnl_reference_validation", vcr.getReferenceValidator());
         pnl.setOutputMarkupId(true);
         add(pnl);
-
+/*
         add(new AbstractAjaxTimerBehavior(Duration.seconds(uiRefreshTimeInSeconds)) {
             @Override
             protected void onTimer(AjaxRequestTarget target) {
@@ -107,6 +109,21 @@ public class AdminPage extends BasePage {
                     logger.info("Update admin page timer");
                     target.add(pnl);
                 }
+            }
+        });
+*/
+        timerManager.addTarget(null, new TimerManager.Update() {
+            @Override
+            public boolean onUpdate(AjaxRequestTarget target) {
+                pnl.update(vcr.getReferenceValidator());
+                return true;
+            }
+
+            @Override
+            public List<Component> getComponents() {
+                List<Component> result = new ArrayList<>();
+                result.add(pnl);
+                return result;
             }
         });
     }

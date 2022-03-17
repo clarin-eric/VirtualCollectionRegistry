@@ -109,7 +109,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
         });
         add(modal);
 
-        final CreateAndEditPanel crud = new CreateAndEditPanel("create_and_edit_panel", vcf);
+        final CreateAndEditPanel crud = new CreateAndEditPanel("create_and_edit_panel", vcf, timerManager);
         crud.addListener(new Listener<VirtualCollection>() {
             @Override
             public void handleEvent(Event<VirtualCollection> event) {

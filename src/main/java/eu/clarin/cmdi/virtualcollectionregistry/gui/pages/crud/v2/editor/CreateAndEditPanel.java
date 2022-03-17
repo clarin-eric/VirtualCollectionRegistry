@@ -7,6 +7,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.TimerManager;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.ActionablePanel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.authors.AuthorsEditor;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.dialogs.ModalConfirmDialog;
@@ -95,7 +96,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
      * @param id
      * @param vcf
      */
-    public CreateAndEditPanel(String id, VirtualCollectionFactory vcf) {//}, ModalConfirmDialog dialog) {
+    public CreateAndEditPanel(String id, VirtualCollectionFactory vcf, TimerManager timerManager) {//}, ModalConfirmDialog dialog) {
         super(id);
         this.vcf = vcf;
         this.setOutputMarkupId(true);
@@ -242,7 +243,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         this.authorsEditor = new AuthorsEditor("authors", "Authors");
         addRequiredField(this.authorsEditor, new Mode[]{Mode.SIMPLE, Mode.ADVANCED});
 
-        this.referencesEditor = new ReferencesEditor("references", "Resources", advancedEditorModeModel, vExtensional);
+        this.referencesEditor = new ReferencesEditor("references", "Resources", advancedEditorModeModel, vExtensional, timerManager);
         addRequiredField(this.referencesEditor, new Mode[]{Mode.SIMPLE, Mode.ADVANCED});
 
         addOptionalField(

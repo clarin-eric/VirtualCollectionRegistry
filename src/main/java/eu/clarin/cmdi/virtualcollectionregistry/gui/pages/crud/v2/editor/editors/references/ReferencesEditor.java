@@ -9,6 +9,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryReferen
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryReferenceValidator;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.TimerManager;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.CancelEventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.EventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.MoveListEventHandler;
@@ -126,16 +127,19 @@ public class ReferencesEditor extends ComposedField {
 
     private final Component componentToUpdate;
     private final Filter f;
+    private final TimerManager timerManager;
+    private final WebMarkupContainer ajaxWrapper;
 
-    public ReferencesEditor(String id, String label, Model<Boolean> advancedEditorMode, VisabilityUpdater updater) {
+    public ReferencesEditor(String id, String label, Model<Boolean> advancedEditorMode, VisabilityUpdater updater, TimerManager timerManager) {
         super(id, "References", null, updater);
+        this.timerManager = timerManager;
         setOutputMarkupId(true);
         componentToUpdate = this;
 
         final WebMarkupContainer editorWrapper = new WebMarkupContainer("ref_editor_wrapper");
         editorWrapper.setOutputMarkupId(true);
 
-        final WebMarkupContainer ajaxWrapper = new WebMarkupContainer("ajaxwrapper");
+        ajaxWrapper = new WebMarkupContainer("ajaxwrapper");
         ajaxWrapper.setOutputMarkupId(true);
 
         f = new Filter("filter", Application.get().getRegistry().getReferenceValidator());
@@ -180,6 +184,9 @@ public class ReferencesEditor extends ComposedField {
                 editor.setVisible(false);
                 listview.setModelObject(f.apply(references));
                 listview.setVisible(true);
+
+                addToTimerManager(target);
+
                 if(target != null) {
                     target.add(componentToUpdate);
                 }
@@ -295,7 +302,7 @@ public class ReferencesEditor extends ComposedField {
                 item.add(c);
             }
         };
-
+/*
         ajaxWrapper.add(new AbstractAjaxTimerBehavior(Duration.seconds(uiRefreshTimeInSeconds)) {
             @Override
             protected void onTimer(AjaxRequestTarget target) {
@@ -307,7 +314,7 @@ public class ReferencesEditor extends ComposedField {
                 fireEvent(new CustomDataUpdateEvent(target));
             }
         });
-
+*/
         ajaxWrapper.add(listview);
 
         lblNoReferences.setVisible(references.isEmpty());
@@ -327,6 +334,32 @@ public class ReferencesEditor extends ComposedField {
         f2.setCompleteSubmitOnUpdate(true);
         f2.setRequired(true);
         add(f2);
+    }
+
+    private void addToTimerManager(AjaxRequestTarget target) {
+        VirtualCollectionRegistry registry = Application.get().getRegistry();
+        timerManager.addTarget(target, new TimerManager.Update() {
+            @Override
+            public boolean onUpdate(AjaxRequestTarget target) {
+                fireEvent(new CustomDataUpdateEvent(target));
+                boolean analyzing = false;
+                for(EditableResource r : references) {
+                    State state = registry.getReferenceValidator().getState(r.getInternalId());
+                    if(state == State.INITIALIZED || state == State.ANALYZING) {
+                        analyzing = true;
+                    }
+                }
+                logger.info("onUpdate, return=" + analyzing);
+                return analyzing;
+            }
+
+            @Override
+            public List<Component> getComponents() {
+                List<Component> result = new ArrayList<>();
+                result.add(ajaxWrapper);
+                return result;
+            }
+        });
     }
 
     public class Filter extends WebMarkupContainer {
@@ -444,6 +477,7 @@ public class ReferencesEditor extends ComposedField {
                 lblNoReferences.setVisible(references.isEmpty());
                 listview.setModelObject(f.apply(references));
                 listview.setVisible(!references.isEmpty());
+                addToTimerManager(target);
                 target.add(this);
             }
         }
@@ -499,6 +533,7 @@ public class ReferencesEditor extends ComposedField {
         lblNoReferences.setVisible(references.isEmpty());
         listview.setModelObject(f.apply(references));
         listview.setVisible(!references.isEmpty());
+        addToTimerManager(null);
     }
 
     /**

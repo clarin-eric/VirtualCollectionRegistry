@@ -140,7 +140,7 @@ public abstract class VirtualCollectionTable extends Panel {
     public void triggerUpdateTimer(AjaxRequestTarget target) {
         timerManager.addTarget(target, new TimerManager.Update() {
             @Override
-            public boolean onUpdate() {
+            public boolean onUpdate(AjaxRequestTarget target) {
                 return provider.countCollectionsWithStates(publishing_states) > 0;
             }
 

@@ -13,7 +13,7 @@ public interface TimerManager {
     void addTarget(AjaxRequestTarget target, Update update);
 
     public interface Update extends Serializable {
-        boolean onUpdate();
+        boolean onUpdate(AjaxRequestTarget target);
         List<Component> getComponents();
     }
 
