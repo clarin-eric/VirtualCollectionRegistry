@@ -19,12 +19,10 @@
             validationQuery="SELECT 1"
             username="vcruser"
             password="vcrpassword"
-            url="jdbc:mysql://database:3306/vcr" />
+            url="jdbc:mysql://database:4306/vcr" />
 
-    <!--
     <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.admindb.basedir"
-               value="{{ADMIN_CONF_DIR}}" />
-    -->
+               value="/conf" />
     
     <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.admindb"
                value="vcr-admin.conf" />
@@ -36,20 +34,28 @@
                value="http://localhost:8080"
                override="false"/>
 
-    <Parameter name="pid_provider.epic.service_base_url"
-               value="http://pid-vm04.gwdg.de:8080/handles/"
-               override="false"/>
-    <Parameter name="pid_provider.epic.handle_prefix"
-               value="11148"
-               override="false"/>
-    <Parameter name="pid_provider.epic.user"
-               value="clarintest"
-               override="false"/>
-    <Parameter name="pid_provider.epic.password"
-               value="verydifficulttoguesspassword"
+    <!-- Configure pid providers configuration -->
+    <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.pidprovider.basedir"
+               value="/conf"
                override="false"/>
 
-     <!-- Switchboard endpoint -->
+    <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.pidprovider.configfile"
+               value="pidproviders.properties"
+               override="false"/>
+
+    <!--
+        Available profiles:
+        - vcr.pid.dummy
+        - vcr.pid.gwdg
+        - vcr.pid.epic
+        - vcr.pid.doi
+        - vcr.pid.multi
+    -->
+    <Parameter name="spring.profiles.active"
+               value="vcr.pid.multi"
+               override="false"/>
+
+    <!-- Switchboard endpoint -->
     <Parameter name="eu.clarin.cmdi.vcr.lrs.endpoint" 
                value="https://switchboard.clarin.eu/#/xyz" 
                override="false"/>
@@ -95,6 +101,15 @@
                override="false" />
     
     <Parameter name="eu.clarin.cmdi.vcr.snippet.credits" 
-               value="credits.html" 
+               value="credits.html"
                override="false" />
+
+    <Parameter name="eu.clarin.cmdi.vcr.mode"
+               value="alpha"
+               override="false" />
+
+    <Parameter name="eu.clarin.cmdi.vcr.forking.enabled"
+               value="true"
+               override="false" />
+
 </Context>

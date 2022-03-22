@@ -23,9 +23,16 @@ import java.util.Locale;
  * @author wilelb
  */
 public interface VcrConfig {
-    public String getSwitchboardEndpoint();    
-    public boolean isSwitchboardEnabledForResources();
-    public boolean isSwitchboardEnabledForCollections();
+    public String getDownloadEndpoint();
+    public String getDownloadEndpointPreferedPidType();
+    public String getProcessEndpointPreferedPidType();
+    public String getProcessEndpoint();
+    public boolean isProcessPopupEnabled();
+    public boolean isProcessEnabledForResources();
+    public boolean isProcessEnabledForCollections();
+    public boolean isDownloadEnabledForCollections();
+
+
     public String getLogoutMode();
     public boolean isLogoutEnabled();
     public String getLocaleString();

@@ -1,0 +1,49 @@
+version: '3'
+services:
+  webapp  :
+    image: registry.gitlab.com/clarin-eric/docker-alpine-supervisor-java-tomcat-base:2.0.3
+    environment:
+      - "CATALINA_OPTS=-Djava.security.egd=file:/dev/urandom"
+    ports:
+      - 8080:8080
+    volumes:
+      - ../..:/app/src
+      - ./conf/tomcat/init.sh:/init/init-tomcat.sh
+      - ./conf/vcr/vcr-admin.conf:/conf/vcr-admin.conf
+      - ./conf/vcr/pidproviders.properties:/conf/pidproviders.properties
+      - ./conf/tomcat/vcr-context.xml:/srv/tomcat8/conf/Catalina/localhost/ROOT.xml
+      - ./conf/tomcat/tomcat-users.xml:/srv/tomcat8/conf/tomcat-users.xml
+      - ./conf/fluentd/vcr.conf:/etc/fluentd/conf.d/vcr.conf
+#      - ./conf/server.jks:/cert/server.jks
+    networks:
+      - vcr
+
+  database:
+    image: "mariadb:10.3.10-bionic"
+    environment:
+      MYSQL_ROOT_PASSWORD: vcr-root
+      MYSQL_DATABASE: vcr
+      MYSQL_USER: vcruser
+      MYSQL_PASSWORD: vcrpassword
+    networks:
+      - vcr
+    volumes:
+      - maria_db_data:/var/lib/mysql
+      - ./database:/docker-entrypoint-initdb.d
+
+  apache:
+    image: docker-apache-php-composer:a6df662
+    ports:
+      - 8081:8000
+    networks:
+      - vcr
+    volumes:
+      - ./apache:/input
+
+volumes:
+  maria_db_data:
+    external: false
+
+networks:
+  vcr:
+    external: false

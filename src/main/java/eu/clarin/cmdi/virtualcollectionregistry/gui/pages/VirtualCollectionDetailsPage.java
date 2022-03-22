@@ -17,6 +17,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.RestUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
 import eu.clarin.cmdi.virtualcollectionregistry.wicket.DetailsStructuredMeatadataHeaderBehavior;
+import eu.clarin.cmdi.wicket.components.CMDIExplorerLink;
+import eu.clarin.cmdi.wicket.components.LanguageResourceSwitchboardLink;
 import eu.clarin.cmdi.wicket.components.citation.CitationPanelFactory;
 import eu.clarin.cmdi.wicket.components.panel.BootstrapDropdown;
 import eu.clarin.cmdi.wicket.components.panel.BootstrapDropdown.DropdownMenuItem;
@@ -249,6 +251,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
             super(id, new CompoundPropertyModel<VirtualCollection>(model));
             add(new Label("name"));
             add(CitationPanelFactory.getCitationPanel("citation", model));
+            /*
             AjaxLink btnFork = new AjaxLink("btn_fork", new Model<String>("Cite")) {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
@@ -257,6 +260,9 @@ public class VirtualCollectionDetailsPage extends BasePage {
             } ;
             btnFork.setVisible(Application.get().getConfig().isForkingEnabled());
             add(btnFork);
+            */
+            add(LanguageResourceSwitchboardLink.forCollection("process", model.getObject(), vcrConfig));
+            add(CMDIExplorerLink.forCollection("download", model.getObject(), vcrConfig));
         }    
     }
     
@@ -428,7 +434,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
 
             //Make sure to check all possible actions. Only add action column if there
             //is more than one action enabled.
-            if (vcrConfig.isSwitchboardEnabledForResources()) {     
+            if (vcrConfig.isProcessEnabledForResources()) {
                 cols.add(new AbstractColumn<Resource, String>(Model.of("Actions")) {
                     @Override
                     public void populateItem(Item<ICellPopulator<Resource>> item, String componentId, IModel<Resource> rowModel) {
@@ -470,8 +476,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
             Lists.newArrayList(new DropdownMenuItem("Process with Language Resource Switchboard", "glyphicon glyphicon-open-file") {
                 @Override
                 protected AbstractLink getLink(String id) {
-                    AbstractLink link = UIUtils.getLrsRedirectAjaxLinkForResource(id, model, vcrConfig.getSwitchboardEndpoint());
-                    return link;
+                    return (AbstractLink) LanguageResourceSwitchboardLink.forResource("link", model.getObject());
                 }
             });                
          

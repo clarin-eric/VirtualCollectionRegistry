@@ -18,6 +18,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.OrderableComparator;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
@@ -36,6 +37,11 @@ import org.slf4j.LoggerFactory;
  public class AuthorsEditor extends ComposedField {
 
      private final static Logger logger = LoggerFactory.getLogger(AuthorsEditor.class);
+
+     private final static int MOVE_UP = 1; //towards beginning of the list (rendered first)
+     private final static int MOVE_DOWN = 2; //towards end of the list (rendered last)
+     private final static int MOVE_START = 3;
+     private final static int MOVE_END = 4;
 
      private final List<Editable<Creator>> authors = new ArrayList<>();
 
@@ -80,12 +86,33 @@ import org.slf4j.LoggerFactory;
          }
      }
 
-     public class AuthorPanel extends ActionablePanel {
+     private long getMaxDisplayOrder() {
+        long maxDisplayOrder = 0;
+         for(Editable<Creator> c : authors) {
+             if(c.getData().getDisplayOrder() > maxDisplayOrder) {
+                 maxDisplayOrder = c.getData().getDisplayOrder();
+             }
+         }
+        return maxDisplayOrder;
+     }
 
+     /**
+      * Get next highest display order, start with 0
+      * @return
+      */
+     private Long getNextDisplayOrder() {
+         if(authors.size() <= 0 ) {
+             return 0L;
+         }
+         return getMaxDisplayOrder()+1;
+     }
+
+     public class AuthorPanel extends ActionablePanel {
          public AuthorPanel(String id, final Editable<Creator> editableAuthor, final Component componentToUpdate) {
              super(id);
              setOutputMarkupId(true);
 
+             long maxDisplayOrder = getMaxDisplayOrder();
              final Creator a = editableAuthor.getData();
              add(new Label("name", a.getPerson()));
              add(new Label("email", a.getEMail()));
@@ -94,47 +121,63 @@ import org.slf4j.LoggerFactory;
              AjaxFallbackLink orderTopButton = new AjaxFallbackLink("btn_order_top") {
                  @Override
                  public void onClick(AjaxRequestTarget target) {
-                     move(0, a.getId());
+                     move(MOVE_START, a.getDisplayOrder());
                      if (target != null) {
                          target.add(componentToUpdate);
                      }
                  }
              };
-             orderTopButton.setEnabled(authors.size() > 1);
+             if(a.getDisplayOrder() == 0) {
+                 orderTopButton.setEnabled(false);
+                 orderTopButton.add(new AttributeAppender("class", " disabled"));
+             }
+
              add(orderTopButton);
              AjaxFallbackLink orderUpButton = new AjaxFallbackLink("btn_order_up") {
                  @Override
                  public void onClick(AjaxRequestTarget target) {
-                     move(-1, a.getId());
+                     move(MOVE_UP, a.getDisplayOrder());
                      if (target != null) {
                          target.add(componentToUpdate);
                      }
                  }
              };
-             orderUpButton.setEnabled(authors.size() > 1);
+             if(a.getDisplayOrder() == 0) {
+                 orderUpButton.setEnabled(false);
+                 orderUpButton.add(new AttributeAppender("class", " disabled"));
+             }
+
              add(orderUpButton);
              AjaxFallbackLink orderDownButton = new AjaxFallbackLink("btn_order_down") {
                  @Override
                  public void onClick(AjaxRequestTarget target) {
-                     move(1, a.getId());
+                     move(MOVE_DOWN, a.getDisplayOrder());
                      if (target != null) {
                          target.add(componentToUpdate);
                      }
                  }
              };
-             orderDownButton.setEnabled(authors.size() > 1);
+             if(a.getDisplayOrder() == maxDisplayOrder) {
+                 orderDownButton.setEnabled(false);
+                 orderDownButton.add(new AttributeAppender("class", " disabled"));
+             }
+
              add(orderDownButton);
              AjaxFallbackLink orderBottomButton = new AjaxFallbackLink("btn_order_bottom") {
                  @Override
                  public void onClick(AjaxRequestTarget target) {
-                     move(authors.size()-1, a.getId());
+                     move(MOVE_END, a.getDisplayOrder());
                      if (target != null) {
                          target.add(componentToUpdate);
                      }
                  }
              };
-             orderBottomButton.setEnabled(authors.size() > 1);
+             if(a.getDisplayOrder() == maxDisplayOrder) {
+                 orderBottomButton.setEnabled(false);
+                 orderBottomButton.add(new AttributeAppender("class", " disabled"));
+             }
              add(orderBottomButton);
+
              AjaxFallbackLink editButton = new AjaxFallbackLink("btn_edit") {
                  @Override
                  public void onClick(AjaxRequestTarget target) {
@@ -166,7 +209,6 @@ import org.slf4j.LoggerFactory;
              };
              add(removeButton);
          }
-
      }
 
      public class AuthorEditPanel extends Panel implements FieldComposition, Serializable {
@@ -289,6 +331,8 @@ import org.slf4j.LoggerFactory;
                          Creator creator = new Creator(mdlFamilyName.getObject(), mdlGivenName.getObject());
                          creator.setEMail(email);
                          creator.setOrganisation(affiliation);
+                         long nextDisplayOrder = getNextDisplayOrder();
+                         creator.setDisplayOrder(nextDisplayOrder);
                          authors.add(new Editable(creator));
                      } else {
                          editableAuthor.getData().setFamilyName(mdlFamilyName.getObject());
@@ -482,24 +526,32 @@ import org.slf4j.LoggerFactory;
          return setError(null);
      }
 
-     protected void move(int direction, Long id) {
+     protected void move(int move, Long displayOrder) {
+         int direction = 0;
+         switch(move) {
+             case MOVE_UP: direction = -1; break;
+             case MOVE_DOWN: direction = 1; break;
+             case MOVE_START: direction = 0; break;
+             case MOVE_END: direction = authors.size() > 0 ? authors.size() - 1 : 0; break;
+         }
+
          //Abort on invalid direction
          if(direction < -1 || direction >= authors.size()) {
              logger.warn("Author list move: invalid direction={}, authors size={}.", direction, authors.size());
              return;
          }
 
-         //Find index of specified (by id) collection
+         //Find index of specified (by id) author
          int idx = -1;
          for(int i = 0; i < authors.size() && idx == -1; i++) {
-             if(authors.get(i).getData().getId() == id) {
+             if(authors.get(i).getData().getDisplayOrder() == displayOrder) {
                  idx = i;
              }
          }
 
          //Abort if the collection was not found
          if(idx == -1) {
-             logger.warn("Author list move: author with id = {} not found.", id);
+             logger.warn("Author list move: author with displayOrder = {} not found.", displayOrder);
              return;
          }
 

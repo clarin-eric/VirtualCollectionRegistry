@@ -72,11 +72,8 @@ public class ReferenceLinkPanel extends Panel {
             HtmlRenderer renderer = HtmlRenderer.builder(options).build();
             Node document = parser.parse(model.getObject().getDescription());
             htmlValue = renderer.render(document);
-
-            logger.info("Original value={}, html value={}", model.getObject().getDescription(), htmlValue);
         }
 
-        //final PropertyModel<String> descriptionModel = new PropertyModel<>(model, "description");
         Label lbl = new Label("description", Model.of(htmlValue)) {
             @Override
             protected void onConfigure() {

@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.pid;
 
+import eu.clarin.cmdi.virtualcollectionregistry.PermaLinkService;
 import eu.clarin.cmdi.virtualcollectionregistry.ServletUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
@@ -129,7 +130,7 @@ public class GWDGPersistentIdentifierProvider implements
     }
 
     @Override
-    public PersistentIdentifier createIdentifier(VirtualCollection vc)
+    public PersistentIdentifier createIdentifier(VirtualCollection vc, PermaLinkService permaLinkService)
             throws VirtualCollectionRegistryException {
         if (vc == null) {
             throw new NullPointerException("vc == null");
