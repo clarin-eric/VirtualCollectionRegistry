@@ -50,6 +50,9 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
     @Autowired
     private PidProviderService pidProviderService;
 
+    @Autowired
+    private PermaLinkService permaLinkService;
+
     @Override
     public void perform(long now) {
         if(!maintenance_enabled) {
@@ -121,7 +124,7 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
         if(!vc.hasPersistentIdentifier()) {
             try {
                 //Mint identifiers and update collection
-                List<PersistentIdentifier> pids = pidProviderService.createIdentifiers(vc);
+                List<PersistentIdentifier> pids = pidProviderService.createIdentifiers(vc, permaLinkService);
                 for(PersistentIdentifier pid : pids) {
                     vc.setPersistentIdentifier(pid);
                 }

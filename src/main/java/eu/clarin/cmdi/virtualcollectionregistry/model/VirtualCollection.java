@@ -331,7 +331,6 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     private Date dateModified;
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Version
     @Column(name = "published", nullable = true)
     private Date datePublished;
 

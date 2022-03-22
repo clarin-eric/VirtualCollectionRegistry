@@ -29,15 +29,31 @@ import org.springframework.stereotype.Component;
 @Component
 public class VcrConfigImpl implements VcrConfig {
     private final static Logger logger = LoggerFactory.getLogger(VcrConfigImpl.class);
-    
-    @Value("${eu.clarin.cmdi.vcr.lrs.endpoint:https://switchboard.clarin.eu/#/vcr}")
-    private String lrsEndpoint;
-    
-    @Value("${eu.clarin.cmdi.vcr.lrs.enable_for_resources:true}")
-    private boolean lrsEnableResources;
-    
-    @Value("${eu.clarin.cmdi.vcr.lrs.enable_for_collections:false}")
-    private boolean lrsEnableCollections;
+
+    public final static String ACTION_ENABLE_COLLECTIONS = "COLLECTIONS";
+    public final static String ACTION_ENABLE_RESOURCES = "RESOURCES";
+
+    @Value("${eu.clarin.cmdi.vcr.process.endpoint:https://switchboard.clarin.eu/#/vcr}")
+    private String processEndpoint;
+
+    @Value("${eu.clarin.cmdi.vcr.process.enable:RESOURCES}")
+    private String processEnable;
+
+    @Value("${eu.clarin.cmdi.vcr.process.prefered_pid_type:HDL}")
+    private String processEndpointPreferedPidType;
+
+    @Value("${eu.clarin.cmdi.vcr.process.popup:true}")
+    private boolean processPopup;
+
+    @Value("${eu.clarin.cmdi.vcr.download.endpoint:https://weblicht.sfs.uni-tuebingen.de/CMDIExplorer/#/vcr}")
+    private String downloadEndpoint;
+
+    @Value("${eu.clarin.cmdi.vcr.download.prefered_pid_type:HDL}")
+    private String downloadEndpointPreferedPidType;
+
+    @Value("${eu.clarin.cmdi.vcr.download.enable:COLLECTIONS}")
+    private String downloadEnable;
+
     
     @Value("${eu.clarin.cmdi.vcr.logout_mode:basic}")
     private String logoutMode;
@@ -51,23 +67,50 @@ public class VcrConfigImpl implements VcrConfig {
     @Value("${eu.clarin.cmdi.vcr.forking.enabled:false}")
     private boolean forkingEnabled;
 
-        @Override
-    public String getSwitchboardEndpoint() {
-        if (lrsEndpoint.endsWith("/")) {
-            return lrsEndpoint.substring(0, lrsEndpoint.length()-1);
+    private String getEndpointWithoutTrailingSlash(String endpoint) {
+        if(endpoint == null) {
+            return null;
         }
-        return lrsEndpoint;
+        if (endpoint.endsWith("/")) {
+            return endpoint.substring(0, endpoint.length()-1);
+        }
+        return endpoint;
     }
-    
+
     @Override
-    public boolean isSwitchboardEnabledForResources() {
-        return lrsEnableResources;
-    }
-    
+    public String getProcessEndpoint() { return getEndpointWithoutTrailingSlash(processEndpoint); }
+
     @Override
-    public boolean isSwitchboardEnabledForCollections() {
-        return lrsEnableCollections;
+    public String getDownloadEndpoint() { return getEndpointWithoutTrailingSlash(downloadEndpoint); }
+
+    private boolean hasConfig(String input, String config) {
+        for(String s : input.split(",")) {
+            if(s.trim().equalsIgnoreCase(config)) {
+                return true;
+            }
+        }
+        return false;
     }
+
+    @Override
+    public String getDownloadEndpointPreferedPidType() {return downloadEndpointPreferedPidType; }
+
+    @Override
+    public String getProcessEndpointPreferedPidType() {return processEndpointPreferedPidType; }
+
+    @Override
+    public boolean isProcessPopupEnabled() {
+        return processPopup;
+    }
+
+    @Override
+    public boolean isProcessEnabledForResources() { return hasConfig(processEnable, ACTION_ENABLE_RESOURCES); }
+
+    @Override
+    public boolean isProcessEnabledForCollections() { return hasConfig(processEnable, ACTION_ENABLE_COLLECTIONS); }
+
+    @Override
+    public boolean isDownloadEnabledForCollections() { return hasConfig(downloadEnable, ACTION_ENABLE_COLLECTIONS); }
     
     @Override
     public boolean isLogoutEnabled() {
@@ -102,11 +145,14 @@ public class VcrConfigImpl implements VcrConfig {
     @Override
     public void logConfig() {
         logger.info("Configuration:");
-        logger.info("  lrsEndpoint:          {}", lrsEndpoint);
-        logger.info("  lrsEnableResources:   {}", lrsEnableResources);
-        logger.info("  lrsEnableCollections: {}", lrsEnableCollections);
         logger.info("  logoutMode:           {}", logoutMode);
         logger.info("  logoutEnabled:        {}", logoutEnabled);
         logger.info("  locale:               {}", locale);
+        logger.info("  Process integration:");
+        logger.info("    processEndpoint:    {}", processEndpoint);
+        logger.info("    processEnable:      {}", processEnable);
+        logger.info("  Download integration:");
+        logger.info("    downloadEndpoint:   {}", downloadEndpoint);
+        logger.info("    downloadEnable:     {}", downloadEnable);
     }
 }

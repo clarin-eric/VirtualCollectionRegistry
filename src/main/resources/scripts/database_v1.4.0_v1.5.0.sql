@@ -9,7 +9,7 @@ SELECT `value` INTO @current_value FROM `config` WHERE ( `key` = 'db_version' AN
 INSERT INTO `config` (`key`, `value`) VALUES ('db_version_check', @current_value);
 
 -- Apply updates
-ALTER TABLE virtualcollection ADD COLUMN `published` timestamp NULL;
+ALTER TABLE virtualcollection ADD COLUMN `published` datetime NULL;
 
 -- Update current database config value
 UPDATE `config` SET `value` = '1.5.0' WHERE `key` = 'db_version';

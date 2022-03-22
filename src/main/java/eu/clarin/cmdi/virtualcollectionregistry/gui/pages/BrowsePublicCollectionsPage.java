@@ -2,6 +2,8 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.RestUtils;
+import eu.clarin.cmdi.wicket.components.CMDIExplorerLink;
+import eu.clarin.cmdi.wicket.components.LanguageResourceSwitchboardLink;
 import eu.clarin.cmdi.wicket.components.citation.CitationPanelFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.PublishedCollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
@@ -34,12 +36,9 @@ public class BrowsePublicCollectionsPage extends BasePage {
         public ActionsPanel(String id, IModel<VirtualCollection> model) {
             super(id, model);
             setRenderBodyOnly(true);
-            
             add(CitationPanelFactory.getCitationPanel("cite", model, true));
-            
-            AjaxLink lrsLink = UIUtils.getLrsRedirectAjaxLink("lrs", model, vcrConfig.getSwitchboardEndpoint());
-            lrsLink.setVisible(vcrConfig.isSwitchboardEnabledForCollections());
-            add(lrsLink);
+            add(LanguageResourceSwitchboardLink.forCollection("lrs", model.getObject(), vcrConfig));
+            add(CMDIExplorerLink.forCollection("download", model.getObject(), vcrConfig));
         }
         
     } // class BrowsePublicCollectionsPage.ActionsPanel

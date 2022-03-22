@@ -4,6 +4,8 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStreamReader;
+import java.nio.file.Path;
+import java.nio.file.Paths;
 import java.util.*;
 import javax.annotation.PostConstruct;
 import org.slf4j.Logger;
@@ -22,10 +24,10 @@ public class AdminUsersServiceImpl implements AdminUsersService {
 
     private final Set<String> adminUsers = new HashSet<>();
 
-    @Value("${eu.clarin.cmdi.virtualcollectionregistry.admindb:}")
+    @Value("${eu.clarin.cmdi.virtualcollectionregistry.admindb:vcr-admin.conf}")
     private String adminDb;
 
-    @Value("${eu.clarin.cmdi.virtualcollectionregistry.admindb.basedir:}")
+    @Value("${eu.clarin.cmdi.virtualcollectionregistry.admindb.basedir:.}")
     private String adminDbBaseDir;
             
     @Override
@@ -41,7 +43,7 @@ public class AdminUsersServiceImpl implements AdminUsersService {
             try {
                 loadAdminDatabase(adminDb);
             } catch (IOException e) {
-                throw new RuntimeException("Could not load admin user database", e);
+                throw new RuntimeException("Could not load admin user database. Dir"+adminDbBaseDir+", file="+adminDb, e);
             }
         }
         if (adminUsers.isEmpty()) {
@@ -53,12 +55,13 @@ public class AdminUsersServiceImpl implements AdminUsersService {
 
     private void loadAdminDatabase(String filename) throws IOException {
         adminUsers.clear();
-     
+     /*
         if(adminDbBaseDir == null || adminDbBaseDir.isEmpty()) {
             adminDbBaseDir = System.getProperty("user.home");
             logger.debug("eu.clarin.cmdi.virtualcollectionregistry.admindb.basedir not set, using home directory: "+adminDbBaseDir);
         }
-        
+       */
+        /*
         String filenameWithPath = filename;
         if(adminDbBaseDir.endsWith("/") && filename.startsWith("/")) {
             filenameWithPath = adminDbBaseDir + filename.substring(1);
@@ -67,11 +70,13 @@ public class AdminUsersServiceImpl implements AdminUsersService {
         } else {
             filenameWithPath = adminDbBaseDir + filename;
         }
+        */
+        Path filenameWithPath = Paths.get(adminDbBaseDir, filename);
 
-        logger.info("filenameWithPath: "+filenameWithPath);
+        logger.info("filenameWithPath: "+filenameWithPath.toAbsolutePath().toString());
         
         try (BufferedReader reader = new BufferedReader(new InputStreamReader(
-                new FileInputStream(filenameWithPath)))) {
+                new FileInputStream(filenameWithPath.toAbsolutePath().toString())))) {
             String line;
             while ((line = reader.readLine()) != null) {
                 line = line.trim();

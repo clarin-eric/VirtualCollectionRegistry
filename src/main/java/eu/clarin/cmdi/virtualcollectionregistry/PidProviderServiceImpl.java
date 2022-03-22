@@ -76,7 +76,7 @@ public class PidProviderServiceImpl implements PidProviderService {
             }
 
         } catch(FileNotFoundException ex) {
-            throw new VirtualCollectionRegistryException("PID Provider configuration file ("+cfg.toAbsolutePath().toString()+") not found.", ex);
+            throw new VirtualCollectionRegistryException("PID Provider configuration file ("+cfg.toAbsolutePath().toString()+") not found (dir="+baseDir+").", ex);
         } catch(IOException ex) {
             throw new VirtualCollectionRegistryException("Failed to read PID Provider configuration file. ", ex);
         }
@@ -160,10 +160,10 @@ public class PidProviderServiceImpl implements PidProviderService {
      * @return
      * @throws VirtualCollectionRegistryException
      */
-    public List<PersistentIdentifier> createIdentifiers(VirtualCollection vc) throws VirtualCollectionRegistryException {
+    public List<PersistentIdentifier> createIdentifiers(VirtualCollection vc, PermaLinkService permaLinkService) throws VirtualCollectionRegistryException {
         List<PersistentIdentifier> pids = new LinkedList<>();
         for(PersistentIdentifierProvider provider : providers) {
-            pids.add(provider.createIdentifier(vc));
+            pids.add(provider.createIdentifier(vc, permaLinkService));
 
         }
         return pids;

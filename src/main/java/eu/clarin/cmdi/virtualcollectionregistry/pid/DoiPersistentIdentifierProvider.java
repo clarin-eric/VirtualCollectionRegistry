@@ -17,6 +17,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.pid;
 
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.Configuration;
+import eu.clarin.cmdi.virtualcollectionregistry.PermaLinkService;
 import eu.clarin.cmdi.virtualcollectionregistry.PidProviderServiceImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
@@ -75,12 +76,12 @@ public class DoiPersistentIdentifierProvider implements PersistentIdentifierProv
     }
 
     @Override
-    public PersistentIdentifier createIdentifier(VirtualCollection vc) throws VirtualCollectionRegistryException {
+    public PersistentIdentifier createIdentifier(VirtualCollection vc, PermaLinkService permaLinkService) throws VirtualCollectionRegistryException {
         logger.debug("creating doi for virtual collection \"{}\"", vc.getId());
         try {
             final String requestedPid = String.format("%s%d", getInfix(), vc.getId());
             DoiRequest req =
-                    DoiRequestBuilder.createGenerateDoiRequest(configuration.getHandlePrefix(), requestedPid, vc);
+                    DoiRequestBuilder.createGenerateDoiRequest(configuration.getHandlePrefix(), requestedPid, vc, permaLinkService);
             final String pid = pidWriter.registerNewPID(configuration, req);
             return new PersistentIdentifier(vc, PersistentIdentifier.Type.DOI, primary, pid);
         } catch (HttpException ex) {
