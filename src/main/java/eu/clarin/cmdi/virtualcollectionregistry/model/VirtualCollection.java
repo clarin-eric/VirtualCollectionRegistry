@@ -982,10 +982,29 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         this.origin = origin;
     }
 
+    public VirtualCollection getLatestVersion() {
+        return getLatestVersion(false);
+    }
+
+    public VirtualCollection getLatestVersion(boolean includePrivate) {
+        return getAllVersions(includePrivate).get(0);
+    }
+
+    /**
+     * Get a list with all _public_ versions of this collection, sorted new --> old.
+     *
+     * @return
+     */
     public List<VirtualCollection> getAllVersions() {
         return getAllVersions(false);
     }
 
+    /**
+     * Get a list with all versions of this collection, sorted new --> old.
+     *
+     * @param includePrivate set to true to include private collections
+     * @return
+     */
     public List<VirtualCollection> getAllVersions(boolean includePrivate) {
         List<VirtualCollection> versions = getChildrenAsList(includePrivate);
         Collections.reverse(versions); //Make sure the list is ordered from new --> old

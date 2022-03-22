@@ -14,7 +14,7 @@ public interface PersistentIdentifierProvider {
 
     PersistentIdentifier createIdentifier(VirtualCollection vc, String suffix, PermaLinkService permaLinkService) throws VirtualCollectionRegistryException;
 
-    void updateIdentifier(String pid, URI target) throws VirtualCollectionRegistryException;
+    void updateIdentifier(PersistentIdentifier pid, URI target) throws VirtualCollectionRegistryException;
 
     void deleteIdentifier(String pid) throws VirtualCollectionRegistryException;
 

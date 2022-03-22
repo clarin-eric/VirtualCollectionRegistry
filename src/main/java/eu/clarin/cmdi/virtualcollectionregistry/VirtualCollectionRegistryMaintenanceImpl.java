@@ -20,6 +20,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifierProvider;
 
+import java.io.IOException;
 import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
@@ -28,6 +29,11 @@ import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.TypedQuery;
 import org.apache.commons.httpclient.HttpException;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.ClientProtocolException;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpHead;
+import org.apache.http.impl.client.HttpClientBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -73,6 +79,7 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
         EntityManager em = datastore.getEntityManager();
         try {
             allocatePersistentIdentifiers(em, nowDateAlloc);
+            updatePersistentIdentifiers(em, nowDateAlloc);
             purgeDeletedCollections(em, nowDatePurge);
             handleCollectionsInError(em, nowDateError);
         } catch (RuntimeException e) {
@@ -111,7 +118,7 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
             for (VirtualCollection vc : collectionsToUpdate) {
                 try {
                     em.getTransaction().begin();
-                    allocatePersistentIdentifier(em, vc);
+                    allocatePersistentIdentifierForCollection(em, vc);
                     em.merge(vc);
                 } catch(Exception ex) {
                     em.getTransaction().rollback();
@@ -128,7 +135,7 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
      * @param em
      * @param vc 
      */
-    protected void allocatePersistentIdentifier(EntityManager em, VirtualCollection vc) {
+    protected void allocatePersistentIdentifierForCollection(EntityManager em, VirtualCollection vc) {
         if(!vc.hasPersistentIdentifier()) {
             try {
                 //Mint identifiers and update collection
@@ -222,7 +229,49 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
                     vc.getId());
         }
     }
-    
+
+    protected void updatePersistentIdentifiers(EntityManager em, final Date nowDateAlloc) {
+        TypedQuery<VirtualCollection> q
+                = em.createNamedQuery("VirtualCollection.findAllByStates",
+                VirtualCollection.class);
+        List<VirtualCollection.State> states = new LinkedList<>();
+        states.add(VirtualCollection.State.PUBLIC);
+        states.add(VirtualCollection.State.PUBLIC_FROZEN);
+        q.setParameter("states", states);
+        q.setParameter("date", nowDateAlloc);
+        q.setLockMode(LockModeType.PESSIMISTIC_WRITE);
+
+        em.getTransaction().begin();
+        List<VirtualCollection> collections = q.getResultList();
+        em.getTransaction().commit();
+
+        HttpClient client = HttpClientBuilder.create().build();
+        for(VirtualCollection vc : collections) {
+            if(vc.isPublicLeaf()) {
+                for(PersistentIdentifier latestPid : vc.getLatestIdentifiers()) {
+                    if(latestPid.getType() != PersistentIdentifier.Type.DUMMY) {
+                        try {
+                            HttpHead request = new HttpHead(latestPid.getActionableURI());
+                            HttpResponse response = client.execute(request);
+                            String pidUrl = response.getFirstHeader("Location").getValue();
+                            String latestVersionUrl = permaLinkService.getCollectionUrl(vc);
+
+                            if(!pidUrl.equalsIgnoreCase(latestVersionUrl)) {
+                                try {
+                                    pidProviderService.updateLatestIdentifierUrl(latestPid, latestVersionUrl);
+                                } catch(VirtualCollectionRegistryException ex) {
+                                    logger.error("Failed to update latest version pid ("+latestPid.getActionableURI()+") url to "+latestVersionUrl);
+                                }
+                            }
+                        } catch (IOException ex) {
+                            logger.info("Http request failed", ex);
+                        }
+                    }
+                }
+            }
+        }
+    }
+
     /*
      * delayed purging of deleted virtual collections
      *

@@ -96,7 +96,7 @@ public class DoiPersistentIdentifierProvider implements PersistentIdentifierProv
      }
 
     @Override
-    public void updateIdentifier(String pid, URI target) throws VirtualCollectionRegistryException {
+    public void updateIdentifier(PersistentIdentifier pid, URI target) throws VirtualCollectionRegistryException {
         throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
     }
 

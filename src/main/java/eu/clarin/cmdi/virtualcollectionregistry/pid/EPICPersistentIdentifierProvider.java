@@ -59,7 +59,11 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
     public String getId() {
         return id;
     }
-    
+
+    private String generatePidValue(Long id, String suffix) {
+        return String.format("%s%d%s", getInfix(), id, suffix);
+    }
+
     @Override
     public PersistentIdentifier createIdentifier(VirtualCollection vc, PermaLinkService permaLinkService) throws VirtualCollectionRegistryException {
         return createIdentifier(vc, "", permaLinkService);
@@ -71,7 +75,7 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
         logger.debug("creating handle for virtual collection \"{}\"", vc.getId());
         final Map<HandleField, String> fieldMap = createPIDFieldMap(vc, permaLinkService);
         try {
-            final String requestedPid = String.format("%s%d%s", getInfix(), vc.getId(), suffix);
+            final String requestedPid = generatePidValue(vc.getId(), suffix);
             final String pid = pidWriter.registerNewPID(configuration, fieldMap, requestedPid);
             return new PersistentIdentifier(vc, PersistentIdentifier.Type.HANDLE, primary, pid);
         } catch (HttpException ex) {
@@ -91,8 +95,12 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
     }
 
     @Override
-    public void updateIdentifier(String pid, URI target) throws VirtualCollectionRegistryException {
+    public void updateIdentifier(PersistentIdentifier pid, URI target) throws VirtualCollectionRegistryException {
+
         throw new UnsupportedOperationException("Not supported yet.");
+
+
+
     }
 
     @Override

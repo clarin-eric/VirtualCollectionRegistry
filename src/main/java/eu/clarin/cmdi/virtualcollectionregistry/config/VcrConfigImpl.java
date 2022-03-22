@@ -55,7 +55,7 @@ public class VcrConfigImpl implements VcrConfig {
     @Value("${eu.clarin.cmdi.vcr.process.popup:true}")
     private boolean processPopup;
 
-    @Value("${eu.clarin.cmdi.vcr.download.endpoint:https://weblicht.sfs.uni-tuebingen.de/CMDIExplorer/input/#/vcr}")
+    @Value("${eu.clarin.cmdi.vcr.download.endpoint:https://weblicht.sfs.uni-tuebingen.de/CMDIExplorer/#/vcr}")
     private String downloadEndpoint;
 
     @Value("${eu.clarin.cmdi.vcr.download.prefered_pid_type:HDL}")
