@@ -507,22 +507,24 @@ public class ReferencesEditor extends ComposedField {
                     logger.error("", ex);
                 }
                 
-                synchronized(this){
-                    for(ReferenceJob job : references) {
-                        if(job.getState() == State.INITIALIZED) {
-                            job.setState(State.ANALYZING);
-                            logger.debug("Starting. Job ref={}, state = {}",job.getReference().getRef(), job.getState());
+                synchronized(this) {
+                    for(int i = 0; i < references.size(); i++) {
+                    //for(ReferenceJob job : references) {
+                        //references.get(i)
+                        if(references.get(i).getState() == State.INITIALIZED) {
+                            references.get(i).setState(State.ANALYZING);
+                            logger.debug("Starting. Job ref={}, state = {}",references.get(i).getReference().getRef(), references.get(i).getState());
                             //fireEvent(new DataUpdatedEvent(null));
                             try {
-                                analyze(job);
-                                job.setState(State.DONE);
+                                analyze(references.get(i));
+                                references.get(i).setState(State.DONE);
                                 //fireEvent(new DataUpdatedEvent(null));
                             } catch(Exception ex) {
-                                job.setState(State.FAILED);
+                                references.get(i).setState(State.FAILED);
 
                                 //fireEvent(new DataUpdatedEvent(null));
                             }
-                            logger.debug("Finishes. Job state = "+job.getState());
+                            logger.debug("Finished.  Job ref={}, state = {}",references.get(i).getReference().getRef(), references.get(i).getState());
                         }
                     }
                 }
