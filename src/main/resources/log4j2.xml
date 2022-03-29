@@ -29,8 +29,11 @@
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.AdminUsersServiceImpl" level="WARN" />
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.ServletUtils" level="WARN" />
 
+        <Logger name="de.mpg.aai.shhaa" level="INFO" />
+        <!--
         <Logger name="de.mpg.aai.shhaa.authn" level="INFO" />
         <Logger name="de.mpg.aai.shhaa.resolver" level="INFO" />
+        -->
 
         <Logger name="org.jboss" level="WARN" />
         <Logger name="org.glassfish.jersey" level="WARN" />

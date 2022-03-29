@@ -363,11 +363,16 @@ public class ReferencesEditor extends ComposedField{
                 return false;
             }
 
-            if(worker == null || !worker.isRunning()) {
+            if(worker == null) {
                 worker = new Worker();
+            }
+
+            if( !worker.isRunning()) {
                 worker.start();
                 new Thread(worker).start();
-                logger.trace("Worker thread started");
+                logger.debug("Reference validation worker thread started");
+            } else {
+                logger.debug("Reference validation worker thread already running");
             }
 
             fireEvent(new DataUpdatedEvent(target));
@@ -424,11 +429,16 @@ public class ReferencesEditor extends ComposedField{
         lblNoReferences.setVisible(references.isEmpty());
         listview.setVisible(!references.isEmpty());
 
-        if(worker == null || !worker.isRunning()) {
+        if(worker == null) {
             worker = new Worker();
+        }
+
+         if(!worker.isRunning()) {
             worker.start();
             new Thread(worker).start();
-            logger.trace("Worker thread started");
+            logger.trace("Reference validation worker thread started");
+        } else {
+            logger.debug("Reference validation worker thread already running");
         }
     }
     
@@ -473,7 +483,7 @@ public class ReferencesEditor extends ComposedField{
         
         public Worker() {}
         
-        public void start() {
+        public synchronized void start() {
             this.running = true;
         }
         
@@ -511,11 +521,11 @@ public class ReferencesEditor extends ComposedField{
                     }
                 }
             }
-            logger.trace("Worker thread finished");
+            logger.trace("Reference Validation worker thread finished");
         }
 
         private void analyze(final ReferenceJob job) throws IOException {
-            logger.trace("Analyzing: {}", job.getReference().getRef());
+            logger.debug("Analyzing: {}", job.getReference().getRef());
             
             CloseableHttpClient httpclient = HttpClients.createDefault();
             try {
@@ -583,12 +593,6 @@ public class ReferencesEditor extends ComposedField{
             } finally {
                 httpclient.close();
             }
-        
-            try {
-                    Thread.sleep(1000);
-                } catch(InterruptedException ex) {
-                    logger.error("", ex);
-                }
         }
     }
 
@@ -728,8 +732,6 @@ public class ReferencesEditor extends ComposedField{
                 idx = i;
             }
         }
-
-        logger.info("direction={}, idx={}", direction, idx);
 
         //Abort if the collection was not found
         if(idx == -1) {
