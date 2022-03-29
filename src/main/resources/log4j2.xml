@@ -23,7 +23,7 @@
     <Loggers>
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry" level="DEBUG" />
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui" level="INFO" />
-        <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2" level="TRACE" />
+        <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2" level="DEBUG" />
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth" level="INFO" />
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui.CharacterEncodingFilter" level="INFO" />
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryMaintenanceImpl" level="INFO" />

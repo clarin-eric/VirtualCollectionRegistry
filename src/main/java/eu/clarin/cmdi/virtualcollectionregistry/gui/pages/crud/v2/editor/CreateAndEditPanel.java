@@ -469,7 +469,6 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     }
 
     private boolean validate() {
-        logger.debug("Validating collection");
         boolean valid = true;
         for(Field f : fields) {
             if(!f.validate()) {

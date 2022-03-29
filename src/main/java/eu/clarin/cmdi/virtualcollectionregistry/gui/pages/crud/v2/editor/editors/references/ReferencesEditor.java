@@ -71,6 +71,7 @@ public class ReferencesEditor extends ComposedField {
     private static Logger logger = LoggerFactory.getLogger(ReferencesEditor.class);
     
     private final List<ReferenceJob> references = new CopyOnWriteArrayList<>();
+
     private IModel<String> data = new Model<>();
     private IModel<String> mdlReferenceTitle = new Model<>();
     
@@ -201,6 +202,7 @@ public class ReferencesEditor extends ComposedField {
             @Override
             protected void populateItem(ListItem item) {
                 ReferenceJob ref = (ReferenceJob)item.getModel().getObject();
+                logger.debug("List ref={}, state={}",  ref.getReference().getRef(), ref.getState());
                 ReferencePanel c = new ReferencePanel("pnl_reference", ref, advancedEditorMode, getMaxDisplayOrder());
                 c.addMoveListEventHandler(new MoveListEventHandler() {
                     @Override
@@ -280,7 +282,7 @@ public class ReferencesEditor extends ComposedField {
             protected void onTimer(AjaxRequestTarget target) {
                 //validate(); //make sure this validation is up to date before re rendering the component
                 if(target != null) {
-                    target.add(componentToUpdate);
+                    target.add(ajaxWrapper);
                 }
                 fireEvent(new CustomDataUpdateEvent(target));
             }
@@ -509,6 +511,7 @@ public class ReferencesEditor extends ComposedField {
                     for(ReferenceJob job : references) {
                         if(job.getState() == State.INITIALIZED) {
                             job.setState(State.ANALYZING);
+                            logger.debug("Starting. Job ref={}, state = {}",job.getReference().getRef(), job.getState());
                             //fireEvent(new DataUpdatedEvent(null));
                             try {
                                 analyze(job);
@@ -516,13 +519,15 @@ public class ReferencesEditor extends ComposedField {
                                 //fireEvent(new DataUpdatedEvent(null));
                             } catch(Exception ex) {
                                 job.setState(State.FAILED);
+
                                 //fireEvent(new DataUpdatedEvent(null));
-                            }   
+                            }
+                            logger.debug("Finishes. Job state = "+job.getState());
                         }
                     }
                 }
             }
-            logger.trace("Reference Validation worker thread finished");
+            logger.debug("Reference Validation worker thread finished");
         }
 
         private void analyze(final ReferenceJob job) throws IOException {
