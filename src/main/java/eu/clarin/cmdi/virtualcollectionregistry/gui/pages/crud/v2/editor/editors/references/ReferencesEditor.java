@@ -331,7 +331,13 @@ public class ReferencesEditor extends ComposedField {
             super(target);
         }
     }
-    
+
+    @Override
+    public void onBeforeRender() {
+        super.onBeforeRender();
+        listview.setModelObject(references);
+    }
+
     @Override
     protected void onRemove() {
         logger.info("Removing Reference editor");
