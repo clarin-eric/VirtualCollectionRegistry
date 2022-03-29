@@ -67,7 +67,7 @@ import org.xml.sax.SAXException;
  *
  * @author wilelb
  */
-public class ReferencesEditor extends ComposedField{
+public class ReferencesEditor extends ComposedField {
     private static Logger logger = LoggerFactory.getLogger(ReferencesEditor.class);
     
     private final List<ReferenceJob> references = new CopyOnWriteArrayList<>();
@@ -280,7 +280,7 @@ public class ReferencesEditor extends ComposedField{
             protected void onTimer(AjaxRequestTarget target) {
                 //validate(); //make sure this validation is up to date before re rendering the component
                 if(target != null) {
-                    target.add(ajaxWrapper);
+                    target.add(componentToUpdate);
                 }
                 fireEvent(new CustomDataUpdateEvent(target));
             }
