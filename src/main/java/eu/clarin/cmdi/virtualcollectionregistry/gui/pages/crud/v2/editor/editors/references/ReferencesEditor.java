@@ -70,7 +70,7 @@ import org.xml.sax.SAXException;
 public class ReferencesEditor extends ComposedField {
     private static Logger logger = LoggerFactory.getLogger(ReferencesEditor.class);
     
-    private final List<ReferenceJob> references = new CopyOnWriteArrayList<>();
+    private final List<ReferenceJob> references = Collections.synchronizedList(new ArrayList<ReferenceJob>());//new CopyOnWriteArrayList<>();
 
     private IModel<String> data = new Model<>();
     private IModel<String> mdlReferenceTitle = new Model<>();
