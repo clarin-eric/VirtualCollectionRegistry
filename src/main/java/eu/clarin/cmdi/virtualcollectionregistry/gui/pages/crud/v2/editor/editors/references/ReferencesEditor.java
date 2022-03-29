@@ -281,6 +281,12 @@ public class ReferencesEditor extends ComposedField {
             @Override
             protected void onTimer(AjaxRequestTarget target) {
                 //validate(); //make sure this validation is up to date before re rendering the component
+                listview.setModelObject(references);
+                logger.info("Timer update:");
+                for(ReferenceJob job : references) {
+                    logger.info("       job ref={}, state={}", job.getReference().getRef(), job.state);
+                }
+
                 if(target != null) {
                     target.add(ajaxWrapper);
                 }
@@ -335,10 +341,12 @@ public class ReferencesEditor extends ComposedField {
     @Override
     public void onBeforeRender() {
         super.onBeforeRender();
+        /*
         listview.setModelObject(references);
         for(ReferenceJob job : references) {
             logger.info("onBeforeRender job ref={}, state={}", job.getReference().getRef(), job.state);
         }
+        */
     }
 
     @Override
@@ -537,7 +545,7 @@ public class ReferencesEditor extends ComposedField {
                             } catch(Exception ex) {
                                 job.setState(State.FAILED);
                                 references.set(i, job);
-                                
+
                                 //fireEvent(new DataUpdatedEvent(null));
                             }
                             logger.debug("Finished.  Job ref={}, state = {}",references.get(i).getReference().getRef(), references.get(i).getState());
