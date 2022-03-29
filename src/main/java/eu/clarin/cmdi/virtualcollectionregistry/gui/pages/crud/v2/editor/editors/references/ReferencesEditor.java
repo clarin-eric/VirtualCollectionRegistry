@@ -336,6 +336,9 @@ public class ReferencesEditor extends ComposedField {
     public void onBeforeRender() {
         super.onBeforeRender();
         listview.setModelObject(references);
+        for(ReferenceJob job : references) {
+            logger.info("onBeforeRender job ref={}, state={}", job.getReference().getRef(), job.state);
+        }
     }
 
     @Override
@@ -515,19 +518,26 @@ public class ReferencesEditor extends ComposedField {
                 
                 synchronized(this) {
                     for(int i = 0; i < references.size(); i++) {
+                        ReferenceJob job = references.get(i);
                     //for(ReferenceJob job : references) {
                         //references.get(i)
-                        if(references.get(i).getState() == State.INITIALIZED) {
-                            references.get(i).setState(State.ANALYZING);
+                        if(job.getState() == State.INITIALIZED) {
+                            job.setState(State.ANALYZING);
+                            references.set(i, job);
+
                             logger.debug("Starting. Job ref={}, state = {}",references.get(i).getReference().getRef(), references.get(i).getState());
                             //fireEvent(new DataUpdatedEvent(null));
                             try {
-                                analyze(references.get(i));
-                                references.get(i).setState(State.DONE);
+                                analyze(job);
+
+                                job.setState(State.DONE);
+                                references.set(i, job);
+
                                 //fireEvent(new DataUpdatedEvent(null));
                             } catch(Exception ex) {
-                                references.get(i).setState(State.FAILED);
-
+                                job.setState(State.FAILED);
+                                references.set(i, job);
+                                
                                 //fireEvent(new DataUpdatedEvent(null));
                             }
                             logger.debug("Finished.  Job ref={}, state = {}",references.get(i).getReference().getRef(), references.get(i).getState());
