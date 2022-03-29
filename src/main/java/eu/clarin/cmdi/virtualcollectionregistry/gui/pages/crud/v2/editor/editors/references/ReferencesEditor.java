@@ -77,7 +77,7 @@ public class ReferencesEditor extends ComposedField{
     final Label lblNoReferences;
     final ListView listview;
     
-    private transient Worker worker = new Worker();
+    private final transient Worker worker = new Worker();
     
     private int edit_index = -1;
     
@@ -362,11 +362,11 @@ public class ReferencesEditor extends ComposedField{
                 fireEvent(new DataUpdatedEvent(target)); //Is this required?
                 return false;
             }
-
+/*
             if(worker == null) {
                 worker = new Worker();
             }
-
+*/
             if( !worker.isRunning()) {
                 worker.start();
                 new Thread(worker).start();
@@ -422,23 +422,23 @@ public class ReferencesEditor extends ComposedField{
     }
     
     public void setData(List<Resource> data) {
-        logger.trace("Set resource data: {} reference", data.size());
+        logger.info("Set resource data: {} reference(s)", data.size());
         for(Resource r : data) {
             this.references.add(new ReferenceJob(r));
         }
         lblNoReferences.setVisible(references.isEmpty());
         listview.setVisible(!references.isEmpty());
-
+/*
         if(worker == null) {
             worker = new Worker();
         }
-
+*/
          if(!worker.isRunning()) {
             worker.start();
             new Thread(worker).start();
-            logger.trace("Reference validation worker thread started");
+            logger.info("Reference validation worker thread started");
         } else {
-            logger.debug("Reference validation worker thread already running");
+            logger.info("Reference validation worker thread already running");
         }
     }
     
@@ -497,6 +497,7 @@ public class ReferencesEditor extends ComposedField{
         
         @Override
         public void run() {
+            running = true;
             while(running) {
                 try {
                     Thread.sleep(workerSleepTime);
