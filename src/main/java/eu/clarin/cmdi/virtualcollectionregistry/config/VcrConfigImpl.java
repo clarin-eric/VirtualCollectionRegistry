@@ -67,6 +67,9 @@ public class VcrConfigImpl implements VcrConfig {
     @Value("${eu.clarin.cmdi.vcr.forking.enabled:false}")
     private boolean forkingEnabled;
 
+    @Value("${eu.clarin.cmdi.vcr.reference_scanning.enabled:false}")
+    private boolean referenceScanningEnabled;
+
     private String getEndpointWithoutTrailingSlash(String endpoint) {
         if(endpoint == null) {
             return null;
@@ -143,6 +146,11 @@ public class VcrConfigImpl implements VcrConfig {
     }
 
     @Override
+    public boolean isHttpReferenceScanningEnabled() {
+        return referenceScanningEnabled;
+    }
+
+    @Override
     public void logConfig() {
         logger.info("Configuration:");
         logger.info("  logoutMode:           {}", logoutMode);
@@ -154,5 +162,9 @@ public class VcrConfigImpl implements VcrConfig {
         logger.info("  Download integration:");
         logger.info("    downloadEndpoint:   {}", downloadEndpoint);
         logger.info("    downloadEnable:     {}", downloadEnable);
+        logger.info("  Reference scanning:   {}", referenceScanningEnabled);
+        if(referenceScanningEnabled) {
+        //    logger.info("    downloadEnable:     {}", downloadEnable);
+        }
     }
 }

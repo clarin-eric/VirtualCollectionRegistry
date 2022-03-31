@@ -534,3 +534,253 @@
 2022-03-22 09:56:12,410 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:187] - Resource input: https://www.clarin.eu/resource/1
 2022-03-22 09:56:12,410 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:200] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
  at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-03-29 11:21:23,385 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@58f174d9
+2022-03-29 11:21:23,402 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:78] - Initialising VCR web application
+2022-03-29 11:21:23,403 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:147] - Configuration:
+2022-03-29 11:21:23,403 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:148] -   logoutMode:           null
+2022-03-29 11:21:23,403 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:149] -   logoutEnabled:        false
+2022-03-29 11:21:23,403 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:150] -   locale:               null
+2022-03-29 11:21:23,403 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:151] -   Process integration:
+2022-03-29 11:21:23,403 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:152] -     processEndpoint:    null
+2022-03-29 11:21:23,403 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:153] -     processEnable:      null
+2022-03-29 11:21:23,404 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:154] -   Download integration:
+2022-03-29 11:21:23,404 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:155] -     downloadEndpoint:   null
+2022-03-29 11:21:23,404 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:156] -     downloadEnable:     null
+2022-03-29 11:21:23,404 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:93] - Web application configured for development
+2022-03-29 11:21:23,429 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:134] - No locale string available
+2022-03-29 11:21:23,446 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.pid.EPICPersistentIdentifierProvider#createIdentifier:65] - creating handle for virtual collection "123"
+2022-03-29 11:21:23,456 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@3af356f
+2022-03-29 11:21:23,458 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:78] - Initialising VCR web application
+2022-03-29 11:21:23,458 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:147] - Configuration:
+2022-03-29 11:21:23,458 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:148] -   logoutMode:           null
+2022-03-29 11:21:23,459 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:149] -   logoutEnabled:        false
+2022-03-29 11:21:23,459 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:150] -   locale:               null
+2022-03-29 11:21:23,459 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:151] -   Process integration:
+2022-03-29 11:21:23,459 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:152] -     processEndpoint:    null
+2022-03-29 11:21:23,459 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:153] -     processEnable:      null
+2022-03-29 11:21:23,459 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:154] -   Download integration:
+2022-03-29 11:21:23,460 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:155] -     downloadEndpoint:   null
+2022-03-29 11:21:23,460 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:156] -     downloadEnable:     null
+2022-03-29 11:21:23,460 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:93] - Web application configured for development
+2022-03-29 11:21:23,461 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:134] - No locale string available
+2022-03-29 11:21:23,507 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:45] - Json={"data":{"type":"dois","attributes":{"event":"publish","prefix":"10.5438","url":"http://vcr/service/virtualcollections/1","creators":[{"nameType":"Personal","givenName":" Person","familyName":"Test","affiliation":[{"name":"Test Org"}]}],"titles":[{"title":"Test VC éë"}],"publisher":"CLARIN","publicationYear":"2022","types":{"resourceType":"Virtual Collection","resourceTypeGeneral":"Collection"}}}}
+2022-03-29 11:21:23,512 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:48] - entity content type=Content-Type: text/plain; charset=UTF-8
+2022-03-29 11:21:23,517 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel#getActionableUri:74] - Failed to make actionable URI for unkown PID type: Something else
+2022-03-29 11:21:23,520 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-03-29 11:21:23,725 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-03-29 11:21:23,736 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-03-29 11:21:23,934 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:61] - Constructing CMDI structure
+2022-03-29 11:21:23,934 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDICreatorImpl#createMetadataStructure:86] - Creating CMD root
+2022-03-29 11:21:23,940 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:64] - Marshalling CMD
+2022-03-29 11:21:24,937 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:187] - Resource input: https://www.clarin.eu/metedata/1
+2022-03-29 11:21:24,941 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:200] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-03-29 11:21:24,941 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:187] - Resource input: https://www.clarin.eu/resource/1
+2022-03-29 11:21:24,941 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:200] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-03-29 11:21:24,948 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:187] - Resource input: https://www.clarin.eu/metedata/1
+2022-03-29 11:21:24,949 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:200] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-03-29 11:21:24,949 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:187] - Resource input: https://www.clarin.eu/resource/1
+2022-03-29 11:21:24,949 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:200] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-03-29 11:23:32,518 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@58f174d9
+2022-03-29 11:23:32,535 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:78] - Initialising VCR web application
+2022-03-29 11:23:32,535 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:147] - Configuration:
+2022-03-29 11:23:32,535 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:148] -   logoutMode:           null
+2022-03-29 11:23:32,536 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:149] -   logoutEnabled:        false
+2022-03-29 11:23:32,536 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:150] -   locale:               null
+2022-03-29 11:23:32,536 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:151] -   Process integration:
+2022-03-29 11:23:32,536 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:152] -     processEndpoint:    null
+2022-03-29 11:23:32,536 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:153] -     processEnable:      null
+2022-03-29 11:23:32,536 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:154] -   Download integration:
+2022-03-29 11:23:32,536 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:155] -     downloadEndpoint:   null
+2022-03-29 11:23:32,536 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:156] -     downloadEnable:     null
+2022-03-29 11:23:32,537 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:93] - Web application configured for development
+2022-03-29 11:23:32,561 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:134] - No locale string available
+2022-03-29 11:23:32,582 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.pid.EPICPersistentIdentifierProvider#createIdentifier:65] - creating handle for virtual collection "123"
+2022-03-29 11:23:32,592 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@3af356f
+2022-03-29 11:23:32,593 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:78] - Initialising VCR web application
+2022-03-29 11:23:32,593 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:147] - Configuration:
+2022-03-29 11:23:32,593 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:148] -   logoutMode:           null
+2022-03-29 11:23:32,593 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:149] -   logoutEnabled:        false
+2022-03-29 11:23:32,594 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:150] -   locale:               null
+2022-03-29 11:23:32,594 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:151] -   Process integration:
+2022-03-29 11:23:32,594 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:152] -     processEndpoint:    null
+2022-03-29 11:23:32,594 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:153] -     processEnable:      null
+2022-03-29 11:23:32,594 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:154] -   Download integration:
+2022-03-29 11:23:32,594 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:155] -     downloadEndpoint:   null
+2022-03-29 11:23:32,594 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:156] -     downloadEnable:     null
+2022-03-29 11:23:32,595 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:93] - Web application configured for development
+2022-03-29 11:23:32,595 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:134] - No locale string available
+2022-03-29 11:23:32,641 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:45] - Json={"data":{"type":"dois","attributes":{"event":"publish","prefix":"10.5438","url":"http://vcr/service/virtualcollections/1","creators":[{"nameType":"Personal","givenName":" Person","familyName":"Test","affiliation":[{"name":"Test Org"}]}],"titles":[{"title":"Test VC éë"}],"publisher":"CLARIN","publicationYear":"2022","types":{"resourceType":"Virtual Collection","resourceTypeGeneral":"Collection"}}}}
+2022-03-29 11:23:32,646 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:48] - entity content type=Content-Type: text/plain; charset=UTF-8
+2022-03-29 11:23:32,651 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel#getActionableUri:74] - Failed to make actionable URI for unkown PID type: Something else
+2022-03-29 11:23:32,653 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-03-29 11:23:32,874 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-03-29 11:23:32,885 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-03-29 11:23:33,113 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:61] - Constructing CMDI structure
+2022-03-29 11:23:33,113 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDICreatorImpl#createMetadataStructure:86] - Creating CMD root
+2022-03-29 11:23:33,119 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:64] - Marshalling CMD
+2022-03-29 11:23:33,976 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:187] - Resource input: https://www.clarin.eu/metedata/1
+2022-03-29 11:23:33,981 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:200] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-03-29 11:23:33,981 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:187] - Resource input: https://www.clarin.eu/resource/1
+2022-03-29 11:23:33,981 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:200] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-03-29 11:23:33,989 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:187] - Resource input: https://www.clarin.eu/metedata/1
+2022-03-29 11:23:33,990 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:200] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-03-29 11:23:33,990 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:187] - Resource input: https://www.clarin.eu/resource/1
+2022-03-29 11:23:33,990 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:200] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-03-29 11:45:41,962 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@58f174d9
+2022-03-29 11:45:41,980 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:78] - Initialising VCR web application
+2022-03-29 11:45:41,980 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:147] - Configuration:
+2022-03-29 11:45:41,981 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:148] -   logoutMode:           null
+2022-03-29 11:45:41,981 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:149] -   logoutEnabled:        false
+2022-03-29 11:45:41,981 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:150] -   locale:               null
+2022-03-29 11:45:41,981 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:151] -   Process integration:
+2022-03-29 11:45:41,981 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:152] -     processEndpoint:    null
+2022-03-29 11:45:41,981 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:153] -     processEnable:      null
+2022-03-29 11:45:41,981 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:154] -   Download integration:
+2022-03-29 11:45:41,981 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:155] -     downloadEndpoint:   null
+2022-03-29 11:45:41,982 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:156] -     downloadEnable:     null
+2022-03-29 11:45:41,982 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:93] - Web application configured for development
+2022-03-29 11:45:42,004 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:134] - No locale string available
+2022-03-29 11:45:42,022 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.pid.EPICPersistentIdentifierProvider#createIdentifier:65] - creating handle for virtual collection "123"
+2022-03-29 11:45:42,030 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@3af356f
+2022-03-29 11:45:42,031 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:78] - Initialising VCR web application
+2022-03-29 11:45:42,031 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:147] - Configuration:
+2022-03-29 11:45:42,031 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:148] -   logoutMode:           null
+2022-03-29 11:45:42,031 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:149] -   logoutEnabled:        false
+2022-03-29 11:45:42,031 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:150] -   locale:               null
+2022-03-29 11:45:42,031 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:151] -   Process integration:
+2022-03-29 11:45:42,031 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:152] -     processEndpoint:    null
+2022-03-29 11:45:42,032 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:153] -     processEnable:      null
+2022-03-29 11:45:42,032 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:154] -   Download integration:
+2022-03-29 11:45:42,032 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:155] -     downloadEndpoint:   null
+2022-03-29 11:45:42,032 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:156] -     downloadEnable:     null
+2022-03-29 11:45:42,032 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:93] - Web application configured for development
+2022-03-29 11:45:42,032 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:134] - No locale string available
+2022-03-29 11:45:42,082 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:45] - Json={"data":{"type":"dois","attributes":{"event":"publish","prefix":"10.5438","url":"http://vcr/service/virtualcollections/1","creators":[{"nameType":"Personal","givenName":" Person","familyName":"Test","affiliation":[{"name":"Test Org"}]}],"titles":[{"title":"Test VC éë"}],"publisher":"CLARIN","publicationYear":"2022","types":{"resourceType":"Virtual Collection","resourceTypeGeneral":"Collection"}}}}
+2022-03-29 11:45:42,085 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:48] - entity content type=Content-Type: text/plain; charset=UTF-8
+2022-03-29 11:45:42,090 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel#getActionableUri:74] - Failed to make actionable URI for unkown PID type: Something else
+2022-03-29 11:45:42,093 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-03-29 11:45:42,305 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-03-29 11:45:42,313 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-03-29 11:45:42,534 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:61] - Constructing CMDI structure
+2022-03-29 11:45:42,534 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDICreatorImpl#createMetadataStructure:86] - Creating CMD root
+2022-03-29 11:45:42,540 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:64] - Marshalling CMD
+2022-03-29 11:45:43,386 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:187] - Resource input: https://www.clarin.eu/metedata/1
+2022-03-29 11:45:43,397 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:200] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-03-29 11:45:43,397 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:187] - Resource input: https://www.clarin.eu/resource/1
+2022-03-29 11:45:43,397 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:200] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-03-29 11:45:43,413 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:187] - Resource input: https://www.clarin.eu/metedata/1
+2022-03-29 11:45:43,413 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:200] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-03-29 11:45:43,413 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:187] - Resource input: https://www.clarin.eu/resource/1
+2022-03-29 11:45:43,414 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:200] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-03-29 12:18:02,365 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@58f174d9
+2022-03-29 12:18:02,381 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:78] - Initialising VCR web application
+2022-03-29 12:18:02,382 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:147] - Configuration:
+2022-03-29 12:18:02,382 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:148] -   logoutMode:           null
+2022-03-29 12:18:02,382 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:149] -   logoutEnabled:        false
+2022-03-29 12:18:02,382 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:150] -   locale:               null
+2022-03-29 12:18:02,382 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:151] -   Process integration:
+2022-03-29 12:18:02,382 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:152] -     processEndpoint:    null
+2022-03-29 12:18:02,382 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:153] -     processEnable:      null
+2022-03-29 12:18:02,382 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:154] -   Download integration:
+2022-03-29 12:18:02,383 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:155] -     downloadEndpoint:   null
+2022-03-29 12:18:02,383 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:156] -     downloadEnable:     null
+2022-03-29 12:18:02,383 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:93] - Web application configured for development
+2022-03-29 12:18:02,405 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:134] - No locale string available
+2022-03-29 12:18:02,421 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.pid.EPICPersistentIdentifierProvider#createIdentifier:65] - creating handle for virtual collection "123"
+2022-03-29 12:18:02,429 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@3af356f
+2022-03-29 12:18:02,429 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:78] - Initialising VCR web application
+2022-03-29 12:18:02,430 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:147] - Configuration:
+2022-03-29 12:18:02,430 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:148] -   logoutMode:           null
+2022-03-29 12:18:02,430 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:149] -   logoutEnabled:        false
+2022-03-29 12:18:02,430 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:150] -   locale:               null
+2022-03-29 12:18:02,430 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:151] -   Process integration:
+2022-03-29 12:18:02,430 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:152] -     processEndpoint:    null
+2022-03-29 12:18:02,430 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:153] -     processEnable:      null
+2022-03-29 12:18:02,430 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:154] -   Download integration:
+2022-03-29 12:18:02,430 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:155] -     downloadEndpoint:   null
+2022-03-29 12:18:02,431 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:156] -     downloadEnable:     null
+2022-03-29 12:18:02,431 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:93] - Web application configured for development
+2022-03-29 12:18:02,431 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:134] - No locale string available
+2022-03-29 12:18:02,473 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:45] - Json={"data":{"type":"dois","attributes":{"event":"publish","prefix":"10.5438","url":"http://vcr/service/virtualcollections/1","creators":[{"nameType":"Personal","givenName":" Person","familyName":"Test","affiliation":[{"name":"Test Org"}]}],"titles":[{"title":"Test VC éë"}],"publisher":"CLARIN","publicationYear":"2022","types":{"resourceType":"Virtual Collection","resourceTypeGeneral":"Collection"}}}}
+2022-03-29 12:18:02,476 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:48] - entity content type=Content-Type: text/plain; charset=UTF-8
+2022-03-29 12:18:02,480 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel#getActionableUri:74] - Failed to make actionable URI for unkown PID type: Something else
+2022-03-29 12:18:02,483 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-03-29 12:18:02,681 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-03-29 12:18:02,697 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-03-29 12:18:02,903 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:61] - Constructing CMDI structure
+2022-03-29 12:18:02,903 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDICreatorImpl#createMetadataStructure:86] - Creating CMD root
+2022-03-29 12:18:02,911 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:64] - Marshalling CMD
+2022-03-29 12:18:03,799 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:187] - Resource input: https://www.clarin.eu/metedata/1
+2022-03-29 12:18:03,805 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:200] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-03-29 12:18:03,805 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:187] - Resource input: https://www.clarin.eu/resource/1
+2022-03-29 12:18:03,805 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:200] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-03-29 12:18:03,813 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:187] - Resource input: https://www.clarin.eu/metedata/1
+2022-03-29 12:18:03,813 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:200] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-03-29 12:18:03,813 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:187] - Resource input: https://www.clarin.eu/resource/1
+2022-03-29 12:18:03,813 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:200] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-03-29 12:26:06,615 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@58f174d9
+2022-03-29 12:26:06,633 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:78] - Initialising VCR web application
+2022-03-29 12:26:06,633 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:147] - Configuration:
+2022-03-29 12:26:06,633 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:148] -   logoutMode:           null
+2022-03-29 12:26:06,633 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:149] -   logoutEnabled:        false
+2022-03-29 12:26:06,634 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:150] -   locale:               null
+2022-03-29 12:26:06,634 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:151] -   Process integration:
+2022-03-29 12:26:06,634 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:152] -     processEndpoint:    null
+2022-03-29 12:26:06,634 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:153] -     processEnable:      null
+2022-03-29 12:26:06,634 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:154] -   Download integration:
+2022-03-29 12:26:06,634 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:155] -     downloadEndpoint:   null
+2022-03-29 12:26:06,634 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:156] -     downloadEnable:     null
+2022-03-29 12:26:06,634 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:93] - Web application configured for development
+2022-03-29 12:26:06,657 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:134] - No locale string available
+2022-03-29 12:26:06,675 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.pid.EPICPersistentIdentifierProvider#createIdentifier:65] - creating handle for virtual collection "123"
+2022-03-29 12:26:06,682 INFO [wicket-jquery-selectors#install:59] - initialize wicket jquery selectors with given settings: de.agilecoders.wicket.jquery.settings.WicketJquerySelectorsSettings@3af356f
+2022-03-29 12:26:06,683 INFO [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:78] - Initialising VCR web application
+2022-03-29 12:26:06,683 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:147] - Configuration:
+2022-03-29 12:26:06,683 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:148] -   logoutMode:           null
+2022-03-29 12:26:06,683 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:149] -   logoutEnabled:        false
+2022-03-29 12:26:06,683 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:150] -   locale:               null
+2022-03-29 12:26:06,683 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:151] -   Process integration:
+2022-03-29 12:26:06,683 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:152] -     processEndpoint:    null
+2022-03-29 12:26:06,683 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:153] -     processEnable:      null
+2022-03-29 12:26:06,683 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:154] -   Download integration:
+2022-03-29 12:26:06,683 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:155] -     downloadEndpoint:   null
+2022-03-29 12:26:06,684 INFO [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#logConfig:156] -     downloadEnable:     null
+2022-03-29 12:26:06,684 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.Application#init:93] - Web application configured for development
+2022-03-29 12:26:06,684 WARN [eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl#getLocale:134] - No locale string available
+2022-03-29 12:26:06,734 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:45] - Json={"data":{"type":"dois","attributes":{"event":"publish","prefix":"10.5438","url":"http://vcr/service/virtualcollections/1","creators":[{"nameType":"Personal","givenName":" Person","familyName":"Test","affiliation":[{"name":"Test Org"}]}],"titles":[{"title":"Test VC éë"}],"publisher":"CLARIN","publicationYear":"2022","types":{"resourceType":"Virtual Collection","resourceTypeGeneral":"Collection"}}}}
+2022-03-29 12:26:06,738 INFO [eu.clarin.cmdi.virtualcollectionregistry.pid.DoiPersistentIdentifierProvider#testCreate:48] - entity content type=Content-Type: text/plain; charset=UTF-8
+2022-03-29 12:26:06,743 WARN [eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel#getActionableUri:74] - Failed to make actionable URI for unkown PID type: Something else
+2022-03-29 12:26:06,746 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-03-29 12:26:06,964 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-03-29 12:26:06,972 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl#<init>:63] - initializing schemas for marshaller ...
+2022-03-29 12:26:07,232 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:61] - Constructing CMDI structure
+2022-03-29 12:26:07,232 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDICreatorImpl#createMetadataStructure:86] - Creating CMD root
+2022-03-29 12:26:07,238 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionCMDIWriterImpl#writeCMDI:64] - Marshalling CMD
+2022-03-29 12:26:08,107 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:187] - Resource input: https://www.clarin.eu/metedata/1
+2022-03-29 12:26:08,113 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:200] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-03-29 12:26:08,113 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:187] - Resource input: https://www.clarin.eu/resource/1
+2022-03-29 12:26:08,113 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:200] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
+2022-03-29 12:26:08,121 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:187] - Resource input: https://www.clarin.eu/metedata/1
+2022-03-29 12:26:08,121 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:200] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/metedata/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/metedata/1
+2022-03-29 12:26:08,121 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:187] - Resource input: https://www.clarin.eu/resource/1
+2022-03-29 12:26:08,121 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder#addResource:200] - Failed to unmarshal resource json: Unrecognized token 'https': was expecting (JSON String, Number, Array, Object or token 'null', 'true' or 'false')
+ at [Source: (String)"https://www.clarin.eu/resource/1"; line: 1, column: 6], falling back to add as plain url with value=https://www.clarin.eu/resource/1
