@@ -39,4 +39,6 @@ public interface VcrConfig {
     public Locale getLocale();
     public void logConfig();
     public boolean isForkingEnabled();
+
+    public boolean isHttpReferenceScanningEnabled();
 }

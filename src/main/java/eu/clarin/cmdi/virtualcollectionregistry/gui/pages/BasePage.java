@@ -62,7 +62,7 @@ public class BasePage extends WebPage {
     private PiwikConfig piwikConfig;
     
     @SpringBean
-    private VcrConfig vcrConfig;
+    protected VcrConfig vcrConfig;
     
     public static final String BETA_MODE = "eu.clarin.cmdi.virtualcollectionregistry.beta_mode";
     

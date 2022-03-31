@@ -20,6 +20,7 @@ import javax.xml.xpath.XPathExpression;
 import javax.xml.xpath.XPathExpressionException;
 import javax.xml.xpath.XPathFactory;
 
+import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.CreateAndEditPanel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.CancelEventHandler;
@@ -70,19 +71,70 @@ import org.xml.sax.SAXException;
 public class ReferencesEditor extends ComposedField {
     private static Logger logger = LoggerFactory.getLogger(ReferencesEditor.class);
     
-    //private final List<ReferenceJob> references = Collections.synchronizedList(new ArrayList<ReferenceJob>());//new CopyOnWriteArrayList<>();
-
-    private final JobManager jobs = new JobManager();
+    private final JobManager jobs;
 
     private class JobManager implements IModel<List<ReferenceJob>>, Serializable {
+        private Logger logger = LoggerFactory.getLogger(JobManager.class);
+
         private final List<ReferenceJob> jobs = Collections.synchronizedList(new ArrayList<ReferenceJob>());
+
+        private Worker worker;
+
+        private final VcrConfig vcrConfig;
+
+        public JobManager(VcrConfig vcrConfig) {
+            this.vcrConfig = vcrConfig;
+        }
+
+        private void startWorker() {
+            if(vcrConfig.isHttpReferenceScanningEnabled()) {
+                if (worker == null) {
+                    worker = new Worker(this);
+                }
+
+                if (!worker.isRunning()) {
+                    worker.start();
+                    new Thread(worker).start();
+                    logger.debug("Reference validation worker thread started");
+                } else {
+                    logger.debug("Reference validation worker thread already running");
+                }
+            }
+        }
+
+        private void stop() {
+            if(worker != null) {
+                worker.stop();
+            }
+        }
 
         public synchronized  void add(ReferenceJob job) {
             this.jobs.add(job);
+            startWorker();
         }
 
         public synchronized void addAll(List<ReferenceJob> jobs) {
             this.jobs.addAll(jobs);
+            startWorker();
+        }
+
+        private State getResourceInitialState() {
+            if(vcrConfig.isHttpReferenceScanningEnabled()) {
+                return State.INITIALIZED;
+            }
+            return State.DONE;
+        }
+
+        public synchronized  void addResource(Resource r) {
+            this.jobs.add(new ReferenceJob(r, getResourceInitialState()));
+            startWorker();
+        }
+
+        public synchronized void addAllResources(List<Resource> resources) {
+            for(Resource r : resources) {
+                jobs.add(new ReferenceJob(r, getResourceInitialState()));
+            }
+            startWorker();
         }
 
         public List<ReferenceJob> getJobs() {
@@ -91,6 +143,7 @@ public class ReferencesEditor extends ComposedField {
 
         public synchronized void updateJobState(int index, State state) {
             jobs.get(index).setState(state);
+            logger.trace("job idx={}, ref={}, state={}", index, jobs.get(index).getReference().getRef(), jobs.get(index).getState());
         }
 
         public boolean isEmpty() {
@@ -120,6 +173,11 @@ public class ReferencesEditor extends ComposedField {
 
         @Override
         public List<ReferenceJob> getObject() {
+            logger.trace("getObject (size={})", jobs.size());
+            for(int i = 0; i < jobs.size(); i++) {
+                ReferenceJob job = jobs.get(i);
+                logger.trace("     job idx={}, ref={}, state={}", i, job.getReference().getRef(), job.getState());
+            }
             return getJobs();
         }
 
@@ -138,9 +196,7 @@ public class ReferencesEditor extends ComposedField {
     
     final Label lblNoReferences;
     final ListView listview;
-    
-    private Worker worker;// = new Worker();
-    
+
     private int edit_index = -1;
     
     private final ReferenceEditor editor;
@@ -188,8 +244,9 @@ public class ReferencesEditor extends ComposedField {
         }
     }
     
-    public ReferencesEditor(String id, String label, Model<Boolean> advancedEditorMode, VisabilityUpdater updater) {
+    public ReferencesEditor(String id, String label, Model<Boolean> advancedEditorMode, VisabilityUpdater updater, VcrConfig vcrConfig) {
         super(id, "References", null, updater);
+        this.jobs = new JobManager(vcrConfig);
         setOutputMarkupId(true);
         Component componentToUpdate = this;
 
@@ -263,7 +320,7 @@ public class ReferencesEditor extends ComposedField {
             @Override
             protected void populateItem(ListItem item) {
                 ReferenceJob ref = (ReferenceJob)item.getModel().getObject();
-                logger.debug("List ref={}, state={}",  ref.getReference().getRef(), ref.getState());
+                logger.trace("List ref={}, state={}",  ref.getReference().getRef(), ref.getState());
                 ReferencePanel c = new ReferencePanel("pnl_reference", ref, advancedEditorMode, getMaxDisplayOrder());
                 c.addMoveListEventHandler(new MoveListEventHandler() {
                     @Override
@@ -403,8 +460,8 @@ public class ReferencesEditor extends ComposedField {
 */
     @Override
     protected void onRemove() {
-        logger.info("Removing Reference editor");
-        worker.stop();
+        logger.trace("Removing Reference editor");
+        jobs.stop();
     }
 
     @Override
@@ -417,14 +474,14 @@ public class ReferencesEditor extends ComposedField {
             if(handleUrl(value)) {
                 Resource r = new Resource(Resource.Type.RESOURCE, value, title);
                 r.setDisplayOrder(getNextDisplayOrder());
-                jobs.add(new ReferenceJob(r));
+                jobs.addResource(r);
                 data.setObject("");
                 mdlReferenceTitle.setObject("");
             } else if(handlePid(value)) {
                 String actionableValue = HandleLinkModel.getActionableUri(value);
                 Resource r = new Resource(Resource.Type.RESOURCE, actionableValue, title);
                 r.setDisplayOrder(getNextDisplayOrder());
-                jobs.add(new ReferenceJob(r));
+                jobs.addResource(r);
                 data.setObject("");
                 mdlReferenceTitle.setObject("");
             } else {
@@ -433,8 +490,6 @@ public class ReferencesEditor extends ComposedField {
                 fireEvent(new DataUpdatedEvent(target)); //Is this required?
                 return false;
             }
-
-            startWorker();
 
             fireEvent(new DataUpdatedEvent(target));
             
@@ -445,20 +500,6 @@ public class ReferencesEditor extends ComposedField {
             }
         }
         return false;
-    }
-
-    private void startWorker() {
-        if(worker == null) {
-            worker = new Worker(jobs);
-        }
-
-        if( !worker.isRunning()) {
-            worker.start();
-            new Thread(worker).start();
-            logger.debug("Reference validation worker thread started");
-        } else {
-            logger.debug("Reference validation worker thread already running");
-        }
     }
     
     private boolean handleUrl(String value) {
@@ -499,13 +540,9 @@ public class ReferencesEditor extends ComposedField {
     public void setData(List<Resource> data) {
         logger.info("Set resource data: {} reference(s)", data.size());
         jobs.clear();
-        for(Resource r : data) {
-            jobs.add(new ReferenceJob(r));
-        }
+        jobs.addAllResources(data);
         lblNoReferences.setVisible(jobs.isEmpty());
         listview.setVisible(!jobs.isEmpty());
-
-        startWorker();
     }
     
     public class ReferenceJob implements Serializable, Comparable{
@@ -513,10 +550,14 @@ public class ReferencesEditor extends ComposedField {
         protected State state;
         
         public ReferenceJob(Resource ref) {
-            this.ref = ref;
-            this.state = State.INITIALIZED;
+           this(ref, State.INITIALIZED);
         }
-        
+
+        public ReferenceJob(Resource ref, State state) {
+            this.ref = ref;
+            this.state = state;
+        }
+
         public State getState() {
             return this.state;
         }
