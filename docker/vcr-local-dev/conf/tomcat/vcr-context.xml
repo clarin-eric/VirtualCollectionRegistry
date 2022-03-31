@@ -1,6 +1,6 @@
 <?xml version='1.0' encoding='utf-8'?>
 <!--https://tomcat.apache.org/tomcat-8.0-doc/config/context.html#Defining_a_context-->
-<Context reloadable="true" privileged="true" docBase="/app/src/target/vcr-1.6.10-SNAPSHOT.war">
+<Context reloadable="true" privileged="true" docBase="/app/src/target/vcr-1.6.11-SNAPSHOT.war">
 
     <Resource
             name="jdbc/VirtualCollectionStore"

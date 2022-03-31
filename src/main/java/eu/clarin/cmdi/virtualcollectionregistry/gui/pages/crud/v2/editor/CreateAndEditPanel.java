@@ -2,6 +2,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor;
 
 import java.util.*;
 
+import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.ActionablePanel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.authors.AuthorsEditor;
@@ -83,8 +84,8 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
      * @param id 
      * @param dialog 
      */
-    public CreateAndEditPanel(String id, ModalConfirmDialog dialog) {
-        this(id, null, dialog);
+    public CreateAndEditPanel(String id, ModalConfirmDialog dialog, VcrConfig vcrConfig) {
+        this(id, null, dialog, vcrConfig);
     }
     
     /**
@@ -95,7 +96,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
      * @param collection 
      * @param dialog 
      */
-    public CreateAndEditPanel(String id, VirtualCollection collection, ModalConfirmDialog dialog) {
+    public CreateAndEditPanel(String id, VirtualCollection collection, ModalConfirmDialog dialog, VcrConfig vcrConfig) {
         super(id);
         //this.dialog = dialog;
         this.setOutputMarkupId(true);
@@ -231,7 +232,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         this.authorsEditor = new AuthorsEditor("authors", "Authors");
         addRequiredField(this.authorsEditor, new Mode[]{Mode.SIMPLE, Mode.ADVANCED});
 
-        this.referencesEditor = new ReferencesEditor("references", "Resources", advancedEditorModeModel, vExtensional);
+        this.referencesEditor = new ReferencesEditor("references", "Resources", advancedEditorModeModel, vExtensional, vcrConfig);
         addRequiredField(this.referencesEditor, new Mode[]{Mode.SIMPLE, Mode.ADVANCED});
 
         addOptionalField(
@@ -469,7 +470,6 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     }
 
     private boolean validate() {
-        logger.debug("Validating collection");
         boolean valid = true;
         for(Field f : fields) {
             if(!f.validate()) {

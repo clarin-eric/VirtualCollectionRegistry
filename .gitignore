@@ -22,3 +22,4 @@ docker/bak/webapps
 tmp
 service-doc
 service-doc/swagger.yaml
+pom.xml.versionsBackup
