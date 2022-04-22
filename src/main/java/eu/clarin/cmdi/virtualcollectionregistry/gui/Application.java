@@ -135,6 +135,17 @@ public class Application extends AuthenticatedWebApplication {
         mountPage("/details/${collection-id}", VirtualCollectionDetailsPage.class);
         mountPage("/submit/${type}", SubmitVirtualCollectionPage.class);
         mountPage("/profile", UserProfilePage.class);
+
+    }
+
+    @Override
+    protected void onDestroy() {
+        try {
+            logger.info("Shutting down datastore");
+            dataStore.destroy();
+        } catch(VirtualCollectionRegistryException ex) {
+            logger.error("Failed to properly shutdown datastore", ex);
+        }
     }
 
     protected void initSpring() {

@@ -115,7 +115,17 @@
                value="alpha"
                override="false" />
 
+    <!-- 1.7.0 -->
     <Parameter name="eu.clarin.cmdi.vcr.forking.enabled"
                value="true"
+               override="false" />
+
+    <!-- 1.8.0 -->
+    <Parameter name="eu.clarin.cmdi.vcr.reference_scanning.enabled"
+               value="true"
+               override="false" />
+
+    <Parameter name="eu.clarin.cmdi.vcr.reference_scanning.scan_age_treshhold_ms"
+               value="86400000"
                override="false" />
 </Context>

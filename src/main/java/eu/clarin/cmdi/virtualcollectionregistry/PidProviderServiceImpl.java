@@ -197,7 +197,7 @@ public class PidProviderServiceImpl implements PidProviderService {
      */
     public void updateLatestIdentifierUrl(PersistentIdentifier pid, String newUrl) throws VirtualCollectionRegistryException {
         for(PersistentIdentifierProvider provider : providers) {
-            pid.getPidType()
+            pid.getPidType();
         }
     }
 

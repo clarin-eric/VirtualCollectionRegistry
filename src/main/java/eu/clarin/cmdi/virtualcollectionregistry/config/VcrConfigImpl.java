@@ -16,6 +16,7 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.config;
 
+import java.io.Serializable;
 import java.util.Locale;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -27,7 +28,7 @@ import org.springframework.stereotype.Component;
  * @author wilelb
  */
 @Component
-public class VcrConfigImpl implements VcrConfig {
+public class VcrConfigImpl implements VcrConfig, Serializable {
     private final static Logger logger = LoggerFactory.getLogger(VcrConfigImpl.class);
 
     public final static String MODE_PRODUCTION = "prod";
@@ -75,6 +76,12 @@ public class VcrConfigImpl implements VcrConfig {
 
     @Value("${eu.clarin.cmdi.vcr.forking.enabled:false}")
     private boolean forkingEnabled;
+
+    @Value("${eu.clarin.cmdi.vcr.reference_scanning.enabled:false}")
+    private boolean referenceScanningEnabled;
+
+    @Value("${eu.clarin.cmdi.vcr.reference_scanning.scan_age_treshhold_ms:86400000}")
+    private int scan_age_treshhold_ms;
 
     @Value("${eu.clarin.cmdi.vcr.mode:alpha}")
     private String mode;
@@ -154,6 +161,16 @@ public class VcrConfigImpl implements VcrConfig {
     }
 
     @Override
+    public boolean isHttpReferenceScanningEnabled() {
+        return referenceScanningEnabled;
+    }
+
+    @Override
+    public int getResourceScanAgeTresholdMs() {
+        return scan_age_treshhold_ms;
+    }
+
+    @Override
     public String getMode() { return mode; }
 
     @Override
@@ -169,20 +186,24 @@ public class VcrConfigImpl implements VcrConfig {
     public String logConfig() {
         StringBuilder result = new StringBuilder();
         result.append("Configuration:\n");
-        result.append("  logoutMode:             "+logoutMode+"\n");
-        result.append("  logoutEnabled:          "+logoutEnabled+"\n");
-        result.append("  locale:                 "+locale+"\n");
-        result.append("  mode:                   "+mode+"\n");
-        result.append("  forking enabled:        "+forkingEnabled+"\n");
+        result.append("  logoutMode:                   "+logoutMode+"\n");
+        result.append("  logoutEnabled:                "+logoutEnabled+"\n");
+        result.append("  locale:                       "+locale+"\n");
+        result.append("  mode:                         "+mode+"\n");
+        result.append("  forking enabled:              "+forkingEnabled+"\n");
         result.append("  Process integration:\n");
-        result.append("    processEndpoint:          "+processEndpoint+"\n");
-        result.append("    processEnable:   "+processEnable+"\n");
+        result.append("    processEndpoint:            "+processEndpoint+"\n");
+        result.append("    processEnable:              "+processEnable+"\n");
         result.append("  Download integration:\n");
-        result.append("    downloadEndpoint: "+downloadEndpoint+"\n");
-        result.append("    downloadEnable: "+downloadEnable+"\n");
+        result.append("    downloadEndpoint:           "+downloadEndpoint+"\n");
+        result.append("    downloadEnable:             "+downloadEnable+"\n");
         result.append("  Validators\n");
-        result.append("    http timeout:         "+httpTimeout+"\n");
-        result.append("    http redirects:       "+httpRedirects+"\n");
+        result.append("    http timeout:               "+httpTimeout+"\n");
+        result.append("    http redirects:             "+httpRedirects+"\n");
+        result.append("  Resource scanning:            "+ referenceScanningEnabled+"\n");
+        if(referenceScanningEnabled) {
+            result.append("    resource scan age treshold: "+scan_age_treshhold_ms+"\n");
+        }
         return result.toString();
     }
 

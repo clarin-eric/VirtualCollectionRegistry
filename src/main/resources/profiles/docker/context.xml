@@ -131,4 +131,8 @@
                value="true"
                override="false" />
 
+    <!-- 1.8.0 -->
+    <Parameter name="eu.clarin.cmdi.vcr.reference_scanning.enabled"
+               value="true"
+               override="false" />
 </Context>

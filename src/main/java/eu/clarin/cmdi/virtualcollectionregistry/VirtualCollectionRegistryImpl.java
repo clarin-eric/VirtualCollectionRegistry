@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
 import eu.clarin.cmdi.oai.provider.impl.OAIProvider;
+import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.model.*;
 import eu.clarin.cmdi.virtualcollectionregistry.query.ParsedQuery;
@@ -58,7 +59,10 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
 
     @Autowired
     private CreatorService creatorService;
-    
+
+    @Autowired
+    private VcrConfig vcrConfig;
+
     private static final Logger logger
             = LoggerFactory.getLogger(VirtualCollectionRegistryImpl.class);
     
@@ -79,6 +83,9 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
      */
     private final ScheduledExecutorService maintenanceExecutor
             = createSingleThreadScheduledExecutor("VirtualCollectionRegistry-Maintenance");
+
+    private final ScheduledExecutorService referenceValidationExecutor
+            = createSingleThreadScheduledExecutor("VirtualCollectionRegistry-Reference-Validation");
 
     @Override
     public void afterPropertiesSet() throws VirtualCollectionRegistryException {
@@ -108,23 +115,39 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
             maintenanceExecutor.scheduleWithFixedDelay(new Runnable() {
                 @Override
                 public void run() {
-                    maintenance.perform(new Date().getTime());
+                    logger.trace("Running maintenance check");
+                    try {
+                        maintenance.perform(new Date().getTime());
+                    } catch(Exception ex) {
+                        logger.error("maintenance perform() failed", ex);
+                    }
                 }
             }, 30, 30, TimeUnit.SECONDS);
             maintenanceExecutor.scheduleWithFixedDelay(new Runnable() {
                 @Override
                 public void run() {
-                    logger.info("Running reference check");
-                    referenceCheck.perform(new Date().getTime());
+                    logger.trace("Running reference check");
+                    try {
+                        referenceCheck.perform(new Date().getTime());
+                    } catch(Exception ex) {
+                        logger.error("referenceCheck perform() failed", ex);
+                    }
                 }
             }, 1, 1, TimeUnit.DAYS);
-            maintenanceExecutor.scheduleWithFixedDelay(new Runnable() {
-                @Override
-                public void run() {
-                    logger.trace("Running reference validation");
-                    referenceValidator.perform(new Date().getTime());
-                }
-            }, 1, 1, TimeUnit.SECONDS);
+            if(vcrConfig.isHttpReferenceScanningEnabled()) {
+                logger.debug("Scheduling referencce validation, interval = 1 seconds");
+                referenceValidationExecutor.scheduleWithFixedDelay(new Runnable() {
+                    @Override
+                    public void run() {
+                        logger.trace("Running reference validation");
+                        try {
+                            referenceValidator.perform(new Date().getTime(), datastore);
+                        } catch (Exception ex) {
+                            logger.error("referenceValidationExecutor perform() failed", ex);
+                        }
+                    }
+                }, 1, 1, TimeUnit.SECONDS);
+            }
 
             this.intialized.set(true);
             logger.info("virtual collection registry successfully intialized");
@@ -141,6 +164,10 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
         if (!maintenanceExecutor.awaitTermination(60, TimeUnit.SECONDS)) {
             logger.warn("Timeout while waiting for maintenance thread to terminate, will try to shut down");
         }
+
+        referenceValidator.shutdown();
+        referenceValidationExecutor.shutdown();
+
 
         final OAIProvider oaiProvider = OAIProvider.instance();
         if (oaiProvider != null) {
@@ -909,6 +936,81 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
     @Override
     public VirtualCollectionRegistryReferenceValidator getReferenceValidator() {
         return referenceValidator;
+    }
+
+    @Override
+    public ResourceScan getResourceScanForRef(String ref) throws VirtualCollectionRegistryException {
+        final EntityManager em = datastore.getEntityManager();
+        try {
+            beginTransaction(datastore.getEntityManager());
+            TypedQuery<ResourceScan> q = datastore.getEntityManager().createNamedQuery("ResourceScan.findByRef", ResourceScan.class);
+            q.setParameter("ref", ref);
+            return q.getSingleResult();
+        } catch (Exception e) {
+            rollbackActiveTransaction(datastore.getEntityManager(), "error while fetching resource scan for resource with ref="+ref, e);
+        } finally {
+            commitActiveTransaction(datastore.getEntityManager());
+        }
+        return null;
+    }
+
+    @Override
+    public List<ResourceScan> getResourceScansForRefs(List<String> refs) throws VirtualCollectionRegistryException {
+        final EntityManager em = datastore.getEntityManager();
+        try {
+            beginTransaction(datastore.getEntityManager());
+            TypedQuery<ResourceScan> q = datastore.getEntityManager().createNamedQuery("ResourceScan.findByRefs", ResourceScan.class);
+            q.setParameter("refs", refs);
+            return q.getResultList();
+        } catch (Exception e) {
+            rollbackActiveTransaction(datastore.getEntityManager(), "error while fetching resource scan for resource with "+refs.size()+" refs.", e);
+        } finally {
+            commitActiveTransaction(datastore.getEntityManager());
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
+    public void addResourceScan(String ref, String sessionId) throws VirtualCollectionRegistryException {
+        logger.debug("Adding resource to scan (ref={}, sessionId={})", ref, sessionId);
+        try {
+            beginTransaction(datastore.getEntityManager());
+
+            //Select any existing scans for this ref
+            TypedQuery<ResourceScan> q = datastore.getEntityManager().createNamedQuery("ResourceScan.findByRef", ResourceScan.class);
+            q.setParameter("ref", ref);
+            List<ResourceScan> scans = q.getResultList();
+
+            //Check if a recent scan result exists for this ref
+            ResourceScan scan_to_persist = null;
+            Date now = new Date();
+            if(scans.isEmpty()) {
+                scan_to_persist = new ResourceScan(ref, sessionId);
+            } else {
+                for(ResourceScan scan: scans) {
+                    long diff_in_ms = now.getTime() - scan.getLastScan().getTime();
+                    logger.debug("Scan (ref={}) = {}ms", ref, diff_in_ms);
+                    if (diff_in_ms > vcrConfig.getResourceScanAgeTresholdMs()) {
+                        scan_to_persist = scan;
+                        scan_to_persist.setLastScan(null);
+                    }
+                }
+            }
+
+            //Add this ref as a new scan if needed, based on the earlier check
+            if(scan_to_persist != null) {
+               if(scan_to_persist.getId() == null) {
+                   datastore.getEntityManager().persist(scan_to_persist); //insert
+               } else {
+                   datastore.getEntityManager().merge(scan_to_persist); //update
+               }
+            }
+        } catch (Exception e) {
+            rollbackActiveTransaction(datastore.getEntityManager(), "error while submitting a new resource scan. ref="+ref+", session="+sessionId, e);
+        } finally {
+            commitActiveTransaction(datastore.getEntityManager());
+        }
+
     }
 
 } // class VirtualCollectionRegistry

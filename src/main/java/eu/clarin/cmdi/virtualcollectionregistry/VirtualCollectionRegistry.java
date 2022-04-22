@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
+import eu.clarin.cmdi.virtualcollectionregistry.model.ResourceScan;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
@@ -102,5 +103,9 @@ public interface VirtualCollectionRegistry {
     String getDbVersion() throws VirtualCollectionRegistryException;
 
     VirtualCollectionRegistryReferenceValidator getReferenceValidator();
+
+    ResourceScan getResourceScanForRef(String ref) throws VirtualCollectionRegistryException;
+    List<ResourceScan> getResourceScansForRefs(List<String> refs) throws VirtualCollectionRegistryException;
+    void addResourceScan(String ref, String sessionId) throws VirtualCollectionRegistryException;
 
 } // interface VirtualCollectionRegistry

@@ -25,7 +25,7 @@ public class TimerManagerImpl implements TimerManager, Serializable {
             @Override
             protected void onTimer(AjaxRequestTarget target) {
                 if(target != null) {
-                    logger.info("TimerManagerImpl onTimer, #targets="+targets.size());
+                    logger.trace("TimerManagerImpl onTimer, #targets="+targets.size());
 
                     List<Integer> idxToRemove = new ArrayList<>();
                     for(int i = 0; i < targets.size(); i++) {

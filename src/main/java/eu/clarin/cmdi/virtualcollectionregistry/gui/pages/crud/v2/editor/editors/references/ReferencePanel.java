@@ -11,6 +11,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.EventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.MoveListEventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
+import eu.clarin.cmdi.virtualcollectionregistry.model.ResourceScan.State;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -37,7 +38,7 @@ public class ReferencePanel extends Panel {
      * @param ref 
      */
 
-    public ReferencePanel(String id, final Resource ref, final ReferencesEditor.State state, String reason, Model<Boolean> advancedEditorMode, long maxDisplayOrder) {
+    public ReferencePanel(String id, final Resource ref, final State state, String reason, Model<Boolean> advancedEditorMode, long maxDisplayOrder) {
         super(id);
         long displayOrder = ref.getDisplayOrder();
 
@@ -58,7 +59,7 @@ public class ReferencePanel extends Panel {
         editorWrapper.add(divReason);
 
         boolean analysing = false;
-        if(state == ReferencesEditor.State.INITIALIZED || state == ReferencesEditor.State.ANALYZING) {
+        if(state == State.INITIALIZED || state == State.ANALYZING) {
             analysing = true;
         }
 
@@ -208,8 +209,8 @@ public class ReferencePanel extends Panel {
         add(editorWrapper);
     }
 
-    private boolean getButtonState(ReferencesEditor.State state) {
-        return state != ReferencesEditor.State.INITIALIZED && state != ReferencesEditor.State.ANALYZING;
+    private boolean getButtonState(State state) {
+        return state != State.INITIALIZED && state != State.ANALYZING;
     }
 
     public void addEventHandler(EventHandler handler) {

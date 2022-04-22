@@ -47,4 +47,7 @@ public interface VcrConfig {
     public int getHttpTimeout();
     public int getHttpRedirects();
 
+    public boolean isHttpReferenceScanningEnabled();
+    int getResourceScanAgeTresholdMs();
+
 }

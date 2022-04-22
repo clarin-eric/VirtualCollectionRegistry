@@ -72,8 +72,7 @@ public class VirtualCollectionRegistryReferenceCheckImpl implements VirtualColle
      */
     private ReferenceValidator checkValidityOfReferences(VirtualCollection vc) {
         ReferenceValidator validator = new ReferenceValidator();
-        
-        
+
         for(Resource resource : vc.getResources()) {
             final Validatable<String> validatable = 
                     new Validatable<>(resource.getRef());

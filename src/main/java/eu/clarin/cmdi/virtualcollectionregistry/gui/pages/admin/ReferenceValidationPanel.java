@@ -77,21 +77,24 @@ public class ReferenceValidationPanel extends Panel {
     }
 
     public void update(VirtualCollectionRegistryReferenceValidator validator) {
+        /*
         if(validator != null && validator.getJobs() != null) {
             updateValues(validator);
             provider.update(validator);
         } else {
             logger.debug("Validator is invalid: " + validator == null ? "validator = null" : "validator.getJobs() == null");
         }
+         */
     }
 
     private void updateValues(VirtualCollectionRegistryReferenceValidator validator) {
         if(validator == null) {
             return;
         }
-        int totalCount = validator.getJobs().size();
+        int totalCount = 0;//validator.getJobs().size();
         int waitingCount = 0;
         int finishedCount = 0;
+        /*
         for(VirtualCollectionRegistryReferenceValidationJob job : validator.getJobs()) {
             ReferencesEditor.State state = job.getState().getState();
             if(state == ReferencesEditor.State.DONE || state == ReferencesEditor.State.FAILED) {
@@ -100,7 +103,7 @@ public class ReferenceValidationPanel extends Panel {
                 waitingCount++;
             }
         }
-
+    */
         numJobsModel.setObject(totalCount);
         numJobsFinishedModel.setObject(finishedCount);
         numJobsFinishedPctModel.setObject(totalCount == 0 ? 0.0 : (float)finishedCount/(float)totalCount*100.0);
@@ -138,7 +141,7 @@ public class ReferenceValidationPanel extends Panel {
 
         @Override
         public Iterator<? extends VirtualCollectionRegistryReferenceValidationJob> iterator(long first, long count) {
-            final List<VirtualCollectionRegistryReferenceValidationJob> list = this.validator.getJobs();
+            final List<VirtualCollectionRegistryReferenceValidationJob> list = new ArrayList<VirtualCollectionRegistryReferenceValidationJob>();//this.validator.getJobs();
             final List<VirtualCollectionRegistryReferenceValidationJob> newList = new ArrayList<>(list);
             Collections.sort(newList, comparator);
             return newList.subList((int)first, (int)first + (int)count).iterator();
@@ -146,6 +149,8 @@ public class ReferenceValidationPanel extends Panel {
 
         @Override
         public long size() {
+            return 0;
+            /*
             if(this.validator == null) {
                 return 0;
             }
@@ -153,6 +158,7 @@ public class ReferenceValidationPanel extends Panel {
                 return 0;
             }
             return this.validator.getJobs().size();
+             */
         }
 
         @Override
