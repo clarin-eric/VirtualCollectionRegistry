@@ -24,6 +24,14 @@ public class ResourceScan implements Serializable  {
         this.created = created;
     }
 
+    public String getException() {
+        return exception;
+    }
+
+    public void setException(String exception) {
+        this.exception = exception;
+    }
+
     public static enum State {
         INITIALIZED, ANALYZING, DONE, FAILED
     }
@@ -57,6 +65,9 @@ public class ResourceScan implements Serializable  {
     @Column(name = "http_message", nullable = true, length = 255)
     private String httpResponseMessage;
 
+    @Column(name = "exception", nullable = true, length = 255)
+    private String exception;
+
     @Column(name = "mimetype", nullable = true, length = 255)
     private String mimeType;
 
@@ -86,6 +97,10 @@ public class ResourceScan implements Serializable  {
 
     public void setHttpResponseCode(Integer httpResponseCode) {
         this.httpResponseCode = httpResponseCode;
+    }
+
+    public boolean hasHttpResponseMessage() {
+        return httpResponseMessage != null && !httpResponseMessage.isEmpty();
     }
 
     public String getHttpResponseMessage() {
@@ -144,7 +159,11 @@ public class ResourceScan implements Serializable  {
         }
 
         int httpCode = getHttpResponseCode().intValue();
-        if(httpCode < 200 && httpCode >= 300) {
+        if(httpCode < 200 || httpCode >= 300) {
+            return State.FAILED;
+        }
+
+        if(exception != null) {
             return State.FAILED;
         }
         

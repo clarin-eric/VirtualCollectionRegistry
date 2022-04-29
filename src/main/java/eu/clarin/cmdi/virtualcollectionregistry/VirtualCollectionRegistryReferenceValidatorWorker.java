@@ -3,7 +3,6 @@ package eu.clarin.cmdi.virtualcollectionregistry;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.ResponseHandler;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
@@ -34,25 +33,14 @@ public class VirtualCollectionRegistryReferenceValidatorWorker {
 
     private final transient List<ReferenceParser> parsers = new LinkedList<>();
 
-    private String session = null;
-    private Thread t;
-
-    public VirtualCollectionRegistryReferenceValidatorWorker() {
-        this.parsers.add(new CmdiReferenceParserImpl());
-    }
-
-    public void setSession(String sessionId) {
-        this.session = sessionId;
-    }
-
-    public String getSessionId() {
-        return session;
-    }
+    private final CloseableHttpClient httpclient = HttpClients.createDefault();
+    private final RequestConfig requestConfig;
 
     public class WorkerResult {
         private int httpResponseCode;
         private String httpResponseMsg;
         private String mimeType;
+        private String exception;
 
         public int getHttpResponseCode() {
             return httpResponseCode;
@@ -77,37 +65,83 @@ public class VirtualCollectionRegistryReferenceValidatorWorker {
         public void setMimeType(String mimeType) {
             this.mimeType = mimeType;
         }
+
+        public void setException(String exception) { this.exception = exception; }
+
+        public void setException(Exception exception) { this.exception = exception.getMessage(); }
+
+        public String getException() { return exception; }
     }
 
-    public WorkerResult doWork(String ref) {
-        try {
-            return analyze(ref);
-        } catch (Exception ex) {
+    public class ValidationResponseHandler implements ResponseHandler<String> {
+        private final WorkerResult result;
 
+        public ValidationResponseHandler() {
+            this.result = new WorkerResult();
         }
 
-        return new WorkerResult();
-        /*
-        session = job.getSessionId();
-        t = new Thread(new Runnable() {
-            @Override
-            public void run() {
-                job.setState(ReferencesEditor.State.ANALYZING);
-                try {
-                    logger.debug("Analysing: session="+job.getSessionId()+", job="+job.getId()+", url="+job.getReference().getRef());
-                    analyze(job);
-                    job.setState(ReferencesEditor.State.DONE);
-                    logger.debug("Analysing done: job="+job.getId());
-                } catch (Exception ex) {
-                    job.setState(ReferencesEditor.State.FAILED, ex.getMessage());
-                    logger.debug("Analysing failed: job="+job.getId());
-                } finally {
-                    session = null;
+        public WorkerResult getResult() {
+            return this.result;
+        }
+
+        @Override
+        public String handleResponse(final HttpResponse response) throws IOException {
+            for (Header h : response.getHeaders("Content-Type")) {
+                logger.trace(h.getName() + " - " + h.getValue());
+
+                String[] parts = h.getValue().split(";");
+                String mediaType = parts[0];
+
+                logger.trace("Media-Type=" + mediaType);
+                if (parts.length > 1) {
+                    String p = parts[1].trim();
+                    if (p.startsWith("charset=")) {
+                        logger.trace("Charset=" + p.replaceAll("charset=", ""));
+                    } else if (p.startsWith("boundary=")) {
+                        logger.trace("Boundary=" + p.replaceAll("boundary=", ""));
+                    }
                 }
+
+                result.setMimeType(mediaType);
             }
-        }, "Session-" + session + "-worker");
-        t.start();
-         */
+
+            int httpCode = response.getStatusLine().getStatusCode();
+            String httpMessage = response.getStatusLine().getReasonPhrase();
+
+            logger.debug("Http response: " + httpCode + " " + httpMessage);
+            for (Header h : response.getHeaders("Content-Length")) {
+                logger.debug(h.getName() + " - " + h.getValue());
+            }
+
+            result.setHttpResponseMsg(httpMessage);
+            result.setHttpResponseCode(httpCode);
+            if (httpCode >= 200 && httpCode < 300) {
+                HttpEntity entity = response.getEntity();
+                String body = entity != null ? EntityUtils.toString(entity) : null;
+
+                if (body != null) {
+                    for (ReferenceParser parser : parsers) {
+                        if (parser.parse(body, result.getMimeType())) {
+                            break; //exit loop if the parser processed the reference
+                        }
+                    }
+                }
+
+                return body;
+            }
+
+            return null;
+        }
+    }
+
+    public VirtualCollectionRegistryReferenceValidatorWorker() {
+        this.parsers.add(new CmdiReferenceParserImpl());
+        this.requestConfig =
+            RequestConfig
+                .custom()
+                .setConnectionRequestTimeout(1000)
+                .setMaxRedirects(5)
+                .build();
     }
 
     /**
@@ -118,76 +152,22 @@ public class VirtualCollectionRegistryReferenceValidatorWorker {
      * work in the background.
      *
      * @param ref
-     * @throws IOException
      */
-    private WorkerResult analyze(final String ref) throws IOException {
+    public WorkerResult doWork(final String ref) {
         WorkerResult result = new WorkerResult();
 
-        //TODO: initialize only once, but take care of serialization / storage in session
-        RequestConfig requestConfig = RequestConfig
-                .custom()
-                .setConnectionRequestTimeout(1000)
-                .setMaxRedirects(5)
-                .build();
+        try {
+            logger.debug("Validating reference = "+ref);
+            ValidationResponseHandler responseHandler = new ValidationResponseHandler();
 
-        HttpGet httpget = new HttpGet(ref);
-        httpget.setConfig(requestConfig);
+            HttpGet httpget = new HttpGet(ref);
+            httpget.setConfig(requestConfig);
+            httpclient.execute(httpget, responseHandler);
 
-        logger.trace("Executing request " + httpget.getRequestLine());
-
-        // Create a custom response handler
-        ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-            @Override
-            public String handleResponse(final HttpResponse response) throws ClientProtocolException, IOException {
-                for(Header h : response.getHeaders("Content-Type")) {
-                    logger.trace(h.getName() + " - " + h.getValue());
-
-                    String[] parts = h.getValue().split(";");
-                    String mediaType = parts[0];
-
-                    logger.trace("Media-Type="+mediaType);
-                    if(parts.length > 1) {
-                        String p = parts[1].trim();
-                        if(p.startsWith("charset=")) {
-                            logger.trace("Charset="+p.replaceAll("charset=", ""));
-                        } else if(p.startsWith("boundary=")) {
-                            logger.trace("Boundary="+p.replaceAll("boundary=", ""));
-                        }
-                    }
-
-                    result.setMimeType(mediaType);
-                }
-
-                for(Header h : response.getHeaders("Content-Length")) {
-                    logger.trace(h.getName() + " - " + h.getValue());
-                }
-
-                result.setHttpResponseMsg(response.getStatusLine().getReasonPhrase());
-                result.setHttpResponseCode(response.getStatusLine().getStatusCode());
-
-                int status = response.getStatusLine().getStatusCode();
-                if (status >= 200 && status < 300) {
-                    HttpEntity entity = response.getEntity();
-                    String body = entity != null ? EntityUtils.toString(entity) : null;
-
-                    if(body != null) {
-                        for(ReferenceParser parser : parsers) {
-                            if(parser.parse(body, result.getMimeType())) {
-                                break; //exit loop if the parser processed the reference
-                            }
-                        }
-                    }
-
-                    return body;
-                } else {
-                    throw new ClientProtocolException("Unexpected response status: HTTP " + status + " - " + response.getStatusLine().getReasonPhrase());
-                }
-            }
-        };
-
-        //String responseBody = httpclient.execute(httpget, responseHandler);
-        CloseableHttpClient httpclient = HttpClients.createDefault(); //TODO: initialize only once, but take care of serialization / storage in session
-        httpclient.execute(httpget, responseHandler);
+            result = responseHandler.getResult();
+        } catch(Exception ex) {
+            result.setException(ex);
+        }
 
         return result;
     }

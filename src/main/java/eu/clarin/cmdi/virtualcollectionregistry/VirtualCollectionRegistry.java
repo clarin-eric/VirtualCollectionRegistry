@@ -107,5 +107,5 @@ public interface VirtualCollectionRegistry {
     ResourceScan getResourceScanForRef(String ref) throws VirtualCollectionRegistryException;
     List<ResourceScan> getResourceScansForRefs(List<String> refs) throws VirtualCollectionRegistryException;
     void addResourceScan(String ref, String sessionId) throws VirtualCollectionRegistryException;
-
+    void rescanResource(String ref, String sessionId) throws VirtualCollectionRegistryException;
 } // interface VirtualCollectionRegistry

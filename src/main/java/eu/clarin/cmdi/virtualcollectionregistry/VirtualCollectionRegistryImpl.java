@@ -972,7 +972,16 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
 
     @Override
     public void addResourceScan(String ref, String sessionId) throws VirtualCollectionRegistryException {
-        logger.debug("Adding resource to scan (ref={}, sessionId={})", ref, sessionId);
+        scanResource(ref, sessionId, false);
+    }
+
+    @Override
+    public void rescanResource(String ref, String sessionId) throws VirtualCollectionRegistryException {
+        scanResource(ref, sessionId, true);
+    }
+
+    public void scanResource(String ref, String sessionId, boolean rescan) throws VirtualCollectionRegistryException {
+        logger.debug("Adding resource to scan (ref={}, sessionId={}), rescan={}", ref, sessionId, rescan);
         try {
             beginTransaction(datastore.getEntityManager());
 
@@ -989,8 +998,7 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
             } else {
                 for(ResourceScan scan: scans) {
                     long diff_in_ms = now.getTime() - scan.getLastScan().getTime();
-                    logger.debug("Scan (ref={}) = {}ms", ref, diff_in_ms);
-                    if (diff_in_ms > vcrConfig.getResourceScanAgeTresholdMs()) {
+                    if (rescan || diff_in_ms > vcrConfig.getResourceScanAgeTresholdMs()) {
                         scan_to_persist = scan;
                         scan_to_persist.setLastScan(null);
                     }
@@ -999,18 +1007,16 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
 
             //Add this ref as a new scan if needed, based on the earlier check
             if(scan_to_persist != null) {
-               if(scan_to_persist.getId() == null) {
-                   datastore.getEntityManager().persist(scan_to_persist); //insert
-               } else {
-                   datastore.getEntityManager().merge(scan_to_persist); //update
-               }
+                if(scan_to_persist.getId() == null) {
+                    datastore.getEntityManager().persist(scan_to_persist); //insert
+                } else {
+                    datastore.getEntityManager().merge(scan_to_persist); //update
+                }
             }
         } catch (Exception e) {
             rollbackActiveTransaction(datastore.getEntityManager(), "error while submitting a new resource scan. ref="+ref+", session="+sessionId, e);
         } finally {
             commitActiveTransaction(datastore.getEntityManager());
         }
-
     }
-
 } // class VirtualCollectionRegistry

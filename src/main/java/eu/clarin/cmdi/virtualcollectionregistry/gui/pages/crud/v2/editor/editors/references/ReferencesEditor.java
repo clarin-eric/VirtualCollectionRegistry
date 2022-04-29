@@ -123,6 +123,12 @@ public class ReferencesEditor extends ComposedField {
     private final TimerManager timerManager;
     private final WebMarkupContainer ajaxWrapper;
 
+    private Map<String, Boolean> refReasonCollapseState = new HashMap<>();
+
+    public interface RescanHandler extends Serializable {
+        public void rescan(String reg, AjaxRequestTarget target);
+    }
+
     public ReferencesEditor(String id, String label, Model<Boolean> advancedEditorMode, VisabilityUpdater updater, TimerManager timerManager) {
         super(id, "References", null, updater);
         this.timerManager = timerManager;
@@ -174,12 +180,16 @@ public class ReferencesEditor extends ComposedField {
                 //VirtualCollectionRegistry registry = Application.get().getRegistry();
                 //registry.getReferenceValidator().setState(references.get(edit_index).getInternalId(), State.INITIALIZED);
 
+                updateReferenceJob(references.get(edit_index));
+
+                //addReferenceJob
+
                 edit_index = -1;
                 editor.setVisible(false);
                 listview.setModelObject(f.apply(references));
                 listview.setVisible(true);
 
-                //addToTimerManager(target);
+                addToTimerManager(target);
 
                 if(target != null) {
                     target.add(componentToUpdate);
@@ -209,18 +219,34 @@ public class ReferencesEditor extends ComposedField {
             @Override
             protected void populateItem(ListItem item) {
                 EditableResource ref = (EditableResource)item.getModel().getObject();
-                State state = getScanResult(ref.getRef());
 
-                logger.info("Rendering reference list item: ref={}, state={}", ref.getRef(), state);
-
-                String reason = null;
-                /*
-                if(scan != null && scan.getState() == ResourceScan.State.FAILED) {
-                    reason = job.getState().getData();
-                    logger.trace("Reason: {}", reason);
+                State state = State.INITIALIZED;
+                String reason = "";
+                ResourceScan scan = scanResults.get(ref.getRef());
+                if(scan != null) {
+                    state = scan.getState();
+                    reason += "Last scan: "+scan.getLastScanEnd()+"<br />";
+                    if(scan.getHttpResponseCode() > 0) {
+                        reason += "HTTP response: " + scan.getHttpResponseCode();
+                        if (scan.hasHttpResponseMessage()) {
+                            reason += " " + scan.getHttpResponseMessage();
+                        }
+                        reason += "<br />";
+                    }
+                    if(scan.getException() != null) {
+                        reason += "Exception: "+scan.getException()+"<br />";
+                    }
+                    reason += "State: "+state.toString()+"<br />";
                 }
-                */
-                ReferencePanel c = new ReferencePanel("pnl_reference", ref, state, reason, advancedEditorMode, getMaxDisplayOrder());
+
+                RescanHandler rescanHandler = new RescanHandler() {
+                    @Override
+                    public void rescan(String ref, AjaxRequestTarget target) {
+                        rescanReferenceJob(ref);
+                        addToTimerManager(target);
+                    }
+                };
+                ReferencePanel c = new ReferencePanel("pnl_reference", ref, state, reason, advancedEditorMode, getMaxDisplayOrder(), refReasonCollapseState, rescanHandler);
                 c.addMoveListEventHandler(new MoveListEventHandler() {
                     @Override
                     public void handleMoveUp(Long displayOrder, AjaxRequestTarget target) {
@@ -331,22 +357,24 @@ public class ReferencesEditor extends ComposedField {
     private Map<String, ResourceScan> scanResults = new HashMap<>();
 
     private void addToTimerManager(AjaxRequestTarget target) {
-        VirtualCollectionRegistry registry = Application.get().getRegistry();
-        VirtualCollectionRegistryReferenceValidator validator = registry.getReferenceValidator();
+       // VirtualCollectionRegistry registry = Application.get().getRegistry();
+       // VirtualCollectionRegistryReferenceValidator validator = registry.getReferenceValidator();
         timerManager.addTarget(target, new TimerManager.Update() {
             @Override
             public boolean onUpdate(AjaxRequestTarget target) {
                 fireEvent(new CustomDataUpdateEvent(target));
 
                 boolean analyzing = true;
-
                 try {
+                    //Build list of refs
                     List<String> refs = new ArrayList<>();
                     for(EditableResource ref : references) {
                         refs.add(ref.getRef());
                     }
+                    //Query scans for this list of refs
                     List<ResourceScan> scans = Application.get().getRegistry().getResourceScansForRefs(refs);
                     for(ResourceScan scan : scans) {
+                        logger.debug("Scan ref="+scan.getRef()+", state="+scan.getState().toString());
                         scanResults.put(scan.getRef(), scan);
                         if(scan.getState() != State.DONE && scan.getState() != State.FAILED) {
                             analyzing = false;
@@ -411,11 +439,15 @@ public class ReferencesEditor extends ComposedField {
             List<EditableResource> filtered = new ArrayList<>();
             for(EditableResource r : references) {
 
-                //State state = validator.getState(r.getInternalId());
-                //if(filterState.getObject() == "ALL" || filterState.getObject() == state.toString()) {
-                    filtered.add(r);
-                //}
+                State state = State.INITIALIZED;
+                ResourceScan scan  = scanResults.get(r.getRef());
+                if(scan != null) {
+                    state = scan.getState();
+                }
 
+                if(filterState.getObject() == "ALL" || filterState.getObject() == state.toString()) {
+                    filtered.add(r);
+                }
             }
             return filtered;
         }
@@ -505,9 +537,34 @@ public class ReferencesEditor extends ComposedField {
                 sessionId = getSession().getId();
             }
 
-            final VirtualCollectionRegistry registry = Application.get().getRegistry();
-            registry.addResourceScan(r.getRef(), sessionId);
-            //registry.getReferenceValidator().addReferenceValidationJob(sessionId, r.getInternalId(), r);
+            Application.get().getRegistry().addResourceScan(r.getRef(), sessionId);
+        } catch(Exception ex) {
+            logger.error("Failed to create new resource scan.", ex);
+        }
+    }
+
+    private void updateReferenceJob(EditableResource r) {
+        //Create new resource scan for this reference
+        try {
+            String sessionId = null;
+            if(getSession() != null) {
+                sessionId = getSession().getId();
+            }
+
+            Application.get().getRegistry().addResourceScan(r.getRef(), sessionId);
+        } catch(Exception ex) {
+            logger.error("Failed to create new resource scan.", ex);
+        }
+    }
+
+    private void rescanReferenceJob(String ref) {
+        try {
+            String sessionId = null;
+            if(getSession() != null) {
+                sessionId = getSession().getId();
+            }
+
+            Application.get().getRegistry().rescanResource(ref, sessionId);
         } catch(Exception ex) {
             logger.error("Failed to create new resource scan.", ex);
         }
@@ -575,7 +632,8 @@ public class ReferencesEditor extends ComposedField {
         long errorCount = 0;
         VirtualCollectionRegistry registry = Application.get().getRegistry();
         for(EditableResource ref : references) {
-            if( getScanResult(ref.getRef()) != State.DONE) {
+            ResourceScan scan = scanResults.get(ref.getRef());
+            if( scan == null || scan.getState() != State.DONE) {
                 errorCount++;
             }
         }
@@ -588,21 +646,6 @@ public class ReferencesEditor extends ComposedField {
 
         currentValidation = setError(null);
         return currentValidation;
-    }
-
-    private State getScanResult(String ref) {
-        ResourceScan scan = scanResults.get(ref);
-        /*
-        try {
-            scan = Application.get().getRegistry().getResourceScanForRef(ref);
-        } catch(VirtualCollectionRegistryException ex) {
-            logger.error("Failed to fetch resource scan for reference.", ex);
-        }
-        */
-        if(scan == null) {
-            return State.INITIALIZED;
-        }
-        return scan.getState();
     }
 
     public boolean didValidationStateChange() {

@@ -101,6 +101,7 @@ public class VirtualCollectionRegistryReferenceValidatorImpl extends TxManager i
                         scan.setHttpResponseCode(result.getHttpResponseCode());
                         scan.setHttpResponseMessage(result.getHttpResponseMsg());
                         scan.setLastScanEnd(new Date());
+                        scan.setException(result.getException());
                         datastore.getEntityManager().merge(scan);
 
                         logger.info("Finished resource scan for ref = {} in {}s, http response = {}", scan.getRef(), scan.getDurationInSeconds(), scan.getHttpResponseCode());

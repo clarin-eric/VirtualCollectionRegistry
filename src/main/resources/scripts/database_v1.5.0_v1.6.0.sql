@@ -29,9 +29,11 @@ CREATE TABLE `resource_scan` (
   `last_scan_end` datetime,
   `http_code` bigint(20),
   `http_message` varchar(255),
+  `exception` varchar(255),
   `mimetype` varchar(255),
   PRIMARY KEY(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--ALTER TABLE resource_scan ADD COLUMN `exception` varchar(255) NULL;
 -- Update current database config value
 UPDATE `config` SET `value` = '1.6.0' WHERE `key` = 'db_version';

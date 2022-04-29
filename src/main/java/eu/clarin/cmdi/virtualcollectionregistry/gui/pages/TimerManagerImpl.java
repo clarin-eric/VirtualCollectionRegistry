@@ -39,7 +39,11 @@ public class TimerManagerImpl implements TimerManager, Serializable {
                     }
 
                     for(Integer idx : idxToRemove) {
-                        removeTarget(targets.get(idx), target);
+                        TimerManager.Update update = null;
+                        if(targets.size()>idx) {
+                            update=targets.get(idx);
+                        }
+                        removeTarget(update, target);
                     }
                 }
             }
@@ -61,7 +65,9 @@ public class TimerManagerImpl implements TimerManager, Serializable {
     }
 
     public void removeTarget(TimerManager.Update update, AjaxRequestTarget target) {
-        targets.remove(update);
+        if(update != null) {
+            targets.remove(update);
+        }
         if(targets.isEmpty()) {
             logger.info("TimerManagerImpl stopping timer");
             timer.stop(target);
