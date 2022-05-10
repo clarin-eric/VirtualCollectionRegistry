@@ -187,11 +187,11 @@ public class VirtualCollectionDetailsPage extends BasePage {
         }
     } // class VirtualCollectionDetailsPage.TypeLabel
     
-    public VirtualCollectionDetailsPage(PageParameters params) {
+    public VirtualCollectionDetailsPage(PageParameters params) throws VirtualCollectionRegistryPermissionException {
         this(getVirtualCollectionModel(params), params);
     }
 
-    public VirtualCollectionDetailsPage(final IModel<VirtualCollection> model, final PageParameters params) {
+    public VirtualCollectionDetailsPage(final IModel<VirtualCollection> model, final PageParameters params) throws VirtualCollectionRegistryPermissionException {
         super(new CompoundPropertyModel<VirtualCollection>(model));
         //setPageStateless(true);
         this.params = params;
@@ -208,11 +208,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
         }
         
         //Will throw an exception and abort flow if authorization fails
-        try {
-            checkReadAccess(model.getObject());
-        } catch (VirtualCollectionRegistryPermissionException e) {
-            throw new UnauthorizedActionException(this, Component.RENDER);
-        }
+        checkReadAccess(model.getObject());
 
         final Link<Void> backLink = new Link<Void>("back") {
             @Override
@@ -306,7 +302,9 @@ public class VirtualCollectionDetailsPage extends BasePage {
             AjaxLink btnFork = new AjaxLink("btn_fork", new Model<String>("Cite")) {
                 @Override
                 public void onClick(AjaxRequestTarget target) {
-                    VirtualCollection forkedCollection = model.getObject().fork(owner);
+                    VirtualCollection forkedCollection =
+                        VirtualCollectionFactory.createFork(model.getObject(), owner).getCollection();
+                    //VirtualCollection forkedCollection = model.getObject().fork(owner);
                     SubmissionUtils.storeCollection((ApplicationSession)getSession(), forkedCollection);
                     setResponsePage(CreateAndEditVirtualCollectionPageV2.class);
                 }

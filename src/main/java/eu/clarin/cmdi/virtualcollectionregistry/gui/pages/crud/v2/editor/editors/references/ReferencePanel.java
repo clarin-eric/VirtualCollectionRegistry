@@ -2,15 +2,19 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editor
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.UIUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.EventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.MoveListEventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
+import eu.clarin.cmdi.virtualcollectionregistry.model.ResourceScan.State;
+import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -37,8 +41,13 @@ public class ReferencePanel extends Panel {
      * @param ref 
      */
 
-    public ReferencePanel(String id, final Resource ref, final ReferencesEditor.State state, String reason, Model<Boolean> advancedEditorMode, long maxDisplayOrder) {
+    public ReferencePanel(String id, final Resource ref, final State state, String reason, Model<Boolean> advancedEditorMode, long maxDisplayOrder, Map<String, Boolean> refReasonCollapseState, ReferencesEditor.RescanHandler rescanHandler) {
         super(id);
+        boolean reasonCollapsed = true;
+        if(refReasonCollapseState.containsKey(ref.getRef())) {
+            reasonCollapsed = refReasonCollapseState.get(ref.getRef());
+        }
+
         long displayOrder = ref.getDisplayOrder();
 
         Model titleModel = Model.of("<required>");
@@ -51,18 +60,36 @@ public class ReferencePanel extends Panel {
         }
 
         WebMarkupContainer divReason = new WebMarkupContainer("reason");
-        divReason.add(new Label("reason_lbl", Model.of(reason == null ? "" : "Validation failed: "+reason)));
-        divReason.setVisible(reason != null);
+        divReason.setOutputMarkupId(true);
+        AjaxFallbackLink reasonBtnRescan = new AjaxFallbackLink("btn_rescan") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                rescanHandler.rescan(ref.getRef(), target);
+            }
+        };
+        divReason.add(reasonBtnRescan);
+
+        Label reasonLbl = new Label("reason_lbl", reason);
+        reasonLbl.setEscapeModelStrings(false);
+        if(state == State.FAILED) {
+            reasonLbl.add(new AttributeModifier("class", "icon-failed"));
+        } else if(reasonCollapsed) {
+            divReason.add(new AttributeModifier("class", "collapse"));
+        }
+        divReason.add(reasonLbl);
 
         WebMarkupContainer editorWrapper = new WebMarkupContainer("wrapper");
         editorWrapper.add(divReason);
 
         boolean analysing = false;
-        if(state == ReferencesEditor.State.INITIALIZED || state == ReferencesEditor.State.ANALYZING) {
+        if(state == State.INITIALIZED || state == State.ANALYZING) {
             analysing = true;
         }
 
         WebMarkupContainer stateIcon = new WebMarkupContainer("state");
+        if(reason != null && !reason.isEmpty()) {
+            UIUtils.addTooltip(stateIcon, reason);
+        }
         switch(state) {
             case DONE:
                 if(HandleLinkModel.isSupportedPersistentIdentifier(ref.getRef())) {
@@ -79,7 +106,29 @@ public class ReferencePanel extends Panel {
                 stateIcon.add(new AttributeAppender("class", "fa fa-dot-circle-o icon icon-waiting"));
                 break;
         }
-        editorWrapper.add(stateIcon);
+
+        AjaxFallbackLink reasonToggleLink = new AjaxFallbackLink("reason_toggle_btn") {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                if(state != State.FAILED) {
+                    if (refReasonCollapseState.containsKey(ref.getRef())) {
+                        refReasonCollapseState.put(ref.getRef(), !refReasonCollapseState.get(ref.getRef()));
+                    } else {
+                        refReasonCollapseState.put(ref.getRef(), false);
+                    }
+                }
+
+                if(target != null) {
+
+                }
+            }
+        };
+        reasonToggleLink.setEnabled(state != State.FAILED);
+        reasonToggleLink.add(new AttributeModifier("data-toggle","collapse"));
+        reasonToggleLink.add(new AttributeModifier("data-target","#"+divReason.getMarkupId()));
+        reasonToggleLink.add(stateIcon);
+
+        editorWrapper.add(reasonToggleLink);
 
         String urlValue = ref.getRef();
         if(!titleModel.getObject().toString().isEmpty()) {
@@ -208,8 +257,8 @@ public class ReferencePanel extends Panel {
         add(editorWrapper);
     }
 
-    private boolean getButtonState(ReferencesEditor.State state) {
-        return state != ReferencesEditor.State.INITIALIZED && state != ReferencesEditor.State.ANALYZING;
+    private boolean getButtonState(State state) {
+        return state != State.INITIALIZED && state != State.ANALYZING;
     }
 
     public void addEventHandler(EventHandler handler) {

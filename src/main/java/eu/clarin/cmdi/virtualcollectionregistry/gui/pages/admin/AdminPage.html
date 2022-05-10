@@ -33,26 +33,37 @@
                 </div>
             </div>
 
-            <div class="row">
-                <div class="col-xs-12">
-                    <h1>Collection administration</h1>
-                    <form wicket:id="spaceSelectForm">
-                        <label for="space">Collections space:</label>
-                        <select id="space" wicket:id="space">
-                            <option>Public</option>
-                            <option>User 1</option>
-                            <option>User 2</option>
-                        </select>
-                        <input type="submit" value="Select" />
-                    </form>
-                    <wicket:container wicket:id="collections">[collections]</wicket:container>
-                </div>
-            </div>
 
             <div class="row">
                 <div class="col-xs-12">
-                    <h1>Reference Validation</h1>
-                    <div wicket:id="pnl_reference_validation"></div>
+                    <br />
+                    <h1>Administration</h1>
+
+                    <!-- Nav tabs -->
+                    <ul class="nav nav-tabs" role="tablist">
+                        <li role="presentation" class="active"><a href="#collections" aria-controls="collections" role="tab" data-toggle="tab">Collections</a></li>
+                        <li role="presentation"><a href="#validation" aria-controls="validation" role="tab" data-toggle="tab">Validation</a></li>
+                    </ul>
+
+                    <!-- Tab panes -->
+                    <div class="tab-content">
+                        <div role="tabpanel" class="tab-pane active" id="collections">
+                            <form wicket:id="spaceSelectForm">
+                                <label for="space">Collections space:</label>
+                                <select id="space" wicket:id="space">
+                                    <option>Public</option>
+                                    <option>User 1</option>
+                                    <option>User 2</option>
+                                </select>
+                                <input type="submit" value="Select" />
+                            </form>
+                            <wicket:container wicket:id="collections">[collections]</wicket:container>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="validation">
+                            <div wicket:id="pnl_reference_validation"></div>
+                        </div>
+                    </div>
+
                 </div>
             </div>
 

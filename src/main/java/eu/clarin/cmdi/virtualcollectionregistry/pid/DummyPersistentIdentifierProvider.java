@@ -44,7 +44,7 @@ public class DummyPersistentIdentifierProvider implements
     }
 
     @Override
-    public void updateIdentifier(String pid, URI target)
+    public void updateIdentifier(PersistentIdentifier pid, URI target)
             throws VirtualCollectionRegistryException {
     }
 

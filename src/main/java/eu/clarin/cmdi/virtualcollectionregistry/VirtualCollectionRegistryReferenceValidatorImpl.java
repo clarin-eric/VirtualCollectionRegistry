@@ -3,6 +3,7 @@ package eu.clarin.cmdi.virtualcollectionregistry;
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.references.ReferencesEditor;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
+import eu.clarin.cmdi.virtualcollectionregistry.model.ResourceScan;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -23,6 +24,8 @@ import org.w3c.dom.Node;
 import org.w3c.dom.NodeList;
 import org.xml.sax.SAXException;
 
+import javax.persistence.EntityManager;
+import javax.persistence.TypedQuery;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -33,288 +36,105 @@ import java.util.*;
 import java.util.concurrent.CopyOnWriteArrayList;
 
 @Component
-public class VirtualCollectionRegistryReferenceValidatorImpl implements VirtualCollectionRegistryReferenceValidator, InitializingBean {
+public class VirtualCollectionRegistryReferenceValidatorImpl extends TxManager implements VirtualCollectionRegistryReferenceValidator, InitializingBean {
 
     private final static Logger logger = LoggerFactory.getLogger(VirtualCollectionRegistryReferenceValidatorImpl.class);
 
-    private final transient List<VirtualCollectionRegistryReferenceValidationJob> jobs = new CopyOnWriteArrayList<>();
-
-    private final transient List<ReferenceParser> parsers = new LinkedList<>();
-
-    private boolean running = false;
-
-    private final CloseableHttpClient httpclient;
-    private RequestConfig requestConfig;
+    private final transient List<VirtualCollectionRegistryReferenceValidatorWorker> workers = new CopyOnWriteArrayList<>();
 
     @Autowired
     private VcrConfig vcrConfig;
 
-    public VirtualCollectionRegistryReferenceValidatorImpl() {
-        this.parsers.add(new CmdiReferenceParserImpl());
-        this.httpclient = HttpClients.createDefault();
-        this.requestConfig = RequestConfig
-                                .custom()
-                                .setConnectionRequestTimeout(1000)
-                                .setMaxRedirects(5)
-                                .build();
-    }
+    private boolean running = false;
+
+    public VirtualCollectionRegistryReferenceValidatorImpl() { }
 
     // called by Spring directly after Bean construction
     @Override
-    public void afterPropertiesSet() {
-        this.requestConfig = RequestConfig
-                .custom()
-                .setConnectionRequestTimeout(vcrConfig.getHttpTimeout())
-                .setMaxRedirects(vcrConfig.getHttpRedirects())
-                .build();
-    }
+    public void afterPropertiesSet() { }
 
     @Override
-    public void perform(long now) {
-        if(!running) {
-            running = true;
-            for (VirtualCollectionRegistryReferenceValidationJob job : jobs) {
-                if (job.getState().getState() == ReferencesEditor.State.INITIALIZED) {
-                    job.setState(ReferencesEditor.State.ANALYZING);
-                    try {
-                        analyze(job);
-                        job.setState(ReferencesEditor.State.DONE);
-                    } catch (Exception ex) {
-                        job.setState(ReferencesEditor.State.FAILED, ex.getMessage());
+    public void shutdown() { }
+
+    @Override
+    public synchronized void perform(long now, DataStore datastore) throws VirtualCollectionRegistryException {
+        try {
+            if(!running) {
+                running = true;
+
+                //Fetch and process list of work items
+                List<ResourceScan> scans = fetchListOfWork(datastore.getEntityManager());
+                if(scans.size() > 0) {
+                    logger.debug("Found {} resource scan(s) requiring analysing.", scans.size());
+                }
+                try {
+                    beginTransaction(datastore.getEntityManager());
+
+                    for (ResourceScan scan : scans) {
+                        logger.trace("Marking start for scan with ref = {}", scan.getRef());
+                        markScanStarted(datastore.getEntityManager(), scan);
+                        logger.trace("Starting work for scan with ref = {}", scan.getRef());
+                        VirtualCollectionRegistryReferenceValidatorWorker.WorkerResult result =
+                                new VirtualCollectionRegistryReferenceValidatorWorker().doWork(scan.getRef());
+
+                        //Update and persist scan
+                        scan.setMimeType(result.getMimeType());
+                        scan.setHttpResponseCode(result.getHttpResponseCode());
+                        scan.setHttpResponseMessage(result.getHttpResponseMsg());
+                        scan.setLastScanEnd(new Date());
+                        scan.setException(result.getException());
+                        scan.setNameSuggestion(result.getNameSuggestion());
+                        scan.setDescriptionSuggestion(result.getDescriptionSuggestion());
+                        datastore.getEntityManager().merge(scan);
+
+                        logger.info("Finished resource scan for ref = {} in {}s, http response = {}", scan.getRef(), scan.getDurationInSeconds(), scan.getHttpResponseCode());
                     }
+                } catch(Exception ex) {
+                    rollbackActiveTransaction(datastore.getEntityManager(), "Failed to update resource scan", ex);
+                } finally {
+                    commitActiveTransaction(datastore.getEntityManager());
                 }
             }
+        } catch (Exception ex) {
+            logger.info("Perform failed", ex);
+        } finally {
             running = false;
         }
     }
 
-    @Override
-    public VirtualCollectionRegistryReferenceValidationJob getJob(String id) {
-        for(VirtualCollectionRegistryReferenceValidationJob job : jobs) {
-            if(job.getId().equalsIgnoreCase(id)) {
-                return job;
-            }
+    /**
+     * Fetch list of resources that require scanning from the database.
+     *
+     * @param em
+     * @return
+     * @throws VirtualCollectionRegistryException
+     */
+    private synchronized List<ResourceScan>  fetchListOfWork(final EntityManager em) throws VirtualCollectionRegistryException {
+        List<ResourceScan> scans = new ArrayList<>();
+        try {
+            beginTransaction(em);
+            TypedQuery<ResourceScan> q = em.createNamedQuery("ResourceScan.findScanRequired", ResourceScan.class);
+            scans = q.getResultList();
+        } catch (Exception ex) {
+            rollbackActiveTransaction(em, "Failed to fetch scan resources", ex);
+        } finally {
+            commitActiveTransaction(em);
         }
-        return null;
-    }
-
-    @Override
-    public ReferencesEditor.State getState(String id) {
-        VirtualCollectionRegistryReferenceValidationJob job = getJob(id);
-        if(job != null) {
-            return job.getState().getState();
-        }
-        return ReferencesEditor.State.FAILED;
-    }
-
-    @Override
-    public void setState(String id, ReferencesEditor.State state) {
-        for(VirtualCollectionRegistryReferenceValidationJob job : jobs) {
-            if(job.getId().equalsIgnoreCase(id)) {
-                job.setState(state);
-            }
-        }
-    }
-
-    @Override
-    public void addReferenceValidationJob(String id, Resource r) {
-        VirtualCollectionRegistryReferenceValidationJob job = new VirtualCollectionRegistryReferenceValidationJob(r, id);
-        jobs.add(job);
-    }
-
-    @Override
-    public void removeReferenceValidationJob(String id) {
-        for(int i = 0; i < jobs.size(); i++) {
-            VirtualCollectionRegistryReferenceValidationJob job = jobs.get(i);
-            if(job.getId().equalsIgnoreCase(id)) {
-                jobs.remove(i);
-            }
-        }
-    }
-
-    @Override
-    public List<VirtualCollectionRegistryReferenceValidationJob> getJobs() {
-        return jobs;
+        return scans;
     }
 
     /**
-     * Try to fetch the reference via HTTP and set it's state based on the response.
+     * Update the properties of the ResourceScan to mark it as being analysed to prevent other workers of processing this
+     * item.
      *
-     * TODO: currently this runs in one thread, so resource validation might impact creation of collections (collection
-     * can only be saved  after validating all resources). Consider alternative approach with multiple threads doing the
-     * work in the background.
-     *
-     * @param job
-     * @throws IOException
+     * @param em
+     * @param scan
      */
-    private void analyze(final VirtualCollectionRegistryReferenceValidationJob job) throws IOException {
-        logger.trace("Analyzing: {}", job.getReference().getRef());
-
-        HttpGet httpget = new HttpGet(job.getReference().getRef());
-        httpget.setConfig(requestConfig);
-
-        logger.trace("Executing request " + httpget.getRequestLine());
-
-        // Create a custom response handler
-        ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
-            @Override
-            public String handleResponse(final HttpResponse response) throws ClientProtocolException, IOException {
-                for(Header h : response.getHeaders("Content-Type")) {
-                    logger.trace(h.getName() + " - " + h.getValue());
-
-                    String[] parts = h.getValue().split(";");
-                    String mediaType = parts[0];
-
-                    logger.trace("Media-Type="+mediaType);
-                    if(parts.length > 1) {
-                        String p = parts[1].trim();
-                        if(p.startsWith("charset=")) {
-                            logger.trace("Charset="+p.replaceAll("charset=", ""));
-                        } else if(p.startsWith("boundary=")) {
-                            logger.trace("Boundary="+p.replaceAll("boundary=", ""));
-                        }
-                    }
-
-                    job.getReference().setMimetype(mediaType);
-                }
-
-                for(Header h : response.getHeaders("Content-Length")) {
-                    logger.trace(h.getName() + " - " + h.getValue());
-                }
-
-                job.setHttpResponseReason(response.getStatusLine().getReasonPhrase());
-                job.setHttpResponseCode(response.getStatusLine().getStatusCode());
-
-                int status = response.getStatusLine().getStatusCode();
-                if (status >= 200 && status < 300) {
-                    HttpEntity entity = response.getEntity();
-                    job.getReference().setCheck("HTTP "+status+"/"+response.getStatusLine().getReasonPhrase());
-                    String body = entity != null ? EntityUtils.toString(entity) : null;
-
-                    if(body != null) {
-                        for(ReferenceParser parser : parsers) {
-                            if(parser.parse(body, job)) {
-                                break; //exit loop if the parser processed the reference
-                            }
-                        }
-                    }
-
-                    return body;
-                } else {
-                    throw new ClientProtocolException("Unexpected response status: HTTP " + status + " - " + response.getStatusLine().getReasonPhrase());
-                }
-            }
-        };
-
-        //String responseBody = httpclient.execute(httpget, responseHandler);
-        httpclient.execute(httpget, responseHandler);
-    }
-
-    public interface ReferenceParser {
-        boolean parse(final String xml, final VirtualCollectionRegistryReferenceValidationJob job);
-    }
-
-    public class CmdiReferenceParserImpl implements ReferenceParser {
-        @Override
-        public boolean parse(final String xml, final VirtualCollectionRegistryReferenceValidationJob job) {
-            boolean handled = false;
-            final String type = job.getReference().getMimetype();
-
-            try {
-                if(type.equalsIgnoreCase("application/x-cmdi+xml")) {
-                    parseCmdi(xml, job);
-                } else if(job.getReference().getMimetype().equalsIgnoreCase("text/xml") && xml.contains("xmlns=\"http://www.clarin.eu/cmd/\"")) {
-                    parseCmdi(xml, job);
-                }
-            } catch(IOException | ParserConfigurationException | XPathExpressionException | SAXException ex) {
-                logger.error("Failed to parse CMDI", ex);
-            }
-
-            return handled;
-        }
-
-        private void parseCmdi(final String xml, final VirtualCollectionRegistryReferenceValidationJob job) throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
-            logger.trace("Parsing CMDI");
-
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setNamespaceAware(true);
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(new java.io.ByteArrayInputStream(xml.getBytes()));
-
-            String profile = getValueForXPath(doc, "//default:CMD/default:Header/default:MdProfile/text()");
-            logger.trace("CMDI profile = " + profile);
-
-            String name = getValueForXPath(doc, "//default:CMD/default:Components/default:lat-session/default:Name/text()");
-            String description = getValueForXPath(doc, "//default:CMD/default:Components/default:lat-session/default:descriptions/default:Description[lang('eng')]/text()");
-            logger.trace("Name = " + name + ", description = " + description);
-
-            if(name != null) {
-                job.getReference().setLabel(name);
-            }
-            if(description != null) {
-                job.getReference().setDescription(description);
-            }
-        }
-
-        /**
-         * Return the first value of the xpath query result, or null if the result is
-         * empty
-         *
-         * @param doc
-         * @param xpathQuery
-         * @return
-         */
-        private String getValueForXPath(Document doc, String xpathQuery) {
-            List<String> result = getValuesForXPath(doc, xpathQuery);
-            if(result.isEmpty()) {
-                return null;
-            }
-            return result.get(0);
-        }
-
-        /**
-         * Return all values for the xpath query
-         *
-         * @param doc
-         * @param xpathQuery
-         * @return
-         */
-        private List<String> getValuesForXPath(Document doc, String xpathQuery) {
-            final XPath xpath = XPathFactory.newInstance().newXPath();
-            xpath.setNamespaceContext(new NamespaceContext() {
-                @Override
-                public String getNamespaceURI(String prefix) {
-                    return prefix.equals("default") ? "http://www.clarin.eu/cmd/" : null;
-                }
-
-                @Override
-                public Iterator<String> getPrefixes(String val) {
-                    return null;
-                }
-
-                @Override
-                public String getPrefix(String uri) {
-                    return null;
-                }
-            });
-
-            List<String> result = new ArrayList<>();
-
-            try {
-                XPathExpression expr = xpath.compile(xpathQuery);
-                Object xpathResult = expr.evaluate(doc, XPathConstants.NODESET);
-                NodeList nodes = (NodeList) xpathResult;
-                logger.trace("XPatch query = ["+xpathQuery+"], result nodelist.getLength() = "+nodes.getLength());
-                for (int i = 0; i < nodes.getLength(); i++) {
-                    Node currentItem = nodes.item(i);
-                    logger.trace("found node -> " + currentItem.getLocalName() + " (namespace: " + currentItem.getNamespaceURI() + "), value = " + currentItem.getNodeValue());
-                    result.add(currentItem.getNodeValue());
-                }
-            } catch(XPathExpressionException ex) {
-                logger.error("XPath query ["+xpathQuery+"] failed.", ex);
-            }
-
-            return result;
-        }
+    private synchronized void markScanStarted(final EntityManager em, ResourceScan scan) {//throws VirtualCollectionRegistryException {
+        beginTransaction(em);
+        scan.setLastScan(new Date());
+        scan.setLastScanEnd(null);
+        em.merge(scan);
+        commitActiveTransaction(em);
     }
 }

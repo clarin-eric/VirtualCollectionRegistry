@@ -19,8 +19,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission;
 import de.mpg.aai.shhaa.config.ConfigContext;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder;
+import eu.clarin.cmdi.virtualcollectionregistry.model.*;
 
 import java.net.URI;
 import java.security.Principal;
@@ -174,6 +173,20 @@ public class SubmissionUtils {
         }
 
         try {
+            VirtualCollectionFactory vcf =
+                VirtualCollectionFactory.createSubmission(new User(principal))
+                    .setName(params.getParameterValue("name").toString())
+                    .setDescription(params.getParameterValue("description").toString())
+                    .setType(type)
+                    .setOrigin(originUrl)
+                    .addAllKeywords(getAsStringList(params.getParameterValues("keyword")))
+                    .setPurpose(getPurposeFromParams(params, "purpose"))
+                    .setReproducibility(
+                            getReproducibilityFromParams(params, "reproducibility"),
+                            params.getParameterValue("reproducibilityNotice").toString()
+                    );
+
+            /*
             //Add shared fields to builder
             VirtualCollectionBuilder vcBuilder = new VirtualCollectionBuilder()
                 .setType(type)
@@ -187,7 +200,28 @@ public class SubmissionUtils {
                 .setReproducibility(getReproducibilityFromParams(params, "reproducibility"))
                 .setReproducibilityNotice(params.getParameterValue("reproducibilityNotice").toString())
                 .setCreationDate(new Date());
+            */
+            if(type == VirtualCollection.Type.EXTENSIONAL) {
+                String originalQuery = params.getParameterValue("original_query").toString();
+                if(originalQuery != null && originalQuery.isEmpty()) {
+                    originalQuery = null;
+                }
+                for(String uri : getAsStringList(params.getParameterValues("metadataUri"))) {
+                    vcf.addResource(Resource.Type.METADATA, uri, originUrl, originalQuery);
+                }
+                for(String uri : getAsStringList(params.getParameterValues("resourceUri"))) {
+                    vcf.addResource(Resource.Type.RESOURCE, uri, originUrl, originalQuery);
+                }
+            } else if(type == VirtualCollection.Type.INTENSIONAL) {
+                vcf.setGeneratedBy(
+                        params.getParameterValue("queryDescription").toString(),
+                        params.getParameterValue("queryUri").toString(),
+                        params.getParameterValue("queryProfile").toString(),
+                        params.getParameterValue("queryValue").toString()
+                );
+            }
 
+            /*
             //Add extensional or intenstional specific fields to builder
             switch(type) {
                 case EXTENSIONAL:
@@ -209,9 +243,11 @@ public class SubmissionUtils {
                             );
                     break;
             }
+            */
 
             //Build collection and serialize to the current session
-            storeCollection(session, vcBuilder.build());
+            //storeCollection(session, vcBuilder.build());
+            storeCollection(session, vcf.getCollection());
         } catch(VirtualCollectionRegistryUsageException | IllegalArgumentException ex) {
             logger.error("Failed to build virtual collection", ex);
             return ex.getMessage();
@@ -259,7 +295,7 @@ public class SubmissionUtils {
     }
     
     public static void storeCollection(ApplicationSession session, VirtualCollection vc) {
-        logger.debug("Storing collection into session: "+session.getId());
+        logger.debug("Storing collection (id="+vc.getId()+") into session: "+session.getId());
         session.setAttribute(COLLECTION_ATTRIBUTE_NAME, vc); 
     }
     
@@ -269,7 +305,9 @@ public class SubmissionUtils {
         if(obj == null) {
             return null;
         }
-        return (VirtualCollection)obj;
+        VirtualCollection vc = (VirtualCollection)obj;
+        logger.debug("Loaded collection id="+vc.getId());
+        return vc;
     }
 
     public static void storeCollectionMergeId(ApplicationSession session, Long id) {

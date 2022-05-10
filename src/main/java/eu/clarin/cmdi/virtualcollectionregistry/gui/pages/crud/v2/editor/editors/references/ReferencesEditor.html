@@ -26,6 +26,14 @@
                     <div wicket:id="ref_editor"></div>
                 </div>
 
+
+                <div class="col-sm-12" wicket:id="filter">
+                    <!-- reverse order because of pull-right -->
+                    <span wicket:id="lbl_filter_postfix" class="pull-right"></span>
+                    <select wicket:id="cb_filter" class="pull-right"></select>
+                    <span wicket:id="lbl_filter_prefix" class="pull-right margin-right"></span>
+                </div>
+
                 <!-- The list of references -->
                 <div class="col-md-12 col-md-offset-0 col-sm-12" wicket:id="ajaxwrapper" style="margin-top: 10px">
                     <div wicket:id="lbl_no_references" class="error-message"></div>

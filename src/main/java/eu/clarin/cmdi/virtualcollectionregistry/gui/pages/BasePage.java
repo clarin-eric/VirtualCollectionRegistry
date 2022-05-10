@@ -61,7 +61,10 @@ import org.slf4j.LoggerFactory;
 public class BasePage extends WebPage {
 
     private static Logger logger = LoggerFactory.getLogger(BasePage.class);
-    
+
+    //@SpringBean
+    protected final TimerManager timerManager = new TimerManagerImpl();
+
     @SpringBean
     private AdminUsersService adminUsersService;
 
@@ -145,6 +148,8 @@ public class BasePage extends WebPage {
         add(badge);
 
         add(new ScrollTracker("scroll"));
+
+        add(timerManager.getTimerBehavior());
     }
     
     private Component createHeaderMenu(String id) {
@@ -302,14 +307,14 @@ public class BasePage extends WebPage {
      * user is not the owner
      *
      */
-    protected void  checkAccess(final VirtualCollection vc) throws VirtualCollectionRegistryPermissionException {
+    protected void checkAccess(final VirtualCollection vc) throws VirtualCollectionRegistryPermissionException {
         //Allow unauthenticated access to public collections
         if(!hasUser()) {
             if( vc.getState() == VirtualCollection.State.PUBLIC ||
                 vc.getState() == VirtualCollection.State.PUBLIC_FROZEN) {
                 return;
             }
-            throw new UnauthorizedInstantiationException(CreateAndEditVirtualCollectionPage.class);
+            throw new VirtualCollectionRegistryPermissionException("Unauthorized to edit this collection");
         }
 
         //An authenticated user is available, do not allow editing of VC's that are non-private or owned by someone else!
@@ -322,18 +327,20 @@ public class BasePage extends WebPage {
 
         ) {
             logger.warn("User {} attempts to edit virtual collection {} with state {} owned by {}", new Object[]{getUser().getName(), vc.getId(), vc.getState(), vc.getOwner().getName()});
-            throw new UnauthorizedInstantiationException(CreateAndEditVirtualCollectionPage.class);
+            throw new VirtualCollectionRegistryPermissionException("Unauthorized to edit this collection");
         }
     }
 
     protected void checkReadAccess(final VirtualCollection vc) throws VirtualCollectionRegistryPermissionException {
         boolean isPublic = vc.getState() == VirtualCollection.State.PUBLIC || vc.getState() == VirtualCollection.State.PUBLIC_FROZEN;
-        if(!isPublic
-                && !isUserAdmin()
-                && !vc.getOwner().equalsPrincipal(getUser())
-        ) {
-            // user trying to access other user's collection
-            throw new VirtualCollectionRegistryPermissionException("Unauthorized");//this, Component.RENDER);
+        if(!isPublic && !isUserAdmin()) {
+            try {
+                if (!vc.getOwner().equalsPrincipal(getUser())) {
+                    throw new VirtualCollectionRegistryPermissionException("Unauthorized to access this collection");
+                }
+            } catch(Exception ex) {
+                throw new VirtualCollectionRegistryPermissionException("Unauthorized to access this collection");
+            }
         }
     }
 
@@ -353,7 +360,6 @@ public class BasePage extends WebPage {
      * @return URL to include as a canonical HREF in the page header.
      */
     public IModel<String> getCanonicalUrlModel() {
-        //return null;
         final CharSequence url = RequestCycle.get().urlFor(getClass(), null);
         final String absoluteUrl = RequestCycle.get().getUrlRenderer().renderFullUrl(Url.parse(url));
         return new Model(absoluteUrl);

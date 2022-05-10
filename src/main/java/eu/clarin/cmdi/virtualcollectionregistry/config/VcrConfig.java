@@ -31,6 +31,7 @@ public interface VcrConfig {
     public boolean isProcessEnabledForResources();
     public boolean isProcessEnabledForCollections();
     public boolean isDownloadEnabledForCollections();
+
     public String getLogoutMode();
     public boolean isLogoutEnabled();
     public String getLocaleString();
@@ -45,5 +46,8 @@ public interface VcrConfig {
 
     public int getHttpTimeout();
     public int getHttpRedirects();
+
+    public boolean isHttpReferenceScanningEnabled();
+    int getResourceScanAgeTresholdMs();
 
 }

@@ -44,6 +44,19 @@ public abstract class CollectionsProvider extends
         return new DetachableVirtualCollectionModel(vc);
     }
 
+    public int countCollectionsWithStates(List<VirtualCollection.State> states) {
+        int count = 0;
+        for(VirtualCollection vc : getList()) {
+            VirtualCollection.State state = vc.getState();
+            for(VirtualCollection.State s : states) {
+                if(s == state) {
+                    count++;
+                }
+            }
+        }
+        return count;
+    }
+
     public List<String> getOrigins() {
         final VirtualCollectionRegistry vcr = Application.get().getRegistry();
         List<String> origins = new ArrayList<>();
@@ -58,8 +71,7 @@ public abstract class CollectionsProvider extends
     @Override
     public long size() {
         try {
-            final VirtualCollectionRegistry vcr = Application.get().getRegistry();
-            return vcr.getVirtualCollectionCount(getQueryFactory());
+            return Application.get().getRegistry().getVirtualCollectionCount(getQueryFactory());
         } catch (VirtualCollectionRegistryException e) {
             throw new WicketRuntimeException(e);
         }
@@ -108,7 +120,7 @@ public abstract class CollectionsProvider extends
         5       | 1      | 4      | 6     | public  | ...
         6       | 1      | 6      | NULL  | private | ...
          */
-        factory.andIsNull(QueryOptions.Property.VC_CHILD);
+        //factory.andIsNull(QueryOptions.Property.VC_CHILD);
 
         // add the filter that selects the public or private space (overridden)
         addSpaceFilter(factory);

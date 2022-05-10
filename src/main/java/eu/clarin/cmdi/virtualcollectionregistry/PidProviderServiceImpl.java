@@ -189,4 +189,19 @@ public class PidProviderServiceImpl implements PidProviderService {
         }
         return pids;
     }
+
+    /**
+     * Update all identifiers for the collection specified by id with the specified newUrl
+     * @param pid
+     * @param newUrl
+     */
+    public void updateLatestIdentifierUrl(PersistentIdentifier pid, String newUrl) throws VirtualCollectionRegistryException {
+        for(PersistentIdentifierProvider provider : providers) {
+            pid.getPidType();
+        }
+    }
+
+    public void updateIdentifierUrl(PersistentIdentifier pid, String newUrl) throws VirtualCollectionRegistryException {
+
+    }
 }

@@ -61,9 +61,9 @@ public class MultiPersistentIdentifierProvider implements PersistentIdentifierPr
     }
 
     @Override
-    public void updateIdentifier(String pid, URI target) throws VirtualCollectionRegistryException {
+    public void updateIdentifier(PersistentIdentifier pid, URI target) throws VirtualCollectionRegistryException {
         for(PersistentIdentifierProvider otherProvider : providers) {
-            if(otherProvider.ownsIdentifier(pid)) {
+            if(otherProvider.ownsIdentifier(pid.getActionableURI())) {
                 otherProvider.updateIdentifier(pid, target);
             }
         }

@@ -5,9 +5,11 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryReferenceValidationJob;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryReferenceValidator;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.TimerManager;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.CancelEventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.EventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.MoveListEventHandler;
@@ -20,16 +22,19 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.Listener;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.*;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
+import eu.clarin.cmdi.virtualcollectionregistry.model.ResourceScan;
+import eu.clarin.cmdi.virtualcollectionregistry.model.ResourceScan.State;
 import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -53,12 +58,8 @@ public class ReferencesEditor extends ComposedField {
 
     private final ModalConfirmDialog localDialog;
     
-    private final int uiRefreshTimeInSeconds = 1;
-
     private boolean currentValidation = false;
     private boolean previousValidation = false;
-
-    private final String editorId = UUID.randomUUID().toString();
 
     public class Validator implements InputValidator, Serializable {
         private String message = "";
@@ -117,16 +118,31 @@ public class ReferencesEditor extends ComposedField {
         }
     }
 
-    public ReferencesEditor(String id, String label, Model<Boolean> advancedEditorMode, VisabilityUpdater updater) {
+    private final Component componentToUpdate;
+    private final Filter f;
+    private final TimerManager timerManager;
+    private final WebMarkupContainer ajaxWrapper;
+
+    private Map<String, Boolean> refReasonCollapseState = new HashMap<>();
+
+    public interface RescanHandler extends Serializable {
+        public void rescan(String reg, AjaxRequestTarget target);
+    }
+
+    public ReferencesEditor(String id, String label, Model<Boolean> advancedEditorMode, VisabilityUpdater updater, TimerManager timerManager) {
         super(id, "References", null, updater);
+        this.timerManager = timerManager;
         setOutputMarkupId(true);
-        Component componentToUpdate = this;
+        componentToUpdate = this;
 
         final WebMarkupContainer editorWrapper = new WebMarkupContainer("ref_editor_wrapper");
         editorWrapper.setOutputMarkupId(true);
 
-        final WebMarkupContainer ajaxWrapper = new WebMarkupContainer("ajaxwrapper");
+        ajaxWrapper = new WebMarkupContainer("ajaxwrapper");
         ajaxWrapper.setOutputMarkupId(true);
+
+        f = new Filter("filter", Application.get().getRegistry().getReferenceValidator());
+        add(f);
 
         localDialog = new ModalConfirmDialog("references_modal");
         localDialog.addListener(new Listener() {
@@ -161,11 +177,20 @@ public class ReferencesEditor extends ComposedField {
             @Override
             public void handleSaveEvent(AjaxRequestTarget target) {
                 //Reset state so this reference is rescanned
-                VirtualCollectionRegistry registry = Application.get().getRegistry();
-                registry.getReferenceValidator().setState(references.get(edit_index).getInternalId(), State.INITIALIZED);
+                //VirtualCollectionRegistry registry = Application.get().getRegistry();
+                //registry.getReferenceValidator().setState(references.get(edit_index).getInternalId(), State.INITIALIZED);
+
+                updateReferenceJob(references.get(edit_index));
+
+                //addReferenceJob
+
                 edit_index = -1;
                 editor.setVisible(false);
+                listview.setModelObject(f.apply(references));
                 listview.setVisible(true);
+
+                addToTimerManager(target);
+
                 if(target != null) {
                     target.add(componentToUpdate);
                 }
@@ -176,6 +201,7 @@ public class ReferencesEditor extends ComposedField {
             public void handleCancelEvent(AjaxRequestTarget target) {
                 edit_index = -1;
                 editor.setVisible(false);
+                listview.setModelObject(f.apply(references));
                 listview.setVisible(true);
                 if(target != null) {
                     target.add(componentToUpdate);
@@ -189,24 +215,38 @@ public class ReferencesEditor extends ComposedField {
         lblNoReferences = new Label("lbl_no_references", "No references found.<br />Please add one or more members that make up this virtual collection by means of a (persistent) reference. ");
         lblNoReferences.setEscapeModelStrings(false);
 
-        listview = new ListView("listview", references) {
+        listview = new ListView("listview", f.apply(references)) {
             @Override
             protected void populateItem(ListItem item) {
-
                 EditableResource ref = (EditableResource)item.getModel().getObject();
-                final VirtualCollectionRegistry registry = Application.get().getRegistry();
-                VirtualCollectionRegistryReferenceValidationJob job =
-                        registry.getReferenceValidator().getJob(ref.getInternalId());
-                State state = registry.getReferenceValidator().getState(ref.getInternalId());
-                String reason = null;
-                if(job != null && state == State.FAILED) {
-                    reason = job.getState().getData();
-                    logger.trace("Reason: {}", reason);
-                } else {
-                    logger.trace("No issue. job="+job+", state="+state);
+
+                State state = State.INITIALIZED;
+                String reason = "";
+                ResourceScan scan = scanResults.get(ref.getRef());
+                if(scan != null) {
+                    state = scan.getState();
+                    reason += "Last scan: "+scan.getLastScanEnd()+"<br />";
+                    if(scan.getHttpResponseCode() > 0) {
+                        reason += "HTTP response: " + scan.getHttpResponseCode();
+                        if (scan.hasHttpResponseMessage()) {
+                            reason += " " + scan.getHttpResponseMessage();
+                        }
+                        reason += "<br />";
+                    }
+                    if(scan.getException() != null) {
+                        reason += "Exception: "+scan.getException()+"<br />";
+                    }
+                    reason += "State: "+state.toString()+"<br />";
                 }
 
-                ReferencePanel c = new ReferencePanel("pnl_reference", ref, state, reason, advancedEditorMode, getMaxDisplayOrder());
+                RescanHandler rescanHandler = new RescanHandler() {
+                    @Override
+                    public void rescan(String ref, AjaxRequestTarget target) {
+                        rescanReferenceJob(ref);
+                        addToTimerManager(target);
+                    }
+                };
+                ReferencePanel c = new ReferencePanel("pnl_reference", ref, state, reason, advancedEditorMode, getMaxDisplayOrder(), refReasonCollapseState, rescanHandler);
                 c.addMoveListEventHandler(new MoveListEventHandler() {
                     @Override
                     public void handleMoveUp(Long displayOrder, AjaxRequestTarget target) {
@@ -250,6 +290,7 @@ public class ReferencesEditor extends ComposedField {
                             }
                         }
 
+                        listview.setModelObject(f.apply(references));
                         if(edit_index < 0) {
                             editor.setVisible(false);
                             editor.reset();
@@ -279,18 +320,19 @@ public class ReferencesEditor extends ComposedField {
                 item.add(c);
             }
         };
-
+/*
         ajaxWrapper.add(new AbstractAjaxTimerBehavior(Duration.seconds(uiRefreshTimeInSeconds)) {
             @Override
             protected void onTimer(AjaxRequestTarget target) {
                 //validate(); //make sure this validation is up to date before re rendering the component
                 if(target != null) {
+                    logger.trace("Update references editor timer");
                     target.add(ajaxWrapper);
                 }
                 fireEvent(new CustomDataUpdateEvent(target));
             }
         });
-
+*/
         ajaxWrapper.add(listview);
 
         lblNoReferences.setVisible(references.isEmpty());
@@ -310,6 +352,105 @@ public class ReferencesEditor extends ComposedField {
         f2.setCompleteSubmitOnUpdate(true);
         f2.setRequired(true);
         add(f2);
+    }
+
+    private Map<String, ResourceScan> scanResults = new HashMap<>();
+
+    private void addToTimerManager(AjaxRequestTarget target) {
+       // VirtualCollectionRegistry registry = Application.get().getRegistry();
+       // VirtualCollectionRegistryReferenceValidator validator = registry.getReferenceValidator();
+        timerManager.addTarget(target, new TimerManager.Update() {
+            @Override
+            public boolean onUpdate(AjaxRequestTarget target) {
+                fireEvent(new CustomDataUpdateEvent(target));
+
+                boolean analyzing = true;
+                try {
+                    //Build list of refs
+                    List<String> refs = new ArrayList<>();
+                    for(EditableResource ref : references) {
+                        refs.add(ref.getRef());
+                    }
+                    //Query scans for this list of refs
+                    List<ResourceScan> scans = Application.get().getRegistry().getResourceScansForRefs(refs);
+                    for(ResourceScan scan : scans) {
+                        logger.debug("Scan ref="+scan.getRef()+", state="+scan.getState().toString());
+                        scanResults.put(scan.getRef(), scan);
+                        if(scan.getState() != State.DONE && scan.getState() != State.FAILED) {
+                            analyzing = false;
+                        }
+                    }
+                } catch(VirtualCollectionRegistryException ex) {
+                    logger.error("Failed to fetch resource scan for reference.", ex);
+                }
+
+                return analyzing;
+            }
+
+            @Override
+            public List<Component> getComponents() {
+                List<Component> result = new ArrayList<>();
+                result.add(ajaxWrapper);
+                return result;
+            }
+        });
+    }
+
+    public class Filter extends WebMarkupContainer implements Serializable {
+        private final IModel<String> filterState = new Model<>("ALL");
+
+        private transient final VirtualCollectionRegistryReferenceValidator validator;
+
+        public Filter(String id, VirtualCollectionRegistryReferenceValidator validator) {
+            super(id);
+            this.validator = validator;
+
+            DropDownChoice choice = new DropDownChoice<String>(
+                    "cb_filter",
+                    filterState,
+                    new LoadableDetachableModel<List<String>>() {
+                        @Override
+                        protected List<String> load() {
+                            List<String> filterableState = new ArrayList<>();
+                            filterableState.add("ALL");
+                            filterableState.add(State.FAILED.toString());
+                            filterableState.add(State.ANALYZING.toString());
+                            filterableState.add(State.DONE.toString());
+                            return filterableState;
+                        }
+                    });
+
+            choice.add(new AjaxFormComponentUpdatingBehavior("change") {
+                @Override
+                protected void onUpdate(final AjaxRequestTarget target) {
+                    listview.setModelObject(apply(references));
+                    target.add(componentToUpdate);
+                }
+            });
+
+            Label lblPrefix = new Label("lbl_filter_prefix", "Filter references: ");
+            add(lblPrefix);
+            add(choice);
+            Label lblPostfix = new Label("lbl_filter_postfix", "");
+            add(lblPostfix);
+        }
+
+        public List<EditableResource> apply(List<EditableResource> references) {
+            List<EditableResource> filtered = new ArrayList<>();
+            for(EditableResource r : references) {
+
+                State state = State.INITIALIZED;
+                ResourceScan scan  = scanResults.get(r.getRef());
+                if(scan != null) {
+                    state = scan.getState();
+                }
+
+                if(filterState.getObject() == "ALL" || filterState.getObject() == state.toString()) {
+                    filtered.add(r);
+                }
+            }
+            return filtered;
+        }
     }
 
     private long getMaxDisplayOrder() {
@@ -337,10 +478,12 @@ public class ReferencesEditor extends ComposedField {
     
     @Override
     protected void onRemove() {
+        /*
         VirtualCollectionRegistry registry = Application.get().getRegistry();
         for(EditableResource r : references) {
             registry.getReferenceValidator().removeReferenceValidationJob(r.getInternalId());
         }
+         */
     }
 
     @Override
@@ -374,7 +517,9 @@ public class ReferencesEditor extends ComposedField {
             
             if(target != null) {
                 lblNoReferences.setVisible(references.isEmpty());
+                listview.setModelObject(f.apply(references));
                 listview.setVisible(!references.isEmpty());
+                addToTimerManager(target);
                 target.add(this);
             }
         }
@@ -382,9 +527,47 @@ public class ReferencesEditor extends ComposedField {
     }
 
     private void addReferenceJob(EditableResource r) {
+        //Add reference to list
         references.add(r);
-        final VirtualCollectionRegistry registry = Application.get().getRegistry();
-        registry.getReferenceValidator().addReferenceValidationJob(r.getInternalId(), r);
+
+        //Create new resource scan for this reference
+        try {
+            String sessionId = null;
+            if(getSession() != null) {
+                sessionId = getSession().getId();
+            }
+
+            Application.get().getRegistry().addResourceScan(r.getRef(), sessionId);
+        } catch(Exception ex) {
+            logger.error("Failed to create new resource scan.", ex);
+        }
+    }
+
+    private void updateReferenceJob(EditableResource r) {
+        //Create new resource scan for this reference
+        try {
+            String sessionId = null;
+            if(getSession() != null) {
+                sessionId = getSession().getId();
+            }
+
+            Application.get().getRegistry().addResourceScan(r.getRef(), sessionId);
+        } catch(Exception ex) {
+            logger.error("Failed to create new resource scan.", ex);
+        }
+    }
+
+    private void rescanReferenceJob(String ref) {
+        try {
+            String sessionId = null;
+            if(getSession() != null) {
+                sessionId = getSession().getId();
+            }
+
+            Application.get().getRegistry().rescanResource(ref, sessionId);
+        } catch(Exception ex) {
+            logger.error("Failed to create new resource scan.", ex);
+        }
     }
     
     private boolean handleUrl(String value) {
@@ -406,11 +589,8 @@ public class ReferencesEditor extends ComposedField {
         editor.reset();
         references.clear();
         lblNoReferences.setVisible(references.isEmpty());
+        listview.setModelObject(f.apply(references));
         listview.setVisible(!references.isEmpty());
-    }
-    
-    public enum State {
-        INITIALIZED, ANALYZING, DONE, FAILED
     }
     
     public List<Resource> getData() {
@@ -427,7 +607,9 @@ public class ReferencesEditor extends ComposedField {
             addReferenceJob(EditableResource.fromResource(r));
         }
         lblNoReferences.setVisible(references.isEmpty());
+        listview.setModelObject(f.apply(references));
         listview.setVisible(!references.isEmpty());
+        addToTimerManager(null);
     }
 
     /**
@@ -449,9 +631,9 @@ public class ReferencesEditor extends ComposedField {
         //Check if any resource was not valid
         long errorCount = 0;
         VirtualCollectionRegistry registry = Application.get().getRegistry();
-        for(EditableResource r : references) {
-            State state = registry.getReferenceValidator().getState(r.getInternalId());
-            if(state != State.DONE) {
+        for(EditableResource ref : references) {
+            ResourceScan scan = scanResults.get(ref.getRef());
+            if( scan == null || scan.getState() != State.DONE) {
                 errorCount++;
             }
         }

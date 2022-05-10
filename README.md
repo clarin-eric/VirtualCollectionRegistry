@@ -12,6 +12,21 @@ Information regarding development and deployment as well as licencing informatio
 
 ## Development
 
+### Compilation
+
+The project is build using maven.
+
+#### JPA Criteria Metamodel
+https://docs.jboss.org/hibernate/orm/5.6/topical/html_single/metamodelgen/MetamodelGenerator.html
+
+#### Unit testing and coverage
+
+Generate a coverage report by running the `verify` target:
+```
+mvn clean compile test verify
+```
+Open the report with `./open_coverage_report.bash`, which will open: `target/site/jacoco/index.html`.
+
 ### Servlet Container
 
 #### Tomcat

@@ -16,10 +16,12 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.State;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidator;
 
 import java.security.Principal;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
+import org.apache.wicket.Component;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
 import org.apache.wicket.WicketRuntimeException;
@@ -105,6 +107,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
             add(deleteLink);
         }
     }
+
     private class ActionsPanel extends PanelWithUserInformation {
         public ActionsPanel(String id, IModel<VirtualCollection> model, final IModel<Boolean> showVersionsModel) {
             super(id, model);
@@ -231,8 +234,8 @@ public class BrowseEditableCollectionsPanel extends Panel {
      * @param id panel id
      * @param provider provider for collections that should be shown
      */
-    public BrowseEditableCollectionsPanel(String id, CollectionsProvider provider, final PageReference reference) {
-        this(id, provider, false, reference);
+    public BrowseEditableCollectionsPanel(String id, CollectionsProvider provider, final PageReference reference, TimerManager timerManager) {
+        this(id, provider, false, reference, timerManager);
     }
     
     /**
@@ -241,11 +244,11 @@ public class BrowseEditableCollectionsPanel extends Panel {
      * @param provider provider for collections that should be shown.
      * @param isAdmin enable (true) or disable (false) the admin options.
      */
-    public BrowseEditableCollectionsPanel(String id, CollectionsProvider provider, final boolean isAdmin, final PageReference reference) {
+    public BrowseEditableCollectionsPanel(String id, CollectionsProvider provider, final boolean isAdmin, final PageReference reference, TimerManager timerManager) {
         super(id);
         this.setOutputMarkupId(true);
 
-        table = new VirtualCollectionTable("collectionsTable", provider, true, isAdmin) {
+        table = new VirtualCollectionTable("collectionsTable", provider, true, isAdmin, timerManager) {
                     @Override
                     protected Panel createActionColumn(String componentId,
                             IModel<VirtualCollection> model) {
@@ -495,6 +498,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
         }
         
         target.add(table);
+        table.triggerUpdateTimer(target);
     }
     
     private Principal getUser() {

@@ -14,9 +14,9 @@ public class PidProviderPanel extends Panel {
         addLabel("provider_primary", "Primary:", String.valueOf(provider.isPrimaryProvider()));
         addLabel("provider_infix", "Infix: ", provider.getInfix());
         PublicConfiguration cfg = provider.getPublicConfiguration();
-        addLabel("provider_url", "Base url:", cfg != null ? cfg.getBaseUrl() : "");
-        addLabel("provider_user", "User:", cfg != null ? cfg.getUsername() : "");
-        addLabel("provider_prefix", "Base url:", cfg != null ? cfg.getPrefix() : "");
+        addLabel("provider_url", "Base url:", cfg != null ? cfg.getBaseUrl() : "n/a");
+        addLabel("provider_user", "User:", cfg != null ? cfg.getUsername() : "n/a");
+        addLabel("provider_prefix", "Base url:", cfg != null ? cfg.getPrefix() : "n/a");
     }
 
     private void addLabel(String id_key, String label, String value) {

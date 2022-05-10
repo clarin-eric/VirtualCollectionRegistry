@@ -630,8 +630,17 @@ h1, h2, h3, h4, h5, h6 {
     height: 50px;
     width: 100%;
     /*border: 1px solid #ff0000;*/
-    position: fixed;
-    bottom: 0px;
-    left: 0px;
+    position: relative;
+    /*bottom: 0px;
+    left: 0px;*/
     padding: 10px;
+}
+
+.margin-left {
+    margin-left: 5px;
+}
+
+
+.margin-right {
+    margin-right: 5px;
 }

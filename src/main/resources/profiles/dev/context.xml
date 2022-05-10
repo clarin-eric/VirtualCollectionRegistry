@@ -7,8 +7,8 @@
     <Resource name="jdbc/VirtualCollectionStore" auth="Container"
                     type="javax.sql.DataSource"
                     maxTotal="8" maxIdle="4" maxWaitMillis="10000"
-              removeAbandonedOnBorrow="true"
-              removeAbandonedOnMaintenance="true"
+                    removeAbandonedOnBorrow="true"
+                    removeAbandonedOnMaintenance="true"
                     defaultAutoCommit="false"
                     driverClassName="com.mysql.cj.jdbc.Driver"
                     validationQuery="SELECT 1"
@@ -157,4 +157,8 @@
                value="true"
                override="false" />
 
+    <!-- 1.8.0 -->
+    <Parameter name="eu.clarin.cmdi.vcr.reference_scanning.enabled"
+               value="true"
+               override="false" />
 </Context>

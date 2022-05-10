@@ -48,8 +48,8 @@
         <!-- dependency versions -->
         <slf4j.version>1.7.35</slf4j.version>
         <log4j.version>2.17.1</log4j.version>
-        <hibernate.version>5.4.24.Final</hibernate.version>
-        <hibernate.jpaVersion>1.0.0.Final</hibernate.jpaVersion>
+        <hibernate.version>5.6.5.Final</hibernate.version>
+        <hibernate.jpaVersion>5.6.5.Final</hibernate.jpaVersion>
         <jersey.version>2.35</jersey.version><!--3.0.3-->
         <jersey-spring4.version>2.35</jersey-spring4.version><!--3.0.0-M6-->
         <jackson.version>2.13.1</jackson.version>
@@ -168,12 +168,13 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        
+        <!--
         <dependency>
             <groupId>org.hibernate.javax.persistence</groupId>
             <artifactId>hibernate-jpa-2.1-api</artifactId>
             <version>${hibernate.jpaVersion}</version>
         </dependency>
+        -->
 <!--
         <dependency>
             <groupId>javax.ws.rs</groupId>
@@ -487,6 +488,10 @@
                     <artifactId>commons-logging</artifactId>
                     <groupId>commons-logging</groupId>
                 </exclusion>
+                <exclusion>
+                    <groupId>org.jsoup</groupId>
+                    <artifactId>jsoup</artifactId>
+                </exclusion>
             </exclusions>
         </dependency>
         <dependency>
@@ -527,17 +532,20 @@
             <version>1.1</version>
         </dependency>
 
-        <dependency>
-            <groupId>javax.xml.bind</groupId>
-            <artifactId>jaxb-api</artifactId>
-            <version>2.4.0-b180830.0359</version>
-        </dependency>
+
 
         <!-- https://mvnrepository.com/artifact/javax.activation/activation -->
         <dependency>
             <groupId>javax.activation</groupId>
             <artifactId>activation</artifactId>
             <version>1.1.1</version>
+            <scope>compile</scope>
+        </dependency>
+
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.4.0-b180830.0359</version>
         </dependency>
 
         <!-- https://mvnrepository.com/artifact/org.glassfish.jaxb/jaxb-runtime -->
@@ -657,6 +665,13 @@
             <version>5.4.24.Final</version>
             <scope>compile</scope>
         </dependency>
+
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-jpamodelgen</artifactId>
+            <version>${hibernate.jpaVersion}</version>
+            <scope>compile</scope>
+        </dependency>
     </dependencies>
 
     <build>
@@ -694,6 +709,7 @@
 
         <plugins>
             <!-- plugin is not thread safe -->
+            <!--
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>javacc-maven-plugin</artifactId>
@@ -708,6 +724,26 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
+            <plugin>
+                <groupId>com.helger.maven</groupId>
+                <artifactId>ph-javacc-maven-plugin</artifactId>
+                <version>4.1.5</version>
+                <executions>
+                    <execution>
+                        <id>javacc</id>
+                        <goals>
+                            <goal>jjtree-javacc</goal>
+                        </goals>
+                        <phase>generate-sources</phase>
+                        <configuration>
+                            <jdkVersion>1.5</jdkVersion>
+                            <sourceDirectory>src/main/jjtree/eu/clarin/cmdi/virtualcollectionregistry/query</sourceDirectory>
+                        </configuration>
+                    </execution>
+                </executions>
+            </plugin>
+<!--
             <plugin>
                 <groupId>org.bsc.maven</groupId>
                 <artifactId>maven-processor-plugin</artifactId>
@@ -738,6 +774,7 @@
                 </dependencies>
             </plugin>
 
+-->
             <plugin>                
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>                
@@ -754,7 +791,21 @@
                     <packageName>eu.clarin.cmdi.virtualcollectionregistry.model.cmdi</packageName>
                 </configuration>
             </plugin>
-                                   
+
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.8.1</version>
+                <configuration>
+                    <compilerArguments>
+                        <processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
+                    </compilerArguments>
+                </configuration>
+                <dependencies>
+
+                </dependencies>
+            </plugin>
+
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>

@@ -8,37 +8,13 @@ import eu.clarin.cmdi.wicket.components.pid.PidType;
 import java.io.Serializable;
 import java.util.*;
 
-import javax.persistence.Basic;
-import javax.persistence.CascadeType;
-import javax.persistence.CollectionTable;
-import javax.persistence.Column;
-import javax.persistence.ElementCollection;
-import javax.persistence.Embedded;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.Lob;
-import javax.persistence.ManyToOne;
-import javax.persistence.NamedQueries;
-import javax.persistence.NamedQuery;
-import javax.persistence.OneToMany;
-import javax.persistence.OneToOne;
-import javax.persistence.OrderBy;
-import javax.persistence.OrderColumn;
-import javax.persistence.Table;
-import javax.persistence.Temporal;
-import javax.persistence.TemporalType;
-import javax.persistence.Version;
+import javax.persistence.*;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
 //"((c.parent IS NULL AND c.child is NULL) OR (c.parent IS NOT NULL AND c.child is NULL)) " +
 /*
 SELECT c.id,c.parent,c.child FROM virtualcollection c
@@ -50,33 +26,6 @@ ORDER BY c.id
 @Entity
 @Table(name = "virtualcollection")
 @NamedQueries({
-        /*
-    @NamedQuery(name = "VirtualCollection.find",
-        query =
-            "SELECT c FROM VirtualCollection c " +
-            "WHERE " +
-                "c.id IN ("+
-                    "SELECT max(c2.id) FROM VirtualCollection c2 WHERE c2.state IN (:vc_state) AND c2.owner.name LIKE :vc_owner GROUP BY c2.root"+
-                ")" +
-            "ORDER BY c.id"
-    ),
-    @NamedQuery(name = "VirtualCollection.findCount",
-        query =
-            "SELECT COUNT(c) FROM VirtualCollection c " +
-            "WHERE "+
-                "c.id IN ("+
-                    "SELECT max(c2.id) FROM VirtualCollection c2 WHERE c2.state IN (:vc_state) AND c2.owner.name LIKE :vc_owner GROUP BY c2.root"+
-                ")"
-    ),
-    @NamedQuery(name = "VirtualCollection.findOrigins",
-        query =
-            "SELECT DISTINCT(c.origin) FROM VirtualCollection c " +
-            "WHERE "+
-                "c.id IN ("+
-                    "SELECT max(c2.id) FROM VirtualCollection c2 WHERE c2.state IN (:vc_state) AND c2.owner.name LIKE :vc_owner GROUP BY c2.root"+
-                ") AND " +
-                "c.origin IS NOT NULL"),
-                */
     @NamedQuery(name = "VirtualCollection.findAllPublic",
         query =
             "SELECT c FROM VirtualCollection c " +
@@ -420,7 +369,6 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     private Date dateCreated = new Date();
 
     @Temporal(TemporalType.TIMESTAMP)
-    @Version
     @Column(name = "modified", nullable = false)
     private Date dateModified;
 
@@ -462,6 +410,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     public VirtualCollection() {
         super();
         this.setState(VirtualCollection.State.PRIVATE);
+        this.setPublicLeaf(false);
     }
 
     public Long getId() {
@@ -693,22 +642,35 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
      * @return
      */
     public VirtualCollection clone() {
-        VirtualCollection clone = new VirtualCollection();
+        return clone(true);
+    }
 
+    /**
+     * Return a new collection with all fields, state and persistent identifiers deep copied.
+     * @return
+     */
+    public VirtualCollection clone(boolean includeId) {
+        VirtualCollection clone = new VirtualCollection();
+        if(includeId) {
+            clone.setId(getId());
+        }
         clone.setType(getType());
         clone.setDatePublished(getDatePublished());
         clone.setOrigin(getOrigin());
         clone.setState(getState());
-        clone.setCreationDate(new Date());
+        clone.setCreationDate(getCreationDate());
+        clone.setDateModified(new Date());
         clone.setOwner(getOwner());
         clone.setReproducibilityNotice(getReproducibilityNotice());
         clone.setReproducibility(getReproducibility());
         clone.setPurpose(getPurpose());
         clone.setDescription(getDescription());
         clone.setName(getName());
+
         clone.setParent(getParent());
         clone.setChild(getChild());
         clone.setRoot(getRoot());
+        clone.setForkedFrom(getForkedFrom());
 
         if(getGeneratedBy() == null) {
             clone.setGeneratedBy(null);
@@ -721,15 +683,15 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         }
 
         for(String keyword : getKeywords()) {
-            clone.getKeywords().add(keyword);
+            clone.addKeyword(keyword);
         }
 
         for(Creator c : getCreators()) {
-            clone.getCreators().add(c.fork());
+            clone.addCreator(c.fork());
         }
 
         for(Resource r : getResources()) {
-            clone.getResources().add(r.fork());
+            clone.addResource(r.fork());
         }
 
         /*
@@ -746,20 +708,20 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
      * @return
      */
     public VirtualCollection fork(User user) {
-        VirtualCollection fork = clone();
-
-        //Clear pids
-        fork.identifiers = new HashSet<>();
-        //Revert state to private
-        fork.setState(State.PRIVATE);
+        VirtualCollection fork = clone(false);
+        fork.identifiers = new HashSet<>(); //Clear pids
+        fork.setState(State.PRIVATE);   //Revert state to private
         fork.setDatePublished(null);
         //Update timestamps
         fork.setCreationDate(new Date());
         fork.setDateModified(new Date());
         //Update other fields
         fork.setOwner(user);
-        fork.setForkedFrom(this);
 
+        fork.setForkedFrom(this);
+        fork.setParent(null);
+        fork.setChild(null);
+        fork.setRoot(fork);
         return fork;
     }
 
@@ -916,7 +878,25 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         }
         return false;
     }
-    
+
+    public boolean hasKeyword(String keyword) {
+        for(String k: this.keywords) {
+            if(k.equalsIgnoreCase(keyword)) {
+                return true;
+            }
+        }
+        return false;
+    }
+
+    public boolean hasResource(Resource resource) {
+        for(Resource r: this.resources) {
+            if(r.getRef().equalsIgnoreCase(resource.getRef())) {
+                return true;
+            }
+        }
+        return false;
+    }
+
     /**
      * Is this collection citaeable? 
      * In order to be citeable the collection must be published and have a persistent identifier.
@@ -1002,10 +982,29 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         this.origin = origin;
     }
 
+    public VirtualCollection getLatestVersion() {
+        return getLatestVersion(false);
+    }
+
+    public VirtualCollection getLatestVersion(boolean includePrivate) {
+        return getAllVersions(includePrivate).get(0);
+    }
+
+    /**
+     * Get a list with all _public_ versions of this collection, sorted new --> old.
+     *
+     * @return
+     */
     public List<VirtualCollection> getAllVersions() {
         return getAllVersions(false);
     }
 
+    /**
+     * Get a list with all versions of this collection, sorted new --> old.
+     *
+     * @param includePrivate set to true to include private collections
+     * @return
+     */
     public List<VirtualCollection> getAllVersions(boolean includePrivate) {
         List<VirtualCollection> versions = getChildrenAsList(includePrivate);
         Collections.reverse(versions); //Make sure the list is ordered from new --> old
@@ -1051,5 +1050,64 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
 
     public void setPublicLeaf(boolean publicLeaf) {
         this.publicLeaf = publicLeaf;
+    }
+
+    public boolean addCreator(Creator e) {
+        if(e != null && !hasCreator(e)) {
+            getCreators().add(e);
+            return true;
+        }
+        return false;
+    }
+
+    public void addAllCreators(List<Creator> creators) {
+        for(Creator c: creators) {
+            addCreator(c);
+        }
+    }
+
+    public boolean addKeyword(String keyword) {
+        if(keyword != null && hasKeyword(keyword)) {
+            getKeywords().add(keyword);
+            return true;
+        }
+        return false;
+    }
+
+    public void addAllKeywords(List<String> keywords) {
+        for(String keyword: keywords) {
+            addKeyword(keyword);
+        }
+    }
+
+    public boolean addResource(Resource r) {
+        if(r != null && !hasResource(r)) {
+            getResources().add(r);
+            return true;
+        }
+        return false;
+    }
+
+    public void addAllResources(List<Resource> resources) {
+        for(Resource r: resources) {
+            addResource(r);
+        }
+    }
+
+    /**
+     * Make sure the timestamps are updated before persisting this collection
+     */
+    @PrePersist
+    private void onCreate() {
+        setCreationDate(new Date());
+        setDateModified(new Date());
+    }
+
+    /**
+     * Make sure the modification timestamp is updated before persisting this collection
+     */
+    @PreUpdate
+    private void onUpdate() {
+        setDateModified(new Date());
     }
 } // class VirtualCollection

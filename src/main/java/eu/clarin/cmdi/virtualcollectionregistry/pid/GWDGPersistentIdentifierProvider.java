@@ -167,19 +167,16 @@ public class GWDGPersistentIdentifierProvider implements
     }
 
     @Override
-    public void updateIdentifier(String pid, URI target)
+    public void updateIdentifier(PersistentIdentifier pid, URI target)
             throws VirtualCollectionRegistryException {
         if (pid == null) {
             throw new NullPointerException("pid == null");
-        }
-        if (pid.isEmpty()) {
-            throw new IllegalArgumentException("pid is empty");
         }
         if (target == null) {
             throw new NullPointerException("target == null");
         }
         List<NameValuePair> params = new ArrayList<NameValuePair>();
-        params.add(new BasicNameValuePair("pid", pid));
+        params.add(new BasicNameValuePair("pid", pid.getActionableURI()));
         params.add(new BasicNameValuePair("url", target.toString()));
         URI serviceURI = URI.create(SERVICE_URI_BASE + "write/modify");
         invokeWebService(serviceURI, params);

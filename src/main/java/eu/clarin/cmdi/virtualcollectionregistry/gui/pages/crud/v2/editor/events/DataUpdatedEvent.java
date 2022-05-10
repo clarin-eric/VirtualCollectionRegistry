@@ -3,9 +3,10 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 
+import java.io.Serializable;
 import java.security.Principal;
 
-public class DataUpdatedEvent implements Event {
+public class DataUpdatedEvent implements Event, Serializable {
 
     private final  AjaxRequestTarget target;
 
@@ -15,6 +16,11 @@ public class DataUpdatedEvent implements Event {
 
     @Override
     public EventType getType() {
+        return null;
+    }
+
+    @Override
+    public Exception getException() {
         return null;
     }
 

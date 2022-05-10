@@ -11,6 +11,7 @@ import java.security.Principal;
  */
 public interface Event<T> {
     public EventType getType();
+    public Exception getException();
     public T getData();
     public Principal getPrincipal();
     public AjaxRequestTarget getAjaxRequestTarget();

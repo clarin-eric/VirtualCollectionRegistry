@@ -64,9 +64,11 @@ public class LanguageResourceSwitchboardLink extends AjaxFallbackLink<String> {
                     found = true;
                 }
             }
+            /*
             if(!found) {
-                logger.debug("Did not find PID of prefered type = {} for collection with id = {}", vcrConfig.getProcessEndpointPreferedPidType(), vc.getId());
+                logger.trace("Did not find PID of prefered type = {} for collection with id = {}", vcrConfig.getProcessEndpointPreferedPidType(), vc.getId());
             }
+             */
         }
 
         LanguageResourceSwitchboardLink link =

@@ -6,13 +6,16 @@ import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BasePage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowseEditableCollectionsPanel;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.TimerManager;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.AdminCollectionsProvider;
+import eu.clarin.cmdi.virtualcollectionregistry.model.ResourceScan;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifierProvider;
+import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
@@ -29,6 +32,8 @@ import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.time.Duration;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -41,6 +46,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 @AuthorizeAction(action = "ENABLE", roles = {Roles.ADMIN})
 public class AdminPage extends BasePage {
 
+    private final static Logger logger = LoggerFactory.getLogger(AdminPage.class);
+
     @SpringBean
     private VirtualCollectionRegistry vcr;
 
@@ -52,8 +59,6 @@ public class AdminPage extends BasePage {
 
     @SpringBean
     private VcrConfig vcrConfig;
-
-    private final int uiRefreshTimeInSeconds = 1;
 
     public final static User PUBLIC_USER = new User("___PUBLIC___",  "Published collections");
     
@@ -89,21 +94,36 @@ public class AdminPage extends BasePage {
 
         // create table showing the collections in the space
         final AdminCollectionsProvider provider = new AdminCollectionsProvider(userModel);
-        add(new BrowseEditableCollectionsPanel("collections", provider, true, getPageReference()));
+        add(new BrowseEditableCollectionsPanel("collections", provider, true, getPageReference(), timerManager));
 
-        ReferenceValidationPanel pnl = new ReferenceValidationPanel("pnl_reference_validation", vcr.getReferenceValidator());
+        ReferenceValidationPanel pnl = new ReferenceValidationPanel("pnl_reference_validation", getScans());
         pnl.setOutputMarkupId(true);
         add(pnl);
 
-        add(new AbstractAjaxTimerBehavior(Duration.seconds(uiRefreshTimeInSeconds)) {
+        timerManager.addTarget(null, new TimerManager.Update() {
             @Override
-            protected void onTimer(AjaxRequestTarget target) {
-                pnl.update(vcr.getReferenceValidator());
-                if(target != null) {
-                    target.add(pnl);
-                }
+            public boolean onUpdate(AjaxRequestTarget target) {
+                pnl.update(getScans());
+                return true;
+            }
+
+            @Override
+            public List<Component> getComponents() {
+                List<Component> result = new ArrayList<>();
+                result.add(pnl);
+                return result;
             }
         });
+    }
+
+    private List<ResourceScan> getScans() {
+        List<ResourceScan> scans = new ArrayList<>();
+        try {
+            scans = vcr.getAllResourceScans();
+        } catch(Exception ex) {
+            logger.error("Failed to fetch resource scans", ex);
+        }
+        return scans;
     }
 
     private DropDownChoice<User> createSpacesDropDown(String id, final IModel<User> userModel, final List<User> users) {

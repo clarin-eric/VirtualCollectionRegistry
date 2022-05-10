@@ -22,7 +22,7 @@ public class VcrChoiceField extends AbstractField {
     }
 
     public VcrChoiceField(String id, String label, List<String> choices, String help_text, final IModel<String> dataModel, VisabilityUpdater v) {
-        super(id, label, help_text, dataModel, null, new RadioChoice<>("input_radio_choice", dataModel, choices), true, v);
+        super(id, label, help_text, dataModel, null, new RadioChoice<>("input_radio_choice", dataModel, choices), false, v);
         /*
         WebMarkupContainer helpMessage = new WebMarkupContainer("help_message");
         Label helpMessageLabel = new Label("message", Model.of(help_text == null ? "" : help_text));
