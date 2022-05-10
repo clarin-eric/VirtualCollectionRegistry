@@ -258,8 +258,8 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
 
                             if(!pidUrl.equalsIgnoreCase(latestVersionUrl)) {
                                 try {
-                                    logger.info("Updating pid = {}, url = {} --> {}", latestPid, pidUrl, latestVersionUrl)
-                                    //pidProviderService.updateLatestIdentifierUrl(latestPid, latestVersionUrl);
+                                    logger.info("Updating pid = {}, url = {} --> {}", latestPid, pidUrl, latestVersionUrl);
+                                    pidProviderService.updateLatestIdentifierUrl(latestPid, latestVersionUrl);
                                 } catch(VirtualCollectionRegistryException ex) {
                                     logger.error("Failed to update latest version pid ("+latestPid.getActionableURI()+") url to "+latestVersionUrl);
                                 }
