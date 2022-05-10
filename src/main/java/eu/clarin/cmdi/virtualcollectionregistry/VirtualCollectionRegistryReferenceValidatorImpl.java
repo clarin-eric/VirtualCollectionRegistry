@@ -40,14 +40,7 @@ public class VirtualCollectionRegistryReferenceValidatorImpl extends TxManager i
 
     private final static Logger logger = LoggerFactory.getLogger(VirtualCollectionRegistryReferenceValidatorImpl.class);
 
-    private final transient List<VirtualCollectionRegistryReferenceValidatorWorker> workers =
-            new CopyOnWriteArrayList<>();
-
-    private final int max_workers = 10;
-    private final int max_workers_per_session = 1;
-
-    //private transient final CloseableHttpClient httpclient;
-    //private RequestConfig requestConfig;
+    private final transient List<VirtualCollectionRegistryReferenceValidatorWorker> workers = new CopyOnWriteArrayList<>();
 
     @Autowired
     private VcrConfig vcrConfig;
@@ -58,26 +51,14 @@ public class VirtualCollectionRegistryReferenceValidatorImpl extends TxManager i
 
     // called by Spring directly after Bean construction
     @Override
-    public void afterPropertiesSet() {
-        /*
-        this.requestConfig = RequestConfig
-                .custom()
-                .setConnectionRequestTimeout(vcrConfig.getHttpTimeout())
-                .setMaxRedirects(vcrConfig.getHttpRedirects())
-                .build();
-
-         */
-    }
+    public void afterPropertiesSet() { }
 
     @Override
-    public void shutdown() {
-
-    }
+    public void shutdown() { }
 
     @Override
     public synchronized void perform(long now, DataStore datastore) throws VirtualCollectionRegistryException {
         try {
-            //logger.debug("Reference validation check (running={}, now={})", running, now);
             if(!running) {
                 running = true;
 
@@ -102,6 +83,8 @@ public class VirtualCollectionRegistryReferenceValidatorImpl extends TxManager i
                         scan.setHttpResponseMessage(result.getHttpResponseMsg());
                         scan.setLastScanEnd(new Date());
                         scan.setException(result.getException());
+                        scan.setNameSuggestion(result.getNameSuggestion());
+                        scan.setDescriptionSuggestion(result.getDescriptionSuggestion());
                         datastore.getEntityManager().merge(scan);
 
                         logger.info("Finished resource scan for ref = {} in {}s, http response = {}", scan.getRef(), scan.getDurationInSeconds(), scan.getHttpResponseCode());
@@ -111,43 +94,6 @@ public class VirtualCollectionRegistryReferenceValidatorImpl extends TxManager i
                 } finally {
                     commitActiveTransaction(datastore.getEntityManager());
                 }
-
-                /*
-                //Get job and free worker
-                //VirtualCollectionRegistryReferenceValidationJob job = getJob();
-               //logger.info("Job=" + (job == null ? "null" : job.getId()) + ", Worker=" + (w == null ? "null" : w.getSessionId()));
-                //logger.info("Job=" + (job == null ? "null" : job.getId()));
-
-                //Process if there is a job and a free worker
-                //while (job != null) {// && w != null) {
-                for(VirtualCollectionRegistryReferenceValidationJob job : jobs) {
-                    if(job.getState().getState() == ReferencesEditor.State.INITIALIZED) {
-                        VirtualCollectionRegistryReferenceValidatorWorker w = getWorker(job);
-                        if (w != null) {
-                            w.setSession(job.getSessionId());
-                            logger.info("Found worker (session=" + w.getSessionId() + ") for job=" + job.getId());
-                            w.doWork(job);
-                        }
-                    }
-                    //Get next job and free worker
-                    //job = getJob();
-                    //w = getWorker(job);
-                    //logger.info("Job=" + (job == null ? "null" : job.getId()) + ", Worker=" + (w == null ? "null" : w.getSessionId()));
-                    //logger.info("Job=" + (job == null ? "null" : job.getId()));
-                }
-            /*
-                for (VirtualCollectionRegistryReferenceValidationJob job : jobs) {
-                    if (job.getState().getState() == ReferencesEditor.State.INITIALIZED) {
-                        job.setState(ReferencesEditor.State.ANALYZING);
-                        try {
-                            analyze(job);
-                            job.setState(ReferencesEditor.State.DONE);
-                        } catch (Exception ex) {
-                            job.setState(ReferencesEditor.State.FAILED, ex.getMessage());
-                        }
-                    }
-                }
-             */
             }
         } catch (Exception ex) {
             logger.info("Perform failed", ex);
@@ -167,7 +113,6 @@ public class VirtualCollectionRegistryReferenceValidatorImpl extends TxManager i
         List<ResourceScan> scans = new ArrayList<>();
         try {
             beginTransaction(em);
-            //Select any existing scans for this ref
             TypedQuery<ResourceScan> q = em.createNamedQuery("ResourceScan.findScanRequired", ResourceScan.class);
             scans = q.getResultList();
         } catch (Exception ex) {

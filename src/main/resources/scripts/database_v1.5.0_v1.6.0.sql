@@ -18,8 +18,6 @@ ALTER TABLE virtualcollection ADD COLUMN `original` bigint(20) NULL;
 ALTER TABLE virtualcollection ADD COLUMN `public_leaf` bool default false;
 ALTER TABLE pid ADD COLUMN `is_latest` bool default false;
 
---ALTER TABLE resource_scan ADD COLUMN `created` datetime;
-
 CREATE TABLE `resource_scan` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `ref` varchar(255) NOT NULL,
@@ -31,9 +29,14 @@ CREATE TABLE `resource_scan` (
   `http_message` varchar(255),
   `exception` varchar(255),
   `mimetype` varchar(255),
+  `name_suggestion` varchar(255),
+  `description_suggestion` text,
   PRIMARY KEY(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+--ALTER TABLE resource_scan ADD COLUMN `created` datetime;
 --ALTER TABLE resource_scan ADD COLUMN `exception` varchar(255) NULL;
+--ALTER TABLE resource_scan ADD COLUMN `name_suggestion` varchar(255) NULL;
+--ALTER TABLE resource_scan ADD COLUMN `description_suggestion` text NULL;
 -- Update current database config value
 UPDATE `config` SET `value` = '1.6.0' WHERE `key` = 'db_version';

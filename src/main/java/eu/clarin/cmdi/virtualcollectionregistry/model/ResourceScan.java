@@ -1,5 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model;
 
+import org.jetbrains.annotations.NotNull;
+
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
@@ -7,6 +9,8 @@ import java.util.Date;
 @Entity
 @Table(name = "resource_scan")
 @NamedQueries({
+        @NamedQuery(name = "ResourceScan.findAll",
+                query = "SELECT r FROM ResourceScan r"),
         @NamedQuery(name = "ResourceScan.findByRef",
                 query = "SELECT r FROM ResourceScan r WHERE r.ref = :ref"),
         @NamedQuery(name = "ResourceScan.findByRefs",
@@ -14,23 +18,7 @@ import java.util.Date;
         @NamedQuery(name = "ResourceScan.findScanRequired",
                 query = "SELECT r FROM ResourceScan r WHERE r.lastScanStart IS NULL")
 })
-public class ResourceScan implements Serializable  {
-
-    public Date getCreated() {
-        return created;
-    }
-
-    public void setCreated(Date created) {
-        this.created = created;
-    }
-
-    public String getException() {
-        return exception;
-    }
-
-    public void setException(String exception) {
-        this.exception = exception;
-    }
+public class ResourceScan implements Serializable, Comparable<ResourceScan>  {
 
     public static enum State {
         INITIALIZED, ANALYZING, DONE, FAILED
@@ -70,6 +58,12 @@ public class ResourceScan implements Serializable  {
 
     @Column(name = "mimetype", nullable = true, length = 255)
     private String mimeType;
+
+    @Column(name = "name_suggestion", nullable = true, length = 255)
+    private String nameSuggestion;
+
+    @Column(name = "description_suggestion", nullable = true)
+    private String descriptionSuggestion;
 
     public ResourceScan() {}
 
@@ -168,5 +162,42 @@ public class ResourceScan implements Serializable  {
         }
         
         return State.DONE;
+    }
+
+    public Date getCreated() {
+        return created;
+    }
+
+    public void setCreated(Date created) {
+        this.created = created;
+    }
+
+    public String getException() {
+        return exception;
+    }
+
+    public void setException(String exception) {
+        this.exception = exception;
+    }
+
+    public String getNameSuggestion() {
+        return nameSuggestion;
+    }
+
+    public void setNameSuggestion(String nameSuggestion) {
+        this.nameSuggestion = nameSuggestion;
+    }
+
+    public String getDescriptionSuggestion() {
+        return descriptionSuggestion;
+    }
+
+    public void setDescriptionSuggestion(String descriptionSuggestion) {
+        this.descriptionSuggestion = descriptionSuggestion;
+    }
+
+    @Override
+    public int compareTo(@NotNull ResourceScan o) {
+        return getRef().compareTo(o.getRef());
     }
 }

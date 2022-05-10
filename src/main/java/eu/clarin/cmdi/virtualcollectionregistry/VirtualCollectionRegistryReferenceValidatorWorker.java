@@ -42,6 +42,9 @@ public class VirtualCollectionRegistryReferenceValidatorWorker {
         private String mimeType;
         private String exception;
 
+        private String nameSuggestion;
+        private String descriptionSuggestion;
+
         public int getHttpResponseCode() {
             return httpResponseCode;
         }
@@ -71,6 +74,22 @@ public class VirtualCollectionRegistryReferenceValidatorWorker {
         public void setException(Exception exception) { this.exception = exception.getMessage(); }
 
         public String getException() { return exception; }
+
+        public String getNameSuggestion() {
+            return nameSuggestion;
+        }
+
+        public void setNameSuggestion(String nameSuggestion) {
+            this.nameSuggestion = nameSuggestion;
+        }
+
+        public String getDescriptionSuggestion() {
+            return descriptionSuggestion;
+        }
+
+        public void setDescriptionSuggestion(String descriptionSuggestion) {
+            this.descriptionSuggestion = descriptionSuggestion;
+        }
     }
 
     public class ValidationResponseHandler implements ResponseHandler<String> {
@@ -108,9 +127,9 @@ public class VirtualCollectionRegistryReferenceValidatorWorker {
             int httpCode = response.getStatusLine().getStatusCode();
             String httpMessage = response.getStatusLine().getReasonPhrase();
 
-            logger.debug("Http response: " + httpCode + " " + httpMessage);
+            logger.trace("Http response: " + httpCode + " " + httpMessage);
             for (Header h : response.getHeaders("Content-Length")) {
-                logger.debug(h.getName() + " - " + h.getValue());
+                logger.trace(h.getName() + " - " + h.getValue());
             }
 
             result.setHttpResponseMsg(httpMessage);
@@ -122,6 +141,13 @@ public class VirtualCollectionRegistryReferenceValidatorWorker {
                 if (body != null) {
                     for (ReferenceParser parser : parsers) {
                         if (parser.parse(body, result.getMimeType())) {
+                            ReferenceParserResult parserResult = parser.getResult();
+                            if(parserResult.getName() != null) {
+                                result.setNameSuggestion(parserResult.getName());
+                            }
+                            if(parserResult.getDescription() != null) {
+                                result.setDescriptionSuggestion(parserResult.getDescription());
+                            }
                             break; //exit loop if the parser processed the reference
                         }
                     }
@@ -174,9 +200,39 @@ public class VirtualCollectionRegistryReferenceValidatorWorker {
 
     public interface ReferenceParser {
         boolean parse(final String xml, final String mimeType);
+        ReferenceParserResult getResult();
+    }
+
+    public class ReferenceParserResult {
+        private String name;
+        private String description;
+
+        public ReferenceParserResult() { }
+
+        public String getName() {
+            return name;
+        }
+
+        public String getDescription() {
+            return description;
+        }
+
+        public void setName(String name) {
+            this.name = name;
+        }
+
+        public void setDescription(String description) {
+            this.description = description;
+        }
     }
 
     public class CmdiReferenceParserImpl implements ReferenceParser {
+        private final ReferenceParserResult result = new ReferenceParserResult();
+
+        public ReferenceParserResult getResult() {
+            return result;
+        }
+
         @Override
         public boolean parse(final String xml, final String mimeType) {
             boolean handled = false;
@@ -209,15 +265,8 @@ public class VirtualCollectionRegistryReferenceValidatorWorker {
             String description = getValueForXPath(doc, "//default:CMD/default:Components/default:lat-session/default:descriptions/default:Description[lang('eng')]/text()");
             logger.trace("Name = " + name + ", description = " + description);
 
-            /*
-            if(name != null) {
-                job.getReference().setLabel(name);
-            }
-            if(description != null) {
-                job.getReference().setDescription(description);
-            }
-
-             */
+            this.result.setName(name);
+            this.result.setDescription(description);
         }
 
         /**

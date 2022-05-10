@@ -955,6 +955,21 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
     }
 
     @Override
+    public List<ResourceScan> getAllResourceScans() throws VirtualCollectionRegistryException {
+        final EntityManager em = datastore.getEntityManager();
+        try {
+            beginTransaction(datastore.getEntityManager());
+            TypedQuery<ResourceScan> q = datastore.getEntityManager().createNamedQuery("ResourceScan.findAll", ResourceScan.class);
+            return q.getResultList();
+        } catch (Exception e) {
+            rollbackActiveTransaction(datastore.getEntityManager(), "error while fetching all resource scans.", e);
+        } finally {
+            commitActiveTransaction(datastore.getEntityManager());
+        }
+        return new ArrayList<>();
+    }
+
+    @Override
     public List<ResourceScan> getResourceScansForRefs(List<String> refs) throws VirtualCollectionRegistryException {
         final EntityManager em = datastore.getEntityManager();
         try {

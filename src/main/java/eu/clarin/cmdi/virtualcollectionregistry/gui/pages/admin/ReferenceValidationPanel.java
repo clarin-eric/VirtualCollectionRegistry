@@ -1,10 +1,8 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin;
 
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryReferenceValidationJob;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryReferenceValidator;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.DateConverter;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.DecimalConverter;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.references.ReferencesEditor;
+import eu.clarin.cmdi.virtualcollectionregistry.model.ResourceScan;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
@@ -30,15 +28,17 @@ public class ReferenceValidationPanel extends Panel {
     private final IModel numJobsWaitingPctModel = Model.of(0.0);
     private final IModel numJobsFinishedModel = Model.of(0);
     private final IModel numJobsFinishedPctModel = Model.of(0.0);
+    private final IModel numJobsRunningModel = Model.of(0.0);
+    private final IModel numJobsRunningPctModel = Model.of(0.0);
 
     private ValidationJobProvider provider;
-    //private final transient VirtualCollectionRegistryReferenceValidator validator;
 
     private final static String LBL_NUM_JOBS = "Number of validation jobs";
     private final static String LBL_NUM_WAITING_JOBS = " Waiting:";
+    private final static String LBL_NUM_RUNNING_JOBS = " Running:";
     private final static String LBL_NUM_FINISHED_JOBS = "Finished:";
 
-    public ReferenceValidationPanel(String id, VirtualCollectionRegistryReferenceValidator validator) {
+    public ReferenceValidationPanel(String id, List<ResourceScan> scans) {
         super(id);
 
         add(new Label("num_jobs", numJobsModel));
@@ -52,6 +52,14 @@ public class ReferenceValidationPanel extends Panel {
             }
         });
 
+        add(new Label("num_running_jobs_lbl", Model.of(LBL_NUM_RUNNING_JOBS)));
+        add(new Label("num_running_jobs", numJobsRunningModel));
+        add(new Label("num_running_jobs_pct", numJobsRunningPctModel) {
+            public <C> IConverter<C> getConverter(Class<C> type) {
+                return new DecimalConverter();
+            }
+        });
+
         add(new Label("num_finished_jobs_lbl", Model.of(LBL_NUM_FINISHED_JOBS)));
         add(new Label("num_finished_jobs", numJobsFinishedModel));
         add(new Label("num_finished_jobs_pct", numJobsFinishedPctModel) {
@@ -60,61 +68,69 @@ public class ReferenceValidationPanel extends Panel {
             }
         });
 
-        List<IColumn<VirtualCollectionRegistryReferenceValidationJob, String>> columns = new ArrayList<>();
-        columns.add(new PropertyColumn(new Model("Location"), "ref.ref", "ref.ref"));
+        List<IColumn<ResourceScan, String>> columns = new ArrayList<>();
+        columns.add(new PropertyColumn(new Model("Location"), "ref", "ref"));
+        columns.add(new ColumnTimestamp(new Model("Last Scan"), "lastScanStart", "lastScanStart"));
+        columns.add(new PropertyColumn(new Model("State"), "state", "state"));
         columns.add(new ColumnHttpStatus(new Model("Response"), "httpResponseCode", "httpResponseCode"));
-        columns.add(new PropertyColumn(new Model("State"), "state.state", "state.state"));
-        columns.add(new ColumnTimestamp(new Model("Timestamp"), "state.timestamp", "state.timestamp"));
-        columns.add(new PropertyColumn(new Model("Data"), "state.data", "state.data"));
+        columns.add(new PropertyColumn(new Model("Response"), "httpResponseMessage", "httpResponseMessage"));
+        columns.add(new PropertyColumn(new Model("Exception"), "exception", "exception"));
 
-        provider = new ValidationJobProvider(validator);
-        final DataTable<VirtualCollectionRegistryReferenceValidationJob, String> table =
+        provider = new ValidationJobProvider(scans);
+        final DataTable<ResourceScan, String> table =
                 new AjaxFallbackDefaultDataTable<>("validation_job_table",
                         columns, provider, 30);
         add(table);
 
-        updateValues(validator);
+        updateValues(scans);
     }
 
-    public void update(VirtualCollectionRegistryReferenceValidator validator) {
-        /*
-        if(validator != null && validator.getJobs() != null) {
-            updateValues(validator);
-            provider.update(validator);
+    public void update(List<ResourceScan> scans) {
+        if(scans != null) {
+            updateValues(scans);
+            provider.update(scans);
         } else {
-            logger.debug("Validator is invalid: " + validator == null ? "validator = null" : "validator.getJobs() == null");
+            logger.debug("Validator is invalid: validator = null");
         }
-         */
+
     }
 
-    private void updateValues(VirtualCollectionRegistryReferenceValidator validator) {
-        if(validator == null) {
+    private void updateValues(List<ResourceScan> scans) {
+        if(scans == null) {
             return;
         }
-        int totalCount = 0;//validator.getJobs().size();
+        int totalCount = scans.size();
         int waitingCount = 0;
+        int runningCount = 0;
         int finishedCount = 0;
-        /*
-        for(VirtualCollectionRegistryReferenceValidationJob job : validator.getJobs()) {
-            ReferencesEditor.State state = job.getState().getState();
-            if(state == ReferencesEditor.State.DONE || state == ReferencesEditor.State.FAILED) {
-                finishedCount++;
-            } else {
-                waitingCount++;
+
+        for(ResourceScan scan : scans) {
+            ResourceScan.State state = scan.getState();
+            switch(state) {
+                case ANALYZING:     runningCount++;     break;
+                case DONE:          finishedCount++;    break;
+                case FAILED:        finishedCount++;    break;
+                case INITIALIZED:   waitingCount++;     break;
             }
         }
-    */
         numJobsModel.setObject(totalCount);
-        numJobsFinishedModel.setObject(finishedCount);
-        numJobsFinishedPctModel.setObject(totalCount == 0 ? 0.0 : (float)finishedCount/(float)totalCount*100.0);
         numJobsWaitingModel.setObject(waitingCount);
         numJobsWaitingPctModel.setObject(totalCount == 0 ? 0.0 : (float)waitingCount/(float)totalCount*100.0);
+        numJobsRunningModel.setObject(runningCount);
+        numJobsRunningPctModel.setObject(totalCount == 0 ? 0.0 : (float)runningCount/(float)totalCount*100.0);
+        numJobsFinishedModel.setObject(finishedCount);
+        numJobsFinishedPctModel.setObject(totalCount == 0 ? 0.0 : (float)finishedCount/(float)totalCount*100.0);
+
     }
 
-    class ValidationJobProvider extends SortableDataProvider<VirtualCollectionRegistryReferenceValidationJob, String> {
+    class ValidationJobProvider extends SortableDataProvider<ResourceScan, String> {
 
-        class SortableDataProviderComparator implements Comparator<VirtualCollectionRegistryReferenceValidationJob>, Serializable {
-            public int compare(final VirtualCollectionRegistryReferenceValidationJob o1, final VirtualCollectionRegistryReferenceValidationJob o2) {
+        class SortableDataProviderComparator implements Comparator<ResourceScan>, Serializable {
+            public int compare(final ResourceScan o1, final ResourceScan o2) {
+                if(getSort() == null) {
+                    return 0;
+                }
+
                 PropertyModel<Comparable> model1 = new PropertyModel<Comparable>(o1, getSort().getProperty());
                 PropertyModel<Comparable> model2 = new PropertyModel<Comparable>(o2, getSort().getProperty());
 
@@ -127,52 +143,45 @@ public class ReferenceValidationPanel extends Panel {
             }
         }
 
-        private transient VirtualCollectionRegistryReferenceValidator validator;
+        private transient List<ResourceScan> scans;
         private SortableDataProviderComparator comparator = new SortableDataProviderComparator();
 
-        public ValidationJobProvider(VirtualCollectionRegistryReferenceValidator validator) {
-            this.validator = validator;
-            setSort("state.timestamp", SortOrder.DESCENDING);
+        public ValidationJobProvider(List<ResourceScan> scans) {
+            this.scans = scans;
+            Collections.sort(this.scans, comparator);
+            setSort("lastScanStart", SortOrder.DESCENDING);
         }
 
-        public void update(VirtualCollectionRegistryReferenceValidator validator) {
-            this.validator = validator;
+        public void update(List<ResourceScan> scans) {
+            this.scans = scans;
+            Collections.sort(this.scans, comparator);
         }
 
         @Override
-        public Iterator<? extends VirtualCollectionRegistryReferenceValidationJob> iterator(long first, long count) {
-            final List<VirtualCollectionRegistryReferenceValidationJob> list = new ArrayList<VirtualCollectionRegistryReferenceValidationJob>();//this.validator.getJobs();
-            final List<VirtualCollectionRegistryReferenceValidationJob> newList = new ArrayList<>(list);
-            Collections.sort(newList, comparator);
-            return newList.subList((int)first, (int)first + (int)count).iterator();
+        public Iterator<? extends ResourceScan> iterator(long first, long count) {
+            return scans.subList((int)first, (int)first + (int)count).iterator();
         }
 
         @Override
         public long size() {
-            return 0;
-            /*
-            if(this.validator == null) {
+            if(this.scans == null) {
                 return 0;
             }
-            if(this.validator.getJobs() == null) {
-                return 0;
-            }
-            return this.validator.getJobs().size();
-             */
+            return this.scans.size();
         }
 
         @Override
-        public IModel<VirtualCollectionRegistryReferenceValidationJob> model(VirtualCollectionRegistryReferenceValidationJob object) {
-            return new AbstractReadOnlyModel<VirtualCollectionRegistryReferenceValidationJob>() {
+        public IModel<ResourceScan> model(ResourceScan object) {
+            return new AbstractReadOnlyModel<ResourceScan>() {
                 @Override
-                public VirtualCollectionRegistryReferenceValidationJob getObject() {
+                public ResourceScan getObject() {
                     return object;
                 }
             };
         }
     }
 
-    final class ColumnTimestamp extends PropertyColumn<VirtualCollectionRegistryReferenceValidationJob, String> {
+    final class ColumnTimestamp extends PropertyColumn<ResourceScan, String> {
         private final IConverter dateConverter = new DateConverter(DateConverter.DF_TIMESTAMP);
 
         public ColumnTimestamp(IModel<String> displayModel, String sortProperty, String propertyExpression) {
@@ -180,8 +189,8 @@ public class ReferenceValidationPanel extends Panel {
         }
 
         @Override
-        public void populateItem(Item<ICellPopulator<VirtualCollectionRegistryReferenceValidationJob>> item,
-                                 String componentId, IModel<VirtualCollectionRegistryReferenceValidationJob> model) {
+        public void populateItem(Item<ICellPopulator<ResourceScan>> item,
+                                 String componentId, IModel<ResourceScan> model) {
             item.add(new Label(componentId, this.getDataModel(model)) {
                 @SuppressWarnings("unchecked")
                 @Override
@@ -201,14 +210,14 @@ public class ReferenceValidationPanel extends Panel {
         }
     }
 
-    final class ColumnHttpStatus extends PropertyColumn<VirtualCollectionRegistryReferenceValidationJob, String> {
+    final class ColumnHttpStatus extends PropertyColumn<ResourceScan, String> {
         public ColumnHttpStatus(IModel<String> displayModel, String sortProperty, String propertyExpression) {
             super(displayModel, sortProperty, propertyExpression);
         }
 
         @Override
-        public void populateItem(Item<ICellPopulator<VirtualCollectionRegistryReferenceValidationJob>> item,
-                                 String componentId, IModel<VirtualCollectionRegistryReferenceValidationJob> model) {
+        public void populateItem(Item<ICellPopulator<ResourceScan>> item,
+                                 String componentId, IModel<ResourceScan> model) {
             IModel<String> lblModel = Model.of("");
             int status = (Integer)this.getDataModel(model).getObject();
             if(status > 0) {
@@ -223,7 +232,7 @@ public class ReferenceValidationPanel extends Panel {
         }
     }
 
-    final class ColumnRef extends PropertyColumn<VirtualCollectionRegistryReferenceValidationJob, String> {
+    final class ColumnRef extends PropertyColumn<ResourceScan, String> {
         public ColumnRef(IModel<String> displayModel, String sortProperty, String propertyExpression) {
             super(displayModel, sortProperty, propertyExpression);
         }

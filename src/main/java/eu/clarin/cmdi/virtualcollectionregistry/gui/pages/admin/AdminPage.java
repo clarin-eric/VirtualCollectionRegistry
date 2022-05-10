@@ -8,6 +8,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BasePage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowseEditableCollectionsPanel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.TimerManager;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.AdminCollectionsProvider;
+import eu.clarin.cmdi.virtualcollectionregistry.model.ResourceScan;
 import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import java.util.ArrayList;
 import java.util.LinkedList;
@@ -59,8 +60,6 @@ public class AdminPage extends BasePage {
     @SpringBean
     private VcrConfig vcrConfig;
 
-    private final int uiRefreshTimeInSeconds = 1;
-
     public final static User PUBLIC_USER = new User("___PUBLIC___",  "Published collections");
     
     public AdminPage() {
@@ -97,25 +96,14 @@ public class AdminPage extends BasePage {
         final AdminCollectionsProvider provider = new AdminCollectionsProvider(userModel);
         add(new BrowseEditableCollectionsPanel("collections", provider, true, getPageReference(), timerManager));
 
-        ReferenceValidationPanel pnl = new ReferenceValidationPanel("pnl_reference_validation", vcr.getReferenceValidator());
+        ReferenceValidationPanel pnl = new ReferenceValidationPanel("pnl_reference_validation", getScans());
         pnl.setOutputMarkupId(true);
         add(pnl);
-/*
-        add(new AbstractAjaxTimerBehavior(Duration.seconds(uiRefreshTimeInSeconds)) {
-            @Override
-            protected void onTimer(AjaxRequestTarget target) {
-                pnl.update(vcr.getReferenceValidator());
-                if(target != null) {
-                    logger.info("Update admin page timer");
-                    target.add(pnl);
-                }
-            }
-        });
-*/
+
         timerManager.addTarget(null, new TimerManager.Update() {
             @Override
             public boolean onUpdate(AjaxRequestTarget target) {
-                pnl.update(vcr.getReferenceValidator());
+                pnl.update(getScans());
                 return true;
             }
 
@@ -126,6 +114,16 @@ public class AdminPage extends BasePage {
                 return result;
             }
         });
+    }
+
+    private List<ResourceScan> getScans() {
+        List<ResourceScan> scans = new ArrayList<>();
+        try {
+            scans = vcr.getAllResourceScans();
+        } catch(Exception ex) {
+            logger.error("Failed to fetch resource scans", ex);
+        }
+        return scans;
     }
 
     private DropDownChoice<User> createSpacesDropDown(String id, final IModel<User> userModel, final List<User> users) {
