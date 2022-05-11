@@ -161,7 +161,14 @@ public class ReferenceValidationPanel extends Panel {
                 PropertyModel<Comparable> model1 = new PropertyModel<Comparable>(o1, getSort().getProperty());
                 PropertyModel<Comparable> model2 = new PropertyModel<Comparable>(o2, getSort().getProperty());
 
-                int result = model1.getObject().compareTo(model2.getObject());
+                Comparable c1 = model1.getObject();
+                Comparable c2 = model2.getObject();
+
+                if(c1 == null || c2 == null) {
+                    return 0;
+                }
+
+                int result = c1.compareTo(c2);
                 if (!getSort().isAscending()) {
                     result = -result;
                 }
