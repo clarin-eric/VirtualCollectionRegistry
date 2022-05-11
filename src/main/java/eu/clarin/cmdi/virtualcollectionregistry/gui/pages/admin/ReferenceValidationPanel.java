@@ -246,9 +246,11 @@ public class ReferenceValidationPanel extends Panel {
         public void populateItem(Item<ICellPopulator<ResourceScan>> item,
                                  String componentId, IModel<ResourceScan> model) {
             IModel<String> lblModel = Model.of("");
-            int status = (Integer)this.getDataModel(model).getObject();
-            if(status > 0) {
-                lblModel = Model.of("HTTP " + status);
+            if(this.getDataModel(model) != null) {
+                Integer status = (Integer) this.getDataModel(model).getObject();
+                if (status != null && status.intValue() > 0) {
+                    lblModel = Model.of("HTTP " + status.intValue());
+                }
             }
             item.add(new Label(componentId, lblModel));
         }
