@@ -30,6 +30,7 @@ import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.time.Duration;
 import org.slf4j.Logger;
@@ -67,7 +68,16 @@ public class AdminPage extends BasePage {
 
         final List<User> users = vcr.getUsers();
 
-        add(new Label("lbl_server_config", Model.of("Server Configuration")));
+        add(new Label("tab_collections", new StringResourceModel("tab.collections", this, null)));
+        add(new Label("tab_validation", new StringResourceModel("tab.validation", this, null)));
+        add(new Label("tab_configuration", new StringResourceModel("tab.configuration", this, null)));
+
+        add(new Label("server_config_pid_heading", new StringResourceModel("server_config.pid.heading", this, null)));
+        add(new Label("server_config_admin_heading", new StringResourceModel("server_config.admin.heading", this, null)));
+        add(new Label("server_config_database_heading", new StringResourceModel("server_config_database_heading", this, null)));
+        add(new Label("server_config_config_heading", new StringResourceModel("server_config.config.heading", this, null)));
+
+    //Server Configuration
         add(new AdminPanel("pnl_admins", adminUsersService));
 
         ListView pidProvidersListview = new ListView("pid_list", pidProviderService.getProviders()) {
@@ -79,10 +89,10 @@ public class AdminPage extends BasePage {
         };
         add(pidProvidersListview);
 
-        add(new Label("lbl_pnl_database", Model.of("Database")));
         add(new DatabasePanel("pnl_database", vcr));
         add(new ConfigPanel("pnl_config", vcrConfig));
 
+    //Collections
         // user model shared between spaces form and the table's provider
         final IModel<User> userModel = new Model<>(null);
 
@@ -90,12 +100,14 @@ public class AdminPage extends BasePage {
         final Form spaceSelectForm = new Form("spaceSelectForm");
         final DropDownChoice<User> spacesDropDown = createSpacesDropDown("space", userModel, users);
         spaceSelectForm.add(spacesDropDown);
+        spaceSelectForm.add(new Label("administration_collections_space", new StringResourceModel("administration.collections.space", this, null)));
         add(spaceSelectForm);
 
         // create table showing the collections in the space
         final AdminCollectionsProvider provider = new AdminCollectionsProvider(userModel);
         add(new BrowseEditableCollectionsPanel("collections", provider, true, getPageReference(), timerManager));
 
+    //Resource Scanning
         ReferenceValidationPanel pnl = new ReferenceValidationPanel("pnl_reference_validation", getScans());
         pnl.setOutputMarkupId(true);
         add(pnl);

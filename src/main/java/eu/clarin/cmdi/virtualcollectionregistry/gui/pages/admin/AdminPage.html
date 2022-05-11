@@ -10,46 +10,31 @@
             <div class="row">
                 <div class="col-xs-12">
 
-                    <h1 wicket:id="lbl_server_config">[Server configuration]</h1>
-                    <div class="row">
-                        <div class="col-xs-6">
-                            <h3>Persistent Identifiers Provider(s)</h3>
-                            <ul wicket:id="pid_list">
-                                <div wicket:id="pid_list_item">pid provider</div>
-                            </ul>
-                        </div>
-                        <div class="col-xs-6">
-                            <h3>Administrators</h3>
-                            <div wicket:id="pnl_admins">[admins]</div>
-                            <h3 wicket:id="lbl_pnl_database">[Database]</h3>
-                            <div wicket:id="pnl_database">[database info panel]</div>
-                        </div>
-                        <div class="col-xs-6">
-                            <h3>Configuration</h3>
-                            <div wicket:id="pnl_config">[config]</div>
-                        </div>
-                    </div>
-
-                </div>
-            </div>
-
-
-            <div class="row">
-                <div class="col-xs-12">
-                    <br />
-                    <h1>Administration</h1>
-
                     <!-- Nav tabs -->
                     <ul class="nav nav-tabs" role="tablist">
-                        <li role="presentation" class="active"><a href="#collections" aria-controls="collections" role="tab" data-toggle="tab">Collections</a></li>
-                        <li role="presentation"><a href="#validation" aria-controls="validation" role="tab" data-toggle="tab">Validation</a></li>
+                        <li role="presentation" class="active">
+                            <a href="#collections" aria-controls="collections" role="tab" data-toggle="tab">
+                                <span wicket:id="tab_collections">Collections</span>
+                            </a>
+                        </li>
+                        <li role="presentation">
+                            <a href="#validation" aria-controls="validation" role="tab" data-toggle="tab">
+                                <span wicket:id="tab_validation">Validation</span>
+                            </a>
+                        </li>
+                        <li role="presentation">
+                            <a href="#configuration" aria-controls="configuration" role="tab" data-toggle="tab">
+                                <span wicket:id="tab_configuration">Configuration</span>
+                            </a>
+                        </li>
                     </ul>
 
                     <!-- Tab panes -->
                     <div class="tab-content">
                         <div role="tabpanel" class="tab-pane active" id="collections">
+                            <br />
                             <form wicket:id="spaceSelectForm">
-                                <label for="space">Collections space:</label>
+                                <label for="space" wicket:id="administration_collections_space">Collections space:</label>
                                 <select id="space" wicket:id="space">
                                     <option>Public</option>
                                     <option>User 1</option>
@@ -61,6 +46,24 @@
                         </div>
                         <div role="tabpanel" class="tab-pane" id="validation">
                             <div wicket:id="pnl_reference_validation"></div>
+                        </div>
+                        <div role="tabpanel" class="tab-pane" id="configuration">
+                            <div class="col-xs-6">
+                                <h3 wicket:id="server_config_pid_heading">Persistent Identifiers Provider(s)</h3>
+                                <ul wicket:id="pid_list">
+                                    <div wicket:id="pid_list_item">pid provider</div>
+                                </ul>
+                            </div>
+                            <div class="col-xs-6">
+                                <h3 wicket:id="server_config_admin_heading">Administrators</h3>
+                                <div wicket:id="pnl_admins">[admins]</div>
+                                <h3 wicket:id="server_config_database_heading">[Database]</h3>
+                                <div wicket:id="pnl_database">[database info panel]</div>
+                            </div>
+                            <div class="col-xs-6">
+                                <h3 wicket:id="server_config_config_heading">Configuration</h3>
+                                <div wicket:id="pnl_config">[config]</div>
+                            </div>
                         </div>
                     </div>
 

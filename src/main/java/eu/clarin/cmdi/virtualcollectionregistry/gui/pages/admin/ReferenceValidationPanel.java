@@ -23,104 +23,131 @@ import java.util.*;
 public class ReferenceValidationPanel extends Panel {
 
     private final static Logger logger = LoggerFactory.getLogger(ReferenceValidationPanel.class);
-    private final IModel numJobsModel = Model.of(0);
-    private final IModel numJobsWaitingModel = Model.of(0);
-    private final IModel numJobsWaitingPctModel = Model.of(0.0);
-    private final IModel numJobsFinishedModel = Model.of(0);
-    private final IModel numJobsFinishedPctModel = Model.of(0.0);
-    private final IModel numJobsRunningModel = Model.of(0.0);
-    private final IModel numJobsRunningPctModel = Model.of(0.0);
 
-    private ValidationJobProvider provider;
+    private final ValidationJobProvider provider;
 
-    private final static String LBL_NUM_JOBS = "Number of validation jobs";
-    private final static String LBL_NUM_WAITING_JOBS = " Waiting:";
-    private final static String LBL_NUM_RUNNING_JOBS = " Running:";
-    private final static String LBL_NUM_FINISHED_JOBS = "Finished:";
+    private final ResourceScanSummary summary = new ResourceScanSummary();
+
+    private class ResourceScanSummary implements Serializable {
+        private int waiting = 0;
+        private int running = 0;
+        private int finished = 0;
+
+        public void update(int waiting, int running, int finished) {
+            this.waiting = waiting;
+            this.running = running;
+            this.finished = finished;
+        }
+
+        public void update(List<ResourceScan> scans) {
+            if(scans == null) {
+                return;
+            }
+
+            int waiting = 0;
+            int running = 0;
+            int finished= 0;
+            for(ResourceScan scan : scans) {
+                ResourceScan.State state = scan.getState();
+                switch(state) {
+                    case ANALYZING:     running++;  break;
+                    case DONE:          finished++; break;
+                    case FAILED:        finished++; break;
+                    case INITIALIZED:   waiting++;  break;
+                }
+            }
+            update(waiting, running, finished);
+        }
+
+        public float getWaiting() {
+            return waiting;
+        }
+
+        public float getWaitingPct() {
+            return (float)(waiting/(float)getTotal()*100.0);
+        }
+
+        public int getRunning() {
+            return running;
+        }
+
+        public float getRunningPct() {
+            return (float)(running/(float)getTotal()*100.0);
+        }
+
+        public int getFinished() {
+            return finished;
+        }
+
+        public float getFinishedPct() {
+            return (float)(finished/(float)getTotal()*100.0);
+        }
+
+        public int getTotal() {
+            return waiting+running+finished;
+        }
+    }
 
     public ReferenceValidationPanel(String id, List<ResourceScan> scans) {
         super(id);
 
-        add(new Label("num_jobs", numJobsModel));
-        add(new Label("num_jobs_lbl", Model.of(LBL_NUM_JOBS)));
+        add(new Label("summary_heading", new StringResourceModel("summary.heading", this, null)));
+        add(new Label("num_jobs_lbl", new StringResourceModel("summary.total", this, null)));
+        add(new Label("num_jobs", new PropertyModel<>(summary, "total")));
 
-        add(new Label("num_waiting_jobs_lbl", Model.of(LBL_NUM_WAITING_JOBS)));
-        add(new Label("num_waiting_jobs", numJobsWaitingModel));
-        add(new Label("num_waiting_jobs_pct", numJobsWaitingPctModel)  {
+        add(new Label("num_waiting_jobs_lbl", new StringResourceModel("summary.waiting", this, null)));
+        add(new Label("num_waiting_jobs", new PropertyModel<>(summary, "waiting")));
+        add(new Label("num_waiting_jobs_pct", new PropertyModel<>(summary, "waitingPct")) {
             public <C> IConverter<C> getConverter(Class<C> type) {
                 return new DecimalConverter();
             }
         });
 
-        add(new Label("num_running_jobs_lbl", Model.of(LBL_NUM_RUNNING_JOBS)));
-        add(new Label("num_running_jobs", numJobsRunningModel));
-        add(new Label("num_running_jobs_pct", numJobsRunningPctModel) {
+        add(new Label("num_running_jobs_lbl",  new StringResourceModel("summary.running", this, null)));
+        add(new Label("num_running_jobs", new PropertyModel(summary,"running")));
+        add(new Label("num_running_jobs_pct", new PropertyModel(summary,"runningPct")) {
             public <C> IConverter<C> getConverter(Class<C> type) {
                 return new DecimalConverter();
             }
         });
 
-        add(new Label("num_finished_jobs_lbl", Model.of(LBL_NUM_FINISHED_JOBS)));
-        add(new Label("num_finished_jobs", numJobsFinishedModel));
-        add(new Label("num_finished_jobs_pct", numJobsFinishedPctModel) {
+        add(new Label("num_finished_jobs_lbl", new StringResourceModel("summary.finished", this, null)));
+        add(new Label("num_finished_jobs", new PropertyModel(summary, "finished")));
+        add(new Label("num_finished_jobs_pct", new PropertyModel(summary, "finishedPct")) {
             public <C> IConverter<C> getConverter(Class<C> type) {
                 return new DecimalConverter();
             }
         });
 
         List<IColumn<ResourceScan, String>> columns = new ArrayList<>();
-        columns.add(new PropertyColumn(new Model("Location"), "ref", "ref"));
-        columns.add(new ColumnTimestamp(new Model("Last Scan"), "lastScanStart", "lastScanStart"));
-        columns.add(new PropertyColumn(new Model("State"), "state", "state"));
-        columns.add(new ColumnHttpStatus(new Model("Response"), "httpResponseCode", "httpResponseCode"));
-        columns.add(new PropertyColumn(new Model("Response"), "httpResponseMessage", "httpResponseMessage"));
-        columns.add(new PropertyColumn(new Model("Exception"), "exception", "exception"));
+        columns.add(new PropertyColumn(new StringResourceModel("table.column.ref"), "ref", "ref"));
+        columns.add(new ColumnTimestamp(new StringResourceModel("table.column.lastScanStart"), "lastScanStart", "lastScanStart"));
+        columns.add(new PropertyColumn(new StringResourceModel("table.column.state"), "state", "state"));
+        columns.add(new ColumnHttpStatus(new StringResourceModel("table.column.httpResponseCode"), "httpResponseCode", "httpResponseCode"));
+        columns.add(new PropertyColumn(new StringResourceModel("table.column.httpResponseMessage"), "httpResponseMessage", "httpResponseMessage"));
+        columns.add(new PropertyColumn(new StringResourceModel("table.column.exception"), "exception", "exception"));
 
+        add(new Label("table_heading", new StringResourceModel("table.heading", this, null)));
         provider = new ValidationJobProvider(scans);
         final DataTable<ResourceScan, String> table =
                 new AjaxFallbackDefaultDataTable<>("validation_job_table",
                         columns, provider, 30);
         add(table);
 
-        updateValues(scans);
+        summary.update(scans);
+    }
+
+    public ResourceScanSummary getSummary() {
+        return summary;
     }
 
     public void update(List<ResourceScan> scans) {
         if(scans != null) {
-            updateValues(scans);
+            summary.update(scans);
             provider.update(scans);
         } else {
             logger.debug("Validator is invalid: validator = null");
         }
-
-    }
-
-    private void updateValues(List<ResourceScan> scans) {
-        if(scans == null) {
-            return;
-        }
-        int totalCount = scans.size();
-        int waitingCount = 0;
-        int runningCount = 0;
-        int finishedCount = 0;
-
-        for(ResourceScan scan : scans) {
-            ResourceScan.State state = scan.getState();
-            switch(state) {
-                case ANALYZING:     runningCount++;     break;
-                case DONE:          finishedCount++;    break;
-                case FAILED:        finishedCount++;    break;
-                case INITIALIZED:   waitingCount++;     break;
-            }
-        }
-        numJobsModel.setObject(totalCount);
-        numJobsWaitingModel.setObject(waitingCount);
-        numJobsWaitingPctModel.setObject(totalCount == 0 ? 0.0 : (float)waitingCount/(float)totalCount*100.0);
-        numJobsRunningModel.setObject(runningCount);
-        numJobsRunningPctModel.setObject(totalCount == 0 ? 0.0 : (float)runningCount/(float)totalCount*100.0);
-        numJobsFinishedModel.setObject(finishedCount);
-        numJobsFinishedPctModel.setObject(totalCount == 0 ? 0.0 : (float)finishedCount/(float)totalCount*100.0);
-
     }
 
     class ValidationJobProvider extends SortableDataProvider<ResourceScan, String> {
