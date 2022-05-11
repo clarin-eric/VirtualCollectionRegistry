@@ -225,8 +225,12 @@ public class ReferencesEditor extends ComposedField {
                 ResourceScan scan = scanResults.get(ref.getRef());
                 if(scan != null) {
                     state = scan.getState();
-                    reason += "Last scan: "+scan.getLastScanEnd()+"<br />";
-                    if(scan.getHttpResponseCode() > 0) {
+                    if(scan.getLastScanEnd() == null) {
+                        reason += "Last scan: Not scanned yet.<br />";
+                    } else {
+                        reason += "Last scan: " + scan.getLastScanEnd() + "<br />";
+                    }
+                    if(scan.getHttpResponseCode() != null && scan.getHttpResponseCode() > 0) {
                         reason += "HTTP response: " + scan.getHttpResponseCode();
                         if (scan.hasHttpResponseMessage()) {
                             reason += " " + scan.getHttpResponseMessage();
