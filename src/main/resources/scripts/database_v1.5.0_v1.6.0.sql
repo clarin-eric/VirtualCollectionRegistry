@@ -14,7 +14,6 @@ ALTER TABLE virtualcollection ADD COLUMN `child` bigint(20) NULL;
 ALTER TABLE virtualcollection ADD COLUMN `latest` bigint(20) NULL;
 ALTER TABLE virtualcollection ADD COLUMN `original` bigint(20) NULL;
 ALTER TABLE virtualcollection ADD COLUMN `forked_from` bigint(20) NULL;
-ALTER TABLE virtualcollection ADD COLUMN `original` bigint(20) NULL;
 ALTER TABLE virtualcollection ADD COLUMN `public_leaf` bool default false;
 ALTER TABLE pid ADD COLUMN `is_latest` bool default false;
 
