@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -22,6 +23,7 @@ import javax.xml.parsers.DocumentBuilderFactory;
 import javax.xml.parsers.ParserConfigurationException;
 import javax.xml.xpath.*;
 import java.io.IOException;
+import java.net.URI;
 import java.util.ArrayList;
 import java.util.Iterator;
 import java.util.LinkedList;
@@ -183,10 +185,15 @@ public class VirtualCollectionRegistryReferenceValidatorWorker {
         WorkerResult result = new WorkerResult();
 
         try {
-            logger.debug("Validating reference = "+ref);
+            String actionableRef = ref;
+            if(HandleLinkModel.isSupportedPersistentIdentifier(ref)) {
+                actionableRef = HandleLinkModel.getActionableUri(ref);
+            }
+
+            logger.debug("Validating reference = "+ref+", actionable = "+actionableRef);
             ValidationResponseHandler responseHandler = new ValidationResponseHandler();
 
-            HttpGet httpget = new HttpGet(ref);
+            HttpGet httpget = new HttpGet(actionableRef);
             httpget.setConfig(requestConfig);
             httpclient.execute(httpget, responseHandler);
 
