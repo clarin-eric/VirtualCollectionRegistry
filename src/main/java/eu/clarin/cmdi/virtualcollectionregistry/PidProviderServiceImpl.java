@@ -27,17 +27,11 @@ public class PidProviderServiceImpl implements PidProviderService {
     @Value("${eu.clarin.cmdi.virtualcollectionregistry.pidprovider.basedir:.}")
     private String baseDir;
 
-    //@Value("${eu.clarin.cmdi.virtualcollectionregistry.base_uri}")
-    //private String baseUri;
-
     public final static String DEFAULT_INFIX = "VC-";
 
-    @Value("${pid_provider.epic.infix:VC-}")
-    private String infix;
+    private final static String LATEST_SUFFIX = "-latest";
 
     private List<PersistentIdentifierProvider> providers = new LinkedList<>();
-
-    private final static String LATEST_SUFFIX = "-latest";
 
     public PidProviderServiceImpl() {}
 
