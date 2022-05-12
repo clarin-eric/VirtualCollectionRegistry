@@ -368,20 +368,21 @@ public class ReferencesEditor extends ComposedField {
             public boolean onUpdate(AjaxRequestTarget target) {
                 fireEvent(new CustomDataUpdateEvent(target));
 
-                boolean analyzing = true;
+                boolean analyzing = false;
                 try {
                     //Build list of refs
                     List<String> refs = new ArrayList<>();
                     for(EditableResource ref : references) {
                         refs.add(ref.getRef());
                     }
+
                     //Query scans for this list of refs
                     List<ResourceScan> scans = Application.get().getRegistry().getResourceScansForRefs(refs);
                     for(ResourceScan scan : scans) {
                         logger.debug("Scan ref="+scan.getRef()+", state="+scan.getState().toString());
                         scanResults.put(scan.getRef(), scan);
                         if(scan.getState() != State.DONE && scan.getState() != State.FAILED) {
-                            analyzing = false;
+                            analyzing = true;
                         }
                     }
                 } catch(VirtualCollectionRegistryException ex) {
