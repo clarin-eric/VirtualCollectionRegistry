@@ -29,8 +29,7 @@
               password="vcrpassword"
               url="jdbc:postgresql://localhost:5432/vcr" />
 -->
-    <Parameter
-               name="eu.clarin.cmdi.virtualcollectionregistry.admindb.basedir"
+    <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.admindb.basedir"
                value="/Users/wilelb/" override="false"/>
 
     <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.admindb"
@@ -65,23 +64,26 @@
                override="false"/>
 
     <!-- EPIC -->
+ <!--
     <Parameter name="pid_provider.epic.service_base_url"
                value="http://pid-vm04.gwdg.de:8080/handles/"
                override="false"/>
-    
+
     <Parameter name="pid_provider.epic.handle_prefix"
                value="11148"
                override="false"/>
-    
+
     <Parameter name="pid_provider.epic.user"
                value="clarintest1"
                override="false"/>
-    
+
     <Parameter name="pid_provider.epic.password"
                value=""
                override="false"/>
+-->
 
     <!-- DataCite DOI test environment -->
+ <!--
     <Parameter name="pid_provider.doi.service_base_url"
                value="https://api.test.datacite.org/"
                override="false"/>
@@ -98,58 +100,60 @@
                value=""
                override="false"/>
 
+-->
+
     <!-- Switchboard endpoint -->
-    <Parameter name="eu.clarin.cmdi.vcr.lrs.endpoint" 
-               value="https://switchboard.clarin.eu/#/vcr" 
+    <Parameter name="eu.clarin.cmdi.vcr.lrs.endpoint"
+               value="https://switchboard.clarin.eu/#/vcr"
                override="false"/>
-    
+
     <!-- Enable switchboard ingegration for resources -->
-    <Parameter name="eu.clarin.cmdi.vcr.lrs.enable_for_resources" 
-               value="true" 
+    <Parameter name="eu.clarin.cmdi.vcr.lrs.enable_for_resources"
+               value="true"
                override="false" />
-    
+
     <!-- Enable switchboard ingegration for collections -->
-    <Parameter name="eu.clarin.cmdi.vcr.lrs.enable_for_collections" 
-               value="false" 
+    <Parameter name="eu.clarin.cmdi.vcr.lrs.enable_for_collections"
+               value="false"
                override="false" />
-    
-    
+
+
     <!--
-    <Parameter name="eu.clarin.cmdi.vcr.piwik.enableTracker" 
-               value="false" 
+    <Parameter name="eu.clarin.cmdi.vcr.piwik.enableTracker"
+               value="false"
                override="false"/>
-    
-    <Parameter name="eu.clarin.cmdi.vcr.piwik.siteId" 
-               value="1" 
+
+    <Parameter name="eu.clarin.cmdi.vcr.piwik.siteId"
+               value="1"
                override="false" />
-    
-    <Parameter name="eu.clarin.cmdi.vcr.piwik.host" 
-               value="https://stats.clarin.eu/" 
+
+    <Parameter name="eu.clarin.cmdi.vcr.piwik.host"
+               value="https://stats.clarin.eu/"
                override="false" />
-       
-     <Parameter name="eu.clarin.cmdi.vcr.piwik.domains" 
-               value="*.vcr.clarin.eu" 
-               override="false" />   
+
+     <Parameter name="eu.clarin.cmdi.vcr.piwik.domains"
+               value="*.vcr.clarin.eu"
+               override="false" />
     -->
-    
-    <Parameter name="eu.clarin.cmdi.vcr.logout_mode" 
-               value="shibboleth" 
+
+    <Parameter name="eu.clarin.cmdi.vcr.logout_mode"
+               value="shibboleth"
                override="false" />
-    
-    <Parameter name="eu.clarin.cmdi.vcr.logout_enable" 
-               value="false" 
+
+    <Parameter name="eu.clarin.cmdi.vcr.logout_enable"
+               value="false"
                override="false" />
-    
-    <Parameter name="eu.clarin.cmdi.vcr.snippet.survey" 
-               value="survey.html" 
+
+    <Parameter name="eu.clarin.cmdi.vcr.snippet.survey"
+               value="survey.html"
                override="false" />
-    
-    <Parameter name="eu.clarin.cmdi.vcr.snippet.credits" 
-               value="credits.html" 
+
+    <Parameter name="eu.clarin.cmdi.vcr.snippet.credits"
+               value="credits.html"
                override="false" />
-    
-    <Parameter name="eu.clarin.cmdi.vcr.mode" 
-               value="alpha" 
+
+    <Parameter name="eu.clarin.cmdi.vcr.mode"
+               value="alpha"
                override="false" />
 
     <!-- 1.7.0 -->
