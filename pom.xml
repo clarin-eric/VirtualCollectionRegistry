@@ -841,10 +841,13 @@
                             <directory>src/main/resources</directory>
                             <targetPath>WEB-INF</targetPath>
                             <includes>
+                                <!--
                                 <include>*.xml</include>
                                 <include>*.properties</include>
+                                -->
                                 <include>scripts</include>
                             </includes>
+
                         </resource>
                         <!-- additional web resources: also copy schemas to web-app -->
                         <resource>
