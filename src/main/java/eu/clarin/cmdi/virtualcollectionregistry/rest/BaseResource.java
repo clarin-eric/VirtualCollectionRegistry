@@ -19,6 +19,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.rest;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.net.URI;
 import javax.ws.rs.GET;
 import javax.ws.rs.Path;
 import javax.ws.rs.Produces;
@@ -66,12 +67,13 @@ public class BaseResource {
      * Serves a short description HTML page at the service root
      */
     @GET
-    @Produces({MediaType.TEXT_XML})
+    @Produces({MediaType.TEXT_PLAIN})
     public Response getDescription() {
+        /*
         final StreamingOutput writer = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
-                try (InputStream is = getClass().getResourceAsStream("/restIndex.html")) {
+                try (InputStream is = getClass().getResourceAsStream("/../src/main/webapp/restIndex.html")) {
                     IOUtils.copy(is, output);
                 } finally {
                     output.close();
@@ -79,6 +81,8 @@ public class BaseResource {
             }
         };
         return Response.ok(writer).type(MediaType.TEXT_HTML).build();
+         */
+        return Response.seeOther(URI.create("https://infra.clarin.eu/apis/")).build();
     }
 
     /**
