@@ -190,7 +190,10 @@ public class VirtualCollectionRegistryReferenceValidatorWorker {
                 actionableRef = HandleLinkModel.getActionableUri(ref);
             }
 
-            logger.debug("Validating reference = "+ref+", actionable = "+actionableRef);
+            logger.debug("Validating reference = "+ref+
+                    " ("+(HandleLinkModel.isSupportedPersistentIdentifier(ref) ? "is" : "is not")+
+                    " a supported pid), actionable ref = "+actionableRef);
+
             ValidationResponseHandler responseHandler = new ValidationResponseHandler();
 
             HttpGet httpget = new HttpGet(actionableRef);
