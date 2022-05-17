@@ -35,7 +35,7 @@ public class VirtualCollectionRegistryReferenceValidatorWorker {
 
     private final transient List<ReferenceParser> parsers = new LinkedList<>();
 
-    private final CloseableHttpClient httpclient = HttpClients.createDefault();
+    private final CloseableHttpClient httpclient;
     private final RequestConfig requestConfig;
 
     public class WorkerResult {
@@ -92,6 +92,10 @@ public class VirtualCollectionRegistryReferenceValidatorWorker {
         public void setDescriptionSuggestion(String descriptionSuggestion) {
             this.descriptionSuggestion = descriptionSuggestion;
         }
+
+        public boolean isHttpResponseCodeValid() {
+            return httpResponseCode >= 200 && httpResponseCode < 300;
+        }
     }
 
     public class ValidationResponseHandler implements ResponseHandler<String> {
@@ -107,6 +111,11 @@ public class VirtualCollectionRegistryReferenceValidatorWorker {
 
         @Override
         public String handleResponse(final HttpResponse response) throws IOException {
+            if(response == null) {
+                result.setException("HTTP Response is null");
+                return null;
+            }
+
             for (Header h : response.getHeaders("Content-Type")) {
                 logger.trace(h.getName() + " - " + h.getValue());
 
@@ -126,17 +135,16 @@ public class VirtualCollectionRegistryReferenceValidatorWorker {
                 result.setMimeType(mediaType);
             }
 
-            int httpCode = response.getStatusLine().getStatusCode();
-            String httpMessage = response.getStatusLine().getReasonPhrase();
+            result.setHttpResponseCode(response.getStatusLine().getStatusCode());
+            result.setHttpResponseMsg(response.getStatusLine().getReasonPhrase());
 
-            logger.trace("Http response: " + httpCode + " " + httpMessage);
+            logger.trace("Http response: " + result.getHttpResponseCode() + " " + result.getHttpResponseMsg());
             for (Header h : response.getHeaders("Content-Length")) {
                 logger.trace(h.getName() + " - " + h.getValue());
             }
 
-            result.setHttpResponseMsg(httpMessage);
-            result.setHttpResponseCode(httpCode);
-            if (httpCode >= 200 && httpCode < 300) {
+
+            if (result.isHttpResponseCodeValid()) {
                 HttpEntity entity = response.getEntity();
                 String body = entity != null ? EntityUtils.toString(entity) : null;
 
@@ -163,13 +171,20 @@ public class VirtualCollectionRegistryReferenceValidatorWorker {
     }
 
     public VirtualCollectionRegistryReferenceValidatorWorker() {
-        this.parsers.add(new CmdiReferenceParserImpl());
-        this.requestConfig =
+        this(
+            HttpClients.createDefault(),
             RequestConfig
                 .custom()
                 .setConnectionRequestTimeout(1000)
                 .setMaxRedirects(5)
-                .build();
+                .build()
+        );
+    }
+
+    public VirtualCollectionRegistryReferenceValidatorWorker(CloseableHttpClient httpclient, RequestConfig requestConfig) {
+        this.httpclient = httpclient;
+        this.parsers.add(new CmdiReferenceParserImpl());
+        this.requestConfig = requestConfig;
     }
 
     /**
@@ -202,6 +217,7 @@ public class VirtualCollectionRegistryReferenceValidatorWorker {
 
             result = responseHandler.getResult();
         } catch(Exception ex) {
+            logger.debug("Exception:", ex);
             result.setException(ex);
         }
 
@@ -216,6 +232,7 @@ public class VirtualCollectionRegistryReferenceValidatorWorker {
     public class ReferenceParserResult {
         private String name;
         private String description;
+        private Exception exception;
 
         public ReferenceParserResult() { }
 
@@ -227,6 +244,8 @@ public class VirtualCollectionRegistryReferenceValidatorWorker {
             return description;
         }
 
+        public Exception getException() { return exception; }
+
         public void setName(String name) {
             this.name = name;
         }
@@ -234,6 +253,8 @@ public class VirtualCollectionRegistryReferenceValidatorWorker {
         public void setDescription(String description) {
             this.description = description;
         }
+
+        public void setException(Exception ex) {this.exception = ex;}
     }
 
     public class CmdiReferenceParserImpl implements ReferenceParser {
@@ -244,39 +265,39 @@ public class VirtualCollectionRegistryReferenceValidatorWorker {
         }
 
         @Override
-        public boolean parse(final String xml, final String mimeType) {
+        public boolean parse(final String body, final String mimeType) {
             boolean handled = false;
-
-            try {
-                if(mimeType.equalsIgnoreCase("application/x-cmdi+xml")) {
-                    parseCmdi(xml);
-                } else if(mimeType.equalsIgnoreCase("text/xml") && xml.contains("xmlns=\"http://www.clarin.eu/cmd/\"")) {
-                    parseCmdi(xml);
+            if(mimeType != null) {
+                if (mimeType.equalsIgnoreCase("application/x-cmdi+xml")) {
+                    parseCmdi(body);
+                    handled = true;
+                } else if (mimeType.equalsIgnoreCase("text/xml") && body.contains("xmlns=\"http://www.clarin.eu/cmd/\"")) {
+                    parseCmdi(body);
+                    handled = true;
                 }
-            } catch(IOException | ParserConfigurationException | XPathExpressionException | SAXException ex) {
-                logger.error("Failed to parse CMDI", ex);
             }
-
             return handled;
         }
 
-        private void parseCmdi(final String xml) throws XPathExpressionException, ParserConfigurationException, SAXException, IOException {
-            logger.trace("Parsing CMDI");
+        private void parseCmdi(final String xml) {
+            try {
+                DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
+                factory.setNamespaceAware(true);
+                DocumentBuilder builder = factory.newDocumentBuilder();
+                Document doc = builder.parse(new java.io.ByteArrayInputStream(xml.getBytes()));
 
-            DocumentBuilderFactory factory = DocumentBuilderFactory.newInstance();
-            factory.setNamespaceAware(true);
-            DocumentBuilder builder = factory.newDocumentBuilder();
-            Document doc = builder.parse(new java.io.ByteArrayInputStream(xml.getBytes()));
+                String profile = getValueForXPath(doc, "//default:CMD/default:Header/default:MdProfile/text()");
+                //logger.trace("CMDI profile = " + profile);
 
-            String profile = getValueForXPath(doc, "//default:CMD/default:Header/default:MdProfile/text()");
-            logger.trace("CMDI profile = " + profile);
+                String name = getValueForXPath(doc, "//default:CMD/default:Components/default:lat-session/default:Name/text()");
+                String description = getValueForXPath(doc, "//default:CMD/default:Components/default:lat-session/default:descriptions/default:Description[lang('eng')]/text()");
+                //logger.trace("Name = " + name + ", description = " + description);
 
-            String name = getValueForXPath(doc, "//default:CMD/default:Components/default:lat-session/default:Name/text()");
-            String description = getValueForXPath(doc, "//default:CMD/default:Components/default:lat-session/default:descriptions/default:Description[lang('eng')]/text()");
-            logger.trace("Name = " + name + ", description = " + description);
-
-            this.result.setName(name);
-            this.result.setDescription(description);
+                this.result.setName(name);
+                this.result.setDescription(description);
+            } catch (IOException | ParserConfigurationException | SAXException ex) {
+                this.result.setException(ex);
+            }
         }
 
         /**
@@ -327,10 +348,10 @@ public class VirtualCollectionRegistryReferenceValidatorWorker {
                 XPathExpression expr = xpath.compile(xpathQuery);
                 Object xpathResult = expr.evaluate(doc, XPathConstants.NODESET);
                 NodeList nodes = (NodeList) xpathResult;
-                logger.trace("XPatch query = ["+xpathQuery+"], result nodelist.getLength() = "+nodes.getLength());
+                //logger.trace("XPatch query = ["+xpathQuery+"], result nodelist.getLength() = "+nodes.getLength());
                 for (int i = 0; i < nodes.getLength(); i++) {
                     Node currentItem = nodes.item(i);
-                    logger.trace("found node -> " + currentItem.getLocalName() + " (namespace: " + currentItem.getNamespaceURI() + "), value = " + currentItem.getNodeValue());
+                    //logger.trace("found node -> " + currentItem.getLocalName() + " (namespace: " + currentItem.getNamespaceURI() + "), value = " + currentItem.getNodeValue());
                     result.add(currentItem.getNodeValue());
                 }
             } catch(XPathExpressionException ex) {

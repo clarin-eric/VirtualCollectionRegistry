@@ -177,12 +177,7 @@ public class ReferencesEditor extends ComposedField {
             @Override
             public void handleSaveEvent(AjaxRequestTarget target) {
                 //Reset state so this reference is rescanned
-                //VirtualCollectionRegistry registry = Application.get().getRegistry();
-                //registry.getReferenceValidator().setState(references.get(edit_index).getInternalId(), State.INITIALIZED);
-
                 updateReferenceJob(references.get(edit_index));
-
-                //addReferenceJob
 
                 edit_index = -1;
                 editor.setVisible(false);
@@ -324,19 +319,7 @@ public class ReferencesEditor extends ComposedField {
                 item.add(c);
             }
         };
-/*
-        ajaxWrapper.add(new AbstractAjaxTimerBehavior(Duration.seconds(uiRefreshTimeInSeconds)) {
-            @Override
-            protected void onTimer(AjaxRequestTarget target) {
-                //validate(); //make sure this validation is up to date before re rendering the component
-                if(target != null) {
-                    logger.trace("Update references editor timer");
-                    target.add(ajaxWrapper);
-                }
-                fireEvent(new CustomDataUpdateEvent(target));
-            }
-        });
-*/
+
         ajaxWrapper.add(listview);
 
         lblNoReferences.setVisible(references.isEmpty());
@@ -361,9 +344,7 @@ public class ReferencesEditor extends ComposedField {
     private Map<String, ResourceScan> scanResults = new HashMap<>();
 
     private void addToTimerManager(AjaxRequestTarget target) {
-       // VirtualCollectionRegistry registry = Application.get().getRegistry();
-       // VirtualCollectionRegistryReferenceValidator validator = registry.getReferenceValidator();
-        timerManager.addTarget(target, new TimerManager.Update() {
+       timerManager.addTarget(target, new TimerManager.Update() {
             @Override
             public boolean onUpdate(AjaxRequestTarget target) {
                 fireEvent(new CustomDataUpdateEvent(target));
@@ -379,7 +360,6 @@ public class ReferencesEditor extends ComposedField {
                     //Query scans for this list of refs
                     List<ResourceScan> scans = Application.get().getRegistry().getResourceScansForRefs(refs);
                     for(ResourceScan scan : scans) {
-                        logger.debug("Scan ref="+scan.getRef()+", state="+scan.getState().toString());
                         scanResults.put(scan.getRef(), scan);
                         if(scan.getState() != State.DONE && scan.getState() != State.FAILED) {
                             analyzing = true;
@@ -398,7 +378,7 @@ public class ReferencesEditor extends ComposedField {
                 result.add(ajaxWrapper);
                 return result;
             }
-        });
+       });
     }
 
     public class Filter extends WebMarkupContainer implements Serializable {
@@ -482,14 +462,7 @@ public class ReferencesEditor extends ComposedField {
     }
     
     @Override
-    protected void onRemove() {
-        /*
-        VirtualCollectionRegistry registry = Application.get().getRegistry();
-        for(EditableResource r : references) {
-            registry.getReferenceValidator().removeReferenceValidationJob(r.getInternalId());
-        }
-         */
-    }
+    protected void onRemove() {    }
 
     @Override
     public boolean completeSubmit(AjaxRequestTarget target) {
