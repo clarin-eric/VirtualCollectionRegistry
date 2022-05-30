@@ -29,6 +29,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.TypedQuery;
 import org.apache.commons.httpclient.HttpException;
+import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.ClientProtocolException;
 import org.apache.http.client.HttpClient;
@@ -251,17 +252,22 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
                 for(PersistentIdentifier latestPid : vc.getLatestIdentifiers()) {
                     if(latestPid.getType() != PersistentIdentifier.Type.DUMMY) {
                         try {
+                            logger.info("Check latest pid = {}", latestPid.getActionableURI());
                             HttpHead request = new HttpHead(latestPid.getActionableURI());
                             HttpResponse response = client.execute(request);
-                            String pidUrl = response.getFirstHeader("Location").getValue();
-                            String latestVersionUrl = permaLinkService.getCollectionUrl(vc);
+                            logger.info("Response = {} / {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+                            Header firstLocationHeader = response.getFirstHeader("Location");
+                            if(firstLocationHeader != null) {
+                                String pidUrl = firstLocationHeader.getValue();
+                                String latestVersionUrl = permaLinkService.getCollectionUrl(vc);
 
-                            if(!pidUrl.equalsIgnoreCase(latestVersionUrl)) {
-                                try {
-                                    logger.info("Updating pid = {}, url = {} --> {}", latestPid, pidUrl, latestVersionUrl);
-                                    pidProviderService.updateLatestIdentifierUrl(latestPid, latestVersionUrl);
-                                } catch(VirtualCollectionRegistryException ex) {
-                                    logger.error("Failed to update latest version pid ("+latestPid.getActionableURI()+") url to "+latestVersionUrl);
+                                if (!pidUrl.equalsIgnoreCase(latestVersionUrl)) {
+                                    try {
+                                        logger.info("Updating pid = {}, url = {} --> {}", latestPid, pidUrl, latestVersionUrl);
+                                        pidProviderService.updateLatestIdentifierUrl(latestPid, latestVersionUrl);
+                                    } catch (VirtualCollectionRegistryException ex) {
+                                        logger.error("Failed to update latest version pid (" + latestPid.getActionableURI() + ") url to " + latestVersionUrl);
+                                    }
                                 }
                             }
                         } catch (IOException ex) {
