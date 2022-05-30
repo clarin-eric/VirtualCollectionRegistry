@@ -8,7 +8,10 @@ DELETE FROM `config` WHERE `key` = 'db_version_check';
 SELECT `value` INTO @current_value FROM `config` WHERE ( `key` = 'db_version' AND `value` = '1.5.0' );
 INSERT INTO `config` (`key`, `value`) VALUES ('db_version_check', @current_value);
 
--- Apply updates
+---
+--- Update schema
+---
+
 ALTER TABLE virtualcollection ADD COLUMN `parent` bigint(20) NULL;
 ALTER TABLE virtualcollection ADD COLUMN `child` bigint(20) NULL;
 ALTER TABLE virtualcollection ADD COLUMN `latest` bigint(20) NULL;
@@ -37,5 +40,19 @@ CREATE TABLE `resource_scan` (
 --ALTER TABLE resource_scan ADD COLUMN `exception` varchar(255) NULL;
 --ALTER TABLE resource_scan ADD COLUMN `name_suggestion` varchar(255) NULL;
 --ALTER TABLE resource_scan ADD COLUMN `description_suggestion` text NULL;
+
+---
+--- Update data
+---
+
+-- Update all public collections to leaf
+--update virtualcollection set public_leaf = 1 where state = 2;
+
+-- Revert update to leaf for those public collections that have public children
+--update virtualcollection set public_leaf = 0 where id in (select parent from virtualcollection where id IN (select child from virtualcollection where public_leaf = 1 and child is not null) and state = 2);
+
+-- Revert update to leaf for those public collections that have public frozen children
+--update virtualcollection set public_leaf = 0 where id in (select parent from virtualcollection where id IN (select child from virtualcollection where public_leaf = 1 and child is not null) and state = 4);
+
 -- Update current database config value
 UPDATE `config` SET `value` = '1.6.0' WHERE `key` = 'db_version';

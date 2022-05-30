@@ -369,6 +369,10 @@ public class ReferencesEditor extends ComposedField {
                     logger.error("Failed to fetch resource scan for reference.", ex);
                 }
 
+                if(!analyzing) {
+                    validate(); //run validation after all references have been analyzed
+                }
+
                 return analyzing;
             }
 

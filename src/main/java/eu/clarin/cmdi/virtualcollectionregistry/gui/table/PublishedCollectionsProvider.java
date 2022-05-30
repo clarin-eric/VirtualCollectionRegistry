@@ -16,6 +16,7 @@ public class PublishedCollectionsProvider extends CollectionsProvider {
     @Override
     protected void addSpaceFilter(QueryFactory factory) {
         factory.and(QueryOptions.Property.VC_PUBLIC_LEAF, QueryOptions.Relation.EQ, Boolean.TRUE);
+
         List<VirtualCollection.State> states = new LinkedList<>();
         states.add(VirtualCollection.State.PUBLIC);
         states.add(VirtualCollection.State.PUBLIC_FROZEN);
