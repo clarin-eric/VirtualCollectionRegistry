@@ -19,6 +19,9 @@ ALTER TABLE virtualcollection ADD COLUMN `original` bigint(20) NULL;
 ALTER TABLE virtualcollection ADD COLUMN `forked_from` bigint(20) NULL;
 ALTER TABLE virtualcollection ADD COLUMN `public_leaf` bool default false;
 ALTER TABLE pid ADD COLUMN `is_latest` bool default false;
+ALTER TABLE pid ADD COLUMN `modified` datetime;
+ALTER TABLE pid ADD COLUMN `modificationError` bool default false;
+ALTER TABLE pid ADD COLUMN `modificationMsg` text NULL;
 
 CREATE TABLE `resource_scan` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
@@ -35,6 +38,7 @@ CREATE TABLE `resource_scan` (
   `description_suggestion` text,
   PRIMARY KEY(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
+
 
 --ALTER TABLE resource_scan ADD COLUMN `created` datetime;
 --ALTER TABLE resource_scan ADD COLUMN `exception` varchar(255) NULL;

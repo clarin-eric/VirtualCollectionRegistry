@@ -250,12 +250,20 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
         for(VirtualCollection vc : collections) {
             if(vc.isPublicLeaf()) {
                 for(PersistentIdentifier latestPid : vc.getLatestIdentifiers()) {
-                    if(latestPid.getType() != PersistentIdentifier.Type.DUMMY) {
+                    //Only try to update pids which are not of the dummy type and have no previous modification error (this prevents repeatedly updating pids in error)
+                    if(latestPid.getType() != PersistentIdentifier.Type.DUMMY && (latestPid.getModificationError() == null || !latestPid.getModificationError())) {
                         try {
                             logger.info("Check latest pid = {}", latestPid.getActionableURI());
                             HttpHead request = new HttpHead(latestPid.getActionableURI());
                             HttpResponse response = client.execute(request);
-                            logger.info("Response = {} / {}", response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase());
+
+                            int httpStatusCode = response.getStatusLine().getStatusCode();
+                            if (httpStatusCode < 200 && httpStatusCode >= 300) {
+                                latestPid.setModificationError(true);
+                            }
+                            latestPid.setModificationMsg("HTTP "+httpStatusCode+": " + response.getStatusLine().getReasonPhrase());
+                            logger.info("Response = HTTP {}: {}", httpStatusCode, response.getStatusLine().getReasonPhrase());
+
                             Header firstLocationHeader = response.getFirstHeader("Location");
                             if(firstLocationHeader != null) {
                                 String pidUrl = firstLocationHeader.getValue();
@@ -265,13 +273,25 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
                                     try {
                                         logger.info("Updating pid = {}, url = {} --> {}", latestPid, pidUrl, latestVersionUrl);
                                         pidProviderService.updateLatestIdentifierUrl(latestPid, latestVersionUrl);
+                                        latestPid.setModificationError(false);
+                                        latestPid.setModificationMsg("Updated url: "+pidUrl+" --> "+latestVersionUrl);
                                     } catch (VirtualCollectionRegistryException ex) {
                                         logger.error("Failed to update latest version pid (" + latestPid.getActionableURI() + ") url to " + latestVersionUrl);
+                                        latestPid.setModificationError(true);
+                                        latestPid.setModificationMsg("Failed to update latest version pid: "+ex.getMessage());
                                     }
                                 }
+                            } else {
+                                latestPid.setModificationError(true);
+                                latestPid.setModificationMsg(". No Location header found in api response");
                             }
                         } catch (IOException ex) {
                             logger.info("Http request failed", ex);
+                            latestPid.setModificationError(true); //invalid http response
+                            latestPid.setModificationMsg(ex.getMessage());
+                        } finally {
+                            latestPid.setDateModified(new Date());
+                            em.merge(latestPid);
                         }
                     }
                 }

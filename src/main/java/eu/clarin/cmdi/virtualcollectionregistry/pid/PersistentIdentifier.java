@@ -3,6 +3,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.pid;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.io.Serializable;
+import java.util.Date;
 import javax.persistence.*;
 
 import eu.clarin.cmdi.wicket.components.pid.PersistentIdentifieable;
@@ -50,7 +51,19 @@ public class PersistentIdentifier implements PersistentIdentifieable, Serializab
     @Column(name = "is_latest", columnDefinition = "TINYINT", length = 1)
     private Boolean latest;
 
-    protected PersistentIdentifier() { }
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "modified", nullable = true)
+    private Date dateModified;
+
+    @Column(name = "modification_error", nullable = true)
+    private Boolean modificationError;
+
+    @Column(name = "modification_msg", nullable = true)
+    private String modificationMsg;
+
+    protected PersistentIdentifier() {
+        dateModified = new Date();
+    }
 
     public PersistentIdentifier(VirtualCollection vc, Type type, String identifier) {
         this(vc, type, true, false, identifier);
@@ -208,6 +221,33 @@ public class PersistentIdentifier implements PersistentIdentifieable, Serializab
                 .append(this.getType())
                 .append(this.getIdentifier())
                 .toHashCode();
+    }
+
+    public Date getDateModified() {
+        return dateModified;
+    }
+
+    public void setDateModified(Date dateModified) {
+        if (dateModified == null) {
+            throw new NullPointerException("dateModified == null");
+        }
+        this.dateModified = dateModified;
+    }
+
+    public Boolean getModificationError() {
+        return modificationError;
+    }
+
+    public void setModificationError(Boolean modificationError) {
+        this.modificationError = modificationError;
+    }
+
+    public String getModificationMsg() {
+        return modificationMsg;
+    }
+
+    public void setModificationMsg(String modificationMsg) {
+        this.modificationMsg = modificationMsg;
     }
 
 } // class PersistentIdentifier
