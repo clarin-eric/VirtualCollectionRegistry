@@ -20,8 +20,8 @@ ALTER TABLE virtualcollection ADD COLUMN `forked_from` bigint(20) NULL;
 ALTER TABLE virtualcollection ADD COLUMN `public_leaf` bool default false;
 ALTER TABLE pid ADD COLUMN `is_latest` bool default false;
 ALTER TABLE pid ADD COLUMN `modified` datetime;
-ALTER TABLE pid ADD COLUMN `modificationError` bool default false;
-ALTER TABLE pid ADD COLUMN `modificationMsg` text NULL;
+ALTER TABLE pid ADD COLUMN `modification_error` bool default false;
+ALTER TABLE pid ADD COLUMN `modification_msg` text NULL;
 
 CREATE TABLE `resource_scan` (
   `id` bigint(20) NOT NULL AUTO_INCREMENT,
