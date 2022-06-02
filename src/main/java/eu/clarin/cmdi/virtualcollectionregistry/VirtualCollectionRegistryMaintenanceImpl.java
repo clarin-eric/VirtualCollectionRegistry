@@ -258,10 +258,11 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
                             HttpResponse response = clientWithoutRedirect.execute(request);
 
                             int httpStatusCode = response.getStatusLine().getStatusCode();
-                            if (httpStatusCode < 200 && httpStatusCode >= 300) {
+                            //if (httpStatusCode < 200 && httpStatusCode >= 400) {
+                            if(httpStatusCode != 302) {
                                 latestPid.setModificationError(true);
                             }
-                            latestPid.setModificationMsg("HTTP "+httpStatusCode+": " + response.getStatusLine().getReasonPhrase());
+                            latestPid.setModificationMsg("HTTP "+httpStatusCode+": " + response.getStatusLine().getReasonPhrase()+".");
                             logger.info("Response = HTTP {}: {}", httpStatusCode, response.getStatusLine().getReasonPhrase());
 
 
@@ -284,7 +285,7 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
                                 }
                             } else {
                                 latestPid.setModificationError(true);
-                                latestPid.setModificationMsg(". No Location header found in api response");
+                                latestPid.setModificationMsg(latestPid.getModificationMsg()+" No Location header found in api response");
                             }
                         } catch (IOException ex) {
                             logger.info("Http request failed", ex);
