@@ -10,6 +10,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
 import java.io.Serializable;
+import java.net.MalformedURLException;
 import java.net.URI;
 import java.util.EnumMap;
 import java.util.Map;
@@ -96,11 +97,13 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
 
     @Override
     public void updateIdentifier(PersistentIdentifier pid, URI target) throws VirtualCollectionRegistryException {
-
-        throw new UnsupportedOperationException("Not supported yet.");
-
-
-
+        final Map<HandleField, String> fieldMap = new EnumMap<>(HandleField.class);
+        try {
+            fieldMap.put(HandleField.URL, target.toURL().toString());
+            pidWriter.modifyPid(configuration, pid.getIdentifier(), fieldMap);
+        } catch (HttpException | MalformedURLException ex) {
+            throw new VirtualCollectionRegistryException("Could not modify EPIC identifier", ex);
+        }
     }
 
     @Override

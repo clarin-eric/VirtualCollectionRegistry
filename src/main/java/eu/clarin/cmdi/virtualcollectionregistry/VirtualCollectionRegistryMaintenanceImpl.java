@@ -252,33 +252,40 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
                 for(PersistentIdentifier latestPid : vc.getLatestIdentifiers()) {
                     //Only try to update pids which are not of the dummy type and have no previous modification error (this prevents repeatedly updating pids in error)
                     if(latestPid.getType() != PersistentIdentifier.Type.DUMMY && (latestPid.getModificationError() == null || !latestPid.getModificationError())) {
+                        String pidUrl = "?";
+                        String latestVersionUrl = "?";
+
                         try {
-                            logger.info("Check latest pid = {}", latestPid.getActionableURI());
                             HttpHead request = new HttpHead(latestPid.getActionableURI());
                             HttpResponse response = clientWithoutRedirect.execute(request);
 
                             int httpStatusCode = response.getStatusLine().getStatusCode();
-                            //if (httpStatusCode < 200 && httpStatusCode >= 400) {
-                            if(httpStatusCode != 302) {
+                            //https://developer.mozilla.org/en-US/docs/Web/HTTP/Redirections
+                            if(httpStatusCode != 301 && httpStatusCode != 302 && httpStatusCode != 303 && httpStatusCode != 307 && httpStatusCode != 308) {
                                 latestPid.setModificationError(true);
                             }
-                            latestPid.setModificationMsg("HTTP "+httpStatusCode+": " + response.getStatusLine().getReasonPhrase()+".");
-                            logger.info("Response = HTTP {}: {}", httpStatusCode, response.getStatusLine().getReasonPhrase());
+                            String msg = "HTTP "+httpStatusCode;
+                            if(!response.getStatusLine().getReasonPhrase().isEmpty()) {
+                                msg += ": "+response.getStatusLine().getReasonPhrase();
+                            }
+                            msg += ".";
 
+                            latestPid.setModificationMsg(msg);
 
                             Header firstLocationHeader = response.getFirstHeader("Location");
                             if(firstLocationHeader != null) {
-                                String pidUrl = firstLocationHeader.getValue();
-                                String latestVersionUrl = permaLinkService.getCollectionUrl(vc);
+                                pidUrl = firstLocationHeader.getValue();
+                                latestVersionUrl = permaLinkService.getCollectionUrl(vc);
 
-                                if (!pidUrl.equalsIgnoreCase(latestVersionUrl)) {
+                                if (!pidUrl.equalsIgnoreCase("?") &&
+                                    !latestVersionUrl.equalsIgnoreCase("?") &&
+                                    !pidUrl.equalsIgnoreCase(latestVersionUrl))
+                                {
                                     try {
-                                        logger.info("Updating pid = {}, url = {} --> {}", latestPid, pidUrl, latestVersionUrl);
                                         pidProviderService.updateLatestIdentifierUrl(latestPid, latestVersionUrl);
                                         latestPid.setModificationError(false);
                                         latestPid.setModificationMsg("Updated url: "+pidUrl+" --> "+latestVersionUrl);
                                     } catch (VirtualCollectionRegistryException ex) {
-                                        logger.error("Failed to update latest version pid (" + latestPid.getActionableURI() + ") url to " + latestVersionUrl);
                                         latestPid.setModificationError(true);
                                         latestPid.setModificationMsg("Failed to update latest version pid: "+ex.getMessage());
                                     }
@@ -288,12 +295,17 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
                                 latestPid.setModificationMsg(latestPid.getModificationMsg()+" No Location header found in api response");
                             }
                         } catch (IOException ex) {
-                            logger.info("Http request failed", ex);
                             latestPid.setModificationError(true); //invalid http response
                             latestPid.setModificationMsg(ex.getMessage());
                         } finally {
                             latestPid.setDateModified(new Date());
                             em.merge(latestPid);
+
+                            if(latestPid.getModificationError()) {
+                                logger.error("Failed to update pid url: {} --> {}. Error: {}", pidUrl, latestVersionUrl, latestPid.getModificationError());
+                            } else {
+                                logger.info("Updated pid url: {} --> {}", pidUrl, latestVersionUrl);
+                            }
                         }
                     }
                 }
