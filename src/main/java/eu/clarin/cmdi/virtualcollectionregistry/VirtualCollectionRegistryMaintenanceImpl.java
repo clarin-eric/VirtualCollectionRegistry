@@ -246,7 +246,7 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
         List<VirtualCollection> collections = q.getResultList();
         em.getTransaction().commit();
 
-        HttpClient client = HttpClientBuilder.create().build();
+        HttpClient clientWithoutRedirect = HttpClientBuilder.create().disableRedirectHandling().build();
         for(VirtualCollection vc : collections) {
             if(vc.isPublicLeaf()) {
                 for(PersistentIdentifier latestPid : vc.getLatestIdentifiers()) {
@@ -255,7 +255,7 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
                         try {
                             logger.info("Check latest pid = {}", latestPid.getActionableURI());
                             HttpHead request = new HttpHead(latestPid.getActionableURI());
-                            HttpResponse response = client.execute(request);
+                            HttpResponse response = clientWithoutRedirect.execute(request);
 
                             int httpStatusCode = response.getStatusLine().getStatusCode();
                             if (httpStatusCode < 200 && httpStatusCode >= 300) {
@@ -263,6 +263,7 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
                             }
                             latestPid.setModificationMsg("HTTP "+httpStatusCode+": " + response.getStatusLine().getReasonPhrase());
                             logger.info("Response = HTTP {}: {}", httpStatusCode, response.getStatusLine().getReasonPhrase());
+
 
                             Header firstLocationHeader = response.getFirstHeader("Location");
                             if(firstLocationHeader != null) {
