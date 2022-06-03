@@ -296,7 +296,7 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
                                 latestPid.setModificationError(true);
                                 latestPid.setModificationMsg(latestPid.getModificationMsg()+" No Location header found in api response");
                             }
-                        } catch (IOException ex) {
+                        } catch (Exception ex) {
                             latestPid.setModificationError(true); //invalid http response
                             latestPid.setModificationMsg(ex.getMessage());
                         } finally {
