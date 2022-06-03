@@ -287,7 +287,7 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
                                         pidProviderService.updateIdentifierUrl(latestPid, latestVersionUrl);
                                         latestPid.setModificationError(false);
                                         latestPid.setModificationMsg("Updated url: "+pidUrl+" --> "+latestVersionUrl);
-                                    } catch (VirtualCollectionRegistryException ex) {
+                                    } catch (Exception ex) {
                                         latestPid.setModificationError(true);
                                         latestPid.setModificationMsg("Failed to update latest version pid: "+ex.getMessage());
                                     }
@@ -296,7 +296,7 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
                                 latestPid.setModificationError(true);
                                 latestPid.setModificationMsg(latestPid.getModificationMsg()+" No Location header found in api response");
                             }
-                        } catch (Exception ex) {
+                        } catch (IOException ex) {
                             latestPid.setModificationError(true); //invalid http response
                             latestPid.setModificationMsg(ex.getMessage());
                         } finally {
