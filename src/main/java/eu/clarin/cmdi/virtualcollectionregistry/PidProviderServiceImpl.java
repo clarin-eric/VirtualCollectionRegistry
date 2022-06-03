@@ -13,6 +13,7 @@ import javax.annotation.PostConstruct;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
+import java.net.URI;
 import java.nio.file.Path;
 import java.nio.file.Paths;
 import java.util.*;
@@ -189,13 +190,16 @@ public class PidProviderServiceImpl implements PidProviderService {
      * @param pid
      * @param newUrl
      */
+    /*
     public void updateLatestIdentifierUrl(PersistentIdentifier pid, String newUrl) throws VirtualCollectionRegistryException {
         for(PersistentIdentifierProvider provider : providers) {
-            pid.getPidType();
+            provider.updateIdentifier(pid, URI.create(newUrl));
         }
     }
-
+*/
     public void updateIdentifierUrl(PersistentIdentifier pid, String newUrl) throws VirtualCollectionRegistryException {
-
+        for(PersistentIdentifierProvider provider : providers) {
+            provider.updateIdentifier(pid, URI.create(newUrl));
+        }
     }
 }

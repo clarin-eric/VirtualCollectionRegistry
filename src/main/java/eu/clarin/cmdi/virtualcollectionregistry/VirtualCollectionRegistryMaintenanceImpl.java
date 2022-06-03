@@ -254,6 +254,7 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
                     if(latestPid.getType() != PersistentIdentifier.Type.DUMMY && (latestPid.getModificationError() == null || !latestPid.getModificationError())) {
                         String pidUrl = "?";
                         String latestVersionUrl = "?";
+                        boolean update_required = false;
 
                         try {
                             HttpHead request = new HttpHead(latestPid.getActionableURI());
@@ -281,8 +282,9 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
                                     !latestVersionUrl.equalsIgnoreCase("?") &&
                                     !pidUrl.equalsIgnoreCase(latestVersionUrl))
                                 {
+                                    update_required = true;
                                     try {
-                                        pidProviderService.updateLatestIdentifierUrl(latestPid, latestVersionUrl);
+                                        pidProviderService.updateIdentifierUrl(latestPid, latestVersionUrl);
                                         latestPid.setModificationError(false);
                                         latestPid.setModificationMsg("Updated url: "+pidUrl+" --> "+latestVersionUrl);
                                     } catch (VirtualCollectionRegistryException ex) {
@@ -304,7 +306,9 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
                             if(latestPid.getModificationError()) {
                                 logger.error("Failed to update pid url: {} --> {}. Error: {}", pidUrl, latestVersionUrl, latestPid.getModificationError());
                             } else {
-                                logger.info("Updated pid url: {} --> {}", pidUrl, latestVersionUrl);
+                                if(update_required) {
+                                    logger.info("Updated pid url: {} --> {}", pidUrl, latestVersionUrl);
+                                }
                             }
                         }
                     }
