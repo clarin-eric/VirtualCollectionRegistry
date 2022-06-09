@@ -1,0 +1,7 @@
+name: trigger-gitlab-ci
+on: [push]
+jobs:
+    trigger-gitlab-ci:
+      runs-on: ubuntu-latest
+      steps:
+        - run: curl -v https://www.clarin.eu
