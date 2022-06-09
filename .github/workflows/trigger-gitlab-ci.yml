@@ -4,4 +4,10 @@ jobs:
     trigger-gitlab-ci:
       runs-on: ubuntu-latest
       steps:
-        - run:  curl -X POST --fail -F token=${{secrets.GITLAB_PIPELINE_TOKEN}} -F "ref=1.8.x-ci-test" -F "variables[RUN_NIGHTLY_BUILD]=true" -F "variables[GITHUB_COMMIT]=$(git rev-parse --short $GITHUB_SHA)" https://gitlab.com/api/v4/projects/4763401/trigger/pipeline
+        - run: |
+            curl -X POST --fail \
+              -F token=${{secrets.GITLAB_PIPELINE_TOKEN}} \
+              -F "ref=1.8.x-ci-test" \
+              -F "variables[RUN_NIGHTLY_BUILD]=true" \
+              -F "variables[GITHUB_COMMIT]=$(git rev-parse --short $GITHUB_SHA)" \
+              https://gitlab.com/api/v4/projects/4763401/trigger/pipeline
