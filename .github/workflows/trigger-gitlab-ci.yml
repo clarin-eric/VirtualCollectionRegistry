@@ -9,5 +9,6 @@ jobs:
               -F token=${{secrets.GITLAB_PIPELINE_TOKEN}} \
               -F "ref=1.8.x-ci-test" \
               -F "variables[RUN_NIGHTLY_BUILD]=true" \
-              -F "variables[GITHUB_COMMIT]=$(git rev-parse --short $GITHUB_SHA)" \
+              -F "variables[GITHUB_COMMIT]=$GITHUB_SHA" \
+              -F "variables[GITHUB_COMMIT_SHORT]=$(git rev-parse --short $GITHUB_SHA)" \
               https://gitlab.com/api/v4/projects/4763401/trigger/pipeline
