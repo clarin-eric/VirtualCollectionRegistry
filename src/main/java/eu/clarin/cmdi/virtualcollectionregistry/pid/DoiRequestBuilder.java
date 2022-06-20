@@ -5,6 +5,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
+import java.net.URI;
+
 public class DoiRequestBuilder {
 
     public static DoiRequest createGenerateDoiRequest(String prefix, String postfix, VirtualCollection vc, PermaLinkService permaLinkService) {
@@ -18,6 +20,13 @@ public class DoiRequestBuilder {
         request.setPrefix(prefix);
         return request;
     }
+
+    public static DoiRequest createUpdateDoiUrlRequest(String prefix, String postfix,  URI target) {
+        DoiRequest request = new DoiRequest();
+        request.setUrl(target.toString());
+        return request;
+    }
+
 
     private static DoiRequest createBasicDoiRequest(VirtualCollection vc, PermaLinkService permaLinkService) {
         DoiRequest request = new DoiRequest();

@@ -12,6 +12,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URI;
+import java.net.URL;
 import java.util.EnumMap;
 import java.util.Map;
 import org.apache.commons.httpclient.HttpException;

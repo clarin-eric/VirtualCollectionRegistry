@@ -24,6 +24,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.net.URL;
+
 import org.apache.commons.httpclient.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -56,13 +58,11 @@ public class DoiPersistentIdentifierProvider implements PersistentIdentifierProv
     private final transient DoiPidWriter pidWriter;
     private final transient Configuration configuration;
     private final String id = "DOI";
+
+    private boolean testing = false;
+
     private boolean primary = false;
     private String infix;
-
-    @Override
-    public String getId() {
-        return id;
-    }
 
     /**
      *
@@ -76,6 +76,11 @@ public class DoiPersistentIdentifierProvider implements PersistentIdentifierProv
     }
 
     @Override
+    public String getId() {
+        return id;
+    }
+
+    @Override
     public PersistentIdentifier createIdentifier(VirtualCollection vc, PermaLinkService permaLinkService) throws VirtualCollectionRegistryException {
         return createIdentifier(vc, "", permaLinkService);
     }
@@ -83,13 +88,14 @@ public class DoiPersistentIdentifierProvider implements PersistentIdentifierProv
     @Override
     public PersistentIdentifier createIdentifier(VirtualCollection vc, String suffix, PermaLinkService permaLinkService)
             throws VirtualCollectionRegistryException {
-        logger.debug("creating doi for virtual collection \"{}\"", vc.getId());
+        logger.debug("creating doi for virtual collection with id = \"{}\"", vc.getId());
         try {
             final String requestedPid = String.format("%s%d%s", getInfix(), vc.getId(), suffix);
             DoiRequest req =
                     DoiRequestBuilder.createGenerateDoiRequest(configuration.getHandlePrefix(), requestedPid, vc, permaLinkService);
             final String pid = pidWriter.registerNewPID(configuration, req);
-            return new PersistentIdentifier(vc, PersistentIdentifier.Type.DOI, primary, pid);
+
+            return new PersistentIdentifier(vc, testing ? PersistentIdentifier.Type.DOI_TEST : PersistentIdentifier.Type.DOI, primary, pid);
         } catch (HttpException ex) {
             throw new VirtualCollectionRegistryException("Could not create DOI identifier", ex);
         }
@@ -97,7 +103,17 @@ public class DoiPersistentIdentifierProvider implements PersistentIdentifierProv
 
     @Override
     public void updateIdentifier(PersistentIdentifier pid, URI target) throws VirtualCollectionRegistryException {
-        throw new UnsupportedOperationException("Not supported yet."); //To change body of generated methods, choose Tools | Templates.
+        logger.debug("updating doi for virtual collection with pid = \"{}\"", pid.toString());
+        try {
+            //final String requestedPid = String.format("%s%d%s", getInfix(), vc.getId(), suffix);
+            DoiRequest req =
+                    DoiRequestBuilder.createUpdateDoiUrlRequest(configuration.getHandlePrefix(), pid.getIdentifier(), target);
+            pidWriter.registerNewPID(configuration, req);
+
+            //return new PersistentIdentifier(vc, testing ? PersistentIdentifier.Type.DOI_TEST : PersistentIdentifier.Type.DOI, primary, pid);
+        } catch (HttpException ex) {
+            throw new VirtualCollectionRegistryException("Could not create DOI identifier", ex);
+        }
     }
 
     @Override

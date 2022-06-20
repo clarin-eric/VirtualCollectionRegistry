@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.pid;
 
 import java.net.URI;
+import java.net.URL;
 
 import eu.clarin.cmdi.virtualcollectionregistry.PermaLinkService;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
@@ -8,7 +9,18 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
 public interface PersistentIdentifierProvider {
 
+    /**
+     * Return this providers id
+     * @return
+     */
     String getId();
+
+    /**
+     * Resolve the supplied PID
+     * @param pid
+     * @return
+     */
+   // URL resolveIdentifier(PersistentIdentifier pid) throws VirtualCollectionRegistryException;
 
     PersistentIdentifier createIdentifier(VirtualCollection vc, PermaLinkService permaLinkService) throws VirtualCollectionRegistryException;
 
@@ -27,4 +39,6 @@ public interface PersistentIdentifierProvider {
     String getInfix();
 
     PublicConfiguration getPublicConfiguration();
+
+
 }

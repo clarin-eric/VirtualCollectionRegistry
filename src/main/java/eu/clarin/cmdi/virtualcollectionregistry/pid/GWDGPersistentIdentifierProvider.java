@@ -8,6 +8,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.io.Serializable;
 import java.net.URI;
 import java.net.URISyntaxException;
+import java.net.URL;
 import java.util.ArrayList;
 import java.util.Collections;
 import java.util.HashMap;
@@ -40,8 +41,7 @@ import org.springframework.stereotype.Service;
 
 @Service
 @Profile("vcr.pid.gwdg")
-public class GWDGPersistentIdentifierProvider implements
-        PersistentIdentifierProvider, Serializable {
+public class GWDGPersistentIdentifierProvider implements PersistentIdentifierProvider, Serializable {
 
     public static final String BASE_URI = "eu.clarin.cmdi.virtualcollectionregistry.base_uri";
 

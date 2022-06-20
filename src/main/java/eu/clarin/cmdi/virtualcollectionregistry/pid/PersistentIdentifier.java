@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.pid;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.io.Serializable;
@@ -19,7 +20,7 @@ public class PersistentIdentifier implements PersistentIdentifieable, Serializab
     private static final long serialVersionUID = 1L;
 
     public static enum Type {
-        DUMMY, HANDLE, DOI;
+        DUMMY, HANDLE, DOI, DOI_TEST
     }
 
     @Id
@@ -192,6 +193,8 @@ public class PersistentIdentifier implements PersistentIdentifieable, Serializab
                 return "http://hdl.handle.net/" + identifier;
             case DOI:
                 return "https://doi.org/" + identifier;
+            case DOI_TEST:
+                return "https://handle.stage.datacite.org/" + identifier;
             default:
                 throw new InternalError();
         }

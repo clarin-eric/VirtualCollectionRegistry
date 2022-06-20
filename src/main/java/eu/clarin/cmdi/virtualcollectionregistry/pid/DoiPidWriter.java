@@ -8,7 +8,9 @@ import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.AuthCache;
 import org.apache.http.client.CredentialsProvider;
 import org.apache.http.client.methods.CloseableHttpResponse;
+import org.apache.http.client.methods.HttpEntityEnclosingRequestBase;
 import org.apache.http.client.methods.HttpPost;
+import org.apache.http.client.methods.HttpPut;
 import org.apache.http.client.protocol.HttpClientContext;
 import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
@@ -20,6 +22,7 @@ import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.io.IOException;
+import java.net.URI;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
@@ -30,20 +33,29 @@ public class DoiPidWriter {
 
     private final CloseableHttpClient httpclient = HttpClientBuilder.create().build();
 
-    //private final DoiRequestBuilder requestBuilder = new DoiRequestBuilder();
+    private final String API_PATH_DOIS = "/dois";
 
     public String registerNewPID(Configuration configuration, PidRequest doiRequest) throws HttpException {
         String generated_pid = null;
         try {
             String json_data = doiRequest.toJsonString();
-            generated_pid = doRequest(configuration, json_data);
+            generated_pid = doRequest(configuration, json_data, new HttpPost(API_PATH_DOIS));
         } catch(IOException | NullPointerException | URISyntaxException ex) {
             throw new HttpException("Failed to mint DOI", ex);
         }
         return generated_pid;
     }
 
-    private String doRequest(Configuration configuration, String requestJsonBody) throws IOException, NullPointerException, URISyntaxException {
+    private void update(Configuration configuration, URI target, PidRequest doiRequest) throws HttpException {
+        try {
+            String json_data = doiRequest.toJsonString();
+            doRequest(configuration, json_data, new HttpPut(API_PATH_DOIS+"/"+target.toString()));
+        } catch(IOException | NullPointerException | URISyntaxException ex) {
+            throw new HttpException("Failed to mint DOI", ex);
+        }
+    }
+
+    private String doRequest(Configuration configuration, String requestJsonBody, HttpEntityEnclosingRequestBase requestBase) throws IOException, NullPointerException, URISyntaxException {
         String doi = null;
 
         URL url  = new URL(configuration.getServiceBaseURL());
@@ -67,18 +79,16 @@ public class DoiPidWriter {
         context.setAuthCache(authCache);
 
         try {
-            HttpPost httppost = new HttpPost("/dois");
+            requestBase.setHeader("Accept", "application/json");
+            requestBase.setHeader("Content-type", "application/vnd.api+json");
+            requestBase.setEntity(new StringEntity(requestJsonBody, StandardCharsets.UTF_8));
 
-            httppost.setHeader("Accept", "application/json");
-            httppost.setHeader("Content-type", "application/vnd.api+json");
-            httppost.setEntity(new StringEntity(requestJsonBody, StandardCharsets.UTF_8));
-
-            logger.debug("Executing request: host uri=" + targetHost.toURI()+", request="+httppost.getRequestLine());
+            logger.debug("Executing request: host uri=" + targetHost.toURI()+", request="+requestBase.getRequestLine());
             logger.debug("Username={}, password={}", configuration.getUser(), "xxxxxxxxx");
             logger.debug("Request entity json: {}", requestJsonBody);
-            logger.debug("Request entity: {}", httppost.getEntity().toString());
+            logger.debug("Request entity: {}", requestBase.getEntity().toString());
 
-            CloseableHttpResponse response = httpclient.execute(targetHost, httppost, context);
+            CloseableHttpResponse response = httpclient.execute(targetHost, requestBase, context);
             try {
                 logger.debug("----------------------------------------");
                 logger.debug(response.getStatusLine().toString());
@@ -94,26 +104,7 @@ public class DoiPidWriter {
             }
         } catch(Exception ex) {
             throw new IOException("Failed to communicate with DOI API", ex);
-        } /*finally {
-            try {
-                httpclient.close();
-            } catch(IOException ex) {
-                throw new IOException("Failed to close DOI API http client", ex);
-            }
-        }*/
-
+        }
         return doi;
     }
-/*
-    public static class DoiApiException extends Exception {
-        public DoiApiException(String msg) {
-            super(msg);
-        }
-
-        public DoiApiException(String msg, Throwable cause) {
-            super(msg, cause);
-        }
-    }
-
- */
 }

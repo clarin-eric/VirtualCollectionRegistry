@@ -6,6 +6,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
 import java.io.Serializable;
 import java.net.URI;
+import java.net.URL;
+
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 
@@ -25,7 +27,6 @@ public class DummyPersistentIdentifierProvider implements
     public String getId() {
         return id;
     }
-
 
     @Override
     public PersistentIdentifier createIdentifier(VirtualCollection vc, PermaLinkService permaLinkService)
