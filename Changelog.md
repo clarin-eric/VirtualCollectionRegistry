@@ -80,4 +80,24 @@
 - Bug fixes:
   - Snyk high severity security fixes
 
-Older release, see https://github.com/clarin-eric/VirtualCollectionRegistry/releases
+## [[1.4.1](https://github.com/clarin-eric/VirtualCollectionRegistry/releases/tag/1.4.1)] - 2020-10-05
+- Enhancements:
+  - Better handling if an empty handle infix is configured.
+- Bug Fixes:
+  - Fixes for #92, #98, #99.
+  - Updated dependencies to resolve reported GitHub and snyk.io vulnerabilities.
+  - Included doc directory to fix missing Protocol.txt.
+  - Included database update to change table and column encodings to utf8mb4_general_ci.
+
+## [[1.4.0](https://github.com/clarin-eric/VirtualCollectionRegistry/releases/tag/1.4.1)] - 2020-07-09
+- Enhancements:
+  - Added funding section to the about page
+  - Improved the external application collection submit endpoint to support more metadata for references
+- Bug Fixes:
+  - Fixed encoding issues with input field when creating a collection
+
+## [[1.3.0](https://github.com/clarin-eric/VirtualCollectionRegistry/releases/tag/1.3.0)]  - 2019-04-08
+
+## [[1.2.0](https://github.com/clarin-eric/VirtualCollectionRegistry/releases/tag/1.2.0)]  -  2019-02-25
+
+For older releases and pre-releases (beta, alpha and release candidates), see https://github.com/clarin-eric/VirtualCollectionRegistry/releases
