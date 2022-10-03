@@ -4,8 +4,8 @@ This document aims to provide a description of the virtual collection registry (
 _Note_: The original version of this document was managed via [google documents](https://docs.google.com/document/d/1HYNDhtNIamcNP3kQg4IgLhcOk7uH60Ij5PJVksJLADM/). This markdown version
 replaces the google drive version.
 
-An easy to use, javascript based, widget has been created to make the process of integrating with the VCR submission endpoints as easy as possible.
-Code and documentation can be found here https://github.com/clarin-eric/js-vcr-integration/.
+**_An easy to use, javascript based, widget has been created to make the process of integrating with the VCR submission endpoints as easy as possible.
+Code and documentation can be found here https://github.com/clarin-eric/js-vcr-integration/._**
 
 ## Submission endpoints
 Send a POST request, with form urlencoded parameters, to any of the following two endpoints:
