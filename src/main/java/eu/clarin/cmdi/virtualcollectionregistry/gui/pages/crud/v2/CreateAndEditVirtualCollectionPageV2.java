@@ -163,6 +163,8 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
                                     .getRegistry()
                                     .updateVirtualCollection(event.getPrincipal(), originalCollectionId, event.getData());
                             }
+                            //Clear any submission data after saving the collection. This makes sure to allow for any subsequent submission. 
+                            SubmissionUtils.clearCollectionFromSession(getSession());
                         } catch(VirtualCollectionRegistryException ex) {
                             logger.error("Failed to persist collect. Error: {}", ex.toString());
                         }
