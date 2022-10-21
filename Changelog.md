@@ -1,6 +1,10 @@
 # Changelog
 
-
+## [[1.6.12](https://github.com/clarin-eric/VirtualCollectionRegistry/releases/tag/1.6.12)] - 2022-10-21
+- Bug fixes:
+  - Removal of collections results in foreign key violations from the maintenance thread (#206)
+  - Form persistence issue when merging to the same collection twice (#205)
+  
 ## [[1.6.11](https://github.com/clarin-eric/VirtualCollectionRegistry/releases/tag/1.6.11)] - 2022-03-31
 - Bug fixes:
   - Improved thread based implementation of background reference validation
