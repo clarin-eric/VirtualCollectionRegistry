@@ -201,7 +201,7 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
         q.setLockMode(LockModeType.PESSIMISTIC_WRITE);
         for (VirtualCollection vc : q.getResultList()) {
             vc.setState(VirtualCollection.State.DEAD);
-            em.remove(vc);
+            //em.remove(vc);
             logger.debug("purged virtual collection (id={})", vc.getId());
         }
         em.getTransaction().commit();
