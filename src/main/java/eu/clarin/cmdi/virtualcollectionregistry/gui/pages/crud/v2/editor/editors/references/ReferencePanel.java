@@ -241,6 +241,7 @@ public class ReferencePanel extends Panel {
         AjaxFallbackLink btnRemove = new AjaxFallbackLink("btn_remove") {
             @Override
             public void onClick(AjaxRequestTarget target) {
+                logger.debug("Clicked remove button");
                 for(EventHandler handler : eventHandlers) {
                     handler.handleRemoveEvent(ref, target);
                 }

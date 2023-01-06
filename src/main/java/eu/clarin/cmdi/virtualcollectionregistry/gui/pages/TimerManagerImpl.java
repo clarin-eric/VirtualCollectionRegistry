@@ -20,30 +20,42 @@ public class TimerManagerImpl implements TimerManager, Serializable {
 
     private final List<Update> targets = new ArrayList<>();
 
+    private final List<TimerCallback> callbacks = new ArrayList<>();
+
     public TimerManagerImpl() {
+        List<Integer> idxToRemove = new ArrayList<>();
         timer = new AbstractAjaxTimerBehavior(Duration.seconds(1)) {
             @Override
             protected void onTimer(AjaxRequestTarget target) {
+                //Run all callbacks on this timer update
+                for(TimerCallback callback : callbacks) {
+                    callback.invokeCallback(target);
+                }
+
+                //Update all targets for this timer update
                 if(target != null) {
                     logger.trace("TimerManagerImpl onTimer, #targets="+targets.size());
 
-                    List<Integer> idxToRemove = new ArrayList<>();
-                    for(int i = 0; i < targets.size(); i++) {
-                        for(Component c : targets.get(i).getComponents()) {
-                            target.add(c);
-                        }
-
-                        if(!targets.get(i).onUpdate(target)) {
-                            idxToRemove.add(i);
-                        }
-                    }
-
+                    //Process remove list and remove update targets, if all update targets are removed, the timer is stopped
                     for(Integer idx : idxToRemove) {
                         TimerManager.Update update = null;
                         if(targets.size()>idx) {
                             update=targets.get(idx);
                         }
                         removeTarget(update, target);
+                    }
+
+                    for(int i = 0; i < targets.size(); i++) {
+                        //Add component to ajax update target
+                        for(Component c : targets.get(i).getComponents()) {
+                            target.add(c);
+                        }
+
+                        //Add update target to remove list if updates are no longer needed. These should be processed in the next timer update
+                        //to allow the ui to update with any pending changes
+                        if(!targets.get(i).onUpdate(target)) {
+                            idxToRemove.add(i);
+                        }
                     }
                 }
             }
@@ -53,6 +65,10 @@ public class TimerManagerImpl implements TimerManager, Serializable {
 
     public AbstractDefaultAjaxBehavior getTimerBehavior() {
         return timer;
+    }
+
+    public void addCallback(TimerCallback callback) {
+        callbacks.add(callback);
     }
 
     public synchronized void addTarget(AjaxRequestTarget target, TimerManager.Update update) {

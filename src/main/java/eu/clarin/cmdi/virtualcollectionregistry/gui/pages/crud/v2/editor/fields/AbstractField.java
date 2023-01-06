@@ -56,6 +56,8 @@ public abstract class AbstractField extends Panel implements Field {
     
     private boolean completeSubmitOnUpdate = false;
     
+    private String fieldName;
+
     private final IModel labelModel;
     private String label;
     private Label lbl;
@@ -73,6 +75,7 @@ public abstract class AbstractField extends Panel implements Field {
     
     public AbstractField(String id, String label, String help_text, final IModel dataModel, final FieldComposition parent, Component editComponent, boolean enableOnKeySubmit, VisabilityUpdater visabilityUpdater) {
         super(id);
+        this.fieldName = id;
         this.visabilityUpdater = visabilityUpdater;
         this.label = label;
         this.editComponent = editComponent;
@@ -109,6 +112,10 @@ public abstract class AbstractField extends Panel implements Field {
         helpMessage.setVisible(help_text != null);
         add(helpMessage);
         helpMessage.setVisible(false);
+    }
+
+    public String getName() {
+        return fieldName;
     }
 
     public void showHelp(boolean showHelp) {
@@ -205,6 +212,10 @@ public abstract class AbstractField extends Panel implements Field {
         }
     }
     
+    public boolean isRequired() {
+        return this.required;
+    }
+
     public void setRequired(boolean required) {
         this.required = required;
         if(lbl != null) {

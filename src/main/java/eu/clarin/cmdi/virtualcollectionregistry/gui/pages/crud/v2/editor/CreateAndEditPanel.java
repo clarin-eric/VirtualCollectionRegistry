@@ -103,6 +103,15 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         
         final Component ajax_update_component = this;
 
+        //Add a callback to run validation on each timer event, but especially after being finished
+        timerManager.addCallback(new TimerManager.TimerCallback() {
+            @Override
+            public void invokeCallback(AjaxRequestTarget target) {
+                boolean validation = validate();
+                target.add(ajax_update_component);
+            }
+        });
+
         //Default updater to toggle visibility based on editor mode
         VisabilityUpdater v = new VisabilityUpdater() {
             @Override
@@ -301,7 +310,6 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
             }
         };
         btnSave.setOutputMarkupId(true);
-        //disableSaveButton();
         add(btnSave);
 
         add(new AjaxFallbackLink("btn_cancel") {
@@ -404,7 +412,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
 
     @Override
     public void handleEvent(Event event) {
-        logger.trace("handleEvent:"+
+        logger.info("handleEvent:"+
                 " class="+event.getClass().getCanonicalName()+
                 ", data="+event.getData()+
                 ", type="+event.getType()+
@@ -490,21 +498,23 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     private boolean validate() {
         boolean valid = true;
         for(Field f : fields) {
-            if(!f.validate()) {
+            boolean validation = f.validate();
+            if(f.isRequired() && !validation) {
                 valid = false;
             }
+            logger.info("{}, required={}, field validation={}, full validation={}", f.getName(), f.isRequired(), validation, valid);
         }
-
-        //Update buttons
-        if(valid) {
-            btnSave.setEnabled(true);
-            btnSave.add(AttributeModifier.remove("disabled"));
-        } else {
-            btnSave.setEnabled(false);
-            btnSave.add(new AttributeModifier("disabled", "true"));
-        }
-
+        logger.info("Validating CreateAndEditPanel. valid={}", valid);
+        updateButtons(valid);
         return valid;
+    }
+
+    private void updateButtons(boolean valid) {
+        if(valid) {
+            enableSaveButton();
+        } else {
+            disableSaveButton();
+        }
     }
 
     private void persist(final AjaxRequestTarget target) {

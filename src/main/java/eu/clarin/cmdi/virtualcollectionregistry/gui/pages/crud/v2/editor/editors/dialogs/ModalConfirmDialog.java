@@ -13,6 +13,8 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.slf4j.LoggerFactory;
+import org.slf4j.Logger;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -24,6 +26,8 @@ import java.util.List;
 public class ModalConfirmDialog extends Modal<String> {
     
     private static final long serialVersionUID = 4591006733317646110L;
+
+    private final static Logger logger = LoggerFactory.getLogger(ModalConfirmDialog.class);
 
     private final List<Listener> actionListeners = new ArrayList<>();
     
@@ -75,6 +79,7 @@ public class ModalConfirmDialog extends Modal<String> {
         AjaxFallbackLink buttonOk = new AjaxFallbackLink("button") {
             @Override
             public void onClick(final AjaxRequestTarget target) {
+                logger.info("Clicked ok");
                 if(action != null) {
                     fireEvent(action.getEvent(target, modal));
                 } else {
@@ -89,6 +94,7 @@ public class ModalConfirmDialog extends Modal<String> {
         AjaxFallbackLink buttonCancel = new AjaxFallbackLink("button") {
             @Override
             public void onClick(final AjaxRequestTarget target) {
+                logger.info("Clicked cancel");
                 fireEvent(new AbstractDialogEvent(EventType.CANCEL, target, modal));
             }        
         };
