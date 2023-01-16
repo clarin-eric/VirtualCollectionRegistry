@@ -1,7 +1,7 @@
 version: '3'
 services:
   webapp  :
-    image: registry.gitlab.com/clarin-eric/docker-alpine-supervisor-java-tomcat-base:2.1.2
+    image: registry.gitlab.com/clarin-eric/docker-alpine-supervisor-java-tomcat-base:9.0.70-java17_1.0.0
     environment:
       - "CATALINA_OPTS=-Djava.security.egd=file:/dev/urandom -agentlib:jdwp=transport=dt_socket,address=*:8000,server=y,suspend=n"
     ports:
@@ -12,9 +12,10 @@ services:
       - ./conf/tomcat/init.sh:/init/init-tomcat.sh
       - ./conf/vcr/vcr-admin.conf:/conf/vcr-admin.conf
       - ./conf/vcr/pidproviders.properties:/conf/pidproviders.properties
-      - ./conf/tomcat/vcr-context.xml:/srv/tomcat8/conf/Catalina/localhost/ROOT.xml
-      - ./conf/tomcat/tomcat-users.xml:/srv/tomcat8/conf/tomcat-users.xml
+      - ./conf/tomcat/vcr-context.xml:/srv/tomcat/conf/Catalina/localhost/ROOT.xml
+      - ./conf/tomcat/tomcat-users.xml:/srv/tomcat/conf/tomcat-users.xml
       - ./conf/fluentd/vcr.conf:/etc/fluentd/conf.d/vcr.conf
+      - ./conf/usr/bin/tomcatFindSkipJars.bash:/usr/bin/tomcatFindSkipJars
 #      - ./conf/server.jks:/cert/server.jks
     networks:
       - vcr
