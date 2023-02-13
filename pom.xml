@@ -48,7 +48,7 @@
         <log4j.version>2.17.2</log4j.version>
         <hibernate.version>5.4.24.Final</hibernate.version>
         <hibernate.jpaVersion>1.0.0.Final</hibernate.jpaVersion>
-        <jersey.version>2.32</jersey.version>
+        <jersey.version>2.38</jersey.version>
         <jackson.version>2.10.5.1</jackson.version>
         <wicket.version>7.12.0</wicket.version> <!-- 7.7.0 has issue https://issues.apache.org/jira/browse/WICKET-6374, which will befixed in 7.8.0 -->
         <wicket-bootstrap.version>2.0.8</wicket-bootstrap.version>
@@ -868,7 +868,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <execute />
+                                        <execute/>
                                     </action>
                                 </pluginExecution>
                                 <pluginExecution>
@@ -881,7 +881,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <execute />
+                                        <execute/>
                                     </action>
                                 </pluginExecution>
                                 <pluginExecution>
@@ -894,7 +894,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <execute />
+                                        <execute/>
                                     </action>
                                 </pluginExecution>
                                 <pluginExecution>
@@ -907,7 +907,7 @@
                                         </goals>
                                     </pluginExecutionFilter>
                                     <action>
-                                        <execute />
+                                        <execute/>
                                     </action>
                                 </pluginExecution>
                             </pluginExecutions>
