@@ -1,0 +1,60 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<project xmlns="http://maven.apache.org/POM/4.0.0" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://maven.apache.org/POM/4.0.0 http://maven.apache.org/maven-v4_0_0.xsd">
+
+    <modelVersion>4.0.0</modelVersion>
+
+    <parent>
+        <groupId>eu.clarin.cmdi</groupId>
+        <artifactId>vcr</artifactId>        
+        <version>1.9.0-SNAPSHOT</version>
+        <relativePath>../pom.xml</relativePath>
+    </parent>
+
+    <groupId>eu.clarin.cmdi</groupId>
+    <artifactId>vcr-model</artifactId>
+    <name>VCR Model</name>
+    <packaging>jar</packaging>
+
+    <dependencies>
+        <dependency>
+            <groupId>com.fasterxml.jackson.core</groupId>
+            <artifactId>jackson-databind</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+        
+        <!-- Provides javax.persistence.* -->
+        <dependency>
+            <groupId>org.hibernate</groupId>
+            <artifactId>hibernate-entitymanager</artifactId>
+            <version>${hibernate.version}</version>
+            <scope>provided</scope>
+        </dependency>
+        
+        <!-- Provides commons-lang-2.5 -->
+        <dependency>
+            <groupId>de.uni_leipzig.asv</groupId>
+            <artifactId>clarin.webservices.pidservices2</artifactId>
+            <version>4.1</version>
+            <exclusions>
+                <exclusion>
+                    <!-- replaced with jcl-over-slf4j -->
+                    <artifactId>commons-logging</artifactId>
+                    <groupId>commons-logging</groupId>
+                </exclusion>               
+            </exclusions>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.jetbrains</groupId>
+            <artifactId>annotations</artifactId>
+            <version>24.0.0</version>
+        </dependency>
+        
+        <!-- Provides spring-beans and spring-context -->
+        <dependency>
+            <groupId>org.glassfish.jersey.ext</groupId>
+            <artifactId>jersey-spring4</artifactId>
+            <version>${jersey-spring4.version}</version>
+        </dependency>
+    </dependencies>
+</project>

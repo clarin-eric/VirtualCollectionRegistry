@@ -1,0 +1,161 @@
+options {
+    DEBUG_PARSER      = false;
+    MULTI             = true;
+    NODE_DEFAULT_VOID = true;
+    STATIC            = false;
+    VISITOR           = true;
+}
+PARSER_BEGIN(QueryParser)
+package eu.clarin.cmdi.virtualcollectionregistry.query.ast;
+
+public class QueryParser {
+    public QueryParser(String s) {
+        this(new java.io.StringReader(s));
+    }
+} // class QueryParser
+PARSER_END(QueryParser)
+/*
+  (vc.)name:           STRING (EQ, NE)
+  (vc.)description:    STRING (EQ, NE)
+  (vc.)state:          { "public", "private", "deleted" } (EQ, NE)
+  {vc.}purpose:        { "research", "reference",
+                         "sample", "future-use" } (EQ, NE)
+  {vc.}reproducibility { "intended", "fluctuating", "untended" } (EQ, NE)
+  (vc.)created:        ISO-DATE (EQ, NE, GT, GE, LT, LE)
+  {vc.}modified:       ISO-DATE (EQ, NE, GT, GE, LT, LE)
+  {vc.}owner           STRING (EQ, NE)
+  {vc.}origin          STRING (EQ, NE)
+  (cr.)creator:        STRING (EQ, NE)
+  {cr.}email:          STRING (EQ, NE)
+  {cr.}organization:   STRING (EQ, NE)
+*/
+SKIP: {
+    " "
+    | "\t"
+    | "\n"
+    | "\r"
+}
+TOKEN: {
+      <VC_NAME: "name">
+    | <VC_DESC: "description">
+    | <VC_CREATED: "created">
+    | <VC_MODIFIED: "modified">
+    | <VC_STATE: "state">
+    | <VC_PURPOSE: "purpose">
+    | <VC_REPRODUCIBILITY: "reproducibility">
+    | <VC_OWNER: "owner">
+    | <VC_ORIGIN: "origin">
+    | <CR_PERSON: "person">
+    | <CR_ORGANIZATION: "organization">
+    | <CR_EMAIL: "email">
+    | <AND: "and">
+    | <OR: "or">
+    | <EQ: "=">
+    | <NE: "<>">
+    | <GT: ">">
+    | <GE: ">=">
+    | <LT: "<">
+    | <LE: "<=">
+    | <LPAREN: "(">
+    | <RPAREN: ")">
+    | <STATE_PUBLIC: "public">
+    | <STATE_PRIVATE: "private">
+    | <STATE_DELETED: "deleted">
+    | <PURPOSE_RESEARCH: "research">
+    | <PURPOSE_REFERENCE: "reference">
+    | <PURPOSE_SAMPLE: "sample">
+    | <PURPOSE_FUTURE_USE: "future-use">
+    | <REPRODUCIBILITY_INTENDED: "intended">
+    | <REPRODUCIBILITY_FLUCTUATING: "fluctuating">
+    | <REPRODUCIBILITY_UNTENDED: "untended">
+    | <#DIGIT: ["0"-"9"]>
+    | <ISO_DATE: <DIGIT> <DIGIT> <DIGIT> <DIGIT> "-"
+                 <DIGIT> <DIGIT> "-"
+                 <DIGIT> <DIGIT> "T"
+                 <DIGIT> <DIGIT> ":"
+                 <DIGIT> <DIGIT> ":"
+                 <DIGIT> <DIGIT> "Z">
+    | <QUOTED_STRING: "\"" (~["\""])+ "\"" >
+}
+ASTStart start() #Start : {
+}
+{
+    expressionOr() <EOF>
+    { return jjtThis; }
+}
+private void expressionOr() : {
+}
+{
+    (expressionAnd() (<OR> expressionAnd())*) #Or(>1)
+}
+private void expressionAnd() : {
+}
+{
+    (term() (<AND> term())*) #And(>1)
+}
+private void term() : {
+}
+{
+    predicate()
+    | (<LPAREN> expressionOr() <RPAREN>)
+}
+private void predicate() #Predicate : {
+    Token attribute = null;
+    Token operator = null;
+    Token value = null;
+}
+{
+    (
+     ( ( attribute = <VC_NAME>
+       | attribute = <VC_DESC>
+       | attribute = <VC_OWNER>
+       | attribute = <VC_ORIGIN>
+       | attribute = <CR_PERSON>
+       | attribute = <CR_ORGANIZATION>
+       | attribute = <CR_EMAIL> )
+       ( operator = <EQ>
+       | operator = <NE> )
+       value = <QUOTED_STRING> )
+     | ( attribute = <VC_STATE>
+        ( operator = <EQ>
+        | operator = <NE> )
+        ( value = <STATE_PUBLIC>
+        | value = <STATE_PRIVATE>
+        | value = <STATE_DELETED> ) )
+     | ( ( attribute = <VC_CREATED>
+         | attribute = <VC_MODIFIED> )
+         ( operator = <EQ>
+         | operator = <NE>
+         | operator = <GT>
+         | operator = <GE>
+         | operator = <LT>
+         | operator = <LE> )
+         value = <ISO_DATE> )
+     | ( attribute = <VC_PURPOSE>
+        ( operator = <EQ>
+        | operator = <NE> )
+        ( value = <PURPOSE_RESEARCH>
+        | value = <PURPOSE_REFERENCE>
+        | value = <PURPOSE_SAMPLE>
+        | value = <PURPOSE_FUTURE_USE> ) )
+     | ( attribute = <VC_REPRODUCIBILITY>
+        ( operator = <EQ>
+        | operator = <NE> )
+        ( value = <REPRODUCIBILITY_INTENDED>
+        | value = <REPRODUCIBILITY_FLUCTUATING>
+        | value = <REPRODUCIBILITY_UNTENDED> ) )
+    )
+    {
+        if ((attribute == null) || (operator == null) || (value == null)) {
+            throw new ParseException("internal error while parsing query");
+        }
+        // strip quotes from QUOTED_STRING
+        String v = value.image;
+        if (value.kind == QUOTED_STRING) {
+            v = v.substring(1, v.length() - 1);
+        }
+        jjtThis.setAttribute(attribute.kind);
+        jjtThis.setOperator(operator.kind);
+        jjtThis.setValue(v);
+    }
+}
