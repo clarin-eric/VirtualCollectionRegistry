@@ -29,6 +29,8 @@ import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.servers.Server;
 import org.apache.wicket.util.io.IOUtils;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  * @author twagoo
@@ -59,20 +61,26 @@ import org.apache.wicket.util.io.IOUtils;
 )
 public class BaseResource {
 
+    private final static Logger logger = LoggerFactory.getLogger(BaseResource.class);
+    
     @Context
     private ResourceContext resourceContext;
 
     /**
      * Serves a short description HTML page at the service root
+     * @return 
      */
     @GET
-    @Produces({MediaType.TEXT_XML})
+    @Produces({MediaType.TEXT_HTML})
     public Response getDescription() {
+        logger.info("HTTP GET / -- getDescription()");
         final StreamingOutput writer = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException, WebApplicationException {
                 try (InputStream is = getClass().getResourceAsStream("/restIndex.html")) {
                     IOUtils.copy(is, output);
+                } catch(IOException ex) {
+                    logger.error("Failed to load restIndex.html", ex);
                 } finally {
                     output.close();
                 }
@@ -83,6 +91,7 @@ public class BaseResource {
 
     /**
      * Server api v1
+     * @return 
      */
     @Path("/v1/collections")
     public VirtualCollectionsResource getCollectionsV1() {

@@ -2,7 +2,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.core.pid;
 
 
 import eu.clarin.cmdi.virtualcollectionregistry.core.PermaLinkService;
-import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PersistentIdentifier;
 

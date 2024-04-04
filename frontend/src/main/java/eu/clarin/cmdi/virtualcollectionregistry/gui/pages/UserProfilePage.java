@@ -1,10 +1,10 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
-import eu.clarin.cmdi.virtualcollectionregistry.ApiKeyService;
+import eu.clarin.cmdi.virtualcollectionregistry.core.apikey.ApiKeyService;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LoginPage;
-import eu.clarin.cmdi.virtualcollectionregistry.model.ApiKey;
-import eu.clarin.cmdi.virtualcollectionregistry.model.User;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.ApiKey;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.RestartResponseException;

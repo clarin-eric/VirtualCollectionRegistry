@@ -4,7 +4,7 @@ import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulato
 import org.apache.wicket.extensions.markup.html.repeater.data.table.HeaderlessColumn;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 
 @SuppressWarnings("serial")
 final class ColumnActions extends HeaderlessColumn<VirtualCollection, String> {

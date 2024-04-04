@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.core;
 
 import eu.clarin.cmdi.virtualcollectionregistry.core.pid.PersistentIdentifierProvider;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PersistentIdentifier;
 import java.util.List;

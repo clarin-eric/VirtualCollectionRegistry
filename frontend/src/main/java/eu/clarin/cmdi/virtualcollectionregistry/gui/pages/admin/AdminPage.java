@@ -1,22 +1,20 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin;
 
-import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
-import eu.clarin.cmdi.virtualcollectionregistry.PidProviderService;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
-import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
+import eu.clarin.cmdi.virtualcollectionregistry.core.AdminUsersService;
+import eu.clarin.cmdi.virtualcollectionregistry.core.PidProviderService;
+import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
+import eu.clarin.cmdi.virtualcollectionregistry.core.pid.PersistentIdentifierProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BasePage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowseEditableCollectionsPanel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.TimerManager;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.AdminCollectionsProvider;
-import eu.clarin.cmdi.virtualcollectionregistry.model.ResourceScan;
-import eu.clarin.cmdi.virtualcollectionregistry.model.User;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User;
+import eu.clarin.cmdi.virtualcollectionregistry.model.config.VcrConfig;
 import java.util.ArrayList;
-import java.util.LinkedList;
 import java.util.List;
 
-import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifierProvider;
 import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeAction;
@@ -31,10 +29,8 @@ import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.util.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * Page that allows the admin to select a "space" (public or user private) and

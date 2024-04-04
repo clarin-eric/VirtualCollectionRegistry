@@ -2,7 +2,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.DateConverter;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.DecimalConverter;
-import eu.clarin.cmdi.virtualcollectionregistry.model.ResourceScan;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.sort.SortOrder;
@@ -110,7 +110,7 @@ public class ReferenceValidationPanel extends Panel {
                 case ANALYZING:     runningCount++;     break;
                 case DONE:          finishedCount++;    break;
                 case FAILED:        finishedCount++;    break;
-                case INITIALIZED:   waitingCount++;     break;
+                case QUEUED:        waitingCount++;     break;
             }
         }
         numJobsModel.setObject(totalCount);

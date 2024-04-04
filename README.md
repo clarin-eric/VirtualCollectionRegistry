@@ -10,6 +10,38 @@ This application is currently documented on the [CLARIN trac](https://trac.clari
 
 Information regarding development and deployment as well as licencing information can be found in the [documentation directory](doc).
 
+## Modules
+
+The modules are related as follows:
+```
+┌──────────┐  ┌──────────┐           ┌──────────────┐
+│          │  │          │           │              │
+│ Frontend │  │ REST API │           │ OAI Provider │
+│          │  │          │           │              │
+└─────┬────┘  └────┬─┬───┘           └────────┬─────┘
+      │            │ │                        │
+      │            │ │ ┌────────────────┐     │
+      │            │ │ │                │     │
+      │            │ └─┤ Serialization  │     │
+      │            │   │                │     │
+      │            │   └────────────────┘     │
+      │            │                          │
+      │            │ ┌──────┐                 │
+      │            └─┤      │                 │
+      │              │ CORE ├─────────────────┘
+      └──────────────┤      │
+                     └───┬──┘
+                         │
+                         │
+                         │
+                     ┌───┴───┐
+                     │       │
+                     │ Model │
+                     │       │
+                     └───────┘
+```
+Ref: https://asciiflow.com/#/
+
 ## Development
 
 ### Compilation

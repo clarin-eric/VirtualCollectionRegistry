@@ -4,14 +4,18 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PersistentIdentifieabl
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidLink;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidType;
 import java.io.Serializable;
+import java.util.Set;
+import javax.persistence.CascadeType;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EnumType;
 import javax.persistence.Enumerated;
+import javax.persistence.FetchType;
 import javax.persistence.GeneratedValue;
 import javax.persistence.GenerationType;
 import javax.persistence.Id;
+import javax.persistence.OneToMany;
 import javax.persistence.Table;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -103,6 +107,11 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
     @Column(name = "original_query", nullable = true)
     private String originalQuery;
 
+    @OneToMany(cascade = CascadeType.ALL,
+               fetch = FetchType.EAGER,
+               mappedBy = "resource")
+    private Set<ResourceKv> kvs;
+    
     public Resource() {
         super();
         this.displayOrder = 0L;
@@ -329,5 +338,19 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
     }
 
     public void setValuesFrom(Resource other) { }
+
+    /**
+     * @return the kvs
+     */
+    public Set<ResourceKv> getKvs() {
+        return kvs;
+    }
+
+    /**
+     * @param kvs the kvs to set
+     */
+    public void setKvs(Set<ResourceKv> kvs) {
+        this.kvs = kvs;
+    }
 
 } // class Resource

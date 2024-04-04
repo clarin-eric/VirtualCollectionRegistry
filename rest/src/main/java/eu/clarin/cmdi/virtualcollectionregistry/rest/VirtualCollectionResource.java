@@ -2,7 +2,9 @@ package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
 
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
-import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.core.rest.RestUtils;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryUsageException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.auth.Secured;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
@@ -30,8 +32,6 @@ import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.core.Variant;
 
 import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
@@ -221,7 +221,7 @@ public final class VirtualCollectionResource {
             throw new NullPointerException("princial == null");
         }
         try {
-            VirtualCollectionMarshaller.Format format = RestUtils.getInputFormat(headers);
+            VirtualCollection.Format format = RestUtils.getInputFormat(headers);
             String encoding = RestUtils.getInputEncoding(headers);
             VirtualCollection vc
                     = marshaller.unmarshal(input, format, encoding);

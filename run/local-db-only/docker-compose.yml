@@ -1,0 +1,19 @@
+version: '3'
+services:
+
+  database:
+    image: "mariadb:10.3.10-bionic"
+    environment:
+      MYSQL_ROOT_PASSWORD: vcr-root
+      MYSQL_DATABASE: vcr
+      MYSQL_USER: vcruser
+      MYSQL_PASSWORD: vcrpassword
+    volumes:
+      - maria_db_data:/var/lib/mysql
+      - ./database:/docker-entrypoint-initdb.d
+    ports:
+      - 3306:3306
+
+volumes:
+  maria_db_data:
+    external: false

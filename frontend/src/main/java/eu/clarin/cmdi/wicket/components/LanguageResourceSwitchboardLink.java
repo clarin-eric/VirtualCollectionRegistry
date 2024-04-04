@@ -1,11 +1,11 @@
 package eu.clarin.cmdi.wicket.components;
 
-import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.UIUtils;
-import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
-import eu.clarin.cmdi.wicket.components.pid.PidType;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Resource;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.config.VcrConfig;
+import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PersistentIdentifier;
+import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidType;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;

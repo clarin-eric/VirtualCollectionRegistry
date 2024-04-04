@@ -17,9 +17,11 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission;
 
 import de.mpg.aai.shhaa.config.ConfigContext;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
+import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory;
+
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
-import eu.clarin.cmdi.virtualcollectionregistry.model.*;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryUsageException;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.*;
 
 import java.net.URI;
 import java.security.Principal;

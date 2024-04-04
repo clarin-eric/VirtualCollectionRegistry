@@ -8,6 +8,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.core.pid.DummyPersistentIdentifi
 import eu.clarin.cmdi.virtualcollectionregistry.core.pid.EPICPersistentIdentifierProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.core.pid.GWDGPersistentIdentifierProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.core.pid.PersistentIdentifierProvider;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PersistentIdentifier;
 import org.slf4j.Logger;

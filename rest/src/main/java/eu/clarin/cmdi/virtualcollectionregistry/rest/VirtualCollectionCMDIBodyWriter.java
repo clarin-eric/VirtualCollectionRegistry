@@ -44,7 +44,7 @@ public class VirtualCollectionCMDIBodyWriter implements MessageBodyWriter<Virtua
         if (!(vc.isPublic() || vc.isPublicFrozen()) || !vc.hasPersistentIdentifier()) {
             throw new WebApplicationException(Response.status(Status.NOT_ACCEPTABLE).entity("CMDI not available for unpublished collections. Please request XML or JSON").build());
         }
-        marshaller.marshalAsCMDI(stream, VirtualCollectionMarshaller.Format.XML, vc);
+        marshaller.marshalAsCMDI(stream, VirtualCollection.Format.XML, vc);
     }
 
 }

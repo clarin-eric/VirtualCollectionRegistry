@@ -77,6 +77,9 @@ public class VcrConfigImpl implements VcrConfig, Serializable {
     @Value("${eu.clarin.cmdi.vcr.forking.enabled:false}")
     private boolean forkingEnabled;
 
+    @Value("${eu.clarin.cmdi.vcr.maintenance.enabled:false}")
+    private boolean maintenanceEnabled;
+    
     @Value("${eu.clarin.cmdi.vcr.reference_scanning.enabled:false}")
     private boolean referenceScanningEnabled;
 
@@ -165,6 +168,11 @@ public class VcrConfigImpl implements VcrConfig, Serializable {
         return referenceScanningEnabled;
     }
 
+    @Override 
+    public boolean isMaintenanceEnabled() {
+        return maintenanceEnabled;
+    }
+    
     @Override
     public int getResourceScanAgeTresholdMs() {
         return scan_age_treshhold_ms;

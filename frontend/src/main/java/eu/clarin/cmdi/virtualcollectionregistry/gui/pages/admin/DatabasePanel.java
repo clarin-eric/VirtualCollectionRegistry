@@ -1,10 +1,9 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin;
 
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
+import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
-import org.postgresql.core.SqlCommand;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

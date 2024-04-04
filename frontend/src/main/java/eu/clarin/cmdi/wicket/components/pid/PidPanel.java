@@ -16,6 +16,7 @@
  */
 package eu.clarin.cmdi.wicket.components.pid;
 
+import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PersistentIdentifieable;
 import eu.clarin.cmdi.wicket.components.panel.EmptyPanel;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;

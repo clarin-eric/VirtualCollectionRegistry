@@ -1,15 +1,18 @@
 package eu.clarin.cmdi.virtualcollectionregistry.core;
 
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import java.util.Map;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
+import javax.servlet.ServletContext;
 //import javax.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
 import org.springframework.beans.factory.annotation.Autowired;
+//import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Repository;
 
 @Repository
@@ -18,16 +21,16 @@ public class DataStore implements DisposableBean {
     private static final Logger logger = LoggerFactory.getLogger(DataStore.class);
     private final EntityManagerFactory emf;
     private final ThreadLocal<EntityManager> em;
-/*
+
     @Autowired
     public DataStore(ServletContext servletContext) throws VirtualCollectionRegistryException {
         this(ServletUtils.createParameterMap(servletContext));
     }
-*/
+
     public DataStore(Map<String, String> config) throws VirtualCollectionRegistryException {
         this(Persistence.createEntityManagerFactory("VirtualCollectionStore", config));
         /*
-        try {
+        try {   
             emf = Persistence.createEntityManagerFactory(
                     "VirtualCollectionStore", config);
             em = new ThreadLocal<EntityManager>() {

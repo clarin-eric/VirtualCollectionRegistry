@@ -1,17 +1,14 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.table;
 
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
-import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
-import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.extensions.markup.html.repeater.data.grid.ICellPopulator;
 import org.apache.wicket.extensions.markup.html.repeater.data.table.AbstractColumn;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

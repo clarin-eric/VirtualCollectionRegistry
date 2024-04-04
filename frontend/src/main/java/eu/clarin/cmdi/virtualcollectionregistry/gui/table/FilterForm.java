@@ -17,9 +17,9 @@ import org.apache.wicket.model.CompoundPropertyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.ResourceModel;
 
-import eu.clarin.cmdi.virtualcollectionregistry.QueryOptions;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.query.QueryOptions;
 import java.util.ArrayList;
 import org.apache.wicket.markup.html.basic.Label;
 import org.slf4j.Logger;

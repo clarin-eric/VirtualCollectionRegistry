@@ -3,10 +3,12 @@ package eu.clarin.cmdi.virtualcollectionregistry.core;
 //import eu.clarin.cmdi.virtualcollectionregistry.model.ResourceScan;
 
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.VirtualCollectionRegistryReferenceValidator;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionList;
+import eu.clarin.cmdi.virtualcollectionregistry.query.QueryFactory;
 
 import java.security.Principal;
 import java.util.List;

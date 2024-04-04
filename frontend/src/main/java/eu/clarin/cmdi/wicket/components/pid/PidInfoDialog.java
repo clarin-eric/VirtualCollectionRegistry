@@ -16,7 +16,13 @@
  */
 package eu.clarin.cmdi.wicket.components.pid;
 
-import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
+import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PersistentIdentifieable;
+import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidLink;
+import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidType;
+import static eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidType.DOI;
+import static eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidType.HANDLE;
+import static eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidType.NBN;
+import static eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidType.UNKOWN;
 import eu.clarin.cmdi.wicket.components.BaseInfoDialog;
 import eu.clarin.cmdi.wicket.components.DialogButton;
 import java.io.IOException;
@@ -142,11 +148,11 @@ public class PidInfoDialog extends BaseInfoDialog {
     private class Body extends Panel {
         public Body(String id, String context) {
             super(id);
-            String actionableUri = HandleLinkModel.getActionableUri(model.getObject().getPidUri());            
+            String actionableUri = PidLink.getActionableUri(model.getObject().getPidUri());            
             TextField<String> input = new TextField("pid", new Model(actionableUri));           
             add(input);
             
-            PidType type = HandleLinkModel.getPidType(model.getObject().getPidUri());
+            PidType type = PidLink.getPidType(model.getObject().getPidUri());
             switch(type) {
                 case DOI: 
                     add(new Label("type", "doi")); break;

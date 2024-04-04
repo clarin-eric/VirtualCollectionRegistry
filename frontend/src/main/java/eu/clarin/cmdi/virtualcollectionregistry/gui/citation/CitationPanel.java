@@ -17,7 +17,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.citation;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.UIUtils;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.panel.Panel;

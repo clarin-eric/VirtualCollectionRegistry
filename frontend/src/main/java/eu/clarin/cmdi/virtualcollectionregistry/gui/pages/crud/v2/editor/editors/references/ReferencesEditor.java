@@ -4,11 +4,9 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryReferenceValidator;
+import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
+import eu.clarin.cmdi.virtualcollectionregistry.core.reference.VirtualCollectionRegistryReferenceValidator;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.TimerManager;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.CancelEventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.EventHandler;
@@ -21,9 +19,11 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.EventType;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.Listener;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.*;
-import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
-import eu.clarin.cmdi.virtualcollectionregistry.model.ResourceScan;
-import eu.clarin.cmdi.virtualcollectionregistry.model.ResourceScan.State;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Resource;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan.State;
+import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidLink;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
@@ -80,7 +80,7 @@ public class ReferencesEditor extends ComposedField {
             }
 
             //Try to parse handle
-            if(HandleLinkModel.isSupportedPersistentIdentifier(input)) {
+            if(PidLink.isSupportedPersistentIdentifier(input)) {
                 validPid = true;
             } else {
                 message += !message.isEmpty() ? "<br />" : "";
@@ -125,6 +125,10 @@ public class ReferencesEditor extends ComposedField {
 
     private Map<String, Boolean> refReasonCollapseState = new HashMap<>();
 
+    private Map<String, ResourceScan> scanResults = new HashMap<>();
+    private final Map<String, Date> scanResultsTimestamp = new HashMap<>();
+    private final Map<String, Long> scanResultsTimedout = new HashMap<>();
+    
     public interface RescanHandler extends Serializable {
         public void rescan(String reg, AjaxRequestTarget target);
     }
@@ -177,13 +181,9 @@ public class ReferencesEditor extends ComposedField {
             @Override
             public void handleSaveEvent(AjaxRequestTarget target) {
                 //Reset state so this reference is rescanned
-                //VirtualCollectionRegistry registry = Application.get().getRegistry();
-                //registry.getReferenceValidator().setState(references.get(edit_index).getInternalId(), State.INITIALIZED);
-
                 updateReferenceJob(references.get(edit_index));
 
                 //addReferenceJob
-
                 edit_index = -1;
                 editor.setVisible(false);
                 listview.setModelObject(f.apply(references));
@@ -220,25 +220,32 @@ public class ReferencesEditor extends ComposedField {
             protected void populateItem(ListItem item) {
                 EditableResource ref = (EditableResource)item.getModel().getObject();
 
-                State state = State.INITIALIZED;
+                State state = State.QUEUED;
                 String reason = "";
-                ResourceScan scan = scanResults.get(ref.getRef());
-                if(scan != null) {
-                    state = scan.getState();
-                    reason += "Last scan: "+scan.getLastScanEnd()+"<br />";
-                    if(scan.getHttpResponseCode() > 0) {
-                        reason += "HTTP response: " + scan.getHttpResponseCode();
-                        if (scan.hasHttpResponseMessage()) {
-                            reason += " " + scan.getHttpResponseMessage();
+                
+                if(scanResultsTimedout.containsKey(ref.getRef())) {
+                    state = State.FAILED;
+                    reason += "Queue processing timed out (Exceeded "+(scanResultsTimedout.get(ref.getRef())/1000)+" seconds)";
+                } else {                
+                    ResourceScan scan = scanResults.get(ref.getRef());
+                    if(scan != null) {
+                        state = scan.getState();
+                        int httpResponseCode = scan.getHttpResponseCode() != null ? scan.getHttpResponseCode() : 0;
+                        reason += "Last scan: "+scan.getLastScanEnd()+"<br />";
+                        if(httpResponseCode > 0) {
+                            reason += "HTTP response: " + httpResponseCode;
+                            if (scan.hasHttpResponseMessage()) {
+                                reason += " " + scan.getHttpResponseMessage();
+                            }
+                            reason += "<br />";
                         }
-                        reason += "<br />";
+                        if(scan.getException() != null) {
+                            reason += "Exception: "+scan.getException()+"<br />";
+                        }
+                        reason += "State: "+state.toString()+"<br />";
                     }
-                    if(scan.getException() != null) {
-                        reason += "Exception: "+scan.getException()+"<br />";
-                    }
-                    reason += "State: "+state.toString()+"<br />";
                 }
-
+                
                 RescanHandler rescanHandler = new RescanHandler() {
                     @Override
                     public void rescan(String ref, AjaxRequestTarget target) {
@@ -320,19 +327,7 @@ public class ReferencesEditor extends ComposedField {
                 item.add(c);
             }
         };
-/*
-        ajaxWrapper.add(new AbstractAjaxTimerBehavior(Duration.seconds(uiRefreshTimeInSeconds)) {
-            @Override
-            protected void onTimer(AjaxRequestTarget target) {
-                //validate(); //make sure this validation is up to date before re rendering the component
-                if(target != null) {
-                    logger.trace("Update references editor timer");
-                    target.add(ajaxWrapper);
-                }
-                fireEvent(new CustomDataUpdateEvent(target));
-            }
-        });
-*/
+
         ajaxWrapper.add(listview);
 
         lblNoReferences.setVisible(references.isEmpty());
@@ -354,12 +349,8 @@ public class ReferencesEditor extends ComposedField {
         add(f2);
     }
 
-    private Map<String, ResourceScan> scanResults = new HashMap<>();
-
     private void addToTimerManager(AjaxRequestTarget target) {
-       // VirtualCollectionRegistry registry = Application.get().getRegistry();
-       // VirtualCollectionRegistryReferenceValidator validator = registry.getReferenceValidator();
-        timerManager.addTarget(target, new TimerManager.Update() {
+       timerManager.addTarget(target, new TimerManager.Update() {
             @Override
             public boolean onUpdate(AjaxRequestTarget target) {
                 fireEvent(new CustomDataUpdateEvent(target));
@@ -376,8 +367,18 @@ public class ReferencesEditor extends ComposedField {
                     for(ResourceScan scan : scans) {
                         logger.debug("Scan ref="+scan.getRef()+", state="+scan.getState().toString());
                         scanResults.put(scan.getRef(), scan);
-                        if(scan.getState() != State.DONE && scan.getState() != State.FAILED) {
-                            analyzing = false;
+                        switch (scan.getState()) {
+                            case DONE:
+                            case FAILED:
+                                analyzing = false;
+                                break;                            
+                            default:
+                                long msElapsed = new Date().getTime() - scanResultsTimestamp.get(scan.getRef()).getTime();
+                                if(msElapsed > 60*1000) {
+                                    analyzing = false;
+                                    scanResultsTimedout.put(scan.getRef(), msElapsed);
+                                }
+                                break;
                         }
                     }
                 } catch(VirtualCollectionRegistryException ex) {
@@ -439,7 +440,7 @@ public class ReferencesEditor extends ComposedField {
             List<EditableResource> filtered = new ArrayList<>();
             for(EditableResource r : references) {
 
-                State state = State.INITIALIZED;
+                State state = State.QUEUED;
                 ResourceScan scan  = scanResults.get(r.getRef());
                 if(scan != null) {
                     state = scan.getState();
@@ -500,7 +501,7 @@ public class ReferencesEditor extends ComposedField {
                 data.setObject("");
                 mdlReferenceTitle.setObject("");
             } else if(handlePid(value)) {
-                String actionableValue = HandleLinkModel.getActionableUri(value);
+                String actionableValue = PidLink.getActionableUri(value);
                 Resource r = new Resource(Resource.Type.RESOURCE, actionableValue, title);
                 r.setDisplayOrder(getNextDisplayOrder());
                 addReferenceJob(EditableResource.fromResource(r));
@@ -537,6 +538,11 @@ public class ReferencesEditor extends ComposedField {
                 sessionId = getSession().getId();
             }
 
+            //Add resource scan placeholder, will be replaced with instance fetched from the database
+            //This ensures we have something to render in the UI, even if there is no database / api communication.
+            scanResults.put(r.getRef(), new ResourceScan(r.getRef(), sessionId));
+            scanResultsTimestamp.put(r.getRef(), new Date());
+            //Insert the scan into the database
             Application.get().getRegistry().addResourceScan(r.getRef(), sessionId);
         } catch(Exception ex) {
             logger.error("Failed to create new resource scan.", ex);
@@ -564,6 +570,8 @@ public class ReferencesEditor extends ComposedField {
                 sessionId = getSession().getId();
             }
 
+            scanResultsTimestamp.put(ref, new Date());
+            scanResultsTimedout.remove(ref);
             Application.get().getRegistry().rescanResource(ref, sessionId);
         } catch(Exception ex) {
             logger.error("Failed to create new resource scan.", ex);
@@ -581,7 +589,7 @@ public class ReferencesEditor extends ComposedField {
     }
     
     private boolean handlePid(String value) {
-        return HandleLinkModel.isSupportedPersistentIdentifier(value);
+        return PidLink.isSupportedPersistentIdentifier(value);
     }
     
     public void reset() {

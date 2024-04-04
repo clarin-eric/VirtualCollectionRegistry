@@ -12,24 +12,10 @@
 
     <groupId>eu.clarin.cmdi</groupId>
     <artifactId>vcr-frontend</artifactId>
-    <name>VCR Frontend</name>
+    <name>VCR Frontend - Wicket UI</name>
     <packaging>war</packaging>
 
     <properties>
-        <!-- dependency versions -->
-        <!--
-        <slf4j.version>1.7.35</slf4j.version>
-        <log4j.version>2.17.1</log4j.version>
-        <hibernate.version>5.6.5.Final</hibernate.version>
-        <hibernate.jpaVersion>5.6.5.Final</hibernate.jpaVersion>
-        <jersey.version>2.35</jersey.version>
-        <jersey-spring4.version>2.35</jersey-spring4.version>
-        <jackson.version>2.13.1</jackson.version>
-        <wicket.version>7.12.0</wicket.version>
-        <wicket-bootstrap.version>2.0.8</wicket-bootstrap.version>
-        <spring.version>4.3.30.RELEASE</spring.version>
-        <swagger.version>2.1.12</swagger.version>
-         -->
         <!-- local development settings, alternatives provided below in in the profiles section -->
         <log4j.appender>FILE</log4j.appender>
         <war.webxml>src/main/resources/profiles/dev/web.xml</war.webxml>
@@ -72,6 +58,17 @@
 
     <dependencies>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>vcr-model</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>vcr-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
             <groupId>io.jsonwebtoken</groupId>
             <artifactId>jjwt-api</artifactId>
             <version>0.11.2</version>
@@ -89,26 +86,7 @@
             <scope>runtime</scope>
         </dependency>
 
-        <!-- <Logging> -->
-        <!-- included from parent
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-slf4j-impl</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-        -->
-        <!--
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-1.2-api</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-        -->
+       
         <dependency>
             <groupId>org.slf4j</groupId>
             <artifactId>jcl-over-slf4j</artifactId>
@@ -126,7 +104,7 @@
             <artifactId>commons-lang3</artifactId>
             <version>3.12.0</version>
         </dependency>
-
+<!--
         <dependency>
             <groupId>org.codehaus.woodstox</groupId>
             <artifactId>woodstox-core-asl</artifactId>
@@ -134,13 +112,14 @@
             <type>jar</type>
             <scope>compile</scope>
             <exclusions>
-                <!-- StaX is part of JRE 1.5 and newer -->
+                < StaX is part of JRE 1.5 and newer >
                 <exclusion>
                     <artifactId>stax-api</artifactId>
                     <groupId>javax.xml.stream</groupId>
                 </exclusion>
             </exclusions>
         </dependency>
+        -->
         <!--
         <dependency>
             <groupId>org.hibernate.javax.persistence</groupId>
@@ -221,6 +200,7 @@
                     </exclusions>
                 </dependency>
         -->
+        <!--
         <dependency>
             <groupId>org.codehaus.jettison</groupId>
             <artifactId>jettison</artifactId>
@@ -232,19 +212,21 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        
+        -->
+<!--        
         <dependency>
             <groupId>de.uni_leipzig.asv</groupId>
             <artifactId>clarin.webservices.pidservices2</artifactId>
             <version>4.1</version>
             <exclusions>
                 <exclusion>
-                    <!-- replaced with jcl-over-slf4j -->
+                    < replaced with jcl-over-slf4j >
                     <artifactId>commons-logging</artifactId>
                     <groupId>commons-logging</groupId>
                 </exclusion>               
             </exclusions>
         </dependency>
+-->
         <!--
         <dependency>
             <groupId>de.uni_leipzig.asv</groupId>
@@ -569,30 +551,9 @@
         </dependency>
 
 
-        <dependency>
-            <groupId>junit</groupId>
-            <artifactId>junit</artifactId>
-            <version>4.13.2</version>
-            <type>jar</type>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hsqldb</groupId>
-            <artifactId>hsqldb</artifactId>
-            <version>2.6.1</version>
-            <type>jar</type>
-            <scope>test</scope>
-        </dependency>
-
-        <dependency>
-            <groupId>org.hsqldb</groupId>
-            <artifactId>sqltool</artifactId>
-            <version>2.6.1</version>
-            <type>jar</type>
-            <scope>test</scope>
-        </dependency>
-
+       
+        
+<!--
         <dependency>
             <groupId>xmlunit</groupId>
             <artifactId>xmlunit</artifactId>
@@ -600,13 +561,7 @@
             <scope>test</scope>
             <type>jar</type>
         </dependency>
-
-        <dependency>
-            <groupId>org.jmock</groupId>
-            <artifactId>jmock-junit4</artifactId>
-            <version>2.12.0</version>
-            <scope>test</scope>
-        </dependency>
+-->
 
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -689,6 +644,7 @@
                 </executions>
             </plugin>
             -->
+            <!--
             <plugin>
                 <groupId>com.helger.maven</groupId>
                 <artifactId>ph-javacc-maven-plugin</artifactId>
@@ -707,6 +663,7 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
 <!--
             <plugin>
                 <groupId>org.bsc.maven</groupId>
@@ -739,6 +696,7 @@
             </plugin>
 
 -->
+<!--
             <plugin>                
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>                
@@ -755,7 +713,8 @@
                     <packageName>eu.clarin.cmdi.virtualcollectionregistry.model.cmdi</packageName>
                 </configuration>
             </plugin>
-
+-->
+<!--
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
@@ -769,7 +728,7 @@
 
                 </dependencies>
             </plugin>
-
+-->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -819,10 +778,13 @@
                             </includes>
                         </resource>
                         <!-- Make API documentation available (referenced from the help page) -->
+                        <!--
                         <resource>
                             <directory>doc</directory>
                         </resource>
+                        -->
                         <!-- Make REST API documentation available -->
+                        <!--
                         <resource>
                             <directory>service-doc</directory>
                             <excludes>
@@ -833,6 +795,7 @@
                             <directory>swagger-ui/dist</directory>
                             <targetPath>service-doc</targetPath>
                         </resource>
+                        -->
                         <!-- Include proper shhaa config based on selected profile -->
                         <resource>
                             <directory>${war.shhaa.dir}</directory>
@@ -880,7 +843,7 @@
                     </descriptors>
                 </configuration>
             </plugin>
-
+<!--
             <plugin>
                 <groupId>io.openapitools.swagger</groupId>
                 <artifactId>swagger-maven-plugin</artifactId>
@@ -903,10 +866,12 @@
                     </execution>
                 </executions>
             </plugin>
+-->
+            <!-- Java source version mismatch
             <plugin>
                 <groupId>org.jacoco</groupId>
                 <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.6</version><!--0.7.9</version>-->
+                <version>0.8.6</version><</version>
                 <executions>
                 <execution>
                     <id>default-prepare-agent</id>
@@ -921,15 +886,15 @@
                         <goal>report</goal>
                     </goals>
                 </execution>
-                    <!--
+                    <!-
                 <execution>
                     <id>default-check</id>
                     <goals>
                         <goal>check</goal>
                     </goals>
                 </execution>
-                -->
-                <!--
+                ->
+                <!-
                 <executions>
                     <execution>
                         <id>prepare-agent</id>
@@ -952,11 +917,12 @@
                             <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
                         </configuration>
                     </execution>
-                    -->
+                    ->
                 </executions>
             </plugin>
+        -->
         </plugins>
-
+        
         <pluginManagement>
             <plugins>
                 <!-- This plugin's configuration is used to store Eclipse m2e settings 
@@ -994,7 +960,8 @@
                                         <execute/>
                                     </action>
                                 </pluginExecution>
-                                <pluginExecution>
+                                <!--
+                                <pluginExecution>                                    
                                     <pluginExecutionFilter>
                                         <groupId>org.codehaus.mojo</groupId>
                                         <artifactId>jaxb2-maven-plugin</artifactId>
@@ -1007,6 +974,7 @@
                                         <execute/>
                                     </action>
                                 </pluginExecution>
+                                            -->
                                 <pluginExecution>
                                     <pluginExecutionFilter>
                                         <groupId>org.jasig.maven</groupId>
@@ -1029,6 +997,7 @@
                     Java 7 to get the same (or higher) JAXB API version as
                     used during the xjc execution. 
                 -->
+                <!--
                 <plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
@@ -1038,6 +1007,7 @@
                         <encoding>${project.build.sourceEncoding}</encoding>
                     </configuration>
                 </plugin>
+                                -->
             </plugins>
         </pluginManagement>
     </build>

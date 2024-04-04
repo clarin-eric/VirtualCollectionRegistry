@@ -1,7 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
-import eu.clarin.cmdi.virtualcollectionregistry.model.IdentifiedEntity;
-
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.IdentifiedEntity;
 import java.io.Serializable;
 
 import javax.persistence.EntityManager;

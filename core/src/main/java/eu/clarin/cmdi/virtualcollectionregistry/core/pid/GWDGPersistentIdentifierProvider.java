@@ -1,7 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.core.pid;
 
 import eu.clarin.cmdi.virtualcollectionregistry.core.PermaLinkService;
-import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PersistentIdentifier;
 
@@ -33,7 +33,6 @@ import org.apache.http.protocol.HttpContext;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Profile;
 import org.springframework.stereotype.Service;
 

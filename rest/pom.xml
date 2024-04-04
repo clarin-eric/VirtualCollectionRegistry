@@ -22,6 +22,12 @@
             <version>${project.version}</version>
         </dependency>
         <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>vcr-serialization</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-core</artifactId>
             <version>${swagger.version}</version>
@@ -46,7 +52,23 @@
             <artifactId>jersey-server</artifactId>
             <version>${jersey.version}</version>
         </dependency>
-        
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-jaxb</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+         <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+        <!-- Provides spring-beans and spring-context -->
+        <dependency>
+            <groupId>org.glassfish.jersey.ext</groupId>
+            <artifactId>jersey-spring4</artifactId>
+            <version>${jersey-spring4.version}</version>
+        </dependency>
+            
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
@@ -66,11 +88,51 @@
             </exclusions>
         </dependency>
         
-        <!-- Provides spring-beans and spring-context -->
+        <!-- Provides org.apache.wicket.spring.injection.annot.SpringBean -->
         <dependency>
-            <groupId>org.glassfish.jersey.ext</groupId>
-            <artifactId>jersey-spring4</artifactId>
-            <version>${jersey-spring4.version}</version>
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket-spring</artifactId>
+            <version>${wicket.version}</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.codehaus.jettison</groupId>
+            <artifactId>jettison</artifactId>
+            <version>1.4.1</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>stax</groupId>
+                    <artifactId>stax-api</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        
+        <dependency>
+            <groupId>de.mpg.mpgaai</groupId>
+            <artifactId>mpgaai-shhaa</artifactId>
+            <version>1.0.13</version>
+            <exclusions>
+                <exclusion>
+                    <groupId>log4j</groupId>
+                    <artifactId>log4j</artifactId>
+                </exclusion>
+            </exclusions>
+        </dependency>
+        
+        <!-- provides stax -->
+        <dependency>
+            <groupId>org.codehaus.woodstox</groupId>
+            <artifactId>woodstox-core-asl</artifactId>
+            <version>4.4.1</version>
+            <type>jar</type>
+            <scope>compile</scope>
+            <exclusions>
+                <!-- StaX is part of JRE 1.5 and newer -->
+                <exclusion>
+                    <artifactId>stax-api</artifactId>
+                    <groupId>javax.xml.stream</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
         
         <dependency>
@@ -87,4 +149,69 @@
             <scope>provided</scope>
         </dependency>
     </dependencies>
+    
+    <build>
+        <plugins>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-war-plugin</artifactId>
+                <version>3.2.3</version>
+                <configuration>
+                    <failOnMissingWebXml>true</failOnMissingWebXml>
+                    <webXml>src/main/webapp/WEB-INF/web.xml</webXml>
+                    <containerConfigXML>src/main/webapp/META-INF/context.xml</containerConfigXML>
+                    <webResources>
+                        <resource>
+                            <directory>src/main/resources</directory>
+                            <targetPath>WEB-INF</targetPath>
+                            <includes>
+                                <include>*.xml</include>
+                                <include>*.properties</include>
+                                <include>scripts</include>
+                            </includes>
+                        </resource>
+                        <!-- additional web resources: also copy schemas to web-app -->
+                        <resource>
+                            <directory>src/main/resources/META-INF</directory>
+                            <targetPath>schema</targetPath>
+                            <includes>
+                                <include>*.xsd</include>
+                            </includes>
+                        </resource>
+                        <!-- Make API documentation available (referenced from the help page) -->
+                        <!--
+                        <resource>
+                            <directory>doc</directory>
+                        </resource>
+                        -->
+                        <!-- Make REST API documentation available -->
+                        <!--
+                        <resource>
+                            <directory>service-doc</directory>
+                            <excludes>
+                                <exclude>*.html</exclude>
+                            </excludes>
+                        </resource>
+                        <resource>
+                            <directory>swagger-ui/dist</directory>
+                            <targetPath>service-doc</targetPath>
+                        </resource>
+                        -->
+                        <!-- Include proper shhaa config based on selected profile -->
+                        <!--
+                        <resource>
+                            <directory>${war.shhaa.dir}</directory>
+                            <targetPath>WEB-INF</targetPath>
+                            <includes>
+                                <include>shhaa.xml</include>
+                            </includes>
+                        </resource>
+                            -->
+                    </webResources>
+                    <!--outputDirectory>bin</outputDirectory-->
+                </configuration>
+            </plugin>
+        </plugins>
+    </build>
+    
 </project>

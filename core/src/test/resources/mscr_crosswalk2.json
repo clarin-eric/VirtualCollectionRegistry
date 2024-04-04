@@ -1,0 +1,53 @@
+{
+    "created": "2024-03-26T09:19:15.887Z", 
+    "modified": "2024-04-02T08:02:34.067Z", 
+    "modifier": {
+        "id": "3b0cfd7b-b4ce-41be-aa9e-ac28bb3148ed",
+        "name": null
+    }, 
+    "creator": {
+        "id": "3b0cfd7b-b4ce-41be-aa9e-ac28bb3148ed",
+        "name": null
+    }, 
+    "type": null, 
+    "prefix": null, 
+    "status": "VALID", 
+    "label": {
+        "en": "TEI minimal to Dublin Core"
+    }, 
+    "description": {
+        "en": ""
+    }, 
+    "languages": [
+        "en"
+    ], 
+    "organizations": [], 
+    "groups": [], 
+    "internalNamespaces": [], 
+    "externalNamespaces": [], 
+    "terminologies": [], 
+    "codeLists": [], 
+    "contact": null, 
+    "documentation": {},
+    "handle": "21.T13999/EOSC-202404000249693",
+    "state": "PUBLISHED",
+    "visibility": "PUBLIC",
+    "format": "XSLT",
+    "aggregationKey": "mscr:crosswalk:36b70083-67e8-4c5e-a62d-e68a9336e1b0",
+    "fileMetadata": [{
+            "contentType": "application/octet-stream",
+            "size": 997,
+            "fileID": 6,
+            "filename": "mscr:crosswalk:36b70083-67e8-4c5e-a62d-e68a9336e1b0.octet-stream",
+            "timestamp": "2024-03-86T09:03:40+0000"
+        }],
+    "sourceSchema": "mscr:schema:09726460-3d0c-4b63-9182-8cedae8d7b73",
+    "targetSchema": "mscr:schema:b5026b1e-f163-4de7-883b-10ddd9807e8d",
+    "owner": ["3b0cfd7b-b4ce-41be-aa9e-ac28bb3148ed"],
+    "mappings": null,
+    "versionLabel": "1",
+    "revisionOf": null,
+    "hasRevisions": null,
+    "revisions": null,
+    "pid": "mscr:crosswalk:36b70083-67e8-4c5e-a62d-e68a9336e1b0"
+}

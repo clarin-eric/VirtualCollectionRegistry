@@ -1,0 +1,19 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Context path="/oai">
+    <Resource 
+        auth="Container" 
+        defaultAutoCommit="false" 
+        driverClassName="com.mysql.cj.jdbc.Driver" 
+        factory="org.apache.tomcat.jdbc.pool.DataSourceFactory" 
+        maxIdle="4" 
+        maxTotal="8" 
+        maxWaitMillis="10000" 
+        name="jdbc/VirtualCollectionStore" 
+        removeAbandonedOnBorrow="true" 
+        removeAbandonedOnMaintenance="true" 
+        type="javax.sql.DataSource" 
+        url="jdbc:mysql://localhost:3306/vcr" 
+        username="vcruser" 
+        password="vcrpassword" 
+        validationQuery="SELECT 1"/>
+</Context>

@@ -1,12 +1,12 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionList;
+import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
+import eu.clarin.cmdi.virtualcollectionregistry.core.rest.RestUtils;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionList;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.auth.Secured;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
-import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller.Format;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -38,7 +38,6 @@ import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 /**
  * REST resource representing the collection of virtual collections
@@ -116,7 +115,7 @@ public class VirtualCollectionsResource {
             @Override
             public void write(OutputStream output) throws IOException,
                     WebApplicationException {
-                final Format format = RestUtils.getOutputFormat(headers.getAcceptableMediaTypes());
+                final VirtualCollection.Format format = RestUtils.getOutputFormat(headers.getAcceptableMediaTypes());
                 marshaller.marshal(output, format, vcs);
                 output.close();
             }
@@ -187,7 +186,7 @@ public class VirtualCollectionsResource {
             throw new AssertionError("principal == null");
         }
         try {
-            VirtualCollectionMarshaller.Format format = RestUtils.getInputFormat(headers);
+            VirtualCollection.Format format = RestUtils.getInputFormat(headers);
             String encoding = RestUtils.getInputEncoding(headers);
             VirtualCollection vc
                     = marshaller.unmarshal(input, format, encoding);

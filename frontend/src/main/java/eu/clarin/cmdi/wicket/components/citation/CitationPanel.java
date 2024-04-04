@@ -17,6 +17,7 @@
 package eu.clarin.cmdi.wicket.components.citation;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.UIUtils;
+import eu.clarin.cmdi.virtualcollectionregistry.model.citation.Citable;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;

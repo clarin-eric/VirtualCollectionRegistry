@@ -1,9 +1,10 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
-import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionValidationException;
+import eu.clarin.cmdi.virtualcollectionregistry.core.AdminUsersService;
+import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.core.reference.VirtualCollectionValidationException;
+import eu.clarin.cmdi.virtualcollectionregistry.core.validation.VirtualCollectionValidator;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.VolatileEntityModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.CreateAndEditVirtualCollectionPageV2;
@@ -11,17 +12,14 @@ import eu.clarin.cmdi.wicket.components.citation.CitationPanelFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.Dialogs;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.CollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.VirtualCollectionTable;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.State;
-import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionValidator;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection.State;
 
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
 import org.apache.wicket.WicketRuntimeException;

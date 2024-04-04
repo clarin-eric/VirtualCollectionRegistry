@@ -1,7 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.core.reference;
 
-import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.core.validation.feedback.IValidationFailedMessage;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import java.util.ArrayList;
 import java.util.List;
 

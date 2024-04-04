@@ -1,4 +1,4 @@
-package eu.clarin.cmdi.virtualcollectionregistry;
+package eu.clarin.cmdi.virtualcollectionregistry.core;
 
 import java.util.List;
 

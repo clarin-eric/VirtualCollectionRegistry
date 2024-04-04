@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
 
+import eu.clarin.cmdi.virtualcollectionregistry.core.rest.RestUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
 import java.io.IOException;
@@ -43,7 +44,7 @@ public class VirtualCollectionXMLBodyWriter implements MessageBodyWriter<Virtual
 
     @Override
     public void writeTo(VirtualCollection vc, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream stream) throws IOException, WebApplicationException {
-        final VirtualCollectionMarshaller.Format format = RestUtils.getOutputFormat(Collections.singletonList(mediaType));
+        final VirtualCollection.Format format = RestUtils.getOutputFormat(Collections.singletonList(mediaType));
         marshaller.marshal(stream, format, vc);
     }
 

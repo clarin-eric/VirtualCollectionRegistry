@@ -1,0 +1,131 @@
+<?xml version='1.0' encoding='utf-8'?>
+<!--https://tomcat.apache.org/tomcat-8.0-doc/config/context.html#Defining_a_context-->
+<Context reloadable="true" privileged="true" docBase="/app/src/target/vcr-1.4.0-SNAPSHOT4.war">
+
+    <Resource
+            name="jdbc/VirtualCollectionStore"
+            auth="Container"
+            type="javax.sql.DataSource"
+            factory="org.apache.tomcat.jdbc.pool.DataSourceFactory"
+            maxTotal="8"
+            maxIdle="4"
+            maxWaitMillis="10000"
+            removeAbandonedOnBorrow="true"
+            removeAbandonedOnMaintenance="true"
+            defaultAutoCommit="false"
+            driverClassName="com.mysql.cj.jdbc.Driver"
+            validationQuery="SELECT 1"
+            username="vcruser"
+            password="vcrpassword"
+            url="jdbc:mysql://database:3306/vcr" />
+
+    <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.admindb.basedir"
+               value="/conf" />
+
+    <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.admindb"
+               value="vcr-admin.conf" />
+
+    <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.collectiondisplayname"
+               value="CLARIN Virtual Collection Registry" />
+
+    <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.base_uri"
+               value="http://localhost:8080"
+               override="false"/>
+
+    <!-- Configure pid providers configuration -->
+    <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.pidprovider.basedir"
+               value="/conf"
+               override="false"/>
+
+    <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.pidprovider.configfile"
+               value="pidproviders.properties"
+               override="false"/>
+
+    <!--
+        Available profiles:
+        - vcr.pid.dummy
+        - vcr.pid.gwdg
+        - vcr.pid.epic
+        - vcr.pid.doi
+        - vcr.pid.multi
+    -->
+    <Parameter name="spring.profiles.active"
+               value="vcr.pid.multi"
+               override="false"/>
+
+    <!-- Process endpoint -->
+    <Parameter name="eu.clarin.cmdi.vcr.process.endpoint"
+               value="https://switchboard.clarin.eu/#/xyz"
+               override="false"/>
+
+    <!-- Allowed values: "COLLECTIONS", "RESOURCES". To disable processing set value="" -->
+    <Parameter name="eu.clarin.cmdi.vcr.process.enable"
+               value="COLLECTIONS,RESOURCES"
+               override="false" />
+
+    <Parameter name="eu.clarin.cmdi.vcr.process.popup"
+               value="true"
+               override="false" />
+
+    <!-- Download endpoint -->
+    <Parameter name="eu.clarin.cmdi.vcr.download.endpoint"
+               value="https://weblicht.sfs.uni-tuebingen.de/CMDIExplorer/input/#/vcr"
+               override="false"/>
+
+    <!-- Allowed values: "COLLECTIONS", "RESOURCES". To disable downloading set value="" -->
+    <Parameter name="eu.clarin.cmdi.vcr.download.enable"
+               value="COLLECTIONS"
+               override="false"/>
+
+    <!--
+    <Parameter name="eu.clarin.cmdi.vcr.piwik.enableTracker"
+               value="false"
+               override="false"/>
+
+    <Parameter name="eu.clarin.cmdi.vcr.piwik.siteId"
+               value="1"
+               override="false" />
+
+    <Parameter name="eu.clarin.cmdi.vcr.piwik.host"
+               value="https://stats.clarin.eu/"
+               override="false" />
+
+     <Parameter name="eu.clarin.cmdi.vcr.piwik.domains"
+               value="*.vcr.clarin.eu"
+               override="false" />
+    -->
+
+    <Parameter name="eu.clarin.cmdi.vcr.logout_mode"
+               value="shibboleth"
+               override="false" />
+
+    <Parameter name="eu.clarin.cmdi.vcr.logout_enable"
+               value="false"
+               override="false" />
+
+    <Parameter name="eu.clarin.cmdi.vcr.snippet.survey"
+               value="survey.html"
+               override="false" />
+
+    <Parameter name="eu.clarin.cmdi.vcr.snippet.credits"
+               value="credits.html"
+               override="false" />
+
+    <Parameter name="eu.clarin.cmdi.vcr.mode"
+               value="alpha"
+               override="false" />
+
+    <!-- 1.7.0 -->
+    <Parameter name="eu.clarin.cmdi.vcr.forking.enabled"
+               value="true"
+               override="false" />
+
+    <!-- 1.8.0 -->
+    <Parameter name="eu.clarin.cmdi.vcr.reference_scanning.enabled"
+               value="true"
+               override="false" />
+
+    <Parameter name="eu.clarin.cmdi.vcr.reference_scanning.scan_age_treshhold_ms"
+               value="86400000"
+               override="false" />
+</Context>

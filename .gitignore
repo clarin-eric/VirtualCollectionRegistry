@@ -24,3 +24,9 @@ service-doc
 service-doc/swagger.yaml
 /orig/target/
 /model/target/
+/query/target/
+/core/target/
+/rest/target/
+/serialization/target/
+/oai/target/
+/frontend/target/

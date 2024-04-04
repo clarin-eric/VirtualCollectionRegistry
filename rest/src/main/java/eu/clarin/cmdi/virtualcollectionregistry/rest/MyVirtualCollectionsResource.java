@@ -1,7 +1,9 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
-import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.core.rest.RestUtils;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionList;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.auth.Secured;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
@@ -29,7 +31,6 @@ import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
 import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityRequirements;
 import io.swagger.v3.oas.annotations.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Autowired;
 import io.swagger.v3.oas.annotations.Operation;
@@ -138,7 +139,7 @@ public class MyVirtualCollectionsResource {
             @Override
             public void write(OutputStream output) throws IOException,
                     WebApplicationException {
-                final VirtualCollectionMarshaller.Format format = RestUtils.getOutputFormat(headers.getAcceptableMediaTypes());
+                final VirtualCollection.Format format = RestUtils.getOutputFormat(headers.getAcceptableMediaTypes());
                 marshaller.marshal(output, format, vcs);
                 output.close();
             }

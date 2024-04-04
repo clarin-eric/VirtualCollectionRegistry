@@ -1,10 +1,10 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.table;
 
-import eu.clarin.cmdi.virtualcollectionregistry.QueryFactory;
-import eu.clarin.cmdi.virtualcollectionregistry.QueryOptions;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin.AdminPage;
-import eu.clarin.cmdi.virtualcollectionregistry.model.User;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.query.QueryFactory;
+import eu.clarin.cmdi.virtualcollectionregistry.query.QueryOptions;
 import java.util.LinkedList;
 import java.util.List;
 

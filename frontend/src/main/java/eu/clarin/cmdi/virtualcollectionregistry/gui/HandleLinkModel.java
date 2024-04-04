@@ -16,6 +16,7 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
+import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidLink;
 import org.apache.wicket.model.IModel;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;

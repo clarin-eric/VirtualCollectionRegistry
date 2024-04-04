@@ -5,7 +5,28 @@ import org.jetbrains.annotations.NotNull;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashSet;
+import java.util.Set;
 
+
+/**
+ * 
+ * scan (1) <---> (n) log (1) <---> (n) kv
+ *
+ * Results in:
+ *  scan
+ *      processor 1 log
+ *          kv 1
+ *      processor 2 log 
+ *          kv 1
+ *          kv 2
+ * 
+ * Example SQL statements to trigger a scan:
+ *  insert into resource_scan (ref, session_id, created) VALUES ('https://www.clarin.eu', 'test_session_id', '2024-02-29 10:00:00');
+ *  insert into resource_scan (ref, session_id, created) VALUES ('https://www.example.com', 'test_session_id', '2024-02-29 10:00:00');
+ * 
+ * @author wilelb
+ */
 @Entity
 @Table(name = "resource_scan")
 @NamedQueries({
@@ -20,8 +41,22 @@ import java.util.Date;
 })
 public class ResourceScan implements Serializable, Comparable<ResourceScan>  {
 
+    /**
+     * A resource scan added to the UI has INITIALIZED state (database ID == null).
+     * After inserting it into the database (effectivly queing it to be processed), puts it it QUEUED state (database ID != null and lastScanStart == null).
+     * When the row is actually picked for processing it is put into ANALYZING state (database ID != null and lastScanStart !== null and lastScanEnd == null).
+     * When processing is finished it is moved into DONE or FAILED state.
+     * 
+     *                                         .--> DONE 
+     * INITIALIZED --> QUEUED --> ANALYZING --|
+     *                                         '--> FAILED
+     */
     public static enum State {
-        INITIALIZED, ANALYZING, DONE, FAILED
+        INITIALIZED, QUEUED, ANALYZING, DONE, FAILED
+    }
+    
+    public static boolean isStateAnalyzing(State s) {
+        return s == State.INITIALIZED || s == State.QUEUED || s == State.ANALYZING;
     }
 
     @Id
@@ -58,18 +93,31 @@ public class ResourceScan implements Serializable, Comparable<ResourceScan>  {
 
     @Column(name = "mimetype", nullable = true, length = 255)
     private String mimeType;
-
+        
+    @OneToMany(cascade = CascadeType.ALL,
+               fetch = FetchType.EAGER,
+                mappedBy = "scan")
+    private Set<ResourceScanLog> logs;
+    
+/*
     @Column(name = "name_suggestion", nullable = true, length = 255)
     private String nameSuggestion;
 
     @Column(name = "description_suggestion", nullable = true)
     private String descriptionSuggestion;
 
+    @Column(name = "processor", nullable = true, length = 255)
+    private String processor;
+    
+    @Column(name = "pid_suggestion", nullable = true)
+    private String suggestedPid;
+*/
+    
     public ResourceScan() {}
 
     public ResourceScan(String ref, String sessionId) {
         this.ref = ref;
-        this.setSessionId(sessionId);
+        this.sessionId = sessionId;
         this.created = new Date();
     }
 
@@ -145,10 +193,16 @@ public class ResourceScan implements Serializable, Comparable<ResourceScan>  {
     }
 
     public State getState() {
-        if(lastScanStart == null) {
-            return State.INITIALIZED;
+        if(id == null) {
+            return State.INITIALIZED;             
         }
-        if(lastScanStart != null && lastScanEnd == null) {
+        
+        if(lastScanStart == null) {
+            return State.QUEUED;
+        }
+        
+        //if(lastScanStart != null && lastScanEnd == null) {
+        if(lastScanEnd == null) {
             return State.ANALYZING;
         }
 
@@ -179,7 +233,7 @@ public class ResourceScan implements Serializable, Comparable<ResourceScan>  {
     public void setException(String exception) {
         this.exception = exception;
     }
-
+/*
     public String getNameSuggestion() {
         return nameSuggestion;
     }
@@ -195,9 +249,74 @@ public class ResourceScan implements Serializable, Comparable<ResourceScan>  {
     public void setDescriptionSuggestion(String descriptionSuggestion) {
         this.descriptionSuggestion = descriptionSuggestion;
     }
-
+*/
     @Override
     public int compareTo(@NotNull ResourceScan o) {
         return getRef().compareTo(o.getRef());
+    }
+/*
+    public String getProcessor() {
+        return processor;
+    }
+
+    public void setProcessor(String processor) {
+        this.processor = processor;
+    }
+
+    public String getSuggestedPid() {
+        return suggestedPid;
+    }
+
+    public void setSuggestedPid(String suggestedPid) {
+        this.suggestedPid = suggestedPid;
+    }
+*/
+    
+    /**
+     * @return the logs
+     */
+    public Set<ResourceScanLog> getLogs() {
+        return logs;
+    }
+
+    /**
+     * @param logs the logs to set
+     */
+    public void setLogs(Set<ResourceScanLog> logs) {
+        this.logs = logs;
+    }
+    
+    /**
+     * Add a parser log to this scan.
+     * 
+     * @param parserId 
+     */
+    public void addResourceScanLog(String parserId) {
+        if(logs == null) {
+            logs = new HashSet();
+        }
+        logs.add(new ResourceScanLog(this, parserId));
+    }
+    
+    /**
+     * Add a key,value pair for this scans parser log.
+     * 
+     * @param parserId
+     * @param key
+     * @param value 
+     */
+    public void addResourceScanLogKV(String parserId, String key, String value) {
+        boolean found = false;
+        for(ResourceScanLog log : logs) {
+            if(log.getProcessorId().equalsIgnoreCase(parserId)) {
+                found = true;
+                log.addKV(key, value);
+            }
+        }
+        
+        if(!found) {
+            //TODO: how to handle this case where the specified parser id was not
+            //found in the list of parsers (by parser id).
+        }
     }
 }

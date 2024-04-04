@@ -31,7 +31,7 @@
 -->
     <Parameter
                name="eu.clarin.cmdi.virtualcollectionregistry.admindb.basedir"
-               value="/Users/wilelb/" override="false"/>
+               value="/Users/wilelb/.vcr/conf" override="false"/>
 
     <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.admindb"
                value="vcr-admin.conf" override="false"/>
@@ -45,7 +45,7 @@
 
     <!-- Configure pid providers configuration -->
     <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.pidprovider.basedir"
-               value="/Users/wilelb/"
+               value="/Users/wilelb/.vcr/conf"
                override="false"/>
 
     <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.pidprovider.configfile"

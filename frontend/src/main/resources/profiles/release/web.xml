@@ -47,7 +47,7 @@
 
     <filter>
         <filter-name>PersistenceFilter</filter-name>
-        <filter-class>eu.clarin.cmdi.virtualcollectionregistry.rest.PersistenceFilter</filter-class>
+        <filter-class>eu.clarin.cmdi.virtualcollectionregistry.core.PersistenceFilter</filter-class>
     </filter>
 
     <filter-mapping>
@@ -62,7 +62,7 @@
 
     <filter>
         <filter-name>CharacterEncodingFilter</filter-name>
-        <filter-class>eu.clarin.cmdi.virtualcollectionregistry.gui.CharacterEncodingFilter</filter-class>
+        <filter-class>eu.clarin.cmdi.virtualcollectionregistry.core.CharacterEncodingFilter</filter-class>
     </filter>
 
     <filter-mapping>

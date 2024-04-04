@@ -16,8 +16,8 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth;
 
-import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
+import eu.clarin.cmdi.virtualcollectionregistry.model.config.VcrConfigImpl;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;

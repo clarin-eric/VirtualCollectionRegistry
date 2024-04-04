@@ -1,18 +1,15 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2;
 
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.CollectionsProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.PrivateCollectionsProvider;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import org.apache.wicket.WicketRuntimeException;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
 import java.security.Principal;
-import java.util.Date;
 import java.util.List;
 
 public class PrivateCollectionsManager implements Serializable {

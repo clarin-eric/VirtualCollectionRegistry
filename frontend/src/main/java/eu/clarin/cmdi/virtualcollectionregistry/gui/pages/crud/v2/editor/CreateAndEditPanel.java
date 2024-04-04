@@ -2,22 +2,20 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor;
 
 import java.util.*;
 
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionDao;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
+import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.TimerManager;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.ActionablePanel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.authors.AuthorsEditor;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.dialogs.ModalConfirmDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.references.ReferencesEditor;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.AbstractEvent;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.Event;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.EventType;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.Listener;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.*;
-import eu.clarin.cmdi.virtualcollectionregistry.model.*;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.GeneratedBy;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.GeneratedByQuery;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;

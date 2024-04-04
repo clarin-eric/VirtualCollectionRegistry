@@ -12,9 +12,9 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.dialogs.ModalConfirmDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.*;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.*;
-import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
-import eu.clarin.cmdi.virtualcollectionregistry.model.Orderable;
-import eu.clarin.cmdi.virtualcollectionregistry.model.OrderableComparator;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Creator;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Orderable;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.OrderableComparator;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;

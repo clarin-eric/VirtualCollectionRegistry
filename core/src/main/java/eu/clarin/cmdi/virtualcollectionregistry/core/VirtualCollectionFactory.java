@@ -1,6 +1,8 @@
 package eu.clarin.cmdi.virtualcollectionregistry.core;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryUsageException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.GeneratedBy;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.GeneratedByQuery;

@@ -16,6 +16,7 @@
  */
 package eu.clarin.cmdi.wicket.components.citation;
 
+import eu.clarin.cmdi.virtualcollectionregistry.model.citation.Citable;
 import eu.clarin.cmdi.wicket.components.BaseInfoDialog;
 import eu.clarin.cmdi.wicket.components.DialogButton;
 import java.util.Arrays;
@@ -23,7 +24,6 @@ import java.util.List;
 
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;

@@ -3,20 +3,16 @@ package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
-import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.core.reference.VirtualCollectionValidationException;
 import eu.clarin.cmdi.virtualcollectionregistry.core.validation.feedback.IValidationFailedMessage;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
-import eu.clarin.cmdi.virtualcollectionregistry.model.*;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Purpose;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Reproducibility;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Type;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection.Purpose;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection.Reproducibility;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection.Type;
-import eu.clarin.cmdi.wicket.PiwikConfig;
+import eu.clarin.cmdi.virtualcollectionregistry.model.config.PiwikConfig;
 import java.net.URI;
 import java.security.Principal;
 import java.util.Date;
@@ -82,17 +78,22 @@ public class VirtualCollectionFormSubmissionResource {
     @Context
     private UriInfo uriInfo;
 
+    private final ErrorBuilder errorBuilder;
+    
     //TODO: how to properly wire this?
     @SpringBean
     private PiwikConfig piwikConfig;
      
-    public VirtualCollectionFormSubmissionResource() {}
+    public VirtualCollectionFormSubmissionResource() {
+        this.errorBuilder = new ErrorJsonBuilder();
+    }
     
     // for testing
     protected VirtualCollectionFormSubmissionResource(VirtualCollectionRegistry registry, SecurityContext security, UriInfo uriInfo) {
         this.registry = registry;        
         this.security = security;        
         this.uriInfo = uriInfo;        
+        this.errorBuilder = new ErrorJsonBuilder();
     }
     
     //TODO: this doesn't seem to work very well for intensional collections since
@@ -126,7 +127,7 @@ public class VirtualCollectionFormSubmissionResource {
         
         //Return error if type was not handled
         final Response.Status response = Response.Status.BAD_REQUEST;
-        final String error = new ErrorPageBuilder().buildErrorPage(response.getStatusCode(), response.toString(), new Exception(String.format("Could not create virtual collection with unkown type: %s.", type.toString())));//String.format("<html>\n<body>\nCould not create virtual collection with unkown type: %s.</body>\n</html>\n", type.toString());
+        final String error = errorBuilder.buildErrorPage(response.getStatusCode(), response.toString(), new Exception(String.format("Could not create virtual collection with unkown type: %s.", type.toString())));//String.format("<html>\n<body>\nCould not create virtual collection with unkown type: %s.</body>\n</html>\n", type.toString());
         return Response.status(response).entity(error).build();
     }
     
@@ -215,7 +216,7 @@ public class VirtualCollectionFormSubmissionResource {
         } catch (VirtualCollectionRegistryException ex) {
             //TODO: wrap in friendly HTML page
             final Response.Status response = Response.Status.BAD_REQUEST;
-            final String error = new ErrorPageBuilder().buildErrorPage(response.getStatusCode(), response.toString(), ex);//String.format("<html>\n<body>\n<h1>%d %s</h1>\nCould not create virtual collection. Error(s):<br/>%s\n</body>\n</html>\n", response.getStatusCode(), response.toString(), ex.getMessage());
+            final String error = errorBuilder.buildErrorPage(response.getStatusCode(), response.toString(), ex);//String.format("<html>\n<body>\n<h1>%d %s</h1>\nCould not create virtual collection. Error(s):<br/>%s\n</body>\n</html>\n", response.getStatusCode(), response.toString(), ex.getMessage());
             return Response.status(response).entity(error).build();
         }
     }
@@ -285,12 +286,42 @@ public class VirtualCollectionFormSubmissionResource {
         } catch (Exception ex) {
             //TODO: wrap in friendly HTML page
             final Response.Status response = Response.Status.BAD_REQUEST;
-            final String error = new ErrorPageBuilder().buildErrorPage(response.getStatusCode(), response.toString(), ex);//String.format("<html>\n<body>\n<h1>%d %s</h1>\nCould not create virtual collection. Error(s):<br/>%s\n</body>\n</html>\n", response.getStatusCode(), response.toString(), ex.getMessage());
+            final String error = errorBuilder.buildErrorPage(response.getStatusCode(), response.toString(), ex);//String.format("<html>\n<body>\n<h1>%d %s</h1>\nCould not create virtual collection. Error(s):<br/>%s\n</body>\n</html>\n", response.getStatusCode(), response.toString(), ex.getMessage());
             return Response.status(response).entity(error).build();
         }
     }
     
-    private class ErrorPageBuilder {
+    private interface ErrorBuilder {
+        public String buildErrorPage(int statusCode, String statusMessage, Exception ex);
+    }
+    
+    private class ErrorJsonBuilder implements ErrorBuilder {
+        public String buildErrorPage(int statusCode, String statusMessage, Exception ex) {
+            String json = "[";
+            if(ex != null) {
+                if(json.length() > 1) {
+                    json += ",";
+                }
+                
+                if(ex instanceof VirtualCollectionValidationException) {
+                    VirtualCollectionValidationException vcve = (VirtualCollectionValidationException)ex;
+                    String errorList = "";
+                    if(vcve.hasErrorMessages()) {
+                        for(IValidationFailedMessage errorMessage : vcve.getErrorMessages()) {
+                            errorList += errorMessage.toString()+"<br />";
+                        }
+                    }
+                    json += String.format("Could not create virtual collection. Error(s):<br/>%s\n", errorList);
+                } else {
+                    json += String.format("Could not create virtual collection. Error(s):<br/>%s\n", ex.getMessage());
+                }
+            }
+            json += "]";
+            return json;
+        }
+    }
+    /*
+    private class ErrorPageBuilder implements ErrorBuilder  {
         public String buildErrorPage(int statusCode, String statusMessage, Exception ex) {
             String html = "";
             html += "<html xmlns=\"http://www.w3.org/1999/xhtml\">\n";
@@ -408,4 +439,5 @@ public class VirtualCollectionFormSubmissionResource {
             return html;
         }
     }
+*/
 }

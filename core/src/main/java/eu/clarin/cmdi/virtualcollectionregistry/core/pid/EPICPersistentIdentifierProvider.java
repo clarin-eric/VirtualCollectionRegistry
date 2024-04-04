@@ -5,7 +5,7 @@ import de.uni_leipzig.asv.clarin.webservices.pidservices2.HandleField;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidWriter;
 import eu.clarin.cmdi.virtualcollectionregistry.core.PermaLinkService;
 import eu.clarin.cmdi.virtualcollectionregistry.core.PidProviderServiceImpl;
-import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PersistentIdentifier;

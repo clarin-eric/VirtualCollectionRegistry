@@ -2,7 +2,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
 import de.mpg.aai.shhaa.model.AuthAttribute;
 import de.mpg.aai.shhaa.model.AuthPrincipal;
-import eu.clarin.cmdi.virtualcollectionregistry.model.User;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User;
 import java.security.Principal;
 import java.util.Locale;
 import java.util.regex.Pattern;

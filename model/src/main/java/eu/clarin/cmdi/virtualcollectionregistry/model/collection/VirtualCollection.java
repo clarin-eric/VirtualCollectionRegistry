@@ -30,26 +30,26 @@ ORDER BY c.id
         query =
             "SELECT c FROM VirtualCollection c " +
             "WHERE "+
-                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State.PUBLIC " +
+                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection$State.PUBLIC " +
                 " OR " +
-                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State.PUBLIC_FROZEN " +
+                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection$State.PUBLIC_FROZEN " +
             "ORDER BY c.id"),
     @NamedQuery(name = "VirtualCollection.countAllPublic",
         query =
             "SELECT COUNT(c) "+
             "FROM VirtualCollection c " +
             "WHERE "+
-                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State.PUBLIC"+
+                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection$State.PUBLIC"+
                 " OR "+
-                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State.PUBLIC_FROZEN"),
+                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection$State.PUBLIC_FROZEN"),
     @NamedQuery(name = "VirtualCollection.findAllPublicOrigins",
         query =
             "SELECT DISTINCT(c.origin) "+
             "FROM VirtualCollection c " +
             "WHERE ("+
-                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State.PUBLIC" +
+                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection$State.PUBLIC" +
                 " OR " +
-                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection$State.PUBLIC_FROZEN" +
+                "c.state = eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection$State.PUBLIC_FROZEN" +
                 ") AND " +
                 "c.origin IS NOT NULL"),
     @NamedQuery(name = "VirtualCollection.findByOwner",
@@ -74,6 +74,10 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     public static final Purpose DEFAULT_PURPOSE_VALUE = Purpose.REFERENCE;
     public static final Reproducibility DEFAULT_REPRODUCIBILIY_VALUE = Reproducibility.INTENDED;
 
+    public static enum Format {
+        XML, JSON, UNSUPPORTED
+    } // public enum Format
+    
     public Set<PersistentIdentifier> getAllIdentifiers() {
         return identifiers;
     }

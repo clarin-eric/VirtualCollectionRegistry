@@ -1,10 +1,13 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.table;
 
-import eu.clarin.cmdi.virtualcollectionregistry.*;
-import eu.clarin.cmdi.virtualcollectionregistry.QueryOptions.Property;
+import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.DetachableVirtualCollectionModel;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.query.QueryFactory;
+import eu.clarin.cmdi.virtualcollectionregistry.query.QueryOptions;
+import eu.clarin.cmdi.virtualcollectionregistry.query.QueryOptions.Property;
 
 import java.util.ArrayList;
 import java.util.Iterator;

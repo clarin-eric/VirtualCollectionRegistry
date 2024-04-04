@@ -16,8 +16,8 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1.forms;
 
-import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
-import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedByQuery;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.GeneratedBy;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.GeneratedByQuery;
 import java.io.Serializable;
 
 /**

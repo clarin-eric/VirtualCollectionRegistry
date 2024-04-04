@@ -1,7 +1,10 @@
 package eu.clarin.cmdi.virtualcollectionregistry.core;
 
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionNotFoundException;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.query.QueryFactory;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 

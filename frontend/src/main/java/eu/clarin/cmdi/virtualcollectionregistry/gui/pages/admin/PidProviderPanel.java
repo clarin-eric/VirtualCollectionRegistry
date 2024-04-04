@@ -1,7 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin;
 
-import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifierProvider;
-import eu.clarin.cmdi.virtualcollectionregistry.pid.PublicConfiguration;
+import eu.clarin.cmdi.virtualcollectionregistry.core.pid.PersistentIdentifierProvider;
+import eu.clarin.cmdi.virtualcollectionregistry.core.pid.PublicConfiguration;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 

@@ -12,12 +12,9 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.model.PropertyModel;
 import org.apache.wicket.model.ResourceModel;
 
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-
-import java.util.Date;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import java.util.List;
 
 @SuppressWarnings("serial")

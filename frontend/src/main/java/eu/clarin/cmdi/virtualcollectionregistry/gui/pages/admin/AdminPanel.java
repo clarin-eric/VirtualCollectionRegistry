@@ -1,6 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin;
 
-import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
+import eu.clarin.cmdi.virtualcollectionregistry.core.AdminUsersService;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;

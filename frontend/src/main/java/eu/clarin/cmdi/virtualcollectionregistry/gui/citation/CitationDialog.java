@@ -17,8 +17,8 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.citation;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.dialog.ModalDialogBase;
-import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PersistentIdentifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.behavior.AttributeAppender;

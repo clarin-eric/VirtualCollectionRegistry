@@ -1,7 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin;
 
-import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
-import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
+import eu.clarin.cmdi.virtualcollectionregistry.model.config.VcrConfig;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;

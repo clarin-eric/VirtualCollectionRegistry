@@ -1,0 +1,58 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<persistence version="2.0" xmlns="http://java.sun.com/xml/ns/persistence" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/persistence http://java.sun.com/xml/ns/persistence/persistence_2_0.xsd">
+  <persistence-unit name="VirtualCollectionStore" transaction-type="RESOURCE_LOCAL">
+    <!--<provider>org.hibernate.ejb.HibernatePersistence</provider>-->
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <jta-data-source>java:comp/env/jdbc/VirtualCollectionStore</jta-data-source>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.config.DbConfig</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.api.ApiKey</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.collection.User</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.collection.Creator</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.collection.Resource</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceKv</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScanLog</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScanLogKV</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.pid.PersistentIdentifier</class>
+    <validation-mode>NONE</validation-mode>
+    <properties>
+      <property name="hibernate.dialect" value="org.hibernate.dialect.MySQL5InnoDBDialect"/>
+      <property name="hibernate.max_fetch_depth" value="3"/>
+      <!--https://docs.jboss.org/hibernate/orm/5.2/userguide/html_single/Hibernate_User_Guide.html#configurations-hbmddl-->
+      <property name="hibernate.hbm2ddl.auto" value="none"/>
+      <property name="hibernate.show_sql" value="false"/>
+      <property name="hibernate.format_sql" value="false"/>
+      <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
+    </properties>
+  </persistence-unit>
+
+  <persistence-unit name="VirtualCollectionStoreTest" transaction-type="RESOURCE_LOCAL">
+    <!--<provider>org.hibernate.ejb.HibernatePersistence</provider>-->
+    <provider>org.hibernate.jpa.HibernatePersistenceProvider</provider>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.config.DbConfig</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.api.ApiKey</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.collection.User</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.collection.Creator</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.collection.Resource</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceKv</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScanLog</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScanLogKV</class>
+    <class>eu.clarin.cmdi.virtualcollectionregistry.model.pid.PersistentIdentifier</class>
+    <validation-mode>NONE</validation-mode>
+    <properties>
+      <property name="hibernate.connection.url" value="jdbc:hsqldb:mem:unit-testing-jpa"/>
+      <property name="hibernate.connection.driver_class" value="org.hsqldb.jdbcDriver"/>
+      <property name="hibernate.connection.username" value="sa"/>
+      <property name="hibernate.connection.password" value=""/>
+      <property name="hibernate.dialect" value="org.hibernate.dialect.HSQLDialect"/>
+      <property name="hibernate.hbm2ddl.auto" value="create-drop"/>
+      <property name="hibernate.max_fetch_depth" value="3"/>
+      <property name="hibernate.show_sql" value="false"/>
+      <property name="hibernate.format_sql" value="false"/>
+      <property name="hibernate.temp.use_jdbc_metadata_defaults" value="false"/>
+    </properties>
+  </persistence-unit>
+</persistence>

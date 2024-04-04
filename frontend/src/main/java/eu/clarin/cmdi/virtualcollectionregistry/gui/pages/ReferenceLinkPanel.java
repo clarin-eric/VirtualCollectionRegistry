@@ -4,7 +4,7 @@ import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.data.MutableDataSet;
-import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Resource;
 import eu.clarin.cmdi.wicket.components.pid.PidPanel;
 
 import org.apache.wicket.AttributeModifier;

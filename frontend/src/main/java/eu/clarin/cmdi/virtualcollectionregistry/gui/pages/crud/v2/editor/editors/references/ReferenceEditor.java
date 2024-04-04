@@ -5,7 +5,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.VcrChoiceField;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.VcrTextArea;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.VcrTextField;
-import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Resource;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;

@@ -1,5 +1,9 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionNotFoundException;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryPermissionException;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryUsageException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -11,12 +15,6 @@ import javax.ws.rs.ext.Provider;
 import javax.xml.stream.XMLStreamException;
 
 import org.xml.sax.SAXParseException;
-
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionNotFoundException;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermissionException;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryUsageException;
-import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionValidationException;
 
 @Provider
 public class VirtualCollectionRegistryExceptionMapper implements

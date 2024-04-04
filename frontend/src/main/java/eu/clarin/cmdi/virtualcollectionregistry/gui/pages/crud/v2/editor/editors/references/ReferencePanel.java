@@ -8,12 +8,15 @@ import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.data.MutableDataSet;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.UIUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.EventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.MoveListEventHandler;
-import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
-import eu.clarin.cmdi.virtualcollectionregistry.model.ResourceScan.State;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Resource;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan.State;
+import static eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan.State.DONE;
+import static eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan.State.FAILED;
+import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidLink;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
@@ -81,18 +84,13 @@ public class ReferencePanel extends Panel {
         WebMarkupContainer editorWrapper = new WebMarkupContainer("wrapper");
         editorWrapper.add(divReason);
 
-        boolean analysing = false;
-        if(state == State.INITIALIZED || state == State.ANALYZING) {
-            analysing = true;
-        }
-
         WebMarkupContainer stateIcon = new WebMarkupContainer("state");
         if(reason != null && !reason.isEmpty()) {
             UIUtils.addTooltip(stateIcon, reason);
         }
         switch(state) {
             case DONE:
-                if(HandleLinkModel.isSupportedPersistentIdentifier(ref.getRef())) {
+                if(PidLink.isSupportedPersistentIdentifier(ref.getRef())) {
                     stateIcon.add(new AttributeAppender("class", "fa fa-check-circle-o icon icon-success"));
                 } else {
                     stateIcon.add(new AttributeAppender("class", "fa fa-check-circle-o icon icon-passed"));
@@ -137,18 +135,18 @@ public class ReferencePanel extends Panel {
         editorWrapper.add(new Label("value", urlValue));
 
         Label lblWaiting = new Label("lbl_waiting", "Waiting on analysis");
-        lblWaiting.setVisible(analysing);
+        lblWaiting.setVisible(ResourceScan.isStateAnalyzing(state));
         editorWrapper.add(lblWaiting);
 
         Label lblTypeLabel = new Label("lbl_type", "Type:");
-        lblTypeLabel.setVisible(!analysing && advancedEditorMode.getObject());
+        lblTypeLabel.setVisible(!ResourceScan.isStateAnalyzing(state) && advancedEditorMode.getObject());
         editorWrapper.add(lblTypeLabel);
         Label lblType = new Label("type", ref.getType());
-        lblType.setVisible(!analysing && advancedEditorMode.getObject());
+        lblType.setVisible(!ResourceScan.isStateAnalyzing(state) && advancedEditorMode.getObject());
         editorWrapper.add(lblType);
 
         Label lblTitle = new Label("title", titleModel);
-        lblTitle.setVisible(!analysing);
+        lblTitle.setVisible(!ResourceScan.isStateAnalyzing(state));
         editorWrapper.add(lblTitle);
 
         Label lblMerged = new Label("merged", "This resource was merged from the submitted collection.");
@@ -166,7 +164,7 @@ public class ReferencePanel extends Panel {
 
         Label labelDescription = new Label("description", Model.of(htmlValue));
         labelDescription.setEscapeModelStrings(false);
-        labelDescription.setVisible(!analysing);
+        labelDescription.setVisible(!ResourceScan.isStateAnalyzing(state));
         editorWrapper.add(labelDescription);
 
         AjaxFallbackLink orderTopButton = new AjaxFallbackLink("btn_order_top") {
@@ -177,7 +175,7 @@ public class ReferencePanel extends Panel {
                 }
             }
         };
-        orderTopButton.setVisible(!analysing);
+        orderTopButton.setVisible(!ResourceScan.isStateAnalyzing(state));
         if(displayOrder == 0) {
             orderTopButton.setEnabled(false);
             orderTopButton.add(new AttributeAppender("class", " disabled"));
@@ -191,7 +189,7 @@ public class ReferencePanel extends Panel {
                 }
             }
         };
-        orderUpButton.setVisible(!analysing);
+        orderUpButton.setVisible(!ResourceScan.isStateAnalyzing(state));
         if(displayOrder == 0) {
             orderUpButton.setEnabled(false);
             orderUpButton.add(new AttributeAppender("class", " disabled"));
@@ -205,7 +203,7 @@ public class ReferencePanel extends Panel {
                 }
             }
         };
-        orderDownButton.setVisible(!analysing);
+        orderDownButton.setVisible(!ResourceScan.isStateAnalyzing(state));
         if(displayOrder == maxDisplayOrder) {
             orderDownButton.setEnabled(false);
             orderDownButton.add(new AttributeAppender("class", " disabled"));
@@ -219,7 +217,7 @@ public class ReferencePanel extends Panel {
                 }
             }
         };
-        orderBottomButton.setVisible(!analysing);
+        orderBottomButton.setVisible(!ResourceScan.isStateAnalyzing(state));
         if(displayOrder == maxDisplayOrder) {
             orderBottomButton.setEnabled(false);
             orderBottomButton.add(new AttributeAppender("class", " disabled"));
@@ -234,8 +232,8 @@ public class ReferencePanel extends Panel {
                 }
             }
         };
-        btnEdit.setEnabled(getButtonState(state));
-        btnEdit.setVisible(!analysing);
+        btnEdit.setEnabled(!ResourceScan.isStateAnalyzing(state));
+        btnEdit.setVisible(!ResourceScan.isStateAnalyzing(state));
         editorWrapper.add(btnEdit);
         
         AjaxFallbackLink btnRemove = new AjaxFallbackLink("btn_remove") {
@@ -246,19 +244,15 @@ public class ReferencePanel extends Panel {
                 }
             }
         };
-        btnRemove.setEnabled(getButtonState(state));
-        btnRemove.setVisible(!analysing);
+        btnRemove.setEnabled(!ResourceScan.isStateAnalyzing(state));
+        btnRemove.setVisible(!ResourceScan.isStateAnalyzing(state));
         editorWrapper.add(btnRemove);
 
         WebMarkupContainer spinner = new WebMarkupContainer("spinner");
-        spinner.setVisible(analysing);
+        spinner.setVisible(ResourceScan.isStateAnalyzing(state));
         editorWrapper.add(spinner);
 
         add(editorWrapper);
-    }
-
-    private boolean getButtonState(State state) {
-        return state != State.INITIALIZED && state != State.ANALYZING;
     }
 
     public void addEventHandler(EventHandler handler) {

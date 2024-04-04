@@ -71,7 +71,7 @@ public class VirtualCollectionRegistryReferenceValidationJob implements Serializ
         this.ref = ref;
         this.id = id;
         this.sessionId = sessionId;
-        states.add(new JobState(State.INITIALIZED));
+        states.add(new JobState(State.QUEUED));
     }
 
     public String getSessionId() {

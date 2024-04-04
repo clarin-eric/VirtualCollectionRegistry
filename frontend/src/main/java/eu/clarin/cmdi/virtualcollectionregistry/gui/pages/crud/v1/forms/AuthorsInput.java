@@ -16,7 +16,7 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1.forms;
 
-import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Creator;
 import java.util.ArrayList;
 import java.util.List;
 import org.apache.wicket.AttributeModifier;
