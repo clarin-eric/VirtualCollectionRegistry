@@ -5,8 +5,12 @@ import org.jetbrains.annotations.NotNull;
 import javax.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.HashSet;
+import java.util.Map;
 import java.util.Set;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 
 /**
@@ -41,6 +45,8 @@ import java.util.Set;
 })
 public class ResourceScan implements Serializable, Comparable<ResourceScan>  {
 
+    private final static Logger logger = LoggerFactory.getLogger(ResourceScan.class);
+    
     /**
      * A resource scan added to the UI has INITIALIZED state (database ID == null).
      * After inserting it into the database (effectivly queing it to be processed), puts it it QUEUED state (database ID != null and lastScanStart == null).
@@ -298,6 +304,15 @@ public class ResourceScan implements Serializable, Comparable<ResourceScan>  {
         logs.add(new ResourceScanLog(this, parserId));
     }
     
+    public void finishResourceScanLog(String parserId) {
+        if(logs != null) {
+            for(ResourceScanLog log : logs) {
+                if(log.getProcessorId().equalsIgnoreCase(parserId)) {
+                    log.finish();
+                }
+            }
+        }
+    }
     /**
      * Add a key,value pair for this scans parser log.
      * 
@@ -317,6 +332,142 @@ public class ResourceScan implements Serializable, Comparable<ResourceScan>  {
         if(!found) {
             //TODO: how to handle this case where the specified parser id was not
             //found in the list of parsers (by parser id).
+            logger.warn("Skipping key,value key={}, value={} for unkown parser, id={}", key, value, parserId);
         }
+    }
+     
+    /**
+     * Get a first value (lowest weight) for the supplied key this scans parser log.
+     * 
+     * @param key
+     * @return 
+     */
+    public String getResourceScanLogFirstValue(String key) {   
+        logger.trace("Fetching first log value for key={}, db id={}, ref={}", key, id, ref);
+        /*
+        try {
+            if(logs != null) {
+                for(ResourceScanLog log : logs) {
+                    if(lastScanStart != null && log.getStart().getTime() >= lastScanStart.getTime()) {
+                        if(log.getKvs() != null) {
+                            for(ResourceScanLogKV kv : log.getKvs()) {
+                                if(kv.getKey().equalsIgnoreCase(key)) {
+                                    logger.info("Key={} has value={}", key, kv.getValue());
+                                    return kv.getValue();
+                                }
+                            }
+                        }
+                    }
+                }
+            }
+        } catch(Exception ex) {
+            logger.debug("Something went wrong", ex);
+        }
+        return null;
+        */
+        Map<Long, String> values = getResourceScanLogByWeight(key);
+        long minWeight = Long.MAX_VALUE;
+        for(Long weight : values.keySet()) {
+            if(weight < minWeight) {
+                minWeight = weight;
+            }
+        }
+                
+        logger.trace("Selected value with min weight: {}", values.get(minWeight));
+        return values.get(minWeight);
+    }
+    
+    /**
+     * Get a last value (heighest weight) for the supplied key this scans parser log.
+     * 
+     * @param key
+     * @return 
+     */
+    public String getResourceScanLogLastValue(String key) { 
+        logger.trace("Fetching last log value for key={}, db id={}, ref={}", key, id, ref);
+        /*
+        String value = null;
+        try {
+            if(logs != null) {
+                //Store all values matching the requested key with their respective processor weight
+                Map<Long, String> values = new HashMap<>();
+                for(ResourceScanLog log : logs) {
+                    if(lastScanStart != null && log.getStart().getTime() >= lastScanStart.getTime()) {
+                        logger.info("Processor={}, scan start={}", log.getProcessorId(), log.getStart().toString());
+                        if(log.getKvs() != null) {
+                            for(ResourceScanLogKV kv : log.getKvs()) {
+                                if(kv.getKey().equalsIgnoreCase(key)) {
+                                    //Add value to the map, use the database id as a weight (works in this case since
+                                    //processor are processed and persisted in order, so higher id is a processor added
+                                    //later
+                                    values.put(log.getId(),  kv.getValue());
+                                } 
+                            }
+                        }
+                    }
+                }
+                
+                long maxWeight = Long.MIN_VALUE;
+                for(Long weight : values.keySet()) {
+                    if(weight > maxWeight) {
+                        maxWeight = weight;
+                    }
+                }
+                
+                value = values.get(maxWeight);
+                logger.debug("Selected value with max weight: {}", value);
+            }
+        } catch(Exception ex) {
+            logger.debug("Something went wrong", ex);
+        }
+        */
+        Map<Long, String> values = getResourceScanLogByWeight(key);
+        long maxWeight = Long.MIN_VALUE;
+        for(Long weight : values.keySet()) {
+            if(weight > maxWeight) {
+                maxWeight = weight;
+            }
+        }
+                
+        logger.trace("Selected value with max weight: {}", values.get(maxWeight));
+        return values.get(maxWeight);
+    }
+    
+    //Store all values matching the requested key with their respective processor weight
+    public Map<Long, String> getResourceScanLogByWeight(String key) { 
+        Map<Long, String> values = new HashMap<>();
+        try {
+            if(logs != null) {                
+                for(ResourceScanLog log : logs) {
+//                    if(lastScanStart != null && log.getStart().getTime() >= lastScanStart.getTime()) {
+                        logger.trace("Processor={}, scan start={}", log.getProcessorId(), log.getStart().toString());
+                        if(log.getKvs() != null) {
+                            for(ResourceScanLogKV kv : log.getKvs()) {
+                                if(kv.getKey().equalsIgnoreCase(key) && kv.getValue() != null && !kv.getValue().isEmpty()) {
+                                    //Add value to the map, use the database id as a weight (works in this case since
+                                    //processor are processed and persisted in order, so higher id is a processor added
+                                    //later
+                                    values.put(log.getId(),  kv.getValue());
+                                } 
+                            }
+                        }
+//                    }
+                }
+                /*
+                long maxWeight = Long.MIN_VALUE;
+                for(Long weight : values.keySet()) {
+                    if(weight > maxWeight) {
+                        maxWeight = weight;
+                    }
+                }
+                
+                value = values.get(maxWeight);
+                logger.debug("Selected value with max weight: {}", value);
+                */
+            }
+        } catch(Exception ex) {
+            logger.debug("Something went wrong", ex);
+        }
+        return values;
     }
 }

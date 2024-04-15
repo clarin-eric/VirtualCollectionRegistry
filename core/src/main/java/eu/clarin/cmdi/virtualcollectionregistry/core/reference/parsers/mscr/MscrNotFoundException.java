@@ -21,6 +21,10 @@ package eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.mscr;
  * @author wilelb
  */
 public class MscrNotFoundException extends Exception {
+    public MscrNotFoundException(String msg) {
+        super(msg);
+    } 
+    
     public MscrNotFoundException(String msg, Throwable t) {
         super(msg, t);
     } 

@@ -34,11 +34,21 @@ public class VirtualCollectionRegistryReferenceProcessor {
 
     private final static Logger logger = LoggerFactory.getLogger(VirtualCollectionRegistryReferenceProcessor.class);
 
-    private final transient List<ReferenceParser> parsers = new LinkedList<>();
+    
 
     private final CloseableHttpClient httpclient = HttpClients.createDefault();
     private final RequestConfig requestConfig;
     private final Map<String, Boolean> skipList = new HashMap<>(); //In-memory list of reference with issues, to avoid looping over them continously
+    
+    public static List<ReferenceParser> getParsers() {
+        final List<ReferenceParser> parsers = new LinkedList<>();
+        //Parsers will be processing the reference in the order they are added
+        //When getting a parser value, order of adding determines which value is used, first match wins.
+        parsers.add(new CmdiReferenceParserImpl());
+        //this.parsers.add(new DogReferenceParser());
+        parsers.add(new MscrReferenceParser());
+        return parsers;
+    }
     
     public VirtualCollectionRegistryReferenceProcessor() {
         this.requestConfig =
@@ -48,10 +58,7 @@ public class VirtualCollectionRegistryReferenceProcessor {
                 .setMaxRedirects(5)
                 .build();
         
-        //Parsers will be processing the reference in the order they are added
-        this.parsers.add(new CmdiReferenceParserImpl());
-        //this.parsers.add(new DogReferenceParser());
-        this.parsers.add(new MscrReferenceParser());
+        
     }
 
     /**
@@ -65,7 +72,7 @@ public class VirtualCollectionRegistryReferenceProcessor {
      * @param scan 
      */
     public void doWork(final DataStore datastore, ResourceScan scan) {
-        ReferenceHttpResponseHandler responseHandler = new ReferenceHttpResponseHandler(parsers, datastore, scan);
+        ReferenceHttpResponseHandler responseHandler = new ReferenceHttpResponseHandler(getParsers(), datastore, scan);
         String exceptionMsg = null;
         try {
             if(!skipList.containsKey(scan.getRef())) {

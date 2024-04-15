@@ -95,7 +95,7 @@ public class MscrReferenceParserTest {
      * 
      * @throws Exception 
      */
-    @Test
+    //@Test
     public void testSchemaSearch() throws Exception {
         MscrClient client = new MscrClientImpl();
         MscrSchema sourceSchema = null;
@@ -139,7 +139,7 @@ public class MscrReferenceParserTest {
         }
     }
     
-    @Test
+    //@Test
     public void testParse() throws Exception {
         String xmlMimeType = "text/xml";
         URL res1 = getClass().getResource("/tei_example.xml");

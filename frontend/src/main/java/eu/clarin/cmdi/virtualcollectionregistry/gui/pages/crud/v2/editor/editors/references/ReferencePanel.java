@@ -8,6 +8,7 @@ import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.util.data.MutableDataSet;
+import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.ReferenceParserResult;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.UIUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.EventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.MoveListEventHandler;
@@ -24,6 +25,7 @@ import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -41,11 +43,22 @@ public class ReferencePanel extends Panel {
     /**
      * 
      * @param id    The wicket component id
-     * @param ref 
+     * @param ref   The actual reference as stored in the collection
+     * @param scan  The scan result 
+     * @param state 
+     * @param reason 
+     * @param advancedEditorMode 
+     * @param maxDisplayOrder 
+     * @param refReasonCollapseState 
+     * @param rescanHandler 
      */
 
-    public ReferencePanel(String id, final Resource ref, final State state, String reason, Model<Boolean> advancedEditorMode, long maxDisplayOrder, Map<String, Boolean> refReasonCollapseState, ReferencesEditor.RescanHandler rescanHandler) {
+    public ReferencePanel(String id, final Resource ref, final ResourceScan scan, 
+            final State state, String reason, 
+            Model<Boolean> advancedEditorMode, long maxDisplayOrder, 
+            Map<String, Boolean> refReasonCollapseState, ReferencesEditor.RescanHandler rescanHandler) {
         super(id);
+        
         boolean reasonCollapsed = true;
         if(refReasonCollapseState.containsKey(ref.getRef())) {
             reasonCollapsed = refReasonCollapseState.get(ref.getRef());
@@ -54,14 +67,29 @@ public class ReferencePanel extends Panel {
         long displayOrder = ref.getDisplayOrder();
 
         Model titleModel = Model.of("<required>");
-        if(ref.getLabel() != null) {
+        if(ref.getLabel() != null && !ref.getLabel().isEmpty()) {
             titleModel.setObject(ref.getLabel());
+        } else if(scan != null) {
+            String value = scan.getResourceScanLogLastValue(ReferenceParserResult.KEY_NAME);
+            if(value != null) {
+                titleModel.setObject(value);
+            }
         }
         Model descriptionModel = Model.of("<required>");
-        if(ref.getDescription() != null) {
+        if(ref.getDescription() != null && !ref.getDescription().isEmpty()) {
             descriptionModel.setObject(ref.getDescription());
-        }
+        } else if(scan != null) {
 
+            String value = scan.getResourceScanLogLastValue(ReferenceParserResult.KEY_DESCRIPTION);
+            if(value != null) {
+                descriptionModel.setObject(value);
+            }
+            
+        }
+        
+        //todo: list other kv pairs from scanner?
+
+        /*
         WebMarkupContainer divReason = new WebMarkupContainer("reason");
         divReason.setOutputMarkupId(true);
         AjaxFallbackLink reasonBtnRescan = new AjaxFallbackLink("btn_rescan") {
@@ -71,7 +99,9 @@ public class ReferencePanel extends Panel {
             }
         };
         divReason.add(reasonBtnRescan);
-
+        */
+        
+        /*
         Label reasonLbl = new Label("reason_lbl", reason);
         reasonLbl.setEscapeModelStrings(false);
         if(state == State.FAILED) {
@@ -80,9 +110,18 @@ public class ReferencePanel extends Panel {
             divReason.add(new AttributeModifier("class", "collapse"));
         }
         divReason.add(reasonLbl);
-
+        */
+        
+        final Panel pnlScanDetails = new ReferenceScanDetails("scan_details", scan, rescanHandler);
+        pnlScanDetails.setOutputMarkupId(true);
+        if(reasonCollapsed) {
+            pnlScanDetails.add(new AttributeModifier("class", "collapse"));
+        }
+        //divReason.add(pnlScanDetails);
+        
         WebMarkupContainer editorWrapper = new WebMarkupContainer("wrapper");
-        editorWrapper.add(divReason);
+        //editorWrapper.add(divReason);
+        editorWrapper.add(pnlScanDetails);
 
         WebMarkupContainer stateIcon = new WebMarkupContainer("state");
         if(reason != null && !reason.isEmpty()) {
@@ -123,7 +162,7 @@ public class ReferencePanel extends Panel {
         };
         reasonToggleLink.setEnabled(state != State.FAILED);
         reasonToggleLink.add(new AttributeModifier("data-toggle","collapse"));
-        reasonToggleLink.add(new AttributeModifier("data-target","#"+divReason.getMarkupId()));
+        reasonToggleLink.add(new AttributeModifier("data-target","#"+pnlScanDetails.getMarkupId()));
         reasonToggleLink.add(stateIcon);
 
         editorWrapper.add(reasonToggleLink);
@@ -250,6 +289,33 @@ public class ReferencePanel extends Panel {
 
         WebMarkupContainer spinner = new WebMarkupContainer("spinner");
         spinner.setVisible(ResourceScan.isStateAnalyzing(state));
+        //TODO: set different icons for initializing, queued and analyzing states
+        
+        Model<String> spinnerLabelModel = Model.of("Initialised");
+        if(state == State.QUEUED) {
+            spinnerLabelModel = Model.of("Queued");
+        } else if(state == State.ANALYZING) {
+            spinnerLabelModel = Model.of("Analysing");
+        }
+        WebMarkupContainer spinnerIcon = new WebMarkupContainer("spinner_icon");
+        spinnerIcon.add(new AttributeAppender("class",
+                new AbstractReadOnlyModel<String>() {
+                    @Override
+                    public String getObject() {
+                        String cssClass = "";
+                        //if(state == State.INITIALIZED) {
+                        //    cssClass = "glyphicon glyphicon-stop";
+                        //} else if(state == State.QUEUED) {
+                        //    cssClass = "glyphicon glyphicon-pause";
+                        //} else if(state == State.ANALYZING) {
+                            cssClass = "lds-dual-ring";
+                        //}
+                        return cssClass;
+                    }
+                }, " "));
+        
+        spinner.add(spinnerIcon);
+        spinner.add(new Label("spinner_text", spinnerLabelModel));
         editorWrapper.add(spinner);
 
         add(editorWrapper);

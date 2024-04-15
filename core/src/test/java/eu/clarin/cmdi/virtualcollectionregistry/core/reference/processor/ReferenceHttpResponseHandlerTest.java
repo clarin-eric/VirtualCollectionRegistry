@@ -14,14 +14,24 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers;
+package eu.clarin.cmdi.virtualcollectionregistry.core.reference.processor;
+
+import junit.framework.Assert;
+import org.junit.Test;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author wilelb
  */
-public interface ReferenceParser {
-    String getId();
-    boolean parse(final String xml, final String mimeType) throws Exception;
-    ReferenceParserResult getResult();
+public class ReferenceHttpResponseHandlerTest {
+    private final static Logger logger = LoggerFactory.getLogger(ReferenceHttpResponseHandlerTest.class);
+    
+    @Test
+    public void getRef() {
+        String ref = "https://www.tweakers.net";
+        String filename = ReferenceHttpResponseHandler.getFilenameFromRef(ref);
+        Assert.assertEquals("www.tweakers.net", filename);
+    }
 }

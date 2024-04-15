@@ -33,6 +33,18 @@ import org.xml.sax.SAXException;
 /**
  * Try to parse any unkown metadata schema via the MSCR crosswalk functionality
  * 
+ * Clear resource scan database state
+ * 
+delete from resource_scan_log_kv;
+delete from resource_scan_log;
+delete from resource_scan;
+ * 
+ * 
+select s.id, s.ref, l.processor, v.k, v.v 
+from resource_scan s 
+join resource_scan_log l on s.id = l.scan_id 
+join resource_scan_log_kv v on l.id = v.scan_log_id;
+ * 
  * @author wilelb
  */
 public class MscrReferenceParser implements ReferenceParser {
@@ -45,6 +57,8 @@ public class MscrReferenceParser implements ReferenceParser {
     private final Map<String, String> namespaceUriToQueryMap = new HashMap<>();
     
     private MscrSchema targetSchema = null;
+    
+    private ReferenceParserResult result = new ReferenceParserResult();
     
     public MscrReferenceParser() {
         namespaceUriToQueryMap.put("http://www.tei-c.org/ns/1.0", "TEI minimal");
@@ -67,7 +81,25 @@ public class MscrReferenceParser implements ReferenceParser {
     }
     
     @Override
-    public boolean parse(String xml, String mimeType) {
+    public boolean parse(String xml, String mimeType) throws Exception {
+        boolean handled = false;
+        //try {
+        if(mimeType.toLowerCase().startsWith("text/xml")) {
+            performParsing(xml, mimeType);
+            handled = true;
+        }
+        //} catch(Exception ex) {
+        //    result.add(ReferenceParserResult.KEY_ERROR, ex.getMessage());
+        //}        
+        return handled;
+    }
+
+    @Override
+    public ReferenceParserResult getResult() {
+        return result;
+    }
+    
+    protected void performParsing(String xml, String mimeType) {
         //Validate target schema
         if(targetSchema == null) {
             throw new RuntimeException("Target schema is required for MSCR parsing.");
@@ -75,7 +107,7 @@ public class MscrReferenceParser implements ReferenceParser {
                 
         //Search and fetch source schema
         String mscrSourceSchemaQuery = null;
-        if(mimeType.toLowerCase().startsWith("text/xml")) {
+        //if(mimeType.toLowerCase().startsWith("text/xml")) {
             try {                
                 String namespace = client.getNamespaceUriFromXml(xml);
                 mscrSourceSchemaQuery = namespaceUriToQueryMap.get(namespace);    
@@ -85,9 +117,9 @@ public class MscrReferenceParser implements ReferenceParser {
             } catch(IOException | ParserConfigurationException | SAXException e) {
                 throw new RuntimeException("Failed to fetch XML root namespace URI.");
             }
-        } else {
-            throw new RuntimeException("Unsupported mimetype ("+mimeType+")");
-        }        
+        //} else {
+        //    throw new RuntimeException("Unsupported mimetype ("+mimeType+")");
+        //}        
                
         MscrSchema sourceSchema = null;
         try {
@@ -128,16 +160,17 @@ public class MscrReferenceParser implements ReferenceParser {
                 throw new RuntimeException("Crosswalk xslt file not found: crosswalk id="+crosswalk.source.id+", file id="+crosswalkMetadata.files[0].fileID);
             }
             
-            String transformedXml = client.transform(xml, xslt);
-            logger.info(""+transformedXml);
+            String transformedXml = client.transform(xml, xslt);           
+            try {
+                XmlParser xmlParser = new XmlParser(transformedXml, "http://purl.org/dc/elements/1.1/");
+                String title = xmlParser.getValueForXPath("//default:dc/default:title/text()");
+                result.add(ReferenceParserResult.KEY_DESCRIPTION, title);
+                String author = xmlParser.getValueForXPath("//default:dc/default:author/text()");
+                result.add(ReferenceParserResult.KEY_NAME, author);
+            } catch(SAXException | ParserConfigurationException | IOException ex) {
+                throw new RuntimeException("Failed to parse transformed xml", ex);
+            }
         }
-        
-        return true;
-    }
-
-    @Override
-    public ReferenceParserResult getResult() {
-        throw new UnsupportedOperationException("Not supported yet."); 
     }
         
 }

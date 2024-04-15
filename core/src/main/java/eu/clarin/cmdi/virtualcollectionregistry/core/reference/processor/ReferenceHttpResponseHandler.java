@@ -21,6 +21,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.Reference
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.ReferenceParserResult;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan;
 import java.io.IOException;
+import java.net.URI;
 import java.util.Date;
 import java.util.List;
 import org.apache.http.Header;
@@ -38,6 +39,8 @@ import org.slf4j.LoggerFactory;
 public class ReferenceHttpResponseHandler implements ResponseHandler<String> {
     private final static Logger logger = LoggerFactory.getLogger(ReferenceHttpResponseHandler.class);
     
+    public final static String PARSER_ID = "PARSER_HTTP";
+     
     private final DataStore datastore;
     private final ResourceScan scan;
           
@@ -107,30 +110,69 @@ public class ReferenceHttpResponseHandler implements ResponseHandler<String> {
         }
     }
         
+    protected static String getFilenameFromRef(String ref) {
+        String[] parts = new String[]{""};
+        try {
+            URI uri = URI.create(ref);
+            if(uri.getPath().isEmpty() || uri.getPath().equalsIgnoreCase("/")) {
+                parts = new String[] {uri.getHost()};
+            } else {
+                parts = uri.getPath().split("/");            
+            }
+        } catch(Exception ex) {
+            parts = ref.split("/");            
+        }
+        
+        String filename = parts[0];
+        if(parts.length > 1) {
+            filename = parts[parts.length-1];
+        }
+        return filename;
+    }
+    
     @Override
-    public String handleResponse(final HttpResponse response) throws IOException {
+    public String handleResponse(final HttpResponse response) throws IOException {        
+        logger.debug("Running parser: {}", PARSER_ID);
+        long t1 = System.nanoTime();
+        scan.addResourceScanLog(PARSER_ID);
+        //Process basic HTTP properties
         processHeaders(response);
         processResponse(response);
         reversePidLookup();
+        //Add default name and http response values
+        scan.addResourceScanLogKV(PARSER_ID, ReferenceParserResult.KEY_HTTP_RESPONSE_MEDIA_TYPE, mediaType);
+        scan.addResourceScanLogKV(PARSER_ID, ReferenceParserResult.KEY_HTTP_RESPONSE_CODE, httpResponseCode.toString());
+        scan.addResourceScanLogKV(PARSER_ID, ReferenceParserResult.KEY_NAME, getFilenameFromRef(scan.getRef()));
+        scan.finishResourceScanLog(PARSER_ID);
+        datastore.getEntityManager().merge(scan);
+        long t2 = System.nanoTime();
+        logger.debug("Finished parser: {} in {}ms", PARSER_ID, (t2-t1)/1000000);
+                
         try {
-            if (this.body != null) {
+            if (this.body != null) {               
                 //Let parsers do their work
                 for (ReferenceParser parser : parsers) {
-                    //Update and persist scan with current processor
+                    t1 = System.nanoTime();
+                    logger.debug("Running parser: {}", parser.getId());
                     scan.addResourceScanLog(parser.getId());
-                    datastore.getEntityManager().merge(scan);
-
-                    //Run parser
+                    
                     try {
-                        if (parser.parse(this.body, this.mediaType)) {
+                        //TODO: we are always running all parsers, maybe stop after a successfull result?
+                        //this would require synchronous processing.
+                        parser.parse(this.body, this.mediaType);
                             ReferenceParserResult parserResult = parser.getResult();
+                            scan.addResourceScanLogKV(parser.getId(), ReferenceParserResult.KEY_STATE, ReferenceParserResult.VALUE_STATE_OK);
                             scan.addResourceScanLogKV(parser.getId(), ReferenceParserResult.KEY_NAME, parserResult.get(ReferenceParserResult.KEY_NAME));
                             scan.addResourceScanLogKV(parser.getId(), ReferenceParserResult.KEY_DESCRIPTION, parserResult.get(ReferenceParserResult.KEY_DESCRIPTION));
-                            break; //exit loop if the parser processed the reference
-                        }    
                     } catch(Exception ex) {
-                        scan.addResourceScanLogKV(parser.getId(), ReferenceParserResult.KEY_ERROR, ex.getMessage());
+                        scan.addResourceScanLogKV(parser.getId(), ReferenceParserResult.KEY_STATE, ReferenceParserResult.VALUE_STATE_ERROR);
+                        scan.addResourceScanLogKV(parser.getId(), ReferenceParserResult.KEY_STATE_MSG, ex.getMessage());
                     }
+        
+                    scan.finishResourceScanLog(parser.getId());
+                    datastore.getEntityManager().merge(scan);
+                    t2 = System.nanoTime();
+                    logger.debug("Finished parser: {} in {}ms", parser.getId(),(t2-t1)/1000000);
                 }
             }
 
@@ -149,6 +191,7 @@ public class ReferenceHttpResponseHandler implements ResponseHandler<String> {
             scan.setLastScanEnd(new Date());        
             scan.setException(ex.getMessage());
             datastore.getEntityManager().merge(scan);            
+            
         }
         return this.body;
     }    

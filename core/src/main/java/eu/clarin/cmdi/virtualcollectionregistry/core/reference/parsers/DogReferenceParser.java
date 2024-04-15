@@ -31,7 +31,7 @@ public class DogReferenceParser implements ReferenceParser {
     }
     
     @Override
-    public boolean parse(String xml, String mimeType) {
+    public boolean parse(String xml, String mimeType) throws Exception {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 

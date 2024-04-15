@@ -31,10 +31,15 @@ CREATE TABLE `resource_scan_log` (
    `id` bigint(20) NOT NULL AUTO_INCREMENT,
   `processor` varchar(255) NOT NULL,
   `scan_id` bigint(20) NOT NULL,
+  `start` datetime NULL,
+  `end` datetime NULL,
   PRIMARY KEY (`id`),
   CONSTRAINT `FK1B18B8E3FCDC` FOREIGN KEY (`scan_id`) REFERENCES `resource_scan` (`id`) ON DELETE CASCADE
 ) ENGINE=InnoDB AUTO_INCREMENT=18 DEFAULT CHARSET=latin1;
 
+
+--- ALTER TABLE resource_scan_log ADD COLUMN `start` datetime NULL;
+--- ALTER TABLE resource_scan_log ADD COLUMN `end` datetime NULL;
 
 --
 -- Table structure for table `resource_scan_log_kv`

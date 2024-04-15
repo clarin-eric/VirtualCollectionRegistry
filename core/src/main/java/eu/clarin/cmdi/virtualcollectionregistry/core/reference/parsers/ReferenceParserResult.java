@@ -24,10 +24,15 @@ import java.util.Map;
  * @author wilelb
  */
 public class ReferenceParserResult {
-    public final static String KEY_ERROR = "ERROR";
+    public final static String KEY_STATE = "STATE"; //one of the VALUE_STATE_xxxx values
+    public final static String KEY_STATE_MSG = "STATE_MSG";
+    public final static String KEY_HTTP_RESPONSE_MEDIA_TYPE = "KEY_HTTP_RESPONSE_MEDIA_TYPE";
+    public final static String KEY_HTTP_RESPONSE_CODE = "HTTP_RESPONSE_CODE";
     public final static String KEY_NAME = "NAME";
     public final static String KEY_DESCRIPTION = "DESCRIPTION";
  
+    public final static String VALUE_STATE_OK = "OK";
+    public final static String VALUE_STATE_ERROR = "ERROR";
     
     private final Map<String, String> properties = new HashMap<>();
     

@@ -23,6 +23,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualColle
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan.State;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScanLog;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScanLogKV;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidLink;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -129,6 +131,8 @@ public class ReferencesEditor extends ComposedField {
     private final Map<String, Date> scanResultsTimestamp = new HashMap<>();
     private final Map<String, Long> scanResultsTimedout = new HashMap<>();
     
+    private boolean useCache = false;
+    
     public interface RescanHandler extends Serializable {
         public void rescan(String reg, AjaxRequestTarget target);
     }
@@ -181,7 +185,7 @@ public class ReferencesEditor extends ComposedField {
             @Override
             public void handleSaveEvent(AjaxRequestTarget target) {
                 //Reset state so this reference is rescanned
-                updateReferenceJob(references.get(edit_index));
+                updateReferenceJob(references.get(edit_index), useCache);
 
                 //addReferenceJob
                 edit_index = -1;
@@ -220,14 +224,19 @@ public class ReferencesEditor extends ComposedField {
             protected void populateItem(ListItem item) {
                 EditableResource ref = (EditableResource)item.getModel().getObject();
 
+                
+                //logger.info("Resource ref={}", ref.getRef());
+                
+                ResourceScan scan = scanResults.get(ref.getRef());
                 State state = State.QUEUED;
                 String reason = "";
                 
                 if(scanResultsTimedout.containsKey(ref.getRef())) {
                     state = State.FAILED;
                     reason += "Queue processing timed out (Exceeded "+(scanResultsTimedout.get(ref.getRef())/1000)+" seconds)";
-                } else {                
-                    ResourceScan scan = scanResults.get(ref.getRef());
+                } else {             
+                    
+                    //ResourceScan scan = scanResults.get(ref.getRef());
                     if(scan != null) {
                         state = scan.getState();
                         int httpResponseCode = scan.getHttpResponseCode() != null ? scan.getHttpResponseCode() : 0;
@@ -249,11 +258,25 @@ public class ReferencesEditor extends ComposedField {
                 RescanHandler rescanHandler = new RescanHandler() {
                     @Override
                     public void rescan(String ref, AjaxRequestTarget target) {
-                        rescanReferenceJob(ref);
+                        rescanReferenceJob(ref, useCache);
                         addToTimerManager(target);
                     }
                 };
-                ReferencePanel c = new ReferencePanel("pnl_reference", ref, state, reason, advancedEditorMode, getMaxDisplayOrder(), refReasonCollapseState, rescanHandler);
+                /*
+                logger.debug("Added ReferencePanel for scan, id={}, ref={}, lastScanStart={}, lastScanEnd={} ==> state={}", scan.getId(), scan.getRef(), scan.getLastScan(), scan.getLastScanEnd(), scan.getState());               
+                if(scan.getLogs() == null) {
+                    logger.trace("No scan logs yet");
+                } else {
+                    logger.trace("Scan logs:");
+                    for(ResourceScanLog log: scan.getLogs()) {
+                        logger.trace("  id={}, processor={}", log.getId(), log.getProcessorId());
+                        for(ResourceScanLogKV kv : log.getKvs()) {
+                            logger.trace("Log key={}, value={}", kv.getKey(), kv.getValue());
+                        }
+                    }
+                }
+                */
+                ReferencePanel c = new ReferencePanel("pnl_reference", ref, scan, state, reason, advancedEditorMode, getMaxDisplayOrder(), refReasonCollapseState, rescanHandler);
                 c.addMoveListEventHandler(new MoveListEventHandler() {
                     @Override
                     public void handleMoveUp(Long displayOrder, AjaxRequestTarget target) {
@@ -338,15 +361,16 @@ public class ReferencesEditor extends ComposedField {
         add(ajaxWrapper);
 
         AbstractField f1 = new VcrTextFieldWithoutLabel("reference", "Add new reference by URL or PID", data, this,null);
-        f1.setCompleteSubmitOnUpdate(false);
+        //f1.setCompleteSubmitOnUpdate(false);
+        f1.setCompleteSubmitOnUpdate(true);
         f1.setRequired(true);
         f1.addValidator(new Validator());
         add(f1);
 
-        AbstractField f2 = new VcrTextFieldWithoutLabel("reference_title", "Set a title for this new reference", mdlReferenceTitle, this,null);
-        f2.setCompleteSubmitOnUpdate(true);
-        f2.setRequired(true);
-        add(f2);
+        //AbstractField f2 = new VcrTextFieldWithoutLabel("reference_title", "Set a title for this new reference", mdlReferenceTitle, this,null);
+        //f2.setCompleteSubmitOnUpdate(true);
+        //f2.setRequired(true);
+        //add(f2);
     }
 
     private void addToTimerManager(AjaxRequestTarget target) {
@@ -355,7 +379,11 @@ public class ReferencesEditor extends ComposedField {
             public boolean onUpdate(AjaxRequestTarget target) {
                 fireEvent(new CustomDataUpdateEvent(target));
 
-                boolean analyzing = true;
+                //Assume analyzing is done, if one if the scans is in the ANALYZING, INITIALIZED or QUEUED state and is below the timeout threshold, 
+                //analyzing is set to true (and should not be reverted back to false until the next check).
+                //If no scans are analyzing and false is returned, the timer will pause updating and also stop the UI from updating, which then leaves
+                //the scans in an incorrect state, eternally waiting to be updated.
+                boolean analyzing = false;
                 try {
                     //Build list of refs
                     List<String> refs = new ArrayList<>();
@@ -365,20 +393,18 @@ public class ReferencesEditor extends ComposedField {
                     //Query scans for this list of refs
                     List<ResourceScan> scans = Application.get().getRegistry().getResourceScansForRefs(refs);
                     for(ResourceScan scan : scans) {
-                        logger.debug("Scan ref="+scan.getRef()+", state="+scan.getState().toString());
                         scanResults.put(scan.getRef(), scan);
                         switch (scan.getState()) {
-                            case DONE:
-                            case FAILED:
-                                analyzing = false;
-                                break;                            
-                            default:
+                            case ANALYZING:
+                            case INITIALIZED:
+                            case QUEUED:
                                 long msElapsed = new Date().getTime() - scanResultsTimestamp.get(scan.getRef()).getTime();
-                                if(msElapsed > 60*1000) {
-                                    analyzing = false;
-                                    scanResultsTimedout.put(scan.getRef(), msElapsed);
+                                if(msElapsed < 60*1000) {
+                                    analyzing = true;
+                                } else {
+                                    scanResultsTimedout.put(scan.getRef(), msElapsed);                                    
                                 }
-                                break;
+                                break;                            
                         }
                     }
                 } catch(VirtualCollectionRegistryException ex) {
@@ -493,18 +519,18 @@ public class ReferencesEditor extends ComposedField {
         String title = mdlReferenceTitle.getObject();
 
         logger.debug("Completing reference submit: value="+value+",title="+title);
-        if(value != null && !value.isEmpty() && title != null && !title.isEmpty()) {
+        if(value != null && !value.isEmpty()) {// && title != null && !title.isEmpty()) {
             if(handleUrl(value)) {
                 Resource r = new Resource(Resource.Type.RESOURCE, value, title);
                 r.setDisplayOrder(getNextDisplayOrder());
-                addReferenceJob(EditableResource.fromResource(r));
+                addReferenceJob(EditableResource.fromResource(r), useCache);
                 data.setObject("");
                 mdlReferenceTitle.setObject("");
             } else if(handlePid(value)) {
                 String actionableValue = PidLink.getActionableUri(value);
                 Resource r = new Resource(Resource.Type.RESOURCE, actionableValue, title);
                 r.setDisplayOrder(getNextDisplayOrder());
-                addReferenceJob(EditableResource.fromResource(r));
+                addReferenceJob(EditableResource.fromResource(r), useCache);
                 data.setObject("");
                 mdlReferenceTitle.setObject("");
             } else {
@@ -527,7 +553,8 @@ public class ReferencesEditor extends ComposedField {
         return false;
     }
 
-    private void addReferenceJob(EditableResource r) {
+    private void addReferenceJob(EditableResource r, boolean useCache) {
+        logger.info("addReferenceJob: ref={}", r.getRef());
         //Add reference to list
         references.add(r);
 
@@ -543,13 +570,14 @@ public class ReferencesEditor extends ComposedField {
             scanResults.put(r.getRef(), new ResourceScan(r.getRef(), sessionId));
             scanResultsTimestamp.put(r.getRef(), new Date());
             //Insert the scan into the database
-            Application.get().getRegistry().addResourceScan(r.getRef(), sessionId);
+            Application.get().getRegistry().addResourceScan(r.getRef(), sessionId, useCache);
         } catch(Exception ex) {
             logger.error("Failed to create new resource scan.", ex);
         }
     }
-
-    private void updateReferenceJob(EditableResource r) {
+    
+    private void updateReferenceJob(EditableResource r, boolean useCache) {
+        logger.info("updateReferenceJob: ref={}", r.getRef());
         //Create new resource scan for this reference
         try {
             String sessionId = null;
@@ -557,13 +585,14 @@ public class ReferencesEditor extends ComposedField {
                 sessionId = getSession().getId();
             }
 
-            Application.get().getRegistry().addResourceScan(r.getRef(), sessionId);
+            Application.get().getRegistry().addResourceScan(r.getRef(), sessionId, useCache);
         } catch(Exception ex) {
             logger.error("Failed to create new resource scan.", ex);
         }
     }
 
-    private void rescanReferenceJob(String ref) {
+    private void rescanReferenceJob(String ref, boolean useCache) {
+        logger.info("rescanReferenceJob: ref={}", ref);
         try {
             String sessionId = null;
             if(getSession() != null) {
@@ -572,7 +601,7 @@ public class ReferencesEditor extends ComposedField {
 
             scanResultsTimestamp.put(ref, new Date());
             scanResultsTimedout.remove(ref);
-            Application.get().getRegistry().rescanResource(ref, sessionId);
+            Application.get().getRegistry().rescanResource(ref, sessionId, useCache);
         } catch(Exception ex) {
             logger.error("Failed to create new resource scan.", ex);
         }
@@ -610,9 +639,9 @@ public class ReferencesEditor extends ComposedField {
     }
     
     public void setData(List<Resource> data) {
-        logger.trace("Set resource data: {} reference", data.size());
+        logger.debug("Set resource data: {} reference", data.size());
         for(Resource r : data) {
-            addReferenceJob(EditableResource.fromResource(r));
+            addReferenceJob(EditableResource.fromResource(r), useCache);
         }
         lblNoReferences.setVisible(references.isEmpty());
         listview.setModelObject(f.apply(references));
@@ -638,7 +667,7 @@ public class ReferencesEditor extends ComposedField {
 
         //Check if any resource was not valid
         long errorCount = 0;
-        VirtualCollectionRegistry registry = Application.get().getRegistry();
+        //VirtualCollectionRegistry registry = Application.get().getRegistry();
         for(EditableResource ref : references) {
             ResourceScan scan = scanResults.get(ref.getRef());
             if( scan == null || scan.getState() != State.DONE) {
@@ -670,7 +699,7 @@ public class ReferencesEditor extends ComposedField {
         //Find index of specified (by id) collection
         int idx = -1;
         for(int i = 0; i < references.size() && idx == -1; i++) {
-            if(references.get(i).getDisplayOrder() == displayOrder) {
+            if(references.get(i).getDisplayOrder().longValue() == displayOrder) {
                 idx = i;
             }
         }
@@ -685,14 +714,14 @@ public class ReferencesEditor extends ComposedField {
 
         //Swap the collection with the collection at the specified destination (up=1, down=-1, beginning=0 or end=i)
         if (direction == -1 && idx > 0) {
-            references.get(idx).setDisplayOrder(new Long(idx - 1));
-            references.get(idx - 1).setDisplayOrder(new Long(idx));
+            references.get(idx).setDisplayOrder(Long.valueOf(idx - 1));
+            references.get(idx - 1).setDisplayOrder(Long.valueOf(idx));
         } else if(direction == 1 && idx < references.size()-1) {
-            references.get(idx).setDisplayOrder(new Long(idx + 1));
-            references.get(idx + 1).setDisplayOrder(new Long(idx));
+            references.get(idx).setDisplayOrder(Long.valueOf(idx + 1));
+            references.get(idx + 1).setDisplayOrder(Long.valueOf(idx));
         } else {
-            references.get(idx).setDisplayOrder(new Long(direction));
-            references.get(direction).setDisplayOrder(new Long(idx));
+            references.get(idx).setDisplayOrder(Long.valueOf(direction));
+            references.get(direction).setDisplayOrder(Long.valueOf(idx));
         }
 
         //Resort list based on new sort order

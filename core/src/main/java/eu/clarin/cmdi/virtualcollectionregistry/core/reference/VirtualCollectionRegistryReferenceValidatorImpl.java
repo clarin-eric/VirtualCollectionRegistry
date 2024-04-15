@@ -53,9 +53,8 @@ public class VirtualCollectionRegistryReferenceValidatorImpl extends TxManager i
                     List<ResourceScan> scans = fetchListOfWork(datastore.getEntityManager());
                     if(scans.size() > 0) {
                         logger.debug("Found {} resource scan(s) requiring analysing.", scans.size());
-                    }
+                    } 
                 
-
                     for (ResourceScan scan : scans) {
                         logger.trace("Marking start for scan with ref = {}", scan.getRef());
                         markScanStarted(datastore.getEntityManager(), scan);
@@ -85,16 +84,13 @@ public class VirtualCollectionRegistryReferenceValidatorImpl extends TxManager i
      */
     private synchronized List<ResourceScan>  fetchListOfWork(final EntityManager em) throws VirtualCollectionRegistryException {
         List<ResourceScan> scans = new ArrayList<>();
-        //try {
-            beginTransaction(em);
-            TypedQuery<ResourceScan> q = em.createNamedQuery("ResourceScan.findScanRequired", ResourceScan.class);
-            scans = q.getResultList();
-        /*} catch (Exception ex) {
-            rollbackActiveTransaction(em, "Failed to fetch scan resources", ex);
-        } finally {
-            */
-            commitActiveTransaction(em);
-        //}
+        
+        beginTransaction(em);
+        TypedQuery<ResourceScan> q = 
+            em.createNamedQuery("ResourceScan.findScanRequired", ResourceScan.class);
+        scans = q.getResultList();
+        commitActiveTransaction(em);
+
         return scans;
     }
 

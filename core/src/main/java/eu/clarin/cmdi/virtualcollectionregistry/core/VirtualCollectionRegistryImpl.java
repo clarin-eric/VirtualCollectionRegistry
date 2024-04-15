@@ -1000,22 +1000,23 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
     }
 
     @Override
-    public void addResourceScan(String ref, String sessionId) throws VirtualCollectionRegistryException {
-        scanResource(ref, sessionId, false);
+    public void addResourceScan(String ref, String sessionId, boolean useCache) throws VirtualCollectionRegistryException {
+        scanResource(ref, sessionId, false, useCache);
     }
 
     @Override
-    public void rescanResource(String ref, String sessionId) throws VirtualCollectionRegistryException {
-        scanResource(ref, sessionId, true);
+    public void rescanResource(String ref, String sessionId, boolean useCache) throws VirtualCollectionRegistryException {
+        scanResource(ref, sessionId, true, useCache);
     }
 
-    public void scanResource(String ref, String sessionId, boolean rescan) throws VirtualCollectionRegistryException {
+    public void scanResource(String ref, String sessionId, boolean rescan, boolean useCache) throws VirtualCollectionRegistryException {
         logger.debug("Adding resource to scan (ref={}, sessionId={}), rescan={}", ref, sessionId, rescan);
         try {
             beginTransaction(datastore.getEntityManager());
 
             //Select any existing scans for this ref
-            TypedQuery<ResourceScan> q = datastore.getEntityManager().createNamedQuery("ResourceScan.findByRef", ResourceScan.class);
+            TypedQuery<ResourceScan> q = 
+                datastore.getEntityManager().createNamedQuery("ResourceScan.findByRef", ResourceScan.class);
             q.setParameter("ref", ref);
             List<ResourceScan> scans = q.getResultList();
 
@@ -1027,7 +1028,7 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
             } else {
                 for(ResourceScan scan: scans) {
                     long diff_in_ms = now.getTime() - scan.getLastScan().getTime();
-                    if (rescan || diff_in_ms > vcrConfig.getResourceScanAgeTresholdMs()) {
+                    if (!useCache || (rescan || diff_in_ms > vcrConfig.getResourceScanAgeTresholdMs())) {
                         scan_to_persist = scan;
                         scan_to_persist.setLastScan(null);
                     }
@@ -1037,10 +1038,14 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
             //Add this ref as a new scan if needed, based on the earlier check
             if(scan_to_persist != null) {
                 if(scan_to_persist.getId() == null) {
+                    logger.debug("Resource scan inserted (ref={}, sessionId={}).", ref, sessionId);
                     datastore.getEntityManager().persist(scan_to_persist); //insert
                 } else {
+                    logger.debug("Resource scan updated (ref={}, sessionId={}).", ref, sessionId);
                     datastore.getEntityManager().merge(scan_to_persist); //update
                 }
+            } else {
+                logger.debug("Resource scan loaded from cache (ref={}, sessionId={}).", ref, sessionId);
             }
         } catch (Exception e) {
             rollbackActiveTransaction(datastore.getEntityManager(), "error while submitting a new resource scan. ref="+ref+", session="+sessionId, e);

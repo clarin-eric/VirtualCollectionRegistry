@@ -10,8 +10,33 @@
             </div>
             <div class="col-xs-10">
                 <!-- Editor to add new reference -->
+                <div class="col-xs-12">
+                    <span>Examples:</span>
+                </div>
+                <div class="col-xs-12">
+                    
+                    <div class="input-group" style="width: 100%">
+                        <span class="input-group-addon">TEI:</span>
+                        <input class="form-control" type="text" readonly="readonly" id="ex1" value="https://llds.ling-phil.ox.ac.uk/llds/xmlui/bitstream/handle/20.500.14106/A39119/A39119.xml" />
+                        <span class="input-group-btn">
+                            <button class="btn btn-default clipboard" title="Copy to clipboard" type="button" data-clipboard-target="#ex1">
+                                <span class="glyphicon glyphicon-copy"></span>
+                            </button>
+                        </span>
+                    </div>
+                </div>
+                <div class="col-xs-12">
+                    <span>TEI:</span>
+                    <div class="input-group" style="width: 100%">
+                        <input class="form-control" type="text" readonly="readonly" id="ex2" value="https://llds.ling-phil.ox.ac.uk/llds/xmlui/bitstream/handle/20.500.14106/A39119/A39119.xml?sequence=7&isAllowed=y" />
+                        
+                        <button class="btn btn-default clipboard" title="Copy to clipboard" type="button" data-clipboard-target="#ex2">
+                            <span class="glyphicon glyphicon-copy"></span>
+                        </button>
+                    </div>
+                </div>
                 <div wicket:id="reference" class="col-xs-12 field-row">[URI]</div>
-                <div wicket:id="reference_title" class="col-xs-12 field-row">[TITLE]</div>
+                <!--div wicket:id="reference_title" class="col-xs-12 field-row">[TITLE]</div-->
                 <div class="col-md-12 col-xs-12">
                     <div class="col-xs-12"><i>Press &lt;enter&gt; to add this reference</i></div>
                 </div>

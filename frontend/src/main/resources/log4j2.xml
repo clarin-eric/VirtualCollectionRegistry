@@ -26,7 +26,7 @@
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission" level="DEBUG" />
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth" level="INFO" />
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui.pages.TimerManagerImpl" level="WARN" />
-        <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.references" level="WARN" />        
+        <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.references" level="DEBUG" />        
         
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistryMaintenanceImpl" level="INFO" />
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistryReferenceValidatorImpl" level="INFO" />

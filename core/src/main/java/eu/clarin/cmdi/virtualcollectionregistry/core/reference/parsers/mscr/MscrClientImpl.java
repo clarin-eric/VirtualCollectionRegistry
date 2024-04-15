@@ -18,6 +18,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.mscr;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
+import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.mscr.MscrCrosswalkMetadata.FileMetadata;
 import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
@@ -169,15 +170,26 @@ public class MscrClientImpl implements MscrClient {
     
     @Override
     public MscrSchema searchSchema(String query) throws MscrNotFoundException, IOException {
+        logger.debug("searchSchema, query="+query);
         List<MscrSchema> schemas = searchSchemas(query);
         if(!schemas.isEmpty()) {
-            return schemas.get(0);
+            logger.debug("Returning first schema");
+            
+            MscrSchema schema = schemas.get(0);
+            logger.debug("Schema id={}, state={}, status={}, type={}, visibility={}", 
+                    schema.id, schema.source.state, schema.source.status,schema.source.type, schema.source.visibility);
+            logger.debug("Labels:");
+            for(String key : schema.source.label.keySet()) {
+                logger.debug("  key={}, value={}", key, schema.source.label.get(key));
+            }
+            return schema;//s.get(0);
         }
-        return null;
+        throw new MscrNotFoundException("Schema not found for query="+query);
     }
     
     @Override
     public List<MscrSchema> searchSchemas(String query) throws MscrNotFoundException, IOException {
+        logger.debug("searchSchemas, query="+query);
         List<MscrSchema> result = new ArrayList<>();
         try {
             MscrSearchResponseHandler<MscrSchema[]> responseHandler = 
@@ -187,29 +199,45 @@ public class MscrClientImpl implements MscrClient {
             issueGet(path, responseHandler);
             MscrSchema[] r = responseHandler.getResponse();
             //Todo: how to handle multiple results
-            for(MscrSchema schema : r) {
-                String label = schema.source.getLabel("en");
-                if(label.equalsIgnoreCase(query)) {
-                    result.add(schema);
+            if(r != null) {
+                logger.debug("Found {} schemas", r.length);
+                for(MscrSchema schema : r) {
+                    String label = schema.source.getLabel("en");
+                    if(label.equalsIgnoreCase(query)) {
+                        result.add(schema);
+                    }
                 }
+            } else {
+                logger.debug("Found no schemas");
             }
         } catch(UnsupportedEncodingException | JsonProcessingException ex) {
-            logger.error("", ex);
+            logger.error("Failed to process schema response", ex);
         }
         return result;
     }
     
     @Override
     public MscrCrosswalk searchCrosswalk(String sourceSchemaId, String targetSchemaId) throws MscrNotFoundException, IOException {
+        logger.debug("searchCrosswalk, sourceSchemaId="+sourceSchemaId+", targetSchemaId="+targetSchemaId);
         List<MscrCrosswalk> crosswalks = searchCrosswalks(sourceSchemaId, targetSchemaId);
         if(!crosswalks.isEmpty()) {
-            return crosswalks.get(0);
+            logger.debug("Returning first schema");
+            MscrCrosswalk crosswalk = crosswalks.get(0);
+            logger.debug("Crosswalk, id={}. state={}, status={}, type={}, visibility={}", 
+                    crosswalk.id, crosswalk.source.state, crosswalk.source.status, crosswalk.source.type, crosswalk.source.visibility);
+            logger.debug("Labels:");
+            for(String key : crosswalk.source.label.keySet()) {
+                logger.debug("  key={}, value={}", key, crosswalk.source.label.get(key));
+            }
+            return crosswalk;//s.get(0);
         }
-        return null;
+        //return null;
+        throw new MscrNotFoundException("Crosswalk not found for sourceSchemaId="+sourceSchemaId+", targetSchemaId="+targetSchemaId);
     }
     
     @Override
     public List<MscrCrosswalk> searchCrosswalks(String sourceSchemaId, String targetSchemaId) throws MscrNotFoundException, IOException {
+        logger.debug("searchCrosswalks, sourceSchemaId="+sourceSchemaId+", targetSchemaId="+targetSchemaId);
         List<MscrCrosswalk> result = new ArrayList<>();
         try {
             MscrSearchResponseHandler<MscrCrosswalk[]> responseHandler = 
@@ -220,44 +248,59 @@ public class MscrClientImpl implements MscrClient {
                     "&type=CROSSWALK";
             issueGet(path, responseHandler);
             MscrCrosswalk[] r = responseHandler.getResponse();
-            result = Arrays.asList(r);
+            if(r != null) {
+                logger.debug("Found {} crosswalks", r.length);
+                result = Arrays.asList(r);
+            } else {
+                logger.debug("Found no crosswalks");
+            }
         } catch(JsonProcessingException ex) {
-            logger.error("", ex);
+            logger.error("Failed to process crosswalk response", ex);
         }
         return result;
     }
     
     @Override
     public MscrCrosswalkMetadata fetchCrosswalkMetadata(String crosswalkId) throws MscrNotFoundException, IOException {
+        logger.debug("fetchCrosswalkMetadalkId="+crosswalkId);
         MscrCrosswalkMetadata md = null;
         try {
             JsonResponseHandler<MscrCrosswalkMetadata> responseHandler = 
                     new JsonResponseHandler<>(new MscrCrosswalkMetadata());
             String path = "./crosswalk/"+crosswalkId;
             issueGet(path, responseHandler);
-            md = responseHandler.getResponse();
-            logger.info("Md: "+md.toString());
+            md = responseHandler.getResponse();  
+            
+            logger.debug("Md: "+(md == null ? "null, schema not found" : "Found schema, format: "+md.format));
+            if(md != null) {                
+                logger.debug("Schema labels:");
+                for(String key : md.label.keySet()) {
+                   logger.debug("  key={}, value={}", key, md.label.get(key)); 
+                }
+                logger.debug("Schema files:");
+                for(FileMetadata fmd : md.files) {
+                    logger.debug("  id={}, filename={}, size={}, filetype={}", fmd.fileID, fmd.filename, fmd.size, fmd.contentType);
+                }
+            }
+            
+            if(md == null) {
+                throw new MscrNotFoundException("Crosswalk metadata not found for crosswalkId="+crosswalkId);
+            }
         } catch(JsonProcessingException ex) {
-            logger.error("", ex);
+            logger.error("Failed to process crosswalk metadata response", ex);
         }
         return md;
     }
     
     @Override
     public String fetchCrosswalkXslt(String crosswalkId, String fileId) throws MscrNotFoundException, IOException {
+        logger.debug("fetchCrosswalkXslt, crosswalkId="+crosswalkId+", fileId="+fileId);
         BasicResponseHandler responseHandler = new BasicResponseHandler();
         String path = "./crosswalk/"+crosswalkId+"/files/"+fileId+"?download=true";
         issueGet(path, responseHandler);
         return responseHandler.getBody();
     }
-    /*
-    @Override
-    public String getUrlContent(String url) throws IOException {
-        BasicResponseHandler responseHandler = new BasicResponseHandler();
-        issueRequest(new HttpGet(url), responseHandler);
-        return responseHandler.getBody();
-    }
-    */
+    
     @Override
     public String transformFromUrl(String url, String xslt) throws IOException {
         BasicResponseHandler responseHandler = new BasicResponseHandler();
@@ -274,6 +317,7 @@ public class MscrClientImpl implements MscrClient {
      */
     @Override
     public String transform(String xmlContent, String xsltContent) {   
+        logger.debug("Running transformation");
         StringWriter sw = new StringWriter();        
         try {
             // Build a transformer from the XSLT
@@ -286,8 +330,10 @@ public class MscrClientImpl implements MscrClient {
             StreamResult result = new StreamResult(sw);
             transformer.transform(source, result);
         } catch (TransformerException | IOException ex) {
-            logger.error("", ex);
+            logger.error("Failed to transform xml", ex);
         }
+        
+        logger.info(""+sw.toString());
         
         return sw.toString();
     }
@@ -295,12 +341,14 @@ public class MscrClientImpl implements MscrClient {
     
     @Override
     public String getNamespaceUriFromXml(String xmlContent) throws ParserConfigurationException, UnsupportedEncodingException, SAXException, IOException {
+        logger.debug("getNamespaceUriFromXml");
         documentFactory.setNamespaceAware(true); 
         DocumentBuilder builder = documentFactory.newDocumentBuilder();
         Document doc = builder.parse(new ByteArrayInputStream(xmlContent.getBytes("UTF-8")));
         
         String prefix = doc.getPrefix();
         String namespaceUri = doc.lookupNamespaceURI(prefix);
+        logger.debug("namespace="+namespaceUri);
         return namespaceUri;
     }
 }

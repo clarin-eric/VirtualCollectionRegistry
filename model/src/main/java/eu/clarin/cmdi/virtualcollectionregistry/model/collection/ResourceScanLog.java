@@ -17,6 +17,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model.collection;
 
 import java.io.Serializable;
+import java.util.Date;
 import java.util.HashSet;
 import java.util.Set;
 import javax.persistence.CascadeType;
@@ -30,6 +31,8 @@ import javax.persistence.JoinColumn;
 import javax.persistence.ManyToOne;
 import javax.persistence.OneToMany;
 import javax.persistence.Table;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 
 /**
  *
@@ -59,11 +62,24 @@ public class ResourceScanLog implements Serializable {
             unique = false)
     private ResourceScan scan;
 
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "start", nullable = true)
+    private Date start;
+
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "end", nullable = true)
+    private Date end;
+       
     public ResourceScanLog() {}
     
     public ResourceScanLog(ResourceScan scan, String processorId) {
         this.scan = scan;
         this.processorId = processorId;
+        this.start = new Date();
+    }
+    
+    public void finish() {
+        this.setEnd(new Date());
     }
     
     /**
@@ -122,13 +138,43 @@ public class ResourceScanLog implements Serializable {
      * @param value 
      */
     public void addKV(String key, String value) {
-        ResourceScanLogKV kv = new ResourceScanLogKV();
-        kv.setKey(key);
-        kv.setValue(value);
-        kv.setScanLog(this);
-        if(kvs == null) {
-            kvs = new HashSet();
+        if(value != null) {
+            ResourceScanLogKV kv = new ResourceScanLogKV();
+            kv.setKey(key);
+            kv.setValue(value);
+            kv.setScanLog(this);
+            if(kvs == null) {
+                kvs = new HashSet();
+            }
+            kvs.add(kv);
         }
-        kvs.add(kv);
+    }
+
+    /**
+     * @return the start
+     */
+    public Date getStart() {
+        return start;
+    }
+
+    /**
+     * @param start the start to set
+     */
+    public void setStart(Date start) {
+        this.start = start;
+    }
+
+    /**
+     * @return the end
+     */
+    public Date getEnd() {
+        return end;
+    }
+
+    /**
+     * @param end the end to set
+     */
+    public void setEnd(Date end) {
+        this.end = end;
     }
 }
