@@ -19,10 +19,15 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editor
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScanLog;
 import java.text.SimpleDateFormat;
+import java.util.Arrays;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Properties;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.Model;
 import org.slf4j.Logger;
@@ -45,6 +50,13 @@ public class ReferenceScanDetails extends Panel {
         }
     }
     
+    public class ProcessorPanel extends Panel {
+        public ProcessorPanel(String id, ResourceScanLog log) {
+            super(id);
+            add(new Label("label", Model.of(log.getProcessorId())));
+        }
+    } 
+         
     public ReferenceScanDetails(String id, ResourceScan scan, ReferencesEditor.RescanHandler rescanHandler) {
         super(id);
         
@@ -73,12 +85,21 @@ public class ReferenceScanDetails extends Panel {
                         scan.getHttpResponseMessage(): "-"));
         add(new LabelValuePanel(props, "scan.details.exception", scan.getException()));
         add(new LabelValuePanel(props, "scan.details.state", scan.getState().toString()));
-        /*
+        
+        List<ResourceScanLog> processors = new LinkedList<>();        
         if(scan.getLogs() != null) {
             for(ResourceScanLog log : scan.getLogs()) {
-                logger.info("Parser: {}", log.getProcessorId());
+                processors.add(log);
             }
         }
-        */
+        
+         ListView<ResourceScanLog> listExamples = new ListView("listProcessors", processors) {
+            @Override
+            protected void populateItem(ListItem item) {
+                item.add(new ProcessorPanel("pnlProcessor", (ResourceScanLog)item.getModel().getObject()));
+            }
+        };
+        add(listExamples);
+        
     }
 }

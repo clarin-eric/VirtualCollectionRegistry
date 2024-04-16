@@ -22,6 +22,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.mscr.Mscr
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.mscr.MscrCrosswalkMetadata;
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.mscr.MscrNotFoundException;
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.mscr.MscrSchema;
+import eu.clarin.cmdi.virtualcollectionregistry.model.config.ParserConfig;
+import eu.clarin.cmdi.virtualcollectionregistry.model.config.VcrConfig;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -52,22 +54,28 @@ public class MscrReferenceParser implements ReferenceParser {
     
     private final static Logger logger = LoggerFactory.getLogger(MscrReferenceParser.class);
     
-    private MscrClient client = new MscrClientImpl();
+    private MscrClient client;// = new MscrClientImpl();
     
     private final Map<String, String> namespaceUriToQueryMap = new HashMap<>();
     
     private MscrSchema targetSchema = null;
     
     private ReferenceParserResult result = new ReferenceParserResult();
-    
-    public MscrReferenceParser() {
+            
+    public MscrReferenceParser(ParserConfig config) {
+        client = new MscrClientImpl(
+                config.getApiUrl(), 
+                config.getConnectionRequestTimeout(), 
+                config.getMaxRedirects(), 
+                config.getTransformerFactory());
+        
         namespaceUriToQueryMap.put("http://www.tei-c.org/ns/1.0", "TEI minimal");
         
-        String query = "CLARIN Dublin Core";
+        //String query = "CLARIN Dublin Core";
         try {
-            targetSchema = client.searchSchema(query);
+            targetSchema = client.searchSchema(config.getTargetSchemaQuery());//query);
         } catch(MscrNotFoundException | IOException ex) {
-            logger.error("Target schema (query="+query+") not found in MSCR");
+            logger.error("Target schema (query="+config.getTargetSchemaQuery()+") not found in MSCR");
         }
     }
     

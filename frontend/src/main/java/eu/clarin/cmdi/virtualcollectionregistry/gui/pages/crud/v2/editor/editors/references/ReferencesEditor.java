@@ -4,8 +4,8 @@ import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.*;
-import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.VirtualCollectionRegistryReferenceValidator;
+import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.ReferenceParserResult;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.TimerManager;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.CancelEventHandler;
@@ -23,17 +23,19 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualColle
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan.State;
-import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScanLog;
-import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScanLogKV;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidLink;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
+import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
+import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
@@ -120,6 +122,47 @@ public class ReferencesEditor extends ComposedField {
         }
     }
 
+    public class Example implements Serializable {
+        private final String label;
+        private final String url;
+        
+        public Example(String label, String url) {
+            this.label = label;
+            this.url = url;
+        }
+
+        public String getLabel() {
+            return label;
+        }
+
+        public String getUrl() {
+            return url;
+        }
+    }
+    
+    public class ExamplePanel extends Panel implements Serializable {
+        public ExamplePanel(String id, Example example) {
+            super(id);
+            
+            add(new Label("label", Model.of(example.getLabel())));
+            final TextField tf = new TextField("url", Model.of(example.getUrl()));
+            tf.setOutputMarkupId(true);            
+            add(tf);
+            
+            WebMarkupContainer btn = new WebMarkupContainer("btn");
+            btn.add(new AttributeAppender("data-clipboard-target",
+                new AbstractReadOnlyModel<String>() {
+                    @Override
+                    public String getObject() {                        
+                        return "#"+tf.getMarkupId();
+                    }
+                }, " "));
+            
+            add(btn);
+        }
+        
+    }
+    
     private final Component componentToUpdate;
     private final Filter f;
     private final TimerManager timerManager;
@@ -325,8 +368,12 @@ public class ReferencesEditor extends ComposedField {
                             editor.setVisible(false);
                             editor.reset();
                             listview.setVisible(true);
-                        } else {
-                            editor.setReference(references.get(edit_index));
+                        } else { 
+                            String ref = references.get(edit_index).getRef();
+                            ResourceScan scan = scanResults.get(ref);
+                            String title = scan.getResourceScanLogLastValue(ReferenceParserResult.KEY_NAME);
+                            String description = scan.getResourceScanLogLastValue(ReferenceParserResult.KEY_DESCRIPTION);
+                            editor.setReference(references.get(edit_index), title, description);
                             editor.setVisible(true);
                             listview.setVisible(false);
                         }
@@ -371,6 +418,23 @@ public class ReferencesEditor extends ComposedField {
         //f2.setCompleteSubmitOnUpdate(true);
         //f2.setRequired(true);
         //add(f2);
+        
+        //Add examples
+        //TODO: only enable in alpha mode?
+        List<Example> examples = new LinkedList<>();
+        examples.add(new Example("TEI example 1", "https://llds.ling-phil.ox.ac.uk/llds/xmlui/bitstream/handle/20.500.14106/A39119/A39119.xml"));
+        examples.add(new Example("TEI example 2", "https://llds.ling-phil.ox.ac.uk/llds/xmlui/bitstream/handle/20.500.14106/A02252/A02252.xml?sequence=5&isAllowed=y"));
+        examples.add(new Example("CMDI example 1", "http://dali.talkbank.org/data-cmdi/childes-data/DutchAfrikaans/Wijnen.cmdi"));
+        examples.add(new Example("CMDI example 2", "https://archive.mpi.nl/tla/islandora/object/tla%3A1839_00_0000_0000_0005_783E_5/datastream/CMD/download"));
+        examples.add(new Example("Website example 1", "https://www.clarin.eu"));
+        
+        ListView<Example> listExamples = new ListView("listExample", examples) {
+            @Override
+            protected void populateItem(ListItem item) {
+                item.add(new ExamplePanel("pnl_example", (Example)item.getModel().getObject()));
+            }
+        };
+        add(listExamples);
     }
 
     private void addToTimerManager(AjaxRequestTarget target) {
@@ -520,7 +584,20 @@ public class ReferencesEditor extends ComposedField {
 
         logger.debug("Completing reference submit: value="+value+",title="+title);
         if(value != null && !value.isEmpty()) {// && title != null && !title.isEmpty()) {
-            if(handleUrl(value)) {
+            //Check if the supplied url (value) is duplicate or not
+            boolean duplicate = false;
+            for(EditableResource res : references) {
+                if(res.getRef().equalsIgnoreCase(value)) {
+                    duplicate = true;
+                    break;
+                }
+            }
+            
+            //Handle the new url value
+            if(duplicate) {
+                logger.debug("Skipping duplicate url: {}", value);
+                return false;
+            } else if(handleUrl(value)) {
                 Resource r = new Resource(Resource.Type.RESOURCE, value, title);
                 r.setDisplayOrder(getNextDisplayOrder());
                 addReferenceJob(EditableResource.fromResource(r), useCache);

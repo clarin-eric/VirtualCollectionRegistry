@@ -63,8 +63,8 @@ public class MscrClientImpl implements MscrClient {
     
     private final CloseableHttpClient httpclient = HttpClients.createDefault();
     
-    private final URI baseApiUrl = 
-            URI.create("https://mscr-test.rahtiapp.fi/datamodel-api/v2/");
+    private final URI baseApiUrl;// = 
+            //URI.create("https://mscr-test.rahtiapp.fi/datamodel-api/v2/");
     
     private final RequestConfig requestConfig;
     
@@ -140,15 +140,25 @@ public class MscrClientImpl implements MscrClient {
             return this.body;
         }
     }
-    
+    /*
     public MscrClientImpl() {
+        this(
+            "https://mscr-test.rahtiapp.fi/datamodel-api/v2/",
+            1000,
+            5, 
+            "net.sf.saxon.TransformerFactoryImpl");
+    }
+    */
+    public MscrClientImpl(String apiBaseUrl, int connectionRequestTimeout, int maxRedirects, String transformerFactory) {
+        this.baseApiUrl = URI.create(apiBaseUrl);
         this.requestConfig =
             RequestConfig
                 .custom()
-                .setConnectionRequestTimeout(1000)
-                .setMaxRedirects(5)
+                .setConnectionRequestTimeout(connectionRequestTimeout)//1000);
+                .setMaxRedirects(maxRedirects)//5)
                 .build();
-        System.setProperty("javax.xml.transform.TransformerFactory", "net.sf.saxon.TransformerFactoryImpl");
+        //System.setProperty("javax.xml.transform.TransformerFactory", "net.sf.saxon.TransformerFactoryImpl");
+        System.setProperty("javax.xml.transform.TransformerFactory", transformerFactory);
         this.transformerFactory = TransformerFactory.newInstance();
         this.documentFactory = DocumentBuilderFactory.newInstance();
     }
@@ -229,9 +239,8 @@ public class MscrClientImpl implements MscrClient {
             for(String key : crosswalk.source.label.keySet()) {
                 logger.debug("  key={}, value={}", key, crosswalk.source.label.get(key));
             }
-            return crosswalk;//s.get(0);
+            return crosswalk;
         }
-        //return null;
         throw new MscrNotFoundException("Crosswalk not found for sourceSchemaId="+sourceSchemaId+", targetSchemaId="+targetSchemaId);
     }
     

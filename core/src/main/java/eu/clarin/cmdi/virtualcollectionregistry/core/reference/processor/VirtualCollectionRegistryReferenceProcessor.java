@@ -5,6 +5,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.CmdiRefer
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.MscrReferenceParser;
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.ReferenceParser;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan;
+import eu.clarin.cmdi.virtualcollectionregistry.model.config.ParserConfig;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.impl.client.CloseableHttpClient;
@@ -33,24 +34,17 @@ import java.util.Map;
 public class VirtualCollectionRegistryReferenceProcessor {
 
     private final static Logger logger = LoggerFactory.getLogger(VirtualCollectionRegistryReferenceProcessor.class);
-
     
-
     private final CloseableHttpClient httpclient = HttpClients.createDefault();
     private final RequestConfig requestConfig;
     private final Map<String, Boolean> skipList = new HashMap<>(); //In-memory list of reference with issues, to avoid looping over them continously
     
-    public static List<ReferenceParser> getParsers() {
-        final List<ReferenceParser> parsers = new LinkedList<>();
-        //Parsers will be processing the reference in the order they are added
-        //When getting a parser value, order of adding determines which value is used, first match wins.
-        parsers.add(new CmdiReferenceParserImpl());
-        //this.parsers.add(new DogReferenceParser());
-        parsers.add(new MscrReferenceParser());
-        return parsers;
-    }
+    //public static List<ReferenceParser> getParsers() {
+        private final List<ReferenceParser> parsers = new LinkedList<>();
+        //        return parsers;
+  //  }
     
-    public VirtualCollectionRegistryReferenceProcessor() {
+    public VirtualCollectionRegistryReferenceProcessor(ParserConfig config) {
         this.requestConfig =
             RequestConfig
                 .custom()
@@ -58,7 +52,11 @@ public class VirtualCollectionRegistryReferenceProcessor {
                 .setMaxRedirects(5)
                 .build();
         
-        
+        //Parsers will be processing the reference in the order they are added
+        //When getting a parser value, order of adding determines which value is used, first match wins.
+        parsers.add(new CmdiReferenceParserImpl());
+        //this.parsers.add(new DogReferenceParser());
+        parsers.add(new MscrReferenceParser(config));
     }
 
     /**
@@ -72,7 +70,7 @@ public class VirtualCollectionRegistryReferenceProcessor {
      * @param scan 
      */
     public void doWork(final DataStore datastore, ResourceScan scan) {
-        ReferenceHttpResponseHandler responseHandler = new ReferenceHttpResponseHandler(getParsers(), datastore, scan);
+        ReferenceHttpResponseHandler responseHandler = new ReferenceHttpResponseHandler(parsers, datastore, scan);
         String exceptionMsg = null;
         try {
             if(!skipList.containsKey(scan.getRef())) {

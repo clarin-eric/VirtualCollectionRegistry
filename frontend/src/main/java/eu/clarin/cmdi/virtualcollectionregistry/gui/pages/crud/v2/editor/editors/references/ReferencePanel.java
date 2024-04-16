@@ -66,23 +66,30 @@ public class ReferencePanel extends Panel {
 
         long displayOrder = ref.getDisplayOrder();
 
-        Model titleModel = Model.of("<required>");
+        Model<String> titleCommentModel = Model.of("Title is required");
+        Model titleModel = Model.of("");
         if(ref.getLabel() != null && !ref.getLabel().isEmpty()) {
             titleModel.setObject(ref.getLabel());
+            titleCommentModel.setObject("");
         } else if(scan != null) {
             String value = scan.getResourceScanLogLastValue(ReferenceParserResult.KEY_NAME);
             if(value != null) {
                 titleModel.setObject(value);
+                titleCommentModel.setObject("Suggested value");
             }
         }
-        Model descriptionModel = Model.of("<required>");
+        
+        Model<String> descriptionCommentModel = Model.of("Description is required");        
+        Model descriptionModel = Model.of("");
         if(ref.getDescription() != null && !ref.getDescription().isEmpty()) {
             descriptionModel.setObject(ref.getDescription());
+            descriptionCommentModel.setObject("");
         } else if(scan != null) {
 
             String value = scan.getResourceScanLogLastValue(ReferenceParserResult.KEY_DESCRIPTION);
             if(value != null) {
                 descriptionModel.setObject(value);
+                descriptionCommentModel.setObject("Suggested value");
             }
             
         }
@@ -168,9 +175,11 @@ public class ReferencePanel extends Panel {
         editorWrapper.add(reasonToggleLink);
 
         String urlValue = ref.getRef();
+        /*
         if(!titleModel.getObject().toString().isEmpty()) {
             urlValue = "("+ref.getRef()+")";
         }
+        */
         editorWrapper.add(new Label("value", urlValue));
 
         Label lblWaiting = new Label("lbl_waiting", "Waiting on analysis");
@@ -187,6 +196,8 @@ public class ReferencePanel extends Panel {
         Label lblTitle = new Label("title", titleModel);
         lblTitle.setVisible(!ResourceScan.isStateAnalyzing(state));
         editorWrapper.add(lblTitle);
+        editorWrapper.add(new Label("titleComment", titleCommentModel));
+        
 
         Label lblMerged = new Label("merged", "This resource was merged from the submitted collection.");
         lblMerged.setVisible(ref.isMerged());
@@ -205,7 +216,8 @@ public class ReferencePanel extends Panel {
         labelDescription.setEscapeModelStrings(false);
         labelDescription.setVisible(!ResourceScan.isStateAnalyzing(state));
         editorWrapper.add(labelDescription);
-
+        editorWrapper.add(new Label("descriptionComment", descriptionCommentModel));
+        
         AjaxFallbackLink orderTopButton = new AjaxFallbackLink("btn_order_top") {
             @Override
             public void onClick(AjaxRequestTarget target) {

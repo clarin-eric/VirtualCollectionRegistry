@@ -2,6 +2,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.core;
 
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.VirtualCollectionRegistryReferenceCheckImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.VirtualCollectionRegistryReferenceValidator;
+import eu.clarin.cmdi.virtualcollectionregistry.core.reference.VirtualCollectionRegistryReferenceValidatorImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.VirtualCollectionValidationException;
 import eu.clarin.cmdi.virtualcollectionregistry.core.validation.VirtualCollectionValidator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionNotFoundException;
@@ -13,6 +14,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User_;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionList;
 import eu.clarin.cmdi.virtualcollectionregistry.model.config.DbConfig;
+import eu.clarin.cmdi.virtualcollectionregistry.model.config.ParserConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.model.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.query.QueryFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.query.ast.ParsedQuery;
@@ -62,14 +64,17 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
     private VirtualCollectionRegistryReferenceCheckImpl referenceCheck; //Checks collections for invalid references
 
     @Autowired
-    private VirtualCollectionRegistryReferenceValidator referenceValidator; //Checks references for validity and gathers additional info for the reference
+    private VirtualCollectionRegistryReferenceValidatorImpl referenceValidator; //Checks references for validity and gathers additional info for the reference
 
     @Autowired
     private CreatorService creatorService;
 
     @Autowired
     private VcrConfig vcrConfig;
-
+    
+    //@Autowired
+    //private ParserConfig parserConfig;
+    
     private static final Logger logger
             = LoggerFactory.getLogger(VirtualCollectionRegistryImpl.class);
     
@@ -81,6 +86,7 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
     public VirtualCollectionRegistryImpl(DataStore datastore) {
         this.datastore = datastore;
         this.vcDao = new VirtualCollectionDaoImpl(datastore);
+        //this.referenceValidator = new VirtualCollectionRegistryReferenceValidatorImpl(parserConfig);
     }
 
     /**

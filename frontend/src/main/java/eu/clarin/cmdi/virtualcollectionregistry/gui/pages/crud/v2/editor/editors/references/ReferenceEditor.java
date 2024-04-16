@@ -92,11 +92,19 @@ public class ReferenceEditor extends Panel {
         return result;
     }
 
-    public void setReference(Resource ref) {
+    public void setReference(Resource ref, String titleSuggestion, String descriptionSuggestion) {
         data = ref;
         urlModel.setObject(ref.getRef());
-        titleModel.setObject(ref.getLabel());
-        descriptionModel.setObject(ref.getDescription());
+        if(ref.getLabel() != null && !ref.getLabel().isEmpty()) {
+            titleModel.setObject(ref.getLabel());
+        } else {
+            titleModel.setObject(titleSuggestion);
+        }
+        if(ref.getDescription() != null && !ref.getDescription().isEmpty()) {
+            descriptionModel.setObject(ref.getDescription());
+        } else {
+            descriptionModel.setObject(descriptionSuggestion); 
+        }
         typeModel.setObject(ref.getType().toString());
     }
 

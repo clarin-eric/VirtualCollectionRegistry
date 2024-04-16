@@ -9,6 +9,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.mscr.Mscr
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.mscr.MscrClientImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.mscr.MscrCrosswalkMetadata;
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.mscr.MscrNotFoundException;
+import eu.clarin.cmdi.virtualcollectionregistry.model.config.ParserConfig;
 import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
@@ -86,7 +87,8 @@ public class MscrReferenceParserTest {
             .collect(Collectors.joining("\n")
         );
         
-        MscrClient client = new MscrClientImpl();
+        ParserConfig config = new ParserTestConfig();
+        MscrClient client = new MscrClientImpl(config.getApiUrl(), config.getConnectionRequestTimeout(), config.getMaxRedirects(), config.getTransformerFactory());
         client.getNamespaceUriFromXml(xmlContent);
         
     }
@@ -97,7 +99,9 @@ public class MscrReferenceParserTest {
      */
     //@Test
     public void testSchemaSearch() throws Exception {
-        MscrClient client = new MscrClientImpl();
+        ParserConfig config = new ParserTestConfig();
+        MscrClient client = new MscrClientImpl(config.getApiUrl(), config.getConnectionRequestTimeout(), config.getMaxRedirects(), config.getTransformerFactory());
+        
         MscrSchema sourceSchema = null;
         try {
             sourceSchema = client.searchSchema("TEI minimal");
@@ -150,8 +154,37 @@ public class MscrReferenceParserTest {
             .collect(Collectors.joining("\n")
         );
         
-        MscrReferenceParser parser = new MscrReferenceParser();
+        MscrReferenceParser parser = new MscrReferenceParser(new ParserTestConfig());
         boolean result = parser.parse(xmlContent, xmlMimeType);
         logger.info("Parsing result: "+result);
+    }
+    
+    public class ParserTestConfig implements ParserConfig {
+
+        @Override
+        public String getApiUrl() {
+            return "https://mscr-test.rahtiapp.fi/datamodel-api/v2/";
+        }
+
+        @Override
+        public String getTargetSchemaQuery() {
+            return "CLARIN Dublin Core";
+        }
+
+        @Override
+        public Integer getConnectionRequestTimeout() {
+            return 1000;
+        }
+
+        @Override
+        public Integer getMaxRedirects() {
+            return 5;
+        }
+
+        @Override
+        public String getTransformerFactory() {
+            return "net.sf.saxon.TransformerFactoryImpl";
+        }
+        
     }
 }

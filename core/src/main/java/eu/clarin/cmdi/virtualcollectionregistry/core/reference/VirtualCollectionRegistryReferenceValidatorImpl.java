@@ -5,7 +5,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.core.DataStore;
 import eu.clarin.cmdi.virtualcollectionregistry.core.TxManager;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan;
-import eu.clarin.cmdi.virtualcollectionregistry.model.config.VcrConfig;
+import eu.clarin.cmdi.virtualcollectionregistry.model.config.ParserConfig;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.InitializingBean;
@@ -24,14 +24,20 @@ public class VirtualCollectionRegistryReferenceValidatorImpl extends TxManager i
 
     private final transient List<VirtualCollectionRegistryReferenceProcessor> workers = new CopyOnWriteArrayList<>();
 
-    private final VirtualCollectionRegistryReferenceProcessor referenceProcessor = new VirtualCollectionRegistryReferenceProcessor();
-            
+    private final VirtualCollectionRegistryReferenceProcessor referenceProcessor;
+      /*      
     @Autowired
     private VcrConfig vcrConfig;
 
+    @Autowired
+    private ParserConfig parserConfig;
+    */
     private boolean running = false;
 
-    public VirtualCollectionRegistryReferenceValidatorImpl() {}
+    @Autowired
+    public VirtualCollectionRegistryReferenceValidatorImpl(ParserConfig parserConfig) {
+        referenceProcessor = new VirtualCollectionRegistryReferenceProcessor(parserConfig);
+    }
 
     // called by Spring directly after Bean construction
     @Override
