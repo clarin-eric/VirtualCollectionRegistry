@@ -25,6 +25,8 @@ package eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers;
 public class DogReferenceParser implements ReferenceParser {
     private final static String PARSER_ID = "PARSER_DOG";
     
+    private ReferenceParserResult result = new ReferenceParserResult();
+    
     @Override
     public String getId() {
         return PARSER_ID;
@@ -32,12 +34,13 @@ public class DogReferenceParser implements ReferenceParser {
     
     @Override
     public boolean parse(String xml, String mimeType) throws Exception {
+        result = new ReferenceParserResult();
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public ReferenceParserResult getResult() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return result;
     }
     
 }

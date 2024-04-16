@@ -23,7 +23,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.mscr.Mscr
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.mscr.MscrNotFoundException;
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.mscr.MscrSchema;
 import eu.clarin.cmdi.virtualcollectionregistry.model.config.ParserConfig;
-import eu.clarin.cmdi.virtualcollectionregistry.model.config.VcrConfig;
 import java.io.IOException;
 import java.util.HashMap;
 import java.util.Map;
@@ -54,7 +53,7 @@ public class MscrReferenceParser implements ReferenceParser {
     
     private final static Logger logger = LoggerFactory.getLogger(MscrReferenceParser.class);
     
-    private MscrClient client;// = new MscrClientImpl();
+    private MscrClient client;
     
     private final Map<String, String> namespaceUriToQueryMap = new HashMap<>();
     
@@ -71,9 +70,8 @@ public class MscrReferenceParser implements ReferenceParser {
         
         namespaceUriToQueryMap.put("http://www.tei-c.org/ns/1.0", "TEI minimal");
         
-        //String query = "CLARIN Dublin Core";
         try {
-            targetSchema = client.searchSchema(config.getTargetSchemaQuery());//query);
+            targetSchema = client.searchSchema(config.getTargetSchemaQuery());
         } catch(MscrNotFoundException | IOException ex) {
             logger.error("Target schema (query="+config.getTargetSchemaQuery()+") not found in MSCR");
         }
@@ -90,15 +88,12 @@ public class MscrReferenceParser implements ReferenceParser {
     
     @Override
     public boolean parse(String xml, String mimeType) throws Exception {
+        result = new ReferenceParserResult();
         boolean handled = false;
-        //try {
         if(mimeType.toLowerCase().startsWith("text/xml")) {
             performParsing(xml, mimeType);
             handled = true;
         }
-        //} catch(Exception ex) {
-        //    result.add(ReferenceParserResult.KEY_ERROR, ex.getMessage());
-        //}        
         return handled;
     }
 
@@ -106,8 +101,8 @@ public class MscrReferenceParser implements ReferenceParser {
     public ReferenceParserResult getResult() {
         return result;
     }
-    
-    protected void performParsing(String xml, String mimeType) {
+   
+    protected void performParsing(String xml, String mimeType) {       
         //Validate target schema
         if(targetSchema == null) {
             throw new RuntimeException("Target schema is required for MSCR parsing.");
@@ -115,19 +110,15 @@ public class MscrReferenceParser implements ReferenceParser {
                 
         //Search and fetch source schema
         String mscrSourceSchemaQuery = null;
-        //if(mimeType.toLowerCase().startsWith("text/xml")) {
-            try {                
-                String namespace = client.getNamespaceUriFromXml(xml);
-                mscrSourceSchemaQuery = namespaceUriToQueryMap.get(namespace);    
-                if(mscrSourceSchemaQuery == null) {
-                    throw new RuntimeException("No mscr query found for xml namespace ("+namespace+")");
-                }   
-            } catch(IOException | ParserConfigurationException | SAXException e) {
-                throw new RuntimeException("Failed to fetch XML root namespace URI.");
-            }
-        //} else {
-        //    throw new RuntimeException("Unsupported mimetype ("+mimeType+")");
-        //}        
+        try {                
+            String namespace = client.getNamespaceUriFromXml(xml);
+            mscrSourceSchemaQuery = namespaceUriToQueryMap.get(namespace);    
+            if(mscrSourceSchemaQuery == null) {
+                throw new RuntimeException("No mscr query found for xml namespace ("+namespace+")");
+            }   
+        } catch(IOException | ParserConfigurationException | SAXException e) {
+            throw new RuntimeException("Failed to fetch XML root namespace URI.");
+        }
                
         MscrSchema sourceSchema = null;
         try {

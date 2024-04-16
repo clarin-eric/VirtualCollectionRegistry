@@ -196,7 +196,9 @@ public class ReferencePanel extends Panel {
         Label lblTitle = new Label("title", titleModel);
         lblTitle.setVisible(!ResourceScan.isStateAnalyzing(state));
         editorWrapper.add(lblTitle);
-        editorWrapper.add(new Label("titleComment", titleCommentModel));
+        Label lblTitleComment = new Label("titleComment", titleCommentModel);
+        lblTitleComment.setVisible(!ResourceScan.isStateAnalyzing(state));
+        editorWrapper.add(lblTitleComment);
         
 
         Label lblMerged = new Label("merged", "This resource was merged from the submitted collection.");
@@ -216,7 +218,10 @@ public class ReferencePanel extends Panel {
         labelDescription.setEscapeModelStrings(false);
         labelDescription.setVisible(!ResourceScan.isStateAnalyzing(state));
         editorWrapper.add(labelDescription);
-        editorWrapper.add(new Label("descriptionComment", descriptionCommentModel));
+
+        Label labelDescriptionComment = new Label("descriptionComment", descriptionCommentModel);
+        labelDescriptionComment.setVisible(!ResourceScan.isStateAnalyzing(state));
+        editorWrapper.add(labelDescriptionComment);
         
         AjaxFallbackLink orderTopButton = new AjaxFallbackLink("btn_order_top") {
             @Override

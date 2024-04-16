@@ -32,7 +32,7 @@ public class CmdiReferenceParserImpl implements ReferenceParser {
     
     private final Logger logger = LoggerFactory.getLogger(CmdiReferenceParserImpl.class);
     
-    private final ReferenceParserResult result = new ReferenceParserResult();
+    private ReferenceParserResult result = new ReferenceParserResult();
 
     @Override
     public ReferenceParserResult getResult() {
@@ -46,9 +46,8 @@ public class CmdiReferenceParserImpl implements ReferenceParser {
 
     @Override
     public boolean parse(final String xml, final String mimeType) throws Exception {
+        result = new ReferenceParserResult();
         boolean handled = false;
-
-        //try {
         if(mimeType.equalsIgnoreCase("application/x-cmdi+xml")) {
             parseCmdi(xml);
             handled = true;
@@ -56,10 +55,6 @@ public class CmdiReferenceParserImpl implements ReferenceParser {
             parseCmdi(xml);
             handled = true;
         }
-        //} catch(IOException | ParserConfigurationException | XPathExpressionException | SAXException ex) {
-        //    logger.error("Failed to parse CMDI", ex);
-        //}
-
         return handled;
     }
 

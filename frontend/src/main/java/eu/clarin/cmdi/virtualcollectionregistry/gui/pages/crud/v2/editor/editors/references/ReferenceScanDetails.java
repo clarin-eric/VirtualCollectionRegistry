@@ -18,10 +18,12 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editor
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScanLog;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScanLogKV;
 import java.text.SimpleDateFormat;
-import java.util.Arrays;
+import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Map;
 import java.util.Properties;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
@@ -50,10 +52,33 @@ public class ReferenceScanDetails extends Panel {
         }
     }
     
+    public class KeyValuePanel extends Panel {    
+        public KeyValuePanel(String id, ResourceScanLogKV kv) {
+            super(id);
+            add(new Label("label", Model.of(kv.getKey())));
+            add(new Label("value", Model.of(kv.getValue())));
+        }
+    }
+    
     public class ProcessorPanel extends Panel {
         public ProcessorPanel(String id, ResourceScanLog log) {
             super(id);
             add(new Label("label", Model.of(log.getProcessorId())));
+            add(new Label("started", Model.of(log.getStart())));
+            add(new Label("duration", Model.of(log.getEnd().getTime()-log.getStart().getTime())));
+            
+            final List<ResourceScanLogKV> kvs = new LinkedList<>();
+            for(ResourceScanLogKV kv : log.getKvs()) {
+                kvs.add(kv);
+            }
+            
+            ListView<ResourceScanLogKV> listKvs = new ListView("listKvs", kvs) {
+                @Override
+                protected void populateItem(ListItem item) {
+                    item.add(new KeyValuePanel("pnlKv", (ResourceScanLogKV)item.getModel().getObject()));
+                }
+            };
+            add(listKvs);
         }
     } 
          
@@ -86,10 +111,25 @@ public class ReferenceScanDetails extends Panel {
         add(new LabelValuePanel(props, "scan.details.exception", scan.getException()));
         add(new LabelValuePanel(props, "scan.details.state", scan.getState().toString()));
         
+        
         List<ResourceScanLog> processors = new LinkedList<>();        
         if(scan.getLogs() != null) {
+            Map<String, ResourceScanLog> processorMap = new HashMap<>();
             for(ResourceScanLog log : scan.getLogs()) {
-                processors.add(log);
+                if(!processorMap.containsKey(log.getProcessorId())) {
+                    processorMap.put(log.getProcessorId(), log);
+                } else {
+                    //Replace with a more recent scan log
+                    ResourceScanLog existing = processorMap.get(log.getProcessorId());
+                    if(log.getStart().getTime() > existing.getStart().getTime()) {
+                        processorMap.put(log.getProcessorId(), log);
+                    }
+                }
+            }
+            
+            //Convert processors from map into a list for UI rendering
+            for(String key : processorMap.keySet()) {
+                processors.add(processorMap.get(key));
             }
         }
         
