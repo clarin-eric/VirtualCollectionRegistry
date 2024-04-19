@@ -50,5 +50,7 @@ public interface VcrConfig {
     public boolean isMaintenanceEnabled();
     public boolean isHttpReferenceScanningEnabled();
     int getResourceScanAgeTresholdMs();
+    
+    public boolean isReferenceExamplesEnabled();
 
 }

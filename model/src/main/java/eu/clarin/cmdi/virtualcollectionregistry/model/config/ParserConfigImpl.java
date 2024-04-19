@@ -41,6 +41,15 @@ public class ParserConfigImpl implements ParserConfig {
     @Value("${eu.clarin.cmdi.vcr.parser.mscr.transformer_factory:net.sf.saxon.TransformerFactoryImpl}")
     private String transformerFactory;
     
+    @Value("${eu.clarin.cmdi.vcr.parser.cmdi.enabled:true}")
+    private boolean cmdiParserEnabled;
+    
+    @Value("${eu.clarin.cmdi.vcr.parser.dog.enabled:true}")
+    private boolean dogParserEnabled;
+    
+    @Value("${eu.clarin.cmdi.vcr.parser.mscr.enabled:true}")
+    private boolean mscrParserEnable;
+    
     @Override
     public String getApiUrl() {
         return apiUrl;
@@ -64,5 +73,20 @@ public class ParserConfigImpl implements ParserConfig {
     @Override
     public String getTransformerFactory() {
         return transformerFactory;
+    }
+    
+    @Override
+    public boolean isCmdiParserEnabled() {
+        return cmdiParserEnabled;
+    }
+    
+    @Override
+    public boolean isDogParserEnabled() {
+        return dogParserEnabled;
+    }
+    
+    @Override
+    public boolean isMscrParserEnabled() {
+        return mscrParserEnable;
     }
 }

@@ -2,6 +2,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.core.reference.processor;
 
 import eu.clarin.cmdi.virtualcollectionregistry.core.DataStore;
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.CmdiReferenceParserImpl;
+import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.DogReferenceParser;
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.MscrReferenceParser;
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.ReferenceParser;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan;
@@ -39,11 +40,8 @@ public class VirtualCollectionRegistryReferenceProcessor {
     private final RequestConfig requestConfig;
     private final Map<String, Boolean> skipList = new HashMap<>(); //In-memory list of reference with issues, to avoid looping over them continously
     
-    //public static List<ReferenceParser> getParsers() {
-        private final List<ReferenceParser> parsers = new LinkedList<>();
-        //        return parsers;
-  //  }
-    
+    private final List<ReferenceParser> parsers = new LinkedList<>();
+
     public VirtualCollectionRegistryReferenceProcessor(ParserConfig config) {
         this.requestConfig =
             RequestConfig
@@ -54,9 +52,18 @@ public class VirtualCollectionRegistryReferenceProcessor {
         
         //Parsers will be processing the reference in the order they are added
         //When getting a parser value, order of adding determines which value is used, first match wins.
-        parsers.add(new CmdiReferenceParserImpl());
-        //this.parsers.add(new DogReferenceParser());
-        parsers.add(new MscrReferenceParser(config));
+        logger.info("isCmdiParserEnabled={}", config.isCmdiParserEnabled());
+        if(config.isCmdiParserEnabled()) {
+            parsers.add(new CmdiReferenceParserImpl());
+        }
+        logger.info("isDogParserEnabled={}", config.isDogParserEnabled());
+        if(config.isDogParserEnabled()) {
+            this.parsers.add(new DogReferenceParser());
+        }
+        logger.info("isMscrParserEnabled={}", config.isMscrParserEnabled());
+        if(config.isMscrParserEnabled()) {
+            parsers.add(new MscrReferenceParser(config));
+        }
     }
 
     /**

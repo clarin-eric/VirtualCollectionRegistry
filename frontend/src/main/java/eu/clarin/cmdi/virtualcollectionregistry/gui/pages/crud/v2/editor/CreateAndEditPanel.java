@@ -16,6 +16,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.GeneratedBy;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.GeneratedByQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.config.VcrConfig;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -78,6 +79,8 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     IModel<String> lbl = Model.of("");
     WebMarkupContainer pnlVersion;
 
+    private final VcrConfig vcrConfig;
+    
     /**
      * Create a new virtual collection
      * @param id 
@@ -93,10 +96,13 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
      * 
      * @param id
      * @param vcf
+     * @param timerManager
+     * @param vcrConfig
      */
-    public CreateAndEditPanel(String id, VirtualCollectionFactory vcf, TimerManager timerManager) {//}, ModalConfirmDialog dialog) {
+    public CreateAndEditPanel(String id, VirtualCollectionFactory vcf, TimerManager timerManager, VcrConfig vcrConfig) {//}, ModalConfirmDialog dialog) {
         super(id);
         this.vcf = vcf;
+        this.vcrConfig = vcrConfig;
         this.setOutputMarkupId(true);
         
         final Component ajax_update_component = this;
@@ -241,7 +247,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         this.authorsEditor = new AuthorsEditor("authors", "Authors");
         addRequiredField(this.authorsEditor, new Mode[]{Mode.SIMPLE, Mode.ADVANCED});
 
-        this.referencesEditor = new ReferencesEditor("references", "Resources", advancedEditorModeModel, vExtensional, timerManager);
+        this.referencesEditor = new ReferencesEditor("references", "Resources", advancedEditorModeModel, vExtensional, timerManager, vcrConfig);
         addRequiredField(this.referencesEditor, new Mode[]{Mode.SIMPLE, Mode.ADVANCED});
 
         addOptionalField(

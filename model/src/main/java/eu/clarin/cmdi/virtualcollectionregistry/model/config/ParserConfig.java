@@ -26,4 +26,8 @@ public interface ParserConfig {
     public Integer getConnectionRequestTimeout();
     public Integer getMaxRedirects();
     public String getTransformerFactory();
+    
+    public boolean isCmdiParserEnabled();
+    public boolean isDogParserEnabled();
+    public boolean isMscrParserEnabled();
 }

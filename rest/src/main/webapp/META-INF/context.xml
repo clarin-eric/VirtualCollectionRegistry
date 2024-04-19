@@ -69,12 +69,19 @@
                value="*.vcr.clarin.eu" 
                override="false" />   
     -->
-  <Parameter name="eu.clarin.cmdi.vcr.logout_mode" override="false" value="shibboleth"/>
-  <Parameter name="eu.clarin.cmdi.vcr.logout_enable" override="false" value="false"/>
-  <Parameter name="eu.clarin.cmdi.vcr.snippet.survey" override="false" value="survey.html"/>
-  <Parameter name="eu.clarin.cmdi.vcr.snippet.credits" override="false" value="credits.html"/>
-  <Parameter name="eu.clarin.cmdi.vcr.mode" override="false" value="alpha"/>
-  <Parameter name="eu.clarin.cmdi.vcr.forking.enabled" override="false" value="true"/>
-  <!-- 1.8.0 -->
-  <Parameter name="eu.clarin.cmdi.vcr.reference_scanning.enabled" override="false" value="true"/>
+    <Parameter name="eu.clarin.cmdi.vcr.logout_mode" override="false" value="shibboleth"/>
+    <Parameter name="eu.clarin.cmdi.vcr.logout_enable" override="false" value="false"/>
+    <Parameter name="eu.clarin.cmdi.vcr.snippet.survey" override="false" value="survey.html"/>
+    <Parameter name="eu.clarin.cmdi.vcr.snippet.credits" override="false" value="credits.html"/>
+    <Parameter name="eu.clarin.cmdi.vcr.mode" override="false" value="alpha"/>
+    <Parameter name="eu.clarin.cmdi.vcr.forking.enabled" override="false" value="true"/>
+    
+    <!-- 1.8.0 -->
+    <Parameter name="eu.clarin.cmdi.vcr.reference_scanning.enabled" override="false" value="true"/>
+  
+    <!-- snapshot -->
+    <Parameter name="eu.clarin.cmdi.vcr.reference_examples" value="true" override="false" />
+    <Parameter name="eu.clarin.cmdi.vcr.parser.mscr.enabled" value="true" override="false" />
+    <Parameter name="eu.clarin.cmdi.vcr.parser.dog.enabled" value="false" override="false" />
+    <Parameter name="eu.clarin.cmdi.vcr.parser.cmdi.enabled" value="true" override="false" />
 </Context>

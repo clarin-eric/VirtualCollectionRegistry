@@ -89,6 +89,9 @@ public class VcrConfigImpl implements VcrConfig, Serializable {
     @Value("${eu.clarin.cmdi.vcr.mode:alpha}")
     private String mode;
 
+    @Value("${eu.clarin.cmdi.vcr.reference_examples:false}")
+    private boolean referenceExamplesEnabled;
+    
     private String getEndpointWithoutTrailingSlash(String endpoint) {
         if(endpoint == null) {
             return null;
@@ -211,6 +214,7 @@ public class VcrConfigImpl implements VcrConfig, Serializable {
         result.append("  Resource scanning:            "+ referenceScanningEnabled+"\n");
         if(referenceScanningEnabled) {
             result.append("    resource scan age treshold: "+scan_age_treshhold_ms+"\n");
+            
         }
         return result.toString();
     }
@@ -223,5 +227,10 @@ public class VcrConfigImpl implements VcrConfig, Serializable {
     @Override
     public int getHttpRedirects() {
         return httpRedirects;
+    }
+    
+    @Override
+    public boolean isReferenceExamplesEnabled() {
+        return referenceExamplesEnabled;
     }
 }

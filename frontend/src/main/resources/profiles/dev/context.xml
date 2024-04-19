@@ -161,4 +161,21 @@
     <Parameter name="eu.clarin.cmdi.vcr.reference_scanning.enabled"
                value="true"
                override="false" />
+    
+    <!-- snapshot -->
+    <Parameter name="eu.clarin.cmdi.vcr.reference_examples"
+               value="true"
+               override="false" />
+    
+    <Parameter name="eu.clarin.cmdi.vcr.parser.mscr.enabled"
+               value="true"
+               override="false" />
+   
+    <Parameter name="eu.clarin.cmdi.vcr.parser.dog.enabled"
+               value="false"
+               override="false" />
+    
+    <Parameter name="eu.clarin.cmdi.vcr.parser.cmdi.enabled"
+               value="true"
+               override="false" />
 </Context>

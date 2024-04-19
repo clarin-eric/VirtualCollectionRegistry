@@ -185,6 +185,21 @@ public class MscrReferenceParserTest {
         public String getTransformerFactory() {
             return "net.sf.saxon.TransformerFactoryImpl";
         }
+
+        @Override
+        public boolean isCmdiParserEnabled() {
+            return true;
+        }
+
+        @Override
+        public boolean isDogParserEnabled() {
+            return true;
+        }
+
+        @Override
+        public boolean isMscrParserEnabled() {
+            return true;
+        }
         
     }
 }

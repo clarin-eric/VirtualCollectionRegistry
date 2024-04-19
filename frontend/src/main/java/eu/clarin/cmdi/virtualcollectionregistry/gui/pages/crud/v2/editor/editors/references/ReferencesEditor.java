@@ -23,6 +23,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualColle
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan.State;
+import eu.clarin.cmdi.virtualcollectionregistry.model.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidLink;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -141,7 +142,7 @@ public class ReferencesEditor extends ComposedField {
     }
     
     public class ExamplePanel extends Panel implements Serializable {
-        public ExamplePanel(String id, Example example) {
+        public ExamplePanel(String id, Example example, String inputMarkupId) {
             super(id);
             
             add(new Label("label", Model.of(example.getLabel())));
@@ -150,6 +151,7 @@ public class ReferencesEditor extends ComposedField {
             add(tf);
             
             WebMarkupContainer btn = new WebMarkupContainer("btn");
+            /*
             btn.add(new AttributeAppender("data-clipboard-target",
                 new AbstractReadOnlyModel<String>() {
                     @Override
@@ -157,7 +159,22 @@ public class ReferencesEditor extends ComposedField {
                         return "#"+tf.getMarkupId();
                     }
                 }, " "));
+            */
             
+            btn.add(new AttributeAppender("data-example-value",
+                new AbstractReadOnlyModel<String>() {
+                    @Override
+                    public String getObject() {                        
+                        return "#"+tf.getMarkupId();
+                    }
+                }, " "));
+            btn.add(new AttributeAppender("data-example-target",
+                new AbstractReadOnlyModel<String>() {
+                    @Override
+                    public String getObject() {                        
+                        return "#"+inputMarkupId;
+                    }
+                }, " "));
             add(btn);
         }
         
@@ -180,7 +197,7 @@ public class ReferencesEditor extends ComposedField {
         public void rescan(String reg, AjaxRequestTarget target);
     }
 
-    public ReferencesEditor(String id, String label, Model<Boolean> advancedEditorMode, VisabilityUpdater updater, TimerManager timerManager) {
+    public ReferencesEditor(String id, String label, Model<Boolean> advancedEditorMode, VisabilityUpdater updater, TimerManager timerManager, VcrConfig vcrConfig) {
         super(id, "References", null, updater);
         this.timerManager = timerManager;
         setOutputMarkupId(true);
@@ -408,6 +425,8 @@ public class ReferencesEditor extends ComposedField {
         add(ajaxWrapper);
 
         AbstractField f1 = new VcrTextFieldWithoutLabel("reference", "Add new reference by URL or PID", data, this,null);
+        f1.setOutputMarkupId(true);
+        final String urlInputMarkupId = f1.getMarkupId();
         //f1.setCompleteSubmitOnUpdate(false);
         f1.setCompleteSubmitOnUpdate(true);
         f1.setRequired(true);
@@ -431,9 +450,10 @@ public class ReferencesEditor extends ComposedField {
         ListView<Example> listExamples = new ListView("listExample", examples) {
             @Override
             protected void populateItem(ListItem item) {
-                item.add(new ExamplePanel("pnl_example", (Example)item.getModel().getObject()));
+                item.add(new ExamplePanel("pnl_example", (Example)item.getModel().getObject(), urlInputMarkupId));
             }
         };
+        listExamples.setVisible(vcrConfig.isReferenceExamplesEnabled());
         add(listExamples);
     }
 

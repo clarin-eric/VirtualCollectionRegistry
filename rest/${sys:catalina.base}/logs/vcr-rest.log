@@ -312,3 +312,15 @@
 2024-04-16 14:21:18,308 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory#addResource:302] - Resource input: https://www.clarin.eu/resource/1, adding as url
 2024-04-16 14:22:11,919 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory#addResource:302] - Resource input: https://www.clarin.eu/metedata/1, adding as url
 2024-04-16 14:22:11,922 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory#addResource:302] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2024-04-18 15:58:10,629 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory#addResource:302] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2024-04-18 15:58:10,631 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory#addResource:302] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2024-04-18 15:58:20,030 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory#addResource:302] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2024-04-18 15:58:20,032 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory#addResource:302] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2024-04-18 16:00:16,610 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory#addResource:302] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2024-04-18 16:00:16,612 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory#addResource:302] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2024-04-18 16:00:21,419 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory#addResource:302] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2024-04-18 16:00:21,421 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory#addResource:302] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2024-04-18 16:02:43,572 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory#addResource:302] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2024-04-18 16:02:43,575 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory#addResource:302] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2024-04-18 16:04:29,506 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory#addResource:302] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2024-04-18 16:04:29,509 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory#addResource:302] - Resource input: https://www.clarin.eu/resource/1, adding as url

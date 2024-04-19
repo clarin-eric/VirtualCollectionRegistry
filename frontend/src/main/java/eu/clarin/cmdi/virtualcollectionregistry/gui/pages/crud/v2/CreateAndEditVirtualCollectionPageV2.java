@@ -13,6 +13,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmissionU
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
+import eu.clarin.cmdi.virtualcollectionregistry.model.config.VcrConfig;
 import org.apache.wicket.Page;
 import org.apache.wicket.RestartResponseException;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
@@ -23,6 +24,7 @@ import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.security.Principal;
+import org.springframework.beans.factory.annotation.Autowired;
 
 @AuthorizeInstantiation(Roles.USER)
 public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
@@ -33,6 +35,9 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
 
     @SpringBean
     private VirtualCollectionRegistry vcr;
+    
+    @SpringBean
+    private VcrConfig vcrConfig;
 
     private final ModalConfirmDialog modal;
 
@@ -41,8 +46,10 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
     /**
      * Create a new virtual collection
      *
+     * @param vcrConfig
      * @throws VirtualCollectionRegistryException
      */
+    @Autowired
     public CreateAndEditVirtualCollectionPageV2() throws VirtualCollectionRegistryException {
         this(null, null);
     }
@@ -51,6 +58,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
      * Edit an existing virtual collection
      *
      * @param params
+     * @param vcrConfig
      * @throws VirtualCollectionRegistryException
      */
     public CreateAndEditVirtualCollectionPageV2(PageParameters params) throws VirtualCollectionRegistryException {
@@ -63,12 +71,13 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
      *
      * @param id
      * @param previousPage
+     * @param vcrConfig
      * @throws VirtualCollectionRegistryException
      */
     public CreateAndEditVirtualCollectionPageV2(Long id, final Page previousPage) throws VirtualCollectionRegistryException {
         //this.originalCollectionId = id;
         final VirtualCollectionFactory vcf = getVirtualCollectionFactory(id);
-
+        
         modal = new ModalConfirmDialog("modal");
         modal.addListener(new Listener() {
             @Override
@@ -94,7 +103,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
         });
         add(modal);
 
-        final CreateAndEditPanel crud = new CreateAndEditPanel("create_and_edit_panel", vcf, timerManager);
+        final CreateAndEditPanel crud = new CreateAndEditPanel("create_and_edit_panel", vcf, timerManager, vcrConfig);
         crud.addListener(new Listener<VirtualCollection>() {
             @Override
             public void handleEvent(Event<VirtualCollection> event) {
