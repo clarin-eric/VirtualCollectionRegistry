@@ -1,7 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry;
 
 import org.jsoup.Jsoup;
-import org.jsoup.safety.Whitelist;
+import org.jsoup.safety.Safelist;
 
 import java.util.LinkedList;
 import java.util.List;
@@ -11,7 +11,7 @@ public class UserInputSanitizer {
     public static String sanitize(String input) {
         String cleaned = "";
         //Remove html tags
-        Whitelist whitelist = Whitelist.none();
+        Safelist whitelist = Safelist.none();
         cleaned = Jsoup.clean(input, whitelist);
         //TODO: Protect against SQL injection
         return cleaned;
