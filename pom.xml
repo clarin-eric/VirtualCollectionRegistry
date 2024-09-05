@@ -41,18 +41,17 @@
         <!-- project settings -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- compiler settings -->
-        <maven.compiler.source>1.8</maven.compiler.source>
-        <maven.compiler.target>1.8</maven.compiler.target>
         <!-- dependency versions -->
-        <slf4j.version>1.7.30</slf4j.version>
-        <log4j.version>2.17.2</log4j.version>
+        <!--slf4j.version>1.7.30</slf4j.version-->
+        <log4j.version>2.23.1</log4j.version>
         <hibernate.version>5.6.15.Final</hibernate.version>
         <hibernate.jpaVersion>1.0.2.Final</hibernate.jpaVersion>
-        <jersey.version>2.32</jersey.version>
+        <jersey.version>3.1.8</jersey.version>
         <jackson.version>2.10.5.1</jackson.version>
-        <wicket.version>7.12.0</wicket.version> <!-- 7.7.0 has issue https://issues.apache.org/jira/browse/WICKET-6374, which will befixed in 7.8.0 -->
+        <wicket.version>10.1.0</wicket.version> <!-- 7.7.0 has issue https://issues.apache.org/jira/browse/WICKET-6374, which will befixed in 7.8.0 -->
         <wicket-bootstrap.version>2.0.15</wicket-bootstrap.version>
-        <spring.version>4.3.20.RELEASE</spring.version>
+        <spring.version>6.1.12</spring.version>
+        <!--spring.version>4.3.20.RELEASE</spring.version-->
         <!--<spring.version>5.2.1.RELEASE</spring.version>-->
         
         <!-- local development settings, alternatives provided below in in the profiles section -->
@@ -192,7 +191,7 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.ext</groupId>
-            <artifactId>jersey-spring4</artifactId>
+            <artifactId>jersey-spring6</artifactId>
             <version>${jersey.version}</version>
         </dependency>
         <dependency>
@@ -323,12 +322,6 @@
 
         <dependency>
             <groupId>org.apache.wicket</groupId>
-            <artifactId>wicket-datetime</artifactId>
-            <version>${wicket.version}</version>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-extensions</artifactId>
             <version>${wicket.version}</version>
         </dependency>
@@ -339,11 +332,37 @@
             <version>${wicket.version}</version>
         </dependency>
 
+        <!-- spring artifacts -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-core</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-web</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-aop</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
         <dependency>
             <groupId>org.springframework</groupId>
             <artifactId>spring-test</artifactId>
             <version>${spring.version}</version>
-            </dependency>
+        </dependency>
 
         <dependency>
             <groupId>mysql</groupId>
@@ -361,7 +380,7 @@
         <dependency>
             <groupId>de.mpg.mpgaai</groupId>
             <artifactId>mpgaai-shhaa</artifactId>
-            <version>1.0.13</version>
+            <version>2.0.0-SNAPSHOT</version>
             <exclusions>
                 <exclusion>
                     <groupId>log4j</groupId>
@@ -433,7 +452,7 @@
         <dependency>
             <groupId>de.agilecoders.wicket</groupId>
             <artifactId>wicket-bootstrap-core</artifactId>
-            <version>${wicket-bootstrap.version}</version>
+            <version>7.0.5</version>
             <exclusions>
                 <exclusion>
                     <groupId>org.apache.wicket</groupId>
@@ -447,42 +466,52 @@
                     <groupId>com.fasterxml.jackson.core</groupId>
                     <artifactId>jackson-databind</artifactId>
                 </exclusion>
+                <!--
                 <exclusion>
                     <groupId>org.webjars</groupId>
                     <artifactId>jquery</artifactId>
                 </exclusion>
+                -->
+                <!--
                 <exclusion>
                     <groupId>org.webjars</groupId>
                     <artifactId>bootstrap</artifactId>
                 </exclusion>
+                        -->
             </exclusions>
-        </dependency>       
+                    
+        </dependency>
+        <!--       
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>jquery</artifactId>
-            <version>3.6.0</version>
+            <version>3.7.1</version>
         </dependency>
+        -->
+        <!--
         <dependency>
             <groupId>org.webjars</groupId>
             <artifactId>bootstrap</artifactId>
             <version>3.4.1</version>
         </dependency>                
+        -->
         <dependency>
             <groupId>de.agilecoders.wicket.webjars</groupId>
             <artifactId>wicket-webjars</artifactId>
-            <version>${wicket-bootstrap.version}</version>
+            <version>4.0.4</version>
         </dependency>
         
+            
         <!-- Include updated version of jackson databind -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
-            <version>2.13.2</version>
+            <version>2.17.2</version>
         </dependency>
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-annotations</artifactId>
-            <version>2.13.2</version>
+            <version>2.17.2</version>
         </dependency>
         
         <!-- 
@@ -511,10 +540,11 @@
             <scope>runtime</scope>
         </dependency>
 
+
         <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
+            <groupId>jakarta.servlet</groupId>
+            <artifactId>jakarta.servlet-api</artifactId>
+            <version>6.1.0</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
@@ -621,6 +651,12 @@
             <groupId>org.jsoup</groupId>
             <artifactId>jsoup</artifactId>
             <version>1.18.1</version>
+        </dependency>
+        
+        <dependency>
+            <groupId>org.apache.wicket</groupId>
+            <artifactId>wicket-tester</artifactId>
+            <version>${wicket.version}</version>
         </dependency>
     </dependencies>
 
@@ -853,6 +889,15 @@
                         </goals>
                     </execution>
                 </executions>
+            </plugin>
+            <plugin>
+                <groupId>org.apache.maven.plugins</groupId>
+                <artifactId>maven-compiler-plugin</artifactId>
+                <version>3.11.0</version>
+                <configuration>
+                    <source>9</source>
+                    <target>9</target>
+                </configuration>
             </plugin>
         </plugins>
 

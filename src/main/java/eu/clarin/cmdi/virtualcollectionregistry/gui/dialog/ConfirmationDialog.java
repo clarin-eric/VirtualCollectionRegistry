@@ -5,7 +5,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.core.request.handler.IPartialPageRequestHandler;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalDialog;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -21,8 +21,7 @@ public abstract class ConfirmationDialog extends ModalDialogBase {
             final AjaxButton yesButton =
                 new AjaxButton("yesButton", new Model<String>("Yes"), form) {
                 @Override
-                protected void onSubmit(AjaxRequestTarget target,
-                        Form<?> form) {
+                protected void onSubmit(AjaxRequestTarget target) {
                     answer = true;
                     ConfirmationDialog.this.close(target);
                 }
@@ -32,8 +31,7 @@ public abstract class ConfirmationDialog extends ModalDialogBase {
             final AjaxButton noButton =
                 new AjaxButton("noButton", new Model<String>("No"), form) {
                 @Override
-                protected void onSubmit(AjaxRequestTarget target,
-                        Form<?> form) {
+                protected void onSubmit(AjaxRequestTarget target) {
                     answer = false;
                     ConfirmationDialog.this.close(target);
                 }
@@ -58,6 +56,7 @@ public abstract class ConfirmationDialog extends ModalDialogBase {
     public ConfirmationDialog(String id, IModel<String> message,
             final Component updateComponent) {
         super(id, new Model<String>("Please confirm"));
+        /*
         setWindowClosedCallback(new ModalWindow.WindowClosedCallback() {
             @Override
             public void onClose(AjaxRequestTarget target) {
@@ -71,6 +70,7 @@ public abstract class ConfirmationDialog extends ModalDialogBase {
                 }
             }
         });
+        */
         if (message != null) {
             setMessage(message);
         }
@@ -99,16 +99,16 @@ public abstract class ConfirmationDialog extends ModalDialogBase {
     protected Model<String> getCssClass() {
         return Model.of("confirmationDialog");
     }
-
+/*
     @Override
     public void show(IPartialPageRequestHandler target) {
-        answer = false; /* set save default value */
+        answer = false; // set save default value
         super.show(target);
     }
-
+*/
     public void show(AjaxRequestTarget target, IModel<String> message) {
         setMessage(message);
-        this.show(target);
+        this.open(target);
     }
 
     public void setMessage(IModel<String> message) {

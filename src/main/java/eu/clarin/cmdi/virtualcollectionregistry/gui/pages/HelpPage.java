@@ -24,7 +24,7 @@ import org.apache.wicket.request.resource.ContextRelativeResource;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 /**
  *

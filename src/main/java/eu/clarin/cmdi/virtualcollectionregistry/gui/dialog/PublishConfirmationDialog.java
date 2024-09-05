@@ -21,7 +21,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.form.AjaxButton;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.core.request.handler.IPartialPageRequestHandler;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalDialog;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
 import org.apache.wicket.markup.html.form.Form;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -44,7 +44,7 @@ public abstract class PublishConfirmationDialog extends ModalDialogBase {
             final AjaxButton noButton =
                 new AjaxButton("noButton", new Model<String>("Cancel"), form) {
                 @Override
-                protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                protected void onSubmit(AjaxRequestTarget target) {
                     answer = ButtonState.CANCEL;
                     PublishConfirmationDialog.this.close(target);
                 }
@@ -55,7 +55,7 @@ public abstract class PublishConfirmationDialog extends ModalDialogBase {
             final AjaxButton yesButton =
                 new AjaxButton("publishButton", new Model<String>("Publish"), form) {
                 @Override
-                protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                protected void onSubmit(AjaxRequestTarget target) {
                     answer = ButtonState.PUBLISH;
                     PublishConfirmationDialog.this.close(target);
                 }
@@ -66,7 +66,7 @@ public abstract class PublishConfirmationDialog extends ModalDialogBase {
             final AjaxButton frozenButton =
                 new AjaxButton("frozenButton", new Model<String>("Publish Frozen"), form) {
                 @Override
-                protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                protected void onSubmit(AjaxRequestTarget target) {
                     answer = ButtonState.PUBLISH_FROZEN;
                     PublishConfirmationDialog.this.close(target);
                 }
@@ -91,6 +91,7 @@ public abstract class PublishConfirmationDialog extends ModalDialogBase {
     public PublishConfirmationDialog(String id, IModel<String> message,
             final Component updateComponent) {
         super(id, new Model<String>("Please confirm"));
+        /*
         setWindowClosedCallback(new ModalWindow.WindowClosedCallback() {
             @Override
             public void onClose(AjaxRequestTarget target) {
@@ -104,6 +105,7 @@ public abstract class PublishConfirmationDialog extends ModalDialogBase {
                 }
             }
         });
+        */
         if (message != null) {
             setMessage(message);
         }
@@ -132,18 +134,19 @@ public abstract class PublishConfirmationDialog extends ModalDialogBase {
     protected Model<String> getCssClass() {
         return Model.of("confirmationDialog");
     }
-
+/*
     @Override
     public void show(IPartialPageRequestHandler target) {
-        answer = ButtonState.CANCEL; /* set save default value */
+        answer = ButtonState.CANCEL; // set save default value
         super.show(target);
     }
-
+*/
+    /*
     public void show(IPartialPageRequestHandler target, IModel<String> message) {
         setMessage(message);
         this.show(target);
     }
-
+*/
     public void setMessage(IModel<String> message) {
         if (message == null) {
             throw new NullPointerException("message == null");

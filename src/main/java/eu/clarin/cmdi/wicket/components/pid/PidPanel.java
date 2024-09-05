@@ -20,7 +20,7 @@ import eu.clarin.cmdi.wicket.components.panel.EmptyPanel;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalDialog;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.panel.Panel;
@@ -54,8 +54,8 @@ public class PidPanel extends Panel {
                 @Override
                 public void onClick( AjaxRequestTarget target ) {
                     if( model.getObject().hasPersistentIdentifier()) {
-                        dlg.setMaskType( ModalWindow.MaskType.SEMI_TRANSPARENT );
-                        dlg.show(target);
+                        //dlg.setMaskType( ModalWindow.MaskType.SEMI_TRANSPARENT );
+                        dlg.open(target);
                     }
                 } 
             };

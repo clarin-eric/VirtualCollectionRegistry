@@ -25,9 +25,9 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder;
 import java.net.URI;
 import java.security.Principal;
 import java.util.*;
-import javax.servlet.ServletContext;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.IRequestParameters;

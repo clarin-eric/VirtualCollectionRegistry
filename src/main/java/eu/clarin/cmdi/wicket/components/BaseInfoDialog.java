@@ -22,7 +22,7 @@ import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.core.request.handler.IPartialPageRequestHandler;
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalDialog;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.CheckBox;
@@ -40,7 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author wilelb
  */
-public class BaseInfoDialog extends ModalWindow {
+public class BaseInfoDialog extends ModalDialog {
             
     private final static Logger logger = LoggerFactory.getLogger(BaseInfoDialog.class);
     
@@ -49,7 +49,7 @@ public class BaseInfoDialog extends ModalWindow {
     private final class Content extends Panel {
         public Content(String id, String title, Component body, List<DialogButton> buttons, CheckBox cb) {
             super(id);
-            showUnloadConfirmation(false);
+            //showUnloadConfirmation(false);
 
             add(new Label("title", new Model(title)));            
             add(new AjaxLink( "closeButtonTop", new Model<String>("X") ){ 
@@ -104,25 +104,26 @@ public class BaseInfoDialog extends ModalWindow {
         }
 
         setOutputMarkupId(true);
-        setInitialWidth(600);
-        setResizable(false);
-        setUseInitialHeight(false);
-        setMaskType(MaskType.SEMI_TRANSPARENT);
+//        setInitialWidth(600);
+//        setResizable(false);
+//        setUseInitialHeight(false);
+//        setMaskType(MaskType.SEMI_TRANSPARENT);
     }
     
     protected void buildContent(String title, Component body, List<DialogButton> buttons, CheckBox cb) {
-        setContent(new Content(this.getContentId(), title, body, buttons, cb));
+        setContent(new Content(ModalDialog.CONTENT_ID, title, body, buttons, cb));
     }    
-    
+    /*
     @Override
     public void show(IPartialPageRequestHandler target) {
         super.show(target);
-    }
-    
+    }*/
+    /*
     @Override
     protected ResourceReference newCssResource() {
         return new CssResourceReference(BaseInfoDialog.class, "modal.css");
     }
+*/
     
     protected String getContentWicketId() {
         return CONTENT_ID;

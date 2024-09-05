@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.table;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import java.time.Duration;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
@@ -11,7 +12,6 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.repeater.Item;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.time.Duration;
 
 public class ColumnProcessing  extends AbstractColumn<VirtualCollection, String> {
     ColumnProcessing(VirtualCollectionTable table) {
@@ -33,7 +33,7 @@ public class ColumnProcessing  extends AbstractColumn<VirtualCollection, String>
         item.add(spinner);
 
 
-        item.add(new AbstractAjaxTimerBehavior(Duration.seconds(1)) {
+        item.add(new AbstractAjaxTimerBehavior(Duration.ofSeconds(1)) {
             @Override
             protected void onTimer(AjaxRequestTarget target) {
                 if(target != null) {

@@ -42,7 +42,7 @@ public class CitationPanel extends Panel {
         AjaxLink citeButton = new AjaxLink( "citeButton", new Model<String>("Cite") ){ 
             @Override
             public void onClick( AjaxRequestTarget target ) {
-                citationDialog.show(target);
+                citationDialog.open(target);
             } 
         };
         

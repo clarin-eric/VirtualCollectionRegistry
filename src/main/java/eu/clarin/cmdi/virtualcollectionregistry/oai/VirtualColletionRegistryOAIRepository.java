@@ -158,7 +158,7 @@ public class VirtualColletionRegistryOAIRepository implements Repository {
 
     @Override
     public Object getSampleRecordLocalId() {
-        return new Long(23);
+        return Long.valueOf(23);
     }
 
     @Override
@@ -224,7 +224,7 @@ public class VirtualColletionRegistryOAIRepository implements Repository {
         try {
             long id = Long.parseLong(unparsedLocalId);
             if (id > 0) {
-                return new Long(id);
+                return Long.valueOf(id);
             }
         } catch (NumberFormatException e) {
             /* FALL-THROUGH */

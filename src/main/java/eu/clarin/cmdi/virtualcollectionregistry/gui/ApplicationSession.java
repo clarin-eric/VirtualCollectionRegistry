@@ -6,7 +6,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.User;
 import java.security.Principal;
 import java.util.Locale;
 import java.util.regex.Pattern;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 import org.apache.wicket.request.Request;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;

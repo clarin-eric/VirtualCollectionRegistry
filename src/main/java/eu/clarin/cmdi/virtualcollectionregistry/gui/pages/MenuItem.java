@@ -7,7 +7,6 @@ import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.BookmarkablePageLink;
 import org.apache.wicket.markup.html.link.Link;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import org.apache.wicket.authroles.authorization.strategies.role.annotations.AuthorizeAction;
@@ -26,7 +25,7 @@ public class MenuItem<T extends WebPage> extends Panel {
         link.add(new Label("title", title).setRenderBodyOnly(true));
         add(link);
 
-        add(new AttributeModifier("class", new AbstractReadOnlyModel<String>() {
+        add(new AttributeModifier("class", new IModel<String>() {
             @Override
             public String getObject() {
                 if (pageClass.equals(getPage().getClass())) {

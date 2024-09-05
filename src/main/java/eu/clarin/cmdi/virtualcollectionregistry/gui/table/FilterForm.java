@@ -98,14 +98,14 @@ public class FilterForm extends Panel {
         final AjaxButton goButton = new AjaxButton("filter",
                 new ResourceModel("button.filter")) {
             @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmit(AjaxRequestTarget target) {
                 target.add(form);
                 target.add(table);
             }
 
             @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
-                super.onError(target, form);
+            protected void onError(AjaxRequestTarget target) {
+                super.onError(target);
                 target.add(form);
             }
         };
@@ -113,7 +113,7 @@ public class FilterForm extends Panel {
         final AjaxButton clearButton = new AjaxButton("clear",
                 new ResourceModel("button.clear")) {
             @Override
-            protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+            protected void onSubmit(AjaxRequestTarget target) {
                 @SuppressWarnings("unchecked")
                 final FilterState state =
                     ((Form<FilterState>) form).getModelObject();
@@ -123,8 +123,8 @@ public class FilterForm extends Panel {
             }
 
             @Override
-            protected void onError(AjaxRequestTarget target, Form<?> form) {
-                super.onError(target, form);
+            protected void onError(AjaxRequestTarget target) {
+                super.onError(target);
                 target.add(form);
             }
         };

@@ -25,6 +25,7 @@ import com.vladsch.flexmark.util.data.MutableDataSet;
 
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Optional;
 
 @SuppressWarnings("serial")
 final class ColumnName extends AbstractColumn<VirtualCollection, String> {
@@ -78,12 +79,12 @@ final class ColumnName extends AbstractColumn<VirtualCollection, String> {
             }
             details.add(descLabel);
             
-            AjaxFallbackLink toggleLink = new AjaxFallbackLink("toggle-link") {
+            AjaxFallbackLink<AjaxRequestTarget> toggleLink = new AjaxFallbackLink<>("toggle-link") {
                 @Override
-                public void onClick(AjaxRequestTarget target) {
+                public void onClick(Optional<AjaxRequestTarget> target) {
                     collapsedState.put(vc.getId(), !collapsedState.get(vc.getId()));
-                    if(target != null) {
-                        target.add(table);
+                    if(target.get() != null) {
+                        target.get().add(table);
                     }
                 }
             };

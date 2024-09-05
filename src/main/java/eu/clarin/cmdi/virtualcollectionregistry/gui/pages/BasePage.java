@@ -1,6 +1,5 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
-import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermissionException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin.AdminPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1.CreateAndEditVirtualCollectionPage;
@@ -25,7 +24,7 @@ import eu.clarin.cmdi.wicket.PiwikConfig;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
@@ -175,17 +174,17 @@ public class BasePage extends WebPage {
         //Add login or user profile + logout buttons based on authentication state
         if(isSignedIn()) {
             final NavbarButton userLink = new NavbarButton(UserProfilePage.class, Model.of(getUser().getName()));
-            userLink.setIconType(GlyphIconType.user);
+//            userLink.setIconType(GlyphIconType.user);
             menuItems.add(new ImmutableNavbarComponent(userLink, ComponentPosition.RIGHT));
             
             if(vcrConfig.isLogoutEnabled()) {
                 final NavbarButton logoutLink = new NavbarButton(LogoutPage.class, Model.of("Logout"));
-                logoutLink.setIconType(GlyphIconType.logout);
+//                logoutLink.setIconType(GlyphIconType.logout);
                 menuItems.add(new ImmutableNavbarComponent(logoutLink, ComponentPosition.RIGHT));
             }            
         } else {
             final NavbarButton loginLink = new NavbarButton(LoginPage.class, Model.of("Login"));
-               loginLink.setIconType(GlyphIconType.login);
+//               loginLink.setIconType(GlyphIconType.login);
             menuItems.add(new ImmutableNavbarComponent(loginLink, ComponentPosition.RIGHT));
         }
 

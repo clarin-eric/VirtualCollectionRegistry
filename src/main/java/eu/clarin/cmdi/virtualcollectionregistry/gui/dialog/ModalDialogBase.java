@@ -1,14 +1,14 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.dialog;
 
 
-import org.apache.wicket.extensions.ajax.markup.html.modal.ModalWindow;
+import org.apache.wicket.extensions.ajax.markup.html.modal.ModalDialog;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.request.resource.CssResourceReference;
 import org.apache.wicket.request.resource.ResourceReference;
 
 @SuppressWarnings("serial")
-public abstract class ModalDialogBase extends ModalWindow {
+public abstract class ModalDialogBase extends ModalDialog {
     private final class Content extends Panel {
         public Content(String id) {
             super(id);
@@ -32,17 +32,17 @@ public abstract class ModalDialogBase extends ModalWindow {
             throw new NullPointerException("title == null");
         }
         setOutputMarkupId(true);
-        setInitialWidth(350);
-        setUseInitialHeight(false);
-        setTitle(title);
-        setContent(new Content(this.getContentId()));
+//        setInitialWidth(350);
+//        setUseInitialHeight(false);
+       // setTitle(title);
+        setContent(new Content(ModalDialog.CONTENT_ID));
     }
-    
+    /*
     @Override
     protected ResourceReference newCssResource() {
         return new CssResourceReference(ModalDialogBase.class, "custom_modal.css");
     }
-
+*/
     protected abstract Panel createButtonBar(String id);
 
     protected abstract Panel createContent(String id);

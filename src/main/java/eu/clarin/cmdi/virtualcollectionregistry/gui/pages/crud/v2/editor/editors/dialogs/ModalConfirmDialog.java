@@ -16,6 +16,7 @@ import org.apache.wicket.model.Model;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  *
@@ -72,13 +73,13 @@ public class ModalConfirmDialog extends Modal<String> {
     }
     
     protected void initFooter(final Modal modal) {
-        AjaxFallbackLink buttonOk = new AjaxFallbackLink("button") {
+        AjaxFallbackLink<AjaxRequestTarget> buttonOk = new AjaxFallbackLink<>("button") {
             @Override
-            public void onClick(final AjaxRequestTarget target) {
+            public void onClick(final Optional<AjaxRequestTarget> target) {
                 if(action != null) {
-                    fireEvent(action.getEvent(target, modal));
+                    fireEvent(action.getEvent(target.get(), modal));
                 } else {
-                    fireEvent(new AbstractDialogEvent(EventType.OK, target, modal));
+                    fireEvent(new AbstractDialogEvent(EventType.OK, target.get(), modal));
                 }
             }        
         };
@@ -86,10 +87,10 @@ public class ModalConfirmDialog extends Modal<String> {
         buttonOk.add(new Label("button_label", Model.of("Ok")));                
         addButton(buttonOk);
         
-        AjaxFallbackLink buttonCancel = new AjaxFallbackLink("button") {
+        AjaxFallbackLink<AjaxRequestTarget> buttonCancel = new AjaxFallbackLink<>("button") {
             @Override
-            public void onClick(final AjaxRequestTarget target) {
-                fireEvent(new AbstractDialogEvent(EventType.CANCEL, target, modal));
+            public void onClick(final Optional<AjaxRequestTarget> target) {
+                fireEvent(new AbstractDialogEvent(EventType.CANCEL, target.get(), modal));
             }        
         };
         buttonCancel.add(new AttributeModifier("class", "btn btn-default"));

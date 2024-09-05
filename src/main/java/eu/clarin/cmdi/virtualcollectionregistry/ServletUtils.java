@@ -10,7 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -29,8 +29,8 @@ public class ServletUtils {
             return Collections.emptyMap();
         } else {
             @SuppressWarnings("unchecked")
-            final List<Object> params = Collections.list(servletContext.getInitParameterNames());
-            final Map<String, String> paramMap = new HashMap<String, String>(params.size());
+            final List params = Collections.list(servletContext.getInitParameterNames());
+            final Map<String, String> paramMap = new HashMap<>(params.size());
             for (Object param : params) {
                 final String paramName = param.toString();
                 final String paramValue = servletContext.getInitParameter(paramName);

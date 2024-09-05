@@ -11,7 +11,6 @@ import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.link.ExternalLink;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.PropertyModel;
@@ -89,7 +88,7 @@ public class ReferenceLinkPanel extends Panel {
      * String model that returns the label of a {@link Resource} if it is
      * available (not null or empty), otherwise the reference URI
      */
-    private static class ReferenceLabelModel extends AbstractReadOnlyModel<String> {
+    private static class ReferenceLabelModel implements IModel<String> {
 
         private final IModel<Resource> resourceModel;
 

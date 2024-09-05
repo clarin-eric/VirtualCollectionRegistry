@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Optional;
 
 /**
  *
@@ -63,21 +64,21 @@ public class ReferenceEditor extends Panel {
         ta.setCompleteSubmitOnUpdate(true); 
         wrapper.add(ta);
         
-        wrapper.add(new AjaxFallbackLink("save") {
+        wrapper.add(new AjaxFallbackLink<AjaxRequestTarget>("save") {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onClick(Optional<AjaxRequestTarget> target) {
                 data.setRef(urlModel.getObject());
                 data.setLabel(titleModel.getObject());
                 data.setDescription( descriptionModel.getObject());
                 reset();
-                saveEventHandler.handleSaveEvent(target);
+                saveEventHandler.handleSaveEvent(target.get());
             }
         });
-        wrapper.add(new AjaxFallbackLink("cancel") {
+        wrapper.add(new AjaxFallbackLink<AjaxRequestTarget>("cancel") {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onClick(Optional<AjaxRequestTarget> target) {
                 reset();
-                cancelEventHandler.handleCancelEvent(target);
+                cancelEventHandler.handleCancelEvent(target.get());
             }
         });
         

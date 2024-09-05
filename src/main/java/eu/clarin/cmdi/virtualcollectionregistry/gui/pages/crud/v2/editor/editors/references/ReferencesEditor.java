@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -22,12 +21,10 @@ import javax.xml.xpath.XPathFactory;
 
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.CreateAndEditPanel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.CancelEventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.EventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.MoveListEventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.SaveEventHandler;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.authors.AuthorsEditor;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.dialogs.ModalConfirmAction;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.dialogs.ModalConfirmDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.DataUpdatedEvent;
@@ -37,6 +34,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.*;
 import eu.clarin.cmdi.virtualcollectionregistry.model.OrderableComparator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
+import java.time.Duration;
 import org.apache.http.Header;
 import org.apache.http.HttpEntity;
 import org.apache.http.HttpResponse;
@@ -55,7 +53,6 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.time.Duration;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -395,7 +392,7 @@ public class ReferencesEditor extends ComposedField {
             }
         };
 
-        ajaxWrapper.add(new AbstractAjaxTimerBehavior(Duration.seconds(uiRefreshTimeInSeconds)) {
+        ajaxWrapper.add(new AbstractAjaxTimerBehavior(Duration.ofSeconds(uiRefreshTimeInSeconds)) {
             @Override
             protected void onTimer(AjaxRequestTarget target) {
                 if(target != null) {
@@ -853,14 +850,14 @@ public class ReferencesEditor extends ComposedField {
 
         //Swap the collection with the collection at the specified destination (up=1, down=-1, beginning=0 or end=i)
         if (direction == -1 && idx > 0) {
-            jobs.get(idx).getReference().setDisplayOrder(new Long(idx - 1));
-            jobs.get(idx - 1).getReference().setDisplayOrder(new Long(idx));
+            jobs.get(idx).getReference().setDisplayOrder(Long.valueOf(idx - 1));
+            jobs.get(idx - 1).getReference().setDisplayOrder(Long.valueOf(idx));
         } else if(direction == 1 && idx < jobs.size()-1) {
-            jobs.get(idx).getReference().setDisplayOrder(new Long(idx + 1));
-            jobs.get(idx + 1).getReference().setDisplayOrder(new Long(idx));
+            jobs.get(idx).getReference().setDisplayOrder(Long.valueOf(idx + 1));
+            jobs.get(idx + 1).getReference().setDisplayOrder(Long.valueOf(idx));
         } else {
-            jobs.get(idx).getReference().setDisplayOrder(new Long(direction));
-            jobs.get(direction).getReference().setDisplayOrder(new Long(idx));
+            jobs.get(idx).getReference().setDisplayOrder(Long.valueOf(direction));
+            jobs.get(direction).getReference().setDisplayOrder(Long.valueOf(idx));
         }
 
         jobs.sort();

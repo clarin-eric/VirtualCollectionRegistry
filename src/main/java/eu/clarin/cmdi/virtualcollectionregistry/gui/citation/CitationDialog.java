@@ -42,7 +42,7 @@ public class CitationDialog extends ModalDialogBase {
             final Form<Void> form = new Form<Void>("buttonsForm");
             final AjaxButton closeButton = new AjaxButton("closeButton", new Model<String>("Close"), form) {
                 @Override
-                protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                protected void onSubmit(AjaxRequestTarget target) {
                     CitationDialog.this.close(target);
                 }
             };
@@ -68,7 +68,7 @@ public class CitationDialog extends ModalDialogBase {
             
     public CitationDialog(String id, final IModel<VirtualCollection> model) {
         super(id, new Model<>("Citation options for " + model.getObject().getName()));
-        this.setCssClassName("/css/custom_modal.css");
+        //this.setCssClassName("/css/custom_modal.css");
         //Update models in content panel
         if(model.getObject() != null && model.getObject().hasPersistentIdentifier()) {
             PersistentIdentifier pid = model.getObject().getPrimaryIdentifier();
@@ -93,9 +93,10 @@ public class CitationDialog extends ModalDialogBase {
     protected Model<String> getCssClass() {
         return Model.of("citationDialog");
     }
-    
+    /*
     @Override
     public void show(IPartialPageRequestHandler target) {
         super.show(target);
     }
+*/
 }
