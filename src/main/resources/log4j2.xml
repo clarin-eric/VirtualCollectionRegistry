@@ -23,13 +23,16 @@
     <Loggers>
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry" level="DEBUG" />
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui" level="INFO" />
-        <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2" level="DEBUG" />
+        <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2" level="TRACE" />
+        <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.CreateAndEditPanel" level="INFO" />    
+        
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth" level="INFO" />
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui.CharacterEncodingFilter" level="INFO" />
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryMaintenanceImpl" level="INFO" />
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.AdminUsersServiceImpl" level="WARN" />
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.ServletUtils" level="WARN" />
-
+        
+        
         <Logger name="de.mpg.aai.shhaa" level="INFO" />
         <!--
         <Logger name="de.mpg.aai.shhaa.authn" level="INFO" />

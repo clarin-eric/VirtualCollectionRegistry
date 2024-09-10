@@ -481,6 +481,11 @@
             </exclusions>
                     
         </dependency>
+        <dependency>
+    <groupId>de.agilecoders.wicket</groupId>
+    <artifactId>wicket-bootstrap-extensions</artifactId>
+    <version>7.0.5</version>
+</dependency>
         <!--       
         <dependency>
             <groupId>org.webjars</groupId>
@@ -500,7 +505,13 @@
             <artifactId>wicket-webjars</artifactId>
             <version>4.0.4</version>
         </dependency>
-        
+        <!--
+        <dependency>
+            <groupId>org.webjars</groupId>
+            <artifactId>font-awesome</artifactId>
+            <version>5.15.4</version>
+        </dependency>
+        -->
             
         <!-- Include updated version of jackson databind -->
         <dependency>
@@ -684,6 +695,12 @@
                     <include>**/*.ico</include>
                     <include>**/*.js</include>
                     <include>**/*.properties</include>
+                    <include>**/*.png</include>
+                    <include>**/*.woff2</include>
+                    <include>**/*.woff</include>
+                    <include>**/*.svg</include>
+                    <include>**/*.ttf</include>
+                    <include>**/*.eot</include>
                 </includes>
             </resource>
         </resources>

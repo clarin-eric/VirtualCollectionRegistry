@@ -14,10 +14,10 @@ import org.springframework.context.annotation.Configuration;
  *
  * @author twagoo
  */
-@Configuration
+//@Configuration
 public class VirtualCollectionRegistryOAIConfiguration {
 
-    @Autowired
+    //@Autowired
     private VirtualCollectionRegistry vcr;
 
     @Bean

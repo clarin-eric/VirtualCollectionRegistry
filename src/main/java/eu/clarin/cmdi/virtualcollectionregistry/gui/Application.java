@@ -11,6 +11,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.CreateAndEditV
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmitVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LoginPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LogoutPage;
+import eu.clarin.cmdi.wicket.theme.ClarinBootstrap5Theme;
 import eu.clarin.cmdi.wicket.ExtremeNoopTheme;
 import org.apache.wicket.Page;
 import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
@@ -64,20 +65,24 @@ public class Application extends AuthenticatedWebApplication {
     @Override
     protected void init() {
         super.init();
-        
-        //Disable CSP for now 
-        //TODO: look into ways of enabling this again, see https://nightlies.apache.org/wicket/guide/9.x/single.html#_content_security_policy_csp
-        getCspSettings().blocking().disabled();
-        
+             
         //Install bootstrap
         Bootstrap.install(
             this, 
             new BootstrapSettings()
                 //bootstrap CSS is provided via markup (CSS link in HTML head)
-                .setThemeProvider(new SingleThemeProvider(new ExtremeNoopTheme()))
-                .setJsResourceReference(JavaScriptResources.getBootstrapJS())
+                //.setThemeProvider(new SingleThemeProvider(new ExtremeNoopTheme()))
+                .setThemeProvider(new SingleThemeProvider(new ClarinBootstrap5Theme()))
+                //.setJsResourceReference(JavaScriptResources.getBootstrapJS())
+                .setAutoAppendResources(true)
+                .setUpdateSecurityManager(true)
         );
-   
+        
+        //FontAwesomeSettings.get(Application.get()).setCssResourceReference(FontAwesome5CssReference.instance());
+
+        //Disable CSP for now 
+        //TODO: look into ways of enabling this again, see https://nightlies.apache.org/wicket/guide/9.x/single.html#_content_security_policy_csp
+        getCspSettings().blocking().disabled();
     
         logger.info("Initialising VCR web application");
         if (vcrConfig != null) {
