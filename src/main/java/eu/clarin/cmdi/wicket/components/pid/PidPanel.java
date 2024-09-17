@@ -50,12 +50,12 @@ public class PidPanel extends Panel {
             }
 
             final PidInfoDialog dlg = new PidInfoDialog("info_dialog", model, context);
-            AjaxLink citeButton = new AjaxLink( "type", new Model<String>(type) ){ 
+            AjaxLink citeButton = new AjaxLink( "type", Model.of(type) ){ 
                 @Override
                 public void onClick( AjaxRequestTarget target ) {
                     if( model.getObject().hasPersistentIdentifier()) {
                         //dlg.setMaskType( ModalWindow.MaskType.SEMI_TRANSPARENT );
-                        dlg.open(target);
+                        dlg.show(true, target);
                     }
                 } 
             };

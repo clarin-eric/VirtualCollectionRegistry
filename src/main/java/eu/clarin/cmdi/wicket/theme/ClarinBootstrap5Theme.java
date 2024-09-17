@@ -26,6 +26,10 @@ import org.apache.wicket.request.resource.CssResourceReference;
 
 /**
  *
+ * Inspired by:
+ * https://github.com/martin-g/wicket-bootstrap/blob/wicket-10.x-bootstrap-5.x/bootstrap-themes/src/main/java/de/agilecoders/wicket/themes/markup/html/material_design/MaterialDesignTheme.java
+ * https://github.com/martin-g/wicket-webjars
+ * 
  * @author wilelb
  */
 public class ClarinBootstrap5Theme extends Theme {
@@ -44,7 +48,7 @@ public class ClarinBootstrap5Theme extends Theme {
         //return Collections.singletonList(headerItem);
         return List.of(
             //CssHeaderItem.forReference(ClarinBootstrap5ThemeCssReference.instance()).setId(BOOTSTRAP_THEME_MARKUP_ID),
-            CssHeaderItem.forReference(ClarinBootstrap5ThemeVloCssReference.instance()).setId(BOOTSTRAP_THEME_MARKUP_ID),
+            //CssHeaderItem.forReference(ClarinBootstrap5ThemeVloCssReference.instance()).setId(BOOTSTRAP_THEME_MARKUP_ID),
             CssHeaderItem.forReference(ClarinBootstrap5ThemeVcrCssReference.instance()).setId(BOOTSTRAP_THEME_MARKUP_ID)
         );
     }

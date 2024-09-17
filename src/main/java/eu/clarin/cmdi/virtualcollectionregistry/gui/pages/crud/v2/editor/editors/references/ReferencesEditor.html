@@ -5,38 +5,39 @@
     <body>
         
         <wicket:panel>  
-            <div class="col-xs-2" style="text-align: right;">
-                <div wicket:id="label">label</div>
-            </div>
-            <div class="col-xs-10">
-                <!-- Editor to add new reference -->
-                <div wicket:id="reference" class="col-xs-12 field-row">[URI]</div>
-                <div wicket:id="reference_title" class="col-xs-12 field-row">[TITLE]</div>
-                <div class="col-md-12 col-xs-12">
-                    <div class="col-xs-12"><i>Press &lt;enter&gt; to add this reference</i></div>
+            <div class="row">
+                <div class="col-md-2" style="text-align: right;">
+                    <div wicket:id="label">label</div>
                 </div>
-
-                <div class="col-md-10 col-md-offset-2 col-sm-12 help_message" wicket:id="help_message">
-                    <i class="fa fa-info-circle" aria-hidden="true" wicket:id="icon"></i>
-                    <span wicket:id="message" class="help-message"></span>
-                </div>
-
-                <!-- Editor to improve a reference -->
-                <div class="col-md-12 col-md-offset-0 col-sm-12" wicket:id="ref_editor_wrapper">
-                    <div wicket:id="ref_editor"></div>
-                </div>
-
-                <!-- The list of references -->
-                <div class="col-md-12 col-md-offset-0 col-sm-12" wicket:id="ajaxwrapper" style="margin-top: 10px">
-                    <div wicket:id="lbl_no_references" class="error-message"></div>
-                    <div wicket:id="listview">
-                        <div wicket:id="pnl_reference">label</div>
+                <div class="col-md-10">
+                    <!-- Editor to add new reference -->
+                    <div wicket:id="reference" class="col-xs-12 field-row">[URI]</div>
+                    <div wicket:id="reference_title" class="col-xs-12 field-row">[TITLE]</div>
+                    <div class="col-md-12 col-xs-12">
+                        <div class="col-xs-12"><i>Press &lt;enter&gt; to add this reference</i></div>
                     </div>
-                </div>
 
-                <div class="col-md-12 col-md-offset-0 col-sm-12 error-message" wicket:id="error_message"></div>
+                    <div class="col-md-10 col-md-offset-2 col-sm-12 help_message" wicket:id="help_message">
+                        <i class="fa fa-info-circle" aria-hidden="true" wicket:id="icon"></i>
+                        <span wicket:id="message" class="help-message"></span>
+                    </div>
+
+                    <!-- Editor to improve a reference -->
+                    <div class="col-md-12 col-md-offset-0 col-sm-12" wicket:id="ref_editor_wrapper">
+                        <div wicket:id="ref_editor"></div>
+                    </div>
+
+                    <!-- The list of references -->
+                    <div class="col-md-12 col-md-offset-0 col-sm-12" wicket:id="ajaxwrapper" style="margin-top: 10px">
+                        <div wicket:id="lbl_no_references" class="error-message"></div>
+                        <div wicket:id="listview">
+                            <div wicket:id="pnl_reference">label</div>
+                        </div>
+                    </div>
+
+                    <div class="col-md-12 col-md-offset-0 col-sm-12 error-message" wicket:id="error_message"></div>
+                </div>
             </div>
-            
             <!-- Modal -->
             <div id="myModal" wicket:id="references_modal"></div>
         </wicket:panel>       

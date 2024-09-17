@@ -16,17 +16,17 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.gui.dialog;
 
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.UIUtils;
-import eu.clarin.cmdi.wicket.components.BaseInfoDialog;
-import eu.clarin.cmdi.wicket.components.DialogButton;
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
+import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
+import eu.clarin.cmdi.wicket.components.BootstrapDialog;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
-import org.apache.wicket.markup.html.basic.Label;
-import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import eu.clarin.cmdi.wicket.components.ConfirmationDialog;
+import org.apache.wicket.markup.ComponentTag;
 
 /**
  *
@@ -36,49 +36,63 @@ public class Dialogs {
 
     private final static Logger logger = LoggerFactory.getLogger(Dialogs.class);
 
-    private static void addDefaultConfirmButtons(eu.clarin.cmdi.wicket.components.ConfirmationDialog dlg, eu.clarin.cmdi.wicket.components.ConfirmationDialog.Handler confirmHandler) {
-        dlg.addButton(new DialogButton("Yes") {
-            @Override
-            public void handleButtonClick(AjaxRequestTarget target) {
-                try {
-                    confirmHandler.handle(target);
-                } catch(RuntimeException ex) {
-                    dlg.close(target);
-                }
-            }
-        });      
-        dlg.addButton(new DialogButton("No") {
-            @Override
-            public void handleButtonClick(AjaxRequestTarget target) {
-                dlg.close(target);
-            }
-        });    
+    private abstract static class PrimaryBootstrapAjaxLink extends BootstrapAjaxLink {
+        public PrimaryBootstrapAjaxLink(IModel<String> labelModel) {
+            super(Modal.BUTTON_MARKUP_ID, Model.of(""), Buttons.Type.Primary, labelModel);
+        }
     }
     
-    private static eu.clarin.cmdi.wicket.components.ConfirmationDialog createDialog(String title, String id, IModel<String> model, eu.clarin.cmdi.wicket.components.ConfirmationDialog.Handler confirmHandler) {
-        eu.clarin.cmdi.wicket.components.ConfirmationDialog dlg = new eu.clarin.cmdi.wicket.components.ConfirmationDialog(id, title, confirmHandler);
-        addDefaultConfirmButtons(dlg, confirmHandler);        
-        dlg.setContentPanel(new PublishConfirmationDialogPanel(BaseInfoDialog.CONTENT_ID, model));
+    private static BootstrapAjaxLink createBootstrapAjaxLink(Buttons.Type type, IModel<String> labelModel, Modal dlg, ConfirmationDialog.Handler handler) {
+        return new BootstrapAjaxLink(Modal.BUTTON_MARKUP_ID, Model.of(""), type, labelModel) {
+            @Override
+            public void onClick(AjaxRequestTarget target) {
+                if(handler != null) {
+                    try {
+                        handler.handle(target);
+                    } catch(RuntimeException ex) {
+                        dlg.close(target);
+                    }
+                } else {
+                    dlg.close(target);
+                }
+            }            
+            
+            @Override
+            protected void onComponentTag(ComponentTag tag) {
+                super.onComponentTag(tag);
+                //Attributes.addClass(tag, " btn-default");
+            }
+        };
+    }
+    
+    private static ConfirmationDialog createDialog(String title, String id, IModel<String> model, ConfirmationDialog.Handler confirmHandler) {
+        ConfirmationDialog dlg = new ConfirmationDialog(id, title, confirmHandler);
+        dlg.addButton(createBootstrapAjaxLink(Buttons.Type.Primary, Model.of("Yes"), dlg, confirmHandler));
+        dlg.addButton(createBootstrapAjaxLink(Buttons.Type.Primary, Model.of("No"), dlg, null)); 
+        dlg.add(new ConfirmationDialogPanel(BootstrapDialog.CONTENT_PANEL_ID, model));
         dlg.build();
         return dlg;
     }
     
-    public static eu.clarin.cmdi.wicket.components.ConfirmationDialog createConfirmPublishCollectionDialog(String id, IModel<String> model, eu.clarin.cmdi.wicket.components.ConfirmationDialog.Handler confirmHandler, eu.clarin.cmdi.wicket.components.ConfirmationDialog.Handler confirmFrozenHandler) {        
-        final eu.clarin.cmdi.wicket.components.ConfirmationDialog dlg = new eu.clarin.cmdi.wicket.components.ConfirmationDialog(id, "Publish virtual collection", confirmHandler);
-        IModel<Boolean> immutableModel = new Model<>(false);
-        CheckBox cb = new CheckBox("cb", immutableModel);
-        UIUtils.addTooltip(cb, "Publish this collection as immutable. This means the collection cannot be changed after publishing.");
-        cb.add(new AjaxFormComponentUpdatingBehavior("blur") {
-            //This triggers the model update on blur event without a form submit
+    public static ConfirmationDialog createConfirmPublishCollectionWithWarningsDialog(String id, IModel<String> model, ConfirmationDialog.Handler confirmHandler) {
+        return createDialog("Publish virtual collection with warnings", id, model, confirmHandler);
+    }
+
+    public static ConfirmationDialog createConfirmEditCollectionDialog(String id, IModel<String> model, ConfirmationDialog.Handler confirmHandler) {
+        return createDialog("Edit virtual collection", id, model, confirmHandler);
+    }
+    
+    public static ConfirmationDialog createDeleteEditCollectionDialog(String id, IModel<String> model, ConfirmationDialog.Handler confirmHandler) {
+        return createDialog("Delete virtual collection", id, model, confirmHandler);
+    }
+    
+    public static ConfirmationDialog createConfirmPublishCollectionDialog(String id, IModel<String> model, ConfirmationDialog.Handler confirmHandler, eu.clarin.cmdi.wicket.components.ConfirmationDialog.Handler confirmFrozenHandler) {        
+        final ConfirmationDialog dlg = new ConfirmationDialog(id, "Publish virtual collection", confirmHandler);
+        final IModel<Boolean> immutableModel = new Model<>(false);
+        dlg.addButton(new PrimaryBootstrapAjaxLink(Model.of("Publish")) {
             @Override
-            protected void onUpdate(final AjaxRequestTarget target) {
-                logger.trace("CB changed: {}", immutableModel.getObject());
-            }
-        });
-        cb.add(new Label("cb_label", "Immutable"));
-        dlg.addButton(new DialogButton("Publish") {
-            @Override
-            public void handleButtonClick(AjaxRequestTarget target) {
+            public void onClick(AjaxRequestTarget target) {
+                logger.debug("Immutable: ", immutableModel.getObject());
                 try {
                     if(immutableModel.getObject()) {
                         confirmFrozenHandler.handle(target);
@@ -91,30 +105,9 @@ public class Dialogs {
                 immutableModel.setObject(false);
             }
         });
-        DialogButton btn = new DialogButton("Cancel", " btn-default") {
-            @Override
-            public void handleButtonClick(AjaxRequestTarget target) {
-                dlg.close(target);
-            }
-        };
-        dlg.addButton(btn);
-        dlg.addCheckbox(cb);
-
-        //addDefaultConfirmButtons(dlg, confirmHandler);
-        dlg.setContentPanel(new PublishConfirmationDialogPanel(BaseInfoDialog.CONTENT_ID, model));
+        dlg.addButton(createBootstrapAjaxLink(Buttons.Type.Primary, Model.of("Cancel"), dlg, null));
+        dlg.add(new PublishConfirmationDialogPanel(BootstrapDialog.CONTENT_PANEL_ID, model, immutableModel));
         dlg.build();
         return dlg;
-    }
-    
-    public static eu.clarin.cmdi.wicket.components.ConfirmationDialog createConfirmPublishCollectionWithWarningsDialog(String id, IModel<String> model, eu.clarin.cmdi.wicket.components.ConfirmationDialog.Handler confirmHandler) {
-        return createDialog("Publish virtual collection with warnings", id, model, confirmHandler);
-    }
-
-    public static eu.clarin.cmdi.wicket.components.ConfirmationDialog createConfirmEditCollectionDialog(String id, IModel<String> model, eu.clarin.cmdi.wicket.components.ConfirmationDialog.Handler confirmHandler) {
-        return createDialog("Edit virtual collection", id, model, confirmHandler);
-    }
-    
-    public static eu.clarin.cmdi.wicket.components.ConfirmationDialog createDeleteEditCollectionDialog(String id, IModel<String> model, eu.clarin.cmdi.wicket.components.ConfirmationDialog.Handler confirmHandler) {
-        return createDialog("Delete virtual collection", id, model, confirmHandler);
     }
 }

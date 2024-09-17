@@ -65,7 +65,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     //Map of field id to support editor modes for that field
     private final Map<String, Mode[]> fieldMode = new HashMap<>();
 
-    //private final ModalConfirmDialog dialog;
+    private final ModalConfirmDialog dialog; //todo: is this used?
 
     private final AjaxFallbackLink<AjaxRequestTarget> btnSave;
     private final WebMarkupContainer cbHelpLabel;
@@ -98,7 +98,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
      */
     public CreateAndEditPanel(String id, VirtualCollection collection, ModalConfirmDialog dialog, VcrConfig vcrConfig) {
         super(id);
-        //this.dialog = dialog;
+        this.dialog = dialog;
         this.setOutputMarkupId(true);
         
         final Component ajax_update_component = this;

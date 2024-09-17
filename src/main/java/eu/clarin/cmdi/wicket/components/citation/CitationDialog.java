@@ -16,42 +16,42 @@
  */
 package eu.clarin.cmdi.wicket.components.citation;
 
-import eu.clarin.cmdi.wicket.components.BaseInfoDialog;
-import eu.clarin.cmdi.wicket.components.DialogButton;
-import java.util.Arrays;
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
+import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
+import eu.clarin.cmdi.wicket.components.BootstrapDialog;
 import java.util.List;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
 
 /**
  *
  * @author wilelb
  */
-public class CitationDialog extends BaseInfoDialog {
+public class CitationDialog extends BootstrapDialog {
     
     private final static String TITLE = "Citation information";
     
     private final IModel<Citable> model;
     
     public CitationDialog(String id, final IModel<Citable> model) {
-        super(id, TITLE);
+        super(id);
+        header(Model.of(TITLE));
         this.model = model;
-        this.build();
+        
+        addButton(new BootstrapAjaxLink(Modal.BUTTON_MARKUP_ID, Model.of(""), Buttons.Type.Primary, Model.of("Close")) {
+            @Override
+            public void onClick(AjaxRequestTarget target) {                
+                    CitationDialog.this.close(target);
+                
+            }    
+        });
+        add(new Body(BootstrapDialog.CONTENT_PANEL_ID));
     }
-    
-    private void build() {
-        List<DialogButton> buttons = Arrays.asList(
-                new DialogButton("Close") {
-                    @Override
-                    public void handleButtonClick(AjaxRequestTarget target) {
-                        CitationDialog.this.close(target);
-                    }
-                });
-        buildContent(TITLE, new Body(getContentWicketId()), buttons, null);
-    }
-    
+        
     private class Body extends Panel {
         public Body(String id) {
             super(id);

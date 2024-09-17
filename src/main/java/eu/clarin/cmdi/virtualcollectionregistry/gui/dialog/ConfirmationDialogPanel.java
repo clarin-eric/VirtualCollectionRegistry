@@ -1,5 +1,5 @@
-/* 
- * Copyright (C) 2017 CLARIN
+/*
+ * Copyright (C) 2024 CLARIN
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,18 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
+package eu.clarin.cmdi.virtualcollectionregistry.gui.dialog;
 
-$( document ).ready(function() {
-    $(function () {
-        $('[data-toggle="tooltip"]').tooltip();
-        $('[data-toggle-tooltip="tooltip"]').tooltip();        
-    });
-    $(function () {
-        $('[data-toggle="popover"]').popover();
-    });    /*
-    $(function () {
-        $('[data-toggle="collapse"]').collapse();
-    });    */
-    console.log( "ready!" );
-});
+import org.apache.wicket.markup.html.basic.MultiLineLabel;
+import org.apache.wicket.markup.html.panel.Panel;
+import org.apache.wicket.model.IModel;
 
+/**
+ *
+ * @author wilelb
+ */
+public class ConfirmationDialogPanel  extends Panel {
+    public ConfirmationDialogPanel(String id, IModel<String> msgModel) {
+        super(id);
+        
+        MultiLineLabel messageLabel = new MultiLineLabel("message", msgModel);
+        add(messageLabel);
+    }    
+}

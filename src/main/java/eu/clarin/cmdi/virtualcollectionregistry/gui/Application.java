@@ -3,6 +3,8 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui;
 import de.agilecoders.wicket.core.Bootstrap;
 import de.agilecoders.wicket.core.settings.BootstrapSettings;
 import de.agilecoders.wicket.core.settings.SingleThemeProvider;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesome5CssReference;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesomeSettings;
 import eu.clarin.cmdi.virtualcollectionregistry.*;
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.*;
@@ -78,7 +80,7 @@ public class Application extends AuthenticatedWebApplication {
                 .setUpdateSecurityManager(true)
         );
         
-        //FontAwesomeSettings.get(Application.get()).setCssResourceReference(FontAwesome5CssReference.instance());
+        FontAwesomeSettings.get(Application.get()).setCssResourceReference(FontAwesome5CssReference.instance());
 
         //Disable CSP for now 
         //TODO: look into ways of enabling this again, see https://nightlies.apache.org/wicket/guide/9.x/single.html#_content_security_policy_csp

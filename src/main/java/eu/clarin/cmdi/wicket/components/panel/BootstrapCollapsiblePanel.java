@@ -35,7 +35,7 @@ public class BootstrapCollapsiblePanel extends AbstractBootstrapPanel {
         String collapseid = UUID.randomUUID().toString();
         
         WebMarkupContainer btnCollapse = new WebMarkupContainer("pnl-btn-collapse");
-        btnCollapse.add(new AttributeModifier("data-target", "#"+collapseid));
+        btnCollapse.add(new AttributeModifier("data-bs-target", "#"+collapseid));
         //btnCollapse.add(new AttributeModifier("href", "#"+collapseid));
         btnCollapse.add(new Label("pnl-title", title));
         add(btnCollapse);        

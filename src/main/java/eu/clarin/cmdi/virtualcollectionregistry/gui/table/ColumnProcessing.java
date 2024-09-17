@@ -31,8 +31,7 @@ public class ColumnProcessing  extends AbstractColumn<VirtualCollection, String>
                 model.getObject().getState() == VirtualCollection.State.PUBLIC_PENDING ||
                 model.getObject().getState() == VirtualCollection.State.PUBLIC_FROZEN_PENDING);
         item.add(spinner);
-
-
+/*
         item.add(new AbstractAjaxTimerBehavior(Duration.ofSeconds(1)) {
             @Override
             protected void onTimer(AjaxRequestTarget target) {
@@ -41,6 +40,7 @@ public class ColumnProcessing  extends AbstractColumn<VirtualCollection, String>
                 }
             }
         });
+*/
     }
 
 }

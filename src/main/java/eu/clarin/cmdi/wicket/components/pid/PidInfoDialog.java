@@ -16,13 +16,13 @@
  */
 package eu.clarin.cmdi.wicket.components.pid;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
+import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
-import eu.clarin.cmdi.wicket.components.BaseInfoDialog;
-import eu.clarin.cmdi.wicket.components.DialogButton;
+import eu.clarin.cmdi.wicket.components.BootstrapDialog;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.List;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -54,7 +54,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author wilelb
  */
-public class PidInfoDialog extends BaseInfoDialog {
+public class PidInfoDialog extends BootstrapDialog {
  
     private final static Logger logger = LoggerFactory.getLogger(PidInfoDialog.class);
     
@@ -122,20 +122,24 @@ public class PidInfoDialog extends BaseInfoDialog {
     }
     
     public PidInfoDialog(String id, final IModel<PersistentIdentifieable> model, String context) {
-        super(id, TITLE);
+        super(id);
+        header(Model.of(TITLE));
         this.model = model;
-        this.build(context);
+        //this.build(context);
+        addButton(new BootstrapAjaxLink(Modal.BUTTON_MARKUP_ID, Model.of(""), Buttons.Type.Primary, Model.of("Close")) {
+            @Override
+            public void onClick(AjaxRequestTarget target) {                
+                    PidInfoDialog.this.close(target);
+                
+            }    
+        });
+        add(new Body(BootstrapDialog.CONTENT_PANEL_ID, context));
     }
     
-    private void build(String context) {
-         List<DialogButton> buttons = Arrays.asList(
-                new DialogButton("Close") {
-                    @Override
-                    public void handleButtonClick(AjaxRequestTarget target) {
-                        PidInfoDialog.this.close(target);
-                    }
-                });
-        buildContent(TITLE, new Body(getContentWicketId(), context), buttons, null);
+    @Override
+    public void renderHead(IHeaderResponse response) {
+        super.renderHead(response);
+        response.render(JavaScriptReferenceHeaderItem.forReference(INIT_JAVASCRIPT_REFERENCE));
     }
     
     private class Body extends Panel {
@@ -162,16 +166,10 @@ public class PidInfoDialog extends BaseInfoDialog {
             add(new Label("context2", new Model(context)));
             
             Label handleResolutionLabel = new Label("hdl-target", new PidResolutionModel(model.getObject().getPidUri()));
-            AjaxSelfUpdatingTimerBehavior timer = new AjaxSelfUpdatingTimerBehavior(Duration.ofMillis(500));
-            handleResolutionLabel.add(timer);
+            //AjaxSelfUpdatingTimerBehavior timer = new AjaxSelfUpdatingTimerBehavior(Duration.ofMillis(1000));
+            //handleResolutionLabel.add(timer);
             add(handleResolutionLabel);
         }
-    }
-    
-    @Override
-    public void renderHead(IHeaderResponse response) {
-        super.renderHead(response);
-        response.render(JavaScriptReferenceHeaderItem.forReference(INIT_JAVASCRIPT_REFERENCE));
     }
     
     private String resolvePid(String uri) throws IOException {
