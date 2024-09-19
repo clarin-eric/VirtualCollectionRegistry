@@ -12,7 +12,10 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import java.time.Duration;
 import org.apache.wicket.PageReference;
+import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.request.resource.PackageResourceReference;
@@ -30,8 +33,8 @@ public abstract class VirtualCollectionTable extends Panel {
     
     public VirtualCollectionTable(String id, CollectionsProvider provider, final boolean showState, final boolean isAdmin) {
         super(id);
-        setOutputMarkupId(true);
-
+        setOutputMarkupId(true);        
+        
         // setup table provider
         List<IColumn<VirtualCollection, String>> columns = new ArrayList<>();
         columns.add(new ColumnName(this));
@@ -61,8 +64,9 @@ public abstract class VirtualCollectionTable extends Panel {
             new FilterForm("filterForm", provider, provider.getOrigins(), table, showState, isAdmin);
         add(form);
         add(table);
-/*
-        add(new AbstractAjaxTimerBehavior(Duration.seconds(1)) {
+
+        //Use a timer to refresh the ui to make sure it is updated while the collections are being processed
+        add(new AbstractAjaxTimerBehavior(Duration.ofSeconds(5)) {
             @Override
             protected void onTimer(AjaxRequestTarget target) {
                 if(target != null) {
@@ -70,7 +74,7 @@ public abstract class VirtualCollectionTable extends Panel {
                 }
             }
         });
-*/
+
     }
 
     @Override
