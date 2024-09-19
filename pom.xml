@@ -5,7 +5,7 @@
     <artifactId>VirtualCollectionRegistry</artifactId>
     <packaging>war</packaging>
     <name>CLARIN Virtual Collection Registry</name>
-    <version>1.6.11</version>
+    <version>1.6.14-SNAPSHOT</version>
 
     <organization>
         <name>CLARIN</name>
@@ -42,7 +42,6 @@
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- compiler settings -->
         <!-- dependency versions -->
-        <!--slf4j.version>1.7.30</slf4j.version-->
         <log4j.version>2.23.1</log4j.version>
         <hibernate.version>5.6.15.Final</hibernate.version>
         <hibernate.jpaVersion>1.0.2.Final</hibernate.jpaVersion>
@@ -51,9 +50,7 @@
         <wicket.version>10.1.0</wicket.version> <!-- 7.7.0 has issue https://issues.apache.org/jira/browse/WICKET-6374, which will befixed in 7.8.0 -->
         <wicket-bootstrap.version>2.0.15</wicket-bootstrap.version>
         <spring.version>6.1.12</spring.version>
-        <!--spring.version>4.3.20.RELEASE</spring.version-->
-        <!--<spring.version>5.2.1.RELEASE</spring.version>-->
-        
+
         <!-- local development settings, alternatives provided below in in the profiles section -->
         <log4j.appender>FILE</log4j.appender>
         <war.webxml>src/main/resources/profiles/dev/web.xml</war.webxml>
@@ -114,30 +111,11 @@
         </dependency>
 
         <!-- <Logging> -->
-<!--
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>slf4j-api</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-        -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-slf4j-impl</artifactId>
             <version>${log4j.version}</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-1.2-api</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-        -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
@@ -171,14 +149,6 @@
             <artifactId>hibernate-jpa-2.1-api</artifactId>
             <version>${hibernate.jpaVersion}</version>
         </dependency>
-<!--
-        <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>jsr311-api</artifactId>
-            <version>1.1.1</version>
-            <type>jar</type>
-        </dependency>
-        -->
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>            
             <artifactId>jersey-container-servlet</artifactId>
@@ -209,45 +179,7 @@
             <artifactId>swagger-annotations</artifactId>
             <version>2.2.7</version>
         </dependency>
-
-        <!--
-                <dependency>
-                    <groupId>com.sun.jersey</groupId>            
-                    <artifactId>jersey-servlet</artifactId>
-                    <version>${jersey.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.sun.jersey.contribs</groupId>
-                    <artifactId>jersey-spring</artifactId>
-                    <version>${jersey.version}</version>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>org.springframework</groupId>
-                            <artifactId>spring-asm</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-                <dependency>
-                    <groupId>com.sun.jersey</groupId>
-                    <artifactId>jersey-json</artifactId>
-                    <version>${jersey.version}</version>
-                    <exclusions>
         
-                        <exclusion>
-                            <groupId>stax</groupId>
-                            <artifactId>stax-api</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>com.sun.xml.bind</groupId>
-                            <artifactId>jaxb-impl</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <artifactId>jackson-mapper-asl</artifactId>
-                            <groupId>org.codehaus.jackson</groupId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-        -->
         <dependency>
             <groupId>org.codehaus.jettison</groupId>
             <artifactId>jettison</artifactId>
@@ -281,32 +213,7 @@
             <groupId>commons-collections</groupId>
             <version>3.2.2</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>de.uni_leipzig.asv</groupId>
-            <artifactId>clarin.webservices.pidservices2</artifactId>
-            <version>2.1.0</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.3</version>
-            <type>jar</type>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        -->
+       
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket</artifactId>
@@ -388,68 +295,6 @@
                 </exclusion>
             </exclusions>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>${spring.version}</version>
-            <type>jar</type>
-            <exclusions>
-                <exclusion>
-                     replaced with jcl-over-slf4j
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        -->
-        <!--
-                <dependency>
-                    <groupId>com.sun.jersey.contribs</groupId>
-                    <artifactId>jersey-spring</artifactId>
-                    <version>${jersey.version}</version>
-                    <exclusions>
-                        <exclusion>
-                            <artifactId>spring-aop</artifactId>
-                            <groupId>org.springframework</groupId>
-                        </exclusion>
-                        <exclusion>
-                            <artifactId>spring-asm</artifactId>
-                            <groupId>org.springframework</groupId>
-                        </exclusion>
-                        <exclusion>
-                            <artifactId>spring-beans</artifactId>
-                            <groupId>org.springframework</groupId>
-                        </exclusion>
-                        <exclusion>
-                            <artifactId>spring-context</artifactId>
-                            <groupId>org.springframework</groupId>
-                        </exclusion>
-                        <exclusion>
-                            <artifactId>spring-core</artifactId>
-                            <groupId>org.springframework</groupId>
-                        </exclusion>
-                        <exclusion>
-                            <artifactId>spring-web</artifactId>
-                            <groupId>org.springframework</groupId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-        -->
-        <!-- Added in this projects source tree -->
-        <!--
-        <dependency>
-            <groupId>eu.clarin</groupId>
-            <artifactId>oai-provider</artifactId>
-            <version>0.2.0</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>slf4j-jdk14</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        -->
         
         <!-- Wicket bootstrap -->
         <dependency>
@@ -469,53 +314,19 @@
                     <groupId>com.fasterxml.jackson.core</groupId>
                     <artifactId>jackson-databind</artifactId>
                 </exclusion>
-                <!--
-                <exclusion>
-                    <groupId>org.webjars</groupId>
-                    <artifactId>jquery</artifactId>
-                </exclusion>
-                -->
-                <!--
-                <exclusion>
-                    <groupId>org.webjars</groupId>
-                    <artifactId>bootstrap</artifactId>
-                </exclusion>
-                        -->
-            </exclusions>
-                    
+            </exclusions>                    
         </dependency>
         <dependency>
-    <groupId>de.agilecoders.wicket</groupId>
-    <artifactId>wicket-bootstrap-extensions</artifactId>
-    <version>7.0.5</version>
-</dependency>
-        <!--       
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>jquery</artifactId>
-            <version>3.7.1</version>
+            <groupId>de.agilecoders.wicket</groupId>
+            <artifactId>wicket-bootstrap-extensions</artifactId>
+            <version>7.0.5</version>
         </dependency>
-        -->
-        <!--
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>bootstrap</artifactId>
-            <version>3.4.1</version>
-        </dependency>                
-        -->
         <dependency>
             <groupId>de.agilecoders.wicket.webjars</groupId>
             <artifactId>wicket-webjars</artifactId>
             <version>4.0.4</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>font-awesome</artifactId>
-            <version>5.15.4</version>
-        </dependency>
-        -->
-            
+ 
         <!-- Include updated version of jackson databind -->
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
@@ -836,10 +647,6 @@
                                 <exclude>*.html</exclude>
                             </excludes>
                         </resource>
-                        <!--resource>
-                            <directory>swagger-ui/dist</directory>
-                            <targetPath>service-doc</targetPath>
-                        </resource-->
                         <!-- Include proper shhaa config based on selected profile -->
                         <resource>
                             <directory>${war.shhaa.dir}</directory>
@@ -855,6 +662,7 @@
             <!--<groupId>org.jasig.maven</groupId>-->
                
            <!--https://www.geodienstencentrum.nl/sass-maven-plugin/plugin-info.html-->
+           <!--
             <plugin>
                 <groupId>nl.geodienstencentrum.maven</groupId>
                 <artifactId>sass-maven-plugin</artifactId>
@@ -868,7 +676,7 @@
                     </execution>
                 </executions>
             </plugin>
-           
+           -->
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.2.0</version>
@@ -1020,21 +828,6 @@
     </reporting>
 
     <repositories>
-        <!--
-        <repository>
-            <id>jboss</id>
-            <name>JBoss Public Maven Repository Group</name>
-            <url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
-            <layout>default</layout>
-        </repository>
-
-        <repository>
-            <id>java-net-maven-2</id>
-            <name>Java.net Repository</name>
-            <url>http://download.java.net/maven/2/</url>
-            <layout>default</layout>
-        </repository>
-        -->
         <repository>
             <id>wiquery</id>
             <name>wiQuery repository</name>
@@ -1058,14 +851,4 @@
             <layout>default</layout>
         </repository>        
     </repositories>
-    <!--
-        <pluginRepositories>
-            <pluginRepository>
-                <id>jboss</id>
-                <name>JBoss Public Maven Repository Group</name>
-                <url>https://repository.jboss.org/nexus/content/repositories/releases/</url>
-                <layout>default</layout>
-            </pluginRepository>
-        </pluginRepositories>
-    -->
 </project>
