@@ -136,7 +136,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
             public void handleEvent(Event<VirtualCollection> event) {
                 switch(event.getType()) {
                     case SAVE:
-                        logger.trace("Saving collection, mode="+originalCollectionId==null ? "create" : "update");
+                        logger.debug((originalCollectionId==null ? "Creating new" : "Updating existing")+" collection: {}", event.getData().toString());
                         try {
                             if(originalCollectionId == null) {
                                 Application

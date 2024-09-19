@@ -727,16 +727,28 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         result += String.format("reproducibility: %s\n", this.getReproducibility());
         result += String.format("repro, notice  : %s\n", this.getReproducibilityNotice());
         result += String.format("creators       :\n");
-        for(Creator c : this.getCreators()) { 
-            result += String.format("  creator      : %s\n", this.getReproducibilityNotice());
+        if(this.getCreators().isEmpty()) {
+            result += "  No creators";
+        } else {
+            for(Creator creator : this.getCreators()) { 
+                result += String.format("  creator      : %s\n", creator.toString());
+            }
         }
         result += String.format("keywords       :\n");
-        for(String keyword: this.getKeywords()) {
-            result += String.format("  keyword      : %s\n", this.getReproducibilityNotice());
+        if(this.getKeywords().isEmpty()) {
+            result += "  No keywords";
+        } else {
+            for(String keyword: this.getKeywords()) {
+                result += String.format("  keyword      : %s\n", keyword);
+            }
         }
         result += String.format("resources       :\n");
-        for(Resource c : this.getResources()) {
-            result += String.format("  resources    : %s\n", this.getReproducibilityNotice());
+        if(this.getResources().isEmpty()) {
+            result += "  No resources";
+        } else {
+            for(Resource resource : this.getResources()) {
+                result += String.format("  resources    : %s\n", resource.toString());
+            }
         }
         return result;
     }

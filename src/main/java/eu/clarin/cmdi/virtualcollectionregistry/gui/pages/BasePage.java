@@ -16,8 +16,8 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.Navbar;
 import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.Navbar.ComponentPosition;
 import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.NavbarButton;
 import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.NavbarExternalLink;
-import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesome5IconTypeBuilder;
-import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesome5IconType;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesome6IconType;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesome6IconTypeBuilder;
 import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.feedback.IValidationFailedMessage;
@@ -176,27 +176,27 @@ public class BasePage extends WebPage {
         //Add login or user profile + logout buttons based on authentication state
         if(isSignedIn()) {
             final NavbarButton userLink = new NavbarButton(UserProfilePage.class, Model.of(getUser().getName()));
-            final FontAwesome5IconType userIcon = 
-                    FontAwesome5IconTypeBuilder
-                        .on(FontAwesome5IconTypeBuilder.FontAwesome5Solid.user)
+            final FontAwesome6IconType userIcon = 
+                    FontAwesome6IconTypeBuilder
+                        .on(FontAwesome6IconTypeBuilder.FontAwesome6Regular.user)
                         .build();
             userLink.setIconType(userIcon);
             menuItems.add(new ImmutableNavbarComponent(userLink, ComponentPosition.RIGHT));
             
             if(vcrConfig.isLogoutEnabled()) {
                 final NavbarButton logoutLink = new NavbarButton(LogoutPage.class, Model.of("Logout"));
-                final FontAwesome5IconType logoutIcon = 
-                    FontAwesome5IconTypeBuilder
-                        .on(FontAwesome5IconTypeBuilder.FontAwesome5Solid.sign_in_alt)
+                final FontAwesome6IconType logoutIcon = 
+                    FontAwesome6IconTypeBuilder
+                        .on(FontAwesome6IconTypeBuilder.FontAwesome6Solid.right_from_bracket)
                         .build();
                 logoutLink.setIconType(logoutIcon);
                 menuItems.add(new ImmutableNavbarComponent(logoutLink, ComponentPosition.RIGHT));
             }            
         } else {
             final NavbarButton loginLink = new NavbarButton(LoginPage.class, Model.of("Login"));
-            final FontAwesome5IconType loginIcon = 
-                    FontAwesome5IconTypeBuilder
-                        .on(FontAwesome5IconTypeBuilder.FontAwesome5Solid.sign_out_alt)
+            final FontAwesome6IconType loginIcon = 
+                    FontAwesome6IconTypeBuilder
+                        .on(FontAwesome6IconTypeBuilder.FontAwesome6Solid.right_to_bracket)
                         .build();            
             loginLink.setIconType(loginIcon);
             menuItems.add(new ImmutableNavbarComponent(loginLink, ComponentPosition.RIGHT));

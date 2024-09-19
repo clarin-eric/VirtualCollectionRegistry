@@ -1,4 +1,4 @@
-/*
+                         /*
  * Copyright (C) 2024 CLARIN
  *
  * This program is free software: you can redistribute it and/or modify
@@ -19,6 +19,7 @@ package eu.clarin.cmdi.wicket.theme;
 import de.agilecoders.wicket.core.Bootstrap;
 import de.agilecoders.wicket.core.settings.Theme;
 import de.agilecoders.wicket.core.util.Dependencies;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesome6CssReference;
 import java.util.List;
 import org.apache.wicket.markup.head.CssHeaderItem;
 import org.apache.wicket.markup.head.HeaderItem;
@@ -49,7 +50,8 @@ public class ClarinBootstrap5Theme extends Theme {
         return List.of(
             //CssHeaderItem.forReference(ClarinBootstrap5ThemeCssReference.instance()).setId(BOOTSTRAP_THEME_MARKUP_ID),
             //CssHeaderItem.forReference(ClarinBootstrap5ThemeVloCssReference.instance()).setId(BOOTSTRAP_THEME_MARKUP_ID),
-            CssHeaderItem.forReference(ClarinBootstrap5ThemeVcrCssReference.instance()).setId(BOOTSTRAP_THEME_MARKUP_ID)
+            CssHeaderItem.forReference(ClarinBootstrap5ThemeVcrCssReference.instance()).setId(BOOTSTRAP_THEME_MARKUP_ID),
+            CssHeaderItem.forReference(FontAwesome6CssReference.instance()).setId(BOOTSTRAP_THEME_MARKUP_ID) //TODO: figure out how to load this via wicket bootstrap extension
         );
     }
     

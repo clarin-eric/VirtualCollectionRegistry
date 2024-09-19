@@ -436,10 +436,12 @@
                     </exclusions>
                 </dependency>
         -->
+        <!-- Added in this projects source tree -->
+        <!--
         <dependency>
-            <groupId>eu.clarin.cmdi</groupId>
-            <artifactId>OAIProvider</artifactId>
-            <version>0.0.2</version>
+            <groupId>eu.clarin</groupId>
+            <artifactId>oai-provider</artifactId>
+            <version>0.2.0</version>
             <exclusions>
                 <exclusion>
                     <artifactId>slf4j-jdk14</artifactId>
@@ -447,6 +449,7 @@
                 </exclusion>
             </exclusions>
         </dependency>
+        -->
         
         <!-- Wicket bootstrap -->
         <dependency>

@@ -1,12 +1,14 @@
 package eu.clarin.cmdi.virtualcollectionregistry.oai;
 
+import eu.clarin.cmdi.oai.provider.Record;
 import eu.clarin.cmdi.oai.provider.DublinCoreAdapter;
 import eu.clarin.cmdi.oai.provider.DublinCoreConverter;
 import eu.clarin.cmdi.oai.provider.MetadataFormat;
 import eu.clarin.cmdi.oai.provider.OAIException;
-import eu.clarin.cmdi.oai.provider.Record;
 import eu.clarin.cmdi.oai.provider.RecordList;
 import eu.clarin.cmdi.oai.provider.Repository;
+import eu.clarin.cmdi.oai.provider.Repository.DeletedNotion;
+import eu.clarin.cmdi.oai.provider.Repository.Granularity;
 import eu.clarin.cmdi.oai.provider.SetSpecDesc;
 import eu.clarin.cmdi.virtualcollectionregistry.DataStore;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionNotFoundException;
@@ -37,7 +39,6 @@ import javax.xml.stream.XMLStreamWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.stereotype.Component;
 
 //@Component
 public class VirtualColletionRegistryOAIRepository implements Repository {
@@ -238,8 +239,7 @@ public class VirtualColletionRegistryOAIRepository implements Repository {
     }
 
     @Override
-    public Record getRecord(Object localId, boolean headerOnly)
-            throws OAIException {
+    public Record getRecord(Object localId, boolean headerOnly) throws OAIException {
         try {
             long id = (Long) localId;
             VirtualCollection vc = registry.retrieveVirtualCollection(id);

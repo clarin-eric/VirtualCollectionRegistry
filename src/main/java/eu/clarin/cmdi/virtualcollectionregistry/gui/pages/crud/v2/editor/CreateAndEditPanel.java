@@ -544,7 +544,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         }
 
         fireEvent(
-                new AbstractEvent<VirtualCollection>(
+                new AbstractEvent<>(
                         EventType.SAVE,
                         session.getPrincipal(),
                         newCollection,

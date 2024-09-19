@@ -3,7 +3,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui;
 import de.agilecoders.wicket.core.Bootstrap;
 import de.agilecoders.wicket.core.settings.BootstrapSettings;
 import de.agilecoders.wicket.core.settings.SingleThemeProvider;
-import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesome5CssReference;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesome6CssReference;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesomeSettings;
 import eu.clarin.cmdi.virtualcollectionregistry.*;
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
@@ -14,7 +14,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmitVirtu
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LoginPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LogoutPage;
 import eu.clarin.cmdi.wicket.theme.ClarinBootstrap5Theme;
-import eu.clarin.cmdi.wicket.ExtremeNoopTheme;
 import org.apache.wicket.Page;
 import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebApplication;
@@ -67,7 +66,7 @@ public class Application extends AuthenticatedWebApplication {
     @Override
     protected void init() {
         super.init();
-             
+        
         //Install bootstrap
         Bootstrap.install(
             this, 
@@ -80,7 +79,9 @@ public class Application extends AuthenticatedWebApplication {
                 .setUpdateSecurityManager(true)
         );
         
-        FontAwesomeSettings.get(Application.get()).setCssResourceReference(FontAwesome5CssReference.instance());
+        FontAwesomeSettings
+            .get(Application.get())
+            .setCssResourceReference(FontAwesome6CssReference.instance());
 
         //Disable CSP for now 
         //TODO: look into ways of enabling this again, see https://nightlies.apache.org/wicket/guide/9.x/single.html#_content_security_policy_csp

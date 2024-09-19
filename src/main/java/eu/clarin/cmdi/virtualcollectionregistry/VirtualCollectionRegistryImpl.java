@@ -146,8 +146,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             throw new NullPointerException("vc == null");
         }
         
-        logger.debug("creating virtual collection");
-
+        logger.debug("creating virtual collection: {}", vc.toString());
+        
         try {
             validator.validate(vc);
         } catch(VirtualCollectionValidationException ex) {

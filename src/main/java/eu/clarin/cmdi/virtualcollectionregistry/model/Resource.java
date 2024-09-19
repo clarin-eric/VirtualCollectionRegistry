@@ -310,4 +310,8 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
         this.originalQuery = originalQuery;
     }
 
+    @Override
+    public String toString() {
+        return "Type: "+getType()+", ref: "+getRef()+", label: "+getLabel();
+    }
 } // class Resource
