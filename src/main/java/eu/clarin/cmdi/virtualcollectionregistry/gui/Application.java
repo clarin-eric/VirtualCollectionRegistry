@@ -86,7 +86,8 @@ public class Application extends AuthenticatedWebApplication {
         //Disable CSP for now 
         //TODO: look into ways of enabling this again, see https://nightlies.apache.org/wicket/guide/9.x/single.html#_content_security_policy_csp
         getCspSettings().blocking().disabled();
-    
+        //Currently missing clipboard js and switchboard popup in theme
+        
         logger.info("Initialising VCR web application");
         if (vcrConfig != null) {
             vcrConfig.logConfig(); //write current configuration to logger

@@ -26,7 +26,7 @@ final class ColumnState extends AbstractColumn<VirtualCollection, String> {
             add(lbl);
 
             WebMarkupContainer icon = new WebMarkupContainer("icon");
-            icon.add(new AttributeModifier("class", "fa fa-info-circle"));
+            icon.add(new AttributeModifier("class", "fa-solid fa-info-circle"));
             icon.add(new AttributeModifier("style", "margin-left: 5px;"));
             icon.add(new AttributeModifier("data-toggle", "tooltip"));
             icon.add(new AttributeModifier("data-placement", "bottom"));
