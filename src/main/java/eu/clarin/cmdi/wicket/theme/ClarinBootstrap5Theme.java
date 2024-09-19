@@ -50,8 +50,9 @@ public class ClarinBootstrap5Theme extends Theme {
         return List.of(
             //CssHeaderItem.forReference(ClarinBootstrap5ThemeCssReference.instance()).setId(BOOTSTRAP_THEME_MARKUP_ID),
             //CssHeaderItem.forReference(ClarinBootstrap5ThemeVloCssReference.instance()).setId(BOOTSTRAP_THEME_MARKUP_ID),
-            CssHeaderItem.forReference(ClarinBootstrap5ThemeVcrCssReference.instance()).setId(BOOTSTRAP_THEME_MARKUP_ID),
-            CssHeaderItem.forReference(FontAwesome6CssReference.instance()).setId(BOOTSTRAP_THEME_MARKUP_ID) //TODO: figure out how to load this via wicket bootstrap extension
+            CssHeaderItem.forReference(FontAwesome6CssReference.instance()).setId("clarin-theme-fontawesome"), //TODO: figure out how to load this via wicket bootstrap extension
+            CssHeaderItem.forReference(ClarinBootstrap5ThemeVcrCssReference.instance()).setId("clarin-theme-css")//,
+
         );
     }
     
