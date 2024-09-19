@@ -10,7 +10,7 @@ name: Java CI with Maven
 
 on:
   release:
-    types: [prereleased, released, published]
+    types: [published]
 
 jobs:
   build:
