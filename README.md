@@ -1,4 +1,16 @@
-# Virtual Collection Registry [![Build Status](https://travis-ci.org/clarin-eric/VirtualCollectionRegistry.svg?branch=milestone-1.2)](https://travis-ci.org/clarin-eric/VirtualCollectionRegistry)
+# Virtual Collection Registry
+
+Environment:
+
+* Java 17+, jakarta EE
+
+Major dependencies and frameworks:
+
+* Wicket 10.x.x
+* Spring 6.x.x
+* Hibernate 5.x.x
+* Bootstrap 5.x.x
+
 
 Instances:
 
@@ -16,7 +28,7 @@ Information regarding development and deployment as well as licencing informatio
 
 #### Tomcat
 
-Apache tomcat 8+ is the prefered servlet container. The mysl jdbc driver
+Apache tomcat 10+ is the prefered servlet container. The mysl jdbc driver
 must be provided in the tomcat libs directory.
 
 ### MySQL
