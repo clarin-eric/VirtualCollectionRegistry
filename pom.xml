@@ -41,7 +41,10 @@
         <!-- project settings -->
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <!-- compiler settings -->
+        <maven.compiler.source>17</maven.compiler.source>
+        <maven.compiler.target>17</maven.compiler.target>
         <!-- dependency versions -->
+        <!-- https://stackoverflow.com/questions/9170832/list-of-java-class-file-format-major-version-numbers -->
         <log4j.version>2.23.1</log4j.version>
         <hibernate.version>5.6.15.Final</hibernate.version>
         <hibernate.jpaVersion>1.0.2.Final</hibernate.jpaVersion>
@@ -441,30 +444,30 @@
         </dependency>
         
          <dependency>
-      <groupId>javax.transaction</groupId>
-      <artifactId>jta</artifactId>
-      <version>1.1</version>
-  </dependency>
+            <groupId>javax.transaction</groupId>
+            <artifactId>jta</artifactId>
+            <version>1.1</version>
+        </dependency>
   
-  <dependency>
-    <groupId>javax.xml.bind</groupId>
-    <artifactId>jaxb-api</artifactId>
-    <version>2.4.0-b180830.0359</version>
-</dependency>
+        <dependency>
+            <groupId>javax.xml.bind</groupId>
+            <artifactId>jaxb-api</artifactId>
+            <version>2.4.0-b180830.0359</version>
+        </dependency>
 
-<!-- https://mvnrepository.com/artifact/javax.activation/activation -->
-<dependency>
-    <groupId>javax.activation</groupId>
-    <artifactId>activation</artifactId>
-    <version>1.1.1</version>
-</dependency>
+        <!-- https://mvnrepository.com/artifact/javax.activation/activation -->
+        <dependency>
+            <groupId>javax.activation</groupId>
+            <artifactId>activation</artifactId>
+            <version>1.1.1</version>
+        </dependency>
 
-<!-- https://mvnrepository.com/artifact/org.glassfish.jaxb/jaxb-runtime -->
-<dependency>
-    <groupId>org.glassfish.jaxb</groupId>
-    <artifactId>jaxb-runtime</artifactId>
-    <version>2.4.0-b180830.0438</version>
-</dependency>
+        <!-- https://mvnrepository.com/artifact/org.glassfish.jaxb/jaxb-runtime -->
+        <dependency>
+            <groupId>org.glassfish.jaxb</groupId>
+            <artifactId>jaxb-runtime</artifactId>
+            <version>2.4.0-b180830.0438</version>
+        </dependency>
 
         <dependency>
             <groupId>com.vladsch.flexmark</groupId>
@@ -541,10 +544,12 @@
                     </execution>
                 </executions>
             </plugin>
-            <plugin>
+            <!-- this was moved into the maven-compiler-plugin as documented here::
+            https://docs.jboss.org/hibernate/orm/5.3/topical/html_single/metamodelgen/MetamodelGenerator.html -->
+            <!--plugin>
                 <groupId>org.bsc.maven</groupId>
                 <artifactId>maven-processor-plugin</artifactId>
-                <version>3.3.3</version>
+                <version>5.1</version>
                 <executions>
                     <execution>
                         <id>process</id>
@@ -552,7 +557,7 @@
                             <goal>process</goal>
                         </goals>
                         <phase>generate-sources</phase>
-                        <configuration>
+                        <configuration>                    
                             <processors>
                                 <processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
                             </processors>
@@ -565,11 +570,11 @@
                     <dependency>
                         <groupId>org.hibernate</groupId>
                         <artifactId>hibernate-jpamodelgen</artifactId>
-                        <version>1.3.0.Final</version>
+                        <version>5.6.15.Final</version>
                         <scope>compile</scope>
                     </dependency>
                 </dependencies>
-            </plugin>
+            </plugin-->
 
             <plugin>                
                 <groupId>org.codehaus.mojo</groupId>
@@ -656,27 +661,10 @@
                             </includes>
                         </resource>
                     </webResources>
-                    <!--outputDirectory>bin</outputDirectory-->
                 </configuration>
             </plugin>
-            <!--<groupId>org.jasig.maven</groupId>-->
-               
-           <!--https://www.geodienstencentrum.nl/sass-maven-plugin/plugin-info.html-->
-           <!--
-            <plugin>
-                <groupId>nl.geodienstencentrum.maven</groupId>
-                <artifactId>sass-maven-plugin</artifactId>
-                <version>3.7.2</version>
-                <executions>
-                    <execution>
-                        <phase>generate-resources</phase>
-                        <goals>
-                            <goal>update-stylesheets</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
-           -->
+
+
             <plugin>
                 <artifactId>maven-assembly-plugin</artifactId>
                 <version>3.2.0</version>
@@ -721,10 +709,18 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.11.0</version>
+                <version>3.13.0</version>
                 <configuration>
-                    <source>9</source>
-                    <target>9</target>
+                    <source>${maven.compiler.source}</source>
+                    <target>${maven.compiler.target}</target>
+                    <encoding>${project.build.sourceEncoding}</encoding>
+                    <annotationProcessorPaths>
+                        <path>
+                            <groupId>org.hibernate</groupId>
+                            <artifactId>hibernate-jpamodelgen</artifactId>
+                            <version>5.3.36.Final</version>
+                        </path>
+                    </annotationProcessorPaths>
                 </configuration>
             </plugin>
         </plugins>
@@ -801,31 +797,25 @@
                     Java 7 to get the same (or higher) JAXB API version as
                     used during the xjc execution. 
                 -->
-                <plugin>
+                <!--plugin>
                     <groupId>org.apache.maven.plugins</groupId>
                     <artifactId>maven-compiler-plugin</artifactId>
                     <configuration>
                         <source>${maven.compiler.source}</source>
-                        <target>${maven.compiler.source}</target>
+                        <target>${maven.compiler.target}</target>
                         <encoding>${project.build.sourceEncoding}</encoding>
+                        <annotationProcessorPaths>
+                            <path>
+                                <groupId>org.hibernate</groupId>
+                                <artifactId>hibernate-jpamodelgen</artifactId>
+                                <version>5.3.36.Final</version>
+                            </path>
+                        </annotationProcessorPaths>
                     </configuration>
-                </plugin>
+                </plugin-->
             </plugins>
         </pluginManagement>
     </build>
-
-    <reporting>
-        <plugins>
-            <!-- NCSS plugin has issues with Java 7 at the moment, check back later -->
-            <!--
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>javancss-maven-plugin</artifactId>
-                <version>2.0-beta-2</version>
-            </plugin>
-            -->
-        </plugins>
-    </reporting>
 
     <repositories>
         <repository>
