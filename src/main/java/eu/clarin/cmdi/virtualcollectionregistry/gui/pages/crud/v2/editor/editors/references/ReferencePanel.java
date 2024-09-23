@@ -60,17 +60,17 @@ public class ReferencePanel extends Panel {
         switch(ref.getState()) {
             case DONE:
                 if(HandleLinkModel.isSupportedPersistentIdentifier(ref.getReference().getRef())) {
-                    stateIcon.add(new AttributeAppender("class", "fa fa-check-circle-o icon icon-success"));
+                    stateIcon.add(new AttributeAppender("class", "fa-regular fa-circle-check icon icon-success"));
                 } else {
-                    stateIcon.add(new AttributeAppender("class", "fa fa-check-circle-o icon icon-passed"));
+                    stateIcon.add(new AttributeAppender("class", "fa-regular fa-circle-check icon icon-passed"));
                     //TODO: make clickable and show popup with details
                 }
                 break;
             case FAILED:
-                stateIcon.add(new AttributeAppender("class", "fa fa-times-circle-o icon icon-failed"));
+                stateIcon.add(new AttributeAppender("class", "fa-regular fa-circle-xmark icon icon-failed"));
                 break;
             default:
-                stateIcon.add(new AttributeAppender("class", "fa fa-dot-circle-o icon icon-waiting"));
+                stateIcon.add(new AttributeAppender("class", "fa-regular fa-circle-dot icon icon-waiting"));
                 break;
         }
         editorWrapper.add(stateIcon);
