@@ -1,19 +1,18 @@
 package eu.clarin.cmdi.virtualcollectionregistry.core.rest;
 
-//import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection.Format;
 import org.apache.wicket.request.flow.RedirectToUrlException;
-import org.glassfish.jersey.message.internal.AcceptableMediaType;
-import org.glassfish.jersey.message.internal.HttpHeaderReader;
-import org.glassfish.jersey.message.internal.MediaTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
 import java.util.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
+import org.glassfish.jersey.message.internal.AcceptableMediaType;
+import org.glassfish.jersey.message.internal.HttpHeaderReader;
+import org.glassfish.jersey.message.internal.MediaTypes;
 
 /**
  * REST input/ouput utilities for the Virtual Collection Registry REST resources

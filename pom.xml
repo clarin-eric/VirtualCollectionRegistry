@@ -76,7 +76,14 @@
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
-
+        <dependency>
+            <groupId>jakarta.ws.rs</groupId>
+            <artifactId>jakarta.ws.rs-api</artifactId>
+            <version>4.0.0</version>
+            <type>jar</type>
+            <!--scope>provided</scope-->
+        </dependency>
+        
         <!-- <Logging> -->
         <dependency>
             <groupId>org.apache.logging.log4j</groupId>

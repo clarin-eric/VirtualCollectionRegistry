@@ -86,55 +86,12 @@
             <scope>runtime</scope>
         </dependency>
 
-       
-        <dependency>
-            <groupId>org.slf4j</groupId>
-            <artifactId>jcl-over-slf4j</artifactId>
-            <version>${slf4j.version}</version>
-        </dependency>
-        <dependency>
-            <groupId>org.apache.logging.log4j</groupId>
-            <artifactId>log4j-core</artifactId>
-            <version>${log4j.version}</version>
-        </dependency>
-        <!-- </Logging> -->
-
         <dependency>
             <groupId>org.apache.commons</groupId>
             <artifactId>commons-lang3</artifactId>
             <version>3.12.0</version>
         </dependency>
-<!--
-        <dependency>
-            <groupId>org.codehaus.woodstox</groupId>
-            <artifactId>woodstox-core-asl</artifactId>
-            <version>4.4.1</version>
-            <type>jar</type>
-            <scope>compile</scope>
-            <exclusions>
-                < StaX is part of JRE 1.5 and newer >
-                <exclusion>
-                    <artifactId>stax-api</artifactId>
-                    <groupId>javax.xml.stream</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        -->
-        <!--
-        <dependency>
-            <groupId>org.hibernate.javax.persistence</groupId>
-            <artifactId>hibernate-jpa-2.1-api</artifactId>
-            <version>${hibernate.jpaVersion}</version>
-        </dependency>
-        -->
-<!--
-        <dependency>
-            <groupId>javax.ws.rs</groupId>
-            <artifactId>jsr311-api</artifactId>
-            <version>1.1.1</version>
-            <type>jar</type>
-        </dependency>
-        -->
+        
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>            
             <artifactId>jersey-container-servlet</artifactId>
@@ -147,8 +104,8 @@
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.ext</groupId>
-            <artifactId>jersey-spring4</artifactId>
-            <version>${jersey-spring4.version}</version>
+            <artifactId>jersey-spring6</artifactId>
+            <version>3.1.8</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
@@ -162,97 +119,6 @@
             <version>1.5.0-b01</version>
         </dependency>
 
-        <!--
-                <dependency>
-                    <groupId>com.sun.jersey</groupId>            
-                    <artifactId>jersey-servlet</artifactId>
-                    <version>${jersey.version}</version>
-                </dependency>
-                <dependency>
-                    <groupId>com.sun.jersey.contribs</groupId>
-                    <artifactId>jersey-spring</artifactId>
-                    <version>${jersey.version}</version>
-                    <exclusions>
-                        <exclusion>
-                            <groupId>org.springframework</groupId>
-                            <artifactId>spring-asm</artifactId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-                <dependency>
-                    <groupId>com.sun.jersey</groupId>
-                    <artifactId>jersey-json</artifactId>
-                    <version>${jersey.version}</version>
-                    <exclusions>
-        
-                        <exclusion>
-                            <groupId>stax</groupId>
-                            <artifactId>stax-api</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <groupId>com.sun.xml.bind</groupId>
-                            <artifactId>jaxb-impl</artifactId>
-                        </exclusion>
-                        <exclusion>
-                            <artifactId>jackson-mapper-asl</artifactId>
-                            <groupId>org.codehaus.jackson</groupId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-        -->
-        <!--
-        <dependency>
-            <groupId>org.codehaus.jettison</groupId>
-            <artifactId>jettison</artifactId>
-            <version>1.4.1</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>stax</groupId>
-                    <artifactId>stax-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        -->
-<!--        
-        <dependency>
-            <groupId>de.uni_leipzig.asv</groupId>
-            <artifactId>clarin.webservices.pidservices2</artifactId>
-            <version>4.1</version>
-            <exclusions>
-                <exclusion>
-                    < replaced with jcl-over-slf4j >
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>               
-            </exclusions>
-        </dependency>
--->
-        <!--
-        <dependency>
-            <groupId>de.uni_leipzig.asv</groupId>
-            <artifactId>clarin.webservices.pidservices2</artifactId>
-            <version>2.1.0</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-
-        <dependency>
-            <groupId>org.apache.httpcomponents</groupId>
-            <artifactId>httpclient</artifactId>
-            <version>4.5.3</version>
-            <type>jar</type>
-            <exclusions>
-                <exclusion>
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        -->
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket</artifactId>
@@ -300,78 +166,6 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.3.1</version>
-        </dependency>
-
-
-        <dependency>
-            <groupId>de.mpg.mpgaai</groupId>
-            <artifactId>mpgaai-shhaa</artifactId>
-            <version>1.0.13</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        <!--
-        <dependency>
-            <groupId>org.springframework</groupId>
-            <artifactId>spring-web</artifactId>
-            <version>${spring.version}</version>
-            <type>jar</type>
-            <exclusions>
-                <exclusion>
-                     replaced with jcl-over-slf4j
-                    <artifactId>commons-logging</artifactId>
-                    <groupId>commons-logging</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        -->
-        <!--
-                <dependency>
-                    <groupId>com.sun.jersey.contribs</groupId>
-                    <artifactId>jersey-spring</artifactId>
-                    <version>${jersey.version}</version>
-                    <exclusions>
-                        <exclusion>
-                            <artifactId>spring-aop</artifactId>
-                            <groupId>org.springframework</groupId>
-                        </exclusion>
-                        <exclusion>
-                            <artifactId>spring-asm</artifactId>
-                            <groupId>org.springframework</groupId>
-                        </exclusion>
-                        <exclusion>
-                            <artifactId>spring-beans</artifactId>
-                            <groupId>org.springframework</groupId>
-                        </exclusion>
-                        <exclusion>
-                            <artifactId>spring-context</artifactId>
-                            <groupId>org.springframework</groupId>
-                        </exclusion>
-                        <exclusion>
-                            <artifactId>spring-core</artifactId>
-                            <groupId>org.springframework</groupId>
-                        </exclusion>
-                        <exclusion>
-                            <artifactId>spring-web</artifactId>
-                            <groupId>org.springframework</groupId>
-                        </exclusion>
-                    </exclusions>
-                </dependency>
-        -->
-        <dependency>
-            <groupId>eu.clarin.cmdi</groupId>
-            <artifactId>OAIProvider</artifactId>
-            <version>0.0.2</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>slf4j-jdk14</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-            </exclusions>
         </dependency>
         
         <!-- Wicket bootstrap -->
@@ -526,13 +320,6 @@
             <scope>runtime</scope>
         </dependency>
 
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
 
         <!--
        Test dependencies
@@ -551,33 +338,14 @@
         </dependency>
 
 
-       
-        
-<!--
-        <dependency>
-            <groupId>xmlunit</groupId>
-            <artifactId>xmlunit</artifactId>
-            <version>1.6</version>
-            <scope>test</scope>
-            <type>jar</type>
-        </dependency>
--->
-
-        <dependency>
+      
+        <!--dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-entitymanager</artifactId>
             <version>${hibernate.version}</version>
             <scope>test</scope>
-        </dependency>
-<!--
-        <dependency>
-
-                    <groupId>org.jboss.logging</groupId>
-                    <artifactId>jboss-logging</artifactId>
-            <version>3.4.1.Final</version>
-            <scope>test</scope>
-        </dependency>
-    -->
+        </dependency-->
+        
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>

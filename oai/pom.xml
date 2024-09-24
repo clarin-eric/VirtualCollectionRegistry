@@ -16,23 +16,7 @@
     <packaging>war</packaging>
 
     <dependencies>
-        <dependency>
-            <groupId>eu.clarin.cmdi</groupId>
-            <artifactId>OAIProvider</artifactId>
-            <version>0.0.2</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>slf4j-jdk14</artifactId>
-                    <groupId>org.slf4j</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency>
         
-        <dependency>
-            <groupId>org.glassfish.jersey.ext</groupId>
-            <artifactId>jersey-spring4</artifactId>
-            <version>${jersey-spring4.version}</version>
-        </dependency>
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>vcr-core</artifactId>
@@ -46,6 +30,11 @@
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>vcr-serialization</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>OAIProvider</artifactId>
             <version>${project.version}</version>
         </dependency>
     </dependencies>
