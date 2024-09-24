@@ -3,8 +3,8 @@ package eu.clarin.cmdi.virtualcollectionregistry.core.reference;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.OrderableComparator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan.State;
+import jakarta.validation.constraints.NotNull;
 
-import javax.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Date;
