@@ -1,15 +1,11 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest.auth;
 
-import eu.clarin.cmdi.virtualcollectionregistry.ApiKeyException;
-import eu.clarin.cmdi.virtualcollectionregistry.ApiKeyNotFoundException;
-import eu.clarin.cmdi.virtualcollectionregistry.ApiKeyRevokedException;
 import eu.clarin.cmdi.virtualcollectionregistry.ApiKeyService;
-import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
-import javax.annotation.Priority;
+import jakarta.annotation.Priority;
 import jakarta.ws.rs.Priorities;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
