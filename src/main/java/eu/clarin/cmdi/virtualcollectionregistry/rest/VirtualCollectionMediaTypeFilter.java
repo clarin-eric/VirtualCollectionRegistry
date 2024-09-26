@@ -2,8 +2,8 @@ package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
 import java.util.HashMap;
 import java.util.Map;
-import javax.ws.rs.core.MediaType;
-import javax.ws.rs.ext.Provider;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.ext.Provider;
 
 /**
  * Extension of the Jersey filter that allows "content negotation" by means of
