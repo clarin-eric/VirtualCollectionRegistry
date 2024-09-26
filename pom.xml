@@ -176,12 +176,12 @@
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-core</artifactId>
-            <version>2.2.7</version>
+            <version>2.2.23</version>
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations</artifactId>
-            <version>2.2.7</version>
+            <version>2.2.23</version>
         </dependency>
         
         <dependency>
@@ -701,11 +701,13 @@
                     </descriptors>
                 </configuration>
             </plugin>
-
+            <!-- blocked on jakarta support:
+            https://github.com/openapi-tools/swagger-maven-plugin/pull/122 -->
+            <!--
             <plugin>
                 <groupId>io.openapitools.swagger</groupId>
                 <artifactId>swagger-maven-plugin</artifactId>
-                <version>2.1.5</version>
+                <version>2.1.6</version>
                 <configuration>
                     <resourcePackages>
                         <resourcePackage>eu.clarin.cmdi.virtualcollectionregistry.rest</resourcePackage>
@@ -724,6 +726,7 @@
                     </execution>
                 </executions>
             </plugin>
+            -->
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-compiler-plugin</artifactId>
