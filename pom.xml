@@ -599,7 +599,49 @@
                     </dependency>
                 </dependencies>
             </plugin-->
-
+            <plugin>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-maven-plugin-jakarta</artifactId>
+                <version>2.2.23</version>
+                <configuration>
+                    <outputFileName>swagger</outputFileName>
+                    <outputPath>${project.build.directory}/service-doc</outputPath>
+                    <outputFormat>JSONANDYAML</outputFormat>
+                    <resourcePackages>
+                        <package>eu.clarin.cmdi.virtualcollectionregistry.rest</package>
+                    </resourcePackages>
+                    <prettyPrint>TRUE</prettyPrint>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>process</id>
+                        <goals>
+                            <goal>resolve</goal>
+                        </goals>
+                        <phase>compile</phase>
+                        <!--
+                        <configuration>                    
+                            <processors>
+                                <processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
+                            </processors>
+                            <sourceDirectory>${basedir}/src/main/java/eu/clarin/cmdi/virtualcollectionregistry/model</sourceDirectory>
+                            <outputDirectory>${project.build.directory}/generated-sources/metamodel</outputDirectory>
+                        </configuration>
+                        -->
+                    </execution>
+                </executions>
+                <!--
+                <dependencies>
+                    <dependency>
+                        <groupId>org.hibernate</groupId>
+                        <artifactId>hibernate-jpamodelgen</artifactId>
+                        <version>5.6.15.Final</version>
+                        <scope>compile</scope>
+                    </dependency>
+                </dependencies>
+                -->
+            </plugin>
+            
             <plugin>                
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>jaxb2-maven-plugin</artifactId>                
@@ -669,16 +711,13 @@
                         <resource>
                             <directory>doc</directory>
                         </resource>
-                        <!-- Make REST API documentation available -->
-                        <!-- Enable again after fixing the maven swagger plugin -->
-                        <!--
+                        <!-- Make REST API documentation available -->                        
                         <resource>
                             <directory>service-doc</directory>
                             <excludes>
                                 <exclude>*.html</exclude>
                             </excludes>
                         </resource>
-                        -->
                         <!-- Include proper shhaa config based on selected profile -->
                         <resource>
                             <directory>${war.shhaa.dir}</directory>

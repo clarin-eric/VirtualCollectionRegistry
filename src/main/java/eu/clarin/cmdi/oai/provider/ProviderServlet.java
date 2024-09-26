@@ -12,7 +12,6 @@ import org.slf4j.LoggerFactory;
 
 import eu.clarin.cmdi.oai.provider.impl.OAIProvider;
 
-
 public class ProviderServlet extends HttpServlet {
     private static final long serialVersionUID = 1L;
     private static final Logger logger =
