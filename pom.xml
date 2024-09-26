@@ -175,12 +175,12 @@
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-core</artifactId>
+            <artifactId>swagger-core-jakarta</artifactId>
             <version>2.2.23</version>
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations</artifactId>
+            <artifactId>swagger-annotations-jakarta</artifactId>
             <version>2.2.23</version>
         </dependency>
         
@@ -713,7 +713,7 @@
                         </resource>
                         <!-- Make REST API documentation available -->                        
                         <resource>
-                            <directory>service-doc</directory>
+                            <directory>${project.build.directory}/service-doc</directory>
                             <excludes>
                                 <exclude>*.html</exclude>
                             </excludes>
