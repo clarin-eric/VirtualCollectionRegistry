@@ -99,7 +99,7 @@ public class LanguageResourceSwitchboardLink extends AjaxFallbackLink<AjaxReques
 
     @Override
     public void onClick(Optional<AjaxRequestTarget> target) {
-        if (target.get() == null || !isPopupEnabled()) {
+        if (target.isEmpty() || !isPopupEnabled()) {
             final String endpoint = vcrConfig.getProcessEndpoint();
             final String href = buildSwitchboardUrl(endpoint, urlToProcessModel.getObject(), mimeTypeModel.getObject(), languageCodeModel.getObject() );
             throw new RedirectToUrlException(href);

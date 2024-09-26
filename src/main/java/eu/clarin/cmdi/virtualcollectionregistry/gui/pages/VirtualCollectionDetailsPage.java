@@ -522,8 +522,9 @@ public class VirtualCollectionDetailsPage extends BasePage {
         if(reference != null) {
             return reference.getPage().getPageClass();
         } else {
-           if(params.get(VirtualCollectionDetailsPage.PARAM_BACK_PAGE) != null) {
-                switch(BackPage.fromInt(params.get(VirtualCollectionDetailsPage.PARAM_BACK_PAGE).toInt())) {
+           StringValue backPageParam = params.get(VirtualCollectionDetailsPage.PARAM_BACK_PAGE);
+           if(backPageParam != null && !backPageParam.isEmpty()) {
+                switch(BackPage.fromInt(backPageParam.toInt())) {
                     case PUBLIC_LISTING: return BrowsePublicCollectionsPage.class;
                     case PRIVATE_LISTING: return BrowsePrivateCollectionsPage.class;
                     case ADMIN_LISTING: return AdminPage.class;
