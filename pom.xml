@@ -664,12 +664,14 @@
                             <directory>doc</directory>
                         </resource>
                         <!-- Make REST API documentation available -->
+                        <!-- Enable again after fixing the maven swagger plugin -->
                         <resource>
                             <directory>service-doc</directory>
                             <excludes>
                                 <exclude>*.html</exclude>
                             </excludes>
                         </resource>
+                        -->
                         <!-- Include proper shhaa config based on selected profile -->
                         <resource>
                             <directory>${war.shhaa.dir}</directory>
