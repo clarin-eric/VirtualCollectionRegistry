@@ -46,10 +46,11 @@
         <!-- dependency versions -->
         <!-- https://stackoverflow.com/questions/9170832/list-of-java-class-file-format-major-version-numbers -->
         <log4j.version>2.23.1</log4j.version>
+        <jakarta.ee.version>6.0.0</jakarta.ee.version>
         <hibernate.version>5.6.15.Final</hibernate.version>
         <hibernate.jpaVersion>1.0.2.Final</hibernate.jpaVersion>
         <jersey.version>3.1.8</jersey.version>
-        <jackson.version>2.10.5.1</jackson.version>
+        <jackson.version>2.10.5.1</jackson.version> <!-- should match supported jakarta ee version -->
         <wicket.version>10.1.0</wicket.version> <!-- 7.7.0 has issue https://issues.apache.org/jira/browse/WICKET-6374, which will befixed in 7.8.0 -->
         <wicket-bootstrap.version>2.0.15</wicket-bootstrap.version>
         <spring.version>6.1.12</spring.version>
@@ -155,7 +156,7 @@
         <dependency>
             <groupId>org.glassfish.jersey.containers</groupId>            
             <artifactId>jersey-container-servlet</artifactId>
-            <version>2.31</version>
+            <version>${jersey.version}</version>
         </dependency>
         <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
@@ -385,11 +386,11 @@
             <scope>runtime</scope>
         </dependency>
 
-
+        <!-- https://jakarta.ee/specifications/servlet/ -->
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <version>6.1.0</version>
+            <version>${jakarta.ee.version}</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
