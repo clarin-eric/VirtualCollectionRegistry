@@ -39,18 +39,17 @@ import javax.xml.stream.XMLStreamWriter;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.stereotype.Component;
 
-//@Component
+@Component
 public class VirtualColletionRegistryOAIRepository implements Repository {
     private static final Logger logger =
             LoggerFactory.getLogger(VirtualColletionRegistryOAIRepository.class);
     private VirtualCollectionRegistry registry;
-  //  @Autowired
+    @Autowired
     private VirtualCollectionCMDIWriter cmdiWriter;
-  //  @Autowired
+    @Autowired
     private DataStore dataStore;
-
-
 
     private class CMDIMetadataFormat implements MetadataFormat {
         @Override

@@ -599,6 +599,7 @@
                     </dependency>
                 </dependencies>
             </plugin-->
+            <!-- https://github.com/swagger-api/swagger-core/blob/master/modules/swagger-maven-plugin/README.md -->
             <plugin>
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-maven-plugin-jakarta</artifactId>

@@ -4,7 +4,9 @@ import eu.clarin.cmdi.oai.provider.OAIException;
 import eu.clarin.cmdi.oai.provider.Repository;
 import eu.clarin.cmdi.oai.provider.impl.OAIProvider;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
+import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.context.annotation.Bean;
+import org.springframework.context.annotation.Configuration;
 
 /**
  * Spring configuration that defines beans for the OAI Provider to be used by
@@ -12,10 +14,10 @@ import org.springframework.context.annotation.Bean;
  *
  * @author twagoo
  */
-//@Configuration
+@Configuration
 public class VirtualCollectionRegistryOAIConfiguration {
 
-    //@Autowired
+    @Autowired
     private VirtualCollectionRegistry vcr;
 
     @Bean
