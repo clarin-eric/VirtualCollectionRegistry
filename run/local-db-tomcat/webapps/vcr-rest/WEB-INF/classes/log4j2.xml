@@ -1,0 +1,59 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<Configuration>
+    <Appenders>
+        <Console name="Console" target="SYSTEM_OUT">
+            <PatternLayout>
+                <Pattern>%d %p [%c#%M:%L] - %m%n</Pattern>
+            </PatternLayout>
+        </Console>
+        <RollingFile
+                name="File"
+                fileName="${sys:catalina.base}/logs/vcr-rest.log"
+                filePattern="${sys:catalina.base}/logs/vcr-rest.%i.log.gz"
+                ignoreExceptions="false">
+            <PatternLayout>
+                <Pattern>%d %p [%c#%M:%L] - %m%n</Pattern>
+            </PatternLayout>
+            <Policies>
+                <SizeBasedTriggeringPolicy size="10MB" />
+            </Policies>
+            <DefaultRolloverStrategy max="5" />
+        </RollingFile>
+    </Appenders>
+    <Loggers>
+        <Logger name="eu.clarin.cmdi.virtualcollectionregistry" level="DEBUG" />
+
+        <Logger name="eu.clarin.cmdi.virtualcollectionregistry.core.CharacterEncodingFilter" level="WARN" />
+        <Logger name="eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistryMaintenanceImpl" level="INFO" />
+        <Logger name="eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistryReferenceValidatorImpl" level="DEBUG" />
+        <Logger name="eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistryReferenceValidatorWorker" level="DEBUG" />
+        <Logger name="eu.clarin.cmdi.virtualcollectionregistry.core.AdminUsersServiceImpl" level="WARN" />
+        <Logger name="eu.clarin.cmdi.virtualcollectionregistry.core.ServletUtils" level="WARN" />
+        <Logger name="eu.clarin.cmdi.virtualcollectionregistry.core.TxManager" level="INFO" />
+
+        <Logger name="de.mpg.aai.shhaa.authn" level="INFO" />
+        <Logger name="de.mpg.aai.shhaa.resolver" level="INFO" />
+
+        <Logger name="org.jboss" level="WARN" />
+        <Logger name="org.glassfish.jersey" level="DEBUG" />
+        <Logger name="org.springframework" level="INFO" />
+        <Logger name="org.hibernate" level="INFO" />
+
+        <!-- logs the SQL statements -->
+        <!-- Logger name="org.hibernate.SQL" level="DEBUG" /-->
+        <!-- Logs the JDBC parameters passed to a query -->
+        <!-- Logger name="org.hibernate.type" level="TRACE" /-->
+
+        <Logger name="org.apache.wicket" level="WARN" />
+        <Logger name="org.apache.wicket.resource" level="WARN" />
+        <Logger name="org.apache.http" level="WARN" />
+        <Logger name="de.agilecoders.wicket" level="WARN" />
+        <Logger name="wicket-webjars" level="WARN" />
+        <Logger name="net.bull.javamelody" level="WARN" />
+
+        <Root level="trace">
+            <AppenderRef ref="File"/>
+            <!--AppenderRef ref="Console"/-->
+        </Root>
+    </Loggers>
+</Configuration>

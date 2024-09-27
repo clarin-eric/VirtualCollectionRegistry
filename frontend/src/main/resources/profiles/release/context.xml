@@ -12,7 +12,7 @@
               validationQuery="SELECT 1"
               username="vcruser"
               password="vcrpassword"
-              url="jdbc:mysql://localhost:3306/vcr" />
+              url="jdbc:mysql://localhost:3307/vcr" />
             <!--
             <Parameter
                        name="eu.clarin.cmdi.virtualcollectionregistry.admindb.basedir"

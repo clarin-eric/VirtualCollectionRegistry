@@ -4,11 +4,11 @@ import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AbstractDefaultAjaxBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.util.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 import java.io.Serializable;
+import java.time.Duration;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,7 +21,7 @@ public class TimerManagerImpl implements TimerManager, Serializable {
     private final List<Update> targets = new ArrayList<>();
 
     public TimerManagerImpl() {
-        timer = new AbstractAjaxTimerBehavior(Duration.seconds(1)) {
+        timer = new AbstractAjaxTimerBehavior(Duration.ofSeconds(1)) {
             @Override
             protected void onTimer(AjaxRequestTarget target) {
                 if(target != null) {

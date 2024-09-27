@@ -53,14 +53,16 @@
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
-       
+        <jakarta.ee.version>6.0.0</jakarta.ee.version>
         <log4j.version>2.3.1</log4j.version>
         <hibernate.version>5.6.15.Final</hibernate.version>
         <hibernate.jpaVersion>5.6.15.Final</hibernate.jpaVersion>
+        <!-- jersey version should match jakarta EE version
+             Check: https://eclipse-ee4j.github.io/jersey/ -->
         <jersey.version>3.1.8</jersey.version>
         <jackson.version>2.13.1</jackson.version>
         <wicket.version>10.1.0</wicket.version>
-        <wicket-bootstrap.version>2.0.15</wicket-bootstrap.version>
+        <wicket-bootstrap.version>7.0.5</wicket-bootstrap.version>
         <spring.version>6.1.12</spring.version>
         
         <!-- Tell Netbeans to insert the right license header -->
@@ -72,14 +74,14 @@
         <dependency>
             <groupId>jakarta.servlet</groupId>
             <artifactId>jakarta.servlet-api</artifactId>
-            <version>6.1.0</version>
+            <version>6.0.0</version>
             <type>jar</type>
             <scope>provided</scope>
         </dependency>
         <dependency>
             <groupId>jakarta.ws.rs</groupId>
             <artifactId>jakarta.ws.rs-api</artifactId>
-            <version>4.0.0</version>
+            <version>3.1.0</version>
             <type>jar</type>
             <!--scope>provided</scope-->
         </dependency>
@@ -124,29 +126,8 @@
             </plugin>
         </plugins>
     </build>
-    
-    <reporting>
-        <plugins>
-            <!-- NCSS plugin has issues with Java 7 at the moment, check back later -->
-            <!--
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>javancss-maven-plugin</artifactId>
-                <version>2.0-beta-2</version>
-            </plugin>
-            -->
-        </plugins>
-    </reporting>
 
     <repositories>
-        <!--
-        <repository>
-            <id>wiquery</id>
-            <name>wiQuery repository</name>
-            <url>http://wiquery.googlecode.com/svn/repo/</url>
-            <layout>default</layout>
-        </repository>
-        -->
         <repository>
             <id>CLARIN central proxy</id>
             <name>CLARIN Repository</name>

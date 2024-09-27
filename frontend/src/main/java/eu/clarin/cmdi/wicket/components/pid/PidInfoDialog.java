@@ -16,6 +16,9 @@
  */
 package eu.clarin.cmdi.wicket.components.pid;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
+import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PersistentIdentifieable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidLink;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidType;
@@ -23,11 +26,13 @@ import static eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidType.DOI;
 import static eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidType.HANDLE;
 import static eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidType.NBN;
 import static eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidType.UNKOWN;
-import eu.clarin.cmdi.wicket.components.BaseInfoDialog;
+import eu.clarin.cmdi.wicket.components.BootstrapDialog;
 import eu.clarin.cmdi.wicket.components.DialogButton;
 import java.io.IOException;
+import java.time.Duration;
 import java.util.Arrays;
 import java.util.List;
+import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -49,11 +54,9 @@ import org.apache.wicket.markup.head.JavaScriptReferenceHeaderItem;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
-import org.apache.wicket.util.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -61,7 +64,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author wilelb
  */
-public class PidInfoDialog extends BaseInfoDialog {
+public class PidInfoDialog extends BootstrapDialog {
  
     private final static Logger logger = LoggerFactory.getLogger(PidInfoDialog.class);
     
@@ -71,7 +74,7 @@ public class PidInfoDialog extends BaseInfoDialog {
     
     private final static JavaScriptResourceReference INIT_JAVASCRIPT_REFERENCE = new JavaScriptResourceReference(PidInfoDialog.class, "PidInfoDialog.js");
     
-    public class PidResolutionModel extends AbstractReadOnlyModel<String> {
+    public class PidResolutionModel implements IModel<String> {
     
         private final String ref;
             
@@ -129,20 +132,18 @@ public class PidInfoDialog extends BaseInfoDialog {
     }
     
     public PidInfoDialog(String id, final IModel<PersistentIdentifieable> model, String context) {
-        super(id, TITLE);
+        super(id);
+        header(Model.of(TITLE));
         this.model = model;
-        this.build(context);
-    }
-    
-    private void build(String context) {
-         List<DialogButton> buttons = Arrays.asList(
-                new DialogButton("Close") {
-                    @Override
-                    public void handleButtonClick(AjaxRequestTarget target) {
-                        PidInfoDialog.this.close(target);
-                    }
-                });
-        buildContent(TITLE, new Body(getContentWicketId(), context), buttons, null);
+        
+        addButton(new BootstrapAjaxLink(Modal.BUTTON_MARKUP_ID, Model.of(""), Buttons.Type.Primary, Model.of("Close")) {
+            @Override
+            public void onClick(AjaxRequestTarget target) {                
+                    PidInfoDialog.this.close(target);
+                
+            }    
+        });
+        add(new Body(BootstrapDialog.CONTENT_PANEL_ID, context));
     }
     
     private class Body extends Panel {
@@ -169,7 +170,7 @@ public class PidInfoDialog extends BaseInfoDialog {
             add(new Label("context2", new Model(context)));
             
             Label handleResolutionLabel = new Label("hdl-target", new PidResolutionModel(model.getObject().getPidUri()));
-            AjaxSelfUpdatingTimerBehavior timer = new AjaxSelfUpdatingTimerBehavior(Duration.milliseconds(500));
+            AjaxSelfUpdatingTimerBehavior timer = new AjaxSelfUpdatingTimerBehavior(Duration.ofMillis(500));
             handleResolutionLabel.add(timer);
             add(handleResolutionLabel);
         }

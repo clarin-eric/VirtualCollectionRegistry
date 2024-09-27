@@ -16,28 +16,30 @@
  */
 package eu.clarin.cmdi.wicket.components;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
+import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
 import java.io.Serializable;
-import java.util.ArrayList;
-import java.util.List;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.model.IModel;
+import org.apache.wicket.model.Model;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author wilelb
  */
-public class ConfirmationDialog extends BaseInfoDialog {    
+public class ConfirmationDialog extends BootstrapDialog {    
     
-//    private final static Logger logger = LoggerFactory.getLogger(ConfirmationDialog.class);
+     private final static Logger logger = LoggerFactory.getLogger(ConfirmationDialog.class);
     
-    private final  List<DialogButton> buttons;
     private CheckBox cb;
 
-    private Component body;
-    private final String title;
     private final Handler confirmHandler;
+    private boolean useButtonDefault = true;
     
     public static interface Handler<T> extends Serializable {
         public void handle(AjaxRequestTarget target);
@@ -51,52 +53,30 @@ public class ConfirmationDialog extends BaseInfoDialog {
     }
     
     public ConfirmationDialog(String id, final String title, Handler confirmHandler) {
-        super(id, title);
-        this.title = title;
+        super(id, Model.of(title));
         this.confirmHandler = confirmHandler;
-        this.buttons = new ArrayList<>();
+        header(Model.of(title));
     }
     
     public void build() {
         //Ensure we have a close button if no custom buttons are configured.
-        if(buttons.isEmpty()) {
-            buttons.add(new DialogButton("Close") {
+        if(useButtonDefault) {
+            addButton(new BootstrapAjaxLink(Modal.BUTTON_MARKUP_ID, Model.of(""), Buttons.Type.Primary, Model.of("Close")) {               
                 @Override
-                public void handleButtonClick(AjaxRequestTarget target) {
-                    ConfirmationDialog.this.close(target);
+                public void onClick(AjaxRequestTarget target) {
+                    ConfirmationDialog.this.close(target); 
                 }
             });
         }
-        buildContent(title, body, buttons, cb);
-    }
-    
-    public void setContentPanel(Component content) {
-        content.setMarkupId(CONTENT_ID);
-        this.body = content;
-        
-    }
-    
-    public void addButton(DialogButton button) {
-        buttons.add(button);
     }
 
+    @Override
+    public Modal addButton(Component c) {
+        this.useButtonDefault = false;
+        return super.addButton(c);        
+    }
+    
     public void addCheckbox(CheckBox cb) {
         this.cb = cb;
     }
-   /*
-    public void confirm(AjaxRequestTarget target) {
-        if(confirmHandler != null) {
-            try {
-                confirmHandler.handle(target);
-            } catch(RuntimeException ex) {
-                 ConfirmationDialog.this.close(target);
-            }
-        } else {
-            logger.info("No confirmation handler set");
-            target.add(this);
-        }
-    }
-    
-    public void onCancel(AjaxRequestTarget target) {}  
-*/
 }

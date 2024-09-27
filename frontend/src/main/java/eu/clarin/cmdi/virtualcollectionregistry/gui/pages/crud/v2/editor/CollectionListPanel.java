@@ -6,6 +6,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
+import java.util.Optional;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
@@ -26,8 +27,8 @@ public class CollectionListPanel extends ActionablePanel {
     
     private final static Logger logger = LoggerFactory.getLogger(CollectionListPanel.class);
 
-    private final Link btnEdit;
-    private final Link btnRemove;
+    private final Link<AjaxRequestTarget> btnEdit;
+    private final Link<AjaxRequestTarget> btnRemove;
 
     public CollectionListPanel(String id, final VirtualCollection collection) {
         super(id);
@@ -62,28 +63,28 @@ public class CollectionListPanel extends ActionablePanel {
         };
         add(referencesListview);
 
-        btnEdit = new AjaxFallbackLink("btn_edit") {
+        btnEdit = new AjaxFallbackLink<>("btn_edit") {
             @Override
-            public void onClick(final AjaxRequestTarget target) {
+            public void onClick(final Optional<AjaxRequestTarget> target) {
                 logger.info("Fire edit event for collection with id = {}", collection.getId());
                 fireEvent(
                         new AbstractEvent<>(
                                 EventType.EDIT,
                                 collection,
-                                target));
+                                target.isPresent() ? target.get() : null));
             }
         };
         add(btnEdit);
 
-        btnRemove = new AjaxFallbackLink("btn_remove") {
+        btnRemove = new AjaxFallbackLink<>("btn_remove") {
             @Override
-            public void onClick(final AjaxRequestTarget target) {
+            public void onClick(final Optional<AjaxRequestTarget> target) {
                 logger.info("Fire delete event for collection with id = {}", collection.getId());
                 fireEvent(
                         new AbstractEvent<>(
                                 EventType.DELETE,
                                 collection,
-                                target));
+                                target.isPresent() ? target.get() : null));
             }
         };
         add(btnRemove);

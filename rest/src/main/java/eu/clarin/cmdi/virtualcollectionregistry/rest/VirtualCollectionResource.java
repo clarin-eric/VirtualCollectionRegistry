@@ -48,10 +48,10 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author twagoo
  */
+//@Path("/virtualcollection")
 public final class VirtualCollectionResource {
 
     public static class MediaTypes {
-
         public static final String CMDI = "application/x-cmdi+xml";
         public static final MediaType CMDI_TYPE = new MediaType("application", "x-cmdi+xml");
     }

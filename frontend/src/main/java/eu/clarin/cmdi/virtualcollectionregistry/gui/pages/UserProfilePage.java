@@ -123,12 +123,12 @@ public class UserProfilePage extends BasePage {
 
             //add(new ClipboardJsBehavior());
 
-            AjaxFallbackLink btnSave = new AjaxFallbackLink("btn_new_api_key") {
+            AjaxFallbackLink<AjaxRequestTarget> btnSave = new AjaxFallbackLink<>("btn_new_api_key") {
                 @Override
-                public void onClick(AjaxRequestTarget target) {
+                public void onClick(Optional<AjaxRequestTarget> target) {
                     apiKeyService.generateNewKeyForUser(username);
-                    if (target != null) {
-                        target.add(componentToUpdate);
+                    if (target.get() != null) {
+                        target.get().add(componentToUpdate);
                     }
                 }
             };

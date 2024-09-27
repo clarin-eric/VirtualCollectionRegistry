@@ -16,14 +16,13 @@
  */
 package eu.clarin.cmdi.wicket.components.panel;
 
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 
 /**
  *
  * @author Twan Goosen &lt;twan@clarin.eu&gt;
  */
-public class BooleanOptionsModel<T> extends AbstractReadOnlyModel<T> {
+public class BooleanOptionsModel<T> implements IModel<T> {
 
     private final IModel<Boolean> innerModel;
     private final IModel<T> trueValue;

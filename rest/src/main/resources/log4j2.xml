@@ -34,6 +34,7 @@
         <Logger name="de.mpg.aai.shhaa.authn" level="INFO" />
         <Logger name="de.mpg.aai.shhaa.resolver" level="INFO" />
 
+        <Logger name="log4j.category.org.glassfish.jersey" level="DEBUG" />
         <Logger name="org.jboss" level="WARN" />
         <Logger name="org.glassfish.jersey" level="DEBUG" />
         <Logger name="org.springframework" level="INFO" />

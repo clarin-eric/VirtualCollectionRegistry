@@ -1,6 +1,5 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
-import com.google.common.collect.Lists;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.*;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin.AdminPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.CreateAndEditVirtualCollectionPageV2;
@@ -75,7 +74,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollecti
 import eu.clarin.cmdi.virtualcollectionregistry.model.config.VcrConfigImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PersistentIdentifieable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PersistentIdentifier;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 @SuppressWarnings("serial")
 public class VirtualCollectionDetailsPage extends BasePage {
@@ -548,8 +547,8 @@ public class VirtualCollectionDetailsPage extends BasePage {
     }
     
     private BootstrapDropdown getDropdown(String id, IModel<Resource> model) {
-         List options = 
-            Lists.newArrayList(new DropdownMenuItem("Process with Language Resource Switchboard", "glyphicon glyphicon-open-file") {
+        List options = new ArrayList();
+        options.add(new DropdownMenuItem("Process with Language Resource Switchboard", "glyphicon glyphicon-open-file") {
                 @Override
                 protected AbstractLink getLink(String id) {
                     return (AbstractLink)LanguageResourceSwitchboardLink.forResource("link", model.getObject());
@@ -614,8 +613,9 @@ public class VirtualCollectionDetailsPage extends BasePage {
         if(reference != null) {
             return reference.getPage().getPageClass();
         } else {
-           if(params.get(VirtualCollectionDetailsPage.PARAM_BACK_PAGE) != null) {
-                switch(BackPage.fromInt(params.get(VirtualCollectionDetailsPage.PARAM_BACK_PAGE).toInt())) {
+           StringValue backPageParam = params.get(VirtualCollectionDetailsPage.PARAM_BACK_PAGE);
+           if(backPageParam != null & !backPageParam.isEmpty()) {
+                switch(BackPage.fromInt(backPageParam.toInt())) {
                     case PUBLIC_LISTING: return BrowsePublicCollectionsPage.class;
                     case PRIVATE_LISTING: return BrowsePrivateCollectionsPage.class;
                     case ADMIN_LISTING: return AdminPage.class;

@@ -1,0 +1,111 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance"
+         xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd"
+         id="WebApp_ID" version="2.5">
+    <display-name>CLARIN Virtual Collection Registry REST API</display-name>
+
+    <!-- Shibboleth -->
+    <!--
+    <context-param>
+        <param-name>ShhaaConfigLocation</param-name>
+        <param-value>/WEB-INF/shhaa.xml</param-value>
+    </context-param>
+    -->
+    
+    <!-- Make sure this one is declared before the wicket filter, the order matters. Shibboleth should trigger the login, before continuing with the wicket filter.-->
+    <!--
+    <filter>
+        <filter-name>AAIFilter</filter-name>
+        <filter-class>de.mpg.aai.shhaa.AuthFilter</filter-class>
+    </filter>
+    <filter-mapping>
+        <filter-name>AAIFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+    -->
+
+    <context-param>
+        <param-name>spring.profiles.active</param-name>
+        <param-value>vcr.pid.dummy</param-value>
+        <!--<param-value>vcr.pid.gwdg</param-value>-->
+    </context-param>
+    
+    <!-- Persistence -->
+    <filter>
+        <filter-name>PersistenceFilter</filter-name>
+        <filter-class>eu.clarin.cmdi.virtualcollectionregistry.core.PersistenceFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>PersistenceFilter</filter-name>
+        <servlet-name>REST-Web-Service</servlet-name>
+    </filter-mapping>
+    
+    <filter-mapping>
+        <filter-name>PersistenceFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <filter>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <filter-class>eu.clarin.cmdi.virtualcollectionregistry.core.CharacterEncodingFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+
+    <servlet>
+        <display-name>Virtual Collection Registry REST web service</display-name>
+        <servlet-name>REST-Web-Service</servlet-name>
+        <!--<servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>-->
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <!-- Register JAX-RS Application, if needed. -->
+        <!--
+        <init-param>
+            <param-name>javax.ws.rs.Application</param-name>
+            <param-value>eu.clarin.cmdi.virtualcollectionregistry.rest.VcrRestApplication</param-value>
+        </init-param>
+        -->
+        <!-- Register resources and providers under the speciefied packages (separate with ;). -->
+        <init-param>
+            <!--param-name>com.sun.jersey.config.property.packages</param-name-->
+            <param-name>jersey.config.server.provider.packages</param-name>
+            <param-value>eu.clarin.cmdi.virtualcollectionregistry.rest</param-value>
+        </init-param>
+        <!--
+        <init-param>
+            <-param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name->
+            <param-name>javax.ws.rs.container.ContainerRequestFilter</param-name>
+            <param-value>eu.clarin.cmdi.virtualcollectionregistry.rest.VirtualCollectionMediaTypeFilter</param-value>
+        </init-param>
+        -->
+        <!-- Enable Tracing support. -->
+        <init-param>
+            <param-name>jersey.config.server.tracing</param-name>
+            <param-value>ALL</param-value>
+        </init-param>
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>REST-Web-Service</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </servlet-mapping>
+
+    <resource-ref>
+        <description>Virtual Collection Datastore Connection</description>
+        <res-ref-name>jdbc/VirtualCollectionStore</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+    </resource-ref>
+
+    <mime-mapping>
+        <extension>xsd</extension>
+        <mime-type>application/xml</mime-type>
+    </mime-mapping>
+
+</web-app>

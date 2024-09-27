@@ -15,7 +15,7 @@
             removeAbandonedOnBorrow="true" 
             removeAbandonedOnMaintenance="true" 
             type="javax.sql.DataSource" 
-            url="jdbc:mysql://localhost:3306/vcr" 
+            url="jdbc:mysql://localhost:3307/vcr" 
             username="vcruser" 
             validationQuery="SELECT 1"
             testOnBorrow="true"

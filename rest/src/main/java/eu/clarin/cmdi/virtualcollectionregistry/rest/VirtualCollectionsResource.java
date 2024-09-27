@@ -44,7 +44,7 @@ import org.springframework.beans.factory.annotation.Autowired;
  *
  * @author twagoo
  */
-//@Path("/virtualcollections")
+@Path("/virtualcollections")
 public class VirtualCollectionsResource {
 
     @Autowired

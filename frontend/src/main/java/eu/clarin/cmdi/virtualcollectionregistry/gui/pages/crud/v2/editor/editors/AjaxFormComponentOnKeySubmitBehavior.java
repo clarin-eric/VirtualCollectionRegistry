@@ -47,7 +47,7 @@ public abstract class AjaxFormComponentOnKeySubmitBehavior extends AjaxFormCompo
                         + "return {keycode: eventKeycode};");
 
         //whithout setting, no keyboard events will reach any inputfield
-        attributes.setAllowDefault(true);
+        attributes.setPreventDefault(false);
     }
 
     protected int getPressedKeyCode() {

@@ -694,13 +694,14 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
                 }
                 results = q.getResultList();
             }
-            
+            /*
             for(VirtualCollection vc : results) {
                 logger.info("Authors for "+vc.getName());
                 for(String a : vc.getAuthors()) {
                     logger.info("\tAuthor: "+a);
                 }
             }
+            */
         } catch (Exception e) {
             rollbackActiveTransaction(datastore.getEntityManager(),"error while enumerating virtual collections", e);
         } finally {

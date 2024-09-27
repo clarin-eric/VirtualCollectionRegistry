@@ -15,6 +15,10 @@
     <name>VCR Backend - Rest API</name>
     <packaging>war</packaging>
 
+    <properties>
+        <war.shhaa.dir>src/main/resources/</war.shhaa.dir>
+    </properties>
+    
     <dependencies>
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -29,14 +33,15 @@
         
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-core</artifactId>
-            <version>2.2.22</version>
+            <artifactId>swagger-core-jakarta</artifactId>
+            <version>2.2.23</version>
         </dependency>
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-annotations</artifactId>
-            <version>2.2.22</version>
-        </dependency>
+            <artifactId>swagger-annotations-jakarta</artifactId>
+            <version>2.2.23</version>
+        </dependency>        
+        
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-util</artifactId>
@@ -47,25 +52,42 @@
             <artifactId>wicket-core</artifactId>
             <version>${wicket.version}</version>
         </dependency>
+        
+         <!-- the Jersey implementation -->
         <dependency>
-            <groupId>org.glassfish.jersey.core</groupId>
-            <artifactId>jersey-server</artifactId>
+            <groupId>org.glassfish.jersey.containers</groupId>
+            <artifactId>jersey-container-servlet</artifactId>
             <version>${jersey.version}</version>
         </dependency>
+
+        <!-- also needed for dependency injection -->
         <dependency>
-            <groupId>org.glassfish.jersey.media</groupId>
-            <artifactId>jersey-media-jaxb</artifactId>
+            <groupId>org.glassfish.jersey.inject</groupId>
+            <artifactId>jersey-hk2</artifactId>
             <version>${jersey.version}</version>
         </dependency>
-         <dependency>
+        
+        <!-- support for using Jackson (JSON) with Jersey -->
+        <dependency>
             <groupId>org.glassfish.jersey.media</groupId>
             <artifactId>jersey-media-json-jackson</artifactId>
             <version>${jersey.version}</version>
         </dependency>
 
+        <dependency>
+            <groupId>org.glassfish.jersey.ext</groupId>
+            <artifactId>jersey-spring6</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-jaxb</artifactId>
+            <version>${jersey.version}</version>
+        </dependency>
+
         <!-- Provides spring-beans and spring-context -->
 
-            
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
             <artifactId>httpcore</artifactId>
@@ -86,12 +108,13 @@
         </dependency>
         
         <!-- Provides org.apache.wicket.spring.injection.annot.SpringBean -->
+        <!--
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-spring</artifactId>
             <version>${wicket.version}</version>
         </dependency>
-        
+        -->
         <dependency>
             <groupId>org.codehaus.jettison</groupId>
             <artifactId>jettison</artifactId>
@@ -100,18 +123,6 @@
                 <exclusion>
                     <groupId>stax</groupId>
                     <artifactId>stax-api</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
-        
-        <dependency>
-            <groupId>de.mpg.mpgaai</groupId>
-            <artifactId>mpgaai-shhaa</artifactId>
-            <version>1.0.13</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
                 </exclusion>
             </exclusions>
         </dependency>
@@ -138,17 +149,11 @@
             <version>${project.version}</version>
         </dependency>
         
-        <dependency>
-            <groupId>javax.servlet</groupId>
-            <artifactId>servlet-api</artifactId>
-            <version>2.5</version>
-            <type>jar</type>
-            <scope>provided</scope>
-        </dependency>
     </dependencies>
     
     <build>
         <plugins>
+            
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-war-plugin</artifactId>
@@ -175,38 +180,49 @@
                                 <include>*.xsd</include>
                             </includes>
                         </resource>
-                        <!-- Make API documentation available (referenced from the help page) -->
-                        <!--
+                        <!-- Make REST API documentation available -->                        
                         <resource>
-                            <directory>doc</directory>
-                        </resource>
-                        -->
-                        <!-- Make REST API documentation available -->
-                        <!--
-                        <resource>
-                            <directory>service-doc</directory>
+                            <directory>${project.build.directory}/service-doc</directory>
                             <excludes>
                                 <exclude>*.html</exclude>
                             </excludes>
-                        </resource>
-                        <resource>
-                            <directory>swagger-ui/dist</directory>
-                            <targetPath>service-doc</targetPath>
-                        </resource>
-                        -->
-                        <!-- Include proper shhaa config based on selected profile -->
-                        <!--
+                        </resource>   
                         <resource>
                             <directory>${war.shhaa.dir}</directory>
                             <targetPath>WEB-INF</targetPath>
                             <includes>
                                 <include>shhaa.xml</include>
                             </includes>
-                        </resource>
-                            -->
+                        </resource>                           
+                                    
                     </webResources>
-                    <!--outputDirectory>bin</outputDirectory-->
                 </configuration>
+            </plugin>
+            
+            
+            <!-- https://github.com/swagger-api/swagger-core/blob/master/modules/swagger-maven-plugin/README.md -->
+            <plugin>
+                <groupId>io.swagger.core.v3</groupId>
+                <artifactId>swagger-maven-plugin-jakarta</artifactId>
+                <version>2.2.23</version>
+                <configuration>
+                    <outputFileName>swagger</outputFileName>
+                    <outputPath>${project.build.directory}/service-doc</outputPath>
+                    <outputFormat>JSONANDYAML</outputFormat>
+                    <resourcePackages>
+                        <package>eu.clarin.cmdi.virtualcollectionregistry.rest</package>
+                    </resourcePackages>
+                    <prettyPrint>TRUE</prettyPrint>
+                </configuration>
+                <executions>
+                    <execution>
+                        <id>process</id>
+                        <goals>
+                            <goal>resolve</goal>
+                        </goals>
+                        <phase>compile</phase>
+                    </execution>
+                </executions>
             </plugin>
         </plugins>
     </build>

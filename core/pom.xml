@@ -36,20 +36,11 @@
             </exclusions>
         </dependency>
         
-        <!-- Should match jakarta verion -->
-        <!-- https://eclipse-ee4j.github.io/jersey/ -->
         <dependency>
             <groupId>org.glassfish.jersey.core</groupId>
             <artifactId>jersey-common</artifactId>
-            <version>3.0.15</version>
+            <version>${jersey.version}</version>
         </dependency>
-       <!--
-        <dependency>
-            <groupId>org.glassfish.jersey.core</groupId>
-            <artifactId>jersey-server</artifactId>
-            <version>3.0.15</version>
-        </dependency>
-        -->
             
         <!-- spring-beans and spring-context -->
         <dependency>
@@ -93,17 +84,6 @@
                 </exclusion>
             </exclusions-->
         </dependency>
-        <dependency>
-            <groupId>de.mpg.mpgaai</groupId>
-            <artifactId>mpgaai-shhaa</artifactId>
-            <version>1.0.13</version>
-            <exclusions>
-                <exclusion>
-                    <groupId>log4j</groupId>
-                    <artifactId>log4j</artifactId>
-                </exclusion>
-            </exclusions>
-        </dependency>
         
         <dependency>
             <groupId>org.hibernate</groupId>
@@ -141,6 +121,11 @@
             <groupId>net.sf.saxon</groupId>
             <artifactId>Saxon-HE</artifactId>
             <version>12.3</version>
+        </dependency>
+        <dependency>
+            <groupId>de.mpg.aai</groupId>
+            <artifactId>mpgaai-shhaa</artifactId>
+            <version>1.9.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

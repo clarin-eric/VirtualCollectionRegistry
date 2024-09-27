@@ -16,8 +16,12 @@
  */
 package eu.clarin.cmdi.wicket.components.citation;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
+import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
+import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
+import static de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesome6IconType.java;
 import eu.clarin.cmdi.virtualcollectionregistry.model.citation.Citable;
-import eu.clarin.cmdi.wicket.components.BaseInfoDialog;
+import eu.clarin.cmdi.wicket.components.BootstrapDialog;
 import eu.clarin.cmdi.wicket.components.DialogButton;
 import java.util.Arrays;
 import java.util.List;
@@ -36,7 +40,7 @@ import org.slf4j.LoggerFactory;
  *
  * @author wilelb
  */
-public class CitationDialog extends BaseInfoDialog {
+public class CitationDialog extends BootstrapDialog {
 
     private Logger logger = LoggerFactory.getLogger(CitationDialog.class);
 
@@ -46,34 +50,22 @@ public class CitationDialog extends BaseInfoDialog {
     private final IModel<Citable> latestModel;
 
     public CitationDialog(String id, final IModel<Citable> model) {
-        super(id, TITLE);
-        this.model = model;
-        this.latestModel = null;
-        this.build();
+        this(id, model, null);
     }
 
     public CitationDialog(String id, final IModel<Citable> model, final IModel<Citable> latestModel) {
-        super(id, TITLE);
+        super(id);
+        header(Model.of(TITLE));
         this.model = model;
         this.latestModel = latestModel;
-        this.build();
-    }
-
-    private void build() {
-        List<DialogButton> buttons = Arrays.asList(
-                new DialogButton("Close") {
-                    @Override
-                    public void handleButtonClick(AjaxRequestTarget target) {
-                        CitationDialog.this.close(target);
-                    }
-                });
+        
         if(latestModel == null) {
-            buildContent(TITLE, new Body(getContentWicketId(), model.getObject()), buttons, null);
+            add(new Body(BootstrapDialog.CONTENT_PANEL_ID, model.getObject()));
         } else {
-            buildContent(TITLE, new VersionsBody(getContentWicketId(), model.getObject(), latestModel.getObject()), buttons, null);
+            add(new VersionsBody(id, model.getObject(), latestModel.getObject()));
         }
     }
-
+    
     private class VersionsBody extends Panel {
         public VersionsBody(String id, Citable cite, Citable latest) {
             super(id);

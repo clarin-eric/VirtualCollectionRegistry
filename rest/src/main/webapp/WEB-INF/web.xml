@@ -5,26 +5,22 @@
          id="WebApp_ID" version="2.5">
     <display-name>CLARIN Virtual Collection Registry REST API</display-name>
 
-    <!-- Shibboleth -->
-    <!--
+    <!-- Spring initialisation -->
+    <listener>
+        <listener-class>
+                org.springframework.web.context.ContextLoaderListener
+        </listener-class>
+    </listener>
+    <!-- required to fix issue:
+        java.lang.IllegalStateException: Cannot initialize context because there is already a root
+            application context present - check whether you have multiple ContextLoader* definitions in
+            your web.xml!
+    -->
     <context-param>
-        <param-name>ShhaaConfigLocation</param-name>
-        <param-value>/WEB-INF/shhaa.xml</param-value>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:applicationContext.xml</param-value>
     </context-param>
-    -->
     
-    <!-- Make sure this one is declared before the wicket filter, the order matters. Shibboleth should trigger the login, before continuing with the wicket filter.-->
-    <!--
-    <filter>
-        <filter-name>AAIFilter</filter-name>
-        <filter-class>de.mpg.aai.shhaa.AuthFilter</filter-class>
-    </filter>
-    <filter-mapping>
-        <filter-name>AAIFilter</filter-name>
-        <url-pattern>/*</url-pattern>
-    </filter-mapping>
-    -->
-
     <context-param>
         <param-name>spring.profiles.active</param-name>
         <param-value>vcr.pid.dummy</param-value>
@@ -57,33 +53,20 @@
         <url-pattern>/*</url-pattern>
     </filter-mapping>
 
-
+<!--
     <servlet>
         <display-name>Virtual Collection Registry REST web service</display-name>
         <servlet-name>REST-Web-Service</servlet-name>
-        <!--<servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>-->
+        <-<servlet-class>com.sun.jersey.spi.spring.container.servlet.SpringServlet</servlet-class>->
         <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
-        <!-- Register JAX-RS Application, if needed. -->
-        <!--
+        <- Register JAX-RS Application, if needed. ->
+        <- Register resources and providers under the speciefied packages (separate with ;). ->
         <init-param>
-            <param-name>javax.ws.rs.Application</param-name>
-            <param-value>eu.clarin.cmdi.virtualcollectionregistry.rest.VcrRestApplication</param-value>
-        </init-param>
-        -->
-        <!-- Register resources and providers under the speciefied packages (separate with ;). -->
-        <init-param>
-            <!--param-name>com.sun.jersey.config.property.packages</param-name-->
+            <-param-name>com.sun.jersey.config.property.packages</param-name->
             <param-name>jersey.config.server.provider.packages</param-name>
             <param-value>eu.clarin.cmdi.virtualcollectionregistry.rest</param-value>
         </init-param>
-        <!--
-        <init-param>
-            <-param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name->
-            <param-name>javax.ws.rs.container.ContainerRequestFilter</param-name>
-            <param-value>eu.clarin.cmdi.virtualcollectionregistry.rest.VirtualCollectionMediaTypeFilter</param-value>
-        </init-param>
-        -->
-        <!-- Enable Tracing support. -->
+        <- Enable Tracing support. ->
         <init-param>
             <param-name>jersey.config.server.tracing</param-name>
             <param-value>ALL</param-value>
@@ -95,7 +78,7 @@
         <servlet-name>REST-Web-Service</servlet-name>
         <url-pattern>/*</url-pattern>
     </servlet-mapping>
-
+-->
     <resource-ref>
         <description>Virtual Collection Datastore Connection</description>
         <res-ref-name>jdbc/VirtualCollectionStore</res-ref-name>

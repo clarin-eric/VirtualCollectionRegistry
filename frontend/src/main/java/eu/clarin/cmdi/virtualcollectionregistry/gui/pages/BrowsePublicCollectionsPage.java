@@ -20,7 +20,7 @@ import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletRequest;
 
 @SuppressWarnings("serial")
 public class BrowsePublicCollectionsPage extends BasePage {

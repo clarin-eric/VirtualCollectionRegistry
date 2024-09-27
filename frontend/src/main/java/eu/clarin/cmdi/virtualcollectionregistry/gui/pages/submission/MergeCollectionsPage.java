@@ -58,7 +58,7 @@ public class MergeCollectionsPage extends BasePage {
 
     private VirtualCollection selectedCollection = null;
 
-    private final AjaxFallbackLink btnMergeWith;
+    private final AjaxFallbackLink<AjaxRequestTarget> btnMergeWith;
     private final Label btnMergeWithMessage;
     private final Model btnMergeWithMessageModel;
 
@@ -196,18 +196,18 @@ public class MergeCollectionsPage extends BasePage {
         listview.setVisible(visibleCollectionCount > 0);
         add(listview);
 
-        AjaxFallbackLink btnAddNew = new AjaxFallbackLink("btn_add_new") {
+        AjaxFallbackLink<AjaxRequestTarget> btnAddNew = new AjaxFallbackLink<>("btn_add_new") {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onClick(Optional<AjaxRequestTarget> target) {
                 doAddNewCollection();
             }
         };
         addLabel(btnAddNew, "btn_add_new_label");
         add(btnAddNew);
 
-        btnMergeWith = new AjaxFallbackLink("btn_merge_with") {
+        btnMergeWith = new AjaxFallbackLink<>("btn_merge_with") {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onClick(Optional<AjaxRequestTarget> target) {
                 doMergeCollection(session);
             }
         };
@@ -218,9 +218,9 @@ public class MergeCollectionsPage extends BasePage {
         btnMergeWithMessage = new Label("btn_merge_with_label_message", btnMergeWithMessageModel);
         add(btnMergeWithMessage);
 
-        AjaxFallbackLink btnCancel = new AjaxFallbackLink("btn_cancel") {
+        AjaxFallbackLink<AjaxRequestTarget> btnCancel = new AjaxFallbackLink<>("btn_cancel") {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onClick(Optional<AjaxRequestTarget> target) {
                 doCancel(session);
             }
         };

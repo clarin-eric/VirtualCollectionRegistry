@@ -1,0 +1,26 @@
+version: '3'
+services:
+
+  tomcat:
+    image: registry.gitlab.com/clarin-eric/docker-alpine-supervisor-java-tomcat-base:9.0-java17_2.9.0
+    volumes:
+      - ./tomcat/conf:/srv/tomcat/conf
+      - ./webapps:/srv/tomcat/webapps 
+      - ./conf:/conf
+    ports:
+      - 9999:8080
+
+  database:
+    image: "mariadb:10.3.10-bionic"
+    environment:
+      MYSQL_ROOT_PASSWORD: vcr-root
+      MYSQL_DATABASE: vcr
+      MYSQL_USER: vcruser
+      MYSQL_PASSWORD: vcrpassword
+    volumes:
+      - maria_db_data:/var/lib/mysql
+      - ./database:/docker-entrypoint-initdb.d
+
+volumes:
+  maria_db_data:
+    external: false

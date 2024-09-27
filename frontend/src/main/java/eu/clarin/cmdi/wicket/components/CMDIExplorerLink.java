@@ -18,6 +18,7 @@ import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Optional;
 
 public class CMDIExplorerLink extends AjaxFallbackLink<String> {
 
@@ -64,7 +65,7 @@ public class CMDIExplorerLink extends AjaxFallbackLink<String> {
     }
 
     @Override
-    public void onClick(AjaxRequestTarget target) {
+    public void onClick(Optional<AjaxRequestTarget> target) {
         final String endpoint = vcrConfig.getDownloadEndpoint();
         final String href = buildCmdiExplorerUrl(endpoint, urlModel.getObject() );
         throw new RedirectToUrlException(href);

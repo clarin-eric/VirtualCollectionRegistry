@@ -1,0 +1,95 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+    <head>
+        <title>Virtual Collection Registry</title>
+        <meta http-equiv="Content-Type" content="text/html; charset=utf-8" />
+        <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+        <link rel="icon" href="./images/icon-services-vcr.png" type="image/png" />
+        <!-- favicon.ico in the root as fallback -->
+        
+        <link wicket:id="canonicalUrl" rel="canonical" />
+        <link rel="stylesheet" type="text/css" href="css/vlo.css" />       
+        <link rel="stylesheet" type="text/css" href="css/vcr.css" />
+        <script type="text/javascript" id="switchboard-popup" defer="defer" src="https://switchboard.clarin.eu/popup/switchboardpopup.js"></script>
+        <!--script src="script/clipboard.min.js"></script-->
+        <!--
+        <link rel="stylesheet" href="assets/font-awesome/css/font-awesome.min.css" />
+        -->
+
+        <!--
+        <link href="https://gitcdn.github.io/bootstrap-toggle/2.2.2/css/bootstrap-toggle.min.css" rel="stylesheet">
+        <script src="https://gitcdn.github.io/bootstrap-toggle/2.2.2/js/bootstrap-toggle.min.js"></script>
+        -->
+
+        <link rel="stylesheet" href="css/font-awesome.min.css" />
+    </head>
+    <body>
+        <noscript>
+            <div id="noscript-warning">Virtual Collection Registry requires JavaScript to be enabled!</div>
+        </noscript>
+
+        <header wicket:id="header" id="header" role="banner">
+            <div class="clarin-top visible-xs">
+                <a class="logo center-block" href="http://www.clarin.eu"></a>
+            </div>
+            <span class="qualifier snapshot">TESTING</span>
+            <span class="qualifier beta">BETA</span>
+            <!--<span wicket:id="authstate">[auth]</span>-->
+            <div wicket:id="menu" class="navbar-static-top"  role="banner">[Navigation]</div>            
+        </header>
+
+        <div wicket:id="badge"></div>
+        
+        <div class="container-fluid" id="content">
+                <div id="feedback" wicket:id="feedback">[Feedback]</div>
+                <wicket:child />
+        </div>
+        
+        <footer id="footer">
+            <div class="container">
+                <div class="row">
+                    <div class="col-sm-6 col-sm-push-3 col-xs-12">
+                        <!-- CLARIN logo and copyright (center column on larger screens) -->
+                        <div class="text-center">
+                            <span class="footer-fineprint">
+                                Service provided by <a href="https://www.clarin.eu">CLARIN</a>
+                            </span>
+                            <wicket:container wicket:id="creditsSnippet"><!-- snippets --></wicket:container>
+                        </div>
+                    </div>
+                    <div class="col-sm-3 col-sm-pull-6 col-xs-12">
+                        <div class="hidden-xs">
+                            <!-- On smaller screen, show about link with contact link -->
+                            <wicket:link><a href="AboutPage.html">About</a></wicket:link>
+                        </div>
+                        <div class="version-info text-center-xs">
+                            <!-- Center version on mobile -->
+                            v1.9.0-SNAPSHOT
+                        </div>
+                    </div>
+                    <div class="col-sm-3 hidden-xs text-right">
+                        <!-- Contact link in right column on larger screens -->
+                        <a href="mailto:vcr@clarin.eu">Contact</a>
+                    </div>
+                    <div class="visible-xs-block text-center">
+                        <!-- Both links in centered div on mobile -->
+                        <wicket:link><a href="AboutPage.html">About</a></wicket:link>
+                        &nbsp;<a href="mailto:vcr@clarin.eu">Contact</a>
+                    </div>
+                </div>
+            </div>
+        </footer>
+
+        <wicket:container wicket:id="clipboardJsSnippet"><!--clipboard.js snippet --></wicket:container>
+
+        <wicket:container wicket:id="piwik"><!-- piwik tracker --></wicket:container>
+        
+        <wicket:container wicket:id="surveySnippet"><!-- snippets --></wicket:container>
+
+        <wicket:container wicket:id="scroll"><!-- scroll tracker --></wicket:container>
+
+    </body>
+</html>

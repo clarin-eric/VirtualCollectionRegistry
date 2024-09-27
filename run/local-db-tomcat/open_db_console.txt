@@ -1,0 +1,3 @@
+#!/bin/bash
+
+docker exec -ti local-db-tomcat_database_1 sh -c 'mysql --verbose --user=${MYSQL_USER} --password=${MYSQL_PASSWORD} ${MYSQL_DATABASE}

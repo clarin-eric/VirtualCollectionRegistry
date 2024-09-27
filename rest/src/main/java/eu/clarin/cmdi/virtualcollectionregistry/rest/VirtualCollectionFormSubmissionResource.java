@@ -28,7 +28,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.UriInfo;
-import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -81,7 +80,8 @@ public class VirtualCollectionFormSubmissionResource {
     private final ErrorBuilder errorBuilder;
     
     //TODO: how to properly wire this?
-    @SpringBean
+    //@SpringBean
+    @Autowired
     private PiwikConfig piwikConfig;
      
     public VirtualCollectionFormSubmissionResource() {

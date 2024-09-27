@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+    <head />
+    <body>
+        <wicket:panel>
+            <div class="container-fluid">
+                <div class="col-sm-12"><h4 wicket:id="title_details">Details</h4></div>
+                <div class="col-sm-2"><span wicket:id="lbl_title">Title:</span></div>
+                <div class="col-sm-10"><span wicket:id="title"></span></div>
+
+                <div class="col-sm-2"><span wicket:id="lbl_authors">Authors:</span></div>
+                <div class="col-sm-10"><span wicket:id="authors"></span></div>
+
+                <div class="col-sm-2"><span wicket:id="lbl_year">Year:</span></div>
+                <div class="col-sm-10"><span wicket:id="year"></span></div>
+
+                <div class="col-sm-2"><span wicket:id="lbl_link">Link:</span></div>
+                <div class="col-sm-10">
+                    <span wicket:id="link" id="pidInputField"></span>
+                    <button class="btn btn-xs btn-default clipboard" data-clipboard-target="#pidInputField" type="button" title="Copy to clipboard" data-original-title="Copied!" wicket:id="btnClipboard"><i class="fa fa-copy"></i></button>
+                </div>
+            
+                <div class="col-sm-12 bibtex">
+                    <h4 wicket:id="title_bibtext">BibTeX</h4>
+                    <pre wicket:id="bibtex"></pre>
+                </div>
+            </div>
+        </wicket:panel>
+    </body>
+</html>

@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?>
-<Context path="/vcr">
+<Context path="/">
 <!-- *******
      * VCR *
      ******* -->
@@ -14,7 +14,7 @@
                     validationQuery="SELECT 1"
                     username="vcruser"
                     password="vcrpassword"
-                    url="jdbc:mysql://localhost:3306/vcr" />
+                    url="jdbc:mysql://localhost:3307/vcr" />
 
 <!--
     <Resource name="jdbc/VirtualCollectionStore" auth="Container"

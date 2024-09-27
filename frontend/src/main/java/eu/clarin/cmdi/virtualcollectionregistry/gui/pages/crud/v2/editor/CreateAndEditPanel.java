@@ -64,7 +64,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     //Map of field id to support editor modes for that field
     private final Map<String, Mode[]> fieldMode = new HashMap<>();
 
-    private final AjaxFallbackLink btnSave;
+    private final AjaxFallbackLink<AjaxRequestTarget> btnSave;
     private final WebMarkupContainer cbHelpLabel;
 
     public static enum Mode {
@@ -285,13 +285,13 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
                         intQueryParameters, vIntensional, false),
                 new Mode[]{Mode.ADVANCED});
 
-        btnSave = new AjaxFallbackLink("btn_save") {
+        btnSave = new AjaxFallbackLink<>("btn_save") {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onClick(Optional<AjaxRequestTarget> target) {
                 if(validate()) {
                     mdlErrorMessage.setObject("");
                     lblErrorMessage.setVisible(false);
-                    persist(target);
+                    persist(target.isPresent() ? target.get() : null);
                     reset();
                 } else {
                     logger.info("Failed to validate");
@@ -299,8 +299,8 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
                     lblErrorMessage.setVisible(true);
                 }
 
-                if (target != null) {
-                    target.add(ajax_update_component);
+                if (target.get() != null) {
+                    target.get().add(ajax_update_component);
                 }
             }
         };
@@ -308,19 +308,19 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         //disableSaveButton();
         add(btnSave);
 
-        add(new AjaxFallbackLink("btn_cancel") {
+        add(new AjaxFallbackLink<>("btn_cancel") {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onClick(Optional<AjaxRequestTarget> target) {
                 reset();
-                if (target != null) {
-                    target.add(ajax_update_component);
+                if (target.get() != null) {
+                    target.get().add(ajax_update_component);
                 }
 
                 fireEvent(
                     new AbstractEvent<VirtualCollection>(
                             EventType.CANCEL,
                             null,
-                            target));
+                            target.isPresent() ? target.get() : null));
             }
         });
 

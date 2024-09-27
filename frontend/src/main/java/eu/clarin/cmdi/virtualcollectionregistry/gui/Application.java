@@ -3,6 +3,8 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui;
 import de.agilecoders.wicket.core.Bootstrap;
 import de.agilecoders.wicket.core.settings.BootstrapSettings;
 import de.agilecoders.wicket.core.settings.SingleThemeProvider;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesome6CssReference;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesomeSettings;
 import eu.clarin.cmdi.virtualcollectionregistry.*;
 import eu.clarin.cmdi.virtualcollectionregistry.core.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.core.DataStore;
@@ -17,6 +19,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LogoutPage;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.config.VcrConfig;
 import eu.clarin.cmdi.wicket.ExtremeNoopTheme;
+import eu.clarin.cmdi.wicket.theme.ClarinBootstrap5Theme;
 import org.apache.wicket.Page;
 import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebApplication;
@@ -27,7 +30,6 @@ import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.IRequestHandler;
-import org.apache.wicket.request.cycle.AbstractRequestCycleListener;
 import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.apache.wicket.validation.validator.StringValidator;
@@ -80,9 +82,21 @@ public class Application extends AuthenticatedWebApplication {
             this, 
             new BootstrapSettings()
                 //bootstrap CSS is provided via markup (CSS link in HTML head)
-                .setThemeProvider(new SingleThemeProvider(new ExtremeNoopTheme()))
-                .setJsResourceReference(JavaScriptResources.getBootstrapJS())
+                //.setThemeProvider(new SingleThemeProvider(new ExtremeNoopTheme()))
+                .setThemeProvider(new SingleThemeProvider(new ClarinBootstrap5Theme()))
+                //.setJsResourceReference(JavaScriptResources.getBootstrapJS())
+                .setAutoAppendResources(true)
+                .setUpdateSecurityManager(true)
         );
+        
+        FontAwesomeSettings
+            .get(Application.get())
+            .setCssResourceReference(FontAwesome6CssReference.instance());
+
+        //Disable CSP for now 
+        //TODO: look into ways of enabling this again, see https://nightlies.apache.org/wicket/guide/9.x/single.html#_content_security_policy_csp
+        getCspSettings().blocking().disabled();
+        //Currently missing clipboard js and switchboard popup in theme
    
     
         logger.info("Initialising VCR web application");
@@ -94,24 +108,13 @@ public class Application extends AuthenticatedWebApplication {
         }
 
         initSpring();
-
+/*
         getRequestCycleListeners().add(new AbstractRequestCycleListener() {
             public IRequestHandler onException(RequestCycle cycle, Exception ex) {
-                //return null;
-
-                /*
-                Optional<AjaxRequestTarget> target = cycle.find(AjaxRequestTarget.class);
-                //this part stopped working since it return Optional.empty(), because active RequestHandler
-                //and RequestHandlerScheduledAfterCurrent are both null
-                if (target.isPresent()) {
-                    return target.get();
-                }
-                */
-                //IPageRequestHandler last = PageRequestHandlerTracker.getLastHandler(RequestCycle.get());
-                //WebPage page = (WebPage) (last.getPage());
                 return new RenderPageRequestHandler(new PageProvider(new ErrorPage(ex)));
             }
         });
+*/  
         getApplicationSettings().setPageExpiredErrorPage(HOME_PAGE_CLASS);
         getMarkupSettings().setDefaultMarkupEncoding("utf-8");
         getRequestCycleSettings().setResponseRequestEncoding("utf-8");

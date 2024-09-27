@@ -23,8 +23,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollecti
 import java.io.UnsupportedEncodingException;
 import java.security.Principal;
 import java.util.Enumeration;
-import javax.servlet.http.HttpServletRequest;
-import javax.servlet.http.HttpServletResponse;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.servlet.http.HttpServletResponse;
 import org.apache.wicket.Application;
 import org.apache.wicket.RestartResponseAtInterceptPageException;
 import org.apache.wicket.RestartResponseException;

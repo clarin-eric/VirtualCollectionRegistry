@@ -12,8 +12,31 @@
         removeAbandonedOnBorrow="true" 
         removeAbandonedOnMaintenance="true" 
         type="javax.sql.DataSource" 
-        url="jdbc:mysql://localhost:3306/vcr" 
+        url="jdbc:mysql://localhost:3307/vcr" 
         username="vcruser" 
         password="vcrpassword" 
         validationQuery="SELECT 1"/>
+    
+    <Parameter
+               name="eu.clarin.cmdi.virtualcollectionregistry.admindb.basedir"
+               value="/Users/wilelb/.vcr/conf" override="false"/>
+
+    <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.admindb"
+               value="vcr-admin.conf" override="false"/>
+
+    <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.collectiondisplayname"
+               value="CLARIN Virtual Collection Registry" />
+
+    <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.base_uri"
+               value="http://localhost:8080/vcr"
+               override="false"/>
+
+    <!-- Configure pid providers configuration -->
+    <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.pidprovider.basedir"
+               value="/Users/wilelb/.vcr/conf"
+               override="false"/>
+
+    <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.pidprovider.configfile"
+               value="pidproviders.properties"
+               override="false"/>
 </Context>

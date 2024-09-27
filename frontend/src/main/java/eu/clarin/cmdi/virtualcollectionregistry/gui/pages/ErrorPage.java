@@ -24,6 +24,7 @@ import java.io.StringWriter;
 import java.util.Arrays;
 import java.util.LinkedList;
 import java.util.List;
+import java.util.Optional;
 import java.util.Properties;
 
 /**
@@ -98,9 +99,9 @@ public class ErrorPage extends BasePage {
             add(new Label("error-body", mdlErrorBody));
             add(new Label("error-contact", "Please try again and if the issue persists us the button below to contact support"));
 
-            AjaxFallbackLink btnSupport = new AjaxFallbackLink("btn-error-support") {
+            AjaxFallbackLink<AjaxRequestTarget> btnSupport = new AjaxFallbackLink<>("btn-error-support") {
                 @Override
-                public void onClick(AjaxRequestTarget target) {
+                public void onClick(Optional<AjaxRequestTarget> target) {
                     logger.error("Logging error submitted in UI", ex);
 
                     if(mailEnabled) {

@@ -24,6 +24,7 @@ import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import java.util.Optional;
 import java.util.Properties;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
@@ -94,10 +95,10 @@ public class ReferenceScanDetails extends Panel {
         
         SimpleDateFormat sdf = new SimpleDateFormat(props.getProperty("scan.details.lastscan.format"));
         
-        AjaxFallbackLink reasonBtnRescan = new AjaxFallbackLink("btn_rescan") {
+        AjaxFallbackLink<AjaxRequestTarget> reasonBtnRescan = new AjaxFallbackLink<>("btn_rescan") {
             @Override
-            public void onClick(AjaxRequestTarget target) {
-                rescanHandler.rescan(scan.getRef(), target);
+            public void onClick(Optional<AjaxRequestTarget> target) {
+                rescanHandler.rescan(scan.getRef(), target.isPresent() ? target.get() : null);
             }
         };
         add(reasonBtnRescan);

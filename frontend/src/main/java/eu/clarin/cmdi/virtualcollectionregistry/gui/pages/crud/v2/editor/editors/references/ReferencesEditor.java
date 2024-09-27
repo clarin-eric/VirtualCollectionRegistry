@@ -36,7 +36,6 @@ import org.apache.wicket.markup.html.form.TextField;
 import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.model.AbstractReadOnlyModel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
@@ -162,14 +161,14 @@ public class ReferencesEditor extends ComposedField {
             */
             
             btn.add(new AttributeAppender("data-example-value",
-                new AbstractReadOnlyModel<String>() {
+                new IModel<String>() {
                     @Override
                     public String getObject() {                        
                         return "#"+tf.getMarkupId();
                     }
                 }, " "));
             btn.add(new AttributeAppender("data-example-target",
-                new AbstractReadOnlyModel<String>() {
+                new IModel<String>() {
                     @Override
                     public String getObject() {                        
                         return "#"+inputMarkupId;

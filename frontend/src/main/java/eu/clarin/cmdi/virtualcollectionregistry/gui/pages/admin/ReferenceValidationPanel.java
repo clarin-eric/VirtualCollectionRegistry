@@ -172,7 +172,7 @@ public class ReferenceValidationPanel extends Panel {
 
         @Override
         public IModel<ResourceScan> model(ResourceScan object) {
-            return new AbstractReadOnlyModel<ResourceScan>() {
+            return new IModel<ResourceScan>() {
                 @Override
                 public ResourceScan getObject() {
                     return object;

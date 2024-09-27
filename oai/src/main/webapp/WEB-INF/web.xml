@@ -5,6 +5,22 @@
          id="WebApp_ID" version="2.5">
     <display-name>CLARIN Virtual Collection Registry - OAI Provider</display-name>
 
+    <!-- Spring initialisation -->
+    <listener>
+        <listener-class>
+                org.springframework.web.context.ContextLoaderListener
+        </listener-class>
+    </listener>
+    <!-- required to fix issue:
+        java.lang.IllegalStateException: Cannot initialize context because there is already a root
+            application context present - check whether you have multiple ContextLoader* definitions in
+            your web.xml!
+    -->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:applicationContext.xml</param-value>
+    </context-param>
+    
     <servlet>
         <display-name>Virtual Collection Registry OAI-PMH Provider</display-name>
         <servlet-name>OAI-PMH-Provider</servlet-name>
@@ -14,7 +30,7 @@
 
     <servlet-mapping>
         <servlet-name>OAI-PMH-Provider</servlet-name>
-        <url-pattern>/oai</url-pattern>
+        <url-pattern>/pmh/*</url-pattern>
     </servlet-mapping>
 
     <resource-ref>

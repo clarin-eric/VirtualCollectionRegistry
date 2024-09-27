@@ -1,0 +1,190 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<web-app id="WebApp_ID" version="2.5" xmlns="http://java.sun.com/xml/ns/javaee" xmlns:web="http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd" xmlns:xsi="http://www.w3.org/2001/XMLSchema-instance" xsi:schemaLocation="http://java.sun.com/xml/ns/javaee http://java.sun.com/xml/ns/javaee/web-app_2_5.xsd">
+    <display-name>CLARIN Virtual Collection Registry</display-name>
+
+    <!-- Spring initialisation -->
+    <listener>
+        <listener-class>
+                org.springframework.web.context.ContextLoaderListener
+        </listener-class>
+    </listener>
+    <!-- required to fix issue:
+        java.lang.IllegalStateException: Cannot initialize context because there is already a root
+            application context present - check whether you have multiple ContextLoader* definitions in
+            your web.xml!
+    -->
+    <context-param>
+        <param-name>contextConfigLocation</param-name>
+        <param-value>classpath:applicationContext.xml</param-value>
+    </context-param>
+
+    <context-param>
+        <param-name>spring.profiles.active</param-name>
+        <param-value>vcr.pid.dummy</param-value>
+    </context-param>
+
+    <!-- Persistence -->
+    <filter>
+        <filter-name>PersistenceFilter</filter-name>
+        <filter-class>eu.clarin.cmdi.virtualcollectionregistry.core.PersistenceFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>PersistenceFilter</filter-name>
+        <servlet-name>REST-Web-Service</servlet-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!-- Character encoding -->
+    <filter>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <filter-class>eu.clarin.cmdi.virtualcollectionregistry.core.CharacterEncodingFilter</filter-class>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>CharacterEncodingFilter</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!--
+        CORS
+        References:
+        - https://tomcat.apache.org/tomcat-9.0-doc/config/filter.html#CORS_Filter
+        - https://tomcat.apache.org/tomcat-8.0-doc/images/cors-flowchart.png
+    -->
+    <filter>
+        <filter-name>CorsFilter</filter-name>
+        <filter-class>org.apache.catalina.filters.CorsFilter</filter-class>
+        <init-param>
+            <param-name>cors.allowed.origins</param-name>
+            <param-value>*</param-value>
+        </init-param>
+    </filter>
+    <filter-mapping>
+        <filter-name>CorsFilter</filter-name>
+        <url-pattern>/swagger.json</url-pattern>
+        <url-pattern>/service/*</url-pattern>
+    </filter-mapping>
+
+    <!-- Webapp -->
+    <filter>
+        <filter-name>VirtualCollectionRegistryApplication</filter-name>
+        <filter-class>eu.clarin.cmdi.virtualcollectionregistry.VcrWicketFilter</filter-class>
+        <init-param>
+            <param-name>applicationFactoryClassName</param-name>
+            <param-value>org.apache.wicket.spring.SpringWebApplicationFactory</param-value>
+        </init-param>
+    </filter>
+
+    <filter-mapping>
+        <filter-name>VirtualCollectionRegistryApplication</filter-name>
+        <url-pattern>/*</url-pattern>
+    </filter-mapping>
+
+    <!-- REST service -->
+    <servlet>
+        <display-name>Virtual Collection Registry REST web service</display-name>
+        <servlet-name>REST-Web-Service</servlet-name>
+        <servlet-class>org.glassfish.jersey.servlet.ServletContainer</servlet-class>
+        <init-param>
+            <param-name>jersey.config.server.provider.packages</param-name>
+            <param-value>eu.clarin.cmdi.virtualcollectionregistry.rest</param-value>
+        </init-param>
+        <!--
+        <init-param>
+            <param-name>com.sun.jersey.spi.container.ContainerRequestFilters</param-name>
+            <param-value>eu.clarin.cmdi.virtualcollectionregistry.rest.VirtualCollectionMediaTypeFilter</param-value>
+        </init-param>
+        -->
+        <load-on-startup>1</load-on-startup>
+    </servlet>
+
+    <servlet-mapping>
+        <servlet-name>REST-Web-Service</servlet-name>
+        <url-pattern>/service/*</url-pattern>
+    </servlet-mapping>
+
+    <!-- OAI-PMH endpoint -->
+    <servlet>
+        <display-name>Virtual Collection Registry OAI-PMH Provider</display-name>
+        <servlet-name>OAI-PMH-Provider</servlet-name>
+        <servlet-class>eu.clarin.cmdi.oai.provider.ProviderServlet</servlet-class>
+        <load-on-startup>2</load-on-startup>
+    </servlet>
+    <servlet-mapping>
+        <servlet-name>OAI-PMH-Provider</servlet-name>
+        <url-pattern>/oai</url-pattern>
+    </servlet-mapping>
+
+
+
+    <resource-ref>
+        <description>Virtual Collection Datastore Connection</description>
+        <res-ref-name>jdbc/VirtualCollectionStore</res-ref-name>
+        <res-type>javax.sql.DataSource</res-type>
+        <res-auth>Container</res-auth>
+    </resource-ref>
+
+    <!--
+        Security constraints; authentication mechanism must be configured
+        by means of a security realm (by default the UserDatabaseRealm is
+        configured in Tomcat, which uses the tomcat-users.xml file)
+    -->
+    <security-constraint>
+        <display-name>REST-Web-Service</display-name>
+        <web-resource-collection>
+            <web-resource-name>REST-Web-Service</web-resource-name>
+            <description></description>
+            <url-pattern>/service/virtualcollections</url-pattern>
+            <http-method>POST</http-method>
+        </web-resource-collection>
+        <web-resource-collection>
+            <web-resource-name>REST-Web-Service</web-resource-name>
+            <description></description>
+            <url-pattern>/service/virtualcollections/*</url-pattern>
+            <http-method>DELETE</http-method>
+            <http-method>POST</http-method>
+            <http-method>PUT</http-method>
+        </web-resource-collection>
+        <!--
+        <web-resource-collection>
+            <web-resource-name>REST-Web-Service</web-resource-name>
+            <description></description>
+            <url-pattern>/service/my-virtualcollections</url-pattern>
+            <http-method>GET</http-method>
+        </web-resource-collection>
+        -->
+        <web-resource-collection>
+            <web-resource-name>REST-Web-Service</web-resource-name>
+            <description></description>
+            <url-pattern>/service/submit</url-pattern>
+            <http-method>POST</http-method>
+        </web-resource-collection>
+        <web-resource-collection>
+            <web-resource-name>VirtualCollectionRegistryApplication</web-resource-name>
+            <description></description>
+            <url-pattern>/login</url-pattern>
+            <http-method>GET</http-method>
+        </web-resource-collection>
+        <auth-constraint>
+            <role-name>*</role-name>
+        </auth-constraint>
+    </security-constraint>
+
+    <login-config>
+        <auth-method>BASIC</auth-method>
+    </login-config>
+
+    <security-role>
+        <role-name>*</role-name>
+    </security-role>
+
+    <mime-mapping>
+        <extension>xsd</extension>
+        <mime-type>application/xml</mime-type>
+    </mime-mapping>
+
+    <welcome-file-list>
+        <welcome-file>index.jsp</welcome-file>
+    </welcome-file-list>
+</web-app>

@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="UTF-8"?>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 Strict//EN"
+    "http://www.w3.org/TR/xhtml1/DTD/xhtml1-strict.dtd">
+<html xmlns="http://www.w3.org/1999/xhtml"
+      xmlns:wicket="http://wicket.apache.org/">
+    <head />
+    <body>
+
+        <wicket:panel>
+            <div class="row details-header">
+                <div  class="col-sm-9">
+                    <div class="col-xs-12 details-title">
+                        <span wicket:id="name_icon"></span>
+                        <span wicket:id="name">[title]</span>
+                    </div>
+                    <div wicket:id="forked_container" class="col-xs-12 details-subtitle">
+                        <span wicket:id="forked_lbl"></span>
+                        <a href="" wicket:id="forked_link">
+                            <span wicket:id="forked_lbl_value"></span>
+                        </a>
+                    </div>
+                    <div wicket:id="versions" class="col-xs-12 details-subtitle"></div>
+                </div>
+                <div class="col-sm-3">
+                    <a wicket:id="process" href="#" class="btn btn-default btn-lg pull-right btngroup-spacing-horizontal"><span class="fa fa-cogs"></span></a>
+                    <a wicket:id="download" href="#" class="btn btn-default btn-lg pull-right btngroup-spacing-horizontal"><span class="fa fa-download"></span></a>
+
+                    <div wicket:id="citation" class="pull-right btngroup-spacing-horizontal">[citation button]</div>
+
+                    <button wicket:id="btn_fork" type="button" class="btn btn-primary btn-lg pull-right btngroup-spacing-horizontal">
+                        <span class="fa fa-code-fork"></span>
+                    </button>
+
+                    <label class="pull-right btngroup-spacing-horizontal">
+                        <input type="checkbox" wicket:id="btn_editor_mode">
+                        <span wicket:id="btn_editor_mode_label">Advanced Mode</span>
+                    </label>
+                </div>
+            </div>
+        </wicket:panel>
+
+    </body>
+</html>
