@@ -442,7 +442,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         try {            
             em.getTransaction().begin();
             VirtualCollection vc
-                    = em.find(VirtualCollection.class, Long.valueOf(id));
+                    = em.find(VirtualCollection.class, id);            
             em.getTransaction().commit();
             if ((vc == null) || vc.isDeleted()) {
                 logger.debug("virtual collection (id={}) not found", id);

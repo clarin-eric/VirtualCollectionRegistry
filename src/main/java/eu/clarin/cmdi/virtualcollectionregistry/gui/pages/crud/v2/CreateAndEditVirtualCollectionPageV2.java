@@ -78,7 +78,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
             vc = vcr.retrieveVirtualCollection(id);
             if (vc != null) {
                 this.checkAccess(vc);
-                logger.info("Retrieved collection: {}", vc.toString());
+                
             }            
         }
 
@@ -167,6 +167,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
         });
         add(crud);
         
+        //Register listener to cleanup on undeploy of webapp
         vcr.registerDestroyListener(new VirtualCollectionRegistryDestroyListener() { 
             @Override
             public void handleDestroy() {
@@ -176,7 +177,6 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
         });
         
         if(vc != null) {
-            logger.info("Editing collection: {}", vc.toString());
             crud.editCollection(vc);
         }
     }
