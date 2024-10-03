@@ -306,9 +306,9 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     @Column(name = "reproducibility_notice", length = 8192)
     private String reproducibilityNotice;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "keyword",
-                     joinColumns = @JoinColumn(name="vc_id"))
+    //https://discourse.hibernate.org/t/elementcollection-on-hashmap-with-generics-returns-duplicates/6108/4
+    @ElementCollection(fetch = FetchType.LAZY) //FetchType.EAGER results in duplicate keywords returned
+    @CollectionTable(name = "keyword", joinColumns = @JoinColumn(name="vc_id"))
     private List<String> keywords;
 
     @OneToMany(cascade = CascadeType.ALL,
