@@ -96,6 +96,8 @@ public class ReferencesEditor extends ComposedField {
                 } else {
                     logger.debug("Reference validation worker thread already running");
                 }
+            } else {
+                logger.debug("vcrConfig.isHttpReferenceScanningEnabled() = {}", vcrConfig.isHttpReferenceScanningEnabled());
             }
         }
 
@@ -105,6 +107,13 @@ public class ReferencesEditor extends ComposedField {
             }
         }
 
+        private State getResourceInitialState() {
+            if(vcrConfig.isHttpReferenceScanningEnabled()) {
+                return State.INITIALIZED;
+            }
+            return State.DONE;
+        }
+        
         public synchronized  void add(ReferenceJob job) {
             this.jobs.add(job);
             startWorker();
@@ -113,18 +122,11 @@ public class ReferencesEditor extends ComposedField {
         public synchronized void addAll(List<ReferenceJob> jobs) {
             this.jobs.addAll(jobs);
             startWorker();
-        }
+        }        
 
-        private State getResourceInitialState() {
-            if(vcrConfig.isHttpReferenceScanningEnabled()) {
-                return State.INITIALIZED;
-            }
-            return State.DONE;
-        }
-
-        public synchronized  void addResource(Resource r) {
+        public synchronized  void addResource(Resource r) {            
             this.jobs.add(new ReferenceJob(r, getResourceInitialState()));
-            startWorker();
+            startWorker();            
         }
 
         public synchronized void addAllResources(List<Resource> resources) {
@@ -133,6 +135,16 @@ public class ReferencesEditor extends ComposedField {
             }
             startWorker();
         }
+        
+        public synchronized void rescanResource(int index) {
+            logger.debug("Rescanning resource with index={}", index);
+            if(index >= 0 && index < jobs.size()) {
+                jobs.get(edit_index).setState(getResourceInitialState());
+                startWorker();
+            } else {
+                logger.debug("Rescan index ({}) was out of bounds", index);
+            }
+        }
 
         public List<ReferenceJob> getJobs() {
             return jobs;
@@ -140,7 +152,8 @@ public class ReferencesEditor extends ComposedField {
 
         public synchronized void updateJobState(int index, State state) {
             jobs.get(index).setState(state);
-            logger.trace("job idx={}, ref={}, state={}", index, jobs.get(index).getReference().getRef(), jobs.get(index).getState());
+            logger.trace("job idx={}, ref={}, state={}", 
+                    index, jobs.get(index).getReference().getRef(), jobs.get(index).getState());
         }
 
         public boolean isEmpty() {
@@ -286,7 +299,8 @@ public class ReferencesEditor extends ComposedField {
             @Override
             public void handleSaveEvent(AjaxRequestTarget target) {
                 //Reset state so this reference is rescanned
-                jobs.get(edit_index).setState(State.INITIALIZED);
+                jobs.rescanResource(edit_index);
+                //jobs.get(edit_index).setState(State.INITIALIZED);
                 edit_index = -1;
                 editor.setVisible(false);
                 listview.setVisible(true);
@@ -515,9 +529,11 @@ public class ReferencesEditor extends ComposedField {
     }
     
     public void reset() {
+        logger.debug("Resetting references editor panel");
         editor.setVisible(false);
         editor.reset();
         jobs.clear();
+        jobs.stop();
         lblNoReferences.setVisible(jobs.isEmpty());
         listview.setVisible(!jobs.isEmpty());
     }
@@ -605,6 +621,7 @@ public class ReferencesEditor extends ComposedField {
         
         @Override
         public void run() {
+            logger.debug("Worker run()");
             running = true;
             while(running) {
                 try {
@@ -614,8 +631,12 @@ public class ReferencesEditor extends ComposedField {
                 }
                 
                 synchronized(this) {
+                    if(mgr.size() <= 0) {
+                        logger.debug("#jobs: {}", mgr.size());
+                    }
                     for(int i = 0; i < mgr.size(); i++) {
                         ReferenceJob job = mgr.get(i);
+                        logger.debug("Job id={}, url={}, state={}", job.ref.getId(), job.ref.getRef(), job.getState());
                         if(job.getState() == State.INITIALIZED) {
                             mgr.updateJobState(i, State.ANALYZING);
                             logger.debug("Starting. Job ref={}, state = {}",job.getReference().getRef(), job.getState());

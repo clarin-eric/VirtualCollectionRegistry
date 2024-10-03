@@ -44,6 +44,8 @@ public class VirtualCollectionRegistryReferenceCheckImpl implements VirtualColle
     @Autowired
     private DataStore datastore; //TODO: replace with Spring managed EM?
     
+    private final ReferenceValidator validator = new ReferenceValidator();
+    
     @Override
     public void perform(long now) {
         logger.debug("{}", name);        
@@ -53,7 +55,7 @@ public class VirtualCollectionRegistryReferenceCheckImpl implements VirtualColle
             TypedQuery<VirtualCollection> q
                     = em.createNamedQuery("VirtualCollection.findAllPublic", VirtualCollection.class);
             q.setLockMode(LockModeType.PESSIMISTIC_WRITE);
-            for (VirtualCollection vc : q.getResultList()) {
+            for (VirtualCollection vc : q.getResultList()) {                
                 checkValidityOfReferences(vc);                 
             }
             em.getTransaction().commit();
@@ -72,8 +74,7 @@ public class VirtualCollectionRegistryReferenceCheckImpl implements VirtualColle
      * @return 
      */
     private ReferenceValidator checkValidityOfReferences(VirtualCollection vc) {
-        ReferenceValidator validator = new ReferenceValidator();
-        
+        logger.debug("Validing references for collection with id = {}", vc.getId());
         
         for(Resource resource : vc.getResources()) {
             final Validatable<String> validatable = 
@@ -84,6 +85,8 @@ public class VirtualCollectionRegistryReferenceCheckImpl implements VirtualColle
                     //TODO: Does this actually print anything meaningful?
                     logger.error("[RESOURCE ERROR] vc={}, error={}", vc.getId(), error.toString());
                 }
+            } else {
+                logger.debug("Successfully validated reference id={}, url={} for collection with id = {}",resource.getId(), resource.getRef(), vc.getId());
             }
         }
         return validator;

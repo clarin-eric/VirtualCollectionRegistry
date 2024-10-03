@@ -28,6 +28,8 @@
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.CreateAndEditPanel" level="INFO" />    
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.references.ReferencesEditor" level="INFO" />
         -->
+        <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.references" level="DEBUG" />
+        
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth" level="INFO" />
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui.CharacterEncodingFilter" level="INFO" />
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryMaintenanceImpl" level="INFO" />

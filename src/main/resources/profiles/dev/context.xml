@@ -155,4 +155,9 @@
     <Parameter name="eu.clarin.cmdi.vcr.forking.enabled"
                value="true"
                override="false" />
+    
+    <Parameter name="eu.clarin.cmdi.vcr.reference_scanning.enabled"
+               value="true"
+               override="false" />  
+    
 </Context>
