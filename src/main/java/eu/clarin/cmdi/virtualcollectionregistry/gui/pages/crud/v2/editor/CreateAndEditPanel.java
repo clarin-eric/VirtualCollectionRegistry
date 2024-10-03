@@ -18,6 +18,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
 import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedByQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import java.security.Principal;
+import javax.print.attribute.standard.JobState;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -357,6 +358,10 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         validate();
     }
 
+    public void handleDestroy() {
+       referencesEditor.reset();
+    }
+    
     private void toggleHelpMode() {
         boolean showHelp = toggleHelpModeModel.getObject();
         for(AbstractField f: fields) {

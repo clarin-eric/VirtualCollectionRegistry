@@ -266,6 +266,7 @@ public class ReferencesEditor extends ComposedField {
         final WebMarkupContainer ajaxWrapper = new WebMarkupContainer("ajaxwrapper");
         ajaxWrapper.setOutputMarkupId(true);
 
+        
         localDialog = new ModalConfirmDialog("references_modal");
         localDialog.addListener(new Listener() {
             @Override

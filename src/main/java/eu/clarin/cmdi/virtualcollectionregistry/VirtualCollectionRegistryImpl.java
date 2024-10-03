@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -52,6 +53,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
     @Autowired
     private CreatorService creatorService;
     
+    private final List<VirtualCollectionRegistryDestroyListener> destroyListeners = new LinkedList<>();
+    
     private static final Logger logger
             = LoggerFactory.getLogger(VirtualCollectionRegistryImpl.class);
     
@@ -65,6 +68,11 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
     private final ScheduledExecutorService maintenanceExecutor
             = createSingleThreadScheduledExecutor("VirtualCollectionRegistry-Maintenance");
 
+    @Override
+    public void registerDestroyListener(VirtualCollectionRegistryDestroyListener listener) {
+        this.destroyListeners.add(listener);
+    }
+    
     @Override
     public void afterPropertiesSet() throws VirtualCollectionRegistryException {
         // called by Spring directly after Bean construction
@@ -113,6 +121,11 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
 
     @Override
     public void destroy() throws VirtualCollectionRegistryException, InterruptedException {
+        logger.info("Stopping Virtual Collection Registry maintenance schedule");
+        for(VirtualCollectionRegistryDestroyListener listener : this.destroyListeners) {
+            listener.handleDestroy();
+        }
+        
         logger.info("Stopping Virtual Collection Registry maintenance schedule");
         maintenanceExecutor.shutdown();
         if (!maintenanceExecutor.awaitTermination(60, TimeUnit.SECONDS)) {

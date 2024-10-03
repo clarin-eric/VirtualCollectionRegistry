@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2;
 
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
+import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryDestroyListener;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BasePage;
@@ -77,7 +78,8 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
             vc = vcr.retrieveVirtualCollection(id);
             if (vc != null) {
                 this.checkAccess(vc);
-            }
+                logger.info("Retrieved collection: {}", vc.toString());
+            }            
         }
 
         if(vc == null) {
@@ -165,7 +167,16 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
         });
         add(crud);
         
+        vcr.registerDestroyListener(new VirtualCollectionRegistryDestroyListener() { 
+            @Override
+            public void handleDestroy() {
+                logger.info("Destroying CreateAndEditVirtualCollectionPageV2");
+                crud.handleDestroy();
+            }
+        });
+        
         if(vc != null) {
+            logger.info("Editing collection: {}", vc.toString());
             crud.editCollection(vc);
         }
     }
