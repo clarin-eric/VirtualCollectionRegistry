@@ -15,6 +15,8 @@ import java.util.List;
 
 public interface VirtualCollectionRegistry {
 
+    void registerDestroyListener(VirtualCollectionRegistryDestroyListener listener);
+    
     public VirtualCollectionDao getVirtualCollectionDao();
 
     /**

@@ -21,6 +21,7 @@
             testOnBorrow="true"
   />
   
+  <!-- Make sure maintenance is running -->
   <Parameter name="eu.clarin.cmdi.vcr.maintenance.enabled" value="true" />
   
   <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.admindb.basedir" value="/Users/wilelb/.vcr/conf"/>

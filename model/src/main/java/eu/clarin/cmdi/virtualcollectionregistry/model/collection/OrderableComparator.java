@@ -1,6 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model.collection;
 
-import org.jetbrains.annotations.NotNull;
+import jakarta.validation.constraints.NotNull;
 
 public class OrderableComparator {
 

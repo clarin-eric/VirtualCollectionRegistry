@@ -366,6 +366,10 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         }
     }
 
+    public void handleDestroy() {
+       referencesEditor.reset();
+    }
+    
     private void toggleHelpMode() {
         boolean showHelp = toggleHelpModeModel.getObject();
         for(AbstractField f: fields) {

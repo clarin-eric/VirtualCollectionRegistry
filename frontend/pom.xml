@@ -57,12 +57,7 @@
     </profiles>
 
     <dependencies>
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>vcr-model</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <dependency>
+        <!--dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>vcr-core</artifactId>
             <version>${project.version}</version>
@@ -72,7 +67,47 @@
                     <groupId>mpgaai-shhaa</groupId>
                 </exclusion>
             </exclusions>
+        </dependency-->
+        <!--dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>rest-utils</artifactId>
+            <version>${project.version}</version>
+        </dependency-->
+        <!--dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>rest-client</artifactId>
+            <version>${project.version}</version>
+        </dependency-->
+        
+        <dependency>
+            <groupId>eu.clarin.cmdi</groupId>
+            <artifactId>vcr-core</artifactId>
+            <version>1.9.0-SNAPSHOT</version>
+            <exclusions>
+                <exclusion>
+                    <artifactId>de.mpg.mpgaai</artifactId>
+                    <groupId>mpgaai-shhaa</groupId>
+                </exclusion>
+            </exclusions>
         </dependency>
+        <dependency>
+            <groupId>eu.clarin.cmdi</groupId>
+            <artifactId>rest-utils</artifactId>
+            <version>1.9.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>vcr-serialization</artifactId>
+            <version>1.9.0-SNAPSHOT</version>
+        </dependency>
+
+<!--
+        <dependency>
+            <groupId>eu.clarin.cmdi</groupId>
+            <artifactId>rest-client</artifactId>
+            <version>1.9.0-SNAPSHOT</version>
+        </dependency>
+-->
         
         <dependency>
             <groupId>io.jsonwebtoken</groupId>

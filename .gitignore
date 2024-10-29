@@ -30,3 +30,6 @@ service-doc/swagger.yaml
 /serialization/target/
 /oai/target/
 /frontend/target/
+/rest-utils/target/
+/rest-client/target/
+/persistence/target/

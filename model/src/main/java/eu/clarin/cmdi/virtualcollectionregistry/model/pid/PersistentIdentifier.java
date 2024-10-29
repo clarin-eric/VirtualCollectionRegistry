@@ -3,7 +3,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.model.pid;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import java.io.Serializable;
-import javax.persistence.*;
+import jakarta.persistence.*;
 
 import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.builder.EqualsBuilder;
@@ -206,6 +206,15 @@ public class PersistentIdentifier implements PersistentIdentifieable, Serializab
                 .append(this.getType())
                 .append(this.getIdentifier())
                 .toHashCode();
+    }
+    
+    public static PersistentIdentifier valueOf(String s, VirtualCollection vc) {
+        if(s.startsWith("dummy-")) {
+           String identifier = s.replaceAll("dummy-", "");
+           return new PersistentIdentifier(vc, Type.DUMMY, identifier);
+        }
+        //TODO: Implement other pid types
+        throw new RuntimeException("Unsupported pid type: "+s);
     }
 
 } // class PersistentIdentifier

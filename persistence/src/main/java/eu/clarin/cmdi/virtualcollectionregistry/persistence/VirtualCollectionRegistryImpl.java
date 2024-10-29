@@ -1,5 +1,14 @@
-package eu.clarin.cmdi.virtualcollectionregistry.core;
+package eu.clarin.cmdi.virtualcollectionregistry.persistence;
 
+import eu.clarin.cmdi.virtualcollectionregistry.core.AdminUsersService;
+import eu.clarin.cmdi.virtualcollectionregistry.core.CreatorService;
+import eu.clarin.cmdi.virtualcollectionregistry.core.DataStore;
+import eu.clarin.cmdi.virtualcollectionregistry.core.TxManager;
+import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionDao;
+import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionDaoImpl;
+import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
+import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistryDestroyListener;
+import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistryMaintenanceImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.VirtualCollectionRegistryReferenceCheckImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.VirtualCollectionRegistryReferenceValidator;
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.VirtualCollectionRegistryReferenceValidatorImpl;
@@ -14,7 +23,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User_;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionList;
 import eu.clarin.cmdi.virtualcollectionregistry.model.config.DbConfig;
-import eu.clarin.cmdi.virtualcollectionregistry.model.config.ParserConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.model.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.query.QueryFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.query.ast.ParsedQuery;
@@ -82,6 +90,8 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
 
     private final VirtualCollectionDao vcDao;
 
+    private final List<VirtualCollectionRegistryDestroyListener> destroyListeners = new LinkedList<>();
+    
     @Autowired
     public VirtualCollectionRegistryImpl(DataStore datastore) {
         this.datastore = datastore;
@@ -100,6 +110,11 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
     private final ScheduledExecutorService referenceValidationExecutor
             = createSingleThreadScheduledExecutor("VirtualCollectionRegistry-Reference-Validation");
 
+    @Override
+    public void registerDestroyListener(VirtualCollectionRegistryDestroyListener listener) {
+        this.destroyListeners.add(listener);
+    }
+    
     @Override
     public void afterPropertiesSet() throws VirtualCollectionRegistryException {
         // called by Spring directly after Bean construction
@@ -123,7 +138,7 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
             checkDbVersion();
             long t1 = System.nanoTime();
             VirtualCollectionList collections = getAllVirtualCollections();
-            creatorService.initialize(collections.getItems());
+            creatorService.initialize(collections.getVirtualCollections());
             long t2 = System.nanoTime();
             double tDelta = (t2-t1)/1000000.0;
             logger.debug(String.format("Initialized CreatorService in %.2fms; loaded %d creators.", tDelta, creatorService.getSize()));
@@ -177,6 +192,11 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
 
     @Override
     public void destroy() throws VirtualCollectionRegistryException, InterruptedException {
+        logger.info("Stopping Virtual Collection Registry maintenance schedule");
+        for(VirtualCollectionRegistryDestroyListener listener : this.destroyListeners) {
+            listener.handleDestroy();
+        }
+        
         logger.info("Stopping Virtual Collection Registry maintenance schedule");
         maintenanceExecutor.shutdown();
         if (!maintenanceExecutor.awaitTermination(60, TimeUnit.SECONDS)) {

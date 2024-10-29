@@ -1,12 +1,13 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model.collection;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.FetchType;
-import javax.persistence.Lob;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.FetchType;
+import jakarta.xml.bind.annotation.XmlElement;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -15,10 +16,14 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 public class GeneratedByQuery implements Serializable {
     private static final long serialVersionUID = 1L;
 
+    @XmlElement(name = "profile")
+    @JsonProperty(value = "profile")
     @Column(name = "generatedby_query_profile", length = 255)
     private String profile;
 
     //@Lob
+    @XmlElement(name = "value")
+    @JsonProperty(value = "value")
     @Basic(fetch = FetchType.EAGER)
     @Column(name = "generatedby_query_value", length = 8192)
     private String value;

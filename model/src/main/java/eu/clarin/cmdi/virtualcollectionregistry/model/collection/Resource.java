@@ -1,26 +1,28 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model.collection;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PersistentIdentifieable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidLink;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidType;
+import jakarta.validation.constraints.NotNull;
 import java.io.Serializable;
 import java.util.Set;
-import javax.persistence.CascadeType;
+import jakarta.persistence.CascadeType;
 
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.EnumType;
-import javax.persistence.Enumerated;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.OneToMany;
-import javax.persistence.Table;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.EnumType;
+import jakarta.persistence.Enumerated;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.OneToMany;
+import jakarta.persistence.Table;
+import jakarta.xml.bind.annotation.XmlElement;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
-import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -38,6 +40,8 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
         RESOURCE;
     } // enum Resource.Type
 
+    @XmlElement(name = "mimeType")
+    @JsonProperty(value = "mimeType")
     @Column(name = "mimetype", nullable = true, length = 255)
     private String mimeType;
 
@@ -62,6 +66,8 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
         this.mimeType = mimeType;
     }
 
+    @XmlElement(name = "check")
+    @JsonProperty(value = "check")
     @Column(name = "checked", nullable = true, length = 255)
     private String check;
 
@@ -79,34 +85,52 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
         this.check = check;
     }
 
+    @XmlElement(name = "id")
+    @JsonProperty(value = "id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
     private Long id;
     
+    @XmlElement(name = "type")
+    @JsonProperty(value = "type")
     @Column(name = "type", nullable = false)
     @Enumerated(EnumType.ORDINAL)
     private Type type;
     
+    @XmlElement(name = "ref")
+    @JsonProperty(value = "ref")
     @Column(name = "ref", nullable = false, length = 255)
     private String ref;
     
+    @XmlElement(name = "label")
+    @JsonProperty(value = "label")
     @Column(name = "label", nullable = true, length = 255)
     private String label;
     
     //@Lob
+    @XmlElement(name = "description")
+    @JsonProperty(value = "description")
     @Column(name = "description", length = 8192)
     private String description;
 
+    @XmlElement(name = "displayOrder")
+    @JsonProperty(value = "displayOrder")
     @Column(name = "display_order", nullable = false)
     private Long displayOrder;
 
+    @XmlElement(name = "origin")
+    @JsonProperty(value = "origin")
     @Column(name = "origin", nullable = true)
     private String origin;
 
+    @XmlElement(name = "originalQuery")
+    @JsonProperty(value = "originalQuery")
     @Column(name = "original_query", nullable = true)
     private String originalQuery;
 
+    @XmlElement(name = "kvs")
+    @JsonProperty(value = "kvs")
     @OneToMany(cascade = CascadeType.ALL,
                fetch = FetchType.EAGER,
                mappedBy = "resource")

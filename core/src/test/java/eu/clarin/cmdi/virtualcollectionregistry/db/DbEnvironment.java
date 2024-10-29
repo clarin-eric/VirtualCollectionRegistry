@@ -7,8 +7,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualColle
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.EntityManager;
-import javax.persistence.Persistence;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.Persistence;
 import java.sql.Connection;
 import java.sql.DriverManager;
 

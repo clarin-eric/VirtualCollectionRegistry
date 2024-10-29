@@ -78,7 +78,7 @@ public class AdminPage extends BasePage {
         add(new Label("lbl_pnl_database", Model.of("Database")));
         add(new DatabasePanel("pnl_database", vcr));
         add(new ConfigPanel("pnl_config", vcrConfig));
-
+        add(new FeatureFlagPanel("pnl_feature_flags", vcrConfig));
         // user model shared between spaces form and the table's provider
         final IModel<User> userModel = new Model<>(null);
 

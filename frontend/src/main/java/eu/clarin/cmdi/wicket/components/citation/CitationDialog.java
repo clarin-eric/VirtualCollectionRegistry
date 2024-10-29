@@ -73,25 +73,25 @@ public class CitationDialog extends BootstrapDialog {
             add(new Body("latest", latest));
         }
     }
-
+/*
     private final static String LBL_TITLE_DETAILS = "Details:";
     private final static String LBL_TITLE_BIBTEXT = "Bibtex:";
     private final static String LBL_TITLE = "Title:";
     private final static String LBL_AUTHORS = "Authors:";
     private final static String LBL_YEAR = "Year:";
     private final static String LBL_LINK = "Link:";
-
+*/
     private class Body extends Panel {
         public Body(String id, Citable cite) {
             super(id);
-
+/*
             add(new Label("title_details", Model.of(LBL_TITLE_DETAILS)));
             add(new Label("title_bibtext", Model.of(LBL_TITLE_BIBTEXT)));
             add(new Label("lbl_title", Model.of(LBL_TITLE)));
             add(new Label("lbl_authors", Model.of(LBL_AUTHORS)));
             add(new Label("lbl_year", Model.of(LBL_YEAR)));
             add(new Label("lbl_link", Model.of(LBL_LINK)));
-
+*/
             add(new Label("title", cite.getTitle()));
             add(new Label("authors", getAuthorsString(cite)));
             add(new Label("year", cite.getYear()));
@@ -99,13 +99,14 @@ public class CitationDialog extends BootstrapDialog {
             lblUri.setOutputMarkupId(true);
             add(lblUri);
             add(new Label("bibtex", getBibTexString(cite)));
-
+/*
             WebMarkupContainer btn = new WebMarkupContainer("btnClipboard");
             btn.add(new AttributeModifier("data-clipboard-target", "#"+lblUri.getMarkupId()));
             btn.add(new AttributeModifier("title", "Copy to clipboard..."));
             btn.add(new AttributeModifier("data-original-title", "Copied!!"));
             add(btn);
-        }
+*/  
+    }
         
         private String getAuthorsString(Citable cite) {
             List<String> author_list = cite.getAuthors();

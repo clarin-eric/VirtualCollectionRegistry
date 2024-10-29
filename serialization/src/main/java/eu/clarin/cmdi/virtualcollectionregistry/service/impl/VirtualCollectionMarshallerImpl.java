@@ -10,6 +10,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection.Format;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionList;
+import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PersistentIdentifier;
 
 import java.io.IOException;
 import java.io.InputStream;
@@ -58,7 +59,7 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
     @Autowired
     private VirtualCollectionCMDIWriter cmdiWriter;
 
-    VirtualCollectionMarshallerImpl() throws VirtualCollectionRegistryException {
+    public VirtualCollectionMarshallerImpl() throws VirtualCollectionRegistryException {
         logger.debug("initializing schemas for marshaller ...");
         try {
             XMLValidationSchemaFactory sf = XMLValidationSchemaFactory
@@ -150,7 +151,7 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
                     Integer.toString(vcs.getOffset()));
             writer.writeAttribute("result",
                     (vcs.isPartialList() ? "partial" : "full"));
-            for (VirtualCollection vc : vcs.getItems()) {
+            for (VirtualCollection vc : vcs.getVirtualCollections()) {
                 writeVirtualCollection(writer, vc);
             }
             writer.writeEndElement(); // "VirtualCollections" element
@@ -179,6 +180,26 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
         } catch (XMLStreamException e) {
             logger.error("error unmarshalling virtual collection", e);
             throw new IOException("error unmarshalling virtual collection", e);
+        } finally {
+            try {
+                if (reader != null) {
+                    reader.close();
+                }
+            } catch (XMLStreamException e) {
+                /* IGNORE */
+            }
+        }
+    }
+    
+    @Override 
+    public VirtualCollectionList unmarshalCollectionList(InputStream in, Format format, String encoding) throws IOException {
+        XMLStreamReader reader = null;
+        try {
+            reader = createReader(in, format, encoding);
+            return readVirtualCollectionList(reader);
+        } catch (XMLStreamException e) {
+            logger.error("error unmarshalling virtual collection list", e);
+            throw new IOException("error unmarshalling virtual collection list", e);
         } finally {
             try {
                 if (reader != null) {
@@ -469,13 +490,63 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
         writer.writeEndElement(); // "Resource" element
     }
 
+    private VirtualCollectionList readVirtualCollectionList(XMLStreamReader reader) throws XMLStreamException {
+        VirtualCollectionList list = new VirtualCollectionList();
+        
+        readStart(reader, "VirtualCollections", true, false);      
+        String s = reader.getAttributeValue(null, "totalCount");
+        if (s != null && !s.isEmpty()) {
+            list.setTotalCount(Integer.parseInt(s));
+        }
+        s = reader.getAttributeValue(null, "offset");
+        if (s != null && !s.isEmpty()) {
+            list.setOffset(Integer.parseInt(s));
+        }
+        s = reader.getAttributeValue(null, "result");
+        if (s != null && !s.isEmpty()) {
+            list.setResult(s);
+        }
+        reader.next();
+        
+        //Add all collections to the list
+        VirtualCollection vc = readVirtualCollection(reader, true);          
+        do {
+            list.addVirtualCollections(vc);                            
+        } while ((vc = readVirtualCollection(reader, false)) != null);
+        
+        return list;
+    }
+    
     private VirtualCollection readVirtualCollection(
             XMLStreamReader reader) throws XMLStreamException {
-        readStart(reader, "VirtualCollection", true, false);
+        return readVirtualCollection(reader, true);
+    }
+    
+    private VirtualCollection readVirtualCollection(
+            XMLStreamReader reader, boolean require) throws XMLStreamException {
+        boolean read = readStart(reader, "VirtualCollection", require, false);
+        if(!require && !read) {
+            return null;
+        }
 
         VirtualCollection vc = new VirtualCollection();
-        String s = reader.getAttributeValue(null, "state");
-        if ((s != null) && !s.isEmpty()) {
+        String s = reader.getAttributeValue(null, "id");
+        if (s != null && !s.isEmpty()) {
+            vc.setId(Long.parseLong(s));
+        }
+        
+        s = reader.getAttributeValue(null, "persistentId");
+        if (s != null && !s.isEmpty()) {
+            //We must store the current state and temporarily set the state to 
+            //pending in order to be able to update the collections persistent identifier
+            VirtualCollection.State actualState = vc.getState();
+            vc.setState(VirtualCollection.State.PUBLIC_PENDING);
+            vc.addPersistentIdentifier(PersistentIdentifier.valueOf(s, vc));
+            vc.setState(actualState);
+        }
+        
+        s = reader.getAttributeValue(null, "state");
+        if (s != null && !s.isEmpty()) {
             if ("private".equals(s)) {
                 vc.setState(VirtualCollection.State.PRIVATE);
             } else if ("public-pending".equals(s)) {
@@ -495,6 +566,7 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
                         "'deleted' or 'dead'");
             }
         }
+        
         reader.next();
         readStart(reader, "Type", true, true);
         s = readString(reader, true);
@@ -644,14 +716,18 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
             vc.setGeneratedBy(generatedBy);
         }
         // skip to end of virtual collection
+        /*
         for (int t = reader.getEventType();
              reader.hasNext();
              t = reader.next()) {
-            if ((t == XMLStreamConstants.END_ELEMENT) &&
-                    "VirtualCollection".equals(reader.getLocalName())) {
+            if ((t == XMLStreamConstants.END_ELEMENT) && "VirtualCollection".equals(reader.getLocalName())) {
+                if(reader.hasNext()) {
+                    reader.next();
+                }
                 break;
             }
         }
+        */
         return vc;
     }
 
@@ -703,15 +779,30 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
             return jsonReaderFactory.createXMLStreamReader(in, encoding);
         default:
             // should never happen
-            throw new IllegalArgumentException("unsupported input format");
+            throw new IllegalArgumentException("unsupported input format: " + format);
         } // switch
     }
 
     private static boolean readStart(XMLStreamReader reader, String element,
             boolean required, boolean advance) throws XMLStreamException {
-        for (int type = reader.getEventType();
-             reader.hasNext();
-             type = reader.next()) {
+        if(reader.getEventType() == XMLStreamConstants.START_ELEMENT) {
+            String currentElement = reader.getLocalName();
+            System.out.println("Start element: "+currentElement);
+        }
+        if(reader.getEventType() == XMLStreamConstants.END_ELEMENT) {
+            String currentElement = reader.getLocalName();
+            System.out.println("End element: "+currentElement);
+        }
+        if(reader.getEventType() == XMLStreamConstants.ENTITY_REFERENCE) {
+            String currentElement = reader.getLocalName();
+            System.out.println("Entity reference: "+currentElement);
+        }
+        
+        for (int type = reader.getEventType(); reader.hasNext(); type = reader.next()) {
+            if(reader.getEventType() == XMLStreamConstants.START_ELEMENT || reader.getEventType() == XMLStreamConstants.END_ELEMENT || reader.getEventType() == XMLStreamConstants.ENTITY_REFERENCE) {
+                String nextElement = reader.getLocalName();
+                System.out.println(nextElement);
+            }
             if (type == XMLStreamConstants.START_ELEMENT) {
                 if (element.equals(reader.getLocalName())) {
                     if (advance) {

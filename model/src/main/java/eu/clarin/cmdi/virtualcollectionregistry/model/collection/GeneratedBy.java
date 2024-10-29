@@ -1,12 +1,14 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model.collection;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
 
-import javax.persistence.Basic;
-import javax.persistence.Column;
-import javax.persistence.Embeddable;
-import javax.persistence.Embedded;
-import javax.persistence.FetchType;
+import jakarta.persistence.Basic;
+import jakarta.persistence.Column;
+import jakarta.persistence.Embeddable;
+import jakarta.persistence.Embedded;
+import jakarta.persistence.FetchType;
+import jakarta.xml.bind.annotation.XmlElement;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -16,13 +18,19 @@ public class GeneratedBy implements Serializable {
     private static final long serialVersionUID = 1L;
 
     //@Lob
+    @XmlElement(name = "generatedby_description")
+    @JsonProperty(value = "generatedby_description")
     @Basic(fetch = FetchType.EAGER)
     @Column(name = "generatedby_description", length = 8192)
     private String description;
 
+    @XmlElement(name = "uri")
+    @JsonProperty(value = "uri")
     @Column(name = "generatedby_uri", nullable = true, length = 255)
     private String uri;
 
+    @XmlElement(name = "query")
+    @JsonProperty(value = "query")
     @Embedded
     private GeneratedByQuery query;
 

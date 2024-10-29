@@ -16,17 +16,19 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.model.collection;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import java.io.Serializable;
-import javax.persistence.CascadeType;
-import javax.persistence.Column;
-import javax.persistence.Entity;
-import javax.persistence.FetchType;
-import javax.persistence.GeneratedValue;
-import javax.persistence.GenerationType;
-import javax.persistence.Id;
-import javax.persistence.JoinColumn;
-import javax.persistence.ManyToOne;
-import javax.persistence.Table;
+import jakarta.persistence.CascadeType;
+import jakarta.persistence.Column;
+import jakarta.persistence.Entity;
+import jakarta.persistence.FetchType;
+import jakarta.persistence.GeneratedValue;
+import jakarta.persistence.GenerationType;
+import jakarta.persistence.Id;
+import jakarta.persistence.JoinColumn;
+import jakarta.persistence.ManyToOne;
+import jakarta.persistence.Table;
+import jakarta.xml.bind.annotation.XmlElement;
 
 /**
  *
@@ -35,17 +37,25 @@ import javax.persistence.Table;
 @Entity
 @Table(name = "resource_kv")
 public class ResourceKv implements Serializable {
+    @XmlElement(name = "id")
+    @JsonProperty(value = "id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
     private Long id;
 
+    @XmlElement(name = "key")
+    @JsonProperty(value = "key")
     @Column(name = "k", nullable = false, length = 255)
     private String key;
 
+    @XmlElement(name = "value")
+    @JsonProperty(value = "value")
     @Column(name = "v", nullable = false)
     private String value;
     
+    @XmlElement(name = "resource")
+    @JsonProperty(value = "resource")
     @ManyToOne(cascade = CascadeType.ALL,
           fetch = FetchType.LAZY,
           optional = true)

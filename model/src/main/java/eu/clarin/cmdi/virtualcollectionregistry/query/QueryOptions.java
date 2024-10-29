@@ -6,11 +6,12 @@ import java.util.Arrays;
 import java.util.Date;
 import java.util.List;
 
-import javax.persistence.criteria.*;
+import jakarta.persistence.criteria.*;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User_;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection_;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
+import java.util.LinkedList;
 
 @SuppressWarnings("serial")
 public class QueryOptions implements Serializable {
@@ -453,7 +454,10 @@ public class QueryOptions implements Serializable {
             throw new RuntimeException("not permitted");
         }
 
-        protected static final Predicate makePredicate(
+        //protected abstract Predicate makePredicate(CriteriaBuilder cb, Expression<?> expr, byte relation,
+        //        Object value);
+                /*
+        protected final Predicate makePredicate(
                 CriteriaBuilder cb, Expression<?> expr, byte relation,
                 Object value) {
             switch (relation) {
@@ -467,7 +471,7 @@ public class QueryOptions implements Serializable {
                 throw new InternalError("bad relation");
             } // switch
         }
-
+*/
         protected static final Predicate makeDatePredicate(
                 CriteriaBuilder cb, Expression<Date> expr, byte relation,
                 Date value) {
@@ -508,6 +512,64 @@ public class QueryOptions implements Serializable {
                 throw new InternalError("bad relation");
             } // switch
         }
+        
+        protected static final Predicate makeBooleanPredicate(CriteriaBuilder cb, Expression<Boolean> expr, byte relation, Boolean value) {
+            switch (relation) {
+            case RELATION_EQ:
+                return cb.equal(expr, value);
+            case RELATION_NE:
+                return cb.notEqual(expr, value);
+            default:
+                throw new InternalError("bad relation");
+            } // switch
+        }
+        
+        protected static final Predicate makeTypePredicate(CriteriaBuilder cb, Expression<VirtualCollection.Type> expr, byte relation, VirtualCollection.Type value) {
+            switch (relation) {
+            case RELATION_EQ:
+                return cb.equal(expr, value);
+            case RELATION_NE:
+                return cb.notEqual(expr, value);
+            default:
+                throw new InternalError("bad relation");
+            } // switch
+        }
+        
+        protected static final Predicate makeStatePredicate(CriteriaBuilder cb, Expression<VirtualCollection.State> expr, byte relation, VirtualCollection.State value) {
+            switch (relation) {
+            case RELATION_EQ:
+                return cb.equal(expr, value);
+            case RELATION_NE:
+                return cb.notEqual(expr, value);
+            default:
+                throw new InternalError("bad relation");
+            } // switch
+        }
+        
+        protected static final Predicate makeStateListPredicate(CriteriaBuilder cb, Expression<VirtualCollection.State> expr, byte relation, LinkedList value) {
+            switch (relation) {
+            case RELATION_IN:
+                return expr.in(value);
+            default:
+                throw new InternalError("bad relation");
+            } // switch
+        }
+                
+        protected static final Predicate makeVirtualCollectionPredicate(
+                CriteriaBuilder cb, Expression<VirtualCollection> expr, byte relation,
+                VirtualCollection value) {
+            switch (relation) {
+            case RELATION_EQ:
+                return cb.equal(expr, value);
+            case RELATION_NE:
+                return cb.notEqual(expr, value);
+            case RELATION_IN:
+                return expr.in(value);
+            default:
+                throw new InternalError("bad relation");
+            } // switch
+        }
+    
     } // class QueryOptions.AbstractPropertyImpl
 
 
@@ -581,7 +643,7 @@ public class QueryOptions implements Serializable {
         public Predicate getPredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                                       Root<VirtualCollection> root, byte relation, Object value) {
             final Expression<String> expr = getExpression(root);
-            return makePredicate(cb, expr, relation, value);
+            return makeStringPredicate(cb, expr, relation, (String) value);
         }
     }
 
@@ -605,7 +667,7 @@ public class QueryOptions implements Serializable {
         public Predicate getPredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                                       Root<VirtualCollection> root, byte relation, Object value) {
             final Expression<VirtualCollection> expr = getExpression(root);
-            return makePredicate(cb, expr, relation, value);
+            return makeVirtualCollectionPredicate(cb, expr, relation, (VirtualCollection) value);
         }
 
         @Override
@@ -641,7 +703,7 @@ public class QueryOptions implements Serializable {
         public Predicate getPredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                                       Root<VirtualCollection> root, byte relation, Object value) {
             final Expression<VirtualCollection> expr = getExpression(root);
-            return makePredicate(cb, expr, relation, value);
+            return makeVirtualCollectionPredicate(cb, expr, relation, (VirtualCollection) value);
         }
 
         @Override
@@ -677,7 +739,7 @@ public class QueryOptions implements Serializable {
                 Root<VirtualCollection> root, byte relation, Object value) {
             final Expression<VirtualCollection.Type> expr =
                 getExpression(root);
-            return makePredicate(cb, expr, relation, value);
+            return makeTypePredicate(cb, expr, relation, (VirtualCollection.Type) value);
         }
     } // class QueryOptions.PropertyImplName
 
@@ -704,7 +766,10 @@ public class QueryOptions implements Serializable {
                 Root<VirtualCollection> root, byte relation, Object value) {
             final Expression<VirtualCollection.State> expr =
                 getExpression(root);
-            return makePredicate(cb, expr, relation, value);
+            if(value instanceof LinkedList) {
+                return makeStateListPredicate(cb, expr, relation, (LinkedList) value);
+            }
+            return makeStatePredicate(cb, expr, relation, (VirtualCollection.State) value);
         }
     } // class QueryOptions.PropertyImplName
 
@@ -779,7 +844,7 @@ public class QueryOptions implements Serializable {
         public Predicate getPredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                                       Root<VirtualCollection> root, byte relation, Object value) {
             final Expression expr = getExpression(root);
-            return makePredicate(cb, expr, relation, value);
+            return makeBooleanPredicate(cb, expr, relation, (Boolean) value);
         }
     }
 

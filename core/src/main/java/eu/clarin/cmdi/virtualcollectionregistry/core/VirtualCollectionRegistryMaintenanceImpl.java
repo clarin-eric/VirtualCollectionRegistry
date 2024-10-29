@@ -24,9 +24,9 @@ import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Set;
-import javax.persistence.EntityManager;
-import javax.persistence.LockModeType;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.EntityManager;
+import jakarta.persistence.LockModeType;
+import jakarta.persistence.TypedQuery;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -139,14 +139,14 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
                 //Mint identifiers and update collection
                 List<PersistentIdentifier> pids = pidProviderService.createIdentifiers(vc, permaLinkService);
                 for(PersistentIdentifier pid : pids) {
-                    vc.setPersistentIdentifier(pid);
+                    vc.addPersistentIdentifier(pid);
                 }
 
                 if(vc.getParent() == null) {
                     //new collection, mint new latest pid
                     List<PersistentIdentifier> latestPids = pidProviderService.createLatestIdentifiers(vc, permaLinkService);
                     for(PersistentIdentifier latestPid : latestPids) {
-                        vc.setPersistentIdentifier(latestPid);
+                        vc.addPersistentIdentifier(latestPid);
                     }
                 } else {
                     //update latest pid to point to this collection

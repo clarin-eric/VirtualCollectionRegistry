@@ -3,8 +3,8 @@ package eu.clarin.cmdi.virtualcollectionregistry.query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import javax.persistence.Parameter;
-import javax.persistence.TypedQuery;
+import jakarta.persistence.Parameter;
+import jakarta.persistence.TypedQuery;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;

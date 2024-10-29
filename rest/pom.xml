@@ -20,16 +20,37 @@
     </properties>
     
     <dependencies>
+        <!--
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>vcr-model</artifactId>
             <version>${project.version}</version>
         </dependency>
+       -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>vcr-serialization</artifactId>
             <version>${project.version}</version>
+        </dependency>        
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>persistence</artifactId>
+            <version>${project.version}</version>
         </dependency>
+        <!--
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>vcr-core</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+       -->
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>rest-utils</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        
+        
         
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
@@ -85,6 +106,13 @@
             <artifactId>jersey-media-jaxb</artifactId>
             <version>${jersey.version}</version>
         </dependency>
+
+        <dependency>
+            <groupId>com.fasterxml.jackson.module</groupId>
+            <artifactId>jackson-module-jaxb-annotations</artifactId>
+            <version>${jackson.version}</version>
+        </dependency>
+    
 
         <!-- Provides spring-beans and spring-context -->
 
@@ -143,11 +171,6 @@
             </exclusions>
         </dependency>
         
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>vcr-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
         
     </dependencies>
     

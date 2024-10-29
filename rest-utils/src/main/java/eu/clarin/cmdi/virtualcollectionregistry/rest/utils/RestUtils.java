@@ -1,4 +1,4 @@
-package eu.clarin.cmdi.virtualcollectionregistry.core.rest;
+package eu.clarin.cmdi.virtualcollectionregistry.rest.utils;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection.Format;
 import org.apache.wicket.request.flow.RedirectToUrlException;
@@ -10,6 +10,7 @@ import java.util.*;
 import jakarta.servlet.http.HttpServletRequest;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.MultivaluedMap;
 import org.glassfish.jersey.message.internal.AcceptableMediaType;
 import org.glassfish.jersey.message.internal.HttpHeaderReader;
 import org.glassfish.jersey.message.internal.MediaTypes;
@@ -43,11 +44,17 @@ public final class RestUtils {
      * @see HttpHeaders#getMediaType()
      */
     public static String getInputEncoding(HttpHeaders headers) {
-        String encoding
-                = headers.getMediaType().getParameters().get("encoding");
-        return (encoding != null) ? encoding : "utf-8";
+        //return getInputEncoding(headers.getRequestHeaders());
+        return getInputEncoding(headers.getMediaType());
+        //        = headers.getMediaType().getParameters().get("encoding");
+        //return (encoding != null) ? encoding : "utf-8";
     }
 
+    public static String getInputEncoding(MediaType mType) {        
+        String encoding = mType.getParameters().get("encoding");
+        return (encoding != null) ? encoding : "utf-8";
+    }
+    
     /**
      *
      * @param headers
@@ -57,10 +64,17 @@ public final class RestUtils {
      * @see HttpHeaders#getMediaType()
      */
     public static Format getInputFormat(HttpHeaders headers) {
-        Format format = getMediaType(headers.getMediaType(), true);
-        return (format != null) ? format : Format.UNSUPPORTED;
+        return getInputFormat(headers.getMediaType());
+        //return getInputFormat(headers.getRequestHeaders());
+        //Format format = getMediaType(headers.getMediaType(), true);
+        //return (format != null) ? format : Format.UNSUPPORTED;
     }
 
+    public static Format getInputFormat(MediaType mType) {       
+        Format format = getMediaType(mType, true);
+        return (format != null) ? format : Format.UNSUPPORTED;
+    }
+    
     public static Format getOutputFormatNoWildcard(List<MediaType> mediaTypes) {
         for (MediaType type : mediaTypes) {
             Format format = getMediaType(type, false);

@@ -1,7 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
 
-import eu.clarin.cmdi.virtualcollectionregistry.core.rest.RestUtils;
+import eu.clarin.cmdi.virtualcollectionregistry.rest.utils.RestUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
 import java.io.IOException;

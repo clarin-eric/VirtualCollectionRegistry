@@ -82,7 +82,7 @@ public class VirtualCollectionResourceTest {
         vc.setName("Test VC");
         vc.setState(VirtualCollection.State.PUBLIC_PENDING);
         // set PID and set state to public
-        vc.setPersistentIdentifier(new PersistentIdentifier(vc, PersistentIdentifier.Type.DUMMY, "PID"));
+        vc.addPersistentIdentifier(new PersistentIdentifier(vc, PersistentIdentifier.Type.DUMMY, "PID"));
 
         context.checking(new Expectations() {
             {
@@ -109,7 +109,7 @@ public class VirtualCollectionResourceTest {
         vc.setName("Test VC");
         vc.setState(VirtualCollection.State.PUBLIC_FROZEN_PENDING);
         // set PID and set state to public_frozen
-        vc.setPersistentIdentifier(new PersistentIdentifier(vc, PersistentIdentifier.Type.DUMMY, "PID"));
+        vc.addPersistentIdentifier(new PersistentIdentifier(vc, PersistentIdentifier.Type.DUMMY, "PID"));
 
         context.checking(new Expectations() {
             {
@@ -196,6 +196,7 @@ public class VirtualCollectionResourceTest {
             {
                 oneOf(security).getUserPrincipal();
                 will(returnValue(principal));
+                allowing(headers).getRequestHeaders();
                 allowing(headers).getMediaType();
                 will(returnValue(MediaType.APPLICATION_XML_TYPE));
                 oneOf(marshaller).unmarshal(input, VirtualCollection.Format.XML, "utf-8");

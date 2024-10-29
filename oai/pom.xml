@@ -16,7 +16,7 @@
     <packaging>war</packaging>
 
     <dependencies>
-        
+        <!--
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>vcr-core</artifactId>
@@ -27,6 +27,7 @@
             <artifactId>vcr-model</artifactId>
             <version>${project.version}</version>
         </dependency>
+                -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>vcr-serialization</artifactId>

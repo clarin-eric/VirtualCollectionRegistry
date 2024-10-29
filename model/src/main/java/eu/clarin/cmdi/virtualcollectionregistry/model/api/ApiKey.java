@@ -1,9 +1,9 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model.api;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User;
-import org.jetbrains.annotations.NotNull;
+import jakarta.validation.constraints.NotNull;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 import java.util.Date;
 

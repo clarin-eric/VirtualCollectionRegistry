@@ -92,7 +92,7 @@ public class VirtualCollectionCMDIWriterImplTest extends XMLTestCase {
 
         vc.setState(VirtualCollection.State.PUBLIC_PENDING);
         //setting the pid requires 'public pending' state and will set the state to public
-        vc.setPersistentIdentifier(new PersistentIdentifier(vc, PersistentIdentifier.Type.HANDLE, "9999/1234-5678"));
+        vc.addPersistentIdentifier(new PersistentIdentifier(vc, PersistentIdentifier.Type.HANDLE, "9999/1234-5678"));
 
         vc.getKeywords().add("keyword1");
         vc.getKeywords().add("keyword2");

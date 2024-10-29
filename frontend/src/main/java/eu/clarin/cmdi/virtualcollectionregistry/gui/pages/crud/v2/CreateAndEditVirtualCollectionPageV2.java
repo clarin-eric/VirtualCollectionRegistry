@@ -2,6 +2,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2;
 
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
+import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistryDestroyListener;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BasePage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.BrowsePrivateCollectionsPage;
@@ -179,6 +180,16 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
                 }
             }
         });
+        
+        //Register listener to cleanup on undeploy of webapp
+        vcr.registerDestroyListener(new VirtualCollectionRegistryDestroyListener() { 
+            @Override
+            public void handleDestroy() {
+                logger.info("Destroying CreateAndEditVirtualCollectionPageV2");
+                crud.handleDestroy();
+            }
+        });
+        
         add(crud);
     }
 

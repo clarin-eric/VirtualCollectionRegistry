@@ -23,6 +23,7 @@ public class SAMLCreatorProvider implements CreatorProvider {
     public Creator getCreator(Principal userPrincipal) {        
         final Creator creator = new Creator();
         if (userPrincipal instanceof AuthPrincipal) {
+            
             final AuthPrincipal principal = (AuthPrincipal) userPrincipal;
             creator.setFamilyName(getAttribute(principal, DISPLAY_NAME_ATTRIBUTE));
             creator.setGivenName("");

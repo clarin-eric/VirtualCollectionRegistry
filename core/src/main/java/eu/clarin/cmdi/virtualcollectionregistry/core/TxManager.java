@@ -3,7 +3,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.core;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 import java.util.ArrayDeque;
 import java.util.Deque;
 

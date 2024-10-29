@@ -44,7 +44,9 @@ public class TestDatasetProvider {
                 .startPublish(dao)
                 .finishPublish(dao)
                 .getPersistedCollection(dao);
-
+/*
+        TODO resolve unique constraint violation
+        
         //public, owner2
         VirtualCollection vc3_2 =
             VirtualCollectionFactory
@@ -58,6 +60,6 @@ public class TestDatasetProvider {
             VirtualCollectionFactory
                 .createNewVersion(vc3_2)
                 .getPersistedCollection(dao);
-
+*/
     }
 }

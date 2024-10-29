@@ -40,27 +40,32 @@
     </developers>
     
     <modules>
-        <module>model</module>
-        <module>core</module>
-        <module>serialization</module>
+        <module>frontend</module>
         <module>rest</module>
         <module>oai</module>
-        <module>frontend</module>
-        <!--module>orig</module-->
+        <module>model</module>
+        <module>core</module>
+        <module>serialization</module>      
         <module>aai</module>
         <module>OAIProvider</module>
+        <module>rest-client</module>
+        <module>rest-utils</module>
+        <module>persistence</module>
+        <!--module>orig</module-->
     </modules>
 
     <properties>
         <project.build.sourceEncoding>UTF-8</project.build.sourceEncoding>
         <jakarta.ee.version>6.0.0</jakarta.ee.version>
         <log4j.version>2.3.1</log4j.version>
-        <hibernate.version>5.6.15.Final</hibernate.version>
-        <hibernate.jpaVersion>5.6.15.Final</hibernate.jpaVersion>
+        <!-- Hibernate also depends on jakarate version 
+                Check: https://hibernate.org/orm/releases/ -->
+        <hibernate.version>6.6.1.Final</hibernate.version><!-- 6.6.1.Final -->
+        <hibernate.jpaVersion>6.6.1.Final</hibernate.jpaVersion>
         <!-- jersey version should match jakarta EE version
              Check: https://eclipse-ee4j.github.io/jersey/ -->
         <jersey.version>3.1.8</jersey.version>
-        <jackson.version>2.13.1</jackson.version>
+        <jackson.version>2.17.0</jackson.version>
         <wicket.version>10.1.0</wicket.version>
         <wicket-bootstrap.version>7.0.5</wicket-bootstrap.version>
         <spring.version>6.1.12</spring.version>
@@ -84,7 +89,7 @@
             <version>3.1.0</version>
             <type>jar</type>
             <!--scope>provided</scope-->
-        </dependency>
+        </dependency>         
         
         <!-- <Logging> -->
         <dependency>
@@ -96,6 +101,18 @@
             <groupId>org.apache.logging.log4j</groupId>
             <artifactId>log4j-core</artifactId>
             <version>${log4j.version}</version>
+        </dependency>
+        
+        <!-- spring-beans and spring-context -->
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-beans</artifactId>
+            <version>${spring.version}</version>
+        </dependency>
+        <dependency>
+            <groupId>org.springframework</groupId>
+            <artifactId>spring-context</artifactId>
+            <version>${spring.version}</version>
         </dependency>
         
         <!-- Tesing -->

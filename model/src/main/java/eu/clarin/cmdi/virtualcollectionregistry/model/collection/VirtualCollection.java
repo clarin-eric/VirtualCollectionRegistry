@@ -1,5 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model.collection;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
+import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.clarin.cmdi.virtualcollectionregistry.model.citation.Citable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PersistentIdentifieable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PersistentIdentifier;
@@ -8,7 +10,9 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidType;
 import java.io.Serializable;
 import java.util.*;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
+import jakarta.xml.bind.annotation.XmlElement;
+import jakarta.xml.bind.annotation.XmlRootElement;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -65,6 +69,8 @@ ORDER BY c.id
         query = "SELECT c FROM VirtualCollection c " +
                 "WHERE c.state IN :states AND c.dateModified < :date")
 })
+@XmlRootElement
+//@JsonIgnoreProperties(ignoreUnknown = true)
 public class VirtualCollection implements Serializable, IdentifiedEntity, PersistentIdentifieable, Citable {
     private static final long serialVersionUID = 1L;
 
@@ -94,6 +100,10 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         return ids;
     }
 
+    public void setIdentifiers(Set<PersistentIdentifier> identifiers) {
+        this.identifiers = identifiers;
+    }
+    
     public Set<PersistentIdentifier> getLatestIdentifiers() {
         boolean includePrivate = false; //private collections don't get a PID assigned
         VirtualCollection mostRecentVersion = getAllVersions(includePrivate).get(0);
@@ -240,45 +250,69 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     }
 
     public static enum State {
+        @JsonProperty("private")
         PRIVATE,
+        @JsonProperty("public_pending")
         PUBLIC_PENDING,
+        @JsonProperty("public")
         PUBLIC,
+        @JsonProperty("public_frozen_pending")
         PUBLIC_FROZEN_PENDING,
+        @JsonProperty("public_frozen")
         PUBLIC_FROZEN,
+        @JsonProperty("deleted")
         DELETED,
+        @JsonProperty("dead")
         DEAD,
+        @JsonProperty("error")
         ERROR
     } // enum VirtualCollection.State
 
     public static enum Type {
+        @JsonProperty("extensional")
         EXTENSIONAL,
+        @JsonProperty("intensional")
         INTENSIONAL
     } // enum VirtualCollecion.Type
 
     public static enum Purpose {
+        @JsonProperty("research")
         RESEARCH,
+        @JsonProperty("reference")
         REFERENCE,
+        @JsonProperty("sample")
         SAMPLE,
+        @JsonProperty("future_use")
         FUTURE_USE
     } // enum VirtualCollecion.Purpose
 
     public static enum Reproducibility {
+        @JsonProperty("intended")
         INTENDED,
+        @JsonProperty("fluctuating")
         FLUCTUATING,
+        @JsonProperty("untended")
         UNTENDED
     } // enum VirtualCollecion.Reproducibility
 
     public static enum Problem {
+        @JsonProperty("pid_minting_http_error")
         PID_MINTING_HTTP_ERROR,
+        @JsonProperty("[id_minting_unkown")
         PID_MINTING_UNKOWN,
+        @JsonProperty("unkown")
         UNKOWN
     }
     
+    @XmlElement(name = "id")
+    @JsonProperty(value = "@id")
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
     private Long id;
 
+    @XmlElement(name = "owner")
+    @JsonProperty(value = "owner")
     @ManyToOne(cascade = { CascadeType.PERSIST,
                            CascadeType.REFRESH,
                            CascadeType.MERGE,
@@ -297,6 +331,8 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     private PersistentIdentifier persistentId = null;
     */
     
+    @XmlElement(name = "identifiers")
+    @JsonProperty(value = "identifiers")
     @OneToMany(cascade = CascadeType.ALL,
                fetch = FetchType.EAGER,
                 mappedBy = "vc")
@@ -305,34 +341,52 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     //Make this a list of problems?
 
     /* Indication of the issue if state = ERROR */
+    @XmlElement(name = "problem")
+    @JsonProperty(value = "problem")
     @Column(name = "problem", nullable = true)
     private VirtualCollection.Problem problem;
 
+    @XmlElement(name = "problemDetails")
+    @JsonProperty(value = "problemDetail")
     @Column(name = "problem_details", nullable = true)
     private String problemDetails;
 
+    @XmlElement(name = "origin")
+    @JsonProperty(value = "origin")
     @Column(name = "origin", nullable = true)
     private String origin;
 
+    @XmlElement(name = "state")
+    @JsonProperty(value = "@state")
     @Column(name = "state", nullable = false)
     private VirtualCollection.State state;
 
+    @XmlElement(name = "type")
+    @JsonProperty(value = "type")
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "type", nullable = false)
     private VirtualCollection.Type type;
 
+    @XmlElement(name = "name")
+    @JsonProperty(value = "name")
     @Column(name = "name", nullable = false, length = 255)
     private String name;
 
     //@Lob
+    @XmlElement(name = "description")
+    @JsonProperty(value = "description")
     @Basic(fetch = FetchType.EAGER)
     @Column(name = "description", length = 8192)
     private String description;
 
+    @XmlElement(name = "creationDate")
+    @JsonProperty(value = "creationDate")
     @Temporal(TemporalType.DATE)
     @Column(name = "creation_date")
     private Date creationDate;
 
+    @XmlElement(name = "creators")
+    @JsonProperty(value = "creators")
     @OneToMany(cascade = CascadeType.ALL,
                fetch = FetchType.LAZY,
                orphanRemoval = true)
@@ -340,24 +394,35 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     @OrderBy("id")
     private List<Creator> creators;
 
+    @XmlElement(name = "purpose")
+    @JsonProperty(value = "purpose")
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "purpose")
     private VirtualCollection.Purpose purpose;
 
+    @XmlElement(name = "reproducibility")
+    @JsonProperty(value = "reproducibility")
     @Enumerated(EnumType.ORDINAL)
     @Column(name = "reproducibility")
     private VirtualCollection.Reproducibility reproducibility;
 
     //@Lob
+    @XmlElement(name = "reproducibilityNotice")
+    @JsonProperty(value = "reproducibilityNotice")
     @Basic(fetch = FetchType.EAGER)
     @Column(name = "reproducibility_notice", length = 8192)
     private String reproducibilityNotice;
 
-    @ElementCollection(fetch = FetchType.EAGER)
+    //https://discourse.hibernate.org/t/elementcollection-on-hashmap-with-generics-returns-duplicates/6108/4
+    @ElementCollection(fetch = FetchType.LAZY) //FetchType.EAGER results in duplicate keywords returned
     @CollectionTable(name = "keyword",
                      joinColumns = @JoinColumn(name="vc_id"))
+    @XmlElement(name = "keywords")
+    @JsonProperty(value = "keyword")
     private List<String> keywords;
 
+    @XmlElement(name = "resources")
+    @JsonProperty(value = "resources")
     @OneToMany(cascade = CascadeType.ALL,
                fetch = FetchType.LAZY,
                orphanRemoval = true)
@@ -365,21 +430,31 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     @OrderColumn(nullable = false)
     private List<Resource> resources;
 
+    @XmlElement(name = "generatedBy")
+    @JsonProperty(value = "generatedBy")
     @Embedded
     private GeneratedBy generatedBy;
 
+    @XmlElement(name = "dateCreated")
+    @JsonProperty(value = "dateCreated")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created", nullable = false, updatable = false)
     private Date dateCreated = new Date();
 
+    @XmlElement(name = "dateModified")
+    @JsonProperty(value = "dateModified")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "modified", nullable = false)
     private Date dateModified;
 
+    @XmlElement(name = "datePublished")
+    @JsonProperty(value = "datePublished")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "published", nullable = true)
     private Date datePublished;
 
+    @XmlElement(name = "forked_from")
+    @JsonProperty(value = "forked_from")
     @OneToOne(cascade = CascadeType.ALL,
             fetch = FetchType.LAZY,
             orphanRemoval = true,
@@ -387,6 +462,8 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     @JoinColumn(name = "forked_from", nullable = true)
     private VirtualCollection forkedFrom;
 
+    @XmlElement(name = "parent")
+    @JsonProperty(value = "parent")
     @OneToOne(cascade = CascadeType.ALL,
             fetch = FetchType.LAZY,
             orphanRemoval = true,
@@ -394,6 +471,8 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     @JoinColumn(name = "parent", nullable = true)
     private VirtualCollection parent;
 
+    @XmlElement(name = "child")
+    @JsonProperty(value = "child")
     @OneToOne(cascade = CascadeType.ALL,
             fetch = FetchType.LAZY,
             orphanRemoval = true,
@@ -401,6 +480,8 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     @JoinColumn(name = "child", nullable = true)
     private VirtualCollection child;
 
+    @XmlElement(name = "original")
+    @JsonProperty(value = "original")
     @OneToOne(cascade = CascadeType.ALL,
             fetch = FetchType.LAZY,
             orphanRemoval = true,
@@ -408,6 +489,8 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     @JoinColumn(name = "original", nullable = true)
     private VirtualCollection root;
 
+    @XmlElement(name = "public_leaf")
+    @JsonProperty(value = "public_leaf")
     @Column(name = "public_leaf")
     private Boolean publicLeaf;
 
@@ -458,7 +541,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         this.identifiers.remove(pid);
     }
 
-    public void setPersistentIdentifier(PersistentIdentifier persistentId) {
+    public void addPersistentIdentifier(PersistentIdentifier persistentId) {
         if (persistentId == null) {
             throw new NullPointerException("pid == null");
         }

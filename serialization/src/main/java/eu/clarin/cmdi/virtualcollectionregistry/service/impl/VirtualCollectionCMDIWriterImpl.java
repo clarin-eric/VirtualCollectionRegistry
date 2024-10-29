@@ -4,9 +4,9 @@ import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionCMDICre
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.cmdi.CMD;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionCMDIWriter;
-import javax.xml.bind.JAXBContext;
-import javax.xml.bind.JAXBException;
-import javax.xml.bind.Marshaller;
+import jakarta.xml.bind.JAXBContext;
+import jakarta.xml.bind.JAXBException;
+import jakarta.xml.bind.Marshaller;
 import javax.xml.stream.XMLStreamException;
 import javax.xml.stream.XMLStreamWriter;
 import org.slf4j.Logger;

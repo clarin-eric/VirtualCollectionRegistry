@@ -1,6 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model.config;
 
-import javax.persistence.*;
+import jakarta.persistence.*;
 import java.io.Serializable;
 
 @Entity

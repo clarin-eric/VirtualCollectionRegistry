@@ -1,6 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
-import eu.clarin.cmdi.virtualcollectionregistry.core.rest.RestUtils;
+import eu.clarin.cmdi.virtualcollectionregistry.rest.utils.RestUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.table.CollectionsProvider;
 import eu.clarin.cmdi.wicket.components.CMDIExplorerLink;
 import eu.clarin.cmdi.wicket.components.LanguageResourceSwitchboardLink;
