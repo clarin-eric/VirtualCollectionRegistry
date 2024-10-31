@@ -2,18 +2,17 @@ package eu.clarin.cmdi.virtualcollectionregistry.pid;
 
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.Configuration;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.HandleField;
+import de.uni_leipzig.asv.clarin.webservices.pidservices2.PidApiException;
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidWriter;
 import eu.clarin.cmdi.virtualcollectionregistry.PermaLinkService;
 import eu.clarin.cmdi.virtualcollectionregistry.PidProviderServiceImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
 import java.io.Serializable;
 import java.net.URI;
 import java.util.EnumMap;
 import java.util.Map;
-import org.apache.commons.httpclient.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -68,9 +67,11 @@ public class EPICPersistentIdentifierProvider implements PersistentIdentifierPro
             final String requestedPid = String.format("%s%d", getInfix(), vc.getId());
             final String pid = pidWriter.registerNewPID(configuration, fieldMap, requestedPid);
             return new PersistentIdentifier(vc, PersistentIdentifier.Type.HANDLE, primary, pid);
-        } catch (HttpException ex) {
+        } catch (PidApiException ex) {
             throw new VirtualCollectionRegistryException("Could not create EPIC identifier", ex);
-        }
+        } catch(Throwable ex) {
+            throw new VirtualCollectionRegistryException("Could not create EPIC identifier", ex);
+        } 
     }
 
     private Map<HandleField, String> createPIDFieldMap(VirtualCollection vc, PermaLinkService permaLinkService) {

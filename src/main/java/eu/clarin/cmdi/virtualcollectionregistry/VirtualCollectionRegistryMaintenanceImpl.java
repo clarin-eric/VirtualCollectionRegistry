@@ -16,6 +16,7 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry;
 
+import de.uni_leipzig.asv.clarin.webservices.pidservices2.PidApiException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
 
@@ -25,7 +26,6 @@ import java.util.List;
 import javax.persistence.EntityManager;
 import javax.persistence.LockModeType;
 import javax.persistence.TypedQuery;
-import org.apache.commons.httpclient.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -141,7 +141,7 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
                 logger.error("Failed to mint PID, setting vc to error state", ex);
                 vc.setState(VirtualCollection.State.ERROR);
                 vc.setProblemDetails(ex.getMessage());
-                if(ex.getCause() instanceof HttpException) {                                                  
+                if(ex.getCause() instanceof PidApiException) {                                                  
                     vc.setProblem(VirtualCollection.Problem.PID_MINTING_HTTP_ERROR);
                 } else {
                     vc.setProblem(VirtualCollection.Problem.PID_MINTING_UNKOWN);

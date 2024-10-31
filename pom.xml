@@ -199,7 +199,7 @@
         <dependency>
             <groupId>de.uni_leipzig.asv</groupId>
             <artifactId>clarin.webservices.pidservices2</artifactId>
-            <version>4.1</version>
+            <version>5.0</version>
             <exclusions>
                 <exclusion>
                     <!-- replaced with jcl-over-slf4j -->
