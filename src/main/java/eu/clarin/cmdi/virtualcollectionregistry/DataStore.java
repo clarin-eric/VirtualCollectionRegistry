@@ -74,12 +74,16 @@ public class DataStore implements DisposableBean {
             em.remove();
             EntityTransaction tx = manager.getTransaction();
             if (tx.isActive()) {
-                logger.debug("Entity manager has active transaction, rolling back");
+                logger.warn("Entity manager has active transaction, rolling back");
                 tx.rollback();
             }
             logger.trace("Closing entity manager");
             manager.close();
         }
+    }
+    
+    public boolean hasActiveTransaction() {
+        return em.get().getTransaction().isActive();
     }
 
 } // class DataStore

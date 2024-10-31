@@ -7,7 +7,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.TestApplication;
 import eu.clarin.cmdi.virtualcollectionregistry.WicketTesterEnabledTest;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import org.apache.http.entity.StringEntity;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -15,6 +14,7 @@ import org.slf4j.LoggerFactory;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import org.apache.hc.core5.http.io.entity.StringEntity;
 
 public class DoiPersistentIdentifierProviderTest extends WicketTesterEnabledTest {
     private static final Logger logger = LoggerFactory.getLogger(DoiPersistentIdentifierProvider.class);

@@ -24,7 +24,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 
 import java.io.Serializable;
 import java.net.URI;
-import org.apache.commons.httpclient.HttpException;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -84,8 +83,10 @@ public class DoiPersistentIdentifierProvider implements PersistentIdentifierProv
                     DoiRequestBuilder.createGenerateDoiRequest(configuration.getHandlePrefix(), requestedPid, vc, permaLinkService);
             final String pid = pidWriter.registerNewPID(configuration, req);
             return new PersistentIdentifier(vc, PersistentIdentifier.Type.DOI, primary, pid);
-        } catch (HttpException ex) {
-            throw new VirtualCollectionRegistryException("Could not create DOI identifier", ex);
+//        } catch (HttpException ex) {
+  //          throw new VirtualCollectionRegistryException("Could not create DOI identifier", ex);
+        } catch(Exception ex) {
+            throw new VirtualCollectionRegistryException(/*"Unkown error while creating DOI identifier"*/ex.getMessage(), ex);
         }
      }
 

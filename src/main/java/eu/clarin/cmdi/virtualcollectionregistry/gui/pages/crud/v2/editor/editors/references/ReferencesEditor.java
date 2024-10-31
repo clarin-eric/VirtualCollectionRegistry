@@ -35,15 +35,15 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.
 import eu.clarin.cmdi.virtualcollectionregistry.model.OrderableComparator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
 import java.time.Duration;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.ClientProtocolException;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpResponse;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -661,66 +661,60 @@ public class ReferencesEditor extends ComposedField {
             CloseableHttpClient httpclient = HttpClients.createDefault();
             try {
                 HttpGet httpget = new HttpGet(job.getReference().getRef());
-                logger.trace("Executing request " + httpget.getRequestLine());
+                logger.trace("Executing request " + httpget.getMethod()+" "+httpget.getPath());
 
-                // Create a custom response handler
-                ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+                httpclient.execute(httpget, response -> {
+                    for(Header h : response.getHeaders("Content-Type")) {
+                        logger.debug(h.getName() + " - " + h.getValue());
 
-                    @Override
-                    public String handleResponse(
-                            final HttpResponse response) throws ClientProtocolException, IOException {
-                        for(Header h : response.getHeaders("Content-Type")) {
-                            logger.debug(h.getName() + " - " + h.getValue());
-                            
-                            String[] parts = h.getValue().split(";");
-                            String mediaType = parts[0];
-                            
-                            logger.trace("Media-Type="+mediaType);
-                            if(parts.length > 1) {
-                                String p = parts[1].trim();
-                                if(p.startsWith("charset=")) {
-                                    logger.trace("Charset="+p.replaceAll("charset=", ""));
-                                } else if(p.startsWith("boundary=")) {
-                                    logger.trace("Boundary="+p.replaceAll("boundary=", ""));
-                                }
+                        String[] parts = h.getValue().split(";");
+                        String mediaType = parts[0];
+
+                        logger.trace("Media-Type="+mediaType);
+                        if(parts.length > 1) {
+                            String p = parts[1].trim();
+                            if(p.startsWith("charset=")) {
+                                logger.trace("Charset="+p.replaceAll("charset=", ""));
+                            } else if(p.startsWith("boundary=")) {
+                                logger.trace("Boundary="+p.replaceAll("boundary=", ""));
                             }
+                        }
 
-                            job.getReference().setMimetype(mediaType);
-                        }
-                        for(Header h : response.getHeaders("Content-Length")) {
-                            logger.debug(h.getName() + " - " + h.getValue());
-                        }
-                        int status = response.getStatusLine().getStatusCode();
-                        if (status >= 200 && status < 300) {
-                            HttpEntity entity = response.getEntity();
-                            job.getReference().setCheck("HTTP "+status+"/"+response.getStatusLine().getReasonPhrase());
-                            String body = entity != null ? EntityUtils.toString(entity) : null;
-                            
-                            if(body != null) {
-                                String type = job.getReference().getMimetype();
-                                if(type.equalsIgnoreCase("application/x-cmdi+xml")) {
-                                    try {
-                                        parseCmdi(body, job);
-                                    } catch(IOException | ParserConfigurationException | XPathExpressionException | SAXException ex) {
-                                        logger.error("Failed to parse CMDI", ex);
-                                    }
-                                } else if(job.getReference().getMimetype().equalsIgnoreCase("text/xml") &&
-                                    body.contains("xmlns=\"http://www.clarin.eu/cmd/\"")) {
-                                    try {
-                                        parseCmdi(body, job);
-                                    } catch(IOException | ParserConfigurationException | XPathExpressionException | SAXException ex) {
-                                        logger.error("Failed to parse CMDI", ex);
-                                    }
-                                }
-                            }
-                            return body;
-                        } else {
-                            throw new ClientProtocolException("Unexpected response status: " + status);
-                        }
+                        job.getReference().setMimetype(mediaType);
                     }
+                    for(Header h : response.getHeaders("Content-Length")) {
+                        logger.debug(h.getName() + " - " + h.getValue());
+                    }
+                    int status = response.getCode();
+                    if (status >= 200 && status < 300) {
+                        HttpEntity entity = response.getEntity();
+                        job.getReference().setCheck("HTTP "+status+"/"+response.getReasonPhrase());
+                        String body = entity != null ? EntityUtils.toString(entity) : null;
 
-                };
-                String responseBody = httpclient.execute(httpget, responseHandler);
+                        if(body != null) {
+                            String type = job.getReference().getMimetype();
+                            if(type.equalsIgnoreCase("application/x-cmdi+xml")) {
+                                try {
+                                    parseCmdi(body, job);
+                                } catch(IOException | ParserConfigurationException | XPathExpressionException | SAXException ex) {
+                                    logger.error("Failed to parse CMDI", ex);
+                                }
+                            } else if(job.getReference().getMimetype().equalsIgnoreCase("text/xml") &&
+                                body.contains("xmlns=\"http://www.clarin.eu/cmd/\"")) {
+                                try {
+                                    parseCmdi(body, job);
+                                } catch(IOException | ParserConfigurationException | XPathExpressionException | SAXException ex) {
+                                    logger.error("Failed to parse CMDI", ex);
+                                }
+                            }
+                        }
+                        return body;
+                    } else {
+                        throw new ClientProtocolException("Unexpected response status: " + status);
+                    }
+                });
+                
+                
             } finally {
                 httpclient.close();
             }

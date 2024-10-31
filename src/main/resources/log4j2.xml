@@ -53,7 +53,8 @@
         -->
         <Logger name="org.apache.wicket" level="WARN" />
         <Logger name="org.apache.wicket.resource" level="WARN" />
-        <Logger name="org.apache.http" level="WARN" />
+        <!--Logger name="org.apache.http" level="WARN" /-->
+        <Logger name="org.apache.hc.client5" level="WARN" />        
         <Logger name="de.agilecoders.wicket" level="WARN" />
         <Logger name="wicket-webjars" level="WARN" />
         <Logger name="net.bull.javamelody" level="WARN" />

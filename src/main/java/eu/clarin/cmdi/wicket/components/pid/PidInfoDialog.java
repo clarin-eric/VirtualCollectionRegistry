@@ -22,23 +22,17 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.wicket.components.BootstrapDialog;
 import java.io.IOException;
-import java.time.Duration;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 import java.util.concurrent.Future;
-import org.apache.http.Header;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.params.HttpClientParams;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.message.StatusLine;
 import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.AjaxSelfUpdatingTimerBehavior;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptReferenceHeaderItem;
 import org.apache.wicket.markup.html.basic.Label;
@@ -174,25 +168,24 @@ public class PidInfoDialog extends BootstrapDialog {
     
     private String resolvePid(String uri) throws IOException {
         String result = "Unkown";
-        HttpParams httpParams = new BasicHttpParams();
-        HttpClientParams.setRedirecting(httpParams, false);
-        DefaultHttpClient client = new DefaultHttpClient(httpParams);        
-
-        HttpContext ctx = new BasicHttpContext();
+        CloseableHttpClient client = HttpClients.custom().disableRedirectHandling().build();
+        HttpClientContext ctx = HttpClientContext.create();
         try {         
-            HttpResponse response = client.execute(new HttpGet(uri), ctx);
-            StatusLine status = response.getStatusLine();
-            if(status.getStatusCode() != 302 && status.getStatusCode() != 301) {
-                result = "Unexpected HTTP response code: "+status.getStatusCode();
-            } else {
-                Header[] headers = response.getHeaders("Location");
-                for(Header h : headers) {            
-                    result = h.getValue();
-                    break;
+            result = client.execute(new HttpGet(uri), ctx, response -> {
+                StatusLine status = new StatusLine(response);
+                if(status.getStatusCode() != 302 && status.getStatusCode() != 301) {
+                    return "Unexpected HTTP response code: "+status.getStatusCode();
+                } else {
+                    Header[] headers = response.getHeaders("Location");
+                    for(Header h : headers) {            
+                        return h.getValue();
+                    }
                 }
-            }
+                return "Unkown";
+            });
+            
         } finally {
-            client.getConnectionManager().shutdown();
+            client.close();
         }
         
         //TODO: follow all aliases? Handles pointing to other handles

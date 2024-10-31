@@ -15,23 +15,38 @@ import java.util.List;
 import java.util.Map;
 
 import jakarta.servlet.ServletContext;
+import java.io.IOException;
+import java.nio.charset.StandardCharsets;
+import java.util.Collection;
 import javax.xml.stream.XMLInputFactory;
 import javax.xml.stream.XMLStreamConstants;
 import javax.xml.stream.XMLStreamReader;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.NameValuePair;
-import org.apache.http.StatusLine;
-import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
-import org.apache.http.client.entity.UrlEncodedFormEntity;
-import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.message.BasicNameValuePair;
-import org.apache.http.params.CoreProtocolPNames;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
-import org.apache.http.util.EntityUtils;
+import org.apache.hc.client5.http.ClientProtocolException;
+import org.apache.hc.client5.http.auth.AuthCache;
+import org.apache.hc.client5.http.auth.AuthScope;
+import org.apache.hc.client5.http.auth.UsernamePasswordCredentials;
+import org.apache.hc.client5.http.classic.methods.HttpPost;
+import org.apache.hc.client5.http.config.RequestConfig;
+import org.apache.hc.client5.http.entity.UrlEncodedFormEntity;
+import org.apache.hc.client5.http.impl.auth.BasicAuthCache;
+import org.apache.hc.client5.http.impl.auth.BasicCredentialsProvider;
+import org.apache.hc.client5.http.impl.auth.BasicScheme;
+import org.apache.hc.client5.http.impl.classic.AbstractHttpClientResponseHandler;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.client5.http.protocol.HttpClientContext;
+import org.apache.hc.core5.http.ClassicHttpResponse;
+import org.apache.hc.core5.http.ContentType;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpHeaders;
+import org.apache.hc.core5.http.HttpHost;
+import org.apache.hc.core5.http.NameValuePair;
+import org.apache.hc.core5.http.ParseException;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
+import org.apache.hc.core5.http.message.BasicHeader;
+import org.apache.hc.core5.http.message.BasicNameValuePair;
+import org.apache.hc.core5.http.message.StatusLine;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -143,8 +158,8 @@ public class GWDGPersistentIdentifierProvider implements
 
             List<NameValuePair> params = new ArrayList<NameValuePair>();
             params.add(new BasicNameValuePair("url", target));
-            Map<Attribute, String> props = invokeWebService(serviceURI, params);
-            String pid = props.get(Attribute.PID);
+            String pid = invokeWebService(serviceURI, params);
+            //String pid = props.get(Attribute.PID);
             if (pid == null) {
                 throw new VirtualCollectionRegistryException(
                         "no handle returned");
@@ -202,100 +217,154 @@ public class GWDGPersistentIdentifierProvider implements
         return base_uri + "service/clarin-virtualcollection/" + vc.getId();
     }
 
-    private Map<Attribute, String> invokeWebService(URI serviceTargetURI,
+    //private Map<Attribute, String> invokeWebService(URI serviceTargetURI,
+    private String invokeWebService(URI serviceTargetURI,
             List<NameValuePair> formparams)
             throws VirtualCollectionRegistryException {
         // force xml encoding
         formparams.add(new BasicNameValuePair("encoding", "xml"));
 
-        DefaultHttpClient client = null;
-        try {
-            client = new DefaultHttpClient();
-            int port = serviceTargetURI.getPort() != -1 ? serviceTargetURI
-                    .getPort() : AuthScope.ANY_PORT;
-            client.getCredentialsProvider().setCredentials(
+        Collection<Header> headers = new ArrayList<>();
+        headers.add(new BasicHeader(HttpHeaders.USER_AGENT, ""));
+        
+        // disable expect continue, GWDG does not like very well
+        RequestConfig defaultRequestConfig = RequestConfig.custom()
+            .setExpectContinueEnabled(false).build(); 
+        // set a proper user agent
+        CloseableHttpClient client = HttpClients.custom()
+            .setDefaultRequestConfig(defaultRequestConfig)
+            .setDefaultHeaders(headers).build();//HttpClientBuilder.create().build();
+        try {            
+            int port = serviceTargetURI.getPort() != -1 ? serviceTargetURI.getPort() : -1;
+            BasicCredentialsProvider credsProvider = new BasicCredentialsProvider();
+            credsProvider.setCredentials(
                     new AuthScope(serviceTargetURI.getHost(), port),
-                    new UsernamePasswordCredentials(username, password));
-            // disable expect continue, GWDG does not like very well
-            client.getParams().setParameter(
-                    CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
-            // set a proper user agent
-            client.getParams().setParameter(CoreProtocolPNames.USER_AGENT,
-                    USER_AGENT);
+                    new UsernamePasswordCredentials(username, password.toCharArray()));
+            
+             // Create AuthCache instance
+            AuthCache authCache = new BasicAuthCache();
+            authCache.put(new HttpHost(serviceTargetURI.getScheme(), serviceTargetURI.getHost(), port), new BasicScheme());
+            
+            
             HttpPost request = new HttpPost(serviceTargetURI);
+            
             request.addHeader("Accept", "text/xml, application/xml");
-            request.setEntity(new UrlEncodedFormEntity(formparams, "UTF-8"));
-            HttpContext ctx = new BasicHttpContext();
-
+            request.setEntity(new UrlEncodedFormEntity(formparams, StandardCharsets.UTF_8));
+            HttpClientContext context = HttpClientContext.create();
+            context.setCredentialsProvider(credsProvider);
+            context.setAuthCache(authCache);
+        
             logger.debug("invoking GWDG service at {}", serviceTargetURI);
-            HttpResponse response = client.execute(request, ctx);
-            StatusLine status = response.getStatusLine();
-            HttpEntity entity = response.getEntity();
-            Map<Attribute, String> props = Collections.emptyMap();
-
-            logger.debug("GWDG Service status: {}", status.toString());
-            if ((status.getStatusCode() >= 200)
-                    && (status.getStatusCode() <= 299) && (entity != null)) {
-                String encoding = EntityUtils.getContentCharSet(entity);
-                if (encoding == null) {
-                    encoding = "UTF-8";
-                }
-
-                XMLStreamReader reader = factory.createXMLStreamReader(entity
-                        .getContent(), encoding);
-                props = new HashMap<Attribute, String>();
-                while (reader.hasNext()) {
-                    reader.next();
-
-                    int type = reader.getEventType();
-                    if (type != XMLStreamConstants.START_ELEMENT) {
-                        continue;
-                    }
-                    Attribute attribute = Attribute.fromString(reader
-                            .getLocalName());
-                    if (attribute != null) {
-                        if (!reader.hasNext()) {
-                            throw new VirtualCollectionRegistryException(
-                                    "unexpected end of data stream");
-                        }
-                        reader.next();
-                        if (reader.getEventType() != XMLStreamConstants.CHARACTERS) {
-                            throw new VirtualCollectionRegistryException(
-                                    "unexpected element type: "
-                                    + reader.getEventType());
-                        }
-                        String value = reader.getText();
-                        if (value == null) {
-                            throw new VirtualCollectionRegistryException(
-                                    "element \"" + attribute + "\" was empty");
-                        }
-                        value = value.trim();
-                        if (!value.isEmpty()) {
-                            props.put(attribute, value);
-                        }
-                    }
-                }
-
-            } else {
-                logger.debug("GWDG Handle service failed: {}", status);
-                request.abort();
-                throw new VirtualCollectionRegistryException(
-                        "error invoking GWDG handle service");
-            }
-            return props;
-        } catch (VirtualCollectionRegistryException e) {
-            throw e;
-        } catch (Exception e) {
-            logger.debug("GWDG Handle service failed", e);
-            throw new VirtualCollectionRegistryException(
-                    "error invoking GWDG handle service", e);
+            
+            GwdgApiResponseHandler responseHandler = new GwdgApiResponseHandler();
+            return client.execute(request, context, responseHandler);
+        } catch (IOException e ) {
+            throw new VirtualCollectionRegistryException("error invoking GWDG handle service", e);
         } finally {
+            try {
             if (client != null) {
-                client.getConnectionManager().shutdown();
+                client.close();
+            }
+            } catch(IOException ex) {
+                
             }
         }
+        
     }
 
+    class GwdgApiResponseHandler extends AbstractHttpClientResponseHandler<String> {
+
+        private Exception error = null;
+        
+        @Override
+        public String handleEntity(HttpEntity entity) throws IOException {
+            try {
+                return EntityUtils.toString(entity);
+            } catch (final ParseException ex) {
+                throw new ClientProtocolException(ex);
+            }
+        }
+        
+        @Override
+        public String handleResponse(final ClassicHttpResponse response) throws IOException {
+            logger.trace("----------------------------------------");
+            logger.trace("HTTP "+response.getCode()+" "+response.getReasonPhrase());
+            
+            Map<Attribute, String> props = Collections.emptyMap();
+            try {
+                StatusLine status = new StatusLine(response);
+
+                HttpEntity entity = response.getEntity();                
+                
+                logger.debug("GWDG Service status: {}", status.toString());
+                if ((status.getStatusCode() >= 200)
+                        && (status.getStatusCode() <= 299) && (entity != null)) {
+                    String encoding = ContentType.parse(response.getEntity().getContentType()).getCharset().name();
+                    //String encoding = EntityUtils.getContentCharSet(entity);
+                    if (encoding == null) {
+                        encoding = "UTF-8";
+                    }
+
+                    XMLStreamReader reader = factory.createXMLStreamReader(entity
+                            .getContent(), encoding);
+                    props = new HashMap<Attribute, String>();
+                    while (reader.hasNext()) {
+                        reader.next();
+
+                        int type = reader.getEventType();
+                        if (type != XMLStreamConstants.START_ELEMENT) {
+                            continue;
+                        }
+                        Attribute attribute = Attribute.fromString(reader
+                                .getLocalName());
+                        if (attribute != null) {
+                            if (!reader.hasNext()) {
+                                throw new VirtualCollectionRegistryException(
+                                        "unexpected end of data stream");
+                            }
+                            reader.next();
+                            if (reader.getEventType() != XMLStreamConstants.CHARACTERS) {
+                                throw new VirtualCollectionRegistryException(
+                                        "unexpected element type: "
+                                        + reader.getEventType());
+                            }
+                            String value = reader.getText();
+                            if (value == null) {
+                                throw new VirtualCollectionRegistryException(
+                                        "element \"" + attribute + "\" was empty");
+                            }
+                            value = value.trim();
+                            if (!value.isEmpty()) {
+                                props.put(attribute, value);
+                            }
+                        }
+                    }
+
+
+                } else {
+                    logger.debug("GWDG Handle service failed: {}", status);
+                    //request.abort();
+                    throw new VirtualCollectionRegistryException(
+                            "error invoking GWDG handle service");
+                }
+            } catch(Exception ex) {
+                error = ex;
+            }
+            return props.get(Attribute.PID);
+        }
+
+        /**
+         * @return the error
+         */
+        public Exception getError() {
+            return error;
+        }
+        
+        public boolean hasError() {
+            return error != null;
+        }
+    }
+    
     private static String getConfigParameter(Map<String, String> config,
             String parameter) throws VirtualCollectionRegistryException {
         String value = config.get(parameter);

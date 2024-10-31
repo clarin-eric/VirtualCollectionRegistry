@@ -108,7 +108,8 @@ public class BasePage extends WebPage {
 
         //Include survey if configured (typically mopinion user satisfaction
         if (Strings.isEmpty(piwikConfig.getSnippetSurvey())) {
-            add(new WebMarkupContainer("surveySnippet"));
+            WebMarkupContainer container = new WebMarkupContainer("surveySnippet");
+            add(container);
         } else {
             add(new Include("surveySnippet", piwikConfig.getSnippetSurvey()));
         }
