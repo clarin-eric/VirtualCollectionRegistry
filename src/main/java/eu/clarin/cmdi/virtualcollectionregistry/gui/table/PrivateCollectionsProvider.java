@@ -11,9 +11,15 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 @SuppressWarnings("serial")
 public class PrivateCollectionsProvider extends CollectionsProvider {
 
+    private final ApplicationSession session;
+    
+    public PrivateCollectionsProvider(final ApplicationSession session) {
+        this.session = session;
+    }
+    
     @Override
     protected void addSpaceFilter(QueryOptions.Filter filter) {
-        ApplicationSession session = ApplicationSession.get();
+        //ApplicationSession session = ApplicationSession.get();
         filter.add(QueryOptions.Property.VC_OWNER,
                 QueryOptions.Relation.EQ,
                 session.getUser());
