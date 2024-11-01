@@ -86,7 +86,7 @@ public class SubmitVirtualCollectionPage extends BasePage {
             } else {
                 //Already logged in, so redirect to creation page
                 //TODO: show choice to add to an existing collection or create a new collection
-                logger.info("Redirect logged in");
+                logger.info("Redirect logged in, user={}", getUser().getName());
                 throw new RestartResponseException(MergeCollectionsPage.class);
             }
         }
