@@ -48,16 +48,21 @@ public class SubmitVirtualCollectionPage extends BasePage {
     @Override
     protected void onBeforeRender() {     
         //Derivate type from page parameter
-        String type_string = getPageParameters().get("type").toString();
         VirtualCollection.Type type = null;
-        try {        
-            type = VirtualCollection.Type.valueOf(type_string.toUpperCase());
-        } catch(IllegalArgumentException ex) {
-            //Invalid collection type
-            //TODO: handle error
-            logger.error("Invalid collection type: {}",type_string);
+        String type_string = getPageParameters().get("type").toString();
+        if(type_string == null) {
+            logger.warn("Collection type not found in page parameters");
+            type = VirtualCollection.Type.EXTENSIONAL; //fallback to extensional
+        } else {
+            try {        
+                type = VirtualCollection.Type.valueOf(type_string.toUpperCase());
+            } catch(IllegalArgumentException ex) {
+                //Invalid collection type
+                //TODO: handle error
+                logger.error("Invalid collection type: {}",type_string);
+            }
         }
-            
+        
         VirtualCollection vc = SubmissionUtils.retrieveCollection(getSession());
         if(vc != null && !isSignedIn()) {
             logger.info("Collection stored in session, but not logged in");
