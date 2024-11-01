@@ -103,7 +103,7 @@ public class MergeCollectionsPage extends BasePage {
             throw new RestartResponseException(ErrorPage.class);
         }
 
-        this.provider = new PrivateCollectionsProvider(getSession());
+        this.provider = new PrivateCollectionsProvider(getUser());
 
         addLabel(this, "heading_submitted_collection");
         addLabel(this, "heading_actions");

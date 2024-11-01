@@ -1,8 +1,8 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.table;
 
 import eu.clarin.cmdi.virtualcollectionregistry.QueryOptions;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import java.security.Principal;
 
 /**
  *
@@ -11,18 +11,21 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 @SuppressWarnings("serial")
 public class PrivateCollectionsProvider extends CollectionsProvider {
 
-    private final ApplicationSession session;
+    private final String authenticatedUsername;
     
-    public PrivateCollectionsProvider(final ApplicationSession session) {
-        this.session = session;
+    public PrivateCollectionsProvider(final Principal authenticatedPrincipal) {
+        this(authenticatedPrincipal.getName());
+    }
+    
+    public PrivateCollectionsProvider(final String authenticatedUsername) {
+        this.authenticatedUsername = authenticatedUsername;
     }
     
     @Override
     protected void addSpaceFilter(QueryOptions.Filter filter) {
-        //ApplicationSession session = ApplicationSession.get();
         filter.add(QueryOptions.Property.VC_OWNER,
                 QueryOptions.Relation.EQ,
-                session.getUser());
+                authenticatedUsername);
     }
 
     protected void addTypeFilter(QueryOptions.Filter filter, VirtualCollection.Type type) {
