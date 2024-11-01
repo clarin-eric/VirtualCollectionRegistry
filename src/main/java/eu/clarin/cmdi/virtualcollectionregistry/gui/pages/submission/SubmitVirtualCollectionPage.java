@@ -47,16 +47,6 @@ public class SubmitVirtualCollectionPage extends BasePage {
 
     @Override
     protected void onBeforeRender() {     
-        VirtualCollection vc = SubmissionUtils.retrieveCollection(getSession());
-        if(vc != null) {        
-            logger.info("Collection stored in session, redirect to edit page");
-            //Class target = CreateAndEditVirtualCollectionPageV2.class;
-            Class target = MergeCollectionsPage.class;
-            throw new RestartResponseException(target);
-        }
-        
-        logger.debug("No collection stored in session");
-        
         //Derivate type from page parameter
         String type_string = getPageParameters().get("type").toString();
         VirtualCollection.Type type = null;
@@ -67,30 +57,42 @@ public class SubmitVirtualCollectionPage extends BasePage {
             //TODO: handle error
             logger.error("Invalid collection type: {}",type_string);
         }
+            
+        VirtualCollection vc = SubmissionUtils.retrieveCollection(getSession());
+        if(vc != null && !isSignedIn()) {
+            logger.info("Collection stored in session, but not logged in");
+            add(new Label("type", new Model((type != null ? type.toString() : "") + " Collection Submission")));
+            add(new LoginPanel("panel"));
+        } else if(vc != null && isSignedIn()) {            
+            logger.info("Collection stored in session, redirect to edit page");
+            //Class target = CreateAndEditVirtualCollectionPageV2.class;
+            Class target = MergeCollectionsPage.class;
+            throw new RestartResponseException(target);
+        } else {
+            logger.debug("No collection stored in session");
+            if (type != null) {
+                String submissionError = SubmissionUtils.checkSubmission(
+                        (WebRequest)RequestCycle.get().getRequest(),
+                        (WebResponse)RequestCycle.get().getResponse(),
+                        getSession(),
+                        type
+                );
 
-        if (type != null) {
-            String submissionError = SubmissionUtils.checkSubmission(
-                    (WebRequest)RequestCycle.get().getRequest(),
-                    (WebResponse)RequestCycle.get().getResponse(),
-                    getSession(),
-                    type
-            );
-
-            if(submissionError != null) {
-                add(new Label("type", new Model(type.toString()+" Collection Submission")));
-                add(new ErrorPanel("panel", "Submitted collection is not valid: "+submissionError));
-            } else if(!isSignedIn()) {
-                //Set proper content panel based on      
-                add(new Label("type", new Model(type.toString()+" Collection Submission")));
-                add(new LoginPanel("panel"));
-            } else {
-                //Already logged in, so redirect to creation page
-                //TODO: show choice to add to an existing collection or create a new collection
-                logger.info("Redirect logged in, user={}", getUser().getName());
-                throw new RestartResponseException(MergeCollectionsPage.class);
+                if(submissionError != null) {
+                    add(new Label("type", new Model(type.toString()+" Collection Submission")));
+                    add(new ErrorPanel("panel", "Submitted collection is not valid: "+submissionError));
+                } else if(!isSignedIn()) {
+                    //Set proper content panel based on      
+                    add(new Label("type", new Model(type.toString()+" Collection Submission")));
+                    add(new LoginPanel("panel"));
+                } else {
+                    //Already logged in, so redirect to creation page
+                    //TODO: show choice to add to an existing collection or create a new collection
+                    logger.info("Redirect logged in, user={}", getUser().getName());
+                    throw new RestartResponseException(MergeCollectionsPage.class);
+                }
             }
         }
-
         //TODO: show error for invalid type?
         
         /** cascades the call to its children */
