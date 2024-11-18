@@ -100,7 +100,15 @@ final class ColumnName extends AbstractColumn<VirtualCollection, String> {
             } else {
                 toggleLink.add(new AttributeModifier("class", Model.of("hover")));
             }
-
+            
+            WebMarkupContainer chevron = new WebMarkupContainer("toggle-chevron");
+            toggleLink.add(chevron);
+            if(!collapsedState.get(vc.getId())) {
+                chevron.add(new AttributeModifier("class", Model.of("fa-solid fa-chevron-right")));
+            } else {
+                chevron.add(new AttributeModifier("class", Model.of("fa-solid fa-chevron-down")));
+            }
+            
             AjaxLink citeButton = new AjaxLink( "name", new Model<String>("") ){ 
             @Override
             public void onClick( AjaxRequestTarget target ) {

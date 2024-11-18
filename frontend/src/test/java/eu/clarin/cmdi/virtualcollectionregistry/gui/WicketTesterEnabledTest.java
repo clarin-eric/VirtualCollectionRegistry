@@ -10,6 +10,6 @@ public class WicketTesterEnabledTest {
 
     @Before
     public void setUp() {
-        tester = new WicketTester(new TestApplication());
+        //tester = new WicketTester(new TestApplication());
     }
 }

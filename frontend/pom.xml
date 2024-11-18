@@ -100,14 +100,6 @@
             <artifactId>vcr-serialization</artifactId>
             <version>1.9.0-SNAPSHOT</version>
         </dependency>
-
-<!--
-        <dependency>
-            <groupId>eu.clarin.cmdi</groupId>
-            <artifactId>rest-client</artifactId>
-            <version>1.9.0-SNAPSHOT</version>
-        </dependency>
--->
         
         <dependency>
             <groupId>io.jsonwebtoken</groupId>
@@ -397,6 +389,19 @@
             <scope>test</scope>
         </dependency>
         
+        
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>persistence</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        <!--
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>rest-client</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        --> 
     </dependencies>
 
     <build>

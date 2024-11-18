@@ -1,7 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.service.impl;
 
+import eu.clarin.cmd.CMD;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionCMDICreator;
-import eu.clarin.cmdi.virtualcollectionregistry.model.collection.cmdi.CMD;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionCMDIWriter;
 import jakarta.xml.bind.JAXBContext;

@@ -169,8 +169,8 @@ public class ReferencePanel extends Panel {
             }
         };
         reasonToggleLink.setEnabled(state != State.FAILED);
-        reasonToggleLink.add(new AttributeModifier("data-toggle","collapse"));
-        reasonToggleLink.add(new AttributeModifier("data-target","#"+pnlScanDetails.getMarkupId()));
+        reasonToggleLink.add(new AttributeModifier("data-bs-toggle","collapse"));
+        reasonToggleLink.add(new AttributeModifier("data-bs-target","#"+pnlScanDetails.getMarkupId()));
         reasonToggleLink.add(stateIcon);
 
         editorWrapper.add(reasonToggleLink);

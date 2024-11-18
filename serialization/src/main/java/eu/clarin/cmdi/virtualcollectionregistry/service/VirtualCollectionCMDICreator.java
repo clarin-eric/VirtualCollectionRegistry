@@ -1,7 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.service;
 
 
-import eu.clarin.cmdi.virtualcollectionregistry.model.collection.cmdi.CMD;
+import eu.clarin.cmd.CMD;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 
 /**

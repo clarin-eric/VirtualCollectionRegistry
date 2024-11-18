@@ -4,6 +4,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.GeneratedBy;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
+/*
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.cmdi.CMD;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.cmdi.CMD.Components.VirtualCollection.Creator.Email;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.cmdi.CMD.Components.VirtualCollection.Creator.Organisation;
@@ -22,6 +23,19 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.collection.cmdi.Simpletype
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.cmdi.SimpletypeReproducability1;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.cmdi.SimpletypeStatus1;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionCMDICreator;
+*/
+import eu.clarin.cmd.*;
+import eu.clarin.cmd.CMD.Components.VirtualCollection.Creator.Email;
+
+import eu.clarin.cmd.CMD.Components.VirtualCollection.Creator.Organisation;
+import eu.clarin.cmd.CMD.Components.VirtualCollection.Description;
+import eu.clarin.cmd.CMD.Components.VirtualCollection.GeneratedBy.QueryProfile;
+import eu.clarin.cmd.CMD.Components.VirtualCollection.GeneratedBy.QueryValue;
+import eu.clarin.cmd.CMD.Components.VirtualCollection.Name;
+import eu.clarin.cmd.CMD.Components.VirtualCollection.ReproducabilityNotice;
+import eu.clarin.cmd.CMD.Resources.ResourceProxyList.ResourceProxy;
+import eu.clarin.cmd.CMD.Resources.ResourceProxyList.ResourceProxy.ResourceType;
+
 import java.util.Date;
 import java.util.List;
 import java.util.UUID;
@@ -45,7 +59,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD.Components.VirtualCollection.Creator.Email;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD.Components.VirtualCollection.Creator.Organisation;
-import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD.Components.VirtualCollection.Description;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD.Components.VirtualCollection.GeneratedBy.QueryProfile;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD.Components.VirtualCollection.GeneratedBy.QueryValue;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.CMD.Components.VirtualCollection.Name;
@@ -59,8 +72,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.ResourcetypeSimple;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.SimpletypePurpose1;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.SimpletypeReproducability1;
 import eu.clarin.cmdi.virtualcollectionregistry.model.cmdi.SimpletypeStatus1;
-import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionCMDICreator;
 */
+import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionCMDICreator;
 
 /**
  * A service implementation that creates a CMDI object hierarchy for a

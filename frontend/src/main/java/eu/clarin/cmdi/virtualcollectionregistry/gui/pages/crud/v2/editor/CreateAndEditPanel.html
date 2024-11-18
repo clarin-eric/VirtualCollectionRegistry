@@ -37,12 +37,12 @@
             </div>
 
             <div class="row" style="margin-top: 25px">
-                <div class="col-xs-12 field-row" wicket:id="authors">[AUTHORS]</div>
+                <div class="col-md-12 col-xs-12 field-row" wicket:id="authors">[AUTHORS]</div>
             </div>
 
             <!-- Extensional block -->
             <div class="row" style="margin-top: 25px">
-                <div class="col-xs-12 field-row" wicket:id="references">[REFERENCES]</div>
+                <div class="col-md-12 col-xs-12 field-row" wicket:id="references">[REFERENCES]</div>
             </div>
 
             <!-- Intensional block -->
@@ -66,16 +66,16 @@
             Button and error messages row, floating controlled by javascript if enabled
             Activate by element id, see ScrollTracker.java
             -->
-            <div class="crud-action-buttons" id="crud-action-buttons">
+            <div class="row crud-action-buttons" id="crud-action-buttons">
                 <!-- Error message(s) -->
-                <div class="col-xs-12" style="text-align: center">
+                <div class="col-md-12 col-xs-12" style="text-align: center">
                     <span wicket:id="error_message" class="error-message"></span>
                 </div>
                 <!-- Action buttons -->
-                <div class="col-xs-6" style="text-align: right;">
+                <div class="col-md-6 col-xs-6" style="text-align: right;">
                     <a class="btn btn-sm btn-primary" wicket:id="btn_save">Save Collection</a>
                 </div>
-                <div class="col-xs-6">
+                <div class="col-md-6 col-xs-6">
                     <a class="btn btn-sm btn-default" wicket:id="btn_cancel">Cancel</a>
                 </div>
             </div>

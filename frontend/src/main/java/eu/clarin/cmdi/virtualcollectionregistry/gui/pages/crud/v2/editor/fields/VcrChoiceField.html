@@ -4,21 +4,23 @@
     <head><title></title></head>
     <body>
         
-        <wicket:panel>            
-            <div class="col-xs-2" style="text-align: right;">                
-                <span wicket:id="label"></span>
+        <wicket:panel>      
+            <div class="row">
+                <div class="col-xs-2" style="text-align: right;">                
+                    <span wicket:id="label"></span>
+                </div>
+                <div class="col-xs-10">
+                    <span wicket:id="input_radio_choice">
+                        <input type="radio">radio 1</input>
+                        <input type="radio">radio 2</input>
+                    </span>
+                </div>
+                <div class="col-md-10 offset-md-2 col-sm-12 help_message" wicket:id="help_message">
+                    <i class="fa-solid fa-circle-info" aria-hidden="true" wicket:id="icon"></i>
+                    <span wicket:id="message" class="help-message"></span>
+                </div>
+                <div class="col-xs-10 offset-xs-2 error-message" wicket:id="error_message"></div>
             </div>
-            <div class="col-xs-10">
-                <span wicket:id="input_radio_choice">
-                    <input type="radio">radio 1</input>
-                    <input type="radio">radio 2</input>
-                </span>
-            </div>
-            <div class="col-md-10 col-md-offset-2 col-sm-12 help_message" wicket:id="help_message">
-                <i class="fa fa-info-circle" aria-hidden="true" wicket:id="icon"></i>
-                <span wicket:id="message" class="help-message"></span>
-            </div>
-            <div class="col-xs-10 col-xs-offset-2 error-message" wicket:id="error_message"></div>
         </wicket:panel>
         
     </body>

@@ -14,5 +14,6 @@
     well as @Configuration annotations for classes defining beans and properties
     -->
     <context:component-scan base-package="eu.clarin.cmdi.virtualcollectionregistry" />
+    <context:component-scan base-package="eu.clarin.cmdi.vcr" />
                 
 </beans>

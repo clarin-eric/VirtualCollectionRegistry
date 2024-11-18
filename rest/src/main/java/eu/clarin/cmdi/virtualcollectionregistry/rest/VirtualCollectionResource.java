@@ -30,12 +30,18 @@ import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.UriBuilder;
 import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.core.Variant;
-
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+/*
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
 import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import io.swagger.v3.oas.annotations.security.SecurityRequirement;
+*/
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
@@ -97,9 +103,9 @@ public final class VirtualCollectionResource {
      * @param id
      */
     public synchronized void setId(long id) {
-        if (this.id != null) {
-            throw new IllegalStateException("Id was already set for Virtual Collection resource! Resource is recycled (by Jersey)?");
-        }
+        //if (this.id != null) {
+        //    throw new IllegalStateException("Id was already set for Virtual Collection resource! Resource is recycled (by Jersey)?");
+        //}
         this.id = id;
     }
 
@@ -120,19 +126,19 @@ public final class VirtualCollectionResource {
     @Operation(
             summary = "Retrieve a virtual collection",
             description = "The virtual collection referenced by the URI will be retrieved.")
-    @ApiResponses(
+    @APIResponses(
             value = {
-                    @ApiResponse(
+                    @APIResponse(
                             responseCode = "404",
                             description = "Not found.",
                             content = {@Content(mediaType = "text/html")}
                     ),
-                    @ApiResponse(
+                    @APIResponse(
                             responseCode = "500",
                             description = "Unexpected server side error.",
                             content = {@Content(mediaType = "text/html")}
                     ),
-                    @ApiResponse(
+                    @APIResponse(
                             responseCode = "200",
                             description = "Representation of the requested collection.",
                             content = {@Content(mediaType = "application/json"), @Content(mediaType = "application/xml")}
@@ -194,22 +200,22 @@ public final class VirtualCollectionResource {
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_JSON})
     @Operation(
-        security = { @SecurityRequirement(name = "apiKey") },
+        //security = { @SecurityRequirement(name = "apiKey") },
         summary = "Update a virtual collection ",
         description = "The virtual collection identified by the URI will be updated, actually replaced, with the representation of the virtual collection sent in the request body.")
-    @ApiResponses(
+    @APIResponses(
         value = {
-            @ApiResponse(
+            @APIResponse(
                 responseCode = "401",
                 description = "Missing or invalid API key in "+HttpHeaders.AUTHORIZATION+" header.",
                 content = @Content(mediaType = "text/html")
             ),
-            @ApiResponse(
+            @APIResponse(
                 responseCode = "500",
                 description = "Unexpected server side error.",
                 content = {@Content(mediaType = "text/html")}
             ),
-            @ApiResponse(
+            @APIResponse(
                 responseCode = "200",
                 description = "Representation of the updated collection.",
                 content = {@Content(mediaType = "application/json"), @Content(mediaType = "application/xml")}
@@ -249,22 +255,22 @@ public final class VirtualCollectionResource {
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_JSON})
     @Operation(
-        security = { @SecurityRequirement(name = "apiKey") },
+        //security = { @SecurityRequirement(name = "apiKey") },
         summary = "Delete a virtual collection ",
         description = "The virtual collection referenced by the URI will be deleted.")
-    @ApiResponses(
+    @APIResponses(
         value = {
-            @ApiResponse(
+            @APIResponse(
                 responseCode = "401",
                 description = "Missing or invalid API key in "+HttpHeaders.AUTHORIZATION+" header.",
                 content = @Content(mediaType = "text/html")
             ),
-            @ApiResponse(
+            @APIResponse(
                 responseCode = "500",
                 description = "Unexpected server side error.",
                 content = {@Content(mediaType = "text/html")}
             ),
-            @ApiResponse(
+            @APIResponse(
                 responseCode = "200",
                 description = "",
                 content = {@Content(mediaType = "application/json"), @Content(mediaType = "application/xml")}

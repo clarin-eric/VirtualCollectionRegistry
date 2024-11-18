@@ -3,7 +3,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.IdentifiedEntity;
 import java.io.Serializable;
 
-import javax.persistence.EntityManager;
+import jakarta.persistence.EntityManager;
 
 import org.apache.wicket.model.IModel;
 import org.slf4j.Logger;

@@ -84,12 +84,13 @@ public class MscrClientImpl implements MscrClient {
         
         @Override
         public T getResponse() throws JsonProcessingException {
-            Class<T> clazz = (Class<T>)content.getClass();
-            MscrSearch search = mapper.readValue(body, MscrSearch.class);
-            if(search.hits.total.value > 0) {
-                return mapper.convertValue(search.hits.hits, clazz);
+            if(body != null) {
+                Class<T> clazz = (Class<T>)content.getClass();
+                MscrSearch search = mapper.readValue(body, MscrSearch.class);
+                if(search.hits.total.value > 0) {
+                    return mapper.convertValue(search.hits.hits, clazz);
+                }            
             }
-            
             return null;
         }
     }
@@ -111,8 +112,11 @@ public class MscrClientImpl implements MscrClient {
         }
 
         public T getResponse() throws JsonProcessingException {
-            Class<T> clazz = (Class<T>)content.getClass();
-            return mapper.readValue(body, clazz);
+            if(body != null) {
+                Class<T> clazz = (Class<T>)content.getClass();
+                return mapper.readValue(body, clazz);
+            }
+            return null;
         }
     }
     

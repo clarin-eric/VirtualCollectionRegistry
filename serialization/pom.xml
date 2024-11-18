@@ -61,12 +61,13 @@
             <artifactId>jakarta.xml.bind-api</artifactId>
             <version>4.0.2</version>
         </dependency>
+        <!--
         <dependency>
             <groupId>com.sun.xml.bind</groupId>
             <artifactId>jaxb-impl</artifactId>
             <version>4.0.2</version>
-            <!--scope>runtime</scope-->
         </dependency>
+        -->
         <dependency>
             <groupId>org.glassfish.jaxb</groupId>
             <artifactId>jaxb-runtime</artifactId>
@@ -125,6 +126,12 @@
             <version>2013.6.1</version>
             <type>jar</type>
             <!--scope>test</scope-->
+            <exclusions>
+                <exclusion>
+                    <groupId>javax.xml.bind</groupId>
+                    <artifactId>jaxb-api</artifactId>
+                </exclusion>
+            </exclusions>
         </dependency>
     
     </dependencies>
@@ -154,6 +161,7 @@
                 <version>4.0.0</version>
                 <executions>
                     <execution>
+                        <id>generate</id>
                         <goals>
                             <goal>generate</goal>
                         </goals>
@@ -164,6 +172,10 @@
                     <sources>
                         <!--source> ${basedir}/src/main/java/eu/clarin/cmdi/virtualcollectionregistry/service/impl/VirtualCollection.xsd</source-->
                     </sources>
+                    <schemaDirectory>src/main/xsd</schemaDirectory>
+                    <schemaIncludes>
+                        <include>VirtualCollection.xsd</include>
+                    </schemaIncludes>
                 </configuration>
             </plugin>
             
@@ -181,7 +193,7 @@
                         <phase>generate-sources</phase>
                         <configuration>
                             <sources>
-                                <source>${project.build.directory}/generated-sources/jaxb</source>
+                                <source>${project.build.directory}/generated-sources/xjc</source>
                             </sources>
                         </configuration>
                     </execution>

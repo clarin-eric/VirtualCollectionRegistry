@@ -1,3 +1,4 @@
+package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
 import eu.clarin.cmdi.virtualcollectionregistry.rest.utils.RestUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
@@ -23,18 +24,17 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.StreamingOutput;
 import jakarta.ws.rs.core.UriInfo;
-
-import io.swagger.v3.oas.annotations.Parameter;
-import io.swagger.v3.oas.annotations.Parameters;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeIn;
-import io.swagger.v3.oas.annotations.enums.SecuritySchemeType;
-import io.swagger.v3.oas.annotations.responses.ApiResponses;
-import io.swagger.v3.oas.annotations.security.SecurityRequirement;
-import io.swagger.v3.oas.annotations.security.SecurityScheme;
+import org.eclipse.microprofile.openapi.annotations.Operation;
+import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeIn;
+import org.eclipse.microprofile.openapi.annotations.enums.SecuritySchemeType;
+import org.eclipse.microprofile.openapi.annotations.media.Content;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
+import org.eclipse.microprofile.openapi.annotations.parameters.Parameters;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
+import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.eclipse.microprofile.openapi.annotations.security.SecurityScheme;
 import org.springframework.beans.factory.annotation.Autowired;
-import io.swagger.v3.oas.annotations.Operation;
-import io.swagger.v3.oas.annotations.responses.ApiResponse;
-import io.swagger.v3.oas.annotations.media.Content;
+
 
 /**
  * REST resource representing the collection of the user's virtual collections
@@ -46,10 +46,10 @@ import io.swagger.v3.oas.annotations.media.Content;
  */
 @Path("/my-virtualcollections")
 @SecurityScheme(
-    name = "apiKey",
+    //name = "apiKey",
     type = SecuritySchemeType.APIKEY,
-    in = SecuritySchemeIn.HEADER,
-    paramName = HttpHeaders.AUTHORIZATION
+    in = SecuritySchemeIn.HEADER
+    //paramName = HttpHeaders.AUTHORIZATION
 )
 public class MyVirtualCollectionsResource {
 
@@ -84,7 +84,7 @@ public class MyVirtualCollectionsResource {
     @GET
     @Produces({MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Operation(
-        security = { @SecurityRequirement(name = "apiKey") },
+//        security = { @SecurityRequirement(name = "apiKey") },
         summary = "Retrieve a list of private collections",
         description = "Retrieve a list of private collections for the user identified via the supplied API key.")
     @Parameters( value = {
@@ -92,19 +92,19 @@ public class MyVirtualCollectionsResource {
         @Parameter(name = "offset", description = "Start with this index. Default = 0"),
         @Parameter(name = "count", description = "Include this many results. Use -1 for all results.")
     })
-    @ApiResponses(
+    @APIResponses(
             value = {
-                    @ApiResponse(
+                    @APIResponse(
                             responseCode = "401",
                             description = "Missing or invalid API key in "+HttpHeaders.AUTHORIZATION+" header.",
                             content = @Content(mediaType = "text/html")
                     ),
-                    @ApiResponse(
+                    @APIResponse(
                             responseCode = "500",
                             description = "Unexpected server side error.",
                             content = {@Content(mediaType = "text/html")}
                     ),
-                    @ApiResponse(
+                    @APIResponse(
                             responseCode = "200",
                             description = "List of all collections for the authenticated user.",
                             content = {@Content(mediaType = "application/json"), @Content(mediaType = "application/xml")}

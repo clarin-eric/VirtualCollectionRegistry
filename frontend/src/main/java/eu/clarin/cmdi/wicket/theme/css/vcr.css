@@ -351,6 +351,21 @@ div.container {
   z-index: -1 !important;
 }
 
+
+.crud-action-buttons {
+    position: relative;
+}
+
+.crud-action-buttons-hover {
+    position: fixed;
+    bottom: 0px;
+    background-color: white;
+    left: 50%;
+    transform: translate(-50%);
+    padding-top: 10px;
+    padding-bottom: 10px;
+    width: 400px;
+}
 /*
 table.display {
   border-collapse: collapse !important;
