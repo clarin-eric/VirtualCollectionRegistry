@@ -1,6 +1,5 @@
 package eu.clarin.cmdi.virtualcollectionregistry.wicket;
 
-import com.google.common.collect.ImmutableList;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;

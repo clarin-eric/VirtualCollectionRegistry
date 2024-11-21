@@ -3,6 +3,8 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui;
 import de.agilecoders.wicket.core.Bootstrap;
 import de.agilecoders.wicket.core.settings.BootstrapSettings;
 import de.agilecoders.wicket.core.settings.SingleThemeProvider;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesome6CssReference;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesomeSettings;
 import eu.clarin.cmdi.virtualcollectionregistry.*;
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.*;
@@ -11,7 +13,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.CreateAndEditV
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmitVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LoginPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LogoutPage;
-import eu.clarin.cmdi.wicket.ExtremeNoopTheme;
+import eu.clarin.cmdi.wicket.theme.ClarinBootstrap5Theme;
 import org.apache.wicket.Page;
 import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebApplication;
@@ -70,11 +72,22 @@ public class Application extends AuthenticatedWebApplication {
             this, 
             new BootstrapSettings()
                 //bootstrap CSS is provided via markup (CSS link in HTML head)
-                .setThemeProvider(new SingleThemeProvider(new ExtremeNoopTheme()))
-                .setJsResourceReference(JavaScriptResources.getBootstrapJS())
+                //.setThemeProvider(new SingleThemeProvider(new ExtremeNoopTheme()))
+                .setThemeProvider(new SingleThemeProvider(new ClarinBootstrap5Theme()))
+                //.setJsResourceReference(JavaScriptResources.getBootstrapJS())
+                .setAutoAppendResources(true)
+                .setUpdateSecurityManager(true)
         );
-   
-    
+        
+        FontAwesomeSettings
+            .get(Application.get())
+            .setCssResourceReference(FontAwesome6CssReference.instance());
+
+        //Disable CSP for now 
+        //TODO: look into ways of enabling this again, see https://nightlies.apache.org/wicket/guide/9.x/single.html#_content_security_policy_csp
+        getCspSettings().blocking().disabled();
+        //Currently missing clipboard js and switchboard popup in theme
+        
         logger.info("Initialising VCR web application");
         if (vcrConfig != null) {
             vcrConfig.logConfig(); //write current configuration to logger

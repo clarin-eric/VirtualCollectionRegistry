@@ -24,7 +24,7 @@ import org.apache.wicket.request.resource.ContextRelativeResource;
 import org.slf4j.LoggerFactory;
 import org.slf4j.Logger;
 
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 
 /**
  *
@@ -55,7 +55,7 @@ public class HelpPage extends BasePage {
         final String serviceBaseUri = String.format("%s/service/", baseUri);
         add(new ExternalLink("restLink", serviceBaseUri)
                 .add(new Label("restUrl", serviceBaseUri)));
-        add(new ExternalLink("restLink2", serviceBaseUri));
+        add(new ExternalLink("restLink2", "https://infra.clarin.eu/apis?urls.primaryName=Virtual%20Collection%20Registry%20API%20(beta)"));
 
         final String oaiIdentifyUri = String.format("%s/oai?verb=Identify", baseUri);
         add(new ExternalLink("oaiLink", oaiIdentifyUri)
@@ -65,8 +65,8 @@ public class HelpPage extends BasePage {
         if(!serviceBaseUri.endsWith("/")) {
             wadlUri += "/";
         }
-        wadlUri += "application.wadl";
-        add(new ExternalLink("wadlLink", wadlUri));
+        //wadlUri += "application.wadl";
+        //add(new ExternalLink("wadlLink", wadlUri));
 
         add(new Image("img-virtualcollection", new ContextRelativeResource("/images/virtualcollection.png")));
         add(new Image("img-vcr-menu-browse", new ContextRelativeResource("/images/help-vcr-menu-browse.png")));

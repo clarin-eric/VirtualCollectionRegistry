@@ -8,6 +8,8 @@ import java.util.List;
 
 public interface VirtualCollectionRegistry {
 
+    void registerDestroyListener(VirtualCollectionRegistryDestroyListener listener);
+    
     /**
      * Will store the specified collection; it will also set the owner according
      * to the specified principal and set its state to

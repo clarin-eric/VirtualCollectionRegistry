@@ -8,6 +8,7 @@ import java.nio.charset.Charset;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.LinkedList;
 import java.util.List;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
@@ -52,6 +53,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
     @Autowired
     private CreatorService creatorService;
     
+    private final List<VirtualCollectionRegistryDestroyListener> destroyListeners = new LinkedList<>();
+    
     private static final Logger logger
             = LoggerFactory.getLogger(VirtualCollectionRegistryImpl.class);
     
@@ -65,6 +68,11 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
     private final ScheduledExecutorService maintenanceExecutor
             = createSingleThreadScheduledExecutor("VirtualCollectionRegistry-Maintenance");
 
+    @Override
+    public void registerDestroyListener(VirtualCollectionRegistryDestroyListener listener) {
+        this.destroyListeners.add(listener);
+    }
+    
     @Override
     public void afterPropertiesSet() throws VirtualCollectionRegistryException {
         // called by Spring directly after Bean construction
@@ -114,6 +122,11 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
     @Override
     public void destroy() throws VirtualCollectionRegistryException, InterruptedException {
         logger.info("Stopping Virtual Collection Registry maintenance schedule");
+        for(VirtualCollectionRegistryDestroyListener listener : this.destroyListeners) {
+            listener.handleDestroy();
+        }
+        
+        logger.info("Stopping Virtual Collection Registry maintenance schedule");
         maintenanceExecutor.shutdown();
         if (!maintenanceExecutor.awaitTermination(60, TimeUnit.SECONDS)) {
             logger.warn("Timeout while waiting for maintenance thread to terminate, will try to shut down");
@@ -146,8 +159,8 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
             throw new NullPointerException("vc == null");
         }
         
-        logger.debug("creating virtual collection");
-
+        logger.debug("creating virtual collection: {}", vc.toString());
+        
         try {
             validator.validate(vc);
         } catch(VirtualCollectionValidationException ex) {
@@ -429,7 +442,7 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
         try {            
             em.getTransaction().begin();
             VirtualCollection vc
-                    = em.find(VirtualCollection.class, Long.valueOf(id));
+                    = em.find(VirtualCollection.class, id);            
             em.getTransaction().commit();
             if ((vc == null) || vc.isDeleted()) {
                 logger.debug("virtual collection (id={}) not found", id);
@@ -561,14 +574,14 @@ public class VirtualCollectionRegistryImpl implements VirtualCollectionRegistry,
                 }
                 results = q.getResultList();
             }
-            
+            /*
             for(VirtualCollection vc : results) {
                 logger.info("Authors for "+vc.getName());
                 for(String a : vc.getAuthors()) {
                     logger.info("\tAuthor: "+a);
                 }
             }
-            
+            */
             return new VirtualCollectionList(results, offset, (int) totalCount);
         } catch (Exception e) {
             logger.error("error while enumerating virtual collections", e);

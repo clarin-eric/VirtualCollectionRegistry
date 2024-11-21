@@ -5,7 +5,7 @@ import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.EntityTransaction;
 import javax.persistence.Persistence;
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.DisposableBean;
@@ -74,12 +74,16 @@ public class DataStore implements DisposableBean {
             em.remove();
             EntityTransaction tx = manager.getTransaction();
             if (tx.isActive()) {
-                logger.debug("Entity manager has active transaction, rolling back");
+                logger.warn("Entity manager has active transaction, rolling back");
                 tx.rollback();
             }
             logger.trace("Closing entity manager");
             manager.close();
         }
+    }
+    
+    public boolean hasActiveTransaction() {
+        return em.get().getTransaction().isActive();
     }
 
 } // class DataStore

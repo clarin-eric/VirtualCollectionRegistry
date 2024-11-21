@@ -21,9 +21,11 @@ $( document ).ready(function() {
         $('[data-toggle-tooltip="tooltip"]').tooltip();        
     });
     $(function () {
-        $('[data-toggle="popover"]').popover()
-    });
-    
+        $('[data-toggle="popover"]').popover();
+    });    /*
+    $(function () {
+        $('[data-toggle="collapse"]').collapse();
+    });    */
     console.log( "ready!" );
 });
 

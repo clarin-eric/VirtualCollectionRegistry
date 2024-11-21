@@ -1,6 +1,5 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
-import com.google.common.collect.Lists;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermissionException;
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfigImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
@@ -15,7 +14,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection.Type;
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.RestUtils;
-import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
 import eu.clarin.cmdi.virtualcollectionregistry.wicket.DetailsStructuredMeatadataHeaderBehavior;
 import eu.clarin.cmdi.wicket.components.CMDIExplorerLink;
 import eu.clarin.cmdi.wicket.components.LanguageResourceSwitchboardLink;
@@ -27,16 +25,10 @@ import eu.clarin.cmdi.wicket.components.pid.PersistentIdentifieable;
 import eu.clarin.cmdi.wicket.components.pid.PidPanel;
 import java.io.Serializable;
 import java.sql.Date;
-import java.text.ParseException;
 import java.util.*;
-import java.util.stream.Collectors;
-
-import org.apache.http.HttpRequest;
 import org.apache.wicket.Component;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.authorization.UnauthorizedActionException;
 import org.apache.wicket.behavior.Behavior;
 import org.apache.wicket.extensions.ajax.markup.html.repeater.data.table.AjaxFallbackDefaultDataTable;
@@ -63,17 +55,12 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.model.util.ListModel;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
-import org.apache.wicket.request.flow.RedirectToUrlException;
 import org.apache.wicket.request.mapper.parameter.INamedParameters.NamedPair;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.convert.IConverter;
 import org.apache.wicket.util.string.StringValue;
 import org.apache.wicket.util.string.Strings;
-import org.glassfish.jersey.message.internal.AcceptableMediaType;
-import org.glassfish.jersey.message.internal.HeaderUtils;
-import org.glassfish.jersey.message.internal.HttpHeaderReader;
-import org.glassfish.jersey.message.internal.MediaTypes;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import com.vladsch.flexmark.util.ast.Node;
@@ -81,10 +68,7 @@ import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.data.MutableDataSet;
 
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.Context;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
+import jakarta.servlet.http.HttpServletRequest;
 
 @SuppressWarnings("serial")
 public class VirtualCollectionDetailsPage extends BasePage {
@@ -472,8 +456,8 @@ public class VirtualCollectionDetailsPage extends BasePage {
     }
     
     private BootstrapDropdown getDropdown(String id, IModel<Resource> model) {
-         List options = 
-            Lists.newArrayList(new DropdownMenuItem("Process with Language Resource Switchboard", "glyphicon glyphicon-open-file") {
+        List options = new ArrayList();
+        options.add(new DropdownMenuItem("Process with Language Resource Switchboard", "glyphicon glyphicon-open-file") {
                 @Override
                 protected AbstractLink getLink(String id) {
                     return (AbstractLink) LanguageResourceSwitchboardLink.forResource("link", model.getObject());
@@ -538,8 +522,9 @@ public class VirtualCollectionDetailsPage extends BasePage {
         if(reference != null) {
             return reference.getPage().getPageClass();
         } else {
-           if(params.get(VirtualCollectionDetailsPage.PARAM_BACK_PAGE) != null) {
-                switch(BackPage.fromInt(params.get(VirtualCollectionDetailsPage.PARAM_BACK_PAGE).toInt())) {
+           StringValue backPageParam = params.get(VirtualCollectionDetailsPage.PARAM_BACK_PAGE);
+           if(backPageParam != null && !backPageParam.isEmpty()) {
+                switch(BackPage.fromInt(backPageParam.toInt())) {
                     case PUBLIC_LISTING: return BrowsePublicCollectionsPage.class;
                     case PRIVATE_LISTING: return BrowsePrivateCollectionsPage.class;
                     case ADMIN_LISTING: return AdminPage.class;

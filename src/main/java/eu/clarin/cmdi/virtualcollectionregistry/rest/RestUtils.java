@@ -11,9 +11,9 @@ import org.slf4j.LoggerFactory;
 
 import java.text.ParseException;
 import java.util.*;
-import javax.servlet.http.HttpServletRequest;
-import javax.ws.rs.core.HttpHeaders;
-import javax.ws.rs.core.MediaType;
+import jakarta.servlet.http.HttpServletRequest;
+import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.MediaType;
 
 /**
  * REST input/ouput utilities for the Virtual Collection Registry REST resources

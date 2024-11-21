@@ -25,9 +25,9 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollectionBuilder;
 import java.net.URI;
 import java.security.Principal;
 import java.util.*;
-import javax.servlet.ServletContext;
-import javax.servlet.http.Cookie;
-import javax.servlet.http.HttpServletRequest;
+import jakarta.servlet.ServletContext;
+import jakarta.servlet.http.Cookie;
+import jakarta.servlet.http.HttpServletRequest;
 
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.IRequestParameters;
@@ -92,9 +92,9 @@ public class SubmissionUtils {
                 }
             }
         } else if(confCtx == null) {
-            logger.warn("Failed to load ConfigContext from ServletContext (servletCtx = "+(servletCtx == null ? "null" : servletCtx.toString())+")");
+            logger.debug("Failed to load ConfigContext from ServletContext (servletCtx = "+(servletCtx == null ? "null" : servletCtx.toString())+")");
         } else if(confCtx.getConfiguration() == null) {
-            logger.warn("Configuration in config context is null");
+            logger.debug("Configuration in config context is null");
         }
         
         return username;
@@ -208,7 +208,19 @@ public class SubmissionUtils {
             //Build collection and serialize to the current session
             storeCollection(session, vcBuilder.build());
         } catch(VirtualCollectionRegistryUsageException | IllegalArgumentException ex) {
-            logger.error("Failed to build virtual collection", ex);
+            logger.debug("Failed to build virtual collection: ", ex.getMessage());
+            logger.debug("Submission request headers:");
+            HttpServletRequest req = (HttpServletRequest)request.getContainerRequest();
+            for(Object name : Collections.list(req.getHeaderNames())) {
+                String values = "";
+                for(Object value : Collections.list(req.getHeaders(name.toString()))) {
+                    if(!values.isEmpty()) {
+                        values += "; ";
+                    }
+                    values += value.toString();
+                }
+                logger.trace("\tHeader, name="+name.toString()+", values="+values);
+            }
             return ex.getMessage();
         }
         return null;

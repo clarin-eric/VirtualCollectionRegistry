@@ -13,7 +13,7 @@ public class BrowsePrivateCollectionsPage extends BasePage {
 
     public BrowsePrivateCollectionsPage() {
         final BrowseEditableCollectionsPanel pnl =
-                new BrowseEditableCollectionsPanel("collections", new PrivateCollectionsProvider(), getPageReference());
+                new BrowseEditableCollectionsPanel("collections", new PrivateCollectionsProvider(getUser()), getPageReference());
         pnl.setOutputMarkupId(true);
         add(pnl);
     }

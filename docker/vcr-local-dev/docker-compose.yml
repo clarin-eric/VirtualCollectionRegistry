@@ -29,6 +29,8 @@ services:
     volumes:
       - maria_db_data:/var/lib/mysql
       - ./database:/docker-entrypoint-initdb.d
+    ports:
+      - 3306:3306
 
 volumes:
   maria_db_data:

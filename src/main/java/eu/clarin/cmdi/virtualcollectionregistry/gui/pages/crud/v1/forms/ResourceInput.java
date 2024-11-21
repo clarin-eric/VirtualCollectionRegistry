@@ -128,7 +128,7 @@ public class ResourceInput extends FormComponentPanel<List<Resource>> {
         //Button btnAdd = new Button("btn_add", Model.of("Add"));
         AjaxSubmitLink btnAdd = new AjaxSubmitLink("btn_add", form) {//Model.of("Add"))  {                
                 @Override
-                protected void onSubmit(AjaxRequestTarget target, Form<?> form) {
+                protected void onSubmit(AjaxRequestTarget target) {
                     
                     logger.info("Ajax submit");
                     
@@ -166,7 +166,7 @@ public class ResourceInput extends FormComponentPanel<List<Resource>> {
                     }
                 
                     target.add(form);
-                    super.onSubmit(target, form);
+                    super.onSubmit(target);
                 }
             };
         btnAdd.add(new AttributeModifier("class", "btn btn-default btn-xs"));

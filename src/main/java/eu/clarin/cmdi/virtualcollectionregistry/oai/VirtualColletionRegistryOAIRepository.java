@@ -1,12 +1,14 @@
 package eu.clarin.cmdi.virtualcollectionregistry.oai;
 
+import eu.clarin.cmdi.oai.provider.Record;
 import eu.clarin.cmdi.oai.provider.DublinCoreAdapter;
 import eu.clarin.cmdi.oai.provider.DublinCoreConverter;
 import eu.clarin.cmdi.oai.provider.MetadataFormat;
 import eu.clarin.cmdi.oai.provider.OAIException;
-import eu.clarin.cmdi.oai.provider.Record;
 import eu.clarin.cmdi.oai.provider.RecordList;
 import eu.clarin.cmdi.oai.provider.Repository;
+import eu.clarin.cmdi.oai.provider.Repository.DeletedNotion;
+import eu.clarin.cmdi.oai.provider.Repository.Granularity;
 import eu.clarin.cmdi.oai.provider.SetSpecDesc;
 import eu.clarin.cmdi.virtualcollectionregistry.DataStore;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionNotFoundException;
@@ -48,8 +50,6 @@ public class VirtualColletionRegistryOAIRepository implements Repository {
     private VirtualCollectionCMDIWriter cmdiWriter;
     @Autowired
     private DataStore dataStore;
-
-
 
     private class CMDIMetadataFormat implements MetadataFormat {
         @Override
@@ -158,7 +158,7 @@ public class VirtualColletionRegistryOAIRepository implements Repository {
 
     @Override
     public Object getSampleRecordLocalId() {
-        return new Long(23);
+        return Long.valueOf(23);
     }
 
     @Override
@@ -224,7 +224,7 @@ public class VirtualColletionRegistryOAIRepository implements Repository {
         try {
             long id = Long.parseLong(unparsedLocalId);
             if (id > 0) {
-                return new Long(id);
+                return Long.valueOf(id);
             }
         } catch (NumberFormatException e) {
             /* FALL-THROUGH */
@@ -238,8 +238,7 @@ public class VirtualColletionRegistryOAIRepository implements Repository {
     }
 
     @Override
-    public Record getRecord(Object localId, boolean headerOnly)
-            throws OAIException {
+    public Record getRecord(Object localId, boolean headerOnly) throws OAIException {
         try {
             long id = (Long) localId;
             VirtualCollection vc = registry.retrieveVirtualCollection(id);

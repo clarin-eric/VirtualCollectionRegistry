@@ -63,6 +63,7 @@ public abstract class AbstractField extends Panel implements Field {
     private final VisabilityUpdater visabilityUpdater;
 
     private final WebMarkupContainer helpMessage;
+    private final WebMarkupContainer help_message_offset;
     private final String helpText;
 
     public AbstractField(String id, String label, String help_text, Component editComponent, VisabilityUpdater visabilityUpdater) {
@@ -107,10 +108,16 @@ public abstract class AbstractField extends Panel implements Field {
         helpMessage.setVisible(help_text != null);
         add(helpMessage);
         helpMessage.setVisible(false);
+        
+        help_message_offset = new WebMarkupContainer("help_message_offset");
+        add(help_message_offset);
+        help_message_offset.setVisible(false);
     }
 
     public void showHelp(boolean showHelp) {
-        helpMessage.setVisible(this.helpText != null && !this.helpText.isEmpty() && showHelp);
+        boolean visible = this.helpText != null && !this.helpText.isEmpty() && showHelp;
+        helpMessage.setVisible(visible);
+        help_message_offset.setVisible(visible);
     }
 
     public void updateVisability() {

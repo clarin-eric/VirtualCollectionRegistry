@@ -6,9 +6,9 @@
     <head />
     <body>
         <wicket:extend>
-            <div id="help">
+            <div id="help" class="row">
                 <!-- Left column, TOC -->
-                <div class="col-xs-2 toc">
+                <div class="col-md-2 toc">
                     <h3>Table of content:</h3>
                     <div class="panel panel-default">
                             <div class="panel-heading">
@@ -61,9 +61,9 @@
                 </div>
 
                 <!-- Right column, content -->
-                <div class="col-xs-7">
+                <div class="col-md-9">
                     <!-- Introduction -->
-                    <div class="col-xs-12">
+                    <div class="col-md-12">
                         <a name="introduction">
                             <h1>Introduction</h1>
                         </a>
@@ -80,7 +80,7 @@
                     </div>
 
                     <!-- Manual -->
-                    <div class="col-xs-12">
+                    <div class="col-md-12">
                         <h1>User Manual</h1>
                         <!-- Browsing -->
                         <a name="manual-browsing">
@@ -99,11 +99,11 @@
                             <ul>
                                 <li>Click the <span class="toggle glyphicon glyphicon-chevron-right"></span> button to view the collection description.</li>
                                 <li>Click the collection title to view the complete collection details.</li>
-                                <li>Click the <button type="button" class="btn btn-primary btn-xs"><span class="fa fa-quote-right"></span></button> button to get the citation details for this collection.</li>
+                                <li>Click the <button type="button" class="btn btn-primary btn-xs"><span class="fa-solid fa-quote-right"></span></button> button to get the citation details for this collection.</li>
                             </ul>
                         </p>
                         <p>
-                            The list of collection can be filtered by clicking the <button type="button" class="btn btn-primary btn-xs"><span class="fa fa-filter"></span></button> button.
+                            The list of collection can be filtered by clicking the <button type="button" class="btn btn-primary btn-xs"><span class="fa-solid fa-filter"></span></button> button.
                             This will open the filter options:
                             <br/>
                             <img width="300" alt="menu filter options" wicket:id="img-vcr-filter">
@@ -116,7 +116,7 @@
                             <h2>Citing Collections</h2>
                         </a>
                         <p>
-                            Collections can be cited by clicking the <button type="button" class="btn btn-primary btn-xs"><span class="fa fa-quote-right"></span></button>
+                            Collections can be cited by clicking the <button type="button" class="btn btn-primary btn-xs"><span class="fa-solid fa-quote-right"></span></button>
                             icon. This icon is available for each collection in the public list of collections and for individual collections on the collection
                             details page.
                         </p>
@@ -169,16 +169,16 @@
                             Each reference is marked:
                             <ul>
                                 <li>
-                                    with a grey dot ( <span class="fa fa-dot-circle-o icon icon-waiting"></span> ) while scanning.
+                                    with a grey dot ( <span class="fa-regular fa-circle-dot icon icon-waiting"></span> ) while scanning.
                                 </li>
                                 <li>
-                                    with a yellow check (<span class="fa fa-check-circle-o icon icon-passed"></span>) if the URI is valid but is not recognized as a PID.
+                                    with a yellow check (<span class="fa-regular fa-circle-check icon icon-passed"></span>) if the URI is valid but is not recognized as a PID.
                                 </li>
                                 <li>
-                                    with a green check (<span class="fa fa-check-circle-o icon icon-success"></span>) if the reference is valid and recognized as a PID.
+                                    with a green check (<span class="fa-regular fa-circle-check icon icon-success"></span>) if the reference is valid and recognized as a PID.
                                 </li>
                                 <li>
-                                    with a red cross (<span class="fa fa-times-circle-o icon icon-failed"></span>) if the URI did not return a valid response.
+                                    with a red cross (<span class="fa-regular fa-circle-xmark icon icon-failed"></span>) if the URI did not return a valid response.
                                     This will prevent you from saving the collection. All references must be valid.
                                 </li>
                             </ul>
@@ -237,7 +237,7 @@
                     </div>
 
                     <!-- Technical -->
-                    <div class="col-xs-12">
+                    <div class="col-md-12">
                         <a name="technical"><h1>Technical Documentation</h1></a>
 
                         <!-- REST API -->
@@ -252,7 +252,6 @@
                                 <li>API documentation is based on the OpenAPI specification and can be found <a wicket:id="restLink2">here</a>.</li>
                                 <ul><li>OpenAI specification file is availble <a href="./swagger.json">here</a>.</li></ul>
                                 <li>An  older version of the documentation, which includes the query language specification, is available <a href="Protocol.txt">here</a>.</li>
-                                <li>You can also consult the <a wicket:id="wadlLink">WADL</a> file.</li>
                             </ul>
                         </p>
 

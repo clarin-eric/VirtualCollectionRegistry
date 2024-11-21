@@ -116,8 +116,6 @@
         <url-pattern>/oai</url-pattern>
     </servlet-mapping>
 
-
-
     <resource-ref>
         <description>Virtual Collection Datastore Connection</description>
         <res-ref-name>jdbc/VirtualCollectionStore</res-ref-name>

@@ -1,6 +1,5 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
-import de.agilecoders.wicket.core.markup.html.bootstrap.image.GlyphIconType;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryPermissionException;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.admin.AdminPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v1.CreateAndEditVirtualCollectionPage;
@@ -17,6 +16,8 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.Navbar;
 import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.Navbar.ComponentPosition;
 import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.NavbarButton;
 import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.NavbarExternalLink;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesome6IconType;
+import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesome6IconTypeBuilder;
 import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.feedback.IValidationFailedMessage;
@@ -25,7 +26,7 @@ import eu.clarin.cmdi.wicket.PiwikConfig;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.List;
-import javax.servlet.ServletContext;
+import jakarta.servlet.ServletContext;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
@@ -107,7 +108,8 @@ public class BasePage extends WebPage {
 
         //Include survey if configured (typically mopinion user satisfaction
         if (Strings.isEmpty(piwikConfig.getSnippetSurvey())) {
-            add(new WebMarkupContainer("surveySnippet"));
+            WebMarkupContainer container = new WebMarkupContainer("surveySnippet");
+            add(container);
         } else {
             add(new Include("surveySnippet", piwikConfig.getSnippetSurvey()));
         }
@@ -175,17 +177,29 @@ public class BasePage extends WebPage {
         //Add login or user profile + logout buttons based on authentication state
         if(isSignedIn()) {
             final NavbarButton userLink = new NavbarButton(UserProfilePage.class, Model.of(getUser().getName()));
-            userLink.setIconType(GlyphIconType.user);
+            final FontAwesome6IconType userIcon = 
+                    FontAwesome6IconTypeBuilder
+                        .on(FontAwesome6IconTypeBuilder.FontAwesome6Regular.user)
+                        .build();
+            userLink.setIconType(userIcon);
             menuItems.add(new ImmutableNavbarComponent(userLink, ComponentPosition.RIGHT));
             
             if(vcrConfig.isLogoutEnabled()) {
                 final NavbarButton logoutLink = new NavbarButton(LogoutPage.class, Model.of("Logout"));
-                logoutLink.setIconType(GlyphIconType.logout);
+                final FontAwesome6IconType logoutIcon = 
+                    FontAwesome6IconTypeBuilder
+                        .on(FontAwesome6IconTypeBuilder.FontAwesome6Solid.right_from_bracket)
+                        .build();
+                logoutLink.setIconType(logoutIcon);
                 menuItems.add(new ImmutableNavbarComponent(logoutLink, ComponentPosition.RIGHT));
             }            
         } else {
             final NavbarButton loginLink = new NavbarButton(LoginPage.class, Model.of("Login"));
-               loginLink.setIconType(GlyphIconType.login);
+            final FontAwesome6IconType loginIcon = 
+                    FontAwesome6IconTypeBuilder
+                        .on(FontAwesome6IconTypeBuilder.FontAwesome6Solid.right_to_bracket)
+                        .build();            
+            loginLink.setIconType(loginIcon);
             menuItems.add(new ImmutableNavbarComponent(loginLink, ComponentPosition.RIGHT));
         }
 

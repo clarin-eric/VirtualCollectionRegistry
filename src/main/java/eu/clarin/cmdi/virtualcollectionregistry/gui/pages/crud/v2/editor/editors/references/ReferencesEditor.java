@@ -9,7 +9,6 @@ import java.util.Collections;
 import java.util.Iterator;
 
 import java.util.List;
-import java.util.concurrent.CopyOnWriteArrayList;
 import javax.xml.namespace.NamespaceContext;
 import javax.xml.parsers.DocumentBuilder;
 import javax.xml.parsers.DocumentBuilderFactory;
@@ -22,12 +21,10 @@ import javax.xml.xpath.XPathFactory;
 
 import eu.clarin.cmdi.virtualcollectionregistry.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.CreateAndEditPanel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.CancelEventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.EventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.MoveListEventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.SaveEventHandler;
-import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.authors.AuthorsEditor;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.dialogs.ModalConfirmAction;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.dialogs.ModalConfirmDialog;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.DataUpdatedEvent;
@@ -37,15 +34,16 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.events.
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.*;
 import eu.clarin.cmdi.virtualcollectionregistry.model.OrderableComparator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Resource;
-import org.apache.http.Header;
-import org.apache.http.HttpEntity;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.ClientProtocolException;
-import org.apache.http.client.ResponseHandler;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
-import org.apache.http.util.EntityUtils;
+import java.time.Duration;
+import org.apache.hc.client5.http.ClientProtocolException;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.BasicHttpClientResponseHandler;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClients;
+import org.apache.hc.core5.http.Header;
+import org.apache.hc.core5.http.HttpEntity;
+import org.apache.hc.core5.http.HttpResponse;
+import org.apache.hc.core5.http.io.entity.EntityUtils;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -55,7 +53,6 @@ import org.apache.wicket.markup.html.list.ListItem;
 import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
-import org.apache.wicket.util.time.Duration;
 import org.jetbrains.annotations.NotNull;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -99,6 +96,8 @@ public class ReferencesEditor extends ComposedField {
                 } else {
                     logger.debug("Reference validation worker thread already running");
                 }
+            } else {
+                logger.debug("vcrConfig.isHttpReferenceScanningEnabled() = {}", vcrConfig.isHttpReferenceScanningEnabled());
             }
         }
 
@@ -108,6 +107,13 @@ public class ReferencesEditor extends ComposedField {
             }
         }
 
+        private State getResourceInitialState() {
+            if(vcrConfig.isHttpReferenceScanningEnabled()) {
+                return State.INITIALIZED;
+            }
+            return State.DONE;
+        }
+        
         public synchronized  void add(ReferenceJob job) {
             this.jobs.add(job);
             startWorker();
@@ -116,18 +122,11 @@ public class ReferencesEditor extends ComposedField {
         public synchronized void addAll(List<ReferenceJob> jobs) {
             this.jobs.addAll(jobs);
             startWorker();
-        }
+        }        
 
-        private State getResourceInitialState() {
-            if(vcrConfig.isHttpReferenceScanningEnabled()) {
-                return State.INITIALIZED;
-            }
-            return State.DONE;
-        }
-
-        public synchronized  void addResource(Resource r) {
+        public synchronized  void addResource(Resource r) {            
             this.jobs.add(new ReferenceJob(r, getResourceInitialState()));
-            startWorker();
+            startWorker();            
         }
 
         public synchronized void addAllResources(List<Resource> resources) {
@@ -136,6 +135,16 @@ public class ReferencesEditor extends ComposedField {
             }
             startWorker();
         }
+        
+        public synchronized void rescanResource(int index) {
+            logger.debug("Rescanning resource with index={}", index);
+            if(index >= 0 && index < jobs.size()) {
+                jobs.get(edit_index).setState(getResourceInitialState());
+                startWorker();
+            } else {
+                logger.debug("Rescan index ({}) was out of bounds", index);
+            }
+        }
 
         public List<ReferenceJob> getJobs() {
             return jobs;
@@ -143,7 +152,8 @@ public class ReferencesEditor extends ComposedField {
 
         public synchronized void updateJobState(int index, State state) {
             jobs.get(index).setState(state);
-            logger.trace("job idx={}, ref={}, state={}", index, jobs.get(index).getReference().getRef(), jobs.get(index).getState());
+            logger.trace("job idx={}, ref={}, state={}", 
+                    index, jobs.get(index).getReference().getRef(), jobs.get(index).getState());
         }
 
         public boolean isEmpty() {
@@ -256,6 +266,7 @@ public class ReferencesEditor extends ComposedField {
         final WebMarkupContainer ajaxWrapper = new WebMarkupContainer("ajaxwrapper");
         ajaxWrapper.setOutputMarkupId(true);
 
+        
         localDialog = new ModalConfirmDialog("references_modal");
         localDialog.addListener(new Listener() {
             @Override
@@ -289,7 +300,8 @@ public class ReferencesEditor extends ComposedField {
             @Override
             public void handleSaveEvent(AjaxRequestTarget target) {
                 //Reset state so this reference is rescanned
-                jobs.get(edit_index).setState(State.INITIALIZED);
+                jobs.rescanResource(edit_index);
+                //jobs.get(edit_index).setState(State.INITIALIZED);
                 edit_index = -1;
                 editor.setVisible(false);
                 listview.setVisible(true);
@@ -395,7 +407,7 @@ public class ReferencesEditor extends ComposedField {
             }
         };
 
-        ajaxWrapper.add(new AbstractAjaxTimerBehavior(Duration.seconds(uiRefreshTimeInSeconds)) {
+        ajaxWrapper.add(new AbstractAjaxTimerBehavior(Duration.ofSeconds(uiRefreshTimeInSeconds)) {
             @Override
             protected void onTimer(AjaxRequestTarget target) {
                 if(target != null) {
@@ -518,9 +530,11 @@ public class ReferencesEditor extends ComposedField {
     }
     
     public void reset() {
+        logger.debug("Resetting references editor panel");
         editor.setVisible(false);
         editor.reset();
         jobs.clear();
+        jobs.stop();
         lblNoReferences.setVisible(jobs.isEmpty());
         listview.setVisible(!jobs.isEmpty());
     }
@@ -608,6 +622,7 @@ public class ReferencesEditor extends ComposedField {
         
         @Override
         public void run() {
+            logger.debug("Worker run()");
             running = true;
             while(running) {
                 try {
@@ -617,8 +632,12 @@ public class ReferencesEditor extends ComposedField {
                 }
                 
                 synchronized(this) {
+                    if(mgr.size() <= 0) {
+                        logger.debug("#jobs: {}", mgr.size());
+                    }
                     for(int i = 0; i < mgr.size(); i++) {
                         ReferenceJob job = mgr.get(i);
+                        logger.debug("Job id={}, url={}, state={}", job.ref.getId(), job.ref.getRef(), job.getState());
                         if(job.getState() == State.INITIALIZED) {
                             mgr.updateJobState(i, State.ANALYZING);
                             logger.debug("Starting. Job ref={}, state = {}",job.getReference().getRef(), job.getState());
@@ -642,66 +661,60 @@ public class ReferencesEditor extends ComposedField {
             CloseableHttpClient httpclient = HttpClients.createDefault();
             try {
                 HttpGet httpget = new HttpGet(job.getReference().getRef());
-                logger.trace("Executing request " + httpget.getRequestLine());
+                logger.trace("Executing request " + httpget.getMethod()+" "+httpget.getPath());
 
-                // Create a custom response handler
-                ResponseHandler<String> responseHandler = new ResponseHandler<String>() {
+                httpclient.execute(httpget, response -> {
+                    for(Header h : response.getHeaders("Content-Type")) {
+                        logger.debug(h.getName() + " - " + h.getValue());
 
-                    @Override
-                    public String handleResponse(
-                            final HttpResponse response) throws ClientProtocolException, IOException {
-                        for(Header h : response.getHeaders("Content-Type")) {
-                            logger.debug(h.getName() + " - " + h.getValue());
-                            
-                            String[] parts = h.getValue().split(";");
-                            String mediaType = parts[0];
-                            
-                            logger.trace("Media-Type="+mediaType);
-                            if(parts.length > 1) {
-                                String p = parts[1].trim();
-                                if(p.startsWith("charset=")) {
-                                    logger.trace("Charset="+p.replaceAll("charset=", ""));
-                                } else if(p.startsWith("boundary=")) {
-                                    logger.trace("Boundary="+p.replaceAll("boundary=", ""));
-                                }
+                        String[] parts = h.getValue().split(";");
+                        String mediaType = parts[0];
+
+                        logger.trace("Media-Type="+mediaType);
+                        if(parts.length > 1) {
+                            String p = parts[1].trim();
+                            if(p.startsWith("charset=")) {
+                                logger.trace("Charset="+p.replaceAll("charset=", ""));
+                            } else if(p.startsWith("boundary=")) {
+                                logger.trace("Boundary="+p.replaceAll("boundary=", ""));
                             }
+                        }
 
-                            job.getReference().setMimetype(mediaType);
-                        }
-                        for(Header h : response.getHeaders("Content-Length")) {
-                            logger.debug(h.getName() + " - " + h.getValue());
-                        }
-                        int status = response.getStatusLine().getStatusCode();
-                        if (status >= 200 && status < 300) {
-                            HttpEntity entity = response.getEntity();
-                            job.getReference().setCheck("HTTP "+status+"/"+response.getStatusLine().getReasonPhrase());
-                            String body = entity != null ? EntityUtils.toString(entity) : null;
-                            
-                            if(body != null) {
-                                String type = job.getReference().getMimetype();
-                                if(type.equalsIgnoreCase("application/x-cmdi+xml")) {
-                                    try {
-                                        parseCmdi(body, job);
-                                    } catch(IOException | ParserConfigurationException | XPathExpressionException | SAXException ex) {
-                                        logger.error("Failed to parse CMDI", ex);
-                                    }
-                                } else if(job.getReference().getMimetype().equalsIgnoreCase("text/xml") &&
-                                    body.contains("xmlns=\"http://www.clarin.eu/cmd/\"")) {
-                                    try {
-                                        parseCmdi(body, job);
-                                    } catch(IOException | ParserConfigurationException | XPathExpressionException | SAXException ex) {
-                                        logger.error("Failed to parse CMDI", ex);
-                                    }
-                                }
-                            }
-                            return body;
-                        } else {
-                            throw new ClientProtocolException("Unexpected response status: " + status);
-                        }
+                        job.getReference().setMimetype(mediaType);
                     }
+                    for(Header h : response.getHeaders("Content-Length")) {
+                        logger.debug(h.getName() + " - " + h.getValue());
+                    }
+                    int status = response.getCode();
+                    if (status >= 200 && status < 300) {
+                        HttpEntity entity = response.getEntity();
+                        job.getReference().setCheck("HTTP "+status+"/"+response.getReasonPhrase());
+                        String body = entity != null ? EntityUtils.toString(entity) : null;
 
-                };
-                String responseBody = httpclient.execute(httpget, responseHandler);
+                        if(body != null) {
+                            String type = job.getReference().getMimetype();
+                            if(type.equalsIgnoreCase("application/x-cmdi+xml")) {
+                                try {
+                                    parseCmdi(body, job);
+                                } catch(IOException | ParserConfigurationException | XPathExpressionException | SAXException ex) {
+                                    logger.error("Failed to parse CMDI", ex);
+                                }
+                            } else if(job.getReference().getMimetype().equalsIgnoreCase("text/xml") &&
+                                body.contains("xmlns=\"http://www.clarin.eu/cmd/\"")) {
+                                try {
+                                    parseCmdi(body, job);
+                                } catch(IOException | ParserConfigurationException | XPathExpressionException | SAXException ex) {
+                                    logger.error("Failed to parse CMDI", ex);
+                                }
+                            }
+                        }
+                        return body;
+                    } else {
+                        throw new ClientProtocolException("Unexpected response status: " + status);
+                    }
+                });
+                
+                
             } finally {
                 httpclient.close();
             }
@@ -853,14 +866,14 @@ public class ReferencesEditor extends ComposedField {
 
         //Swap the collection with the collection at the specified destination (up=1, down=-1, beginning=0 or end=i)
         if (direction == -1 && idx > 0) {
-            jobs.get(idx).getReference().setDisplayOrder(new Long(idx - 1));
-            jobs.get(idx - 1).getReference().setDisplayOrder(new Long(idx));
+            jobs.get(idx).getReference().setDisplayOrder(Long.valueOf(idx - 1));
+            jobs.get(idx - 1).getReference().setDisplayOrder(Long.valueOf(idx));
         } else if(direction == 1 && idx < jobs.size()-1) {
-            jobs.get(idx).getReference().setDisplayOrder(new Long(idx + 1));
-            jobs.get(idx + 1).getReference().setDisplayOrder(new Long(idx));
+            jobs.get(idx).getReference().setDisplayOrder(Long.valueOf(idx + 1));
+            jobs.get(idx + 1).getReference().setDisplayOrder(Long.valueOf(idx));
         } else {
-            jobs.get(idx).getReference().setDisplayOrder(new Long(direction));
-            jobs.get(direction).getReference().setDisplayOrder(new Long(idx));
+            jobs.get(idx).getReference().setDisplayOrder(Long.valueOf(direction));
+            jobs.get(direction).getReference().setDisplayOrder(Long.valueOf(idx));
         }
 
         jobs.sort();

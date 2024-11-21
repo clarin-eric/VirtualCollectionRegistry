@@ -19,12 +19,13 @@ package eu.clarin.cmdi.virtualcollectionregistry.service.impl;
 import java.io.IOException;
 import java.net.URI;
 import java.net.UnknownHostException;
-import org.apache.http.HttpResponse;
-import org.apache.http.StatusLine;
-import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.protocol.BasicHttpContext;
-import org.apache.http.protocol.HttpContext;
+import org.apache.hc.client5.http.classic.methods.HttpGet;
+import org.apache.hc.client5.http.impl.classic.CloseableHttpClient;
+import org.apache.hc.client5.http.impl.classic.HttpClientBuilder;
+import org.apache.hc.core5.http.HttpResponse;
+import org.apache.hc.core5.http.message.StatusLine;
+import org.apache.hc.core5.http.protocol.BasicHttpContext;
+import org.apache.hc.core5.http.protocol.HttpContext;
 import org.apache.wicket.validation.IValidatable;
 import org.apache.wicket.validation.IValidator;
 import org.apache.wicket.validation.ValidationError;
@@ -70,14 +71,14 @@ public class HttpResponseValidator implements IValidator<String> {
     
     protected boolean checkValidityOfUri(URI uri) throws IOException {
         boolean result = false;
-        DefaultHttpClient client = new DefaultHttpClient();
+        CloseableHttpClient client = HttpClientBuilder.create().build();
         HttpContext ctx = new BasicHttpContext();
         try {         
             HttpResponse response = client.execute(new HttpGet(uri), ctx);
-            status = response.getStatusLine();
+            status = new StatusLine(response);
             result = status.getStatusCode() == 200;
         } finally {
-            client.getConnectionManager().shutdown();
+            client.close();
         }
         return result;
     }

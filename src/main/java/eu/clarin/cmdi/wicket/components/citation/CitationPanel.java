@@ -39,17 +39,16 @@ public class CitationPanel extends Panel {
     
         final CitationDialog citationDialog = new CitationDialog("citationDialog", model);
 
-        AjaxLink citeButton = new AjaxLink( "citeButton", new Model<String>("Cite") ){ 
+        AjaxLink citeButton = new AjaxLink( "citeButton", Model.of("Cite") ){ 
             @Override
             public void onClick( AjaxRequestTarget target ) {
-                citationDialog.show(target);
+                citationDialog.show(true, target);
             } 
         };
         
         citeButton.add(new AttributeModifier("class", small ? "btn btn-primary btn-xs" : "btn btn-primary btn-lg"));
         
         UIUtils.addTooltip(citeButton, "Cite this collection");
-        
         
         add(citeButton);
         add(citationDialog);

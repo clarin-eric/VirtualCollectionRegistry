@@ -20,8 +20,9 @@ import org.slf4j.LoggerFactory;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.Optional;
 
-public class LanguageResourceSwitchboardLink extends AjaxFallbackLink<String> {
+public class LanguageResourceSwitchboardLink extends AjaxFallbackLink<AjaxRequestTarget> {
 
     private final static Logger logger = LoggerFactory.getLogger(LanguageResourceSwitchboardLink.class);
 
@@ -97,8 +98,8 @@ public class LanguageResourceSwitchboardLink extends AjaxFallbackLink<String> {
     }
 
     @Override
-    public void onClick(AjaxRequestTarget target) {
-        if (target == null || !isPopupEnabled()) {
+    public void onClick(Optional<AjaxRequestTarget> target) {
+        if (target.isEmpty() || !isPopupEnabled()) {
             final String endpoint = vcrConfig.getProcessEndpoint();
             final String href = buildSwitchboardUrl(endpoint, urlToProcessModel.getObject(), mimeTypeModel.getObject(), languageCodeModel.getObject() );
             throw new RedirectToUrlException(href);

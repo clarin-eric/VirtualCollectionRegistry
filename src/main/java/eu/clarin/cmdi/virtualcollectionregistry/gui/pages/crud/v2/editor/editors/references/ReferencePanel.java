@@ -10,6 +10,7 @@ import com.vladsch.flexmark.util.data.MutableDataSet;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.HandleLinkModel;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.EventHandler;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.MoveListEventHandler;
+import java.util.Optional;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.behavior.AttributeAppender;
@@ -59,17 +60,17 @@ public class ReferencePanel extends Panel {
         switch(ref.getState()) {
             case DONE:
                 if(HandleLinkModel.isSupportedPersistentIdentifier(ref.getReference().getRef())) {
-                    stateIcon.add(new AttributeAppender("class", "fa fa-check-circle-o icon icon-success"));
+                    stateIcon.add(new AttributeAppender("class", "fa-regular fa-circle-check icon icon-success"));
                 } else {
-                    stateIcon.add(new AttributeAppender("class", "fa fa-check-circle-o icon icon-passed"));
+                    stateIcon.add(new AttributeAppender("class", "fa-regular fa-circle-check icon icon-passed"));
                     //TODO: make clickable and show popup with details
                 }
                 break;
             case FAILED:
-                stateIcon.add(new AttributeAppender("class", "fa fa-times-circle-o icon icon-failed"));
+                stateIcon.add(new AttributeAppender("class", "fa-regular fa-circle-xmark icon icon-failed"));
                 break;
             default:
-                stateIcon.add(new AttributeAppender("class", "fa fa-dot-circle-o icon icon-waiting"));
+                stateIcon.add(new AttributeAppender("class", "fa-regular fa-circle-dot icon icon-waiting"));
                 break;
         }
         editorWrapper.add(stateIcon);
@@ -113,13 +114,15 @@ public class ReferencePanel extends Panel {
         labelDescription.setVisible(!analysing);
         editorWrapper.add(labelDescription);
 
-        AjaxFallbackLink orderTopButton = new AjaxFallbackLink("btn_order_top") {
+        AjaxFallbackLink<AjaxRequestTarget> orderTopButton = new AjaxFallbackLink<>("btn_order_top") {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onClick(Optional<AjaxRequestTarget> target) {
                 for(MoveListEventHandler handler : moveListEventHandlers) {
-                    handler.handleMoveTop(ref.getReference().getDisplayOrder(), target);
+                    handler.handleMoveTop(ref.getReference().getDisplayOrder(), target.get());
                 }
             }
+
+           
         };
         orderTopButton.setVisible(!analysing);
         if(displayOrder == 0) {
@@ -127,11 +130,11 @@ public class ReferencePanel extends Panel {
             orderTopButton.add(new AttributeAppender("class", " disabled"));
         }
         editorWrapper.add(orderTopButton);
-        AjaxFallbackLink orderUpButton = new AjaxFallbackLink("btn_order_up") {
+        AjaxFallbackLink<AjaxRequestTarget> orderUpButton = new AjaxFallbackLink<>("btn_order_up") {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onClick(Optional<AjaxRequestTarget> target) {
                 for(MoveListEventHandler handler : moveListEventHandlers) {
-                    handler.handleMoveUp(ref.getReference().getDisplayOrder(), target);
+                    handler.handleMoveUp(ref.getReference().getDisplayOrder(), target.get());
                 }
             }
         };
@@ -141,11 +144,11 @@ public class ReferencePanel extends Panel {
             orderUpButton.add(new AttributeAppender("class", " disabled"));
         }
         editorWrapper.add(orderUpButton);
-        AjaxFallbackLink orderDownButton = new AjaxFallbackLink("btn_order_down") {
+        AjaxFallbackLink<AjaxRequestTarget> orderDownButton = new AjaxFallbackLink<>("btn_order_down") {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onClick(Optional<AjaxRequestTarget> target) {
                 for(MoveListEventHandler handler : moveListEventHandlers) {
-                    handler.handleMoveDown(ref.getReference().getDisplayOrder(), target);
+                    handler.handleMoveDown(ref.getReference().getDisplayOrder(), target.get());
                 }
             }
         };
@@ -155,11 +158,11 @@ public class ReferencePanel extends Panel {
             orderDownButton.add(new AttributeAppender("class", " disabled"));
         }
         editorWrapper.add(orderDownButton);
-        AjaxFallbackLink orderBottomButton = new AjaxFallbackLink("btn_order_bottom") {
+        AjaxFallbackLink<AjaxRequestTarget> orderBottomButton = new AjaxFallbackLink<>("btn_order_bottom") {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onClick(Optional<AjaxRequestTarget> target) {
                 for(MoveListEventHandler handler : moveListEventHandlers) {
-                    handler.handleMoveEnd(ref.getReference().getDisplayOrder(), target);
+                    handler.handleMoveEnd(ref.getReference().getDisplayOrder(), target.get());
                 }
             }
         };
@@ -170,11 +173,11 @@ public class ReferencePanel extends Panel {
         }
         editorWrapper.add(orderBottomButton);
 
-        AjaxFallbackLink btnEdit = new AjaxFallbackLink("btn_edit") {
+        AjaxFallbackLink<AjaxRequestTarget> btnEdit = new AjaxFallbackLink<>("btn_edit") {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onClick(Optional<AjaxRequestTarget> target) {
                 for(EventHandler handler : eventHandlers) {
-                    handler.handleEditEvent(ref.getReference(), target);
+                    handler.handleEditEvent(ref.getReference(), target.get());
                 }
             }
         };
@@ -182,11 +185,11 @@ public class ReferencePanel extends Panel {
         btnEdit.setVisible(!analysing);
         editorWrapper.add(btnEdit);
         
-        AjaxFallbackLink btnRemove = new AjaxFallbackLink("btn_remove") {
+        AjaxFallbackLink<AjaxRequestTarget> btnRemove = new AjaxFallbackLink<>("btn_remove") {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onClick(Optional<AjaxRequestTarget> target) {
                 for(EventHandler handler : eventHandlers) {
-                    handler.handleRemoveEvent(ref.getReference(), target);
+                    handler.handleRemoveEvent(ref.getReference(), target.get());
                 }
             }
         };

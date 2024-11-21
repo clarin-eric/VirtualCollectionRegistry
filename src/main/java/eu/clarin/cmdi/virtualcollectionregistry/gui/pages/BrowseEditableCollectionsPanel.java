@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
+import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
 import eu.clarin.cmdi.virtualcollectionregistry.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.VirtualCollectionRegistryException;
@@ -20,22 +21,18 @@ import java.util.Collections;
 import java.util.List;
 import java.util.Map;
 
-import org.apache.wicket.Component;
 import org.apache.wicket.PageReference;
 import org.apache.wicket.Session;
 import org.apache.wicket.WicketRuntimeException;
-import org.apache.wicket.ajax.AbstractAjaxTimerBehavior;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
-import org.apache.wicket.migrate.StringResourceModelMigration;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.apache.wicket.model.StringResourceModel;
 import org.apache.wicket.request.mapper.parameter.PageParameters;
 import org.apache.wicket.spring.injection.annot.SpringBean;
-import org.apache.wicket.util.time.Duration;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -404,13 +401,13 @@ public class BrowseEditableCollectionsPanel extends Panel {
                 // ask for confirmation when trying to edit a published collection                
                 confirmEditCollectionModel.setObject(new StringResourceModel("collections.editpublishedconfirm", new VolatileEntityModel<>(vc)).getObject());
                 confirmEditHandler.setObject(new VolatileEntityModel<>(vc));
-                editPublishedDialog.show(target);
+                editPublishedDialog.show(true, target);
             } else if (vc.isPublicFrozen()) {
                 // ask for confirmation when trying to edit a published collection
                 // todo: custom message for editing of frozen collections
                 confirmEditCollectionModel.setObject(new StringResourceModel("collections.editpublishedfrozenconfirm", new VolatileEntityModel<>(vc)).getObject());
                 confirmEditHandler.setObject(new VolatileEntityModel<>(vc));
-                editPublishedDialog.show(target);
+                editPublishedDialog.show(true, target);
             } else {
                 setResponsePage(CreateAndEditVirtualCollectionPageV2.class,
                         buildParamsFromMap(Collections.singletonMap(CreateAndEditVirtualCollectionPageV2.PARAM_VC_ID, vc.getId())));
@@ -422,7 +419,7 @@ public class BrowseEditableCollectionsPanel extends Panel {
         publishCollectionModel.setObject(new StringResourceModel("collections.publishconfirm", model).getObject());
         confirmHandler.setObject(model);
         confirmFrozenHandler.setObject(model);
-        publishDialog.show(target);
+        publishDialog.show(true, target);
     }
 
     private void confirmPublishWithWarnings(AjaxRequestTarget target, IModel<VirtualCollection> model, List<String> errors, boolean frozen) {
@@ -431,21 +428,26 @@ public class BrowseEditableCollectionsPanel extends Panel {
             sb.append(" -").append(warning).append("\n");
         }
 
-        StringResourceModel stringResourceModel = 
-            StringResourceModelMigration.of("collections.publishwarningsconfirm", model, new Object[]{sb});
-                            
+        //ResourceModel x = new ResourceModel
+        StringResourceModel stringResourceModel = new StringResourceModel("collections.publishwarningsconfirm", model);//, new Object[]{sb});
+                
+          //  StringResourceModelMigration.of("collections.publishwarningsconfirm", model, new Object[]{sb});
+          
+         
+        //publishDialog.show(false, target);       
         publishDialog.close(target);
         confirmPublishCollectionModel.setObject(stringResourceModel.getObject());
         confirmPublishCollectionWithWarningsHandler.setObject(model);
         confirmPublishCollectionWithWarningsHandler.setFrozen(frozen);
-        confirmPublishCollectionWithWarningsDialog.show(target);
+        confirmPublishCollectionWithWarningsDialog.show(true, target);
     }
     
     private void doDelete(AjaxRequestTarget target,
             VirtualCollection vc) {
         confirmDeleteCollectionModel.setObject(new StringResourceModel("collections.deleteconfirm",new VolatileEntityModel<VirtualCollection>(vc)).getObject());
         confirmDeleteHandler.setObject(new VolatileEntityModel<>(vc));
-        deleteDialog.show(target);
+        deleteDialog.show(true, target);//.open(target);
+        
     }
 
     private void doRetry(AjaxRequestTarget target,

@@ -1,25 +1,20 @@
 package eu.clarin.cmdi.virtualcollectionregistry.pid;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
-import de.uni_leipzig.asv.clarin.webservices.pidservices2.interfaces.PidWriter;
 import eu.clarin.cmdi.virtualcollectionregistry.PermaLinkService;
 import eu.clarin.cmdi.virtualcollectionregistry.PermaLinkServiceImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.TestApplication;
 import eu.clarin.cmdi.virtualcollectionregistry.WicketTesterEnabledTest;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
-import org.apache.commons.io.IOUtils;
-import org.apache.http.entity.StringEntity;
-import org.apache.wicket.util.tester.WicketTester;
-import org.junit.Before;
 import org.junit.Test;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
 import java.nio.charset.StandardCharsets;
 import java.util.Date;
+import org.apache.hc.core5.http.io.entity.StringEntity;
 
 public class DoiPersistentIdentifierProviderTest extends WicketTesterEnabledTest {
     private static final Logger logger = LoggerFactory.getLogger(DoiPersistentIdentifierProvider.class);

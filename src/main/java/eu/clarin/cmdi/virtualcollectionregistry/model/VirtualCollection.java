@@ -306,9 +306,9 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     @Column(name = "reproducibility_notice", length = 8192)
     private String reproducibilityNotice;
 
-    @ElementCollection(fetch = FetchType.EAGER)
-    @CollectionTable(name = "keyword",
-                     joinColumns = @JoinColumn(name="vc_id"))
+    //https://discourse.hibernate.org/t/elementcollection-on-hashmap-with-generics-returns-duplicates/6108/4
+    @ElementCollection(fetch = FetchType.LAZY) //FetchType.EAGER results in duplicate keywords returned
+    @CollectionTable(name = "keyword", joinColumns = @JoinColumn(name="vc_id"))
     private List<String> keywords;
 
     @OneToMany(cascade = CascadeType.ALL,
@@ -727,16 +727,28 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         result += String.format("reproducibility: %s\n", this.getReproducibility());
         result += String.format("repro, notice  : %s\n", this.getReproducibilityNotice());
         result += String.format("creators       :\n");
-        for(Creator c : this.getCreators()) { 
-            result += String.format("  creator      : %s\n", this.getReproducibilityNotice());
+        if(this.getCreators().isEmpty()) {
+            result += "  No creators";
+        } else {
+            for(Creator creator : this.getCreators()) { 
+                result += String.format("  creator      : %s\n", creator.toString());
+            }
         }
         result += String.format("keywords       :\n");
-        for(String keyword: this.getKeywords()) {
-            result += String.format("  keyword      : %s\n", this.getReproducibilityNotice());
+        if(this.getKeywords().isEmpty()) {
+            result += "  No keywords";
+        } else {
+            for(String keyword: this.getKeywords()) {
+                result += String.format("  keyword      : %s\n", keyword);
+            }
         }
         result += String.format("resources       :\n");
-        for(Resource c : this.getResources()) {
-            result += String.format("  resources    : %s\n", this.getReproducibilityNotice());
+        if(this.getResources().isEmpty()) {
+            result += "  No resources";
+        } else {
+            for(Resource resource : this.getResources()) {
+                result += String.format("  resources    : %s\n", resource.toString());
+            }
         }
         return result;
     }

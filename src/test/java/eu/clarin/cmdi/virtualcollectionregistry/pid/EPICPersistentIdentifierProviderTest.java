@@ -9,7 +9,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.pid.PersistentIdentifier.Type;
 import static org.hamcrest.Matchers.*;
 
-import org.apache.wicket.util.tester.WicketTester;
 import org.jmock.Expectations;
 import org.jmock.Mockery;
 import org.jmock.integration.junit4.JUnit4Mockery;

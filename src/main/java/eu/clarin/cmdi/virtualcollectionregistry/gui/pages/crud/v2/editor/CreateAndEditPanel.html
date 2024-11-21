@@ -20,39 +20,39 @@
             </div>
 
             <!-- Collection edit fields -->
-            <div class="row">
-                <div class="col-xs-12 field-row" wicket:id="name">[NAME]</div>
-                <div class="col-xs-12 field-row" wicket:id="description">[DESCRIPTION]</div>
-                <div class="col-xs-12 field-row" wicket:id="type">[TYPE]</div>
-                <div class="col-xs-12 field-row" wicket:id="purpose">[PURPOSE]</div>
-                <div class="col-xs-12 field-row" wicket:id="repro">[REPRODUCIBILITY]</div>
-                <div class="col-xs-12 field-row" wicket:id="repro_notice">[REPRODUCIBILITY NOTICE]</div>
-                <div class="col-xs-12 field-row" wicket:id="keywords">[KEYWORDS]</div>
-            </div>
+            <!--div class="row"-->
+            <div class="row field-row" wicket:id="name">[NAME]</div>
+            <div class="row field-row" wicket:id="description">[DESCRIPTION]</div>
+            <div class="row field-row" wicket:id="type">[TYPE]</div>
+            <div class="row field-row" wicket:id="purpose">[PURPOSE]</div>
+            <div class="row field-row" wicket:id="repro">[REPRODUCIBILITY]</div>
+            <div class="row field-row" wicket:id="repro_notice">[REPRODUCIBILITY NOTICE]</div>
+            <div class="row field-row" wicket:id="keywords">[KEYWORDS]</div>
+            <!--/div-->
 
-            <div class="row" style="margin-top: 25px">
-                <div class="col-xs-12 field-row" wicket:id="authors">[AUTHORS]</div>
-            </div>
+            <!--div class="row" style="margin-top: 25px"-->
+                <div class="row field-row" style="margin-top: 25px" wicket:id="authors">[AUTHORS]</div>
+            <!--/div-->
 
             <!-- Extensional block -->
-            <div class="row" style="margin-top: 25px">
-                <div class="col-xs-12 field-row" wicket:id="references">[REFERENCES]</div>
-            </div>
+            <!--div class="row" style="margin-top: 25px"-->
+                <div class="row field-row" style="margin-top: 25px" wicket:id="references">[REFERENCES]</div>
+            <!--/div-->
 
             <!-- Intensional block -->
-            <div class="row" style="margin-top: 25px">
-                <div class="col-xs-12 field-row" wicket:id="int_description">[INT DESCRIPTION]</div>
-                <div class="col-xs-12 field-row" wicket:id="int_uri">[INT URI]</div>
-                <div class="col-xs-12 field-row" wicket:id="int_query_profile">[INT QUERY PROFILE]</div>
-                <div class="col-xs-12 field-row" wicket:id="int_query_parameters">[INT QUERY PARAMETERS]</div>
-            </div>
+            <!--div class="row" style="margin-top: 25px"-->
+                <div class="row field-row" style="margin-top: 25px" wicket:id="int_description">[INT DESCRIPTION]</div>
+                <div class="row field-row" wicket:id="int_uri">[INT URI]</div>
+                <div class="row field-row" wicket:id="int_query_profile">[INT QUERY PROFILE]</div>
+                <div class="row field-row" wicket:id="int_query_parameters">[INT QUERY PARAMETERS]</div>
+            <!--/div-->
 
             <!-- Button row -->
             <div class="row" style="margin-top: 25px">
-                <div class="col-xs-6" style="text-align: right;">
+                <div class="col-md-6" style="text-align: right;">
                     <a class="btn btn-sm btn-primary" wicket:id="btn_save">Save Collection</a>
                 </div>
-                <div class="col-xs-6">
+                <div class="col-md-6">
                     <a class="btn btn-sm btn-default" wicket:id="btn_cancel">Cancel</a>
                 </div>
             </div>

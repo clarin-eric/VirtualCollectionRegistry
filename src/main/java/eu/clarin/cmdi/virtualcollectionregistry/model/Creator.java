@@ -223,4 +223,9 @@ public class Creator implements Serializable, IdentifiedEntity, Orderable, Compa
     public void setGivenName(String givenName) {
         this.givenName = givenName;
     }
+    
+    @Override
+    public String toString() {
+        return getFamilyName()+" "+getGivenName()+", email: "+getEMail()+", org: "+getOrganisation();
+    }
 } // class Creator

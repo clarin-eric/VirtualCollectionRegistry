@@ -15,6 +15,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.fields.
 import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.Orderable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.OrderableComparator;
+import java.util.Optional;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
@@ -118,12 +119,12 @@ import org.slf4j.LoggerFactory;
              add(new Label("email", a.getEMail()));
              add(new Label("affiliation", a.getOrganisation()));
 
-             AjaxFallbackLink orderTopButton = new AjaxFallbackLink("btn_order_top") {
+             AjaxFallbackLink<AjaxRequestTarget> orderTopButton = new AjaxFallbackLink<>("btn_order_top") {
                  @Override
-                 public void onClick(AjaxRequestTarget target) {
+                 public void onClick(Optional<AjaxRequestTarget> target) {
                      move(MOVE_START, a.getDisplayOrder());
-                     if (target != null) {
-                         target.add(componentToUpdate);
+                     if (target.get() != null) {
+                         target.get().add(componentToUpdate);
                      }
                  }
              };
@@ -133,12 +134,12 @@ import org.slf4j.LoggerFactory;
              }
 
              add(orderTopButton);
-             AjaxFallbackLink orderUpButton = new AjaxFallbackLink("btn_order_up") {
+             AjaxFallbackLink<AjaxRequestTarget> orderUpButton = new AjaxFallbackLink<>("btn_order_up") {
                  @Override
-                 public void onClick(AjaxRequestTarget target) {
+                 public void onClick(Optional<AjaxRequestTarget> target) {
                      move(MOVE_UP, a.getDisplayOrder());
-                     if (target != null) {
-                         target.add(componentToUpdate);
+                     if (target.get() != null) {
+                         target.get().add(componentToUpdate);
                      }
                  }
              };
@@ -148,12 +149,12 @@ import org.slf4j.LoggerFactory;
              }
 
              add(orderUpButton);
-             AjaxFallbackLink orderDownButton = new AjaxFallbackLink("btn_order_down") {
+             AjaxFallbackLink<AjaxRequestTarget> orderDownButton = new AjaxFallbackLink<>("btn_order_down") {
                  @Override
-                 public void onClick(AjaxRequestTarget target) {
+                 public void onClick(Optional<AjaxRequestTarget> target) {
                      move(MOVE_DOWN, a.getDisplayOrder());
-                     if (target != null) {
-                         target.add(componentToUpdate);
+                     if (target.get() != null) {
+                         target.get().add(componentToUpdate);
                      }
                  }
              };
@@ -163,12 +164,12 @@ import org.slf4j.LoggerFactory;
              }
 
              add(orderDownButton);
-             AjaxFallbackLink orderBottomButton = new AjaxFallbackLink("btn_order_bottom") {
+             AjaxFallbackLink<AjaxRequestTarget> orderBottomButton = new AjaxFallbackLink<>("btn_order_bottom") {
                  @Override
-                 public void onClick(AjaxRequestTarget target) {
+                 public void onClick(Optional<AjaxRequestTarget> target) {
                      move(MOVE_END, a.getDisplayOrder());
-                     if (target != null) {
-                         target.add(componentToUpdate);
+                     if (target.get() != null) {
+                         target.get().add(componentToUpdate);
                      }
                  }
              };
@@ -178,9 +179,9 @@ import org.slf4j.LoggerFactory;
              }
              add(orderBottomButton);
 
-             AjaxFallbackLink editButton = new AjaxFallbackLink("btn_edit") {
+             AjaxFallbackLink<AjaxRequestTarget> editButton = new AjaxFallbackLink<>("btn_edit") {
                  @Override
-                 public void onClick(AjaxRequestTarget target) {
+                 public void onClick(Optional<AjaxRequestTarget> target) {
                      for(int i = 0; i < authors.size(); i++) {
                          if(authors.get(i).getData().getId() == a.getId()) {
                              authors.get(i).setEditing(true);
@@ -191,20 +192,20 @@ import org.slf4j.LoggerFactory;
                      ajaxWrapper.setVisible(authors.size() > 0);
                      pnl.setVisible(false);
 
-                     if (target != null) {
-                         target.add(componentToUpdate);
+                     if (target.get() != null) {
+                         target.get().add(componentToUpdate);
                      }
                  }
              };
              add(editButton);
 
-             AjaxFallbackLink removeButton = new AjaxFallbackLink("btn_remove") {
+             AjaxFallbackLink<AjaxRequestTarget> removeButton = new AjaxFallbackLink<>("btn_remove") {
                  @Override
-                 public void onClick(AjaxRequestTarget target) {
+                 public void onClick(Optional<AjaxRequestTarget> target) {
                      fireEvent(new AbstractEvent<>(
                          EventType.DELETE,
                          a,
-                         target));
+                         target.get()));
                  }
              };
              add(removeButton);
@@ -557,14 +558,14 @@ import org.slf4j.LoggerFactory;
 
          //Swap the collection with the collection at the specified destination (up=1, down=-1, beginning=0 or end=i)
          if (direction == -1 && idx > 0) {
-             authors.get(idx).getData().setDisplayOrder(new Long(idx-1));
-             authors.get(idx-1).getData().setDisplayOrder(new Long(idx));
+             authors.get(idx).getData().setDisplayOrder(Long.valueOf(idx-1));
+             authors.get(idx-1).getData().setDisplayOrder(Long.valueOf(idx));
          } else if(direction == 1 && idx < authors.size()-1) {
-             authors.get(idx).getData().setDisplayOrder(new Long(idx+1));
-             authors.get(idx+1).getData().setDisplayOrder(new Long(idx));
+             authors.get(idx).getData().setDisplayOrder(Long.valueOf(idx+1));
+             authors.get(idx+1).getData().setDisplayOrder(Long.valueOf(idx));
          } else {
-             authors.get(idx).getData().setDisplayOrder(new Long(direction));
-             authors.get(direction).getData().setDisplayOrder(new Long(idx));
+             authors.get(idx).getData().setDisplayOrder(Long.valueOf(direction));
+             authors.get(direction).getData().setDisplayOrder(Long.valueOf(idx));
          }
 
          //Resort list based on new sort order

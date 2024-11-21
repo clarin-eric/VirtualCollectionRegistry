@@ -17,6 +17,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedBy;
 import eu.clarin.cmdi.virtualcollectionregistry.model.GeneratedByQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.model.VirtualCollection;
+import java.security.Principal;
+import javax.print.attribute.standard.JobState;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -65,9 +67,9 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     //Map of field id to support editor modes for that field
     private final Map<String, Mode[]> fieldMode = new HashMap<>();
 
-    //private final ModalConfirmDialog dialog;
+    private final ModalConfirmDialog dialog; //todo: is this used?
 
-    private final AjaxFallbackLink btnSave;
+    private final AjaxFallbackLink<AjaxRequestTarget> btnSave;
     private final WebMarkupContainer cbHelpLabel;
 
     public static enum Mode {
@@ -98,7 +100,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
      */
     public CreateAndEditPanel(String id, VirtualCollection collection, ModalConfirmDialog dialog, VcrConfig vcrConfig) {
         super(id);
-        //this.dialog = dialog;
+        this.dialog = dialog;
         this.setOutputMarkupId(true);
         
         final Component ajax_update_component = this;
@@ -270,22 +272,31 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
                         intQueryParameters, vIntensional, false),
                 new Mode[]{Mode.ADVANCED});
 
-        btnSave = new AjaxFallbackLink("btn_save") {
+        btnSave = new AjaxFallbackLink<>("btn_save") {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onClick(Optional<AjaxRequestTarget> target) {
                 if(validate()) {
                     mdlErrorMessage.setObject("");
                     lblErrorMessage.setVisible(false);
-                    persist(target);
-                    reset();
+                    //Make sure we have a principal, otherwise fail early
+                    Principal principal = getPrincipal() ;
+                    if(principal == null) {
+                        logger.warn("Collection persist attempt with null principal (expired session?).");
+                        mdlErrorMessage.setObject("Save cancelled.<br />Session seemed to have expired.");
+                        lblErrorMessage.setVisible(true);                       
+                    } else {
+                        VirtualCollection newCollection = persist(target.get());
+                        reset();
+                        fireEvent(new AbstractEvent<>(EventType.SAVE, principal, newCollection, target.isEmpty() ? null : target.get()));
+                    }
                 } else {
                     logger.info("Failed to validate");
                     mdlErrorMessage.setObject("Collection failed to validate.<br />Please fix all issues and try again.");
                     lblErrorMessage.setVisible(true);
                 }
 
-                if (target != null) {
-                    target.add(ajax_update_component);
+                if (target.get() != null) {
+                    target.get().add(ajax_update_component);
                 }
             }
         };
@@ -293,19 +304,19 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         //disableSaveButton();
         add(btnSave);
 
-        add(new AjaxFallbackLink("btn_cancel") {
+        add(new AjaxFallbackLink<AjaxRequestTarget>("btn_cancel") {
             @Override
-            public void onClick(AjaxRequestTarget target) {
+            public void onClick(Optional<AjaxRequestTarget> target) {
                 reset();
-                if (target != null) {
-                    target.add(ajax_update_component);
+                if (target.get() != null) {
+                    target.get().add(ajax_update_component);
                 }
 
                 fireEvent(
                     new AbstractEvent<VirtualCollection>(
                             EventType.CANCEL,
                             null,
-                            target));
+                            target.get()));
             }
         });
 
@@ -347,6 +358,10 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         validate();
     }
 
+    public void handleDestroy() {
+       referencesEditor.reset();
+    }
+    
     private void toggleHelpMode() {
         boolean showHelp = toggleHelpModeModel.getObject();
         for(AbstractField f: fields) {
@@ -448,6 +463,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
     }
 
     private void reset() {
+        logger.debug("Resetting editor panel");
         this.originalCollection = null;
         nameModel.setObject("");
         descriptionModel.setObject("");
@@ -491,17 +507,12 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
         return valid;
     }
 
-    private void persist(final AjaxRequestTarget target) {
-        //Make sure we have a principal, otherwise fail early
+    private Principal getPrincipal() {
         ApplicationSession session = (ApplicationSession)getSession();
-        if(session.getPrincipal() == null) {
-            logger.warn("Collection persist attempt with null principal (expired session?).");
-            mdlErrorMessage.setObject("Save cancelled.<br />Session seemed to have expired.");
-            lblErrorMessage.setVisible(true);
-            target.add(this);
-            return;
-        }
-
+        return session.getPrincipal();
+    }
+    
+    private VirtualCollection persist(final AjaxRequestTarget target) {
         VirtualCollection newCollection = new VirtualCollection();
         newCollection.setCreationDate(new Date()); // FIXME: get date from GUI?
 
@@ -542,12 +553,7 @@ public class CreateAndEditPanel extends ActionablePanel implements Listener {
             genBy.setQuery(new GeneratedByQuery(intQueryProfile.getObject(), intQueryParameters.getObject()));
             newCollection.setGeneratedBy(genBy);
         }
-
-        fireEvent(
-                new AbstractEvent<VirtualCollection>(
-                        EventType.SAVE,
-                        session.getPrincipal(),
-                        newCollection,
-                        target));
+        
+        return newCollection;
     }
 }

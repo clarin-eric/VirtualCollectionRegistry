@@ -16,18 +16,50 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.gui.dialog;
 
+import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.UIUtils;
+import org.apache.wicket.ajax.AjaxRequestTarget;
+import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.basic.MultiLineLabel;
+import org.apache.wicket.markup.html.form.CheckBox;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
  * @author wilelb
  */
 public class PublishConfirmationDialogPanel extends Panel {
-    public PublishConfirmationDialogPanel(String id, IModel model) {
+    private final static  Logger logger = LoggerFactory.getLogger(PublishConfirmationDialogPanel.class);
+    
+    public PublishConfirmationDialogPanel(String id, IModel<String> msgModel, IModel<Boolean> immutableModel) {
         super(id);
-        MultiLineLabel messageLabel = new MultiLineLabel("message", model);
+        
+        MultiLineLabel messageLabel = new MultiLineLabel("message", msgModel);
         add(messageLabel);
+        
+        
+        CheckBox cb = new CheckBox("cb_immutable", immutableModel);
+        UIUtils.addTooltip(cb, "Publish this collection as immutable. This means the collection cannot be changed after publishing.");
+        
+        cb.add(new AjaxFormComponentUpdatingBehavior("click") {
+            @Override
+            protected void onUpdate(final AjaxRequestTarget target) {
+                logger.trace("CB changed on click: {}", immutableModel.getObject());
+            }
+        });
+        
+        cb.add(new AjaxFormComponentUpdatingBehavior("blur") {
+            @Override
+            protected void onUpdate(final AjaxRequestTarget target) {
+                logger.trace("CB changed on blur: {}", immutableModel.getObject());
+            }
+        });
+        
+        
+        add(cb);
+        add(new Label("lbl_immutable", "Immutable"));
     }
 }
