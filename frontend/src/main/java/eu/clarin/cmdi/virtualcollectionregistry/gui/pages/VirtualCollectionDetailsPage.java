@@ -548,7 +548,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
     
     private BootstrapDropdown getDropdown(String id, IModel<Resource> model) {
         List options = new ArrayList();
-        options.add(new DropdownMenuItem("Process with Language Resource Switchboard", "glyphicon glyphicon-open-file") {
+        options.add(new DropdownMenuItem("Process with Language Resource Switchboard", "fa-solid fa-file-arrow-up") {
                 @Override
                 protected AbstractLink getLink(String id) {
                     return (AbstractLink)LanguageResourceSwitchboardLink.forResource("link", model.getObject());
@@ -563,7 +563,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
 
             @Override
             protected Serializable getButtonIconClass() {
-                return "glyphicon glyphicon-option-horizontal";
+                return "fa-solid fa-ellipsis";
             }
 
             @Override
