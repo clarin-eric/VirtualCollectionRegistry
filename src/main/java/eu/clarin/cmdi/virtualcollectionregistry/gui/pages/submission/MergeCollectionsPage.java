@@ -183,7 +183,7 @@ public class MergeCollectionsPage extends BasePage {
 
                 boolean matchedTypes = collection.getType() == submitted_vc.getType();
                 if(!matchedTypes || !collection.canMerge()) {
-                    logger.info("Hiding item, types dont match or cannot merge");
+                    logger.debug("Hiding item, types dont match or cannot merge");
                 }
                 div.setVisible(matchedTypes);
 
