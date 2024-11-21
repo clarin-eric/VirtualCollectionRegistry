@@ -5,7 +5,7 @@
     <artifactId>VirtualCollectionRegistry</artifactId>
     <packaging>war</packaging>
     <name>CLARIN Virtual Collection Registry</name>
-    <version>1.6.14-SNAPSHOT</version>
+    <version>1.6.14</version>
 
     <organization>
         <name>CLARIN</name>
