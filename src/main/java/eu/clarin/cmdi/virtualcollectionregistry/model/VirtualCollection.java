@@ -39,6 +39,7 @@ import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+import org.springframework.transaction.annotation.Transactional;
 
 @Entity
 @Table(name = "virtualcollection")
@@ -480,6 +481,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         this.creationDate = creationDate;
     }
 
+    //@Transactional
     public List<Creator> getCreators() {
         if (creators == null) {
             this.creators = new ArrayList<Creator>();
@@ -519,6 +521,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         this.reproducibilityNotice = reproducibilityNotice;
     }
 
+    //@Transactional
     public List<String> getKeywords() {
         if (keywords == null) {
             keywords = new ArrayList<String>();
@@ -526,6 +529,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         return keywords;
     }
 
+    //@Transactional
     public List<Resource> getResources() {
         if (resources == null) {
             resources = new ArrayList<Resource>();
