@@ -286,19 +286,18 @@ public class VirtualColletionRegistryOAIRepository implements Repository {
             if ((vcs != null) && !vcs.isEmpty()) {
                 List<Record> records = new ArrayList<Record>(vcs.size());
                 for (VirtualCollection vc : vcs) {
+                    /*
+                     * Force fetching of creators, keywords and resources which
+                     * are defined with lazy loading. This avoids the
+                     * org.hibernate.LazyInitializationException: failed to lazily initialize a collection of role .... no Session
+                     * exception.
+                     */
+                    vc.getCreators().size();                  
+                    vc.getKeywords().size();
+                    vc.getResources().size();
+                    
                     records.add(createRecord(vc, headerOnly));
-                    /*
-                     * XXX: force fetching of creators.
-                     */
-                    vc.getCreators().size();
-
-                    /*
-                     *  XXX: force fetching of resources in case of "cmdi"
-                     *  prefix.
-                     */
-                    if ("cmdi".equals(prefix) && !headerOnly) {
-                        vc.getResources().size();
-                    }
+                    
                 }
                 boolean hasMore = (offset + vcs.size()) < count;
                 return new RecordList(records, offset, hasMore, (int) count);
