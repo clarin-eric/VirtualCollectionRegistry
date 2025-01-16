@@ -26,8 +26,11 @@ import org.springframework.stereotype.Component;
 @Component
 public class ParserConfigImpl implements ParserConfig {
     
-    @Value("${eu.clarin.cmdi.vcr.parser.mscr.api_url:https://mscr-test.rahtiapp.fi/datamodel-api/v2/}")
-    private String apiUrl;
+    @Value("${eu.clarin.cmdi.vcr.parser.dtr.api_url:https://typeregistry.lab.pidconsortium.net}")
+    private String dtrApiUrl;
+    
+    @Value("${eu.clarin.cmdi.vcr.parser.mscr.api_url:https://mscr-test.2.rahtiapp.fi/datamodel-api/v2/}")
+    private String mscrApiUrl;
      
     @Value("${eu.clarin.cmdi.vcr.parser.mscr.target_schema_query:CLARIN Dublin Core}")
     private String targetSchemaQuery;
@@ -50,9 +53,17 @@ public class ParserConfigImpl implements ParserConfig {
     @Value("${eu.clarin.cmdi.vcr.parser.mscr.enabled:true}")
     private boolean mscrParserEnable;
     
+    @Value("${eu.clarin.cmdi.vcr.parser.mscr.enabled:true}")
+    private boolean mscrParserWithDtrExtendedTypesEnabled;
+    
     @Override
-    public String getApiUrl() {
-        return apiUrl;
+    public String getDtrApiUrl() {
+        return dtrApiUrl;
+    }
+    
+    @Override
+    public String getMscrApiUrl() {
+        return mscrApiUrl;
     }
 
     @Override
@@ -88,5 +99,10 @@ public class ParserConfigImpl implements ParserConfig {
     @Override
     public boolean isMscrParserEnabled() {
         return mscrParserEnable;
+    }
+
+    @Override
+    public boolean isMscrParserWithDtrExtendedTypesEnabled() {
+        return mscrParserWithDtrExtendedTypesEnabled;
     }
 }

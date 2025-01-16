@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 CLARIN
+ * Copyright (C) 2025 CLARIN
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,14 +14,21 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers;
+
+package eu.clarin.pidmr.client;
 
 /**
  *
  * @author wilelb
  */
-public interface ReferenceParser {
-    String getId();
-    boolean parse(final String xml, final String mimeType) throws Throwable;
-    ReferenceParserResult getResult();
+public interface PidmrClient {
+    
+    /**
+     * Resolve a pid to the associated url.
+     * 
+     * @param pid The pid to resolve.
+     * @return The url that was resolved.
+     * @throws eu.clarin.pidmr.client.PidNotFoundException
+     */
+    public String resolvePid(String pid) throws PidNotFoundException, PidmrException;
 }

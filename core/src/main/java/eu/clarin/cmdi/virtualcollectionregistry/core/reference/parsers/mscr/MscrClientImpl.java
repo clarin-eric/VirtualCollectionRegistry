@@ -183,6 +183,11 @@ public class MscrClientImpl implements MscrClient {
     }
     
     @Override
+    public String getCrosswalkIdFromUrl(String url) {
+        return url.replace(baseApiUrl.resolve("crosswalk").toString()+"/", "");       
+    }
+    
+    @Override
     public MscrSchema searchSchema(String query) throws MscrNotFoundException, IOException {
         logger.debug("searchSchema, query="+query);
         List<MscrSchema> schemas = searchSchemas(query);

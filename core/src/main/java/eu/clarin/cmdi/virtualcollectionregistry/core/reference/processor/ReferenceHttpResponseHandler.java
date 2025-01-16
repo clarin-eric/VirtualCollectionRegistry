@@ -160,13 +160,23 @@ public class ReferenceHttpResponseHandler implements ResponseHandler<String> {
                         //TODO: we are always running all parsers, maybe stop after a successfull result?
                         //this would require synchronous processing.
                         parser.parse(this.body, this.mediaType);
-                            ReferenceParserResult parserResult = parser.getResult();
-                            scan.addResourceScanLogKV(parser.getId(), ReferenceParserResult.KEY_STATE, ReferenceParserResult.VALUE_STATE_OK);
-                            scan.addResourceScanLogKV(parser.getId(), ReferenceParserResult.KEY_NAME, parserResult.get(ReferenceParserResult.KEY_NAME));
-                            scan.addResourceScanLogKV(parser.getId(), ReferenceParserResult.KEY_DESCRIPTION, parserResult.get(ReferenceParserResult.KEY_DESCRIPTION));
-                    } catch(Exception ex) {
+                        ReferenceParserResult parserResult = parser.getResult();
+                        scan.addResourceScanLogKV(parser.getId(), ReferenceParserResult.KEY_STATE, ReferenceParserResult.VALUE_STATE_OK);
+                        scan.addResourceScanLogKV(parser.getId(), ReferenceParserResult.KEY_NAME, parserResult.get(ReferenceParserResult.KEY_NAME));
+                        scan.addResourceScanLogKV(parser.getId(), ReferenceParserResult.KEY_DESCRIPTION, parserResult.get(ReferenceParserResult.KEY_DESCRIPTION));
+                        //Add process details
+                        for(int i = 0; i < parserResult.getProcessCount(); i++) {
+                            scan.addResourceScanLogKV(
+                                    parser.getId(), 
+                                    ReferenceParserResult.kEY_PROCESS_PREFIX+i, 
+                                    parserResult.get(ReferenceParserResult.kEY_PROCESS_PREFIX+i));
+                        }
+                    } catch(Throwable ex) {
                         scan.addResourceScanLogKV(parser.getId(), ReferenceParserResult.KEY_STATE, ReferenceParserResult.VALUE_STATE_ERROR);
                         scan.addResourceScanLogKV(parser.getId(), ReferenceParserResult.KEY_STATE_MSG, ex.getMessage());
+                        if(ex.getCause() != null) {
+                            scan.addResourceScanLogKV(parser.getId(), ReferenceParserResult.KEY_STATE_CAUSE, ex.getCause().getMessage());
+                        }
                     }
         
                     scan.finishResourceScanLog(parser.getId());

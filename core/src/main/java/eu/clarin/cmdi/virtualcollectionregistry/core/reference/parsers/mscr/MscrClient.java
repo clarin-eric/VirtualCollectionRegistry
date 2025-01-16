@@ -27,6 +27,8 @@ import org.xml.sax.SAXException;
  * @author wilelb
  */
 public interface MscrClient {
+    public String getCrosswalkIdFromUrl(String url);
+    
     /**
      * Search a schema in the MSCR registry.
      * @param query

@@ -26,23 +26,38 @@ import java.util.Map;
 public class ReferenceParserResult {
     public final static String KEY_STATE = "STATE"; //one of the VALUE_STATE_xxxx values
     public final static String KEY_STATE_MSG = "STATE_MSG";
+    public final static String KEY_STATE_CAUSE = "STATE_CAUSE";
     public final static String KEY_HTTP_RESPONSE_MEDIA_TYPE = "KEY_HTTP_RESPONSE_MEDIA_TYPE";
     public final static String KEY_HTTP_RESPONSE_CODE = "HTTP_RESPONSE_CODE";
     public final static String KEY_NAME = "NAME";
     public final static String KEY_DESCRIPTION = "DESCRIPTION";
- 
+
+    public final static String KEY_PROCESS_COUNT = "PROCESS_COUNT";
+    public final static String kEY_PROCESS_PREFIX = "PROCESS_";
+    
     public final static String VALUE_STATE_OK = "OK";
     public final static String VALUE_STATE_ERROR = "ERROR";
     
     private final Map<String, String> properties = new HashMap<>();
     
     //public ReferenceParserResult() { }
-
+    private int process_count = 0;
+    
+    public void addProcessStep(String value) {
+        this.properties.put(KEY_PROCESS_COUNT, String.valueOf(process_count));
+        this.properties.put(kEY_PROCESS_PREFIX+process_count, value);        
+        process_count++;
+    }
+    
     public void add(String key, String value) {
         this.properties.put(key, value);
     }
     
     public String get(String key) {
         return this.properties.get(key);
+    }
+    
+    public int getProcessCount() {
+        return process_count;
     }
 }

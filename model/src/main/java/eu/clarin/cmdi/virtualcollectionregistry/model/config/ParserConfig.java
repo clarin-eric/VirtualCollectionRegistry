@@ -21,7 +21,9 @@ package eu.clarin.cmdi.virtualcollectionregistry.model.config;
  * @author wilelb
  */
 public interface ParserConfig {
-    public String getApiUrl();
+    public String getDtrApiUrl();
+    public String getMscrApiUrl();
+
     public String getTargetSchemaQuery();
     public Integer getConnectionRequestTimeout();
     public Integer getMaxRedirects();
@@ -30,4 +32,6 @@ public interface ParserConfig {
     public boolean isCmdiParserEnabled();
     public boolean isDogParserEnabled();
     public boolean isMscrParserEnabled();
+    
+    public boolean isMscrParserWithDtrExtendedTypesEnabled();
 }

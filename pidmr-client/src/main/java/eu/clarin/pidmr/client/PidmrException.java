@@ -1,5 +1,5 @@
 /*
- * Copyright (C) 2024 CLARIN
+ * Copyright (C) 2025 CLARIN
  *
  * This program is free software: you can redistribute it and/or modify
  * it under the terms of the GNU General Public License as published by
@@ -14,14 +14,18 @@
  * You should have received a copy of the GNU General Public License
  * along with this program.  If not, see <http://www.gnu.org/licenses/>.
  */
-package eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers;
+package eu.clarin.pidmr.client;
 
 /**
  *
  * @author wilelb
  */
-public interface ReferenceParser {
-    String getId();
-    boolean parse(final String xml, final String mimeType) throws Throwable;
-    ReferenceParserResult getResult();
+public class PidmrException extends Exception {
+    public PidmrException(String msg) {
+        super(msg);
+    }
+    
+    public PidmrException(String msg, Throwable t) {
+        super(msg, t);
+    }
 }

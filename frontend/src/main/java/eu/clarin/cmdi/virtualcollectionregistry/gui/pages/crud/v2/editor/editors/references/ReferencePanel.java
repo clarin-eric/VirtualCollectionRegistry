@@ -17,6 +17,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan.State;
 import static eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan.State.DONE;
 import static eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan.State.FAILED;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScanLogKV;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidLink;
 import java.util.Optional;
 import org.apache.wicket.AttributeModifier;
@@ -25,6 +26,8 @@ import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.list.ListItem;
+import org.apache.wicket.markup.html.list.ListView;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -95,8 +98,29 @@ public class ReferencePanel extends Panel {
             
         }
         
+        //select * from resource_scan_log l join resource_scan_log_kv kv on kv.scan_log_id = l.id where l.scan_id = 56 limit 10;
         //todo: list other kv pairs from scanner?
+        //List<ResourceScanLogKV> latestLogKvs = scan.getLatestLogs();
 
+        try {
+            if(scan != null) {
+                String sCount = scan.getResourceScanLogLastValue(ReferenceParserResult.KEY_PROCESS_COUNT);
+                if(sCount != null) {
+                   int count = Integer.parseInt(sCount);
+                   for(int i = 0; i < count; i++) {
+                       String value = scan.getResourceScanLogLastValue(ReferenceParserResult.kEY_PROCESS_PREFIX+i);
+                       logger.info("Parser process index="+i+", value="+value);
+                   }
+                } else {
+                    logger.info("Parser process count is null");
+                }
+            } else {
+                logger.info("Scan is null");
+            }
+        } catch(Throwable t) {
+            logger.error("Debug: " ,t);
+        } 
+                
         /*
         WebMarkupContainer divReason = new WebMarkupContainer("reason");
         divReason.setOutputMarkupId(true);
@@ -336,6 +360,18 @@ public class ReferencePanel extends Panel {
         spinner.add(new Label("spinner_text", spinnerLabelModel));
         editorWrapper.add(spinner);
 
+        editorWrapper.add(new ListView<ResourceScanLogKV>("rows", scan.getLatestLogs()) {
+            public void populateItem(final ListItem<ResourceScanLogKV> item) {
+                final ResourceScanLogKV datum = item.getModelObject();
+                item.add(new Label("rows-id1", datum.getScanLog().getId()));
+                item.add(new Label("rows-id2", datum.getId()));
+                item.add(new Label("rows-ts", datum.getScanLog().getStart().toString()));
+                item.add(new Label("rows-processor",datum.getScanLog().getProcessorId()));
+                item.add(new Label("rows-key", datum.getKey()));
+                item.add(new Label("rows-value", datum.getValue()));
+            }
+        });
+        
         add(editorWrapper);
     }
 

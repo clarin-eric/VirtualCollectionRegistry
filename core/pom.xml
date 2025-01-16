@@ -21,10 +21,12 @@
             <artifactId>vcr-model</artifactId>
             <version>${project.version}</version>
             <exclusions>
+                <!--
                 <exclusion>
                     <groupId>org.glassfish.jersey.core</groupId>
                     <artifactId>jersey-client</artifactId>
                 </exclusion>
+                -->
                 <exclusion>
                     <groupId>org.glassfish.jersey.core</groupId>
                     <artifactId>jersey-common</artifactId>
@@ -36,6 +38,17 @@
             </exclusions>
         </dependency>
         
+        <dependency>
+            <groupId>org.glassfish.jersey.core</groupId>
+            <artifactId>jersey-client</artifactId>
+            <version>3.1.9</version>
+        </dependency>
+        <dependency>
+            <groupId>org.glassfish.jersey.media</groupId>
+            <artifactId>jersey-media-json-jackson</artifactId>
+            <version>3.1.9</version>
+        </dependency>
+
         <dependency>
             <groupId>com.fasterxml.jackson.core</groupId>
             <artifactId>jackson-databind</artifactId>
@@ -123,6 +136,16 @@
             <groupId>de.mpg.aai</groupId>
             <artifactId>mpgaai-shhaa</artifactId>
             <version>1.9.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>eu.clarin</groupId>
+            <artifactId>dtr-client</artifactId>
+            <version>1.9.0-SNAPSHOT</version>
+        </dependency>
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>mscr-client</artifactId>
+            <version>1.0.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 </project>

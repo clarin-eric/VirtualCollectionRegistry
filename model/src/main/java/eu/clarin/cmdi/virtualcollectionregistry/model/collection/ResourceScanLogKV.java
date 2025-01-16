@@ -35,7 +35,7 @@ import jakarta.persistence.Table;
  */
 @Entity
 @Table(name = "resource_scan_log_kv")
-public class ResourceScanLogKV implements Serializable {
+public class ResourceScanLogKV implements Serializable, Comparable<ResourceScanLogKV> {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     @Column(name = "id", nullable = false, updatable = false)
@@ -103,4 +103,11 @@ public class ResourceScanLogKV implements Serializable {
     public void setScanLog(ResourceScanLog scan) {
         this.scanLog = scan;
     }
+
+    @Override
+    public int compareTo(ResourceScanLogKV o) {
+        return getId().compareTo(o.getId());
+    }
+    
+    
 }

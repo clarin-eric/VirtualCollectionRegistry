@@ -76,7 +76,22 @@ public class MscrReferenceParserTest {
         MscrCrosswalkMetadata crosswalk = mapper.readValue(res1.openStream(), new MscrCrosswalkMetadata().getClass());
         logger.info("Found {} schemas", crosswalk.format);
     }
-    
+    /*
+    @Test 
+    public void testDtrParsing() throws Exception {
+        String xmlMimeType = "text/xml";
+        URL res1 = getClass().getResource("/tei_example.xml");
+        
+        String xmlContent = new BufferedReader(
+            new InputStreamReader(res1.openStream(), StandardCharsets.UTF_8))
+            .lines()
+            .collect(Collectors.joining("\n")
+        );
+        
+        MscrReferenceParser parser = new MscrReferenceParser(new ParserTestConfig());
+        parser.performParsingDtr(xmlContent, xmlMimeType);
+    }
+    */
     @Test
     public void test() throws Exception {
         URL res1 = getClass().getResource("/tei_example.xml");
@@ -88,7 +103,7 @@ public class MscrReferenceParserTest {
         );
         
         ParserConfig config = new ParserTestConfig();
-        MscrClient client = new MscrClientImpl(config.getApiUrl(), config.getConnectionRequestTimeout(), config.getMaxRedirects(), config.getTransformerFactory());
+        MscrClient client = new MscrClientImpl(config.getMscrApiUrl(), config.getConnectionRequestTimeout(), config.getMaxRedirects(), config.getTransformerFactory());
         client.getNamespaceUriFromXml(xmlContent);
         
     }
@@ -100,7 +115,7 @@ public class MscrReferenceParserTest {
     //@Test
     public void testSchemaSearch() throws Exception {
         ParserConfig config = new ParserTestConfig();
-        MscrClient client = new MscrClientImpl(config.getApiUrl(), config.getConnectionRequestTimeout(), config.getMaxRedirects(), config.getTransformerFactory());
+        MscrClient client = new MscrClientImpl(config.getMscrApiUrl(), config.getConnectionRequestTimeout(), config.getMaxRedirects(), config.getTransformerFactory());
         
         MscrSchema sourceSchema = null;
         try {
@@ -144,7 +159,7 @@ public class MscrReferenceParserTest {
     }
     
     //@Test
-    public void testParse() throws Exception {
+    public void testParse() throws Throwable {
         String xmlMimeType = "text/xml";
         URL res1 = getClass().getResource("/tei_example.xml");
         
@@ -162,8 +177,8 @@ public class MscrReferenceParserTest {
     public class ParserTestConfig implements ParserConfig {
 
         @Override
-        public String getApiUrl() {
-            return "https://mscr-test.rahtiapp.fi/datamodel-api/v2/";
+        public String getMscrApiUrl() {
+            return "https://mscr-test.2.rahtiapp.fi/datamodel-api/v2/";
         }
 
         @Override
@@ -200,6 +215,15 @@ public class MscrReferenceParserTest {
         public boolean isMscrParserEnabled() {
             return true;
         }
+
+        @Override
+        public String getDtrApiUrl() {
+            return "https://typeregistry.lab.pidconsortium.net";
+        }
         
+        @Override
+        public boolean isMscrParserWithDtrExtendedTypesEnabled() {
+            return true;
+        }        
     }
 }

@@ -33,6 +33,8 @@ import jakarta.persistence.OneToMany;
 import jakarta.persistence.Table;
 import jakarta.persistence.Temporal;
 import jakarta.persistence.TemporalType;
+import java.util.LinkedList;
+import java.util.List;
 
 /**
  *
@@ -52,7 +54,7 @@ public class ResourceScanLog implements Serializable {
     @OneToMany(cascade = CascadeType.ALL,
                fetch = FetchType.EAGER,
                mappedBy = "scanLog")
-    private Set<ResourceScanLogKV> kvs;
+    private List<ResourceScanLogKV> kvs;
     
     @ManyToOne(cascade = CascadeType.ALL,
           fetch = FetchType.LAZY,
@@ -106,14 +108,14 @@ public class ResourceScanLog implements Serializable {
     /**
      * @return the kvs
      */
-    public Set<ResourceScanLogKV> getKvs() {
+    public List<ResourceScanLogKV> getKvs() {
         return kvs;
     }
 
     /**
      * @param kvs the kvs to set
      */
-    public void setKvs(Set<ResourceScanLogKV> kvs) {
+    public void setKvs(List<ResourceScanLogKV> kvs) {
         this.kvs = kvs;
     }
 
@@ -144,7 +146,7 @@ public class ResourceScanLog implements Serializable {
             kv.setValue(value);
             kv.setScanLog(this);
             if(kvs == null) {
-                kvs = new HashSet();
+                kvs = new LinkedList();
             }
             kvs.add(kv);
         }

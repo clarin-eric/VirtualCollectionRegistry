@@ -3,9 +3,13 @@ package eu.clarin.cmdi.virtualcollectionregistry.model.collection;
 import jakarta.validation.constraints.NotNull;
 import jakarta.persistence.*;
 import java.io.Serializable;
+import java.util.ArrayList;
+import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
 import java.util.HashSet;
+import java.util.LinkedList;
+import java.util.List;
 import java.util.Map;
 import java.util.Set;
 import org.slf4j.Logger;
@@ -102,7 +106,7 @@ public class ResourceScan implements Serializable, Comparable<ResourceScan>  {
     @OneToMany(cascade = CascadeType.ALL,
                fetch = FetchType.EAGER,
                 mappedBy = "scan")
-    private Set<ResourceScanLog> logs;
+    private List<ResourceScanLog> logs;
     
 /*
     @Column(name = "name_suggestion", nullable = true, length = 255)
@@ -238,56 +242,23 @@ public class ResourceScan implements Serializable, Comparable<ResourceScan>  {
     public void setException(String exception) {
         this.exception = exception;
     }
-/*
-    public String getNameSuggestion() {
-        return nameSuggestion;
-    }
 
-    public void setNameSuggestion(String nameSuggestion) {
-        this.nameSuggestion = nameSuggestion;
-    }
-
-    public String getDescriptionSuggestion() {
-        return descriptionSuggestion;
-    }
-
-    public void setDescriptionSuggestion(String descriptionSuggestion) {
-        this.descriptionSuggestion = descriptionSuggestion;
-    }
-*/
     @Override
     public int compareTo(@NotNull ResourceScan o) {
         return getRef().compareTo(o.getRef());
     }
-/*
-    public String getProcessor() {
-        return processor;
-    }
-
-    public void setProcessor(String processor) {
-        this.processor = processor;
-    }
-
-    public String getSuggestedPid() {
-        return suggestedPid;
-    }
-
-    public void setSuggestedPid(String suggestedPid) {
-        this.suggestedPid = suggestedPid;
-    }
-*/
     
     /**
      * @return the logs
      */
-    public Set<ResourceScanLog> getLogs() {
+    public List<ResourceScanLog> getLogs() {
         return logs;
     }
 
     /**
      * @param logs the logs to set
      */
-    public void setLogs(Set<ResourceScanLog> logs) {
+    public void setLogs(List<ResourceScanLog> logs) {
         this.logs = logs;
     }
     
@@ -298,7 +269,7 @@ public class ResourceScan implements Serializable, Comparable<ResourceScan>  {
      */
     public void addResourceScanLog(String parserId) {
         if(logs == null) {
-            logs = new HashSet();
+            logs = new LinkedList();
         }
         logs.add(new ResourceScanLog(this, parserId));
     }
@@ -384,7 +355,15 @@ public class ResourceScan implements Serializable, Comparable<ResourceScan>  {
      */
     public String getResourceScanLogLastValue(String key) { 
         logger.trace("Fetching last log value for key={}, db id={}, ref={}", key, id, ref);
-        /*
+        List<ResourceScanLogKV> logKVs = getLatestLogs();
+        for(ResourceScanLogKV kv : logKVs) {
+            if(kv.getKey().equalsIgnoreCase(key) && kv.getValue() != null && !kv.getValue().isEmpty()) {                                    
+                return kv.getValue();
+            } 
+        }
+        return null;
+        
+        /*        
         String value = null;
         try {
             if(logs != null) {
@@ -420,6 +399,8 @@ public class ResourceScan implements Serializable, Comparable<ResourceScan>  {
             logger.debug("Something went wrong", ex);
         }
         */
+        
+        /*
         Map<Long, String> values = getResourceScanLogByWeight(key);
         long maxWeight = Long.MIN_VALUE;
         for(Long weight : values.keySet()) {
@@ -430,6 +411,7 @@ public class ResourceScan implements Serializable, Comparable<ResourceScan>  {
                 
         logger.trace("Selected value with max weight: {}", values.get(maxWeight));
         return values.get(maxWeight);
+        */
     }
     
     //Store all values matching the requested key with their respective processor weight
@@ -468,5 +450,25 @@ public class ResourceScan implements Serializable, Comparable<ResourceScan>  {
             logger.debug("Something went wrong", ex);
         }
         return values;
+    }
+    
+    public List<ResourceScanLogKV> getLatestLogs() {
+        List<ResourceScanLogKV> logKVs = new ArrayList<>();
+        if(logs != null) {
+            for(ResourceScanLog log : logs) {
+                if(getLastScan() != null && (log.getStart().getTime() >= getLastScan().getTime())) {
+                    if(log.getKvs() != null) {
+                        for(ResourceScanLogKV kv : log.getKvs()) {
+                            logKVs.add(kv);
+                        }
+                    }
+                }
+            }
+        }
+        
+        //Sort on increasing id
+        Collections.sort(logKVs);
+        
+        return logKVs;
     }
 }
