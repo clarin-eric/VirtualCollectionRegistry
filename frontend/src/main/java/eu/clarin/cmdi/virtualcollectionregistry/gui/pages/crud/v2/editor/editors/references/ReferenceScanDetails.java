@@ -98,7 +98,7 @@ public class ReferenceScanDetails extends Panel {
         AjaxFallbackLink<AjaxRequestTarget> reasonBtnRescan = new AjaxFallbackLink<>("btn_rescan") {
             @Override
             public void onClick(Optional<AjaxRequestTarget> target) {
-                rescanHandler.rescan(scan.getRef(), target.isPresent() ? target.get() : null);
+                rescanHandler.rescan(scan.getRef(), scan.getResolvedRef(), target.isPresent() ? target.get() : null);
             }
         };
         add(reasonBtnRescan);

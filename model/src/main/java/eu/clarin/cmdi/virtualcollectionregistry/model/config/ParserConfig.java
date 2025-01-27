@@ -23,7 +23,8 @@ package eu.clarin.cmdi.virtualcollectionregistry.model.config;
 public interface ParserConfig {
     public String getDtrApiUrl();
     public String getMscrApiUrl();
-
+    public String getPidmrApiUrl();
+    
     public String getTargetSchemaQuery();
     public Integer getConnectionRequestTimeout();
     public Integer getMaxRedirects();

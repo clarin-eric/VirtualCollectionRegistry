@@ -1,0 +1,171 @@
+{
+  "took": 3,
+  "timed_out": false,
+  "_shards": {
+    "failed": 0,
+    "successful": 2,
+    "total": 2,
+    "skipped": 1
+  },
+  "hits": {
+    "total": {
+      "relation": "eq",
+      "value": 4
+    },
+    "hits": [
+      {
+        "_index": "schemas_v2",
+        "_id": "mscr%3Aschema%3A50cfc068-6439-43b2-8b67-d56fb7214c65",
+        "_source": {
+          "id": "mscr:schema:50cfc068-6439-43b2-8b67-d56fb7214c65",
+          "label": {
+            "en": "Simple CLARIN DC"
+          },
+          "status": "DRAFT",
+          "modified": "2024-11-20T12:06:30.837Z",
+          "created": "2024-11-20T12:06:21.876Z",
+          "contentModified": "2024-11-20T12:06:21.876Z",
+          "type": "SCHEMA",
+          "state": "DRAFT",
+          "visibility": "PUBLIC",
+          "prefix": "mscr:schema:50cfc068-6439-43b2-8b67-d56fb7214c65",
+          "comment": {
+            "en": ""
+          },
+          "contributor": [],
+          "organizations": [],
+          "isPartOf": [],
+          "language": [
+            "en"
+          ],
+          "format": "XSD",
+          "aggregationKey": "mscr:schema:50cfc068-6439-43b2-8b67-d56fb7214c65",
+          "hasRevision": "false",
+          "numberOfRevisions": 1,
+          "owner": [
+            "2ca533f7-ea05-41cc-ada5-ea695184cbd8"
+          ],
+          "versionLabel": "1",
+          "namespace": "http://test.com"
+        },
+        "sort": [
+          null
+        ]
+      },
+      {
+        "_index": "schemas_v2",
+        "_id": "mscr%3Aschema%3A84ae53c0-ca68-42af-843a-54330cef85e4",
+        "_source": {
+          "id": "mscr:schema:84ae53c0-ca68-42af-843a-54330cef85e4",
+          "label": {
+            "en": "CLARIN Dublin Core"
+          },
+          "status": "DRAFT",
+          "modified": "2024-11-11T08:16:08.946Z",
+          "created": "2024-11-11T08:16:08.946Z",
+          "contentModified": "2024-11-11T08:16:08.946Z",
+          "type": "SCHEMA",
+          "state": "PUBLISHED",
+          "visibility": "PUBLIC",
+          "prefix": "mscr:schema:84ae53c0-ca68-42af-843a-54330cef85e4",
+          "comment": {},
+          "contributor": [],
+          "organizations": [],
+          "isPartOf": [],
+          "language": [
+            "en"
+          ],
+          "format": "XSD",
+          "aggregationKey": "mscr:schema:84ae53c0-ca68-42af-843a-54330cef85e4",
+          "hasRevision": "false",
+          "numberOfRevisions": 1,
+          "owner": [
+            "40438e38-ec5c-4606-9075-a2c29b016126"
+          ],
+          "versionLabel": "1",
+          "namespace": "http://test.com",
+          "handle": "21.T13999/EOSC-202411000283272"
+        },
+        "sort": [
+          null
+        ]
+      },
+      {
+        "_index": "schemas_v2",
+        "_id": "mscr%3Aschema%3A30c41f40-e42e-4cf8-89ee-d276295ade12",
+        "_source": {
+          "id": "mscr:schema:30c41f40-e42e-4cf8-89ee-d276295ade12",
+          "label": {
+            "en": "CLARIN Dublin Core"
+          },
+          "status": "DRAFT",
+          "modified": "2024-12-04T07:43:05.301Z",
+          "created": "2024-11-11T08:17:07.662Z",
+          "contentModified": "2024-11-11T08:17:07.662Z",
+          "type": "SCHEMA",
+          "state": "DEPRECATED",
+          "visibility": "PUBLIC",
+          "prefix": "mscr:schema:30c41f40-e42e-4cf8-89ee-d276295ade12",
+          "comment": {},
+          "contributor": [],
+          "organizations": [],
+          "isPartOf": [],
+          "language": [
+            "en"
+          ],
+          "format": "XSD",
+          "aggregationKey": "mscr:schema:30c41f40-e42e-4cf8-89ee-d276295ade12",
+          "hasRevision": "false",
+          "numberOfRevisions": 1,
+          "owner": [
+            "40438e38-ec5c-4606-9075-a2c29b016126"
+          ],
+          "versionLabel": "1",
+          "namespace": "http://test.com",
+          "handle": "21.T13999/EOSC-202411000283281"
+        },
+        "sort": [
+          null
+        ]
+      },
+      {
+        "_index": "schemas_v2",
+        "_id": "mscr%3Aschema%3Ac2d91f5a-268f-4acf-ad93-73dc6fdec7d2",
+        "_source": {
+          "id": "mscr:schema:c2d91f5a-268f-4acf-ad93-73dc6fdec7d2",
+          "label": {
+            "en": "CLARIN Dublin Core"
+          },
+          "status": "DRAFT",
+          "modified": "2024-12-04T07:42:52.884Z",
+          "created": "2024-10-10T07:41:14.758Z",
+          "contentModified": "2024-10-10T07:41:14.758Z",
+          "type": "SCHEMA",
+          "state": "DEPRECATED",
+          "visibility": "PUBLIC",
+          "prefix": "mscr:schema:c2d91f5a-268f-4acf-ad93-73dc6fdec7d2",
+          "comment": {},
+          "contributor": [],
+          "organizations": [],
+          "isPartOf": [],
+          "language": [
+            "en"
+          ],
+          "format": "XSD",
+          "aggregationKey": "mscr:schema:c2d91f5a-268f-4acf-ad93-73dc6fdec7d2",
+          "hasRevision": "false",
+          "numberOfRevisions": 1,
+          "owner": [
+            "40438e38-ec5c-4606-9075-a2c29b016126"
+          ],
+          "versionLabel": "1",
+          "namespace": "http://test.com",
+          "handle": "21.T13999/EOSC-202410000279527"
+        },
+        "sort": [
+          null
+        ]
+      }
+    ]
+  }
+}

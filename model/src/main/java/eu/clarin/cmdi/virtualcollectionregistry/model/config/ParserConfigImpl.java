@@ -31,7 +31,10 @@ public class ParserConfigImpl implements ParserConfig {
     
     @Value("${eu.clarin.cmdi.vcr.parser.mscr.api_url:https://mscr-test.2.rahtiapp.fi/datamodel-api/v2/}")
     private String mscrApiUrl;
-     
+    
+    @Value("${eu.clarin.cmdi.vcr.parser.pidmr.api_url:https://api.pidmr.devel.argo.grnet.gr/v1/}")
+    private String pidmrApiUrl;
+    
     @Value("${eu.clarin.cmdi.vcr.parser.mscr.target_schema_query:CLARIN Dublin Core}")
     private String targetSchemaQuery;
 
@@ -66,6 +69,11 @@ public class ParserConfigImpl implements ParserConfig {
         return mscrApiUrl;
     }
 
+    @Override
+    public String getPidmrApiUrl() {
+        return pidmrApiUrl;
+    }
+    
     @Override
     public String getTargetSchemaQuery() {
         return targetSchemaQuery;

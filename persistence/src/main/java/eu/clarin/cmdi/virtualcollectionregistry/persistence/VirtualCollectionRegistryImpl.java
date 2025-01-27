@@ -53,7 +53,7 @@ import org.springframework.stereotype.Service;
 @Service
 public class VirtualCollectionRegistryImpl extends TxManager implements VirtualCollectionRegistry, InitializingBean, DisposableBean {
 
-    private final static String REQUIRED_DB_VERSION = "1.7.0";
+    private final static String REQUIRED_DB_VERSION = "1.8.0";
 
    //@Autowired
     private final DataStore datastore; //TODO: replace with Spring managed EM?
@@ -1027,16 +1027,16 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
     }
 
     @Override
-    public void addResourceScan(String ref, String sessionId, boolean useCache) throws VirtualCollectionRegistryException {
-        scanResource(ref, sessionId, false, useCache);
+    public void addResourceScan(String ref, String resolvedRef, String sessionId, boolean useCache) throws VirtualCollectionRegistryException {
+        scanResource(ref, resolvedRef, sessionId, false, useCache);
     }
 
     @Override
-    public void rescanResource(String ref, String sessionId, boolean useCache) throws VirtualCollectionRegistryException {
-        scanResource(ref, sessionId, true, useCache);
+    public void rescanResource(String ref, String resolvedRef, String sessionId, boolean useCache) throws VirtualCollectionRegistryException {
+        scanResource(ref, resolvedRef, sessionId, true, useCache);
     }
 
-    public void scanResource(String ref, String sessionId, boolean rescan, boolean useCache) throws VirtualCollectionRegistryException {
+    public void scanResource(String ref, String resolvedRef, String sessionId, boolean rescan, boolean useCache) throws VirtualCollectionRegistryException {
         logger.debug("Adding resource to scan (ref={}, sessionId={}), rescan={}", ref, sessionId, rescan);
         try {
             beginTransaction(datastore.getEntityManager());
@@ -1051,7 +1051,7 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
             ResourceScan scan_to_persist = null;
             Date now = new Date();
             if(scans.isEmpty()) {
-                scan_to_persist = new ResourceScan(ref, sessionId);
+                scan_to_persist = new ResourceScan(ref, resolvedRef, sessionId);
             } else {
                 for(ResourceScan scan: scans) {
                     long diff_in_ms = now.getTime() - scan.getLastScan().getTime();

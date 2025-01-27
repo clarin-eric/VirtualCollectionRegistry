@@ -23,11 +23,18 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualColle
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan.State;
+import eu.clarin.cmdi.virtualcollectionregistry.model.config.ParserConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.model.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidLink;
+import eu.clarin.pidmr.client.PidNotFoundException;
+import eu.clarin.pidmr.client.PidmrClientConfig;
+import eu.clarin.pidmr.client.PidmrClientImpl;
+import eu.clarin.pidmr.client.PidmrException;
+import java.net.URI;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
+import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
 import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
@@ -39,6 +46,7 @@ import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 import org.apache.wicket.model.Model;
+import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -65,33 +73,44 @@ public class ReferencesEditor extends ComposedField {
     private boolean currentValidation = false;
     private boolean previousValidation = false;
 
+    @SpringBean
+    private ParserConfig parserConfig;
+    
+    private final PidmrClientConfig pidMrConfig;// = new PidmrClientConfig("127.0.0.1", 8888);
+    
     public class Validator implements InputValidator, Serializable {
         private String message = "";
             
         @Override
         public boolean validate(String input) {
             message = "";
-            boolean validUrl = false;
-            boolean validPid = false;
-
+            
             //Try to parse url
             try {
                 new URL(input);
-                validUrl = true;
+                return true;
             } catch(MalformedURLException ex) {
                 message += !message.isEmpty() ? "<br />" : "";
-                message += ex.getMessage()+".";
+                message += "Not a valid URL: "+ex.getMessage()+".";
             }
 
             //Try to parse handle
+            
             if(PidLink.isSupportedPersistentIdentifier(input)) {
-                validPid = true;
+                return true;
             } else {
                 message += !message.isEmpty() ? "<br />" : "";
-                message += "Not a valid persistent identifier.";
+                message += "Not a valid supported persistent identifier.";
             }
 
-            return (validUrl || validPid);
+            try {
+                new PidmrClientImpl(pidMrConfig).validatePid(input);
+                return true;
+            } catch(PidmrException ex) {
+                message += !message.isEmpty() ? "<br />" : "";
+                message += "Not handled by PID meta resolver.";
+            }
+            return false;
         }
 
         @Override
@@ -113,6 +132,7 @@ public class ReferencesEditor extends ComposedField {
             result.setOrigin(r.getOrigin());
             result.setOriginalQuery(r.getOriginalQuery());
             result.setRef(r.getRef());
+            result.setResolvedRef(r.getResolvedRef());
             result.setType(r.getType());
             return result;
         }
@@ -140,7 +160,11 @@ public class ReferencesEditor extends ComposedField {
         }
     }
     
-    public class ExamplePanel extends Panel implements Serializable {
+    public interface Clickable {
+        public void handleClick();
+    }
+    
+    public abstract class ExamplePanel extends Panel implements Serializable, Clickable {
         public ExamplePanel(String id, Example example, String inputMarkupId) {
             super(id);
             
@@ -149,31 +173,14 @@ public class ReferencesEditor extends ComposedField {
             tf.setOutputMarkupId(true);            
             add(tf);
             
-            WebMarkupContainer btn = new WebMarkupContainer("btn");
-            /*
-            btn.add(new AttributeAppender("data-clipboard-target",
-                new AbstractReadOnlyModel<String>() {
-                    @Override
-                    public String getObject() {                        
-                        return "#"+tf.getMarkupId();
-                    }
-                }, " "));
-            */
             
-            btn.add(new AttributeAppender("data-example-value",
-                new IModel<String>() {
-                    @Override
-                    public String getObject() {                        
-                        return "#"+tf.getMarkupId();
-                    }
-                }, " "));
-            btn.add(new AttributeAppender("data-example-target",
-                new IModel<String>() {
-                    @Override
-                    public String getObject() {                        
-                        return "#"+inputMarkupId;
-                    }
-                }, " "));
+            AjaxFallbackLink btn = new AjaxFallbackLink<>("btn") {
+                @Override
+                public void onClick(Optional<AjaxRequestTarget> target) {                    
+                    completeReferenceSubmit(example.getUrl(), null, target.isPresent() ? target.get() : null);
+                }
+            };
+            
             add(btn);
         }
         
@@ -193,12 +200,13 @@ public class ReferencesEditor extends ComposedField {
     private boolean useCache = false;
     
     public interface RescanHandler extends Serializable {
-        public void rescan(String reg, AjaxRequestTarget target);
+        public void rescan(String reg, String resolvedRef, AjaxRequestTarget target);
     }
 
     public ReferencesEditor(String id, String label, Model<Boolean> advancedEditorMode, VisabilityUpdater updater, TimerManager timerManager, VcrConfig vcrConfig) {
         super(id, "References", null, updater);
         this.timerManager = timerManager;
+        this.pidMrConfig = new PidmrClientConfig(parserConfig.getPidmrApiUrl());
         setOutputMarkupId(true);
         componentToUpdate = this;
 
@@ -316,8 +324,8 @@ public class ReferencesEditor extends ComposedField {
                 
                 RescanHandler rescanHandler = new RescanHandler() {
                     @Override
-                    public void rescan(String ref, AjaxRequestTarget target) {
-                        rescanReferenceJob(ref, useCache);
+                    public void rescan(String ref, String resolvedRef, AjaxRequestTarget target) {
+                        rescanReferenceJob(ref, resolvedRef, useCache);
                         addToTimerManager(target);
                     }
                 };
@@ -432,11 +440,6 @@ public class ReferencesEditor extends ComposedField {
         f1.addValidator(new Validator());
         add(f1);
 
-        //AbstractField f2 = new VcrTextFieldWithoutLabel("reference_title", "Set a title for this new reference", mdlReferenceTitle, this,null);
-        //f2.setCompleteSubmitOnUpdate(true);
-        //f2.setRequired(true);
-        //add(f2);
-        
         //Add examples
         //TODO: only enable in alpha mode?
         List<Example> examples = new LinkedList<>();
@@ -449,7 +452,13 @@ public class ReferencesEditor extends ComposedField {
         ListView<Example> listExamples = new ListView("listExample", examples) {
             @Override
             protected void populateItem(ListItem item) {
-                item.add(new ExamplePanel("pnl_example", (Example)item.getModel().getObject(), urlInputMarkupId));
+                item.add(new ExamplePanel("pnl_example", (Example)item.getModel().getObject(), urlInputMarkupId) {
+                    @Override
+                    public void handleClick() {
+                        
+                    }
+                    
+                });
             }
         };
         listExamples.setVisible(vcrConfig.isReferenceExamplesEnabled());
@@ -599,8 +608,11 @@ public class ReferencesEditor extends ComposedField {
     @Override
     public boolean completeSubmit(AjaxRequestTarget target) {
         String value = data.getObject();
-        String title = mdlReferenceTitle.getObject();
-
+        String title = mdlReferenceTitle.getObject();        
+        return completeReferenceSubmit(value, title, target);
+    }
+    
+    private boolean completeReferenceSubmit(String value, String title, AjaxRequestTarget target) {
         logger.debug("Completing reference submit: value="+value+",title="+title);
         if(value != null && !value.isEmpty()) {// && title != null && !title.isEmpty()) {
             //Check if the supplied url (value) is duplicate or not
@@ -616,15 +628,21 @@ public class ReferencesEditor extends ComposedField {
             if(duplicate) {
                 logger.debug("Skipping duplicate url: {}", value);
                 return false;
-            } else if(handleUrl(value)) {
-                Resource r = new Resource(Resource.Type.RESOURCE, value, title);
-                r.setDisplayOrder(getNextDisplayOrder());
-                addReferenceJob(EditableResource.fromResource(r), useCache);
-                data.setObject("");
-                mdlReferenceTitle.setObject("");
-            } else if(handlePid(value)) {
-                String actionableValue = PidLink.getActionableUri(value);
-                Resource r = new Resource(Resource.Type.RESOURCE, actionableValue, title);
+            } 
+            
+            //Resolve url
+            String actionableUri = null;
+            if((actionableUri = handleUrl(value)) != null) {
+                logger.trace("Value was url");
+            } else if((actionableUri = handlePid(value)) != null) {
+                logger.trace("Value was supported pid");
+            } else if((actionableUri = handlePidmr(value)) != null ) {
+                logger.trace("Value was pidmr pid");
+            } 
+            
+            //Add the reference job
+            if(actionableUri != null) {
+                Resource r = new Resource(Resource.Type.RESOURCE, value, actionableUri, title);
                 r.setDisplayOrder(getNextDisplayOrder());
                 addReferenceJob(EditableResource.fromResource(r), useCache);
                 data.setObject("");
@@ -636,8 +654,8 @@ public class ReferencesEditor extends ComposedField {
                 return false;
             }
 
-            fireEvent(new DataUpdatedEvent(target));
-            
+            //Update UI
+            fireEvent(new DataUpdatedEvent(target));            
             if(target != null) {
                 lblNoReferences.setVisible(references.isEmpty());
                 listview.setModelObject(f.apply(references));
@@ -663,10 +681,10 @@ public class ReferencesEditor extends ComposedField {
 
             //Add resource scan placeholder, will be replaced with instance fetched from the database
             //This ensures we have something to render in the UI, even if there is no database / api communication.
-            scanResults.put(r.getRef(), new ResourceScan(r.getRef(), sessionId));
+            scanResults.put(r.getRef(), new ResourceScan(r.getRef(), r.getResolvedRef(), sessionId));
             scanResultsTimestamp.put(r.getRef(), new Date());
             //Insert the scan into the database
-            Application.get().getRegistry().addResourceScan(r.getRef(), sessionId, useCache);
+            Application.get().getRegistry().addResourceScan(r.getRef(), r.getResolvedRef(), sessionId, useCache);
         } catch(Exception ex) {
             logger.error("Failed to create new resource scan.", ex);
         }
@@ -681,13 +699,13 @@ public class ReferencesEditor extends ComposedField {
                 sessionId = getSession().getId();
             }
 
-            Application.get().getRegistry().addResourceScan(r.getRef(), sessionId, useCache);
+            Application.get().getRegistry().addResourceScan(r.getRef(), r.getResolvedRef(), sessionId, useCache);
         } catch(Exception ex) {
             logger.error("Failed to create new resource scan.", ex);
         }
     }
 
-    private void rescanReferenceJob(String ref, boolean useCache) {
+    private void rescanReferenceJob(String ref, String resolvedRef, boolean useCache) {
         logger.info("rescanReferenceJob: ref={}", ref);
         try {
             String sessionId = null;
@@ -697,24 +715,39 @@ public class ReferencesEditor extends ComposedField {
 
             scanResultsTimestamp.put(ref, new Date());
             scanResultsTimedout.remove(ref);
-            Application.get().getRegistry().rescanResource(ref, sessionId, useCache);
+            Application.get().getRegistry().rescanResource(ref, resolvedRef, sessionId, useCache);
         } catch(Exception ex) {
             logger.error("Failed to create new resource scan.", ex);
         }
     }
     
-    private boolean handleUrl(String value) {
+    private String handleUrl(String value) {
         try {
-            new URL(value);
+            URL url = new URL(value);
+            return url.toExternalForm();
         } catch(MalformedURLException ex) {
             logger.debug("Failed to parse value: "+value+" as url", ex);
-            return false;
+            //return false;
         }
-        return true;
+        return null;
     }
     
-    private boolean handlePid(String value) {
-        return PidLink.isSupportedPersistentIdentifier(value);
+    private String handlePid(String value) {
+        if(PidLink.isSupportedPersistentIdentifier(value)) {
+            return PidLink.getActionableUri(value);
+        }
+        return null;
+    }
+    
+    
+    private String handlePidmr(String value) {
+        try {
+            String result = new PidmrClientImpl(pidMrConfig).resolvePid(value);
+            return result;
+        } catch(PidNotFoundException | PidmrException ex) {
+            logger.debug("Failed to parse value: "+value+ " with pidmr", ex);
+        }
+        return null;
     }
     
     public void reset() {

@@ -24,6 +24,14 @@ package eu.clarin.pidmr.client;
 public interface PidmrClient {
     
     /**
+     * Check if the input is a valid and support pid which can be resolved.
+     * @param pid
+     * @return
+     * @throws PidmrException 
+     */
+    public String validatePid(String pid) throws PidmrException;
+    
+    /**
      * Resolve a pid to the associated url.
      * 
      * @param pid The pid to resolve.

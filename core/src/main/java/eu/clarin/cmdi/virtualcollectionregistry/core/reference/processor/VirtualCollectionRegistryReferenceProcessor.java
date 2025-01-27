@@ -80,21 +80,21 @@ public class VirtualCollectionRegistryReferenceProcessor {
         ReferenceHttpResponseHandler responseHandler = new ReferenceHttpResponseHandler(parsers, datastore, scan);
         String exceptionMsg = null;
         try {
-            if(!skipList.containsKey(scan.getRef())) {
-                logger.debug("Validating reference = "+scan.getRef());
-                HttpGet httpget = new HttpGet(scan.getRef());
+            if(!skipList.containsKey(scan.getResolvedRef())) {
+                logger.debug("Validating reference = "+scan.getRef()+", resolved to = "+scan.getResolvedRef());
+                HttpGet httpget = new HttpGet(scan.getResolvedRef());
                 httpget.setConfig(requestConfig);
                 httpclient.execute(httpget, responseHandler);            
             } else {
-                logger.warn("Skipped problematic (failed before) reference: "+scan.getRef()); 
+                logger.warn("Skipped problematic (failed before) reference: "+scan.getResolvedRef()); 
             }
         } catch(Exception ex) {
             try {
                 scan.setException(ex.getMessage());
                 datastore.getEntityManager().merge(scan);
             } catch(Exception ex2) {
-                logger.warn("Added "+scan.getRef()+" to the skiplist.", ex);
-                skipList.put(scan.getRef(), Boolean.TRUE);
+                logger.warn("Added "+scan.getResolvedRef()+" to the skiplist.", ex);
+                skipList.put(scan.getResolvedRef(), Boolean.TRUE);
             }
         }
     }    

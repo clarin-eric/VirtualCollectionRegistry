@@ -54,6 +54,7 @@
         <!--module>orig</module-->
         <module>dtr-client</module>
         <module>pidmr-client</module>
+        <module>mscr-client</module>
     </modules>
 
     <properties>

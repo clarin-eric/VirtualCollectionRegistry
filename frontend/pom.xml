@@ -401,7 +401,12 @@
             <artifactId>rest-client</artifactId>
             <version>${project.version}</version>
         </dependency>
-        --> 
+        -->
+        <dependency>
+            <groupId>eu.clarin</groupId>
+            <artifactId>pidmr-client</artifactId>
+            <version>1.9.0-SNAPSHOT</version>
+        </dependency>
     </dependencies>
 
     <build>

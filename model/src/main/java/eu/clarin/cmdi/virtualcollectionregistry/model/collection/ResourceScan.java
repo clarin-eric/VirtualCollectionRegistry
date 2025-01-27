@@ -73,9 +73,12 @@ public class ResourceScan implements Serializable, Comparable<ResourceScan>  {
     @Column(name = "id", nullable = false, updatable = false)
     private Long id;
 
-    @Column(name = "ref", nullable = false, length = 255)
+    @Column(name = "ref", nullable = false, length = 2048)
     private String ref;
 
+    @Column(name = "ref_resolved", nullable = false, length = 2048)
+    private String resolvedRef;
+    
     @Column(name = "session_id", nullable = false, length = 255)
     private String sessionId;
 
@@ -124,9 +127,10 @@ public class ResourceScan implements Serializable, Comparable<ResourceScan>  {
     
     public ResourceScan() {}
 
-    public ResourceScan(String ref, String sessionId) {
+    public ResourceScan(String ref, String resolvedRef, String sessionId) {
         this.ref = ref;
         this.sessionId = sessionId;
+        this.resolvedRef = resolvedRef;
         this.created = new Date();
     }
 
@@ -470,5 +474,19 @@ public class ResourceScan implements Serializable, Comparable<ResourceScan>  {
         Collections.sort(logKVs);
         
         return logKVs;
+    }
+
+    /**
+     * @return the resolved_ref
+     */
+    public String getResolvedRef() {
+        return resolvedRef;
+    }
+
+    /**
+     * @param resolvedRef the resolvedRef to set
+     */
+    public void setResolvedRef(String resolvedRef) {
+        this.resolvedRef = resolvedRef;
     }
 }

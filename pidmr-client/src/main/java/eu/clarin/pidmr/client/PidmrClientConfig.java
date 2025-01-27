@@ -21,54 +21,23 @@ package eu.clarin.pidmr.client;
  * @author wilelb
  */
 public class PidmrClientConfig {
-    private String scheme = "http";
-    private String host;
-    private Integer port;
+    private String apiBaseUrl;
     
-    public PidmrClientConfig(String host, int port) {
-        this.host = host;
-        this.port = port;
+    public PidmrClientConfig(String apiBaseUrl) {
+        this.apiBaseUrl = apiBaseUrl;
     }
 
     /**
-     * @return the host
+     * @return the apiBaseUrl
      */
-    public String getHost() {
-        return host;
+    public String getApiBaseUrl() {
+        return apiBaseUrl;
     }
 
     /**
-     * @param host the host to set
+     * @param apiBaseUrl the apiBaseUrl to set
      */
-    public void setHost(String host) {
-        this.host = host;
-    }
-
-    /**
-     * @return the port
-     */
-    public Integer getPort() {
-        return port;
-    }
-
-    /**
-     * @param port the port to set
-     */
-    public void setPort(int port) {
-        this.port = port;
-    }
-
-    /**
-     * @return the scheme
-     */
-    public String getScheme() {
-        return scheme;
-    }
-
-    /**
-     * @param scheme the scheme to set
-     */
-    public void setScheme(String scheme) {
-        this.scheme = scheme;
+    public void setApiBaseUrl(String apiBaseUrl) {
+        this.apiBaseUrl = apiBaseUrl;
     }
 }

@@ -64,14 +64,14 @@ public class ScanResource {
     }
     
     @POST
-    public Response addResourceScan(@PathParam("ref") String ref, @PathParam("session") String session, @PathParam("cache") boolean useCache) throws VirtualCollectionRegistryException {        
-        registry.addResourceScan(ref, session, useCache);
+    public Response addResourceScan(@PathParam("ref") String ref, @PathParam("actionable_ref") String actionableRef, @PathParam("session") String session, @PathParam("cache") boolean useCache) throws VirtualCollectionRegistryException {        
+        registry.addResourceScan(ref, actionableRef, session, useCache);
         return Response.ok().build();
     }
     
     @PUT
-    public Response updateResourceScan(@PathParam("ref") String ref, @PathParam("session") String session, @PathParam("cache") boolean useCache) throws VirtualCollectionRegistryException {        
-        registry.rescanResource(ref, session, useCache);
+    public Response updateResourceScan(@PathParam("ref") String ref, @PathParam("actionable_ref") String actionableRef, @PathParam("session") String session, @PathParam("cache") boolean useCache) throws VirtualCollectionRegistryException {        
+        registry.rescanResource(ref, actionableRef, session, useCache);
         return Response.ok().build();
     }
 }

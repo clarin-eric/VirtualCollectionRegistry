@@ -29,29 +29,44 @@ import jakarta.ws.rs.core.Response;
 public class PidmrClientImpl implements PidmrClient {
     
     private final PidmrClientConfig config;
-    private final String apiBaseUrl;
     
     public PidmrClientImpl(PidmrClientConfig config) {
         this.config = config;
-        this.apiBaseUrl = config.getScheme()+"://"+config.getHost()+(config.getPort() != null ? ":"+config.getPort() : "");
     }
     
     @Override
-    public String resolvePid(String pid) throws PidNotFoundException, PidmrException {
+    public String validatePid(String pid) throws PidmrException {
         final Client client = ClientBuilder.newClient();
         WebTarget webTarget = 
-            client.target(config.getScheme()+"://"+config.getHost()+":"+config.getPort())
-                .path("v1/metaresolvers/resolve?pid="+pid+"&pidMode=landingpage&redirect=false");
+            client.target(config.getApiBaseUrl())
+                .path("providers/validate")
+                .queryParam("pid", pid);
         Response response = webTarget.request(MediaType.APPLICATION_JSON).get();
         if(response.getStatus() == 200) {
             String responseBody = response.readEntity(String.class);
             return responseBody;
+        }
+        
+        throw new PidmrException("Unexpected response code " + response.getStatus());
+    }
+    @Override
+    public String resolvePid(String pid) throws PidNotFoundException, PidmrException {
+        final Client client = ClientBuilder.newClient();
+        WebTarget webTarget = 
+            client.target(config.getApiBaseUrl())
+                .path("metaresolvers/resolve")
+                .queryParam("pid", pid)
+                .queryParam("pidMode", "landingpage")
+                .queryParam("redirect", "false");
+        Response response = webTarget.request(MediaType.APPLICATION_JSON).get();
+        if(response.getStatus() == 200) {
+            ResolutionResponse responseBody = response.readEntity(ResolutionResponse.class);
+            return responseBody.getUrl();
         } else if(response.getStatus() == 404) {
             throw new PidNotFoundException(pid);
         }
         
         throw new PidmrException("Unexpected response code " + response.getStatus());
-        //ResolutionResponse resolutionResponse = response.readEntity(ResolutionResponse.class);
-        //return resolutionResponse.getUrl();
     }
+    
 }

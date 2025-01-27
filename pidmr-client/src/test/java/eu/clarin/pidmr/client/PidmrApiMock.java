@@ -141,7 +141,7 @@ public class PidmrApiMock {
     private MockResponse doResolve(String pid, String pidMode, boolean redirect) {
         Pid p = registeredPids.get(pid);
         if(p == null) {
-            return new MockResponse().setResponseCode(400);
+            return new MockResponse().setResponseCode(404);
         }
         
         String url = null;

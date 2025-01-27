@@ -62,29 +62,6 @@
             
             <!-- Modal -->
             <div id="myModal" wicket:id="references_modal"></div>
-            
-            <script>                
-                /* Inject click handler into all buttons with a data-bs-example-target attribute */                
-                const items = document.querySelectorAll('button[data-bs-example-target]');
-                items.forEach((btn) => {
-                    const valueElementId = btn.dataset["exampleValue"];
-                    const targetElementId = btn.dataset["exampleTarget"] + " input";                        
-                    btn.addEventListener("click", (e) => {                                              
-                        const valueElements = document.querySelectorAll(valueElementId);
-                        const targetElements = document.querySelectorAll(targetElementId);
-                        if(valueElements.length <= 0) {
-                            console.warn("No element found for value with id=", valueElementId);
-                        } else if(targetElements.length <= 0) {
-                            console.warn("No element found for target with id=", targetElementId);
-                        } else {
-                            const valueElement = valueElements[0];
-                            const targetElement = targetElements[0];
-                            targetElement.value = valueElement.value;
-                            targetElement.focus();       
-                        }
-                    });
-                });
-            </script>
         </wicket:panel>       
         
     </body>

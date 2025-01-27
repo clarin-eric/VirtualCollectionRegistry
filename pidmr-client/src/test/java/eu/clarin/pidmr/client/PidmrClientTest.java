@@ -31,7 +31,8 @@ import org.slf4j.LoggerFactory;
 public class PidmrClientTest {
     private final static Logger logger = LoggerFactory.getLogger(PidmrClientTest.class);
  
-    private final PidmrClientConfig config = new PidmrClientConfig("127.0.0.1", 8888);
+    private final int testApiPort = 8888;
+    private final PidmrClientConfig config = new PidmrClientConfig("http://127.0.0.1:"+testApiPort+"/v1/");
         
     private PidmrApiMock apiMock;
     
@@ -49,7 +50,7 @@ public class PidmrClientTest {
                 "http://example.com/landingpage2", 
                 "http://example.com/metadata2", 
                 "http://example.com/resource2");
-        apiMock.start(config.getPort());
+        apiMock.start(testApiPort);
     }
 
     @After

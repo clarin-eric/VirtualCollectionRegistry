@@ -23,6 +23,8 @@ package eu.clarin.pidmr.client;
 public class ResolutionResponse {
     private String url;
         
+    public ResolutionResponse() {}
+    
     public ResolutionResponse(String url) {
         this.url = url;
     }

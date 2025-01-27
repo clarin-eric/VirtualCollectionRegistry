@@ -113,6 +113,6 @@ public interface VirtualCollectionRegistry {
     ResourceScan getResourceScanForRef(String ref) throws VirtualCollectionRegistryException;
     List<ResourceScan> getAllResourceScans() throws VirtualCollectionRegistryException;
     List<ResourceScan> getResourceScansForRefs(List<String> refs) throws VirtualCollectionRegistryException;
-    void addResourceScan(String ref, String sessionId, boolean useCache) throws VirtualCollectionRegistryException;
-    void rescanResource(String ref, String sessionId, boolean useCache) throws VirtualCollectionRegistryException;
+    void addResourceScan(String ref, String resolvedRef, String sessionId, boolean useCache) throws VirtualCollectionRegistryException;
+    void rescanResource(String ref, String resolvedRef, String sessionId, boolean useCache) throws VirtualCollectionRegistryException;
 } // interface VirtualCollectionRegistry

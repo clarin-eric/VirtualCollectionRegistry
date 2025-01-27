@@ -206,6 +206,7 @@ public class ReferencePanel extends Panel {
         }
         */
         editorWrapper.add(new Label("value", urlValue));
+        editorWrapper.add(new Label("resolved_value", ref.getResolvedRef()));
 
         Label lblWaiting = new Label("lbl_waiting", "Waiting on analysis");
         lblWaiting.setVisible(ResourceScan.isStateAnalyzing(state));

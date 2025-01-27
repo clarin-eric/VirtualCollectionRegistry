@@ -100,8 +100,13 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
     
     @XmlElement(name = "ref")
     @JsonProperty(value = "ref")
-    @Column(name = "ref", nullable = false, length = 255)
+    @Column(name = "ref", nullable = false, length = 2048)
     private String ref;
+    
+    @XmlElement(name = "ref_resolved")
+    @JsonProperty(value = "ref_resolved")
+    @Column(name = "ref_resolved", nullable = false, length = 2048)
+    private String resolvedRef;
     
     @XmlElement(name = "label")
     @JsonProperty(value = "label")
@@ -141,18 +146,36 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
         this.displayOrder = 0L;
     }
     
+    /**
+     * Both ref and resolvedRef are set to ref parameter value, typically the case
+     * for plain URLs
+     * 
+     * @param type
+     * @param ref 
+     */
     public Resource(Resource.Type type, String ref) {
         super();
         this.displayOrder = 0L;
         this.setType(type);
         this.setRef(ref);
+        this.setResolvedRef(ref);
     }
 
-    public Resource(Resource.Type type, String ref, String label) {
+    /**
+     * Ref and resolvedRef can have different value, typically the case for handles
+     * in uri form: hdl:1234/56789
+     * 
+     * @param type
+     * @param ref
+     * @param resolvedRef
+     * @param label 
+     */
+    public Resource(Resource.Type type, String ref, String resolvedRef, String label) {
         super();
         this.displayOrder = 0L;
         this.setType(type);
         this.setRef(ref);
+        this.setResolvedRef(resolvedRef);
         this.setLabel(label);
     }
 
@@ -375,6 +398,20 @@ public class Resource implements Serializable, IdentifiedEntity, PersistentIdent
      */
     public void setKvs(Set<ResourceKv> kvs) {
         this.kvs = kvs;
+    }
+
+    /**
+     * @return the resolvedRef
+     */
+    public String getResolvedRef() {
+        return resolvedRef;
+    }
+
+    /**
+     * @param resolvedRef the resolvedRef to set
+     */
+    public void setResolvedRef(String resolvedRef) {
+        this.resolvedRef = resolvedRef;
     }
 
 } // class Resource
