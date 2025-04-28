@@ -31,8 +31,9 @@ public class DtrClientImpl implements DtrClient {
     
     public DtrClientImpl(DtrClientConfig config) {
         this.config = config;
-        this.apiBaseUrl = config.getScheme()+"://"+config.getHost()+(config.getPort() != null ? ":"+config.getPort() : "");
+        this.apiBaseUrl = config.getScheme()+"://"+config.getHost()+(config.getPort() != -1 ? ":"+config.getPort() : "");
     }
+
     
     @Override
     public DtrType getType(String typeId) {

@@ -17,6 +17,20 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 @Table(name = "creator")
 public class Creator implements Serializable, IdentifiedEntity, Orderable, Comparable {
 
+    /**
+     * @return the externalAuthorId
+     */
+    public String getExternalAuthorId() {
+        return externalAuthorId;
+    }
+
+    /**
+     * @param externalAuthorId the externalAuthorId to set
+     */
+    public void setExternalAuthorId(String externalAuthorId) {
+        this.externalAuthorId = externalAuthorId;
+    }
+
     private final static String UNKOWN_FAMILY_NAME = "Unkown";
     private final static String UNKOWN_GIVEN_NAME = "Unkown";
 
@@ -27,6 +41,12 @@ public class Creator implements Serializable, IdentifiedEntity, Orderable, Compa
     @Column(name = "id", nullable = false, updatable = false)
     private Long id;
 
+    /**
+     * External author id, such as ORCHID
+     */
+    @Column(name = "external_id", nullable = true, length = 255)
+    private String externalAuthorId;
+    
     @Column(name = "family_name", nullable = false, length = 255)
     private String familyName;
 

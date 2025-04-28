@@ -19,6 +19,7 @@ import static eu.clarin.cmdi.virtualcollectionregistry.model.collection.Resource
 import static eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan.State.FAILED;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScanLogKV;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidLink;
+import java.text.SimpleDateFormat;
 import java.util.Optional;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -206,7 +207,9 @@ public class ReferencePanel extends Panel {
         }
         */
         editorWrapper.add(new Label("value", urlValue));
-        editorWrapper.add(new Label("resolved_value", ref.getResolvedRef()));
+        Label resolvedUrlLabel = new Label("resolved_value", " --> Resolved as: "+ref.getResolvedRef());
+        resolvedUrlLabel.setVisible(!ref.getResolvedRef().equalsIgnoreCase(urlValue));
+        editorWrapper.add(resolvedUrlLabel);
 
         Label lblWaiting = new Label("lbl_waiting", "Waiting on analysis");
         lblWaiting.setVisible(ResourceScan.isStateAnalyzing(state));
@@ -361,12 +364,13 @@ public class ReferencePanel extends Panel {
         spinner.add(new Label("spinner_text", spinnerLabelModel));
         editorWrapper.add(spinner);
 
+        SimpleDateFormat sdf = new SimpleDateFormat("YYYY-MM-DD HH:mm:ss");
         editorWrapper.add(new ListView<ResourceScanLogKV>("rows", scan.getLatestLogs()) {
             public void populateItem(final ListItem<ResourceScanLogKV> item) {
                 final ResourceScanLogKV datum = item.getModelObject();
-                item.add(new Label("rows-id1", datum.getScanLog().getId()));
-                item.add(new Label("rows-id2", datum.getId()));
-                item.add(new Label("rows-ts", datum.getScanLog().getStart().toString()));
+                //item.add(new Label("rows-id1", datum.getScanLog().getId()));
+                //item.add(new Label("rows-id2", datum.getId()));
+                item.add(new Label("rows-ts", sdf.format(datum.getScanLog().getStart())));
                 item.add(new Label("rows-processor",datum.getScanLog().getProcessorId()));
                 item.add(new Label("rows-key", datum.getKey()));
                 item.add(new Label("rows-value", datum.getValue()));

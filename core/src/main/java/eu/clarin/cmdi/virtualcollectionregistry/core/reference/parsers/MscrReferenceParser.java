@@ -137,13 +137,13 @@ public class MscrReferenceParser implements ReferenceParser {
     @Override
     public boolean parse(String xml, String mimeType) throws Throwable {
         result = new ReferenceParserResult();
-        if(mimeType.toLowerCase().startsWith("text/xml")) {
+        //if(mimeType.toLowerCase().startsWith("text/xml")) {
             if(config.isMscrParserWithDtrExtendedTypesEnabled()) {
                 performParsingDtr(xml, mimeType);
             } else {
                 performParsing(xml, mimeType);
             }                        
-        }
+        //}
         return true;
     }
 
@@ -180,6 +180,9 @@ public class MscrReferenceParser implements ReferenceParser {
     protected void performParsingDtr(String xml, String mimeType) {
         result.addProcessStep("performParsingDtr");
         try {
+            
+            
+            
             String dataTypeId = "21.T11969/710b1a3647d431e205e0";
             result.addProcessStep("Found datatype with id: " + dataTypeId);
             

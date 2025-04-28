@@ -14,5 +14,7 @@ ALTER TABLE resource MODIFY ref VARCHAR(2048);
 ALTER TABLE resource_scan ADD COLUMN `ref_resolved` VARCHAR(2048) NULL;
 ALTER TABLE resource_scan MODIFY ref VARCHAR(2048);
 
+ALTER TABLE creator ADD COLUMN `external_id` VARCHAR(255) NULL;
+
 -- Update current database config value
 UPDATE `config` SET `value` = '1.8.0' WHERE `key` = 'db_version';

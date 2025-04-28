@@ -443,11 +443,13 @@ public class ReferencesEditor extends ComposedField {
         //Add examples
         //TODO: only enable in alpha mode?
         List<Example> examples = new LinkedList<>();
-        examples.add(new Example("TEI example 1", "https://llds.ling-phil.ox.ac.uk/llds/xmlui/bitstream/handle/20.500.14106/A39119/A39119.xml"));
-        examples.add(new Example("TEI example 2", "https://llds.ling-phil.ox.ac.uk/llds/xmlui/bitstream/handle/20.500.14106/A02252/A02252.xml?sequence=5&isAllowed=y"));
-        examples.add(new Example("CMDI example 1", "http://dali.talkbank.org/data-cmdi/childes-data/DutchAfrikaans/Wijnen.cmdi"));
-        examples.add(new Example("CMDI example 2", "https://archive.mpi.nl/tla/islandora/object/tla%3A1839_00_0000_0000_0005_783E_5/datastream/CMD/download"));
-        examples.add(new Example("Website example 1", "https://www.clarin.eu"));
+        examples.add(new Example("TEI example 1", "https://hdl.handle.net/20.500.14106/A39119"));
+        examples.add(new Example("TEI example 1':", "https://llds.ling-phil.ox.ac.uk/llds/xmlui/bitstream/handle/20.500.14106/A39119/A39119.xml"));
+        examples.add(new Example("TEI example 2:", "https://llds.ling-phil.ox.ac.uk/llds/xmlui/bitstream/handle/20.500.14106/A02252/A02252.xml?sequence=5&isAllowed=y"));
+        examples.add(new Example("CMDI example 1:", "http://dali.talkbank.org/data-cmdi/childes-data/DutchAfrikaans/Wijnen.cmdi"));
+        examples.add(new Example("CMDI example 2:", "https://archive.mpi.nl/tla/islandora/object/tla%3A1839_00_0000_0000_0005_783E_5/datastream/CMD/download"));
+        examples.add(new Example("Website example 1:", "https://www.clarin.eu"));
+        examples.add(new Example("arXiv example:", "arXiv:2501.09773"));
         
         ListView<Example> listExamples = new ListView("listExample", examples) {
             @Override

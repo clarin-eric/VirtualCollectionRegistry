@@ -3,8 +3,24 @@
   <!-- *******
      * VCR *
      ******* -->
-  <Resource auth="Container" defaultAutoCommit="false" driverClassName="com.mysql.cj.jdbc.Driver" maxIdle="4" maxTotal="8" maxWaitMillis="10000" name="jdbc/VirtualCollectionStore" password="vcrpassword" removeAbandonedOnBorrow="true" removeAbandonedOnMaintenance="true" type="javax.sql.DataSource" url="jdbc:mysql://localhost:3306/vcr" username="vcruser" validationQuery="SELECT 1"/>
+  <Resource 
+        auth="Container" 
+        defaultAutoCommit="false" 
+        driverClassName="com.mysql.cj.jdbc.Driver" 
+        maxIdle="4" 
+        maxTotal="8" 
+        maxWaitMillis="10000" 
+        name="jdbc/VirtualCollectionStore" 
+        password="vcrpassword" 
+        removeAbandonedOnBorrow="true" 
+        removeAbandonedOnMaintenance="true" 
+        type="javax.sql.DataSource" 
+        url="jdbc:mysql://localhost:3306/vcr" 
+        username="vcruser" 
+        validationQuery="SELECT 1"/>
+  
   <!--
+
     <Resource name="jdbc/VirtualCollectionStore" auth="Container"
               type="javax.sql.DataSource"
               maxTotal="8" maxIdle="4" maxWaitMillis="10000"

@@ -118,7 +118,7 @@ import org.slf4j.LoggerFactory;
              add(new Label("name", a.getPerson()));
              add(new Label("email", a.getEMail()));
              add(new Label("affiliation", a.getOrganisation()));
-
+             add(new Label("author-id", a.getExternalAuthorId()));
              AjaxFallbackLink<AjaxRequestTarget> orderTopButton = new AjaxFallbackLink<>("btn_order_top") {
                  @Override
                  public void onClick(Optional<AjaxRequestTarget> target) {
@@ -218,7 +218,8 @@ import org.slf4j.LoggerFactory;
          private final IModel<String> mdlGivenName = new Model<>();
          private final IModel<String> mdlEmail = new Model<>();
          private final IModel<String> mdlAffiliation = new Model<>();
-
+         private final IModel<String> mdlExternalId = new Model<>();
+         
          private final List<AbstractField> fields = new ArrayList<>();
 
          private final Editable<Creator> editableAuthor;
@@ -283,17 +284,21 @@ import org.slf4j.LoggerFactory;
                  }
              });
              AbstractField f4 = new VcrTextField("author_affiliation", "Affiliation", "New author affiliation (optional)", mdlAffiliation, this,null);
-             f4.setCompleteSubmitOnUpdate(true);
-
+             //f4.setCompleteSubmitOnUpdate(true);
+             AbstractField f5 = new VcrTextField("author-id", "Author Identifier", "External author identifier, such as ORCID (optional)", mdlExternalId, this,null);
+             f5.setCompleteSubmitOnUpdate(true);
+             
              fields.add(f1);
              fields.add(f2);
              fields.add(f3);
              fields.add(f4);
+             fields.add(f5);
 
              add(f1);
              add(f2);
              add(f3);
              add(f4);
+             add(f5);
          }
 
          public boolean validate() {
@@ -326,12 +331,14 @@ import org.slf4j.LoggerFactory;
                      String givenName = mdlGivenName.getObject();
                      String email = mdlEmail.getObject();
                      String affiliation = mdlAffiliation.getObject() == null ? null : mdlAffiliation.getObject();
-
+                     String externalId = mdlExternalId.getObject() == null ? null : mdlExternalId.getObject();
+                     
                      //Create or edit
                      if(editableAuthor == null) {
                          Creator creator = new Creator(mdlFamilyName.getObject(), mdlGivenName.getObject());
                          creator.setEMail(email);
                          creator.setOrganisation(affiliation);
+                         creator.setExternalAuthorId(externalId);
                          long nextDisplayOrder = getNextDisplayOrder();
                          creator.setDisplayOrder(nextDisplayOrder);
                          authors.add(new Editable(creator));
@@ -340,6 +347,7 @@ import org.slf4j.LoggerFactory;
                          editableAuthor.getData().setGivenName(mdlGivenName.getObject());
                          editableAuthor.getData().setEMail(email);
                          editableAuthor.getData().setOrganisation(affiliation);
+                         editableAuthor.getData().setExternalAuthorId(externalId);
                          editableAuthor.setEditing(false);
                      }
 

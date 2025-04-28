@@ -9,14 +9,12 @@
                 <div class="col-xs-10">
                     <div class="col-xs-11">
                         <span wicket:id="value" class="reference-url"></span>
+                        <span wicket:id="resolved_value" class="reference-url"></span>
                     </div>
                     <div class="col-xs-1">
                         <a wicket:id="reason_toggle_btn">
                             <i wicket:id="state"></i>
                         </a>
-                    </div>
-                    <div class="col-xs-12">
-                        <span wicket:id="resolved_value" class="reference-url"></span>
                     </div>
                     <div class="col-xs-12" wicket:id="scan_details"></div>
                     <div class="col-xs-10"><span wicket:id="title" class="reference-title"></span></div>
@@ -33,12 +31,12 @@
                         <table>
                         <tbody>
                             <tr wicket:id="rows">
-                                <td><span wicket:id="rows-id1"></span></td>
-                                <td><span wicket:id="rows-id2"></span></td>
-                                <td><span wicket:id="rows-ts"></span></td>
-                                <td><span wicket:id="rows-processor"></span></td>
-                                <td><span wicket:id="rows-key"></span></td>
-                                <td><span wicket:id="rows-value"></span></td>
+                                <!--td><span wicket:id="rows-id1"></span></td>
+                                <td><span wicket:id="rows-id2"></span></td-->
+                                <td style="vertical-align: top; min-width: 140px;"><span wicket:id="rows-ts"></span></td>
+                                <td style="vertical-align: top;"><span wicket:id="rows-processor"></span></td>
+                                <td style="vertical-align: top;"><span wicket:id="rows-key"></span></td>
+                                <td style="vertical-align: top;"><span wicket:id="rows-value"></span></td>
                             </tr>
                         </tbody>
                         </table>
