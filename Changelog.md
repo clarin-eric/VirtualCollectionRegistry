@@ -1,5 +1,24 @@
 # Changelog
 
+## [[1.6.15](https://github.com/clarin-eric/VirtualCollectionRegistry/releases/tag/1.6.15)] - 2024-12-13
+- Bug Fixes:
+  - Fix issue in OAIProvider causing a "no session" error
+    
+## [[1.6.14](https://github.com/clarin-eric/VirtualCollectionRegistry/releases/tag/1.6.14)] - 2024-11-21
+- Enhancements:
+  - Update of major dependencies including jakarta EE support: wicket, spring, jersey
+
+- Bug Fixes:
+  - Unified strategy to get the session in order to fix #231
+  - Indefinite collection validaition, fix for #230
+  - Fallback to default extensional type if type cannot be derived from page parameters
+  - Fixed issue causing collection publication to always fail
+  - Fixed some icons that started to fail because of all the dependency updates
+
+## [[1.6.13](https://github.com/clarin-eric/VirtualCollectionRegistry/releases/tag/1.6.13-rc1)] - 2023-01-16
+- Enhancements:
+  - Local docker setup for local development was improved.
+
 ## [[1.6.12](https://github.com/clarin-eric/VirtualCollectionRegistry/releases/tag/1.6.12)] - 2022-10-21
 - Bug fixes:
   - Removal of collections results in foreign key violations from the maintenance thread (#206)
