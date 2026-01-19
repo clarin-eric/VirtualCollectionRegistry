@@ -27,7 +27,6 @@
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth" level="INFO" />
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui.pages.TimerManagerImpl" level="WARN" />
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.references" level="DEBUG" />        
-        
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistryMaintenanceImpl" level="INFO" />
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistryReferenceValidatorImpl" level="INFO" />
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistryReferenceValidatorWorker" level="INFO" />        
@@ -36,18 +35,13 @@
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.core.TxManager" level="INFO" />
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.core.CharacterEncodingFilter" level="WARN" />
         
-        
         <Logger name="de.mpg.aai.shhaa.authn" level="INFO" />
         <Logger name="de.mpg.aai.shhaa.resolver" level="INFO" />
 
         <Logger name="org.jboss" level="WARN" />
         <Logger name="org.glassfish.jersey" level="WARN" />
         <Logger name="org.springframework" level="WARN" />
-        <Logger name="org.hibernate" level="INFO" />
-<!--
-        <Logger name="org.hibernate.SQL" level="DEBUG" />
-        <Logger name="org.hibernate.type" level="TRACE" />
--->
+
         <Logger name="org.apache.wicket" level="WARN" />
         <Logger name="org.apache.wicket.resource" level="WARN" />
         <Logger name="org.apache.http" level="WARN" />

@@ -6,7 +6,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.rest.utils.RestUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryUsageException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
-import eu.clarin.cmdi.virtualcollectionregistry.rest.auth.Secured;
+import eu.clarin.cmdi.virtualcollectionregistry.rest.auth.ApiKeyOptional;
+import eu.clarin.cmdi.virtualcollectionregistry.rest.auth.ApiKeyRequired;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
 import java.io.IOException;
 import java.io.InputStream;
@@ -80,8 +81,7 @@ public final class VirtualCollectionResource {
      * {@link VirtualCollectionsResource}, remember to
      * {@link #setId(long) set the id} after construction!
      */
-    public VirtualCollectionResource() {
-    }
+    public VirtualCollectionResource() {}
 
     // for testing
     protected VirtualCollectionResource(VirtualCollectionRegistry registry, VirtualCollectionMarshaller marshaller, SecurityContext security, HttpHeaders headers, UriInfo uriInfo, Long id) {
@@ -118,6 +118,7 @@ public final class VirtualCollectionResource {
      * status code is issued and an error message is returned.
      * @throws VirtualCollectionRegistryException
      */
+    @ApiKeyOptional
     @GET
     @Produces({VirtualCollectionResource.MediaTypes.CMDI,
         MediaType.TEXT_XML,
@@ -170,6 +171,7 @@ public final class VirtualCollectionResource {
      * @return
      * @throws VirtualCollectionRegistryException
      */
+    @ApiKeyOptional
     @GET
     @Produces({MediaType.TEXT_HTML})
     public Response getVirtualCollectionDetailsRedirect()
@@ -191,7 +193,7 @@ public final class VirtualCollectionResource {
      * @return A response containing a {@link RestResponse}
      * @throws VirtualCollectionRegistryException
      */
-    @Secured
+    @ApiKeyRequired
     @PUT
     @Consumes({MediaType.TEXT_XML,
         MediaType.APPLICATION_XML,
@@ -249,7 +251,7 @@ public final class VirtualCollectionResource {
      * @return A response containing a {@link RestResponse}
      * @throws VirtualCollectionRegistryException
      */
-    @Secured
+    @ApiKeyRequired
     @DELETE
     @Produces({MediaType.TEXT_XML,
         MediaType.APPLICATION_XML,
@@ -297,6 +299,7 @@ public final class VirtualCollectionResource {
      * Collection
      * @throws VirtualCollectionRegistryException
      */
+    @ApiKeyOptional
     @GET
     @Path("/state")
     @Produces({MediaType.TEXT_XML,
@@ -334,6 +337,7 @@ public final class VirtualCollectionResource {
      * @return a response containg a {@link RestResponse}
      * @throws VirtualCollectionRegistryException
      */
+    @ApiKeyRequired
     @POST
     @Path("/state")
     @Consumes({MediaType.TEXT_XML,

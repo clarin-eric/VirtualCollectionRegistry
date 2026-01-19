@@ -100,6 +100,7 @@
     </servlet-mapping>
 
     <!-- OAI-PMH endpoint -->
+    <!--
     <servlet>
         <display-name>Virtual Collection Registry OAI-PMH Provider</display-name>
         <servlet-name>OAI-PMH-Provider</servlet-name>
@@ -110,7 +111,7 @@
         <servlet-name>OAI-PMH-Provider</servlet-name>
         <url-pattern>/oai</url-pattern>
     </servlet-mapping>
-
+    -->
 
 
     <resource-ref>

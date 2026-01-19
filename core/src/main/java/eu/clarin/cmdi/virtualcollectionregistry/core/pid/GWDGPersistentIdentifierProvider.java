@@ -1,9 +1,11 @@
 package eu.clarin.cmdi.virtualcollectionregistry.core.pid;
 
 import eu.clarin.cmdi.virtualcollectionregistry.core.PermaLinkService;
+import eu.clarin.cmdi.virtualcollectionregistry.core.VcrHttpClientFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PersistentIdentifier;
+import java.io.IOException;
 
 import java.io.Serializable;
 import java.net.URI;
@@ -22,10 +24,9 @@ import org.apache.http.HttpResponse;
 import org.apache.http.NameValuePair;
 import org.apache.http.StatusLine;
 import org.apache.http.auth.AuthScope;
-import org.apache.http.auth.UsernamePasswordCredentials;
 import org.apache.http.client.entity.UrlEncodedFormEntity;
 import org.apache.http.client.methods.HttpPost;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.message.BasicNameValuePair;
 import org.apache.http.params.CoreProtocolPNames;
 import org.apache.http.protocol.BasicHttpContext;
@@ -212,14 +213,12 @@ public class GWDGPersistentIdentifierProvider implements
         // force xml encoding
         formparams.add(new BasicNameValuePair("encoding", "xml"));
 
-        DefaultHttpClient client = null;
+        CloseableHttpClient client = 
+            VcrHttpClientFactory.getClientWithBasicAthentication(username, password);
         try {
-            client = new DefaultHttpClient();
             int port = serviceTargetURI.getPort() != -1 ? serviceTargetURI
                     .getPort() : AuthScope.ANY_PORT;
-            client.getCredentialsProvider().setCredentials(
-                    new AuthScope(serviceTargetURI.getHost(), port),
-                    new UsernamePasswordCredentials(username, password));
+            
             // disable expect continue, GWDG does not like very well
             client.getParams().setParameter(
                     CoreProtocolPNames.USE_EXPECT_CONTINUE, Boolean.FALSE);
@@ -294,8 +293,12 @@ public class GWDGPersistentIdentifierProvider implements
             throw new VirtualCollectionRegistryException(
                     "error invoking GWDG handle service", e);
         } finally {
-            if (client != null) {
-                client.getConnectionManager().shutdown();
+            try {
+                if (client != null) {
+                    client.close();
+                }
+            } catch(IOException ex) {
+                logger.error("Failed to close http connection", ex);
             }
         }
     }

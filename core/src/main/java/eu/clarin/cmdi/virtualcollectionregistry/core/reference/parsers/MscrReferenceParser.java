@@ -42,6 +42,7 @@ import java.io.ByteArrayInputStream;
 import java.io.IOException;
 import java.io.StringWriter;
 import java.io.UnsupportedEncodingException;
+import java.net.SocketException;
 import java.net.URI;
 import java.util.HashMap;
 import java.util.List;

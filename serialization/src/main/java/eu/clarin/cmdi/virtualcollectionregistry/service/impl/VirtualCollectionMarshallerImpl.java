@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.service.impl;
 
+import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionCMDIWriter;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
@@ -19,6 +20,7 @@ import java.text.DateFormat;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
 import java.util.Collections;
+import java.util.Date;
 import java.util.Map;
 
 import javax.xml.stream.XMLInputFactory;
@@ -246,8 +248,9 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
             writer.writeAttribute("id", Long.toString(vc.getId()));
         }
         if (vc.hasPersistentIdentifier()) {
-            writer.writeAttribute("persistentId",
-                    vc.getPrimaryIdentifier().getIdentifier());
+            //Make sure to use the identifier URI form so that it includes the scheme. 
+            //This is needed for unmarshalling again
+            writer.writeAttribute("persistentId",vc.getPrimaryIdentifier().getURI());
         }
         writer.writeAttribute("state", getStateRepresentation(vc.getState()));
 
@@ -276,7 +279,9 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
             writer.writeStartElement("CreationDate");
             // XXX: threading vs. performance
             synchronized (df) {
-                writer.writeCharacters(df.format(vc.getCreationDate()));
+                Date input = vc.getCreationDate();
+                String output = df.format(input);
+                writer.writeCharacters(output);
             } // synchronized (df)
             writer.writeEndElement(); // "CreationDate" element
         }
@@ -383,14 +388,18 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
     private String getStateRepresentation(final VirtualCollection.State state) {
         String s = null;
         switch (state) {
+            
             case PRIVATE:
                 s = "private";
                 break;
             case PUBLIC_PENDING:
-                s = "public-pending";
+                s = "public_pending";
                 break;
             case PUBLIC:
                 s = "public";
+                break;
+            case PUBLIC_FROZEN_PENDING:
+                s = "public_frozen_pending";
                 break;
             case PUBLIC_FROZEN:
                 s = "public_frozen";
@@ -400,6 +409,9 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
                 break;
             case DEAD:
                 s = "dead";
+                break;
+            case ERROR:
+                s = "error";
                 break;
         }
         return s;
@@ -509,7 +521,7 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
         reader.next();
         
         //Add all collections to the list
-        VirtualCollection vc = readVirtualCollection(reader, true);          
+        VirtualCollection vc = readVirtualCollection(reader, false); //collection is optional, list can have no results          
         do {
             list.addVirtualCollections(vc);                            
         } while ((vc = readVirtualCollection(reader, false)) != null);
@@ -549,8 +561,10 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
         if (s != null && !s.isEmpty()) {
             if ("private".equals(s)) {
                 vc.setState(VirtualCollection.State.PRIVATE);
-            } else if ("public-pending".equals(s)) {
+            } else if ("public_pending".equals(s)) {
                 vc.setState(VirtualCollection.State.PUBLIC_PENDING);
+            } else if ("public_frozen_pending".equals(s)) {
+                vc.setState(VirtualCollection.State.PUBLIC_FROZEN_PENDING);
             } else if ("public".equals(s)) {
                 vc.setState(VirtualCollection.State.PUBLIC);
             } else if ("public_frozen".equals(s)) {
@@ -559,11 +573,13 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
                 vc.setState(VirtualCollection.State.DELETED);
             } else if ("dead".equals(s)) {
                 vc.setState(VirtualCollection.State.DEAD);
+            } else if ("error".equals(s)) {
+                vc.setState(VirtualCollection.State.ERROR);
             } else {
                 throw new XMLStreamException("invalid value for attribute " +
                         "'state' on element 'VirtualCollecion', expected one " +
-                        "of 'private', 'public-pending', 'public', " +
-                        "'deleted' or 'dead'");
+                        "of 'private', 'public_pending', 'public_frozen_pending', public', " +
+                        "'public_frozen', deleted', 'dead' or 'error'");
             }
         }
         
@@ -587,7 +603,9 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
             try {
                 // XXX: threading vs. performance
                 synchronized (df) {
-                    vc.setCreationDate(df.parse(readString(reader, false)));
+                    String input = readString(reader, false);
+                    Date output = df.parse(input);
+                    vc.setCreationDate(output);
                 } // synchronized df
             } catch (ParseException e) {
                 throw new XMLStreamException("invalid date format", e);
@@ -599,7 +617,7 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
                 readStart(reader, "FamilyName", true, true);
                 String familyName = readString(reader, false);
                 readStart(reader, "GivenName", true, true);
-                String givenName = readString(reader, false);
+                String givenName = readOptionalString(reader, false);
                 Creator creator = new Creator(familyName, givenName);
 
                 if (readStart(reader, "Address", false, true)) {
@@ -688,7 +706,7 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
                 }
 
                 if(readStart(reader, "Description", false, true)){
-                    resource.setDescription(readString(reader, false));
+                    resource.setDescription(readOptionalString(reader, false));
                 }
 
                 vc.getResources().add(resource);
@@ -820,8 +838,16 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
         return false;
     }
 
-    private static String readString(XMLStreamReader reader, boolean intern)
-            throws XMLStreamException {
+    
+    private static String readString(XMLStreamReader reader, boolean intern) throws XMLStreamException {
+        return readString(reader, intern, true);
+    }
+    
+    private static String readOptionalString(XMLStreamReader reader, boolean intern) throws XMLStreamException {
+        return readString(reader, intern, false);
+    }
+            
+    private static String readString(XMLStreamReader reader, boolean intern, boolean required) throws XMLStreamException {
         int type = reader.getEventType();
         while (type == XMLStreamConstants.SPACE) {
             type = reader.next();
@@ -841,8 +867,12 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
                 }
             }
             if (s == null || s.isEmpty()) {
-                throw new XMLStreamException("expected character content " +
+                if(required) {
+                    throw new XMLStreamException("expected character content " +
                         "at this position", reader.getLocation());
+                } else {
+                    s = "";
+                }
             }
             reader.next();
             return s;

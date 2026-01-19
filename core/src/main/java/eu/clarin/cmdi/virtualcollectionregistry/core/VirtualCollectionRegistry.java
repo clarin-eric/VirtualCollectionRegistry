@@ -15,6 +15,10 @@ import java.util.List;
 
 public interface VirtualCollectionRegistry {
 
+    void setAuthenticatedUser(Principal user);
+    Principal getAuthenticatedUser();
+    boolean hasAuthenticatedUser();
+    
     void registerDestroyListener(VirtualCollectionRegistryDestroyListener listener);
     
     public VirtualCollectionDao getVirtualCollectionDao();

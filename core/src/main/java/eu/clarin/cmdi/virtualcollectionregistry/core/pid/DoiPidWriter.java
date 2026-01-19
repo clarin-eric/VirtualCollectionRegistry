@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.core.pid;
 
 import de.uni_leipzig.asv.clarin.webservices.pidservices2.Configuration;
+import eu.clarin.cmdi.virtualcollectionregistry.core.VcrHttpClientFactory;
 import org.apache.commons.httpclient.HttpException;
 import org.apache.http.HttpHost;
 import org.apache.http.auth.AuthScope;
@@ -14,8 +15,6 @@ import org.apache.http.entity.StringEntity;
 import org.apache.http.impl.auth.BasicScheme;
 import org.apache.http.impl.client.BasicAuthCache;
 import org.apache.http.impl.client.BasicCredentialsProvider;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClientBuilder;
 import org.apache.http.util.EntityUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -23,14 +22,11 @@ import java.io.IOException;
 import java.net.URISyntaxException;
 import java.net.URL;
 import java.nio.charset.StandardCharsets;
+import org.apache.http.impl.client.CloseableHttpClient;
 
 public class DoiPidWriter {
 
     private static final Logger logger = LoggerFactory.getLogger(DoiPidWriter.class);
-
-    private final CloseableHttpClient httpclient = HttpClientBuilder.create().build();
-
-    //private final DoiRequestBuilder requestBuilder = new DoiRequestBuilder();
 
     public String registerNewPID(Configuration configuration, PidRequest doiRequest) throws HttpException {
         String generated_pid = null;
@@ -66,6 +62,7 @@ public class DoiPidWriter {
         context.setCredentialsProvider(credsProvider);
         context.setAuthCache(authCache);
 
+        CloseableHttpClient client = VcrHttpClientFactory.getClient();
         try {
             HttpPost httppost = new HttpPost("/dois");
 
@@ -78,7 +75,7 @@ public class DoiPidWriter {
             logger.debug("Request entity json: {}", requestJsonBody);
             logger.debug("Request entity: {}", httppost.getEntity().toString());
 
-            CloseableHttpResponse response = httpclient.execute(targetHost, httppost, context);
+            CloseableHttpResponse response = client.execute(targetHost, httppost, context);
             try {
                 logger.debug("----------------------------------------");
                 logger.debug(response.getStatusLine().toString());
@@ -94,26 +91,16 @@ public class DoiPidWriter {
             }
         } catch(Exception ex) {
             throw new IOException("Failed to communicate with DOI API", ex);
-        } /*finally {
+        } finally {
             try {
-                httpclient.close();
+                if(client != null) {
+                    client.close();
+                }
             } catch(IOException ex) {
                 throw new IOException("Failed to close DOI API http client", ex);
             }
-        }*/
+        }
 
         return doi;
     }
-/*
-    public static class DoiApiException extends Exception {
-        public DoiApiException(String msg) {
-            super(msg);
-        }
-
-        public DoiApiException(String msg, Throwable cause) {
-            super(msg, cause);
-        }
-    }
-
- */
 }

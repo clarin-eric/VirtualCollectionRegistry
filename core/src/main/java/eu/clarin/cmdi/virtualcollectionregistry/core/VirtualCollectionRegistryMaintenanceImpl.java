@@ -31,7 +31,7 @@ import org.apache.commons.httpclient.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpHead;
-import org.apache.http.impl.client.HttpClientBuilder;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
@@ -243,7 +243,8 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
         List<VirtualCollection> collections = q.getResultList();
         em.getTransaction().commit();
 
-        HttpClient client = HttpClientBuilder.create().build();
+        CloseableHttpClient client = VcrHttpClientFactory.getClient();
+        try {
         for(VirtualCollection vc : collections) {
             if(vc.isPublicLeaf()) {
                 for(PersistentIdentifier latestPid : vc.getLatestIdentifiers()) {
@@ -267,6 +268,15 @@ public class VirtualCollectionRegistryMaintenanceImpl implements VirtualCollecti
                         }
                     }
                 }
+            }
+        }
+        } finally {
+            try {
+                if(client != null) {
+                    client.close();
+                }
+            } catch(IOException ex) {
+                logger.error("Failed to close http client", ex);
             }
         }
     }

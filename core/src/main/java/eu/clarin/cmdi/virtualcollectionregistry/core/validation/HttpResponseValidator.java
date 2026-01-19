@@ -16,13 +16,14 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.core.validation;
 
+import eu.clarin.cmdi.virtualcollectionregistry.core.VcrHttpClientFactory;
 import java.io.IOException;
 import java.net.URI;
 import java.net.UnknownHostException;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.DefaultHttpClient;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.wicket.validation.IValidatable;
@@ -70,14 +71,14 @@ public class HttpResponseValidator implements IValidator<String> {
     
     protected boolean checkValidityOfUri(URI uri) throws IOException {
         boolean result = false;
-        DefaultHttpClient client = new DefaultHttpClient();
         HttpContext ctx = new BasicHttpContext();
-        try {         
+        CloseableHttpClient client = VcrHttpClientFactory.getClient();
+        try {
             HttpResponse response = client.execute(new HttpGet(uri), ctx);
             status = response.getStatusLine();
             result = status.getStatusCode() == 200;
         } finally {
-            client.getConnectionManager().shutdown();
+            client.close();
         }
         return result;
     }

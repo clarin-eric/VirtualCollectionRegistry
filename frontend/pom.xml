@@ -68,16 +68,38 @@
                 </exclusion>
             </exclusions>
         </dependency-->
-        <!--dependency>
+        
+        <!--
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>rest-utils</artifactId>
             <version>${project.version}</version>
-        </dependency-->
-        <!--dependency>
+        </dependency>
+        -->
+        
+        <!-- Enable REST based communication between frontend and backend (Direct database communication must be disabled) -->
+        <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>rest-client</artifactId>
             <version>${project.version}</version>
-        </dependency-->
+        </dependency>
+        
+        <!-- Enable direct database communication (REST based communication must be disabled) -->
+        <!--
+        <dependency>
+            <groupId>${project.groupId}</groupId>
+            <artifactId>persistence</artifactId>
+            <version>${project.version}</version>
+        </dependency>
+        -->
+            
+        <!-- Include PIDMR client -->
+        <dependency>
+            <groupId>eu.clarin</groupId>
+            <artifactId>pidmr-client</artifactId>
+            <version>1.9.0-SNAPSHOT</version>
+        </dependency>
+        
         
         <dependency>
             <groupId>eu.clarin.cmdi</groupId>
@@ -99,24 +121,6 @@
             <groupId>${project.groupId}</groupId>
             <artifactId>vcr-serialization</artifactId>
             <version>1.9.0-SNAPSHOT</version>
-        </dependency>
-        
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-api</artifactId>
-            <version>0.11.2</version>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-impl</artifactId>
-            <version>0.11.2</version>
-            <scope>runtime</scope>
-        </dependency>
-        <dependency>
-            <groupId>io.jsonwebtoken</groupId>
-            <artifactId>jjwt-jackson</artifactId> <!-- or jjwt-gson if Gson is preferred -->
-            <version>0.11.2</version>
-            <scope>runtime</scope>
         </dependency>
 
         <dependency>
@@ -387,25 +391,6 @@
             <artifactId>wicket-tester</artifactId>
             <version>${wicket.version}</version>
             <scope>test</scope>
-        </dependency>
-        
-        
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>persistence</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        <!--
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>rest-client</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        -->
-        <dependency>
-            <groupId>eu.clarin</groupId>
-            <artifactId>pidmr-client</artifactId>
-            <version>1.9.0-SNAPSHOT</version>
         </dependency>
     </dependencies>
 

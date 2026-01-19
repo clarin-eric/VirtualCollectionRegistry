@@ -1,5 +1,10 @@
 package eu.clarin.cmdi.virtualcollectionregistry.query;
 
+import com.fasterxml.jackson.annotation.JsonCreator;
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.JsonSubTypes;
+import com.fasterxml.jackson.annotation.JsonTypeInfo;
 import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -52,7 +57,8 @@ public class QueryOptions implements Serializable {
         }
     } // enum QueryOptions.Relation
 
-
+    private static final byte RELATION_NOOP = 0x00;   //00000000
+    
     private static final byte RELATION_EQ = 0x01;   //00000001
     private static final byte RELATION_NE = 0x02;   //00000010
     private static final byte RELATION_LT = 0x04;   //00000100
@@ -80,9 +86,10 @@ public class QueryOptions implements Serializable {
                 new PropertyImplChild(),
                 new PropertyImplPublicLeaf()
         );
+    
+    
     private Filter filter;
     private List<OrderBy> orderByItems;
-
 
     public QueryOptions() {
         super();
@@ -97,9 +104,6 @@ public class QueryOptions implements Serializable {
     }
 
     public boolean addSortProperty(Property property, boolean asc) {
-        if (property == null) {
-            throw new IllegalArgumentException("property == null");
-        }
         final AbstractPropertyImpl impl = getPropertyImpl(property);
         if (orderByItems == null) {
             orderByItems = new ArrayList<OrderBy>();
@@ -123,22 +127,10 @@ public class QueryOptions implements Serializable {
     }
 
     public Filter expr(Property property, Relation relation, Object value) {
-        if (property == null) {
-            throw new IllegalArgumentException("property == null");
-        }
-        if (relation == null) {
-            throw new IllegalArgumentException("relation == null");
-        }
-        if (value == null) {
-            throw new IllegalArgumentException("value == null");
-        }
-        final AbstractPropertyImpl impl = getPropertyImpl(property);
-        if (!impl.isValidRelation(relation)) {
-            throw new IllegalArgumentException("invalid relation");
-        }
-        return new ExpressionFilter(impl, relation.getCode(), value);
+        return new ExpressionFilter(property, relation.getCode(), value);
     }
 
+    @JsonIgnore
     public Predicate getWhere(CriteriaBuilder cb, AbstractQuery<?> cq,
             Root<VirtualCollection> root) {
         if (filter != null) {
@@ -159,6 +151,18 @@ public class QueryOptions implements Serializable {
         return order;
     }
 
+    // Use this getter for JSON instead of the raw 'property' object
+    @JsonProperty("property")
+    public Property getPropertyName(Property property) {
+        for (AbstractPropertyImpl predicate : PROPERTIES) {
+            if (predicate.matchProperty(property)) {
+                return predicate.getProperty();
+            }
+        }
+        return null;
+    }
+
+    @JsonIgnore
     private static AbstractPropertyImpl getPropertyImpl(Property property) {
         for (AbstractPropertyImpl predicate : PROPERTIES) {
             if (predicate.matchProperty(property)) {
@@ -169,75 +173,61 @@ public class QueryOptions implements Serializable {
     }
 
 
-    public abstract class Filter implements Serializable {
-
-        private Property property;
-        private Object value;
+    @JsonTypeInfo(
+        use = JsonTypeInfo.Id.NAME, 
+        include = JsonTypeInfo.As.PROPERTY, 
+        property = "type"
+    )
+    @JsonSubTypes({
+        @JsonSubTypes.Type(value = QueryOptions.AndFilter.class, name = "and"),
+        @JsonSubTypes.Type(value = QueryOptions.OrFilter.class, name = "or"),
+        @JsonSubTypes.Type(value = QueryOptions.ExpressionFilter.class, name = "expr"),
+        @JsonSubTypes.Type(value = QueryOptions.NullExpressionFilter.class, name = "isNull"),
+        @JsonSubTypes.Type(value = QueryOptions.NotNullExpressionFilter.class, name = "isNotNull")
+    })
+    public static abstract class Filter implements Serializable {
 
         public final Filter add(Property property, Relation relation,
                 Object value) {
-            if (property == null) {
-                throw new IllegalArgumentException("property == null");
-            }
             if (relation == null) {
                 throw new IllegalArgumentException("relation == null");
             }
-            if (value == null) {
-                throw new IllegalArgumentException("value == null");
-            }
-            this.property = property;
-            this.value = value;
-
-            final AbstractPropertyImpl impl = getPropertyImpl(property);
-            if (!impl.isValidRelation(relation)) {
-                throw new IllegalArgumentException("invalid relation");
-            }
-            doAdd(new ExpressionFilter(impl, relation.getCode(), value));
+            doAdd(new ExpressionFilter(property, relation.getCode(), value));
             return this;
         }
 
         public final Filter addIsNull(Property property) {
             final AbstractPropertyImpl impl = getPropertyImpl(property);
-            doAdd(new NullExpressionFilter(impl));
+            doAdd(new NullExpressionFilter(property));
             return this;
         }
 
         public final Filter addIsNotNull(Property property) {
             final AbstractPropertyImpl impl = getPropertyImpl(property);
-            doAdd(new NotNullExpressionFilter(impl));
+            doAdd(new NotNullExpressionFilter(property));
             return this;
         }
 
         public abstract Filter add(Filter filter);
 
-        //protected abstract void doAdd(ExpressionFilter filter);
         protected abstract void doAdd(Filter filter);
 
-        protected abstract Predicate makePredicate(CriteriaBuilder cb,
-                                                   AbstractQuery<?> cq, Root<VirtualCollection> root);
-
-        public Property getProperty() {
-            return property;
-        };
-
-        public Object getValue() {
-            return value;
-        }
+        @JsonIgnore
+        protected abstract Predicate makePredicate(CriteriaBuilder cb, AbstractQuery<?> cq, Root<VirtualCollection> root);
 
         public abstract List<Filter> getItems();
-
     } // QueryOptions.Filter
 
 
-    public final class AndFilter extends Filter {
-        private final List<Filter> items = new ArrayList<Filter>();
+    public static class AndFilter extends Filter {
+        private final List<Filter> items = new ArrayList<>();
 
+        @Override
         public List<Filter> getItems() {
             return items;
         }
 
-        private AndFilter() {
-        }
+        public AndFilter() {}
 
         @Override
         public Filter add(Filter filter) {
@@ -257,6 +247,7 @@ public class QueryOptions implements Serializable {
             items.add(filter);
         }
 
+        @JsonIgnore
         @Override
         protected Predicate makePredicate(CriteriaBuilder cb,
                                           AbstractQuery<?> cq, Root<VirtualCollection> root) {
@@ -270,15 +261,14 @@ public class QueryOptions implements Serializable {
     } // QueryOptions.AndFilter
 
 
-    public final class OrFilter extends Filter {
-        private final List<Filter> items = new ArrayList<Filter>();
+    public static class OrFilter extends Filter {
+        private final List<Filter> items = new ArrayList<>();
 
         public List<Filter> getItems() {
             return items;
         }
 
-        private OrFilter() {
-        }
+        public OrFilter() {}
 
         @Override
         public Filter add(Filter filter) {
@@ -298,6 +288,7 @@ public class QueryOptions implements Serializable {
             items.add(filter);
         }
 
+        @JsonIgnore
         @Override
         protected Predicate makePredicate(CriteriaBuilder cb,
                                           AbstractQuery<?> cq, Root<VirtualCollection> root) {
@@ -311,28 +302,119 @@ public class QueryOptions implements Serializable {
     } // QueryOptions.OrFilter
 
 
-    private final class NullExpressionFilter extends Filter {
-        private final AbstractPropertyImpl property;
-
-        public List<Filter> getItems() {
-            return Arrays.asList(new Filter[] {});
+    public static abstract class AbstractExpressionFilter extends Filter {
+        protected final AbstractPropertyImpl property;
+        protected final byte relation;
+        protected final Object value;
+        
+        //TODO: Ideally this should perform the relation == null check and then call the other constructor with this(....). 
+        //      This is not supported before java 25 (flexible constructors).
+        public AbstractExpressionFilter(Property property, Relation relation, Object value) {
+            if (relation == null) {
+                throw new IllegalArgumentException("relation == null");
+            }
+            if(relation.getCode() != RELATION_NOOP) {
+                if (property == null) {
+                    throw new IllegalArgumentException("property == null");
+                }
+                if (value == null) {
+                    throw new IllegalArgumentException("value == null");
+                }
+            }
+            this.property = getPropertyImpl(property);
+            this.relation = relation.getCode();
+            this.value = value;
+            
+            if (relation.getCode() != RELATION_NOOP && !this.property.isValidRelation(relation)) {
+                throw new IllegalArgumentException("invalid relation");
+            }
+        }
+        
+        public AbstractExpressionFilter(Property property, byte relation, Object value) {
+            if(relation != RELATION_NOOP) {
+                if (property == null) {
+                    throw new IllegalArgumentException("property == null");
+                }
+                if (value == null) {
+                    throw new IllegalArgumentException("value == null");
+                }
+            }
+            this.property = getPropertyImpl(property);
+            this.relation = relation;
+            this.value = value;
+            
+            if (relation != RELATION_NOOP && !this.property.isValidRelation(relation)) {
+                throw new IllegalArgumentException("invalid relation");
+            }
         }
 
-        private NullExpressionFilter(AbstractPropertyImpl property) {
-            this.property = property;
+        /**
+         * @return the property
+         */
+        @JsonIgnore
+        public AbstractPropertyImpl getProperty() {
+            return property;
         }
 
+        @JsonProperty("property")
+        public Property getPropertyEnum() {
+            return property.getProperty();
+        }
+    
+        /**
+         * @return the relation
+         */
+        public byte getRelation() {
+            return relation;
+        }
+
+        /**
+         * @return the value
+         */
+        public Object getValue() {
+            return value;
+        }
+        
         @Override
         public Filter add(Filter filter) {
             throw new RuntimeException("not permitted");
         }
 
         @Override
-        //protected void doAdd(ExpressionFilter filter) {
         protected void doAdd(Filter filter) {
             throw new RuntimeException("not permitted");
         }
+        
+        @Override
+        public List<Filter> getItems() {
+            return Arrays.asList(new Filter[] {});
+        }
+    }
+    
+    private static final class ExpressionFilter extends AbstractExpressionFilter {
+        @JsonCreator
+        public ExpressionFilter(
+                @JsonProperty("property") Property property, 
+                @JsonProperty("relation") byte relation, 
+                @JsonProperty("value") Object value) {
+            super(property, relation, value);
+        }
+        
+        @JsonIgnore
+        @Override
+        public Predicate makePredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
+                Root<VirtualCollection> root) {
+            return property.getPredicate(cb, cq, root, getRelation(), getValue());
+        }
+    } 
+    
+    private static final class NullExpressionFilter extends AbstractExpressionFilter {        
+        @JsonCreator
+        public NullExpressionFilter(@JsonProperty("property") Property property) {
+            super(property, RELATION_NOOP, null);
+        }
 
+        @JsonIgnore
         @Override
         public Predicate makePredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                                        Root<VirtualCollection> root) {
@@ -340,28 +422,13 @@ public class QueryOptions implements Serializable {
         }
     }
 
-    private final class NotNullExpressionFilter extends Filter {
-        private final AbstractPropertyImpl property;
-
-        public List<Filter> getItems() {
-            return Arrays.asList(new Filter[] {});
+    private static final class NotNullExpressionFilter extends AbstractExpressionFilter {
+        @JsonCreator
+        public NotNullExpressionFilter(@JsonProperty("property") Property property) {
+            super(property, RELATION_NOOP, null);
         }
 
-        private NotNullExpressionFilter(AbstractPropertyImpl property) {
-            this.property = property;
-        }
-
-        @Override
-        public Filter add(Filter filter) {
-            throw new RuntimeException("not permitted");
-        }
-
-        @Override
-        //protected void doAdd(ExpressionFilter filter) {
-        protected void doAdd(Filter filter) {
-            throw new RuntimeException("not permitted");
-        }
-
+        @JsonIgnore
         @Override
         public Predicate makePredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                                        Root<VirtualCollection> root) {
@@ -369,50 +436,37 @@ public class QueryOptions implements Serializable {
         }
     }
 
-    private final class ExpressionFilter extends Filter {
-        private final AbstractPropertyImpl property;
-        private final byte relation;
-        private final Object value;
 
-        public List<Filter> getItems() {
-            return Arrays.asList(new Filter[] {});
-        }
-
-        private ExpressionFilter(AbstractPropertyImpl property, byte relation,
-                Object value) {
-            this.property = property;
-            this.relation = relation;
-            this.value = value;
-        }
-
-        @Override
-        public Filter add(Filter filter) {
-            throw new RuntimeException("not permitted");
-        }
-
-        @Override
-        //protected void doAdd(ExpressionFilter filter) {
-        protected void doAdd(Filter filter) {
-            throw new RuntimeException("not permitted");
-        }
-
-        @Override
-        public Predicate makePredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
-                Root<VirtualCollection> root) {
-            return property.getPredicate(cb, cq, root, relation, value);
-        }
-    } // QueryOptions.PropertyFilter
-
-
+    
+    
+    
+    
+    
+    
+    
+    
+    
     private static final class OrderBy implements Serializable {
         private final AbstractPropertyImpl property;
         private final boolean asc;
 
+        @JsonCreator
+        public OrderBy(@JsonProperty("property") Property property, @JsonProperty("asc") boolean asc) {
+            this(getPropertyImpl(property), asc);
+        }
+        
         public OrderBy(AbstractPropertyImpl property, boolean asc) {
             this.property = property;
             this.asc = asc;
         }
+        
+        // Use this getter for JSON instead of the raw 'property' object
+        @JsonProperty("property")
+        public Property getPropertyName() {
+            return property.getProperty();
+        }
 
+        @JsonIgnore
         public AbstractPropertyImpl getProperty() {
             return property;
         }
@@ -425,6 +479,14 @@ public class QueryOptions implements Serializable {
             }
         }
     } // class QueryOptions.OrderBy
+    
+    
+    
+    
+    
+    
+    
+    
 
     private static abstract class AbstractPropertyImpl {
         public abstract Property getProperty();
@@ -442,6 +504,10 @@ public class QueryOptions implements Serializable {
             return getProperty() == property;
         }
 
+        public final boolean isValidRelation(byte relation) {
+            return (getValidRelationMask() & relation) > 0;
+        }
+        
         public final boolean isValidRelation(Relation relation) {
             return (getValidRelationMask() & relation.getCode()) > 0;
         }
@@ -499,7 +565,7 @@ public class QueryOptions implements Serializable {
             // escape SQL specific stuff
             value = value.replace("\\", "\\\\");
             value = value.replace("%", "\\%");
-            value = value.replace("_", "\\_");
+            //value = value.replace("_", "\\_");
             // replace query language wildcards with add SQL wildcards
             value = value.replace("*", "%");
 
@@ -546,7 +612,7 @@ public class QueryOptions implements Serializable {
             } // switch
         }
         
-        protected static final Predicate makeStateListPredicate(CriteriaBuilder cb, Expression<VirtualCollection.State> expr, byte relation, LinkedList value) {
+        protected static final Predicate makeStateListPredicate(CriteriaBuilder cb, Expression<VirtualCollection.State> expr, byte relation, List value) {
             switch (relation) {
             case RELATION_IN:
                 return expr.in(value);
@@ -585,11 +651,13 @@ public class QueryOptions implements Serializable {
             return RELATIONS_EQ_NE;
         }
 
+        @JsonIgnore
         @Override
         public Expression<String> getExpression(Root<VirtualCollection> root) {
             return root.get(VirtualCollection_.owner).get(User_.name);
         }
 
+        @JsonIgnore
         @Override
         public Predicate getPredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                 Root<VirtualCollection> root, byte relation, Object value) {
@@ -611,11 +679,13 @@ public class QueryOptions implements Serializable {
             return RELATIONS_EQ_NE;
         }
 
+        @JsonIgnore
         @Override
         public Expression<String> getExpression(Root<VirtualCollection> root) {
             return root.get(VirtualCollection_.name);
         }
 
+        @JsonIgnore
         @Override
         public Predicate getPredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                 Root<VirtualCollection> root, byte relation, Object value) {
@@ -634,11 +704,13 @@ public class QueryOptions implements Serializable {
             return RELATIONS_EQ_NE;
         }
 
+        @JsonIgnore
         @Override
         public Expression<String> getExpression(Root<VirtualCollection> root) {
             return root.get(VirtualCollection_.origin);
         }
 
+        @JsonIgnore
         @Override
         public Predicate getPredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                                       Root<VirtualCollection> root, byte relation, Object value) {
@@ -658,11 +730,13 @@ public class QueryOptions implements Serializable {
             return 0x00;
         }
 
+        @JsonIgnore
         @Override
         public Expression<VirtualCollection> getExpression(Root<VirtualCollection> root) {
             return root.get(VirtualCollection_.parent);
         }
 
+        @JsonIgnore
         @Override
         public Predicate getPredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                                       Root<VirtualCollection> root, byte relation, Object value) {
@@ -670,12 +744,14 @@ public class QueryOptions implements Serializable {
             return makeVirtualCollectionPredicate(cb, expr, relation, (VirtualCollection) value);
         }
 
+        @JsonIgnore
         @Override
         public Predicate getNullPredicate(CriteriaBuilder cb, AbstractQuery<?> cq, Root<VirtualCollection> root) {
             final Expression<VirtualCollection> expr = getExpression(root);
             return cb.isNull(expr);
         }
 
+        @JsonIgnore
         @Override
         public Predicate getNotNullPredicate(CriteriaBuilder cb, AbstractQuery<?> cq, Root<VirtualCollection> root) {
             final Expression<VirtualCollection> expr = getExpression(root);
@@ -694,24 +770,28 @@ public class QueryOptions implements Serializable {
             return 0x00;
         }
 
+        @JsonIgnore
         @Override
         public Expression<VirtualCollection> getExpression(Root<VirtualCollection> root) {
             return root.get(VirtualCollection_.child);
         }
 
+        @JsonIgnore
         @Override
         public Predicate getPredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                                       Root<VirtualCollection> root, byte relation, Object value) {
             final Expression<VirtualCollection> expr = getExpression(root);
             return makeVirtualCollectionPredicate(cb, expr, relation, (VirtualCollection) value);
         }
-
+        
+        @JsonIgnore
         @Override
         public Predicate getNullPredicate(CriteriaBuilder cb, AbstractQuery<?> cq, Root<VirtualCollection> root) {
             final Expression<VirtualCollection> expr = getExpression(root);
             return cb.isNull(expr);
         }
 
+        @JsonIgnore
         @Override
         public Predicate getNotNullPredicate(CriteriaBuilder cb, AbstractQuery<?> cq, Root<VirtualCollection> root) {
             final Expression<VirtualCollection> expr = getExpression(root);
@@ -728,12 +808,14 @@ public class QueryOptions implements Serializable {
             return RELATIONS_EQ_NE;
         }
 
+        @JsonIgnore
         @Override
         public Expression<VirtualCollection.Type> getExpression(
                 Root<VirtualCollection> root) {
             return root.get(VirtualCollection_.type);
         }
 
+        @JsonIgnore
         @Override
         public Predicate getPredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                 Root<VirtualCollection> root, byte relation, Object value) {
@@ -755,20 +837,32 @@ public class QueryOptions implements Serializable {
             return RELATIONS_EQ_NE_IN;
         }
 
+        @JsonIgnore
         @Override
         public Expression<VirtualCollection.State> getExpression(
                 Root<VirtualCollection> root) {
             return root.get(VirtualCollection_.state);
         }
 
+        @JsonIgnore
         @Override
         public Predicate getPredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                 Root<VirtualCollection> root, byte relation, Object value) {
             final Expression<VirtualCollection.State> expr =
                 getExpression(root);
-            if(value instanceof LinkedList) {
-                return makeStateListPredicate(cb, expr, relation, (LinkedList) value);
-            }
+            //if(value instanceof LinkedList) {
+            if(value instanceof List) {
+                //While unmarshalling form JSON value is ceated as an ArrayList<String> but we want ArrayList<State>
+                if(!((List) value).isEmpty() && ((List) value).get(0) instanceof String) {
+                    ArrayList<VirtualCollection.State> _value = new ArrayList<>();
+                    for(Object o : (List)value) {
+                        VirtualCollection.State state = VirtualCollection.State.valueOf(o.toString().toUpperCase());
+                        _value.add(state);
+                    }
+                    return makeStateListPredicate(cb, expr, relation, _value);
+                }
+                return makeStateListPredicate(cb, expr, relation, (List) value);
+            } 
             return makeStatePredicate(cb, expr, relation, (VirtualCollection.State) value);
         }
     } // class QueryOptions.PropertyImplName
@@ -785,11 +879,13 @@ public class QueryOptions implements Serializable {
             return RELATIONS_EQ_NE;
         }
 
+        @JsonIgnore
         @Override
         public Expression<String> getExpression(Root<VirtualCollection> root) {
             return root.get(VirtualCollection_.description);
         }
 
+        @JsonIgnore
         @Override
         public Predicate getPredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                 Root<VirtualCollection> root, byte relation, Object value) {
@@ -811,11 +907,13 @@ public class QueryOptions implements Serializable {
             return RELATIONS_ALL;
         }
 
+        @JsonIgnore
         @Override
         public Expression<Date> getExpression(Root<VirtualCollection> root) {
             return root.get(VirtualCollection_.creationDate);
         }
 
+        @JsonIgnore
         @Override
         public Predicate getPredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                 Root<VirtualCollection> root, byte relation, Object value) {
@@ -835,11 +933,13 @@ public class QueryOptions implements Serializable {
             return RELATIONS_EQ_NE;
         }
 
+        @JsonIgnore
         @Override
         public Expression<Boolean> getExpression(Root<VirtualCollection> root) {
             return root.get(VirtualCollection_.publicLeaf);
         }
 
+        @JsonIgnore
         @Override
         public Predicate getPredicate(CriteriaBuilder cb, AbstractQuery<?> cq,
                                       Root<VirtualCollection> root, byte relation, Object value) {

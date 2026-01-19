@@ -91,4 +91,9 @@
   <Parameter name="eu.clarin.cmdi.vcr.forking.enabled" override="false" value="true"/>
   <!-- 1.8.0 -->
   <Parameter name="eu.clarin.cmdi.vcr.reference_scanning.enabled" override="false" value="true"/>
+  
+  <Parameter name="eu.clarin.cmdi.vcr.reference_examples" override="false" value="true"/>
+  <Parameter name="eu.clarin.cmdi.vcr.parser.mscr.enabled" override="false" value="false"/>
+  <Parameter name="eu.clarin.cmdi.vcr.parser.dog.enabled" override="false" value="false"/>
+  <Parameter name="eu.clarin.cmdi.vcr.parser.cmdi.enabled" override="false" value="true"/>
 </Context>

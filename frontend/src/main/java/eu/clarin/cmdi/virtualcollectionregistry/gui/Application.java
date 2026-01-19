@@ -20,6 +20,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualColle
 import eu.clarin.cmdi.virtualcollectionregistry.model.config.VcrConfig;
 import eu.clarin.cmdi.wicket.ExtremeNoopTheme;
 import eu.clarin.cmdi.wicket.theme.ClarinBootstrap5Theme;
+import java.security.Principal;
 import org.apache.wicket.Page;
 import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebApplication;
@@ -188,6 +189,9 @@ public class Application extends AuthenticatedWebApplication {
     }
 
     public VirtualCollectionRegistry getRegistry() {
+        ApplicationSession session = (ApplicationSession)AuthenticatedWebSession.get();
+        Principal principal = session.getPrincipal();
+        registry.setAuthenticatedUser(principal);
         return registry;
     }
 

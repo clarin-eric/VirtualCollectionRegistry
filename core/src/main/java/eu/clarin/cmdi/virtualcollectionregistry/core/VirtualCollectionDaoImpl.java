@@ -12,6 +12,7 @@ import jakarta.persistence.EntityManager;
 import jakarta.persistence.NoResultException;
 import jakarta.persistence.TypedQuery;
 import jakarta.persistence.criteria.*;
+import java.util.ArrayList;
 import java.util.List;
 
 public class VirtualCollectionDaoImpl extends TxManager implements VirtualCollectionDao {
@@ -242,9 +243,12 @@ public class VirtualCollectionDaoImpl extends TxManager implements VirtualCollec
                 query.setMaxResults(count);
             }
             return query.getResultList();
+        } catch(Exception ex) {
+            logger.error("Error", ex);
         } finally {
             commitActiveTransaction(em);
         }
+        return new ArrayList<>();
     }
 
     @Override

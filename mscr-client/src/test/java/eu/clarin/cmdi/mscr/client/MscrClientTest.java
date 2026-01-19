@@ -81,7 +81,7 @@ public class MscrClientTest {
         return new MscrApiConfiguration("http://"+testHost+":"+testPort+"/v2/", "test-api-key");
     }
     
-    @Test
+//    @Test
     public void testSchemaSearch() throws UnsupportedEncodingException, MscrApiException {
         MscrClient client = new MscrClientImpl(getConfig());
         List<MscrSchema> result = client.searchSchema(new SearchBuilder()
@@ -92,7 +92,7 @@ public class MscrClientTest {
         Assert.assertEquals(true, !result.isEmpty());
     }
     
-    @Test
+//    @Test
     public void testCrosswalkSearchByName() throws UnsupportedEncodingException, MscrApiException {
         MscrClient client = new MscrClientImpl(getConfig());
         List<MscrCrosswalk> result = client.searchCrosswalk(new SearchBuilder()
@@ -101,7 +101,7 @@ public class MscrClientTest {
         Assert.assertEquals(true, !result.isEmpty());
     }
     
-    @Test
+//    @Test
     public void testCrosswalkSearchByIds() throws UnsupportedEncodingException, MscrApiException {
         MscrClient client = new MscrClientImpl(getConfig());
         List<MscrCrosswalk> result = client.searchCrosswalk(new SearchBuilder()

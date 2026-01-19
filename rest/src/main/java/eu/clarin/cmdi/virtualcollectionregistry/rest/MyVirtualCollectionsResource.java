@@ -5,7 +5,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionList;
-import eu.clarin.cmdi.virtualcollectionregistry.rest.auth.Secured;
+import eu.clarin.cmdi.virtualcollectionregistry.rest.auth.ApiKeyRequired;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
 import java.io.IOException;
 import java.io.OutputStream;
@@ -80,7 +80,7 @@ public class MyVirtualCollectionsResource {
      * VirtualCollectionRegistry#getVirtualCollections(java.security.Principal,
      * java.lang.String, int, int)
      */
-    @Secured
+    @ApiKeyRequired
     @GET
     @Produces({MediaType.TEXT_XML, MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
     @Operation(

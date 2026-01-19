@@ -3,25 +3,33 @@ package eu.clarin.cmdi.virtualcollectionregistry.query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import jakarta.persistence.Parameter;
-import jakarta.persistence.TypedQuery;
+//import jakarta.persistence.Parameter;
+//import jakarta.persistence.TypedQuery;
 import java.io.Serializable;
-import java.util.HashMap;
-import java.util.Map;
+//import java.util.HashMap;
+//import java.util.Map;
 
 public class QueryFactory implements Serializable {
 
     private static Logger logger = LoggerFactory.getLogger(QueryFactory.class);
 
-    private Map<String, Object> params = new HashMap<>();
-
+//    private Map<String, Object> params = new HashMap<>();
     private QueryOptions options = new QueryOptions();
+    
     private QueryOptions.Filter andFilter = new QueryOptions().and();
 
+    public QueryFactory() {}
+    
+    public QueryFactory(QueryOptions opts) {
+        this.options = opts;
+        //TODO: how to initialize the internal andFilter?
+    }
+   
     public QueryOptions getQueryOptions() {
         return options;
     }
-
+    
+/*
     public void applyParamsToQuery(TypedQuery query) {
         for(Parameter p : query.getParameters()) {
             logger.trace("Param name={}, type={}, position={}", p.getName(), p.getParameterType().toString(), p.getPosition());
@@ -41,9 +49,9 @@ public class QueryFactory implements Serializable {
             params.put(key, value);
         }
     }
-
+*/
     public QueryFactory and(QueryOptions.Property property, QueryOptions.Relation relation, Object value) {
-        addParam(property.toString().toLowerCase(), value);
+  //      addParam(property.toString().toLowerCase(), value);
         andFilter.add(property, relation, value);
         options.setFilter(andFilter);
         return this;

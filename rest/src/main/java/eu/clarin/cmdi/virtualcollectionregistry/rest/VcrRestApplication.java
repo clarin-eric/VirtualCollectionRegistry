@@ -18,25 +18,12 @@ package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
 import jakarta.ws.rs.ApplicationPath;
 import jakarta.ws.rs.core.Application;
-import org.glassfish.jersey.server.ResourceConfig;
-import org.glassfish.jersey.server.ServerProperties;
 
 /**
  *
  * @author wilelb
  */
 @ApplicationPath("/")
-public class VcrRestApplication extends Application {//ResourceConfig {
-     public VcrRestApplication() {
-        // Register resources and providers using package-scanning.
-        //packages("eu.clarin.cmdi.virtualcollectionregistry.rest");
-
-        // Register my custom provider - not needed if it's in my.package.
-        //register(SecurityRequestFilter.class);
-        // Register an instance of LoggingFilter.
-        //register(new LoggingFilter(LOGGER, true));
-
-        // Enable Tracing support.
-        //property(ServerProperties.TRACING, "ALL");
-    }
+public class VcrRestApplication extends Application {
+    public VcrRestApplication() {}
 }

@@ -7,7 +7,7 @@
             </PatternLayout>
         </Console>
         <RollingFile
-                name="File"
+                name="File"                                
                 fileName="${sys:catalina.base}/logs/vcr-rest.log"
                 filePattern="${sys:catalina.base}/logs/vcr-rest.%i.log.gz"
                 ignoreExceptions="false">
@@ -41,16 +41,11 @@
         <Logger name="org.hibernate" level="INFO" />
 
         <!-- logs the SQL statements -->
-        <!-- Logger name="org.hibernate.SQL" level="DEBUG" /-->
+        <!--Logger name="org.hibernate.SQL" level="DEBUG" /-->
         <!-- Logs the JDBC parameters passed to a query -->
-        <!-- Logger name="org.hibernate.type" level="TRACE" /-->
-
-        <Logger name="org.apache.wicket" level="WARN" />
-        <Logger name="org.apache.wicket.resource" level="WARN" />
-        <Logger name="org.apache.http" level="WARN" />
-        <Logger name="de.agilecoders.wicket" level="WARN" />
-        <Logger name="wicket-webjars" level="WARN" />
-        <Logger name="net.bull.javamelody" level="WARN" />
+        <!--Logger name="org.hibernate.type" level="TRACE" /-->
+        <!--Logger name="org.hibernate.orm.jdbc.bind" level="TRACE" /-->
+        <!--Logger name="org.hibernate.orm.jdbc.extract" level="TRACE" /-->
 
         <Root level="trace">
             <AppenderRef ref="File"/>

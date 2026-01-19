@@ -15,14 +15,16 @@ public class VirtualCollectionList implements Serializable {
     private int totalCount;
     private String result;
     
-    public VirtualCollectionList() {}
+    public VirtualCollectionList() {
+        virtualCollections = new LinkedList<>();
+    }
     
     public VirtualCollectionList(List<VirtualCollection> list, int offset,
             int totalCount) {
         if (list != null) {
             this.virtualCollections = list;
         } else {
-            this.virtualCollections = Collections.emptyList();
+            this.virtualCollections = new LinkedList<>();
         }
         this.offset = offset;
         this.totalCount = totalCount;

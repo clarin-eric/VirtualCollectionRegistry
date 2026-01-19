@@ -19,6 +19,7 @@ package eu.clarin.cmdi.wicket.components.pid;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
 import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
 import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
+import eu.clarin.cmdi.virtualcollectionregistry.core.VcrHttpClientFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PersistentIdentifieable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidLink;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidType;
@@ -27,12 +28,8 @@ import static eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidType.HANDLE;
 import static eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidType.NBN;
 import static eu.clarin.cmdi.virtualcollectionregistry.model.pid.PidType.UNKOWN;
 import eu.clarin.cmdi.wicket.components.BootstrapDialog;
-import eu.clarin.cmdi.wicket.components.DialogButton;
 import java.io.IOException;
 import java.time.Duration;
-import java.util.Arrays;
-import java.util.List;
-import java.util.Optional;
 import java.util.concurrent.ExecutionException;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
@@ -41,10 +38,7 @@ import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.client.params.HttpClientParams;
-import org.apache.http.impl.client.DefaultHttpClient;
-import org.apache.http.params.BasicHttpParams;
-import org.apache.http.params.HttpParams;
+import org.apache.http.impl.client.CloseableHttpClient;
 import org.apache.http.protocol.BasicHttpContext;
 import org.apache.http.protocol.HttpContext;
 import org.apache.wicket.ajax.AjaxRequestTarget;
@@ -184,11 +178,9 @@ public class PidInfoDialog extends BootstrapDialog {
     
     private String resolvePid(String uri) throws IOException {
         String result = "Unkown";
-        HttpParams httpParams = new BasicHttpParams();
-        HttpClientParams.setRedirecting(httpParams, false);
-        DefaultHttpClient client = new DefaultHttpClient(httpParams);        
 
         HttpContext ctx = new BasicHttpContext();
+        CloseableHttpClient client = VcrHttpClientFactory.getNonRedirectClient();
         try {         
             HttpResponse response = client.execute(new HttpGet(uri), ctx);
             StatusLine status = response.getStatusLine();

@@ -80,6 +80,8 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
     @Autowired
     private VcrConfig vcrConfig;
     
+    private Principal authenticatedUser;
+    
     //@Autowired
     //private ParserConfig parserConfig;
     
@@ -215,6 +217,22 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
         }
         */
     }
+    
+    @Override
+    public void setAuthenticatedUser(Principal user) {
+        this.authenticatedUser = user;
+    }   
+    
+    @Override
+    public Principal getAuthenticatedUser() {
+        return this.authenticatedUser;
+    }
+    
+    @Override
+    public boolean hasAuthenticatedUser() {
+        return this.authenticatedUser != null;
+    }
+    
 
     /**
      * Will store the specified collection; it will also set the owner according
@@ -832,7 +850,7 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
         //int result = -1;
         //try {
           //  beginTransaction(datastore.getEntityManager());
-            qryFactory.addParam("vc_owner", "%%");
+            //qryFactory.addParam("vc_owner", "%%");
             //result = vcDao.getVirtualCollectionCount(qryFactory);
             return vcDao.getVirtualCollectionCount(qryFactory);
         //} catch(Exception ex) {
@@ -849,7 +867,7 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
         //List<VirtualCollection> result = new LinkedList<>();
         //try {
             //beginTransaction(datastore.getEntityManager());
-            qryFactory.addParam("vc_owner", "%%");
+            //qryFactory.addParam("vc_owner", "%%");
             //result = vcDao.getVirtualCollections(first, count, qryFactory);
         return vcDao.getVirtualCollections(first, count, qryFactory);
        // } catch(Exception ex) {

@@ -212,6 +212,15 @@ public class PersistentIdentifier implements PersistentIdentifieable, Serializab
         if(s.startsWith("dummy-")) {
            String identifier = s.replaceAll("dummy-", "");
            return new PersistentIdentifier(vc, Type.DUMMY, identifier);
+        } else if(s.startsWith("dummy:")) {
+           String identifier = s.replaceAll("dummy:", "");
+           return new PersistentIdentifier(vc, Type.DUMMY, identifier);
+        } else if (s.startsWith("hdl:")) {
+           String identifier = s.replaceAll("hdl:", "");
+           return new PersistentIdentifier(vc, Type.HANDLE, identifier); 
+        } else if (s.startsWith("doi:")) {
+           String identifier = s.replaceAll("doi:", "");
+           return new PersistentIdentifier(vc, Type.DOI, identifier);  
         }
         //TODO: Implement other pid types
         throw new RuntimeException("Unsupported pid type: "+s);

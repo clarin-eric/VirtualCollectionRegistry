@@ -1,22 +1,23 @@
 package eu.clarin.cmdi.virtualcollectionregistry.core.reference.processor;
 
 import eu.clarin.cmdi.virtualcollectionregistry.core.DataStore;
+import eu.clarin.cmdi.virtualcollectionregistry.core.VcrHttpClientFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.CmdiReferenceParserImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.DogReferenceParser;
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.MscrReferenceParser;
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.parsers.ReferenceParser;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan;
 import eu.clarin.cmdi.virtualcollectionregistry.model.config.ParserConfig;
+import java.io.IOException;
 import org.apache.http.client.config.RequestConfig;
 import org.apache.http.client.methods.HttpGet;
-import org.apache.http.impl.client.CloseableHttpClient;
-import org.apache.http.impl.client.HttpClients;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import java.util.HashMap;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
+import org.apache.http.impl.client.CloseableHttpClient;
 
 /**
  * Reference processing does 2 things:
@@ -36,7 +37,7 @@ public class VirtualCollectionRegistryReferenceProcessor {
 
     private final static Logger logger = LoggerFactory.getLogger(VirtualCollectionRegistryReferenceProcessor.class);
     
-    private final CloseableHttpClient httpclient = HttpClients.createDefault();
+    //private final CloseableHttpClient httpclient = HttpClients.createDefault();
     private final RequestConfig requestConfig;
     private final Map<String, Boolean> skipList = new HashMap<>(); //In-memory list of reference with issues, to avoid looping over them continously
     
@@ -78,13 +79,14 @@ public class VirtualCollectionRegistryReferenceProcessor {
      */
     public void doWork(final DataStore datastore, ResourceScan scan) {
         ReferenceHttpResponseHandler responseHandler = new ReferenceHttpResponseHandler(parsers, datastore, scan);
-        String exceptionMsg = null;
+        //String exceptionMsg = null;
+        CloseableHttpClient client = VcrHttpClientFactory.getClient();
         try {
             if(!skipList.containsKey(scan.getResolvedRef())) {
                 logger.debug("Validating reference = "+scan.getRef()+", resolved to = "+scan.getResolvedRef());
                 HttpGet httpget = new HttpGet(scan.getResolvedRef());
                 httpget.setConfig(requestConfig);
-                httpclient.execute(httpget, responseHandler);            
+                client.execute(httpget, responseHandler);            
             } else {
                 logger.warn("Skipped problematic (failed before) reference: "+scan.getResolvedRef()); 
             }
@@ -95,6 +97,14 @@ public class VirtualCollectionRegistryReferenceProcessor {
             } catch(Exception ex2) {
                 logger.warn("Added "+scan.getResolvedRef()+" to the skiplist.", ex);
                 skipList.put(scan.getResolvedRef(), Boolean.TRUE);
+            }
+        } finally {
+            try {
+                if(client != null) {
+                    client.close();
+                }
+            } catch(IOException ex) {
+                logger.error("Failed to close http exception", ex);
             }
         }
     }    

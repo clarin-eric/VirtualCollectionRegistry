@@ -20,6 +20,7 @@
     </properties>
     
     <dependencies>
+        
         <!--
         <dependency>
             <groupId>${project.groupId}</groupId>
@@ -63,20 +64,22 @@
             <version>2.2.23</version>
         </dependency>
         -->
-                <!-- 1. OpenAPI API -->
-<dependency>
-    <groupId>org.eclipse.microprofile.openapi</groupId>
-    <artifactId>microprofile-openapi-api</artifactId>
-    <version>4.0.2</version>
-</dependency>
-<!-- 2. Swagger-ui -->
-<dependency>
-    <groupId>org.microprofile-ext.openapi-ext</groupId>
-    <artifactId>openapi-ui</artifactId>
-    <version>2.0.0</version>
-</dependency>
         
+        <!-- 1. OpenAPI API -->
+        <dependency>
+            <groupId>org.eclipse.microprofile.openapi</groupId>
+            <artifactId>microprofile-openapi-api</artifactId>
+            <version>4.0.2</version>
+        </dependency>
+        <!-- 2. Swagger-ui -->
+        <dependency>
+            <groupId>org.microprofile-ext.openapi-ext</groupId>
+            <artifactId>openapi-ui</artifactId>
+            <version>2.0.0</version>
+        </dependency>
         
+        <!-- TODO: the dependency on wicket should go at some point -->
+        <!--
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-util</artifactId>
@@ -87,6 +90,7 @@
             <artifactId>wicket-core</artifactId>
             <version>${wicket.version}</version>
         </dependency>
+        -->
         
          <!-- the Jersey implementation -->
         <dependency>

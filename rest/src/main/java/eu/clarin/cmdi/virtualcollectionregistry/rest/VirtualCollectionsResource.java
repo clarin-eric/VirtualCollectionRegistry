@@ -1,12 +1,16 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
+import com.fasterxml.jackson.core.JsonProcessingException;
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.utils.RestUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionList;
-import eu.clarin.cmdi.virtualcollectionregistry.rest.auth.Secured;
+import eu.clarin.cmdi.virtualcollectionregistry.query.QueryFactory;
+import eu.clarin.cmdi.virtualcollectionregistry.rest.auth.ApiKeyOptional;
+import eu.clarin.cmdi.virtualcollectionregistry.rest.auth.ApiKeyRequired;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
+import eu.clarin.cmdi.virtualcollectionregistry.service.impl.QueryFactorySerializer;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -29,12 +33,16 @@ import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
 import jakarta.ws.rs.core.StreamingOutput;
 import jakarta.ws.rs.core.UriInfo;
+import java.util.ArrayList;
+import java.util.List;
 import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
 import org.eclipse.microprofile.openapi.annotations.parameters.Parameters;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 import org.springframework.beans.factory.annotation.Autowired;
 
@@ -46,6 +54,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 @Path("/virtualcollections")
 public class VirtualCollectionsResource {
 
+    private final static Logger logger = LoggerFactory.getLogger(VirtualCollectionsResource.class);
+    
     @Autowired
     private VirtualCollectionRegistry registry;
     @Autowired
@@ -84,6 +94,7 @@ public class VirtualCollectionsResource {
      * @param query a Virtual Collection Query Language expression
      * @param offset
      * @param count
+     * @param queryFactoryAsJsonBase64Encoded
      * @return a serialised list of all public virtual collections. If no
      * virtual collection are found an empty list will be returned.
      * @throws VirtualCollectionRegistryException if the collections could not
@@ -91,6 +102,7 @@ public class VirtualCollectionsResource {
      * @see VirtualCollectionRegistry#getVirtualCollections(java.lang.String,
      * int, int)
      */
+    @ApiKeyOptional
     @GET
     @Produces({MediaType.TEXT_XML,
         MediaType.APPLICATION_XML,
@@ -101,15 +113,50 @@ public class VirtualCollectionsResource {
     @Parameters( value = {
         @Parameter(name = "query", description = "Query to filter specific collections"),
         @Parameter(name = "offset", description = "Start with this index. Default = 0"),
-        @Parameter(name = "count", description = "Include this many results. Use -1 for all results. Default = -1")
+        @Parameter(name = "count", description = "Include this many results. Use -1 for all results. Default = -1"),
+        @Parameter(name = "queryfactory", description = "Parameter used to send the serialized queryfactory from the client, query is ignored if this parameter is used")
     })
     public Response getVirtualCollections(
             @QueryParam("q") String query,
             @DefaultValue("0") @QueryParam("offset") int offset,
-            @DefaultValue("-1") @QueryParam("count") int count)
+            @DefaultValue("-1") @QueryParam("count") int count,
+            @DefaultValue("") @QueryParam("queryfactory") String queryFactoryAsJsonBase64Encoded)
             throws VirtualCollectionRegistryException {
-        final VirtualCollectionList vcs = registry.getVirtualCollections(query,
-                (offset > 0) ? offset : 0, count);
+        
+        Principal principal = security.getUserPrincipal();
+
+        logger.debug("getVirtualCollections(q={}, offet={}, count={}, queryfactory={}), principal={}", query, offset, count, queryFactoryAsJsonBase64Encoded, principal != null ? principal.getName() : "no principal set");
+        
+        // Query the virtual collections list list either by the simple query or via the supplied queryfactory
+        VirtualCollectionList vcrQueryResult = null;
+        if(!queryFactoryAsJsonBase64Encoded.isEmpty()) {
+            try {
+                QueryFactory qryFactory = QueryFactorySerializer.deserializeBase64Encoded(queryFactoryAsJsonBase64Encoded);
+                
+                List<VirtualCollection> collections = registry.getVirtualCollections(offset, count, qryFactory);
+                final List<VirtualCollection> authorizedCollections = new ArrayList<>();
+                for(VirtualCollection collection : collections) {
+                    if(principal == null || collection.getState() == VirtualCollection.State.PUBLIC || collection.getOwner().getName().equals(principal.getName())) {
+                        authorizedCollections.add(collection);
+                    } else {
+                        logger.warn("Skipping unauthorized collection (id={} / name={}) for username={}", collection.getId(), collection.getName(), principal.getName());
+                    }
+                }    
+
+                vcrQueryResult = new VirtualCollectionList(authorizedCollections, offset, collections.size());
+            } catch(JsonProcessingException ex) {
+                throw new VirtualCollectionRegistryException("Failed to deserialize query factory json", ex);
+            }
+        } else {       
+            vcrQueryResult = registry.getVirtualCollections(query, (offset > 0) ? offset : 0, count);
+        }
+        
+        if(vcrQueryResult == null) {
+            throw new VirtualCollectionRegistryException("Failed to query virtual collections");
+        }
+        
+        //Serialize and stream the result to the client
+        final VirtualCollectionList vcs = vcrQueryResult;
         StreamingOutput writer = new StreamingOutput() {
             @Override
             public void write(OutputStream output) throws IOException,
@@ -135,7 +182,7 @@ public class VirtualCollectionsResource {
      *
      * @throws VirtualCollectionRegistryException
      */
-    @Secured
+    @ApiKeyRequired
     @POST
     @Consumes({MediaType.TEXT_XML,
         MediaType.APPLICATION_XML,

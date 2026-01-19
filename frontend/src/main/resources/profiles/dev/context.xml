@@ -168,7 +168,7 @@
                override="false" />
     
     <Parameter name="eu.clarin.cmdi.vcr.parser.mscr.enabled"
-               value="true"
+               value="false"
                override="false" />
    
     <Parameter name="eu.clarin.cmdi.vcr.parser.dog.enabled"

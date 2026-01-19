@@ -34,7 +34,6 @@ import eu.clarin.cmdi.wicket.ScrollTracker;
 import org.apache.wicket.AttributeModifier;
 import org.apache.wicket.Component;
 import org.apache.wicket.WicketRuntimeException;
-import org.apache.wicket.authorization.UnauthorizedInstantiationException;
 import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
