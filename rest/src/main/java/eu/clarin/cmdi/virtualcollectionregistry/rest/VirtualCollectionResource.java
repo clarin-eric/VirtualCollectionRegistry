@@ -35,7 +35,7 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
-import org.eclipse.microprofile.openapi.annotations.security.SecurityRequirement;
+
 /*
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
@@ -147,6 +147,9 @@ public final class VirtualCollectionResource {
             })
     public Response getVirtualCollection(@Context Request request)
             throws VirtualCollectionRegistryException {
+        
+        //TODO: Deny access if collection is private
+        
         final VirtualCollection vc = registry.retrieveVirtualCollection(id);
         // CMDI's should not be returned for non-public VC's, so check this...
         if (!(vc.isPublic() || vc.isPublicFrozen()) || (!vc.hasPersistentIdentifier())) {

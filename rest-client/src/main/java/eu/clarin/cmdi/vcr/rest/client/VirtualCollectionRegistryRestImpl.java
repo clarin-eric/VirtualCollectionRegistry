@@ -143,11 +143,15 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
     
     private VirtualCollection getCollection(long id) throws VirtualCollectionRegistryException {
         Response response = 
-            RequestBuilder.setPath("virtualcollections/"+id, jwtUtil).get();
-        //Response response = getRequest("virtualcollections/"+id).get();
+            RequestBuilder
+                .setPath("virtualcollections/"+id, jwtUtil)
+                .setAuthenticatedUser(authenticatedUser)
+                .get();
+        
         if(response.getStatus() != 200) {
             throw new VirtualCollectionRegistryException("Invalid api response: HTTP "+response.getStatus()+", "+response.getStatusInfo().getReasonPhrase());
         }
+        
         InputStream input = (InputStream)response.getEntity();      
 
         VirtualCollection.Format format = RestUtils.getInputFormat(response.getMediaType());
@@ -156,7 +160,14 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
         VirtualCollection vc = new VirtualCollection();
         try {
             vc = marshaller.unmarshal(input, format, encoding);
+            //Note: this is a workaround to fix the client authorization check
+            //      The rest api checks for permission. If it returns a collection
+            //      the authentication user is allowed to access it.
+            //      We explicitly set the owner here based on the user principal
+            //      that made the request.
+            vc.setOwner(new User(authenticatedUser));
         } catch(IOException ex) {
+            logger.error("Failed to unmarshall collection", ex);
             throw new VirtualCollectionRegistryException("", ex);
         }
 

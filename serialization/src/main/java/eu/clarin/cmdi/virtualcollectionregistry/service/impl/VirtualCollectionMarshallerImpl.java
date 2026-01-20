@@ -1,6 +1,5 @@
 package eu.clarin.cmdi.virtualcollectionregistry.service.impl;
 
-import com.fasterxml.jackson.annotation.JsonProperty;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionCMDIWriter;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
