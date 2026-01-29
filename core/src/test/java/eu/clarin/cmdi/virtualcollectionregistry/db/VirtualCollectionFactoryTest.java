@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.db;
 
-import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory;
+import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactoryWithPersistence;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
@@ -27,10 +28,12 @@ public class VirtualCollectionFactoryTest {
     public void testPersist() throws VirtualCollectionRegistryException, Exception {
         User owner = new User("test", "Test user");
         VirtualCollection vc =
+            new VirtualCollectionFactoryWithPersistence(
                 VirtualCollectionFactory
                         .createNew(owner, "Collection name", "Collection description")
-                        .persist(db.getVirtualCollectionDao())
-                        .getCollection();
+            )
+            .persist(db.getVirtualCollectionDao())
+            .getFactory().getCollection();
 
         Assert.assertTrue("Collection must not be null", vc != null);
         Assert.assertTrue("Collection must have an id", vc.getId() != null);
@@ -48,11 +51,12 @@ public class VirtualCollectionFactoryTest {
     public void testPublish() throws VirtualCollectionRegistryException, Exception {
         User owner = new User("test", "Test user");
         VirtualCollection vc =
+            new VirtualCollectionFactoryWithPersistence(
                 VirtualCollectionFactory
-                        .createNew(owner, "Collection name", "Collection description")
-                        .startPublish(db.getVirtualCollectionDao())
-                        .finishPublish(db.getVirtualCollectionDao())
-                        .getPersistedCollection(db.getVirtualCollectionDao());
+                    .createNew(owner, "Collection name", "Collection description")
+            ).startPublish(db.getVirtualCollectionDao())
+            .finishPublish(db.getVirtualCollectionDao())
+            .getPersistedCollection(db.getVirtualCollectionDao());
 
         Assert.assertNotNull("Collection must not be null", vc);
         Assert.assertNotNull("Collection must have an id", vc.getId());
@@ -70,21 +74,22 @@ public class VirtualCollectionFactoryTest {
     public void testForking() throws VirtualCollectionRegistryException, Exception {
         User owner = new User("test", "Test user");
         VirtualCollection vc =
+            new VirtualCollectionFactoryWithPersistence(
                 VirtualCollectionFactory
-                        .createNew(owner, "Collection name", "Collection description")
-                        .startPublish(db.getVirtualCollectionDao())
-                        .finishPublish(db.getVirtualCollectionDao())
-                        .setState(VirtualCollection.State.PUBLIC)
-                        .getPersistedCollection(db.getVirtualCollectionDao());
+                    .createNew(owner, "Collection name", "Collection description")
+            ).startPublish(db.getVirtualCollectionDao())
+            .finishPublish(db.getVirtualCollectionDao())
+            .setState(VirtualCollection.State.PUBLIC)
+            .getPersistedCollection(db.getVirtualCollectionDao());
 
         Assert.assertNotNull("Persisted collection must have an id", vc.getId());
         Assert.assertEquals("Collection must be in public state", VirtualCollection.State.PUBLIC, vc.getState());
 
          User owner2 = new User("test 2", "Test user 2");
         VirtualCollection vcForked =
-                VirtualCollectionFactory
-                        .createFork(vc, owner2)
-                        .getPersistedCollection(db.getVirtualCollectionDao());
+            new VirtualCollectionFactoryWithPersistence(
+                VirtualCollectionFactory.createFork(vc, owner2)
+            ).getPersistedCollection(db.getVirtualCollectionDao());
 
         Assert.assertNotNull("Collection must have an id after persist", vcForked.getId());
         Assert.assertTrue("Collection must have a value id (>= 0) after persist", vcForked.getId() >= 0);
@@ -103,12 +108,14 @@ public class VirtualCollectionFactoryTest {
         //Create first collection
         User owner = new User("test", "Test user");
         VirtualCollection vcRoot =
+            new VirtualCollectionFactoryWithPersistence(
                 VirtualCollectionFactory
-                        .createNew(owner, "Collection name", "Collection description")
-                        .startPublish(db.getVirtualCollectionDao())
-                        .finishPublish(db.getVirtualCollectionDao())
-                        .setState(VirtualCollection.State.PUBLIC)
-                        .getPersistedCollection(db.getVirtualCollectionDao());
+                    .createNew(owner, "Collection name", "Collection description")
+                )
+                .startPublish(db.getVirtualCollectionDao())
+                .finishPublish(db.getVirtualCollectionDao())
+                .setState(VirtualCollection.State.PUBLIC)
+                .getPersistedCollection(db.getVirtualCollectionDao());
 
         Assert.assertNotNull("Persisted collection must have an id", vcRoot.getId());
         Assert.assertEquals("Collection must be in public state", VirtualCollection.State.PUBLIC, vcRoot.getState());
@@ -164,8 +171,10 @@ public class VirtualCollectionFactoryTest {
         //Create private collection
         User owner = new User("test", "Test user");
         VirtualCollection vcRoot =
+            new VirtualCollectionFactoryWithPersistence(
                 VirtualCollectionFactory
                         .createNew(owner, "Collection name", "Collection description")
+            )
                         .getPersistedCollection(db.getVirtualCollectionDao());
 
         Assert.assertNotNull("Persisted collection must have an id", vcRoot.getId());

@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.core;
 
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.db.DbEnvironment;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User;
@@ -17,14 +18,17 @@ public class CreatorServiceImplTest {
     public CreatorServiceImplTest() throws Exception {
         DbEnvironment db = DbEnvironment.initialize();
         List<VirtualCollection> collections = new ArrayList<>();
-        collections.add(
-            VirtualCollectionFactory
-                .createNew(new User("test user"), "Test", "Test")
-                .addCreator(new Creator("creatorFamilyName", "creatorGivenName"))
-                .startPublish(db.getVirtualCollectionDao())
-                .finishPublish(db.getVirtualCollectionDao())
-                .getCollection()
-        );
+        
+        VirtualCollectionFactoryWithPersistence vcf =
+            new VirtualCollectionFactoryWithPersistence(
+                VirtualCollectionFactory
+                    .createNew(new User("test user"), "Test", "Test")
+                    .addCreator(new Creator("creatorFamilyName", "creatorGivenName"))
+            )
+            .startPublish(db.getVirtualCollectionDao())
+            .finishPublish(db.getVirtualCollectionDao());        
+                
+        collections.add(vcf.getFactory().getCollection());
         service.initialize(collections);
         db.destroy();
     }

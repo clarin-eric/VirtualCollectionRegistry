@@ -206,7 +206,7 @@ public class ResourceScan implements Serializable, Comparable<ResourceScan>  {
     }
 
     public State getState() {
-        if(id == null) {
+        if(getId() == null) {
             return State.INITIALIZED;             
         }
         

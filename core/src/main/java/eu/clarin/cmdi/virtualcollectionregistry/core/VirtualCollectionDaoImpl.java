@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.core;
 
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionNotFoundException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User;
@@ -144,7 +145,7 @@ public class VirtualCollectionDaoImpl extends TxManager implements VirtualCollec
     }
 
     @Override
-    public void persist(VirtualCollection vc) throws VirtualCollectionRegistryException {
+    public Long persist(VirtualCollection vc) throws VirtualCollectionRegistryException {
         EntityManager em = getEntityManager();
         try {
             beginTransaction(em);
@@ -174,8 +175,8 @@ public class VirtualCollectionDaoImpl extends TxManager implements VirtualCollec
             rollbackActiveTransaction(em, "", ex);
         } finally {
             commitActiveTransaction(em);
-
         }
+        return vc.getId();
     }
 
     /**
@@ -280,5 +281,10 @@ public class VirtualCollectionDaoImpl extends TxManager implements VirtualCollec
         } finally {
             commitActiveTransaction(em);
         }
+    }
+
+    @Override
+    public Long delete(Long id) throws VirtualCollectionRegistryException {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }

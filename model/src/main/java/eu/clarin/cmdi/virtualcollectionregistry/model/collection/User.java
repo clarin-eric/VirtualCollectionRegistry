@@ -1,5 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model.collection;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.ApiKey;
 import java.io.Serializable;
 import java.security.Principal;
@@ -19,6 +21,7 @@ import jakarta.persistence.Table;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
 @Table(name = "vcr_user")
 @NamedQueries({

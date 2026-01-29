@@ -4,6 +4,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.rest;
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.utils.RestUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryPermissionException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryUsageException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.auth.ApiKeyOptional;
@@ -35,6 +36,8 @@ import org.eclipse.microprofile.openapi.annotations.Operation;
 import org.eclipse.microprofile.openapi.annotations.media.Content;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
 import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /*
 import io.swagger.v3.oas.annotations.Operation;
@@ -58,11 +61,8 @@ import org.springframework.beans.factory.annotation.Autowired;
 //@Path("/virtualcollection")
 public final class VirtualCollectionResource {
 
-    public static class MediaTypes {
-        public static final String CMDI = "application/x-cmdi+xml";
-        public static final MediaType CMDI_TYPE = new MediaType("application", "x-cmdi+xml");
-    }
-
+    private final static Logger logger = LoggerFactory.getLogger(VirtualCollectionResource.class);
+    
     @Autowired
     private VirtualCollectionRegistry registry;
     @Autowired
@@ -93,8 +93,6 @@ public final class VirtualCollectionResource {
         this.id = id;
     }
 
-    
-    
     /**
      * Sets the id for this resource; should be called exactly once per
      * instance; <strong>mandatory call</strong>, not setting will lead to
@@ -103,9 +101,6 @@ public final class VirtualCollectionResource {
      * @param id
      */
     public synchronized void setId(long id) {
-        //if (this.id != null) {
-        //    throw new IllegalStateException("Id was already set for Virtual Collection resource! Resource is recycled (by Jersey)?");
-        //}
         this.id = id;
     }
 
@@ -120,31 +115,32 @@ public final class VirtualCollectionResource {
      */
     @ApiKeyOptional
     @GET
-    @Produces({VirtualCollectionResource.MediaTypes.CMDI,
+    @Produces({
+        VirtualCollectionMediaTypes.CMDI,
         MediaType.TEXT_XML,
         MediaType.APPLICATION_XML,
         MediaType.APPLICATION_JSON})
     @Operation(
-            summary = "Retrieve a virtual collection",
-            description = "The virtual collection referenced by the URI will be retrieved.")
+        summary = "Retrieve a virtual collection",
+        description = "The virtual collection referenced by the URI will be retrieved.")
     @APIResponses(
-            value = {
-                    @APIResponse(
-                            responseCode = "404",
-                            description = "Not found.",
-                            content = {@Content(mediaType = "text/html")}
-                    ),
-                    @APIResponse(
-                            responseCode = "500",
-                            description = "Unexpected server side error.",
-                            content = {@Content(mediaType = "text/html")}
-                    ),
-                    @APIResponse(
-                            responseCode = "200",
-                            description = "Representation of the requested collection.",
-                            content = {@Content(mediaType = "application/json"), @Content(mediaType = "application/xml")}
-                    )
-            })
+        value = {
+            @APIResponse(
+                responseCode = "404",
+                description = "Not found.",
+                content = {@Content(mediaType = "text/html")}
+            ),
+            @APIResponse(
+                responseCode = "500",
+                description = "Unexpected server side error.",
+                content = {@Content(mediaType = "text/html")}
+            ),
+            @APIResponse(
+                responseCode = "200",
+                description = "Representation of the requested collection.",
+                content = {@Content(mediaType = "application/json"), @Content(mediaType = "application/xml")}
+            )
+        })
     public Response getVirtualCollection(@Context Request request)
             throws VirtualCollectionRegistryException {
         
@@ -242,9 +238,16 @@ public final class VirtualCollectionResource {
             response.setInfo("updated");
             response.setId(id);
             return Response.ok(response).build();
+        } catch(VirtualCollectionRegistryException ex) {
+            if(ex.getCause() instanceof VirtualCollectionRegistryPermissionException) {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+            throw new VirtualCollectionRegistryException("update", ex);
         } catch (IOException e) {
-            throw new VirtualCollectionRegistryException("update", e);
-
+            throw new VirtualCollectionRegistryException("API communication issue while updating collection", e);
+        } catch(Exception e) {
+            logger.error("Unexpected error", e);
+            throw new VirtualCollectionRegistryException("Unexpected error", e);
         }
     }
 
@@ -287,12 +290,19 @@ public final class VirtualCollectionResource {
         if (principal == null) {
             throw new NullPointerException("principal == null");
         }
-        registry.deleteVirtualCollection(principal, id);
-        RestResponse response = new RestResponse();
-        response.setIsSuccess(true);
-        response.setInfo("deleted");
-        response.setId(id);
-        return Response.ok(response).build();
+        try {
+            registry.deleteVirtualCollection(principal, id);
+            RestResponse response = new RestResponse();
+            response.setIsSuccess(true);
+            response.setInfo("deleted");
+            response.setId(id);
+            return Response.ok(response).build();
+        } catch(VirtualCollectionRegistryException ex) {
+            if(ex instanceof VirtualCollectionRegistryPermissionException) {
+                return Response.status(Response.Status.FORBIDDEN).build();
+            }
+            throw new VirtualCollectionRegistryException("delete", ex);
+        }
     }
 
     /**

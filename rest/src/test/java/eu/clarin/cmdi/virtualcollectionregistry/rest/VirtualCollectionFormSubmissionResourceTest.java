@@ -18,7 +18,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
 
 import de.mpg.aai.security.auth.model.BasePrincipal;
-import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Resource;

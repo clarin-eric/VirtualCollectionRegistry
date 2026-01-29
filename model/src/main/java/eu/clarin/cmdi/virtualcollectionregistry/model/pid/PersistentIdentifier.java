@@ -1,6 +1,8 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model.pid;
 
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import java.io.Serializable;
 import jakarta.persistence.*;
@@ -9,6 +11,7 @@ import org.apache.commons.lang.NullArgumentException;
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
 
+@JsonIdentityInfo(generator = ObjectIdGenerators.PropertyGenerator.class, property = "id")
 @Entity
 @Table(name = "pid")
 public class PersistentIdentifier implements PersistentIdentifieable, Serializable {

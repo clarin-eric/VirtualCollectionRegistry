@@ -62,7 +62,7 @@ import com.vladsch.flexmark.util.ast.Node;
 import com.vladsch.flexmark.html.HtmlRenderer;
 import com.vladsch.flexmark.parser.Parser;
 import com.vladsch.flexmark.util.data.MutableDataSet;
-import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.utils.RestUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryPermissionException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Creator;

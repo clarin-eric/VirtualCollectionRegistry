@@ -125,8 +125,6 @@ public class VirtualCollectionsResource {
         
         Principal principal = security.getUserPrincipal();
 
-        //logger.debug("getVirtualCollections(q={}, offet={}, count={}, queryfactory={}), principal={}", query, offset, count, queryFactoryAsJsonBase64Encoded, principal != null ? principal.getName() : "no principal set");
-        
         // Query the virtual collections list list either by the simple query or via the supplied queryfactory
         VirtualCollectionList vcrQueryResult = null;
         if(!queryFactoryAsJsonBase64Encoded.isEmpty()) {
@@ -138,9 +136,7 @@ public class VirtualCollectionsResource {
                 for(VirtualCollection collection : collections) {
                     if(principal == null || collection.getState() == VirtualCollection.State.PUBLIC || collection.getOwner().getName().equals(principal.getName())) {
                         authorizedCollections.add(collection);
-                    }/* else {
-                        logger.warn("Skipping unauthorized collection (id={} / name={}) for username={}", collection.getId(), collection.getName(), principal.getName());
-                    }*/
+                    }
                 }    
 
                 vcrQueryResult = new VirtualCollectionList(authorizedCollections, offset, collections.size());

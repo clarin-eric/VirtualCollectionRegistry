@@ -2,7 +2,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor;
 
 import java.util.*;
 
-import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.TimerManager;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.ActionablePanel;

@@ -17,6 +17,8 @@ import eu.clarin.cmdi.virtualcollectionregistry.core.validation.VirtualCollectio
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionNotFoundException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryPermissionException;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.GeneratedBy;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.GeneratedByQuery;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User_;
@@ -246,31 +248,21 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
      */
     @Override
     public long createVirtualCollection(Principal principal, VirtualCollection vc) throws VirtualCollectionRegistryException {
-        long result = -1;
-        try {
-            beginTransaction(datastore.getEntityManager());
-            User user = getOrCreateUser(principal);
-            result = createVirtualCollection(user, vc);
-        } catch(Exception ex) {
-            rollbackActiveTransaction(datastore.getEntityManager(),"Failed to fetch or create user for principal="+ principal.getName()+".", ex);
-        } finally {
-            commitActiveTransaction(datastore.getEntityManager());
-        }
-        return result;
+        return createVirtualCollection(new User(principal), vc);
     }
 
+    @Override
     public long createVirtualCollection(User user, VirtualCollection vc) throws VirtualCollectionRegistryException {
         if (user == null) {
             throw new NullPointerException("user == null");
         }
 
-        logger.debug("creating virtual collection");
-
         final EntityManager em = datastore.getEntityManager();
         long result = -1;
         try {            
             beginTransaction(datastore.getEntityManager());
-            createCollection(em, vc, user);
+            User managedUser = getOrCreateUser(user.getName());
+            createCollection(em, vc, managedUser);
             logger.debug("virtual collection created (id={})", vc.getId());
             result = vc.getId();
         } catch (Exception e) {
@@ -288,7 +280,9 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
 
         logger.debug("persisting new virtual collection");
 
-        vc.setOwner(user);
+        User managedUser = em.merge(user);
+        vc.setOwner(managedUser);
+        
         vc.setState(VirtualCollection.State.PRIVATE); // force new collection to be private
 
         // Make sure all relations are set from collection objects in managed state
@@ -320,7 +314,7 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
         if(vc.getRoot() == null) {
             logger.trace("Updating collection with root reference to itself");
             vc.setRoot(vc);
-            updateCollection(em, vc.getId(), vc);
+            updateCollection(em, user, vc.getId(), vc);
         }
 
         return vc.getId();
@@ -382,9 +376,14 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
         return result;
     }
 
-    private long updateCollection(EntityManager em, long id, VirtualCollection vc) throws VirtualCollectionRegistryException {
-        VirtualCollection c = em.find(VirtualCollection.class,
-                Long.valueOf(id), LockModeType.PESSIMISTIC_WRITE);
+    private long updateCollection(EntityManager em, User user, long id, VirtualCollection vc) throws VirtualCollectionRegistryPermissionException, VirtualCollectionRegistryException {
+        VirtualCollection c = em.find(VirtualCollection.class, id, LockModeType.PESSIMISTIC_WRITE);
+        
+        if (!isAllowedToModify(user, c)) {
+            throw new VirtualCollectionRegistryPermissionException(
+                "permission denied for user=\""+user.getName()+"\" to modify collection with id="+id);
+        }
+        
         /*
          * Do not check for deleted state here, as we might want to
          * resurrect deleted virtual collections.
@@ -396,7 +395,44 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
 
         // update virtual collection
         logger.debug("Updating Virtual collection:\n{}", vc.toString());
-        c.updateFrom(vc);
+
+        //Update all fields that can be updated by the user
+        c.setType(vc.getType());
+        c.setName(vc.getName());
+        c.setDescription(vc.getDescription());
+        c.setCreationDate(vc.getCreationDate());
+        c.setPurpose(vc.getPurpose());
+        c.setReproducibility(vc.getReproducibility());
+        c.setReproducibilityNotice(vc.getReproducibilityNotice());
+        
+        //Since the collection is managed by hibernate we have to keep the
+        //reference intact and make sure all creators we add are also managed
+        c.clearCreators();
+        c.addAllCreators(vc.getCreators());
+        
+        c.clearKeywords();
+        c.addAllKeywords(vc.getKeywords());
+        
+        c.clearResources();
+        c.addAllResources(vc.getResources());
+        
+
+        if (vc.getGeneratedBy() != null) {
+            final GeneratedBy genBy = vc.getGeneratedBy();
+            if (c.getGeneratedBy() == null) {
+                c.setGeneratedBy(new GeneratedBy(genBy.getDescription()));
+            } else {
+                c.getGeneratedBy().setDescription(genBy.getDescription());
+            }
+            c.getGeneratedBy().setURI(genBy.getURI());
+            if (genBy.getQuery() != null) {
+                final GeneratedByQuery q = genBy.getQuery();
+                GeneratedByQuery query =
+                    new GeneratedByQuery(q.getProfile(), q.getValue());
+                c.getGeneratedBy().setQuery(query);
+            }
+        }
+        
         validator.validate(c);
         em.merge(c);
 
@@ -453,13 +489,9 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
         EntityManager em = datastore.getEntityManager();
         try {
             beginTransaction(datastore.getEntityManager());
-
-            if (!isAllowedToModify(principal, vc)) {
-                throw new VirtualCollectionRegistryPermissionException(
-                        "permission denied for user=\""+principal.getName()+"\" to modify collection with id="+id);
-            }
-
-            result = updateCollection(em, id, vc);
+            result = updateCollection(em, new User(principal), id, vc);
+        } catch(VirtualCollectionRegistryPermissionException ex) {
+            rollbackActiveTransaction(datastore.getEntityManager(),"permission denied while updating virtual collection", ex);
         } catch (VirtualCollectionRegistryException e) {
             em.getTransaction().rollback();
             rollbackActiveTransaction(datastore.getEntityManager(),"failed to update virtual collecion (id="+id+"): "+e.getMessage(),e);
@@ -689,7 +721,7 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
 
     @Override
     public VirtualCollectionList getVirtualCollections(String query, int offset, int count) throws VirtualCollectionRegistryException {
-        logger.info("getVirtualCollections()");
+        logger.trace("getVirtualCollections()");
 
         List<VirtualCollection> results = null;
         long totalCount = 0;
@@ -982,10 +1014,17 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
         });
     }
 
-    private boolean isAllowedToModify(Principal principal, VirtualCollection c) {
+    private boolean isAllowedToModify(User user, VirtualCollection c) {
+        if(c.getOwner() == null) {
+            return false;
+        }
         // admin and owner are allowed to modify collections
-        return adminUsersService.isAdmin(principal.getName())
-                || c.getOwner().equalsPrincipal(principal);
+        return adminUsersService.isAdmin(user.getName())
+                || c.getOwner().equals(user);
+    }
+    
+    private boolean isAllowedToModify(Principal principal, VirtualCollection c) {
+        return isAllowedToModify(new User(principal), c);
     }
     
     public CreatorService getCreatorService() {

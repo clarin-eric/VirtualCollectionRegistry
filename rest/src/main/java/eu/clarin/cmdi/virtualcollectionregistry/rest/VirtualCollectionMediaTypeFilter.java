@@ -24,7 +24,7 @@ public class VirtualCollectionMediaTypeFilter extends CustomUriConnegFilter {
         mediaTypes.put("xml", MediaType.APPLICATION_XML_TYPE);
         mediaTypes.put("json", MediaType.APPLICATION_JSON_TYPE);
         mediaTypes.put("html", MediaType.TEXT_HTML_TYPE);
-        mediaTypes.put("cmdi", VirtualCollectionResource.MediaTypes.CMDI_TYPE);
+        mediaTypes.put("cmdi", VirtualCollectionMediaTypes.CMDI_TYPE);
     }
 
     public VirtualCollectionMediaTypeFilter() {

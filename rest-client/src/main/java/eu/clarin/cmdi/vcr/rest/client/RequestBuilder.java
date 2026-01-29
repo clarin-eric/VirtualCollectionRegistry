@@ -19,6 +19,7 @@ package eu.clarin.cmdi.vcr.rest.client;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import eu.clarin.cmdi.virtualcollectionregistry.core.jwt.JwtUtil;
 import eu.clarin.cmdi.virtualcollectionregistry.query.QueryFactory;
+import eu.clarin.cmdi.virtualcollectionregistry.rest.VirtualCollectionXMLBodyWriter;
 import eu.clarin.cmdi.virtualcollectionregistry.service.impl.QueryFactorySerializer;
 import jakarta.ws.rs.client.Client;
 import jakarta.ws.rs.client.ClientBuilder;
@@ -54,6 +55,7 @@ public class RequestBuilder {
 
     public static RequestBuilder setPath(String path, JwtUtil jwtUtil) {
         final Client x = ClientBuilder.newClient();
+        x.register(VirtualCollectionXMLBodyWriter.class);
         RequestBuilder builder = new RequestBuilder(x.target(SERVICE_URL).path(path), jwtUtil);
         return builder;
     }
@@ -77,8 +79,8 @@ public class RequestBuilder {
         }
         return this;
     }
-
-    public Response get() {
+    
+    private Invocation.Builder getInvocationBuilder() {
         String uri = webTarget.getUri().toString();
         logger.debug("Build request: " + uri);
         Invocation.Builder invocationBuilder = 
@@ -90,21 +92,30 @@ public class RequestBuilder {
             invocationBuilder.header("Authorization", "Bearer "+jwtToken);
         }
         
-        return invocationBuilder.get();
+        return invocationBuilder;
+    }
+
+    public Response get() {
+        return getInvocationBuilder().get();
     }
 
     public <T> T get(Class<T> responseType) {
-        Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
-        return invocationBuilder.get(responseType);
+        return getInvocationBuilder().get(responseType);
     }
     
     public <T> T get(GenericType<T> responseType) {
-        Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
-        return invocationBuilder.get(responseType);
+        return getInvocationBuilder().get(responseType);
     }
     
     public Response post(Entity entity) {
-        Invocation.Builder invocationBuilder = webTarget.request(MediaType.APPLICATION_JSON);
-        return invocationBuilder.post(entity);
+        return getInvocationBuilder().post(entity);
+    }
+    
+    public Response put(Entity entity) {
+        return getInvocationBuilder().put(entity);
+    }
+    
+    public Response delete() {
+        return getInvocationBuilder().delete();
     }
 }

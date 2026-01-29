@@ -3,7 +3,8 @@ package eu.clarin.cmdi.virtualcollectionregistry.db;
 import eu.clarin.cmdi.virtualcollectionregistry.core.DataStore;
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionDao;
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionDaoImpl;
-import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory;
+import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactoryWithPersistence;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
@@ -25,25 +26,28 @@ public class TestDatasetProvider {
 
         //private, owner1
         VirtualCollection vc1 =
-            VirtualCollectionFactory
-                .createNew(owner1, "Private Tést Collection 1", "This is the tést collection description")
-                .getPersistedCollection(dao);
+            new VirtualCollectionFactoryWithPersistence(
+                VirtualCollectionFactory
+                    .createNew(owner1, "Private Tést Collection 1", "This is the tést collection description")
+            ).getPersistedCollection(dao);
 
         //public, owner1
         VirtualCollection vc2 =
-            VirtualCollectionFactory
-                .createNew(owner1, "Public Tést Collection 2", "This is the tést collection description")
-                .startPublish(dao)
-                .finishPublish(dao)
-                .getPersistedCollection(dao);
+            new VirtualCollectionFactoryWithPersistence(
+                VirtualCollectionFactory
+                    .createNew(owner1, "Public Tést Collection 2", "This is the tést collection description")
+            ).startPublish(dao)
+            .finishPublish(dao)
+            .getPersistedCollection(dao);
 
         //public, owner2
         VirtualCollection vc3 =
-            VirtualCollectionFactory
-                .createNew(owner2, "Public Tést Collection 3", "This is the tést collection description")
-                .startPublish(dao)
-                .finishPublish(dao)
-                .getPersistedCollection(dao);
+            new VirtualCollectionFactoryWithPersistence(
+                VirtualCollectionFactory
+                    .createNew(owner2, "Public Tést Collection 3", "This is the tést collection description")
+            ).startPublish(dao)
+            .finishPublish(dao)
+            .getPersistedCollection(dao);
 /*
         TODO resolve unique constraint violation
         

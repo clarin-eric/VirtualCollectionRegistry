@@ -44,6 +44,7 @@ public abstract class AbstractApiKeyFilter implements ContainerRequestFilter {
     @Autowired
     private ApiKeyService apiKeyService;
     
+    //TODO: read this from config
     private final String secret = "ghekjghejkhgjkehjkfhgcilqu;ioqhq!;oijf;qhvbwl";
     private final JwtUtil jwtUtil;
     
@@ -54,7 +55,7 @@ public abstract class AbstractApiKeyFilter implements ContainerRequestFilter {
     /**
      * Check the request for availability of an authorization header.
      * 
-     * An exception is thrown if:
+     * The filter chain is aborted if:
      * - no authorization header is present
      * - or the key in the authorization headers is invalid.
      * 
@@ -68,7 +69,7 @@ public abstract class AbstractApiKeyFilter implements ContainerRequestFilter {
     /**
      * Check the request for availability of an authorization header.
      * 
-     * An exception is thrown if:
+     * The filter chain is aborted if:
      * - allowAnonymousAccess = false
      * - no authorization header is present
      * - or the key in the authorization headers is invalid.
@@ -78,7 +79,7 @@ public abstract class AbstractApiKeyFilter implements ContainerRequestFilter {
      * @throws IOException 
      */
     protected void performFilter(ContainerRequestContext requestContext, boolean allowAnonymousAccess) throws IOException {
-        logger.debug("Filtering API key from request");
+        logger.trace("Filtering API key from request");
 
         // Get the Authorization header from the request
         String authorizationHeader =
@@ -134,8 +135,9 @@ public abstract class AbstractApiKeyFilter implements ContainerRequestFilter {
     }
 
     /**
-     * Abort the filter chain with a 401 status code response
-     * The WWW-Authenticate header is sent along with the response
+     * Abort the filter chain with a 401 status code response if anonymous
+     * access is not allowed. The WWW-Authenticate header is sent along with 
+     * the response.
      *
      * @param requestContext
      * @param allowAnonymousAccess
@@ -155,12 +157,12 @@ public abstract class AbstractApiKeyFilter implements ContainerRequestFilter {
     }
 
     /**
-     * Check if the token was issued by the server and if it's not expired
-     * Throw an Exception if the token is invalid
+     * Check if the token was issued by the server and if it's not expired return
+     * the username associated with the token.
      *
      * @param token
      * @return 
-     * @throws Exception
+     * @throws Exception if the token is invalid
      */
     protected String validateToken(String token) throws Exception {
         logger.info("Validating token: ["+token+"]");
@@ -174,10 +176,10 @@ public abstract class AbstractApiKeyFilter implements ContainerRequestFilter {
     }
 
     /**
-     * Fetch the information associated to the token and update the requests security context accordingly.
+     * Update the requests security context with the supplied username.
      *
      * @param requestContext
-     * @param token
+     * @param username
      * @throws Exception
      */
     protected void updatePrincipal(ContainerRequestContext requestContext, final String username) throws Exception {

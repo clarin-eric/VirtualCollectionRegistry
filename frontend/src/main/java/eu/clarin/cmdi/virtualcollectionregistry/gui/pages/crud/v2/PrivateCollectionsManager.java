@@ -13,7 +13,7 @@ import java.security.Principal;
 import java.util.List;
 
 public class PrivateCollectionsManager implements Serializable {
-
+/*
     private static Logger logger = LoggerFactory.getLogger(PrivateCollectionsManager.class);
 
     private final CollectionsProvider provider;
@@ -54,4 +54,5 @@ public class PrivateCollectionsManager implements Serializable {
     public List<VirtualCollection> getList() {
         return this.provider.getList();
     }
+*/
 }

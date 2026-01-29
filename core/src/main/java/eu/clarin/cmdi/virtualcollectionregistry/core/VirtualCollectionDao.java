@@ -12,16 +12,17 @@ public interface VirtualCollectionDao {
 
     VirtualCollection getVirtualCollection(long id) throws VirtualCollectionRegistryException;
     int getVirtualCollectionCount(QueryFactory factory) throws VirtualCollectionRegistryException;
-    List<VirtualCollection> getVirtualCollections(int first, int count, QueryFactory factory);
-    List<VirtualCollection> getVirtualCollections(QueryFactory factory);
+    List<VirtualCollection> getVirtualCollections(int first, int count, QueryFactory factory) throws VirtualCollectionRegistryException;
+    List<VirtualCollection> getVirtualCollections(QueryFactory factory) throws VirtualCollectionRegistryException;
 
     /**
      * Persist the collection into the database. Will create a new collection if the collection has no id set, otherwise
      * it will update the existing instance.
      *
      * @param vc
+     * @return 
      * @throws VirtualCollectionRegistryException
      */
-    void persist(VirtualCollection vc) throws VirtualCollectionRegistryException;
-
+    Long persist(VirtualCollection vc) throws VirtualCollectionRegistryException;
+    Long delete(Long id) throws VirtualCollectionRegistryException;
 }

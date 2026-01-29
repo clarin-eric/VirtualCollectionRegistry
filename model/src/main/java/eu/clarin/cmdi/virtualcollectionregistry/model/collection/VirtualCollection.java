@@ -1,7 +1,9 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model.collection;
 
+import com.fasterxml.jackson.annotation.JsonIdentityInfo;
 import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import com.fasterxml.jackson.annotation.JsonProperty;
+import com.fasterxml.jackson.annotation.ObjectIdGenerators;
 import eu.clarin.cmdi.virtualcollectionregistry.model.citation.Citable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PersistentIdentifieable;
 import eu.clarin.cmdi.virtualcollectionregistry.model.pid.PersistentIdentifier;
@@ -70,6 +72,9 @@ ORDER BY c.id
                 "WHERE c.state IN :states AND c.dateModified < :date")
 })
 @XmlRootElement
+@JsonIdentityInfo(
+  generator = ObjectIdGenerators.PropertyGenerator.class, 
+  property = "@id") // Use the "id" field to identify loops
 //@JsonIgnoreProperties(ignoreUnknown = true)
 public class VirtualCollection implements Serializable, IdentifiedEntity, PersistentIdentifieable, Citable {
     private static final long serialVersionUID = 1L;
@@ -83,8 +88,500 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     public static enum Format {
         XML, JSON, UNSUPPORTED
     } // public enum Format
+
+    public static enum State {
+        @JsonProperty("private")
+        PRIVATE,
+        @JsonProperty("public_pending")
+        PUBLIC_PENDING,
+        @JsonProperty("public")
+        PUBLIC,
+        @JsonProperty("public_frozen_pending")
+        PUBLIC_FROZEN_PENDING,
+        @JsonProperty("public_frozen")
+        PUBLIC_FROZEN,
+        @JsonProperty("deleted")
+        DELETED,
+        @JsonProperty("dead")
+        DEAD,
+        @JsonProperty("error")
+        ERROR
+    } // enum VirtualCollection.State
+
+    public static enum Type {
+        @JsonProperty("extensional")
+        EXTENSIONAL,
+        @JsonProperty("intensional")
+        INTENSIONAL
+    } // enum VirtualCollecion.Type
+
+    public static enum Purpose {
+        @JsonProperty("research")
+        RESEARCH,
+        @JsonProperty("reference")
+        REFERENCE,
+        @JsonProperty("sample")
+        SAMPLE,
+        @JsonProperty("future_use")
+        FUTURE_USE
+    } // enum VirtualCollecion.Purpose
+
+    public static enum Reproducibility {
+        @JsonProperty("intended")
+        INTENDED,
+        @JsonProperty("fluctuating")
+        FLUCTUATING,
+        @JsonProperty("untended")
+        UNTENDED
+    } // enum VirtualCollecion.Reproducibility
+
+    public static enum Problem {
+        @JsonProperty("pid_minting_http_error")
+        PID_MINTING_HTTP_ERROR,
+        @JsonProperty("[id_minting_unkown")
+        PID_MINTING_UNKOWN,
+        @JsonProperty("unkown")
+        UNKOWN
+    }
     
-    public Set<PersistentIdentifier> getAllIdentifiers() {
+    @XmlElement(name = "id")
+    @JsonProperty(value = "@id")
+    @Id
+    @GeneratedValue(strategy = GenerationType.IDENTITY)
+    @Column(name = "id", nullable = false, updatable = false)
+    private Long id;
+
+    @XmlElement(name = "owner")
+    @JsonProperty(value = "owner")
+    @ManyToOne(cascade = { CascadeType.PERSIST,
+                           CascadeType.REFRESH,
+                           CascadeType.MERGE,
+                           CascadeType.DETACH
+    },
+               fetch = FetchType.EAGER)
+    @JoinColumn(name = "owner_id",
+                nullable = false)
+    private User owner;
+
+   
+    @XmlElement(name = "identifiers")
+    @JsonProperty(value = "identifiers")
+    @OneToMany(cascade = CascadeType.ALL,
+               fetch = FetchType.EAGER,
+                mappedBy = "vc")
+    private Set<PersistentIdentifier> identifiers;
+
+    //Make this a list of problems?
+
+    /* Indication of the issue if state = ERROR */
+    @XmlElement(name = "problem")
+    @JsonProperty(value = "problem")
+    @Column(name = "problem", nullable = true)
+    private VirtualCollection.Problem problem;
+
+    @XmlElement(name = "problemDetails")
+    @JsonProperty(value = "problemDetail")
+    @Column(name = "problem_details", nullable = true)
+    private String problemDetails;
+
+    @XmlElement(name = "origin")
+    @JsonProperty(value = "origin")
+    @Column(name = "origin", nullable = true)
+    private String origin;
+
+    @XmlElement(name = "state")
+    @JsonProperty(value = "@state")
+    @Column(name = "state", nullable = false)
+    private VirtualCollection.State state;
+
+    @XmlElement(name = "type")
+    @JsonProperty(value = "type")
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "type", nullable = false)
+    private VirtualCollection.Type type;
+
+    @XmlElement(name = "name")
+    @JsonProperty(value = "name")
+    @Column(name = "name", nullable = false, length = 255)
+    private String name;
+
+    //@Lob
+    @XmlElement(name = "description")
+    @JsonProperty(value = "description")
+    @Basic(fetch = FetchType.EAGER)
+    @Column(name = "description", length = 8192)
+    private String description;
+
+    @XmlElement(name = "creationDate")
+    @JsonProperty(value = "creationDate")
+    @Temporal(TemporalType.DATE)
+    @Column(name = "creation_date")
+    private Date creationDate;
+
+    @XmlElement(name = "creators")
+    @JsonProperty(value = "creators")
+    @OneToMany(cascade = CascadeType.ALL,
+               fetch = FetchType.LAZY,
+               orphanRemoval = true)
+    @JoinColumn(name = "vc_id", nullable = false)
+    @OrderBy("id")
+    private List<Creator> creators;
+
+    @XmlElement(name = "purpose")
+    @JsonProperty(value = "purpose")
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "purpose")
+    private VirtualCollection.Purpose purpose;
+
+    @XmlElement(name = "reproducibility")
+    @JsonProperty(value = "reproducibility")
+    @Enumerated(EnumType.ORDINAL)
+    @Column(name = "reproducibility")
+    private VirtualCollection.Reproducibility reproducibility;
+
+    //@Lob
+    @XmlElement(name = "reproducibilityNotice")
+    @JsonProperty(value = "reproducibilityNotice")
+    @Basic(fetch = FetchType.EAGER)
+    @Column(name = "reproducibility_notice", length = 8192)
+    private String reproducibilityNotice;
+
+    //https://discourse.hibernate.org/t/elementcollection-on-hashmap-with-generics-returns-duplicates/6108/4
+    @ElementCollection(fetch = FetchType.LAZY) //FetchType.EAGER results in duplicate keywords returned
+    @CollectionTable(name = "keyword",
+                     joinColumns = @JoinColumn(name="vc_id"))
+    @XmlElement(name = "keywords")
+    @JsonProperty(value = "keyword")
+    private List<String> keywords;
+
+    @XmlElement(name = "resources")
+    @JsonProperty(value = "resources")
+    @OneToMany(cascade = CascadeType.ALL,
+               fetch = FetchType.LAZY,
+               orphanRemoval = true)
+    @JoinColumn(name = "vc_id", nullable = false)    
+    @OrderColumn(nullable = false)
+    private List<Resource> resources;
+
+    @XmlElement(name = "generatedBy")
+    @JsonProperty(value = "generatedBy")
+    @Embedded
+    private GeneratedBy generatedBy;
+
+    @XmlElement(name = "dateCreated")
+    @JsonProperty(value = "dateCreated")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "created", nullable = false, updatable = false)
+    private Date dateCreated = new Date();
+
+    @XmlElement(name = "dateModified")
+    @JsonProperty(value = "dateModified")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "modified", nullable = false)
+    private Date dateModified;
+
+    @XmlElement(name = "datePublished")
+    @JsonProperty(value = "datePublished")
+    @Temporal(TemporalType.TIMESTAMP)
+    @Column(name = "published", nullable = true)
+    private Date datePublished;
+
+    @JsonIgnoreProperties({"forkedFrom", "parent", "child", "root", "allVersions", "latestVersion"})
+    @XmlElement(name = "forked_from")
+    @JsonProperty(value = "forked_from")
+    @OneToOne(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            orphanRemoval = true,
+            optional = true)
+    @JoinColumn(name = "forked_from", nullable = true)
+    private VirtualCollection forkedFrom;
+    
+    @JsonIgnoreProperties({"forkedFrom", "parent", "child", "root", "allVersions", "latestVersion"})
+    @XmlElement(name = "parent")
+    @JsonProperty(value = "parent")
+    @OneToOne(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            orphanRemoval = true,
+            optional = true)
+    @JoinColumn(name = "parent", nullable = true)
+    private VirtualCollection parent;
+
+    @JsonIgnoreProperties({"forkedFrom", "parent", "child", "root", "allVersions", "latestVersion"})
+    @XmlElement(name = "child")
+    @JsonProperty(value = "child")
+    @OneToOne(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            orphanRemoval = true,
+            optional = true)
+    @JoinColumn(name = "child", nullable = true)
+    private VirtualCollection child;
+
+    @JsonIgnoreProperties({"forkedFrom", "parent", "child", "root", "allVersions", "latestVersion"})
+    @XmlElement(name = "original")
+    @JsonProperty(value = "original")
+    @OneToOne(cascade = CascadeType.ALL,
+            fetch = FetchType.LAZY,
+            orphanRemoval = true,
+            optional = true)
+    @JoinColumn(name = "original", nullable = true)
+    private VirtualCollection root;
+
+    @XmlElement(name = "public_leaf")
+    @JsonProperty(value = "public_leaf")
+    @Column(name = "public_leaf")
+    private Boolean publicLeaf;
+
+    public VirtualCollection() {
+        super();
+        this.setState(VirtualCollection.State.PRIVATE);
+        this.setPublicLeaf(false);
+    }
+
+    @Override
+    public Long getId() {
+        return id;
+    }
+
+    public void setId(Long id) {
+        this.id = id;
+    }
+
+    @JsonIgnoreProperties({"owner"})
+    public User getOwner() {
+        return owner;
+    }
+
+    public void setOwner(User owner) {
+        if (owner == null) {
+            throw new NullPointerException("owner == null");
+        }
+        if (this.owner != null) {
+            this.owner.getVirtualCollections().remove(this);
+        }
+        this.owner = owner;
+        this.owner.getVirtualCollections().add(this);
+    }
+/*
+    public PersistentIdentifier getPersistentIdentifier() {
+        
+        return persistentId;
+    }
+  */  
+    @Override
+    public boolean hasPersistentIdentifier() {
+        PersistentIdentifier primaryId = getPrimaryIdentifier();
+        return primaryId != null;
+    }
+
+    public void removePersistentIdentiefer(PersistentIdentifier pid) {
+        if (pid == null) {
+            throw new NullPointerException("pid == null");
+        }
+        this.identifiers.remove(pid);
+    }
+
+    public void addPersistentIdentifier(PersistentIdentifier persistentId) {
+        if (persistentId == null) {
+            throw new NullPointerException("pid == null");
+        }
+        if (persistentId.getPrimary() && hasPersistentIdentifier()) {
+            throw new IllegalStateException("Already has a primary peristent identifier");
+        }
+        if(!(state == State.PUBLIC_PENDING || state == State.PUBLIC_FROZEN_PENDING || state == State.ERROR)) {
+            throw new IllegalStateException("illegal state, current state = "+state);
+        }
+
+        if(this.identifiers == null) {
+            this.identifiers = new HashSet<>();
+        }
+        this.identifiers.add(persistentId);
+
+        /*
+        switch(state) {
+            case PUBLIC_PENDING: this.state = State.PUBLIC; break;
+            case PUBLIC_FROZEN_PENDING: this.state = State.PUBLIC_FROZEN; break;
+            case ERROR: this.state = State.PUBLIC; break; //TODO: properly handle switching from ERROR to PUBLIC_FROZEN state
+            default: throw new IllegalStateException("Invalid state transition. Unexpected source state: "+state);
+        }
+         */
+    }
+
+    public VirtualCollection.Problem getProblem() {
+        return problem;
+    }
+
+    public void setProblem(VirtualCollection.Problem problem) {
+        this.problem = problem;
+    }
+    
+    public State getState() {
+        return state;
+    }
+
+    public void setState(State state) {
+        if (state == null) {
+            throw new NullPointerException("state == null");
+        }
+        this.state = state;
+        this.setDateModified(new Date());
+    }
+
+    public boolean isPrivate() {
+        return state == State.PRIVATE;
+    }
+
+    public boolean isPublic() {
+        return (state == State.PUBLIC_PENDING) || (state == State.PUBLIC);
+    }
+
+    public boolean isPublicFrozen() {
+        return (state == State.PUBLIC_FROZEN_PENDING) || (state == State.PUBLIC_FROZEN) ;
+    }
+    
+    public boolean isDeleted() {
+        return (state == State.DELETED) || (state == State.DEAD);
+    }
+
+    public VirtualCollection.Type getType() {
+        return type;
+    }
+
+    public void setType(VirtualCollection.Type type) {
+        this.type = type;
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        if (name == null) {
+            throw new NullPointerException("name == null");
+        }
+        name = name.trim();
+        if (name.isEmpty()) {
+            throw new IllegalArgumentException("name is empty");
+        }
+        this.name = name;
+    }
+
+    public String getDescription() {
+        return description;
+    }
+
+    public void setDescription(String description) {
+        if (description != null) {
+            description = description.trim();
+            if (description.isEmpty()) {
+                description = null;
+            }
+        }
+        this.description = description;
+    }
+
+    public Date getCreationDate() {
+        return creationDate;
+    }
+
+    public void setCreationDate(Date creationDate) {
+        this.creationDate = creationDate;
+    }
+    
+    public void clearCreators() {
+        if(this.creators != null) {
+            this.creators.clear();
+        }
+    }
+
+    public List<Creator> getCreators() {
+        if (creators == null) {
+            this.creators = new ArrayList<Creator>();
+        }
+        Collections.sort(this.creators);
+        return creators;
+    }
+
+    public VirtualCollection.Purpose getPurpose() {
+        return purpose;
+    }
+
+    public void setPurpose(VirtualCollection.Purpose purpose) {
+        this.purpose = purpose;
+    }
+
+    public VirtualCollection.Reproducibility getReproducibility() {
+        return reproducibility;
+    }
+
+    public void setReproducibility(
+            VirtualCollection.Reproducibility reproducibility) {
+        this.reproducibility = reproducibility;
+    }
+
+    public String getReproducibilityNotice() {
+        return reproducibilityNotice;
+    }
+
+    public void setReproducibilityNotice(String reproducibilityNotice) {
+        if (reproducibilityNotice != null) {
+            reproducibilityNotice = reproducibilityNotice.trim();
+            if (reproducibilityNotice.isEmpty()) {
+                reproducibilityNotice = null;
+            }
+        }
+        this.reproducibilityNotice = reproducibilityNotice;
+    }
+    
+    public void clearKeywords() {
+        if(this.keywords != null) {
+            this.keywords.clear();
+        }
+    }
+
+    public List<String> getKeywords() {
+        if (keywords == null) {
+            keywords = new ArrayList<String>();
+        }
+        return keywords;
+    }
+
+    public void clearResources() {
+        if(this.resources != null) {
+            this.resources.clear();
+        }
+    }
+    
+    public List<Resource> getResources() {
+        if (resources == null) {
+            resources = new ArrayList<Resource>();
+        }
+        return resources;
+    }
+
+    public GeneratedBy getGeneratedBy() {
+        return generatedBy;
+    }
+
+    public void setGeneratedBy(GeneratedBy generatedBy) {
+        this.generatedBy = generatedBy;
+    }
+
+    public Date getDateCreated() {
+        return dateCreated;
+    }
+
+    public Date getDateModified() {
+        return dateModified;
+    }
+
+    public void setDateModified(Date dateModified) {
+        if (dateModified == null) {
+            throw new NullPointerException("dateModified == null");
+        }
+        this.dateModified = dateModified;
+    }
+
+     public Set<PersistentIdentifier> getAllIdentifiers() {
         return identifiers;
     }
 
@@ -248,482 +745,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     public void setRoot(VirtualCollection root) {
         this.root = root;
     }
-
-    public static enum State {
-        @JsonProperty("private")
-        PRIVATE,
-        @JsonProperty("public_pending")
-        PUBLIC_PENDING,
-        @JsonProperty("public")
-        PUBLIC,
-        @JsonProperty("public_frozen_pending")
-        PUBLIC_FROZEN_PENDING,
-        @JsonProperty("public_frozen")
-        PUBLIC_FROZEN,
-        @JsonProperty("deleted")
-        DELETED,
-        @JsonProperty("dead")
-        DEAD,
-        @JsonProperty("error")
-        ERROR
-    } // enum VirtualCollection.State
-
-    public static enum Type {
-        @JsonProperty("extensional")
-        EXTENSIONAL,
-        @JsonProperty("intensional")
-        INTENSIONAL
-    } // enum VirtualCollecion.Type
-
-    public static enum Purpose {
-        @JsonProperty("research")
-        RESEARCH,
-        @JsonProperty("reference")
-        REFERENCE,
-        @JsonProperty("sample")
-        SAMPLE,
-        @JsonProperty("future_use")
-        FUTURE_USE
-    } // enum VirtualCollecion.Purpose
-
-    public static enum Reproducibility {
-        @JsonProperty("intended")
-        INTENDED,
-        @JsonProperty("fluctuating")
-        FLUCTUATING,
-        @JsonProperty("untended")
-        UNTENDED
-    } // enum VirtualCollecion.Reproducibility
-
-    public static enum Problem {
-        @JsonProperty("pid_minting_http_error")
-        PID_MINTING_HTTP_ERROR,
-        @JsonProperty("[id_minting_unkown")
-        PID_MINTING_UNKOWN,
-        @JsonProperty("unkown")
-        UNKOWN
-    }
     
-    @XmlElement(name = "id")
-    @JsonProperty(value = "@id")
-    @Id
-    @GeneratedValue(strategy = GenerationType.IDENTITY)
-    @Column(name = "id", nullable = false, updatable = false)
-    private Long id;
-
-    @XmlElement(name = "owner")
-    @JsonProperty(value = "owner")
-    @ManyToOne(cascade = { CascadeType.PERSIST,
-                           CascadeType.REFRESH,
-                           CascadeType.MERGE,
-                           CascadeType.DETACH
-    },
-               fetch = FetchType.EAGER)
-    @JoinColumn(name = "owner_id",
-                nullable = false)
-    private User owner;
-
-    /*
-    @OneToOne(cascade = CascadeType.ALL,
-              fetch = FetchType.EAGER,
-              mappedBy = "vc",
-              optional = true)
-    private PersistentIdentifier persistentId = null;
-    */
-    
-    @XmlElement(name = "identifiers")
-    @JsonProperty(value = "identifiers")
-    @OneToMany(cascade = CascadeType.ALL,
-               fetch = FetchType.EAGER,
-                mappedBy = "vc")
-    private Set<PersistentIdentifier> identifiers;
-
-    //Make this a list of problems?
-
-    /* Indication of the issue if state = ERROR */
-    @XmlElement(name = "problem")
-    @JsonProperty(value = "problem")
-    @Column(name = "problem", nullable = true)
-    private VirtualCollection.Problem problem;
-
-    @XmlElement(name = "problemDetails")
-    @JsonProperty(value = "problemDetail")
-    @Column(name = "problem_details", nullable = true)
-    private String problemDetails;
-
-    @XmlElement(name = "origin")
-    @JsonProperty(value = "origin")
-    @Column(name = "origin", nullable = true)
-    private String origin;
-
-    @XmlElement(name = "state")
-    @JsonProperty(value = "@state")
-    @Column(name = "state", nullable = false)
-    private VirtualCollection.State state;
-
-    @XmlElement(name = "type")
-    @JsonProperty(value = "type")
-    @Enumerated(EnumType.ORDINAL)
-    @Column(name = "type", nullable = false)
-    private VirtualCollection.Type type;
-
-    @XmlElement(name = "name")
-    @JsonProperty(value = "name")
-    @Column(name = "name", nullable = false, length = 255)
-    private String name;
-
-    //@Lob
-    @XmlElement(name = "description")
-    @JsonProperty(value = "description")
-    @Basic(fetch = FetchType.EAGER)
-    @Column(name = "description", length = 8192)
-    private String description;
-
-    @XmlElement(name = "creationDate")
-    @JsonProperty(value = "creationDate")
-    @Temporal(TemporalType.DATE)
-    @Column(name = "creation_date")
-    private Date creationDate;
-
-    @XmlElement(name = "creators")
-    @JsonProperty(value = "creators")
-    @OneToMany(cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY,
-               orphanRemoval = true)
-    @JoinColumn(name = "vc_id", nullable = false)
-    @OrderBy("id")
-    private List<Creator> creators;
-
-    @XmlElement(name = "purpose")
-    @JsonProperty(value = "purpose")
-    @Enumerated(EnumType.ORDINAL)
-    @Column(name = "purpose")
-    private VirtualCollection.Purpose purpose;
-
-    @XmlElement(name = "reproducibility")
-    @JsonProperty(value = "reproducibility")
-    @Enumerated(EnumType.ORDINAL)
-    @Column(name = "reproducibility")
-    private VirtualCollection.Reproducibility reproducibility;
-
-    //@Lob
-    @XmlElement(name = "reproducibilityNotice")
-    @JsonProperty(value = "reproducibilityNotice")
-    @Basic(fetch = FetchType.EAGER)
-    @Column(name = "reproducibility_notice", length = 8192)
-    private String reproducibilityNotice;
-
-    //https://discourse.hibernate.org/t/elementcollection-on-hashmap-with-generics-returns-duplicates/6108/4
-    @ElementCollection(fetch = FetchType.LAZY) //FetchType.EAGER results in duplicate keywords returned
-    @CollectionTable(name = "keyword",
-                     joinColumns = @JoinColumn(name="vc_id"))
-    @XmlElement(name = "keywords")
-    @JsonProperty(value = "keyword")
-    private List<String> keywords;
-
-    @XmlElement(name = "resources")
-    @JsonProperty(value = "resources")
-    @OneToMany(cascade = CascadeType.ALL,
-               fetch = FetchType.LAZY,
-               orphanRemoval = true)
-    @JoinColumn(name = "vc_id", nullable = false)    
-    @OrderColumn(nullable = false)
-    private List<Resource> resources;
-
-    @XmlElement(name = "generatedBy")
-    @JsonProperty(value = "generatedBy")
-    @Embedded
-    private GeneratedBy generatedBy;
-
-    @XmlElement(name = "dateCreated")
-    @JsonProperty(value = "dateCreated")
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "created", nullable = false, updatable = false)
-    private Date dateCreated = new Date();
-
-    @XmlElement(name = "dateModified")
-    @JsonProperty(value = "dateModified")
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "modified", nullable = false)
-    private Date dateModified;
-
-    @XmlElement(name = "datePublished")
-    @JsonProperty(value = "datePublished")
-    @Temporal(TemporalType.TIMESTAMP)
-    @Column(name = "published", nullable = true)
-    private Date datePublished;
-
-    @XmlElement(name = "forked_from")
-    @JsonProperty(value = "forked_from")
-    @OneToOne(cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,
-            orphanRemoval = true,
-            optional = true)
-    @JoinColumn(name = "forked_from", nullable = true)
-    private VirtualCollection forkedFrom;
-
-    @XmlElement(name = "parent")
-    @JsonProperty(value = "parent")
-    @OneToOne(cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,
-            orphanRemoval = true,
-            optional = true)
-    @JoinColumn(name = "parent", nullable = true)
-    private VirtualCollection parent;
-
-    @XmlElement(name = "child")
-    @JsonProperty(value = "child")
-    @OneToOne(cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,
-            orphanRemoval = true,
-            optional = true)
-    @JoinColumn(name = "child", nullable = true)
-    private VirtualCollection child;
-
-    @XmlElement(name = "original")
-    @JsonProperty(value = "original")
-    @OneToOne(cascade = CascadeType.ALL,
-            fetch = FetchType.LAZY,
-            orphanRemoval = true,
-            optional = true)
-    @JoinColumn(name = "original", nullable = true)
-    private VirtualCollection root;
-
-    @XmlElement(name = "public_leaf")
-    @JsonProperty(value = "public_leaf")
-    @Column(name = "public_leaf")
-    private Boolean publicLeaf;
-
-    public VirtualCollection() {
-        super();
-        this.setState(VirtualCollection.State.PRIVATE);
-        this.setPublicLeaf(false);
-    }
-
-    public Long getId() {
-        return id;
-    }
-
-    public void setId(Long id) {
-        this.id = id;
-    }
-
-    public User getOwner() {
-        return owner;
-    }
-
-    public void setOwner(User owner) {
-        if (owner == null) {
-            throw new NullPointerException("owner == null");
-        }
-        if (this.owner != null) {
-            this.owner.getVirtualCollections().remove(this);
-        }
-        this.owner = owner;
-        this.owner.getVirtualCollections().add(this);
-    }
-/*
-    public PersistentIdentifier getPersistentIdentifier() {
-        
-        return persistentId;
-    }
-  */  
-    @Override
-    public boolean hasPersistentIdentifier() {
-        PersistentIdentifier primaryId = getPrimaryIdentifier();
-        return primaryId != null;
-    }
-
-    public void removePersistentIdentiefer(PersistentIdentifier pid) {
-        if (pid == null) {
-            throw new NullPointerException("pid == null");
-        }
-        this.identifiers.remove(pid);
-    }
-
-    public void addPersistentIdentifier(PersistentIdentifier persistentId) {
-        if (persistentId == null) {
-            throw new NullPointerException("pid == null");
-        }
-        if (persistentId.getPrimary() && hasPersistentIdentifier()) {
-            throw new IllegalStateException("Already has a primary peristent identifier");
-        }
-        if(!(state == State.PUBLIC_PENDING || state == State.PUBLIC_FROZEN_PENDING || state == State.ERROR)) {
-            throw new IllegalStateException("illegal state, current state = "+state);
-        }
-
-        if(this.identifiers == null) {
-            this.identifiers = new HashSet<>();
-        }
-        this.identifiers.add(persistentId);
-
-        /*
-        switch(state) {
-            case PUBLIC_PENDING: this.state = State.PUBLIC; break;
-            case PUBLIC_FROZEN_PENDING: this.state = State.PUBLIC_FROZEN; break;
-            case ERROR: this.state = State.PUBLIC; break; //TODO: properly handle switching from ERROR to PUBLIC_FROZEN state
-            default: throw new IllegalStateException("Invalid state transition. Unexpected source state: "+state);
-        }
-         */
-    }
-
-    public VirtualCollection.Problem getProblem() {
-        return problem;
-    }
-
-    public void setProblem(VirtualCollection.Problem problem) {
-        this.problem = problem;
-    }
-    
-    public State getState() {
-        return state;
-    }
-
-    public void setState(State state) {
-        if (state == null) {
-            throw new NullPointerException("state == null");
-        }
-        this.state = state;
-        this.setDateModified(new Date());
-    }
-
-    public boolean isPrivate() {
-        return state == State.PRIVATE;
-    }
-
-    public boolean isPublic() {
-        return (state == State.PUBLIC_PENDING) || (state == State.PUBLIC);
-    }
-
-    public boolean isPublicFrozen() {
-        return (state == State.PUBLIC_FROZEN_PENDING) || (state == State.PUBLIC_FROZEN) ;
-    }
-    
-    public boolean isDeleted() {
-        return (state == State.DELETED) || (state == State.DEAD);
-    }
-
-    public VirtualCollection.Type getType() {
-        return type;
-    }
-
-    public void setType(VirtualCollection.Type type) {
-        this.type = type;
-    }
-
-    public String getName() {
-        return name;
-    }
-
-    public void setName(String name) {
-        if (name == null) {
-            throw new NullPointerException("name == null");
-        }
-        name = name.trim();
-        if (name.isEmpty()) {
-            throw new IllegalArgumentException("name is empty");
-        }
-        this.name = name;
-    }
-
-    public String getDescription() {
-        return description;
-    }
-
-    public void setDescription(String description) {
-        if (description != null) {
-            description = description.trim();
-            if (description.isEmpty()) {
-                description = null;
-            }
-        }
-        this.description = description;
-    }
-
-    public Date getCreationDate() {
-        return creationDate;
-    }
-
-    public void setCreationDate(Date creationDate) {
-        this.creationDate = creationDate;
-    }
-
-    public List<Creator> getCreators() {
-        if (creators == null) {
-            this.creators = new ArrayList<Creator>();
-        }
-        Collections.sort(this.creators);
-        return creators;
-    }
-
-    public VirtualCollection.Purpose getPurpose() {
-        return purpose;
-    }
-
-    public void setPurpose(VirtualCollection.Purpose purpose) {
-        this.purpose = purpose;
-    }
-
-    public VirtualCollection.Reproducibility getReproducibility() {
-        return reproducibility;
-    }
-
-    public void setReproducibility(
-            VirtualCollection.Reproducibility reproducibility) {
-        this.reproducibility = reproducibility;
-    }
-
-    public String getReproducibilityNotice() {
-        return reproducibilityNotice;
-    }
-
-    public void setReproducibilityNotice(String reproducibilityNotice) {
-        if (reproducibilityNotice != null) {
-            reproducibilityNotice = reproducibilityNotice.trim();
-            if (reproducibilityNotice.isEmpty()) {
-                reproducibilityNotice = null;
-            }
-        }
-        this.reproducibilityNotice = reproducibilityNotice;
-    }
-
-    public List<String> getKeywords() {
-        if (keywords == null) {
-            keywords = new ArrayList<String>();
-        }
-        return keywords;
-    }
-
-    public List<Resource> getResources() {
-        if (resources == null) {
-            resources = new ArrayList<Resource>();
-        }
-        return resources;
-    }
-
-    public GeneratedBy getGeneratedBy() {
-        return generatedBy;
-    }
-
-    public void setGeneratedBy(GeneratedBy generatedBy) {
-        this.generatedBy = generatedBy;
-    }
-
-    public Date getDateCreated() {
-        return dateCreated;
-    }
-
-    public Date getDateModified() {
-        return dateModified;
-    }
-
-    public void setDateModified(Date dateModified) {
-        if (dateModified == null) {
-            throw new NullPointerException("dateModified == null");
-        }
-        this.dateModified = dateModified;
-    }
-
     /**
      * Return a new collection with all fields, including the id, state and persistent identifiers deep copied.
      * @return
@@ -811,7 +833,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         fork.setRoot(fork);
         return fork;
     }
-
+/*
     public void updateFrom(VirtualCollection vc) {
         if (this == vc) {
             return;
@@ -845,7 +867,8 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
             obsolete_creators = null;
         }
         */
-        this.creators = vc.getCreators();
+        //this.creators = vc.getCreators();
+        
 
         /*
         // Keywords
@@ -864,7 +887,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
             obsolete_keywords = null;
         }
         */
-        this.keywords = vc.getKeywords();
+//        this.keywords = vc.getKeywords();
 
         /*
         // Resources
@@ -882,7 +905,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
             }
             obsolete_resources = null;
         }
-        */
+        *//*
         this.resources = vc.getResources();
 
         if (vc.generatedBy != null) {
@@ -904,7 +927,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         this.child = vc.getChild();
         this.parent = vc.getParent();
     }
-
+*/
     @Override
     public boolean equals(Object obj) {
         if (obj == null) {
@@ -1069,6 +1092,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         this.origin = origin;
     }
 
+    @JsonIgnoreProperties({"forkedFrom", "parent", "child", "root", "allVersions", "latestVersion"})
     public VirtualCollection getLatestVersion() {
         return getLatestVersion(false);
     }
@@ -1082,6 +1106,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
      *
      * @return
      */
+    @JsonIgnoreProperties({"forkedFrom", "parent", "child", "root", "allVersions", "latestVersion"})
     public List<VirtualCollection> getAllVersions() {
         return getAllVersions(false);
     }

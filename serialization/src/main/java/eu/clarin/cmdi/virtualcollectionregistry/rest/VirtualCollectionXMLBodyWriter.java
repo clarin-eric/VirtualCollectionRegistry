@@ -1,31 +1,41 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
-//import com.sun.jersey.api.core.InjectParam;
+
+import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.rest.utils.RestUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
+import eu.clarin.cmdi.virtualcollectionregistry.service.impl.VirtualCollectionMarshallerImpl;
 import java.io.IOException;
 import java.io.OutputStream;
 import java.lang.annotation.Annotation;
 import java.lang.reflect.Type;
+import java.util.Collections;
 import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.MultivaluedMap;
-import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.Response.Status;
 import jakarta.ws.rs.ext.MessageBodyWriter;
 import jakarta.ws.rs.ext.Provider;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
- * Body writer that outputs a CMDI representation of a virtual collection
+ * Body writer that outputs an XML representation of a virtual collection in the
+ * internal representation
  *
  * @author twagoo
  */
 @Provider
-@Produces(VirtualCollectionResource.MediaTypes.CMDI)
-public class VirtualCollectionCMDIBodyWriter implements MessageBodyWriter<VirtualCollection> {
+@Produces({
+    MediaType.TEXT_XML,
+    MediaType.APPLICATION_XML,
+    MediaType.APPLICATION_JSON})
+public class VirtualCollectionXMLBodyWriter implements MessageBodyWriter<VirtualCollection> {
 
+    private final static Logger logger = LoggerFactory.getLogger(VirtualCollectionXMLBodyWriter.class);
+    
     @Autowired
     private VirtualCollectionMarshaller marshaller;
 
@@ -41,10 +51,16 @@ public class VirtualCollectionCMDIBodyWriter implements MessageBodyWriter<Virtua
 
     @Override
     public void writeTo(VirtualCollection vc, Class<?> type, Type genericType, Annotation[] annotations, MediaType mediaType, MultivaluedMap<String, Object> httpHeaders, OutputStream stream) throws IOException, WebApplicationException {
-        if (!(vc.isPublic() || vc.isPublicFrozen()) || !vc.hasPersistentIdentifier()) {
-            throw new WebApplicationException(Response.status(Status.NOT_ACCEPTABLE).entity("CMDI not available for unpublished collections. Please request XML or JSON").build());
+        final VirtualCollection.Format format = RestUtils.getOutputFormat(Collections.singletonList(mediaType));
+        if(marshaller == null) {
+            //TODO: Needed for client based usage where marshaller is not set via spring injection
+            try {
+                marshaller = new VirtualCollectionMarshallerImpl();
+            } catch(VirtualCollectionRegistryException ex) {
+                logger.error("Failed to create VirtualCollectionMarshallerImpl", ex);
+            }
         }
-        marshaller.marshalAsCMDI(stream, VirtualCollection.Format.XML, vc);
+        marshaller.marshal(stream, format, vc);
     }
 
 }

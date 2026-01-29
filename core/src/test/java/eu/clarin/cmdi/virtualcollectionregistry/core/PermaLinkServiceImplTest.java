@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.core;
 
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import org.junit.Assert;

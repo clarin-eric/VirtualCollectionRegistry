@@ -1,18 +1,9 @@
-package eu.clarin.cmdi.virtualcollectionregistry.core;
+package eu.clarin.cmdi.virtualcollectionregistry.model.collection;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryUsageException;
-import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Creator;
-import eu.clarin.cmdi.virtualcollectionregistry.model.collection.GeneratedBy;
-import eu.clarin.cmdi.virtualcollectionregistry.model.collection.GeneratedByQuery;
-import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Resource;
-import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User;
-import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
-
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-
 import java.io.IOException;
 import java.io.Serializable;
 import java.util.Date;
@@ -105,9 +96,9 @@ public class VirtualCollectionFactory implements Serializable  {
         return new VirtualCollectionFactory(vc);
     }
 
-    private VirtualCollection c;
-    private boolean dirty = false;
-    private boolean forked = false;
+    protected VirtualCollection c;
+    protected boolean dirty = false;
+    protected boolean forked = false;
 
     private VirtualCollectionFactory() {
         Date now = new Date();
@@ -139,69 +130,37 @@ public class VirtualCollectionFactory implements Serializable  {
         dirty = true;
     }
 
-    private VirtualCollectionFactory(User owner) {
+    protected VirtualCollectionFactory(User owner) {
        this();
         c.setOwner(owner);
     }
 
-    private VirtualCollectionFactory(User owner, String name, String description) {
+    protected VirtualCollectionFactory(User owner, String name, String description) {
         this(owner);
         c.setName(name);
         c.setDescription(description);
         dirty = true;
     }
 
-    private VirtualCollectionFactory(VirtualCollection vc) {
+    protected VirtualCollectionFactory(VirtualCollection vc) {
         this.c = vc;
         if(c.getId() == null || c.getId() == FORKED_ID) {
             dirty = true;
         }
     }
 
-    public VirtualCollectionFactory persist(VirtualCollectionDao dao) throws VirtualCollectionRegistryException {
-        //if(c.getId() == FORKED_ID) {
-        //    c.setId(null);
-        //}
-        dao.persist(c);
-        dirty = false;
-        return this;
-    }
-
-    public VirtualCollection getPersistedCollection(VirtualCollectionDao dao) throws VirtualCollectionRegistryException  {
-        if(dirty) {
-            persist(dao);
-        }
-        return getCollection();
-    }
-
     public VirtualCollection getCollection() {
-        /*
-        if(c.getId() == FORKED_ID) {
-            c.setId(null);
-        }*/
         return this.c;
     }
 
     public boolean isDirty() {
         return dirty;
-    }
+    }    
 
-    public VirtualCollectionFactory startPublish(VirtualCollectionDao dao) throws VirtualCollectionRegistryException {
-        c.setState(VirtualCollection.State.PUBLIC_PENDING);
-        persist(dao);
-        return this;
+    public void setDirty(boolean dirty) {
+        this.dirty = dirty;
     }
-
-    public VirtualCollectionFactory finishPublish(VirtualCollectionDao dao) throws VirtualCollectionRegistryException {
-        c.setState(VirtualCollection.State.PUBLIC);
-        c.setPublicLeaf(true);
-        if(c.getParent() != null) {
-            c.getParent().setPublicLeaf(false);
-        }
-        persist(dao);
-        return this;
-    }
-
+    
     public boolean isNewVersion() {
         return c.getId() == null && c.getParent() != null;
     }
@@ -353,7 +312,14 @@ public class VirtualCollectionFactory implements Serializable  {
         dirty = true;
         return this;
     }
+    
+    public void setPublicLeaf(boolean isPublicLeaf) {
+        c.setPublicLeaf(isPublicLeaf);
+    }
 
+    public VirtualCollection getParent() {
+        return c.getParent();
+    }
 
 
 

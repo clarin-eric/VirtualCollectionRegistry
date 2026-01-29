@@ -30,21 +30,14 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollecti
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionList;
 import eu.clarin.cmdi.virtualcollectionregistry.model.info.Info;
 import eu.clarin.cmdi.virtualcollectionregistry.query.QueryFactory;
-import eu.clarin.cmdi.virtualcollectionregistry.rest.utils.RestUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
-import jakarta.ws.rs.client.Client;
-import jakarta.ws.rs.client.ClientBuilder;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
-import java.io.IOException;
-import java.io.InputStream;
 import java.security.Principal;
+import java.util.ArrayList;
+import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.DisposableBean;
-import org.springframework.beans.factory.InitializingBean;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
         
@@ -53,10 +46,9 @@ import org.springframework.stereotype.Service;
  * @author wilelb
  */
 @Service
-public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegistry, InitializingBean, DisposableBean {
+public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegistry {
 
-    private final Client client = ClientBuilder.newClient();
-    
+    //TODO: Read this secret from config
     private final String secret = "ghekjghejkhgjkehjkfhgcilqu;ioqhq!;oijf;qhvbwl";
     private final JwtUtil jwtUtil;
     
@@ -70,6 +62,8 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
     private final static Logger logger = LoggerFactory.getLogger(VirtualCollectionRegistryRestImpl.class);
 
     private Principal authenticatedUser;
+    
+    private final List<VirtualCollectionRegistryDestroyListener> destroyListeners = new LinkedList<>();
     
     public VirtualCollectionRegistryRestImpl() {
         this.jwtUtil = new JwtUtil(secret);
@@ -97,27 +91,33 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
     
     @Override
     public VirtualCollectionDao getVirtualCollectionDao() {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return new VirtualCollectionDaoRestImpl(authenticatedUser, jwtUtil, marshaller);
     }
 
     @Override
     public long createVirtualCollection(User user, VirtualCollection vc) throws VirtualCollectionRegistryException {
-        throw new UnsupportedOperationException("Not supported yet.");
+       return getVirtualCollectionDao().persist(vc);
     }
 
     @Override
     public long createVirtualCollection(Principal principal, VirtualCollection vc) throws VirtualCollectionRegistryException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getVirtualCollectionDao().persist(vc);
     }
 
     @Override
     public long updateVirtualCollection(Principal principal, long id, VirtualCollection vc) throws VirtualCollectionRegistryException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        if(vc.getId() == null) {
+            throw new VirtualCollectionRegistryException("Cannot update a virtual collection without an id");
+        }
+        if(vc.getId() != id) {
+            throw new VirtualCollectionRegistryException("Cannot update a virtual collection with not matching id ("+id+" != "+vc.getId()+")");
+        }
+        return getVirtualCollectionDao().persist(vc);
     }
 
     @Override
     public long deleteVirtualCollection(Principal principal, long id) throws VirtualCollectionRegistryException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        return getVirtualCollectionDao().delete(id);
     }
 
     @Override
@@ -125,9 +125,10 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
+    
     @Override
     public VirtualCollection.State getVirtualCollectionState(long id) throws VirtualCollectionRegistryException {
-        VirtualCollection vc = getCollection(id);
+        VirtualCollection vc = getVirtualCollectionDao().getVirtualCollection(id);
         return vc.getState();
     }
 
@@ -138,113 +139,27 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
 
     @Override
     public VirtualCollection retrieveVirtualCollection(long id) throws VirtualCollectionRegistryException {
-        return getCollection(id);
+        return getVirtualCollectionDao().getVirtualCollection(id);
     }
-    
-    private VirtualCollection getCollection(long id) throws VirtualCollectionRegistryException {
-        Response response = 
-            RequestBuilder
-                .setPath("virtualcollections/"+id, jwtUtil)
-                .setAuthenticatedUser(authenticatedUser)
-                .get();
-        
-        if(response.getStatus() != 200) {
-            throw new VirtualCollectionRegistryException("Invalid api response: HTTP "+response.getStatus()+", "+response.getStatusInfo().getReasonPhrase());
-        }
-        
-        InputStream input = (InputStream)response.getEntity();      
-
-        VirtualCollection.Format format = RestUtils.getInputFormat(response.getMediaType());
-        String encoding = RestUtils.getInputEncoding(response.getMediaType());
-        
-        VirtualCollection vc = new VirtualCollection();
-        try {
-            vc = marshaller.unmarshal(input, format, encoding);
-            //Note: this is a workaround to fix the client authorization check
-            //      The rest api checks for permission. If it returns a collection
-            //      the authentication user is allowed to access it.
-            //      We explicitly set the owner here based on the user principal
-            //      that made the request.
-            vc.setOwner(new User(authenticatedUser));
-        } catch(IOException ex) {
-            logger.error("Failed to unmarshall collection", ex);
-            throw new VirtualCollectionRegistryException("", ex);
-        }
-
-        return vc;
-    }
-
-    private VirtualCollectionList getVirtualCollectionsList(Response response) throws VirtualCollectionRegistryException {
-        InputStream input = (InputStream)response.getEntity();      
-
-        if(response.getStatus() != 200) {
-            throw new VirtualCollectionRegistryException("Unexpected response code: "+response.getStatus() +", "+response.getStatusInfo().getReasonPhrase());
-        }
-        
-        VirtualCollection.Format format = RestUtils.getInputFormat(response.getMediaType());
-        String encoding = RestUtils.getInputEncoding(response.getMediaType());
-        
-        VirtualCollectionList list = new VirtualCollectionList();
-        try {
-            list = marshaller.unmarshalCollectionList(input, format, encoding);
-        } catch(IOException ex) {
-            throw new VirtualCollectionRegistryException("", ex);
-        }
-        return list;
-    }
-    
+  
     @Override
     public VirtualCollectionList getVirtualCollections(String query, int offset, int count) throws VirtualCollectionRegistryException {
         throw new UnsupportedOperationException("Not supported client side");
-        /*
-        Response response = 
-            RequestBuilder
-                .setPath("virtualcollections")
-                .addParam("q", query)
-                .addParam("offset", offset)
-                .addParam("count", count)
-                .get();
-        return getVirtualCollectionsList(response);
-        */
     }
 
     @Override
     public VirtualCollectionList getVirtualCollections(Principal principal, String query, int offset, int count) throws VirtualCollectionRegistryException {
         throw new UnsupportedOperationException("Not supported client side");
-        /*
-        //Principal should be set via authentication
-        Response response = 
-            RequestBuilder
-                .setPath("my-virtualcollections")
-                .addParam("q", query)
-                .addParam("offset", offset)
-                .addParam("count", count)
-                .get();
-        return getVirtualCollectionsList(response);
-        */
     }
     
     @Override
     public List<VirtualCollection> getVirtualCollections(int first, int count, QueryFactory qryFactory) throws VirtualCollectionRegistryException {       
-        Response response = 
-            RequestBuilder
-                .setPath("virtualcollections", jwtUtil)
-                .setAuthenticatedUser(authenticatedUser)
-                .addParam("offset", first)
-                .addParam("count", count)
-                .addQueryFactory(qryFactory)
-                .get();
-        return getVirtualCollectionsList(response).getVirtualCollections();
+        return getVirtualCollectionDao().getVirtualCollections(first, count, qryFactory);
     }
 
     @Override
     public int getVirtualCollectionCount(QueryFactory qryFactory) throws VirtualCollectionRegistryException {
-        Response response = 
-            RequestBuilder
-                .setPath("virtualcollections", jwtUtil)
-                .setAuthenticatedUser(authenticatedUser)
-                .get();
-        return getVirtualCollectionsList(response).getVirtualCollections().size();
+        return getVirtualCollectionDao().getVirtualCollectionCount(qryFactory);
     }
     
     @Override
@@ -263,13 +178,7 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
 
     @Override
     public User getOrCreateUser(String username) throws VirtualCollectionRegistryException {   
-        Response response = 
-            RequestBuilder
-                .setPath("user", jwtUtil)
-                .setAuthenticatedUser(authenticatedUser)
-                .get();
-        String usernameResponse = response.readEntity(String.class);
-        return new User(usernameResponse);
+        return getVirtualCollectionDao().getOrCreateUser(username);
     }
 
     @Override
@@ -329,31 +238,54 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
 
     @Override
     public List<ResourceScan> getResourceScansForRefs(List<String> refs) throws VirtualCollectionRegistryException {
+        logger.warn("Not implemented yet: getResourceScansForRefs()");
+        
+        ArrayList<ResourceScan> scans = new ArrayList<>();
+        //for(String ref : refs) {
+        for(int i = 0; i < refs.size(); i++) {
+            String ref = refs.get(i);
+        
+            ResourceScan scan = new LocalResourceScanWrapper(i, ref, ref, "1");
+            scan.setHttpResponseCode(200);
+            scan.setHttpResponseMessage("Ok");
+            scan.setCreated(new Date());
+            scan.setLastScan(new Date());
+            scan.setLastScanEnd(new Date());
+            scan.setMimeType("text/html");
+            scans.add(scan);
+        }        
+        return scans;
+    }
+
+    @Override
+    public void addResourceScan(String ref, String resolvedRef, String sessionId, boolean useCache) throws VirtualCollectionRegistryException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+
+    @Override
+    public void rescanResource(String ref, String resolvedRef, String sessionId, boolean useCache) throws VirtualCollectionRegistryException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
     @Override
     public void registerDestroyListener(VirtualCollectionRegistryDestroyListener listener) {
-        //throw new UnsupportedOperationException("Not supported yet.");
+        this.destroyListeners.add(listener);
     }
-
-    @Override
-    public void afterPropertiesSet() throws Exception {
-        //throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void destroy() throws Exception {
-        //throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void addResourceScan(String ref, String resolvedRef, String sessionId, boolean useCache) throws VirtualCollectionRegistryException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
-    }
-
-    @Override
-    public void rescanResource(String ref, String resolvedRef, String sessionId, boolean useCache) throws VirtualCollectionRegistryException {
-        throw new UnsupportedOperationException("Not supported yet."); // Generated from nbfs://nbhost/SystemFileSystem/Templates/Classes/Code/GeneratedMethodBody
+    
+    /**
+     * Wrapper around the ResourceScan that allows to set the scan id
+     */
+    public class LocalResourceScanWrapper extends ResourceScan {
+        private final Long id;
+        
+        public LocalResourceScanWrapper(long id, String ref, String resolvedRef, String sessionId) {
+            super(ref, resolvedRef, sessionId);
+            this.id = id;
+        }
+        
+        @Override
+        public Long getId() {
+            return id;
+        }   
     }
 }

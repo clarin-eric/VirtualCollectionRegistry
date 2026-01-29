@@ -1,7 +1,8 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
 
-import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactory;
+import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactoryWithPersistence;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.VirtualCollectionValidationException;
 import eu.clarin.cmdi.virtualcollectionregistry.core.validation.feedback.IValidationFailedMessage;
@@ -158,61 +159,32 @@ public class VirtualCollectionFormSubmissionResource {
 
         try {
             // construct a proto-VC from the form parameters
-
-            VirtualCollectionFactory vcf =
-                VirtualCollectionFactory
-                    .createNew(new User(principal.getName()), name, description)
-                    .setType(Type.EXTENSIONAL)
-                    .addCreator(new Creator(principal.getName(), ""))
-                    .addAllKeywords(keywords)
-                    .setPurpose(purpose)
-                    .setReproducibility(reproducibility, reproducibilityNotice);
+            VirtualCollectionFactoryWithPersistence vcf = 
+                new VirtualCollectionFactoryWithPersistence(
+                    VirtualCollectionFactory
+                        .createNew(new User(principal.getName()), name, description)
+                        .setType(Type.EXTENSIONAL)
+                        .addCreator(new Creator(principal.getName(), ""))
+                        .addAllKeywords(keywords)
+                        .setPurpose(purpose)
+                        .setReproducibility(reproducibility, reproducibilityNotice)
+                );
 
             for(String uri : metadataUris) {
-                vcf.addResource(Resource.Type.METADATA, uri, null, null);
+                vcf.getFactory().addResource(Resource.Type.METADATA, uri, null, null);
             }
             for(String uri : resourceUris) {
-                vcf.addResource(Resource.Type.RESOURCE, uri, null, null);
+                vcf.getFactory().addResource(Resource.Type.RESOURCE, uri, null, null);
             }
-
-            /*
-            final VirtualCollection vc = new VirtualCollectionBuilder()
-                .setName(name)
-                .setType(VirtualCollection.Type.EXTENSIONAL)
-                .addCreator(principal)
-                .addMetadataResources(metadataUris, null, null)
-                .addResourceResources(resourceUris, null,null)
-                .addKeywords(keywords)
-                .setDescription(description)
-                .setPurpose(purpose)
-                .setReproducibility(reproducibility)
-                .setReproducibilityNotice(reproducibilityNotice)
-                .setCreationDate(creationDate)                
-                .build();
-            */
 
             // create the VC in the registry (persist)
             long id = vcf.getPersistedCollection(registry.getVirtualCollectionDao()).getId();
-
-//            long id = registry.createVirtualCollection(principal, vc);
 
             // respond with redirect to editor
             final URI uri = uriInfo.getBaseUriBuilder()
                     .path("../edit/{arg1}")
                     .build(id);
             return Response.seeOther(uri).build();
-//        } catch (VirtualCollectionValidationException ex) {
-//            //TODO: wrap in friendly HTML page
-//            final Response.Status response = Response.Status.BAD_REQUEST;
-//            
-//            String errorList = "";
-//            if(ex.hasErrorMessages()) {
-//                for(IValidationFailedMessage errorMessage : ex.getErrorMessages()) {
-//                    errorList += errorMessage.toString()+"<br />";
-//                }
-//            }
-//            final String error = String.format("<html>\n<body>\n<h1>%d %s</h1>\nCould not create virtual collection. Error(s):<br/>%s\n</body>\n</html>\n", response.getStatusCode(), response.toString(), errorList);
-//            return Response.status(response).entity(error).build();
         } catch (VirtualCollectionRegistryException ex) {
             //TODO: wrap in friendly HTML page
             final Response.Status response = Response.Status.BAD_REQUEST;
@@ -250,32 +222,19 @@ public class VirtualCollectionFormSubmissionResource {
 
         try {
             // construct a proto-VC from the form parameters
-            /*
-            final VirtualCollection vc = new VirtualCollectionBuilder()
-                .setName(name)
-                .setType(VirtualCollection.Type.INTENSIONAL)
-                .addCreator(principal)
-                .addKeywords(keywords)
-                .setDescription(description)
-                .setPurpose(purpose)
-                .setReproducibility(reproducibility)
-                .setReproducibilityNotice(reproducibilityNotice)
-                .setCreationDate(creationDate)
-                .setIntenstionalQuery(intensionalDescription, intensionalUri, intensionalQueryProfile, intensionalQueryValue)
-                .build();
-            */
-            VirtualCollectionFactory vcf =
+            VirtualCollectionFactoryWithPersistence vcf =
+                new VirtualCollectionFactoryWithPersistence(
                     VirtualCollectionFactory
-                            .createNew(new User(principal.getName()), name, description)
-                            .setType(Type.INTENSIONAL)
-                            .addCreator(new Creator(principal.getName(), ""))
-                            .addAllKeywords(keywords)
-                            .setPurpose(purpose)
-                            .setReproducibility(reproducibility, reproducibilityNotice)
-                            .setGeneratedBy(intensionalDescription, intensionalUri, intensionalQueryProfile, intensionalQueryValue);
+                        .createNew(new User(principal.getName()), name, description)
+                        .setType(Type.INTENSIONAL)
+                        .addCreator(new Creator(principal.getName(), ""))
+                        .addAllKeywords(keywords)
+                        .setPurpose(purpose)
+                        .setReproducibility(reproducibility, reproducibilityNotice)
+                        .setGeneratedBy(intensionalDescription, intensionalUri, intensionalQueryProfile, intensionalQueryValue)
+                );
 
             // create the VC in the registry (persist)
-            //long id = registry.createVirtualCollection(principal, vc);
             long id = vcf.getPersistedCollection(registry.getVirtualCollectionDao()).getId();
 
             // respond with redirect to editor
@@ -296,6 +255,7 @@ public class VirtualCollectionFormSubmissionResource {
     }
     
     private class ErrorJsonBuilder implements ErrorBuilder {
+        @Override
         public String buildErrorPage(int statusCode, String statusMessage, Exception ex) {
             String json = "[";
             if(ex != null) {
