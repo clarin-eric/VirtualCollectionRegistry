@@ -16,26 +16,19 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.OutputStream;
-import jakarta.ws.rs.GET;
+import io.swagger.v3.oas.annotations.OpenAPIDefinition;
+import io.swagger.v3.oas.annotations.info.Info;
+import io.swagger.v3.oas.annotations.servers.Server;
 import jakarta.ws.rs.Path;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.container.ResourceContext;
 import jakarta.ws.rs.core.*;
-import org.apache.wicket.util.io.IOUtils;
-import org.eclipse.microprofile.openapi.annotations.OpenAPIDefinition;
-import org.eclipse.microprofile.openapi.annotations.info.Info;
-import org.eclipse.microprofile.openapi.annotations.servers.Server;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  * @author twagoo
  */
-@Path("")
+@Path("/")
 @OpenAPIDefinition(
     info = @Info(
         title = "Virtual Collection Registry REST API",
@@ -45,7 +38,7 @@ import org.slf4j.LoggerFactory;
                 + "<br />Description of the API protocol is available <a href=\"../Protocol.txt\">here</a>."
                 + "<br /><br />In addition to the REST API there are submission endpoints available to provide a low "
                 + "friction integration with external data catalogues. Documentation is available <a href=\"https://github.com/clarin-eric/VirtualCollectionRegistry/blob/master/doc/Integration.md\">here</a>."
-                + "<br />Submission endpoint test paages:"
+                + "<br />Submission endpoint test pages:"
                 + "<ul>"
                 + "<li><a target=\"_new\" href=\"../test_vc_submission_extensional.html\">Extensional collections</a></li>"
                 + "<li><a target=\"_new\" href=\"../test_vc_submission_intensional.html\">Intensional collections</a></li>"
@@ -55,7 +48,7 @@ import org.slf4j.LoggerFactory;
     servers = {
         @Server(
             description = "Local API endpoint",
-            url = "http://localhost:8080/vcr/service"
+            url = "http://localhost:8080/service"
         )
     }
 )
@@ -65,29 +58,6 @@ public class BaseResource {
     
     @Context
     private ResourceContext resourceContext;
-
-    /**
-     * Serves a short description HTML page at the service root
-     * @return 
-     */
-    @GET
-    @Produces({MediaType.TEXT_HTML})
-    public Response getDescription() {
-        logger.info("HTTP GET / -- getDescription()");
-        final StreamingOutput writer = new StreamingOutput() {
-            @Override
-            public void write(OutputStream output) throws IOException, WebApplicationException {
-                try (InputStream is = getClass().getResourceAsStream("/restIndex.html")) {
-                    IOUtils.copy(is, output);
-                } catch(IOException ex) {
-                    logger.error("Failed to load restIndex.html", ex);
-                } finally {
-                    output.close();
-                }
-            }
-        };
-        return Response.ok(writer).type(MediaType.TEXT_HTML).build();
-    }
 
     /**
      * Server api v1

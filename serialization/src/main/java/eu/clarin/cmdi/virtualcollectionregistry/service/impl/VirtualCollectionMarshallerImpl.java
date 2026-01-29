@@ -251,7 +251,12 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
             //This is needed for unmarshalling again
             writer.writeAttribute("persistentId",vc.getPrimaryIdentifier().getURI());
         }
-        writer.writeAttribute("state", getStateRepresentation(vc.getState()));
+        try {
+            writer.writeAttribute("state", getStateRepresentation(vc.getState()));
+        } catch(Exception ex) {
+            logger.debug("Invalid state = "+vc.getState() + " for collection with id = " + vc.getId());
+            throw ex;
+        }
 
         writer.writeStartElement("Type");
         switch (vc.getType()) {

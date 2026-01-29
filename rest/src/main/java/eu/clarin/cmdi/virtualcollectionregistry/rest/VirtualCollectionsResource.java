@@ -11,6 +11,12 @@ import eu.clarin.cmdi.virtualcollectionregistry.rest.auth.ApiKeyOptional;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.auth.ApiKeyRequired;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
 import eu.clarin.cmdi.virtualcollectionregistry.service.impl.QueryFactorySerializer;
+import io.swagger.v3.oas.annotations.Operation;
+import io.swagger.v3.oas.annotations.Parameter;
+import io.swagger.v3.oas.annotations.Parameters;
+import io.swagger.v3.oas.annotations.media.Content;
+import io.swagger.v3.oas.annotations.responses.ApiResponse;
+import io.swagger.v3.oas.annotations.responses.ApiResponses;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
@@ -35,12 +41,6 @@ import jakarta.ws.rs.core.StreamingOutput;
 import jakarta.ws.rs.core.UriInfo;
 import java.util.ArrayList;
 import java.util.List;
-import org.eclipse.microprofile.openapi.annotations.Operation;
-import org.eclipse.microprofile.openapi.annotations.media.Content;
-import org.eclipse.microprofile.openapi.annotations.parameters.Parameter;
-import org.eclipse.microprofile.openapi.annotations.parameters.Parameters;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponse;
-import org.eclipse.microprofile.openapi.annotations.responses.APIResponses;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -190,19 +190,19 @@ public class VirtualCollectionsResource {
  //           security = { @SecurityRequirement(name = "apiKey") },
             summary = "Create a new collection",
             description = "A virtual collection will be created based on the representation of the virtual collection sent in the request body. ID and state, if provided, will be ignored so this will always result in a private collection with a new identifier.")
-    @APIResponses(
+    @ApiResponses(
             value = {
-                    @APIResponse(
+                    @ApiResponse(
                             responseCode = "401",
                             description = "Missing or invalid API key in "+HttpHeaders.AUTHORIZATION+" header.",
                             content = @Content(mediaType = "text/html")
                     ),
-                    @APIResponse(
+                    @ApiResponse(
                             responseCode = "500",
                             description = "Unexpected server side error.",
                             content = {@Content(mediaType = "text/html")}
                     ),
-                    @APIResponse(
+                    @ApiResponse(
                             responseCode = "200",
                             description = "Representation of the created collection.",
                             content = {@Content(mediaType = "application/json"), @Content(mediaType = "application/xml")}

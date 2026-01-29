@@ -16,14 +16,22 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
-import jakarta.ws.rs.ApplicationPath;
-import jakarta.ws.rs.core.Application;
+import org.glassfish.jersey.server.ResourceConfig;
+import org.glassfish.jersey.servlet.ServletProperties;
 
 /**
- *
+ * Load the application via a Jersey Filter definition in web.xml. By using
+ * a filter and the jersey ResourceConfig we can override the default Jersey
+ * behaviour when a resource is not found and pass it through to the tomcat
+ * default servlet that will serve static files with our Swagger UI.
+ * 
+ * The path must be mapped to /* in the web.xml filter definition.
+ * 
  * @author wilelb
  */
-@ApplicationPath("/")
-public class VcrRestApplication extends Application {
-    public VcrRestApplication() {}
+public class VcrRestApplication extends ResourceConfig {
+    public VcrRestApplication() {
+        packages("eu.clarin.cmdi.virtualcollectionregistry.rest");
+        property(ServletProperties.FILTER_FORWARD_ON_404, true);
+    }
 }

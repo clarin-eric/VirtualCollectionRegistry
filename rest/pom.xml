@@ -21,13 +21,6 @@
     
     <dependencies>
         
-        <!--
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>vcr-model</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-       -->
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>vcr-serialization</artifactId>
@@ -38,59 +31,39 @@
             <artifactId>persistence</artifactId>
             <version>${project.version}</version>
         </dependency>
-        <!--
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>vcr-core</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-       -->
+
         <dependency>
             <groupId>${project.groupId}</groupId>
             <artifactId>rest-utils</artifactId>
             <version>${project.version}</version>
         </dependency>
         
-        
-        <!--
-        <dependency>
-            <groupId>io.swagger.core.v3</groupId>
-            <artifactId>swagger-core-jakarta</artifactId>
-            <version>2.2.23</version>
-        </dependency>
+        <!-- 1. OpenAPI API -->
         <dependency>
             <groupId>io.swagger.core.v3</groupId>
             <artifactId>swagger-annotations-jakarta</artifactId>
             <version>2.2.23</version>
         </dependency>
-        -->
-        
-        <!-- 1. OpenAPI API -->
+        <!--
         <dependency>
             <groupId>org.eclipse.microprofile.openapi</groupId>
             <artifactId>microprofile-openapi-api</artifactId>
             <version>4.0.2</version>
         </dependency>
+        -->
         <!-- 2. Swagger-ui -->
+        <!--
         <dependency>
             <groupId>org.microprofile-ext.openapi-ext</groupId>
             <artifactId>openapi-ui</artifactId>
             <version>2.0.0</version>
         </dependency>
-        
-        <!-- TODO: the dependency on wicket should go at some point -->
-        <!--
+       -->
         <dependency>
-            <groupId>org.apache.wicket</groupId>
-            <artifactId>wicket-util</artifactId>
-            <version>${wicket.version}</version>
+            <groupId>org.webjars</groupId>
+            <artifactId>swagger-ui</artifactId>
+            <version>5.31.0</version> 
         </dependency>
-        <dependency>
-            <groupId>org.apache.wicket</groupId>
-            <artifactId>wicket-core</artifactId>
-            <version>${wicket.version}</version>
-        </dependency>
-        -->
         
          <!-- the Jersey implementation -->
         <dependency>
@@ -124,15 +97,6 @@
             <artifactId>jersey-media-jaxb</artifactId>
             <version>${jersey.version}</version>
         </dependency>
-<!--
-        <dependency>
-            <groupId>com.fasterxml.jackson.module</groupId>
-            <artifactId>jackson-module-jaxb-annotations</artifactId>
-            <version>${jackson.version}</version>
-        </dependency>
-    -->
-
-        <!-- Provides spring-beans and spring-context -->
 
         <dependency>
             <groupId>org.apache.httpcomponents</groupId>
@@ -159,15 +123,6 @@
             <version>2.1.3</version>
         </dependency>
 
-
-        <!-- Provides org.apache.wicket.spring.injection.annot.SpringBean -->
-        <!--
-        <dependency>
-            <groupId>org.apache.wicket</groupId>
-            <artifactId>wicket-spring</artifactId>
-            <version>${wicket.version}</version>
-        </dependency>
-        -->
         <dependency>
             <groupId>org.codehaus.jettison</groupId>
             <artifactId>jettison</artifactId>
@@ -196,10 +151,41 @@
             </exclusions>
         </dependency>
         
-        
     </dependencies>
     
     <build>
+        <finalName>vcr-rest-backend${project.version}</finalName>
+        <resources>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/resources</directory>
+            </resource>
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/BasePage.html</include>
+                </includes>
+            </resource>
+            <resource>
+                <filtering>false</filtering>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.html</include>
+                    <include>**/*.css</include>
+                    <include>**/*.ico</include>
+                    <include>**/*.js</include>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>
+        </resources>
+
+        <testResources>
+            <testResource>
+                <directory>src/test/resources</directory>
+            </testResource>
+        </testResources>
+        
         <plugins>
             
             <plugin>
@@ -219,17 +205,7 @@
                                 <include>*.properties</include>
                                 <include>scripts</include>
                             </includes>
-                        </resource>
-                        <!-- additional web resources: also copy schemas to web-app -->
-                        <!--
-                        <resource>
-                            <directory>src/main/resources/META-INF</directory>
-                            <targetPath>schema</targetPath>
-                            <includes>
-                                <include>*.xsd</include>
-                            </includes>
-                        </resource>
-                        -->
+                        </resource>                                             
                         <!-- Make REST API documentation available -->                        
                         <resource>
                             <directory>${project.build.directory}/service-doc</directory>
@@ -254,14 +230,20 @@
             <plugin>
                 <groupId>io.swagger.core.v3</groupId>
                 <artifactId>swagger-maven-plugin-jakarta</artifactId>
-                <version>2.2.23</version>
+                <version>2.2.41</version>
                 <configuration>
                     <outputFileName>swagger</outputFileName>
                     <outputPath>${project.build.directory}/service-doc</outputPath>
                     <outputFormat>JSONANDYAML</outputFormat>
+                    <!--configurationFilePath>${project.basedir}/src/main/resources/openapi-configuration.yaml</configurationFilePath-->
+                    
                     <resourcePackages>
                         <package>eu.clarin.cmdi.virtualcollectionregistry.rest</package>
                     </resourcePackages>
+                    <!--resourceClasses>
+                        <resourceClass>eu.clarin.cmdi.virtualcollectionregistry.rest.VcrRestApplication</resourceClass>
+                    </resourceClasses>
+                    <scannerClass>io.swagger.v3.jaxrs2.integration.JaxrsAnnotationScanner</scannerClass-->
                     <prettyPrint>TRUE</prettyPrint>
                 </configuration>
                 <executions>

@@ -1,0 +1,59 @@
+<!DOCTYPE html>
+<!--
+Copyright (C) 2026 CLARIN
+
+This program is free software: you can redistribute it and/or modify
+it under the terms of the GNU General Public License as published by
+the Free Software Foundation, either version 3 of the License, or
+(at your option) any later version.
+
+This program is distributed in the hope that it will be useful,
+but WITHOUT ANY WARRANTY; without even the implied warranty of
+MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE.  See the
+GNU General Public License for more details.
+
+You should have received a copy of the GNU General Public License
+along with this program.  If not, see <http://www.gnu.org/licenses/>.
+-->
+<!--
+<html>
+    <head>
+        <title>OpenAPI UI redirect</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <meta http-equiv="refresh" content="0; url=webjars/swagger-ui/5.31.0/index.html?url=http%3A%2F%2Flocalhost%3A8080%2Fservice%2Fswagger.json" />
+    </head>
+    <body>
+        <p>Redirecting to <a href="webjars/swagger-ui/5.31.0/index.html?url=http%3A%2F%2Flocalhost%3A8080%2Fservice%2Fswagger.json">Swagger UI</a></p>
+        
+    </body>
+</html>
+-->
+
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <title>API Documentation</title>
+    <link rel="stylesheet" type="text/css" href="./webjars/swagger-ui/5.31.0/swagger-ui.css">
+    <link rel="icon" type="image/png" href="./webjars/swagger-ui/5.31.0/favicon-32x32.png" sizes="32x32">
+</head>
+<body>
+    <div id="swagger-ui"></div>
+    <script src="./webjars/swagger-ui/5.31.0/swagger-ui-bundle.js"></script>
+    <script src="./webjars/swagger-ui/5.31.0/swagger-ui-standalone-preset.js"></script>
+    <script>
+        window.onload = function() {
+            window.ui = SwaggerUIBundle({
+                url: "/service/swagger.json", // Your JSON location
+                dom_id: '#swagger-ui',
+                deepLinking: true,
+                presets: [
+                    SwaggerUIBundle.presets.apis,
+                    SwaggerUIStandalonePreset
+                ],
+                layout: "StandaloneLayout"
+            });
+        };
+    </script>
+</body>
+</html>

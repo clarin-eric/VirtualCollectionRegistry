@@ -1,0 +1,10 @@
+resourcePackages:
+  - eu.clarin.cmdi.virtualcollectionregistry.rest
+openAPI:
+  info:
+    title: "Virtual Collection Registry API"
+    version: "1.9.0"
+    description: "CLARIN VCR REST Services"
+  servers:
+    - url: "/service"
+      description: "Default Server"
