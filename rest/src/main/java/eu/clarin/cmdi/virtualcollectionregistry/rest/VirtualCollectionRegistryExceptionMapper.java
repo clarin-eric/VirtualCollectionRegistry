@@ -4,12 +4,15 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualColle
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryPermissionException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryUsageException;
+import jakarta.ws.rs.core.Context;
 import java.util.ArrayList;
 import java.util.List;
 
 import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Request;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.Response.Status;
+import jakarta.ws.rs.core.Variant;
 import jakarta.ws.rs.ext.ExceptionMapper;
 import jakarta.ws.rs.ext.Provider;
 import javax.xml.stream.XMLStreamException;
@@ -20,13 +23,27 @@ import org.xml.sax.SAXParseException;
 public class VirtualCollectionRegistryExceptionMapper implements
         ExceptionMapper<VirtualCollectionRegistryException> {
 
+    @Context
+    private Request request;
+    
+    //List of supported response types
+    private final List<Variant> variants = Variant.mediaTypes(
+                MediaType.APPLICATION_JSON_TYPE,
+                MediaType.APPLICATION_XML_TYPE
+        ).build();
+    
+    private MediaType getResponseType() {
+        Variant v = request.selectVariant(variants);
+        return (v == null) ? MediaType.APPLICATION_XML_TYPE : v.getMediaType();
+    }
+    
     @Override
     public Response toResponse(VirtualCollectionRegistryException e) {
         Status       status = null;
         List<String> errors = null;
         if (e instanceof VirtualCollectionRegistryUsageException) {
             status = Status.BAD_REQUEST;
-            errors = getErrors(e.getCause());
+            errors = getErrors(e);
         } else if (e instanceof VirtualCollectionRegistryPermissionException) {
             status = Status.FORBIDDEN;
         } else if (e instanceof VirtualCollectionNotFoundException) {
@@ -37,16 +54,21 @@ public class VirtualCollectionRegistryExceptionMapper implements
             } else {
                 status = Status.INTERNAL_SERVER_ERROR;
             }
-            errors = getErrors(e.getCause());
+            errors = getErrors(e);//.getCause());
         }
+        
         RestResponse response = new RestResponse();
-        response.setIsSuccess(false);
+        response.setSuccess(false);
         response.setInfo(e.getMessage());
         if (errors != null) {
             response.setError(errors);
         }
-        return Response.status(status).type(MediaType.APPLICATION_XML)
-            .entity(response).build();
+        
+        return 
+            Response
+                .status(status)
+                .type(getResponseType())
+                .entity(response).build();
     }
 
     private static List<String> getErrors(Throwable t) {
@@ -86,7 +108,7 @@ public class VirtualCollectionRegistryExceptionMapper implements
             }
             t = t.getCause();
         }
-        ;
+        
         return errors;
     }
 

@@ -92,6 +92,8 @@ public class VirtualCollectionDetailsPage extends BasePage {
 
     private IModel<Boolean> showAdvancedFields = Model.of(false);
 
+    private final IModel<VirtualCollection> model;
+    
     @SpringBean
     private VcrConfigImpl vcrConfig;
 
@@ -194,7 +196,9 @@ public class VirtualCollectionDetailsPage extends BasePage {
     }
 
     public VirtualCollectionDetailsPage(final IModel<VirtualCollection> model, final PageParameters params) throws VirtualCollectionRegistryPermissionException {
-        super(new CompoundPropertyModel<VirtualCollection>(model));
+        super(new CompoundPropertyModel<>(model));
+        this.model = model;
+        
         //setPageStateless(true);
         this.params = params;
         setOutputMarkupId(true);
@@ -248,6 +252,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
                 .setVisible(model.getObject().getType() == Type.INTENSIONAL)
                 .build());
 
+//        add(new GoogleScholarHeaderBehavior(model));
         add(new DetailsStructuredMeatadataHeaderBehavior(model));
     }
 
@@ -466,7 +471,8 @@ public class VirtualCollectionDetailsPage extends BasePage {
                         IModel<? extends List<Creator>> listViewModel, int index) {
                     final List<Creator> creators = listViewModel.getObject();
                     return new CompoundPropertyModel<Creator>(
-                            new VolatileEntityModel<>(creators.get(index)));
+                            Model.of(creators.get(index)));
+                            //new VolatileEntityModel<>(creators.get(index)));
                 }
 
                 @Override
@@ -531,7 +537,7 @@ public class VirtualCollectionDetailsPage extends BasePage {
 
                 @Override
                 public IModel<Resource> model(Resource resource) {
-                    return new VolatileEntityModel<>(resource);
+                    return Model.of(resource);//new VolatileEntityModel<>(resource);
                 }
 
                 @Override

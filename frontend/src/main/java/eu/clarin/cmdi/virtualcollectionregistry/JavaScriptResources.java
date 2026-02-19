@@ -27,6 +27,9 @@ public class JavaScriptResources {
     private final static ResourceReference BOOTSTRAP = new ContextRelativeResourceReference("script/bootstrap.js"); //bootstrap scripts are extracted from CLARIN's base style bootstrap package
     //private final static ResourceReference BOOTSTRAP_MIN = new ContextRelativeResourceReference("script/bootstrap.min.js"); 
 
+    private final static ResourceReference CLIPBOARD = new ContextRelativeResourceReference("script/clipboard.js");
+    private final static ResourceReference CITEPROC = new ContextRelativeResourceReference("script/citeproc.js");
+    
     public static ResourceReference getBootstrapJS() {
         return BOOTSTRAP;
     }
@@ -34,4 +37,12 @@ public class JavaScriptResources {
     //public static ResourceReference getBootstrapMinJS() {
     //    return BOOTSTRAP_MIN;
     //}
+    
+    public static ResourceReference getClipboardJs() {
+        return CLIPBOARD;
+    }
+    
+    public static ResourceReference getCiteProcJs() {
+        return CITEPROC;
+    }
 }

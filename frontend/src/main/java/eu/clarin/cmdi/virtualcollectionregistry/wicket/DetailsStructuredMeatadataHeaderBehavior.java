@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.wicket;
 
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
+import eu.clarin.cmdi.virtualcollectionregistry.gui.DateConverter;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
@@ -11,14 +12,18 @@ import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.LoadableDetachableModel;
 
-import java.text.SimpleDateFormat;
 import java.util.Collection;
 import java.util.Date;
 import java.util.LinkedList;
 
+/**
+ * * Reference:
+ * - Google dataset: https://developers.google.com/search/docs/appearance/structured-data/dataset
+ * - Google dataset fields: https://developers.google.com/search/docs/appearance/structured-data/dataset#structured-data-type-definitions
+ * 
+ */
 public class DetailsStructuredMeatadataHeaderBehavior extends JsonLdHeaderBehavior {
 
-    public final static SimpleDateFormat SDF_ISO_8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
     public static final int DESCRIPTION_MIN_LENGTH = 50;
     public static final int DESCRIPTION_MAX_LENGTH = 5000;
 
@@ -38,7 +43,7 @@ public class DetailsStructuredMeatadataHeaderBehavior extends JsonLdHeaderBehavi
         }
     }
 
-    private static class JsonLoadableDetachableModel extends  LoadableDetachableModel<JsonLdModel.JsonLdObject> {
+    private static class JsonLoadableDetachableModel extends LoadableDetachableModel<JsonLdModel.JsonLdObject> {
         private final IModel<VirtualCollection> collectionModel;
 
         public JsonLoadableDetachableModel(IModel<VirtualCollection> collectionModel) {
@@ -85,7 +90,7 @@ public class DetailsStructuredMeatadataHeaderBehavior extends JsonLdHeaderBehavi
             if(d == null) {
                 return null;
             }
-            return SDF_ISO_8601.format(d);
+            return DateConverter.SDF_ISO_8601.format(d);
         }
         /**
          * Ensures value validity for description; if necessary transforms the

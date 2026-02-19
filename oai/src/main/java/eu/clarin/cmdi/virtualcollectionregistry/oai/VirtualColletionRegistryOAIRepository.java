@@ -8,13 +8,13 @@ import eu.clarin.cmdi.oai.provider.Record;
 import eu.clarin.cmdi.oai.provider.RecordList;
 import eu.clarin.cmdi.oai.provider.Repository;
 import eu.clarin.cmdi.oai.provider.SetSpecDesc;
-import eu.clarin.cmdi.virtualcollectionregistry.core.DataStore;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionNotFoundException;
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Creator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection_;
+import eu.clarin.cmdi.virtualcollectionregistry.persistence.DataStore;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionCMDIWriter;
 
 import java.util.ArrayList;

@@ -1,6 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2;
 
-import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactoryWithPersistence;
+//import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionFactoryWithPersistence;
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistryDestroyListener;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.Application;
@@ -78,7 +78,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
      */
     public CreateAndEditVirtualCollectionPageV2(Long id, final Page previousPage) throws VirtualCollectionRegistryException {
         //this.originalCollectionId = id;
-        final VirtualCollectionFactoryWithPersistence vcf = getVirtualCollectionFactory(id);
+        final VirtualCollectionFactory vcf = getVirtualCollectionFactory(id);
         
         modal = new ModalConfirmDialog("modal");
         modal.addListener(new Listener() {
@@ -105,7 +105,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
         });
         add(modal);
 
-        final CreateAndEditPanel crud = new CreateAndEditPanel("create_and_edit_panel", vcf.getFactory(), timerManager, vcrConfig);
+        final CreateAndEditPanel crud = new CreateAndEditPanel("create_and_edit_panel", vcf, timerManager, vcrConfig);
         crud.addListener(new Listener<VirtualCollection>() {
             @Override
             public void handleEvent(Event<VirtualCollection> event) {
@@ -114,14 +114,13 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
 
                         //logger.trace("Saving collection, mode="+originalCollectionId==null ? "create" : "update");
                         try {
-                            VirtualCollection vc = vcf.getFactory().getCollection();
+                            VirtualCollection vc = vcf.getCollection();
                             logger.info("Persisting collecction, id="+vc.getId()+",name="+vc.getName());
-                            vcf.persist(
-                                Application
-                                    .get()
-                                    .getRegistry()
-                                    .getVirtualCollectionDao()
-                            );
+                            Application
+                                .get()
+                                .getRegistry()
+                                .getVirtualCollectionDao()
+                                    .persist(vcf.getCollection());
                             /*
                             Application
                                     .get()
@@ -194,14 +193,10 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
         add(crud);
     }
 
-    private VirtualCollectionFactoryWithPersistence getVirtualCollectionFactory(Long id) throws VirtualCollectionRegistryException {
+    private VirtualCollectionFactory getVirtualCollectionFactory(Long id) throws VirtualCollectionRegistryException {
         Principal p = getUser();
         logger.info("Principal p = "+p.getName());
-        VirtualCollectionFactoryWithPersistence vcf = 
-            new VirtualCollectionFactoryWithPersistence(
-                VirtualCollectionFactory.createNew(new User(p.getName())
-            )
-        );
+        VirtualCollectionFactory vcf = VirtualCollectionFactory.createNew(new User(p.getName()));
 
         //if null we are creating a new collection, otherwise an existing collection is being editing (might require a new version)
         logger.info(id == null ? "Creating a new collection (id is null)" : "Editing collection with id = {}", id);
@@ -230,12 +225,12 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
                 vc = newVersionCollection; //Activate the new version
                  */
                 //vc = VirtualCollectionFactory.fromExisting(existingCollection).getNewCollectionVersion().getCollection();
-                vcf = new VirtualCollectionFactoryWithPersistence(VirtualCollectionFactory.createNewVersion(existingCollection));
-                VirtualCollection vc = vcf.getFactory().getCollection();
+                vcf = VirtualCollectionFactory.createNewVersion(existingCollection);
+                VirtualCollection vc = vcf.getCollection();
                 logger.info("Created new version, id="+vc.getId()+",name="+vc.getName());
                 //parentCollectionId = existingCollection.getId();
             } else {
-                vcf = new VirtualCollectionFactoryWithPersistence(VirtualCollectionFactory.fromExisting(existingCollection)); //Activate the existing collection
+                vcf = VirtualCollectionFactory.fromExisting(existingCollection); //Activate the existing collection
             }
         } else {
 
@@ -248,7 +243,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
                 logger.info("Processing cached collection. id="+submitted_vc.getId());
                 if(mergeWithCollectionId == null) {
                     logger.debug("New collection");
-                    vcf = new VirtualCollectionFactoryWithPersistence(VirtualCollectionFactory.cloneWithId(submitted_vc));
+                    vcf = VirtualCollectionFactory.cloneWithId(submitted_vc);
 
                     //Check if any of the properties require updating
                     /*
@@ -264,7 +259,7 @@ public class CreateAndEditVirtualCollectionPageV2 extends BasePage {
 
                     VirtualCollection vc = vcr.retrieveVirtualCollection(mergeWithCollectionId);
                     vc.merge(submitted_vc);
-                    vcf = new VirtualCollectionFactoryWithPersistence(VirtualCollectionFactory.cloneWithId(vc));
+                    vcf = VirtualCollectionFactory.cloneWithId(vc);
                     //originalCollectionId = vc.getId();
 
                 }

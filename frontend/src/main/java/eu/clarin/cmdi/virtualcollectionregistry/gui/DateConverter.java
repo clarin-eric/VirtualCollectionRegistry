@@ -6,6 +6,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
 import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Locale;
 
 import org.apache.commons.lang3.time.FastDateFormat;
@@ -21,10 +22,12 @@ import org.slf4j.LoggerFactory;
 public class DateConverter implements IConverter {
 
     private final static Logger logger = LoggerFactory.getLogger(DateConverter.class);
-    private static final FastDateFormat DF = FastDateFormat.getInstance("yyyy-MM-dd");
+    public static final FastDateFormat DF = FastDateFormat.getInstance("yyyy-MM-dd");
 
     public static final FastDateFormat DF_TIMESTAMP = FastDateFormat.getInstance("yyyy-MM-dd HH:mm:ss");
 
+    public final static SimpleDateFormat SDF_ISO_8601 = new SimpleDateFormat("yyyy-MM-dd'T'HH:mm:ss.SSSXXX");
+    
     private final FastDateFormat activeDf;
 
     public DateConverter() {

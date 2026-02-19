@@ -12,7 +12,7 @@ public class IllegalArgumentExceptionMapper implements
     @Override
     public Response toResponse(IllegalArgumentException e) {
         RestResponse response = new RestResponse();
-        response.setIsSuccess(false);
+        response.setSuccess(false);
         response.setInfo(e.getMessage());
         return Response.status(Response.Status.BAD_REQUEST).type(
                 MediaType.APPLICATION_XML).entity(response).build();

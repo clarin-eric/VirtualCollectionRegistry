@@ -16,6 +16,7 @@
  */
 package eu.clarin.cmdi.vcr.rest.client;
 
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionDao;
 import eu.clarin.cmdi.virtualcollectionregistry.core.jwt.JwtUtil;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
@@ -23,6 +24,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionList;
 import eu.clarin.cmdi.virtualcollectionregistry.query.QueryFactory;
+import eu.clarin.cmdi.virtualcollectionregistry.rest.RestResponse;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.utils.RestUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
 import jakarta.ws.rs.client.Entity;
@@ -69,7 +71,7 @@ public class VirtualCollectionDaoRestImpl implements VirtualCollectionDao {
     public VirtualCollection getVirtualCollection(long id) throws VirtualCollectionRegistryException {
         Response response = 
             RequestBuilder
-                .setPath("virtualcollections/"+id, jwtUtil)
+                .setPath("collections/"+id, jwtUtil)
                 .setAuthenticatedUser(authenticatedUser)
                 .get();
         
@@ -103,7 +105,7 @@ public class VirtualCollectionDaoRestImpl implements VirtualCollectionDao {
     public int getVirtualCollectionCount(QueryFactory factory) throws VirtualCollectionRegistryException {
         Response response = 
             RequestBuilder
-                .setPath("virtualcollections", jwtUtil)
+                .setPath("collections", jwtUtil)
                 .setAuthenticatedUser(authenticatedUser)
                 .get();
         return getVirtualCollectionsList(response).getVirtualCollections().size();
@@ -113,7 +115,7 @@ public class VirtualCollectionDaoRestImpl implements VirtualCollectionDao {
     public List<VirtualCollection> getVirtualCollections(int first, int count, QueryFactory factory) throws VirtualCollectionRegistryException {
         Response response = 
             RequestBuilder
-                .setPath("virtualcollections", jwtUtil)
+                .setPath("collections", jwtUtil)
                 .setAuthenticatedUser(authenticatedUser)
                 .addParam("offset", first)
                 .addParam("count", count)
@@ -126,16 +128,17 @@ public class VirtualCollectionDaoRestImpl implements VirtualCollectionDao {
     public List<VirtualCollection> getVirtualCollections(QueryFactory factory) throws VirtualCollectionRegistryException {
         Response response = 
             RequestBuilder
-                .setPath("virtualcollections", jwtUtil)
+                .setPath("collections", jwtUtil)
                 .setAuthenticatedUser(authenticatedUser)
                 .get();
         return getVirtualCollectionsList(response).getVirtualCollections();
     }
 
+    @JsonIgnoreProperties
     public static class ApiCreateResponse {
         private Long id;
         private String info;
-        private String errors;
+        private List<String> errors;
         private Boolean success;
 
         /**
@@ -155,7 +158,7 @@ public class VirtualCollectionDaoRestImpl implements VirtualCollectionDao {
         /**
          * @return the errors
          */
-        public String getErrors() {
+        public List<String> getErrors() {
             return errors;
         }
 
@@ -183,7 +186,7 @@ public class VirtualCollectionDaoRestImpl implements VirtualCollectionDao {
         /**
          * @param errors the errors to set
          */
-        public void setErrors(String errors) {
+        public void setErrors(List<String> errors) {
             this.errors = errors;
         }
 
@@ -221,7 +224,7 @@ public class VirtualCollectionDaoRestImpl implements VirtualCollectionDao {
             //Create new collection
             response = 
                 RequestBuilder
-                    .setPath("virtualcollections/", jwtUtil)
+                    .setPath("collections/", jwtUtil)
                     .setAuthenticatedUser(authenticatedUser)
                     .post(Entity.entity(vc, MediaType.APPLICATION_JSON));
             
@@ -263,7 +266,7 @@ public class VirtualCollectionDaoRestImpl implements VirtualCollectionDao {
     public Long delete(Long id) throws VirtualCollectionRegistryException {
         Response response = 
             RequestBuilder
-                .setPath("virtualcollections/"+id.toString(), jwtUtil)
+                .setPath("collections/"+id.toString(), jwtUtil)
                 .setAuthenticatedUser(authenticatedUser)
                 .delete();
         
@@ -271,5 +274,23 @@ public class VirtualCollectionDaoRestImpl implements VirtualCollectionDao {
         logger.info("Body: {}", body);
         
         return -1L;
+    }
+    
+    @Override
+    public void setVirtualCollectionState(Long id, VirtualCollection.State state) throws VirtualCollectionRegistryException {
+        Response response = 
+            RequestBuilder
+                .setPath("collections/"+id.toString()+"/state", jwtUtil)
+                .setAuthenticatedUser(authenticatedUser)
+                .post(Entity.entity(state, MediaType.APPLICATION_JSON));
+        
+        try {
+            RestResponse apiResponse = response.readEntity(RestResponse.class);
+            if(!apiResponse.isSuccess()) {
+                throw new VirtualCollectionRegistryException("Failed to publish collection. Api error: "+String.join("\n", apiResponse.getErrors()));
+            }
+        } catch(Exception ex) {
+            throw new VirtualCollectionRegistryException("Api communication error", ex);
+        }
     }
 }

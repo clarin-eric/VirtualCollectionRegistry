@@ -3,7 +3,7 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.IdentifiedEntity;
 import java.io.Serializable;
 
-import jakarta.persistence.EntityManager;
+//import jakarta.persistence.EntityManager;
 
 import org.apache.wicket.model.IModel;
 import org.slf4j.Logger;
@@ -47,8 +47,8 @@ public class VolatileEntityModel<T extends IdentifiedEntity & Serializable> impl
     private void attach() {
         logger.trace("Merging volatile object ({}) into persistence context", object);
         if (object != null && object.getId() != null) {
-            final EntityManager em = Application.get().getDataStore().getEntityManager();
-            object = em.merge(object);
+            //final EntityManager em = Application.get().getDataStore().getEntityManager();
+            //object = em.merge(object);
         }
         attached = true;
     }

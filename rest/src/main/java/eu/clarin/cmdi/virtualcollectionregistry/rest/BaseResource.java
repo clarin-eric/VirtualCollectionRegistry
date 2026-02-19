@@ -16,14 +16,13 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.rest;
 
+import eu.clarin.cmdi.virtualcollectionregistry.rest.v1.BaseResourceV1;
 import io.swagger.v3.oas.annotations.OpenAPIDefinition;
 import io.swagger.v3.oas.annotations.info.Info;
 import io.swagger.v3.oas.annotations.servers.Server;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.container.ResourceContext;
 import jakarta.ws.rs.core.*;
-import org.slf4j.Logger;
-import org.slf4j.LoggerFactory;
 
 /**
  * @author twagoo
@@ -54,30 +53,24 @@ import org.slf4j.LoggerFactory;
 )
 public class BaseResource {
 
-    private final static Logger logger = LoggerFactory.getLogger(BaseResource.class);
-    
     @Context
     private ResourceContext resourceContext;
-
-    /**
-     * Server api v1
-     * @return 
-     */
-    @Path("/v1/collections")
-    public VirtualCollectionsResource getCollectionsV1() {
-        final VirtualCollectionsResource resource =
-                resourceContext.getResource(VirtualCollectionsResource.class);
+   
+    @Path("/v1")
+    public BaseResourceV1 getApiV1() {
+        final BaseResourceV1 resource = resourceContext.getResource(BaseResourceV1.class);
         return resource;
     }
-
+    
+   
+    
     /**
-     * Server api v2
-     */
-    /*
-    @Path("/v2/collections")
-    public VirtualCollectionsResource getCollectionsV2() {
-        final VirtualCollectionsResource resource =
-                resourceContext.getResource(VirtualCollectionsResource.class);
+     * TODO: Implement BaseResourceV2 if needed
+     *
+    @Path("/v2")
+    public BaseResourceV2 getApiV2() {
+        final BaseResourceV2 resource =
+                resourceContext.getResource(BaseResourceV2.class);
         return resource;
     }
      */

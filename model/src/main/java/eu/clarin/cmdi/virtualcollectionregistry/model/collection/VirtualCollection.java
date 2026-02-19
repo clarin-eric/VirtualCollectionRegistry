@@ -15,6 +15,7 @@ import java.util.*;
 import jakarta.persistence.*;
 import jakarta.xml.bind.annotation.XmlElement;
 import jakarta.xml.bind.annotation.XmlRootElement;
+import java.time.ZoneId;
 
 import org.apache.commons.lang.builder.EqualsBuilder;
 import org.apache.commons.lang.builder.HashCodeBuilder;
@@ -1221,5 +1222,16 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     @PreUpdate
     private void onUpdate() {
         setDateModified(new Date());
+    }
+    
+    public Date getPublicationDate() {
+        if(datePublished != null) {
+            return datePublished;
+        }
+        return dateCreated;
+    }
+    
+    public int getPublicationYear() {
+        return getPublicationDate().toInstant().atZone(ZoneId.systemDefault()).toLocalDate().getYear();
     }
 } // class VirtualCollection

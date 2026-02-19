@@ -37,6 +37,7 @@ public class ClipboardJs extends WebComponent {
 
     @Override
     protected void onRender() {
+        /*
         getResponse().write("\n"
                 + "<!-- ClipboardJs -->\n"
                 + "<script type=\"text/javascript\">\n"
@@ -59,5 +60,6 @@ public class ClipboardJs extends WebComponent {
                 + "  });\n"
                 + "</script>\n"
                 + "<!-- ClipboardJs -->");
+                */
     }
 }

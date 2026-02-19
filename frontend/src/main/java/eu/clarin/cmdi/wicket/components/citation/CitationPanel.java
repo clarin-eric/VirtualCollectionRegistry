@@ -24,6 +24,8 @@ import org.apache.wicket.ajax.markup.html.AjaxLink;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 
 /**
  *
@@ -31,12 +33,8 @@ import org.apache.wicket.model.Model;
  */
 public class CitationPanel extends Panel {
 
-    /*
-    public CitationPanel(String id, final IModel<Citable> model) {
-        this(id,  model, false);
-    }
-    */
-
+    private final static Logger logger = LoggerFactory.getLogger(CitationPanel.class);
+    
     public CitationPanel(String id, final IModel<Citable> model, boolean small) {
         this(id, model, null, small);
     }
@@ -46,18 +44,25 @@ public class CitationPanel extends Panel {
     
         final CitationDialog citationDialog = new CitationDialog("citationDialog", model, latest);
 
-        AjaxLink citeButton = new AjaxLink( "citeButton", new Model<String>("Cite") ){ 
+        AjaxLink citeButton = new AjaxLink( "citeButton", new Model<>("Cite") ){ 
             @Override
             public void onClick( AjaxRequestTarget target ) {
                 citationDialog.show(target);
+                
+                String elTargetId = citationDialog.getCslTargetId();
+                String cslJson = CslJsonGenerator.generateCslJson(model.getObject());
+                String js = String.format("initCiteProc(%s, %s, %s);", elTargetId, model.getObject().getId(), cslJson);
+                target.appendJavaScript(js);
             } 
         };
-        
+        citeButton.setOutputMarkupId(true);
         citeButton.add(new AttributeModifier("class", small ? "btn btn-primary btn-xs" : "btn btn-primary btn-lg"));
         
         UIUtils.addTooltip(citeButton, "Cite this collection");
 
         add(citeButton);
-        add(citationDialog);
+        add(citationDialog);    
+        
+        add(new CitationInitBehavior());
     }
 }

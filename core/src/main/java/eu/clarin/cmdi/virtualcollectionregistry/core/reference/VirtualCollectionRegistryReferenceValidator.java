@@ -1,11 +1,10 @@
 package eu.clarin.cmdi.virtualcollectionregistry.core.reference;
 
-import eu.clarin.cmdi.virtualcollectionregistry.core.DataStore;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import java.io.Serializable;
 
 public interface VirtualCollectionRegistryReferenceValidator extends Serializable {
-    void perform(long now, DataStore datastore) throws VirtualCollectionRegistryException;
+    void perform(long now) throws VirtualCollectionRegistryException;
     void shutdown();
 
     /*

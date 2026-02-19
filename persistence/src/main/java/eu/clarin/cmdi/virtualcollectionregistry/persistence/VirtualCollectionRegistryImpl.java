@@ -2,16 +2,10 @@ package eu.clarin.cmdi.virtualcollectionregistry.persistence;
 
 import eu.clarin.cmdi.virtualcollectionregistry.core.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.core.CreatorService;
-import eu.clarin.cmdi.virtualcollectionregistry.core.DataStore;
-import eu.clarin.cmdi.virtualcollectionregistry.core.TxManager;
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionDao;
-import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionDaoImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistryDestroyListener;
-import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistryMaintenanceImpl;
-import eu.clarin.cmdi.virtualcollectionregistry.core.reference.VirtualCollectionRegistryReferenceCheckImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.VirtualCollectionRegistryReferenceValidator;
-import eu.clarin.cmdi.virtualcollectionregistry.core.reference.VirtualCollectionRegistryReferenceValidatorImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.VirtualCollectionValidationException;
 import eu.clarin.cmdi.virtualcollectionregistry.core.validation.VirtualCollectionValidator;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionNotFoundException;
@@ -25,6 +19,7 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User_;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionList;
 import eu.clarin.cmdi.virtualcollectionregistry.model.config.DbConfig;
+import eu.clarin.cmdi.virtualcollectionregistry.model.config.ParserConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.model.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.query.QueryFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.query.ast.ParsedQuery;
@@ -73,8 +68,8 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
     @Autowired
     private VirtualCollectionRegistryReferenceCheckImpl referenceCheck; //Checks collections for invalid references
 
-    @Autowired
-    private VirtualCollectionRegistryReferenceValidatorImpl referenceValidator; //Checks references for validity and gathers additional info for the reference
+    //@Autowired
+    private final VirtualCollectionRegistryReferenceValidator referenceValidator; //Checks references for validity and gathers additional info for the reference
 
     @Autowired
     private CreatorService creatorService;
@@ -97,10 +92,11 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
     private final List<VirtualCollectionRegistryDestroyListener> destroyListeners = new LinkedList<>();
     
     @Autowired
-    public VirtualCollectionRegistryImpl(DataStore datastore) {
+    public VirtualCollectionRegistryImpl(DataStore datastore, ParserConfig parserConfig) {
         this.datastore = datastore;
         this.vcDao = new VirtualCollectionDaoImpl(datastore);
         //this.referenceValidator = new VirtualCollectionRegistryReferenceValidatorImpl(parserConfig);
+        this.referenceValidator = new VirtualCollectionRegistryReferenceValidatorImpl(parserConfig, datastore);
     }
 
     /**
@@ -178,7 +174,7 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
                         public void run() {
                             logger.trace("Running reference validation");
                             try {
-                                referenceValidator.perform(new Date().getTime(), datastore);
+                                referenceValidator.perform(new Date().getTime());
                             } catch (Exception ex) {
                                 logger.error("referenceValidationExecutor perform() failed", ex);
                             }
@@ -1031,7 +1027,6 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
         return this.creatorService;
     }
 
-    @Override
     public VirtualCollectionRegistryReferenceValidator getReferenceValidator() {
         return referenceValidator;
     }

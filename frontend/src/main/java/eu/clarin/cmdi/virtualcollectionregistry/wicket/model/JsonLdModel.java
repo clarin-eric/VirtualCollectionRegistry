@@ -24,7 +24,7 @@ public class JsonLdModel implements IModel<String> {
 
     @Override
     public void setObject(String obj) {
-
+            
     }
 
     @Override

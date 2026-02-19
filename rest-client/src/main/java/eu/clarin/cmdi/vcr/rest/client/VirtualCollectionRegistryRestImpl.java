@@ -21,8 +21,6 @@ import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionDao;
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistryDestroyListener;
 import eu.clarin.cmdi.virtualcollectionregistry.core.jwt.JwtUtil;
-import eu.clarin.cmdi.virtualcollectionregistry.core.reference.VirtualCollectionRegistryReferenceValidator;
-import eu.clarin.cmdi.virtualcollectionregistry.core.reference.VirtualCollectionRegistryReferenceValidatorImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User;
@@ -54,11 +52,7 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
     
     @Autowired
     private VirtualCollectionMarshaller marshaller;
-    
-    //Checks references for validity and gathers additional info for the reference
-    @Autowired
-    private VirtualCollectionRegistryReferenceValidatorImpl referenceValidator; 
-    
+
     private final static Logger logger = LoggerFactory.getLogger(VirtualCollectionRegistryRestImpl.class);
 
     private Principal authenticatedUser;
@@ -134,7 +128,7 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
 
     @Override
     public void setVirtualCollectionState(Principal principal, long id, VirtualCollection.State state) throws VirtualCollectionRegistryException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        getVirtualCollectionDao().setVirtualCollectionState(id, state);        
     }
 
     @Override
@@ -172,8 +166,7 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
     //Admin only
     @Override
     public List<User> getUsers() {
-        logger.error("getUsers() not implemented yet");
-        throw new UnsupportedOperationException("Not supported yet.");
+        return new AdminDaoRestImpl(authenticatedUser, jwtUtil).getUsers();
     }
 
     @Override
@@ -199,16 +192,6 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
                 .get(Info.class).getDbVersion();
     }
     
-    @Override
-    public VirtualCollectionRegistryReferenceValidator getReferenceValidator() {
-        return referenceValidator;
-    }
-    
-    
-    
-    
-    
-    
     
     
     
@@ -225,15 +208,15 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
     }
 
     @Override
-    public ResourceScan getResourceScanForRef(String ref) throws VirtualCollectionRegistryException {
+    public ResourceScan getResourceScanForRef(String ref) throws VirtualCollectionRegistryException {        
+        logger.warn("Not implemented yet: getResourceScanForRef()");
         ResourceScan scan = RequestBuilder.setPath("scans", jwtUtil).get(ResourceScan.class);
         return scan;
     }
 
     @Override
     public List<ResourceScan> getAllResourceScans() throws VirtualCollectionRegistryException {
-        List<ResourceScan> scans = RequestBuilder.setPath("scans", jwtUtil).get(List.class);
-        return scans;
+        return new AdminDaoRestImpl(authenticatedUser, jwtUtil).getResourceScans();
     }
 
     @Override

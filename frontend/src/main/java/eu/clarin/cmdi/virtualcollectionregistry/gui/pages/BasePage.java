@@ -17,6 +17,7 @@ import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.NavbarButton;
 import de.agilecoders.wicket.core.markup.html.bootstrap.navbar.NavbarExternalLink;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesome6IconType;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesome6IconTypeBuilder;
+import eu.clarin.cmdi.virtualcollectionregistry.JavaScriptResources;
 import eu.clarin.cmdi.virtualcollectionregistry.core.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.core.validation.feedback.IValidationFailedMessage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.ApplicationSession;
@@ -38,6 +39,7 @@ import org.apache.wicket.feedback.FeedbackMessage;
 import org.apache.wicket.markup.head.IHeaderResponse;
 import org.apache.wicket.markup.head.JavaScriptHeaderItem;
 import org.apache.wicket.markup.head.JavaScriptReferenceHeaderItem;
+import org.apache.wicket.markup.head.filter.HeaderResponseContainer;
 import org.apache.wicket.markup.html.WebComponent;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.WebPage;
@@ -49,9 +51,7 @@ import org.apache.wicket.model.Model;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.request.Url;
 import org.apache.wicket.request.cycle.RequestCycle;
-import org.apache.wicket.request.resource.ContextRelativeResourceReference;
 import org.apache.wicket.request.resource.JavaScriptResourceReference;
-import org.apache.wicket.request.resource.ResourceReference;
 import org.apache.wicket.spring.injection.annot.SpringBean;
 import org.apache.wicket.util.string.Strings;
 import org.slf4j.Logger;
@@ -61,7 +61,10 @@ public class BasePage extends WebPage {
 
     private static Logger logger = LoggerFactory.getLogger(BasePage.class);
 
-    //@SpringBean
+    public final static String CSL_FILTER_NAME = "csl-script";
+    public final static String SCRIPT_CONTAINER_ID = "footer-script-container";
+    
+    //@SpringBean;
     protected final TimerManager timerManager = new TimerManagerImpl();
 
     @SpringBean
@@ -76,7 +79,7 @@ public class BasePage extends WebPage {
     public static final String BETA_MODE = "eu.clarin.cmdi.virtualcollectionregistry.beta_mode";
 
     //private final static ResourceReference SWITCHBOARD_JAVASCRIPT_REFERENCE = new ContextRelativeResourceReference("https://switchboard.clarin.eu/popup/switchboardpopup.js");
-    private final static ResourceReference CLIPBOARD_JAVASCRIPT_REFERENCE = new ContextRelativeResourceReference("script/clipboard.js");
+    //private final static ResourceReference CLIPBOARD_JAVASCRIPT_REFERENCE = new ContextRelativeResourceReference("script/clipboard.js");
     private final static JavaScriptResourceReference INIT_JAVASCRIPT_REFERENCE = new JavaScriptResourceReference(BasePage.class, "BasePage.js");
 
     protected FeedbackPanel feedback;
@@ -91,6 +94,10 @@ public class BasePage extends WebPage {
     protected BasePage() {
         addComponents();
     }
+    
+    public FeedbackPanel getFeedbackPanel() {
+        return feedback;
+    }
 
      @Override
     public void renderHead(IHeaderResponse response) {
@@ -98,7 +105,8 @@ public class BasePage extends WebPage {
         //TODO: check if https://ci.apache.org/projects/wicket/apidocs/6.x/org/apache/wicket/markup/head/OnLoadHeaderItem.html is a better alternative
         response.render(JavaScriptHeaderItem.forReference(getApplication().getJavaScriptLibrarySettings().getJQueryReference()));  //Ensure jquery is loaded before custom script
         response.render(JavaScriptReferenceHeaderItem.forReference(INIT_JAVASCRIPT_REFERENCE));
-        response.render(JavaScriptReferenceHeaderItem.forReference(CLIPBOARD_JAVASCRIPT_REFERENCE));
+        response.render(JavaScriptReferenceHeaderItem.forReference(JavaScriptResources.getClipboardJs()));
+        response.render(JavaScriptReferenceHeaderItem.forReference(JavaScriptResources.getCiteProcJs()));
         // response.render(JavaScriptReferenceHeaderItem.forReference(SWITCHBOARD_JAVASCRIPT_REFERENCE));
     }
     
@@ -110,6 +118,8 @@ public class BasePage extends WebPage {
                 .add(createHeaderMenu("menu"))); // navbar in header
 
         feedback = new FeedbackPanel("feedback");
+        feedback.setOutputMarkupId(true);
+        feedback.setEscapeModelStrings(false);
         feedback.setFilter((FeedbackMessage fm) -> !(fm.getMessage() instanceof IValidationFailedMessage));
         add(feedback);
 
@@ -149,6 +159,8 @@ public class BasePage extends WebPage {
         add(new ScrollTracker("scroll"));
 
         add(timerManager.getTimerBehavior());
+        
+        add(new HeaderResponseContainer(SCRIPT_CONTAINER_ID, CSL_FILTER_NAME));
     }
     
     private Component createHeaderMenu(String id) {

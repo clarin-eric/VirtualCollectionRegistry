@@ -20,8 +20,9 @@
       username="vcruser" 
       validationQuery="SELECT 1" />
   
-  <!-- Make sure maintenance is running -->
-  <Parameter name="eu.clarin.cmdi.vcr.maintenance.enabled" value="false"/>
+  <!-- set to false to disable maintenance thread running in the background -->
+  <Parameter name="eu.clarin.cmdi.vcr.maintenance.enabled" value="true"/>
+  
   <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.admindb.basedir" value="/Users/wilelb/.vcr/conf"/>
   <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.admindb" value="vcr-admin.conf"/>
   <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.collectiondisplayname" value="CLARIN Virtual Collection Registry"/>

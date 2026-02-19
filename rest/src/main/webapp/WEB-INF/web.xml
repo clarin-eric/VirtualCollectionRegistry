@@ -62,7 +62,7 @@
     <!-- Persistence -->
     <filter>
         <filter-name>PersistenceFilter</filter-name>
-        <filter-class>eu.clarin.cmdi.virtualcollectionregistry.core.PersistenceFilter</filter-class>
+        <filter-class>eu.clarin.cmdi.virtualcollectionregistry.persistence.PersistenceFilter</filter-class>
     </filter>
 
     <filter-mapping>

@@ -2,7 +2,6 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui;
 
 import eu.clarin.cmdi.virtualcollectionregistry.core.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.core.AdminUsersServiceImpl;
-import eu.clarin.cmdi.virtualcollectionregistry.core.DataStore;
 import eu.clarin.cmdi.virtualcollectionregistry.core.PermaLinkService;
 import eu.clarin.cmdi.virtualcollectionregistry.core.PermaLinkServiceImpl;
 import eu.clarin.cmdi.virtualcollectionregistry.model.config.VcrConfig;
@@ -17,14 +16,14 @@ public class TestApplication extends Application  {
         this(
             //new VirtualCollectionRegistryRestImpl(null),
             //    new VirtualCollectionRegistryImpl(null),
-            null, //new DataStore(),
+            //null, //new DataStore(),
             new AdminUsersServiceImpl(),
             new VcrConfigImpl(),
             new PermaLinkServiceImpl(BASE_URI)
         );
     }
 
-    public TestApplication(/*VirtualCollectionRegistry registry, */DataStore dataStore, AdminUsersService adminUsersService, VcrConfig vcrConfig, PermaLinkService permaLinkService) {
+    public TestApplication(/*VirtualCollectionRegistry registry, DataStore dataStore, */AdminUsersService adminUsersService, VcrConfig vcrConfig, PermaLinkService permaLinkService) {
         //super(registry, dataStore, adminUsersService, vcrConfig, permaLinkService);
     }
 

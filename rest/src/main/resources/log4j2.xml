@@ -29,14 +29,15 @@
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistryReferenceValidatorWorker" level="DEBUG" />
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.core.AdminUsersServiceImpl" level="WARN" />
         <Logger name="eu.clarin.cmdi.virtualcollectionregistry.core.ServletUtils" level="WARN" />
-        <Logger name="eu.clarin.cmdi.virtualcollectionregistry.core.TxManager" level="INFO" />
+        <Logger name="eu.clarin.cmdi.virtualcollectionregistry.persistence" level="WARN" />
+        <Logger name="eu.clarin.cmdi.virtualcollectionregistry.rest.auth" level="WARN" />
 
         <Logger name="de.mpg.aai.shhaa.authn" level="INFO" />
         <Logger name="de.mpg.aai.shhaa.resolver" level="INFO" />
 
-        <Logger name="log4j.category.org.glassfish.jersey" level="WARN" />
+        <Logger name="log4j.category.org.glassfish.jersey" level="TRACE" />
         <Logger name="org.jboss" level="WARN" />
-        <Logger name="org.glassfish.jersey" level="WARN" />
+        <Logger name="org.glassfish.jersey" level="TRACE" />
         <Logger name="org.springframework" level="WARN" />
         <Logger name="org.hibernate" level="WARN" />
         <Logger name="org.apache.http" level="WARN" />

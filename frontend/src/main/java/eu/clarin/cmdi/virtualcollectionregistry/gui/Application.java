@@ -5,9 +5,7 @@ import de.agilecoders.wicket.core.settings.BootstrapSettings;
 import de.agilecoders.wicket.core.settings.SingleThemeProvider;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesome6CssReference;
 import de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesomeSettings;
-import eu.clarin.cmdi.virtualcollectionregistry.*;
 import eu.clarin.cmdi.virtualcollectionregistry.core.AdminUsersService;
-import eu.clarin.cmdi.virtualcollectionregistry.core.DataStore;
 import eu.clarin.cmdi.virtualcollectionregistry.core.PermaLinkService;
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.*;
@@ -16,22 +14,25 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.CreateAndEditV
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.submission.SubmitVirtualCollectionPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LoginPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LogoutPage;
-import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.config.VcrConfig;
-import eu.clarin.cmdi.wicket.ExtremeNoopTheme;
 import eu.clarin.cmdi.wicket.theme.ClarinBootstrap5Theme;
 import java.security.Principal;
+import java.util.Collections;
+import java.util.Map;
 import org.apache.wicket.Page;
+import org.apache.wicket.RuntimeConfigurationType;
 import static org.apache.wicket.RuntimeConfigurationType.DEPLOYMENT;
+import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebApplication;
 import org.apache.wicket.authroles.authentication.AuthenticatedWebSession;
 import org.apache.wicket.authroles.authorization.strategies.role.Roles;
-import org.apache.wicket.core.request.handler.PageProvider;
-import org.apache.wicket.core.request.handler.RenderPageRequestHandler;
+import org.apache.wicket.markup.head.HeaderItem;
+import org.apache.wicket.markup.head.filter.FilteredHeaderItem;
+import org.apache.wicket.markup.head.filter.FilteringHeaderResponse;
+import org.apache.wicket.markup.head.filter.FilteringHeaderResponse.IHeaderResponseFilter;
+import org.apache.wicket.markup.head.filter.JavaScriptFilteredIntoFooterHeaderResponse;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
-import org.apache.wicket.request.IRequestHandler;
-import org.apache.wicket.request.cycle.RequestCycle;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
 import org.apache.wicket.validation.validator.StringValidator;
 import org.slf4j.Logger;
@@ -53,9 +54,6 @@ public class Application extends AuthenticatedWebApplication {
     private VirtualCollectionRegistry registry;
 
     @Autowired
-    private DataStore dataStore;
-
-    @Autowired
     private AdminUsersService adminUsersService;
 
     @Autowired
@@ -66,9 +64,8 @@ public class Application extends AuthenticatedWebApplication {
 
     public Application() {}
 
-    public Application(VirtualCollectionRegistry registry, DataStore dataStore, AdminUsersService adminUsersService, VcrConfig vcrConfig, PermaLinkService permaLinkService) {
+    public Application(VirtualCollectionRegistry registry, AdminUsersService adminUsersService, VcrConfig vcrConfig, PermaLinkService permaLinkService) {
         this.registry = registry;
-        this.dataStore = dataStore;
         this.adminUsersService = adminUsersService;
         this.vcrConfig = vcrConfig;
         this.permaLinkService = permaLinkService;
@@ -99,7 +96,6 @@ public class Application extends AuthenticatedWebApplication {
         getCspSettings().blocking().disabled();
         //Currently missing clipboard js and switchboard popup in theme
    
-    
         logger.info("Initialising VCR web application");
         if (vcrConfig != null) {
             logger.info(vcrConfig.logConfig()); //write current configuration to logger
@@ -109,13 +105,7 @@ public class Application extends AuthenticatedWebApplication {
         }
 
         initSpring();
-/*
-        getRequestCycleListeners().add(new AbstractRequestCycleListener() {
-            public IRequestHandler onException(RequestCycle cycle, Exception ex) {
-                return new RenderPageRequestHandler(new PageProvider(new ErrorPage(ex)));
-            }
-        });
-*/  
+
         getApplicationSettings().setPageExpiredErrorPage(HOME_PAGE_CLASS);
         getMarkupSettings().setDefaultMarkupEncoding("utf-8");
         getRequestCycleSettings().setResponseRequestEncoding("utf-8");
@@ -124,6 +114,7 @@ public class Application extends AuthenticatedWebApplication {
             logger.warn("Web application configured for development");
             getMarkupSettings().setStripWicketTags(true);
             getMarkupSettings().setStripComments(true);
+            getDebugSettings().setAjaxDebugModeEnabled(true);
         }
 
         mountPage("/login", LoginPage.class);
@@ -138,18 +129,59 @@ public class Application extends AuthenticatedWebApplication {
         mountPage("/details/${collection-id}", VirtualCollectionDetailsPage.class);
         mountPage("/submit/${type}", SubmitVirtualCollectionPage.class);
         mountPage("/profile", UserProfilePage.class);
+        
+        //Listen for AJAX events and make sure to update the feedbackpanel on any
+        //AJAX event that set a message.
+        getAjaxRequestTargetListeners().add(new AjaxRequestTarget.IListener() {           
+            @Override
+            public void onBeforeRespond(Map<String, org.apache.wicket.Component> map, AjaxRequestTarget target) {
+                Page page = target.getPage();
+                if (page instanceof BasePage) {
+                    BasePage basePage = (BasePage)page;
+                    if (basePage.getFeedbackPanel().anyMessage()) {
+                        target.add(basePage.getFeedbackPanel());
+                    }
+                }
+            }
+        });
+/*
+        // This decorator intercepts header items and redirects those 
+        // marked "footer-container" to a specific spot in your HTML.
+        getHeaderResponseDecorators().add(response -> 
+            new JavaScriptFilteredIntoFooterHeaderResponse(response, BasePage.SCRIPT_CONTAINER_ID)
+        );
+        */
+        
+        getHeaderResponseDecorators().add(response -> {
+            IHeaderResponseFilter myFooterFilter = new IHeaderResponseFilter() {
+                @Override
+                public String getName() {
+                    return BasePage.CSL_FILTER_NAME;
+                }
 
+                @Override
+                public boolean accepts(HeaderItem item) {
+                    // Only intercept if the item is explicitly wrapped in a FilteredHeaderItem
+                    // with the matching filter name.
+                    if (item instanceof FilteredHeaderItem) {
+                        return ((FilteredHeaderItem) item).getFilterName().equals(getName());
+                    }
+                    return false;
+                }
+            };
+
+            // This response will handle the "head" by default and your custom filter for the rest
+            return new FilteringHeaderResponse(response, "head", Collections.singletonList(myFooterFilter));
+        });
+    }
+    
+    @Override
+    public RuntimeConfigurationType getConfigurationType() {
+        return RuntimeConfigurationType.DEVELOPMENT; // Force development mode for testing
     }
 
     @Override
-    protected void onDestroy() {
-        try {
-            logger.info("Shutting down datastore");
-            dataStore.destroy();
-        } catch(VirtualCollectionRegistryException ex) {
-            logger.error("Failed to properly shutdown datastore", ex);
-        }
-    }
+    protected void onDestroy() {}
 
     protected void initSpring() {
         getComponentInstantiationListeners().add(new SpringComponentInjector(this));
@@ -193,10 +225,6 @@ public class Application extends AuthenticatedWebApplication {
         Principal principal = session.getPrincipal();
         registry.setAuthenticatedUser(principal);
         return registry;
-    }
-
-    public DataStore getDataStore() {
-        return dataStore;
     }
 
     public static Application get() {

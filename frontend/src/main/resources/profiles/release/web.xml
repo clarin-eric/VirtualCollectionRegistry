@@ -44,12 +44,13 @@
     </context-param>
     
     <!-- Persistence -->
-
+    <!--
     <filter>
         <filter-name>PersistenceFilter</filter-name>
         <filter-class>eu.clarin.cmdi.virtualcollectionregistry.core.PersistenceFilter</filter-class>
     </filter>
-
+    
+    
     <filter-mapping>
         <filter-name>PersistenceFilter</filter-name>
         <servlet-name>REST-Web-Service</servlet-name>
@@ -59,7 +60,8 @@
         <filter-name>PersistenceFilter</filter-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-
+    -->
+     
     <filter>
         <filter-name>CharacterEncodingFilter</filter-name>
         <filter-class>eu.clarin.cmdi.virtualcollectionregistry.core.CharacterEncodingFilter</filter-class>

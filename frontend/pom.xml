@@ -57,25 +57,6 @@
     </profiles>
 
     <dependencies>
-        <!--dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>vcr-core</artifactId>
-            <version>${project.version}</version>
-            <exclusions>
-                <exclusion>
-                    <artifactId>de.mpg.mpgaai</artifactId>
-                    <groupId>mpgaai-shhaa</groupId>
-                </exclusion>
-            </exclusions>
-        </dependency-->
-        
-        <!--
-        <dependency>
-            <groupId>${project.groupId}</groupId>
-            <artifactId>rest-utils</artifactId>
-            <version>${project.version}</version>
-        </dependency>
-        -->
         
         <!-- Enable REST based communication between frontend and backend (Direct database communication must be disabled) -->
         <dependency>
@@ -168,13 +149,7 @@
             <artifactId>wicket-auth-roles</artifactId>
             <version>${wicket.version}</version>
         </dependency>
-<!--
-        <dependency>
-            <groupId>org.apache.wicket</groupId>
-            <artifactId>wicket-datetime</artifactId>
-            <version>${wicket.version}</version>
-        </dependency>
--->
+
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-extensions</artifactId>
@@ -203,8 +178,7 @@
             <groupId>org.postgresql</groupId>
             <artifactId>postgresql</artifactId>
             <version>42.7.4</version>
-        </dependency>
-        
+        </dependency>   
         
         <!-- Wicket bootstrap -->
         <dependency>
@@ -233,16 +207,7 @@
             <artifactId>wicket-bootstrap-extensions</artifactId>
             <version>${wicket-bootstrap.version}</version>
         </dependency>
-        <!--dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>jquery</artifactId>
-            <version>3.6.0</version>
-        </dependency
-        <dependency>
-            <groupId>org.webjars</groupId>
-            <artifactId>bootstrap</artifactId>
-            <version>3.4.1</version>
-        </dependency-->                
+                       
         <dependency>
             <groupId>de.agilecoders.wicket.webjars</groupId>
             <artifactId>wicket-webjars</artifactId>
@@ -309,8 +274,6 @@
             <version>1.1</version>
         </dependency>
 
-
-
         <!-- https://mvnrepository.com/artifact/javax.activation/activation -->
         <dependency>
             <groupId>javax.activation</groupId>
@@ -357,6 +320,12 @@
             <version>1.9.0-SNAPSHOT</version>
         </dependency>
 
+        <dependency>
+            <groupId>de.undercouch</groupId>
+            <artifactId>citeproc-java</artifactId>
+            <version>3.4.1</version> 
+        </dependency>
+    
         <!--
        Test dependencies
        -->
@@ -372,7 +341,7 @@
             <version>${jersey.version}</version>
             <scope>test</scope>
         </dependency>
-        
+        <!--
         <dependency>
             <groupId>org.hibernate</groupId>
             <artifactId>hibernate-core</artifactId>
@@ -386,6 +355,7 @@
             <version>${hibernate.jpaVersion}</version>
             <scope>compile</scope>
         </dependency>
+        -->
         <dependency>
             <groupId>org.apache.wicket</groupId>
             <artifactId>wicket-tester</artifactId>
@@ -395,12 +365,30 @@
     </dependencies>
 
     <build>
-        <finalName>vcr-frontend${project.version}</finalName>
+        <finalName>vcr-frontend-${project.version}</finalName>
         <resources>
             <resource>
                 <filtering>true</filtering>
                 <directory>src/main/resources</directory>
-            </resource>           
+            </resource>     
+            <resource>
+                <filtering>true</filtering>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/BasePage.html</include>
+                </includes>
+            </resource>
+            <resource>
+                <filtering>false</filtering>
+                <directory>src/main/java</directory>
+                <includes>
+                    <include>**/*.html</include>
+                    <include>**/*.css</include>
+                    <include>**/*.ico</include>
+                    <include>**/*.js</include>
+                    <include>**/*.properties</include>
+                </includes>
+            </resource>      
         </resources>
 
         <testResources>
@@ -410,108 +398,6 @@
         </testResources>
 
         <plugins>
-            <!-- plugin is not thread safe -->
-            <!--
-            <plugin>
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>javacc-maven-plugin</artifactId>
-                <version>2.6</version>
-                <executions>
-                    <execution>
-                        <id>javacc</id>
-                        <goals>
-                            <goal>jjtree-javacc</goal>
-                        </goals>
-                        <phase>generate-sources</phase>
-                    </execution>
-                </executions>
-            </plugin>
-            -->
-            <!--
-            <plugin>
-                <groupId>com.helger.maven</groupId>
-                <artifactId>ph-javacc-maven-plugin</artifactId>
-                <version>4.1.5</version>
-                <executions>
-                    <execution>
-                        <id>javacc</id>
-                        <goals>
-                            <goal>jjtree-javacc</goal>
-                        </goals>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <jdkVersion>1.5</jdkVersion>
-                            <sourceDirectory>src/main/jjtree/eu/clarin/cmdi/virtualcollectionregistry/query</sourceDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-            </plugin>
-            -->
-<!--
-            <plugin>
-                <groupId>org.bsc.maven</groupId>
-                <artifactId>maven-processor-plugin</artifactId>
-                <version>3.3.3</version>
-                <executions>
-                    <execution>
-                        <id>process</id>
-                        <goals>
-                            <goal>process</goal>
-                        </goals>
-                        <phase>generate-sources</phase>
-                        <configuration>
-                            <processors>
-                                <processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
-                            </processors>
-                            <sourceDirectory>${basedir}/src/main/java/eu/clarin/cmdi/virtualcollectionregistry/model</sourceDirectory>
-                            <outputDirectory>${project.build.directory}/generated-sources/metamodel</outputDirectory>
-                        </configuration>
-                    </execution>
-                </executions>
-                <dependencies>
-                    <dependency>
-                        <groupId>org.hibernate</groupId>
-                        <artifactId>hibernate-jpamodelgen</artifactId>
-                        <version>${hibernate.jpaVersion}</version>
-                        <scope>compile</scope>
-                    </dependency>
-                </dependencies>
-            </plugin>
-
--->
-<!--
-            <plugin>                
-                <groupId>org.codehaus.mojo</groupId>
-                <artifactId>jaxb2-maven-plugin</artifactId>                
-                <version>2.5.0</version>
-                <executions>
-                    <execution>
-                        <id>xjc</id>
-                        <goals>
-                            <goal>xjc</goal>
-                        </goals>
-                    </execution>
-                </executions>
-                <configuration>
-                    <packageName>eu.clarin.cmdi.virtualcollectionregistry.model.cmdi</packageName>
-                </configuration>
-            </plugin>
--->
-<!--
-            <plugin>
-                <groupId>org.apache.maven.plugins</groupId>
-                <artifactId>maven-compiler-plugin</artifactId>
-                <version>3.8.1</version>
-                <configuration>
-                    <compilerArguments>
-                        <processor>org.hibernate.jpamodelgen.JPAMetaModelEntityProcessor</processor>
-                    </compilerArguments>
-                </configuration>
-                <dependencies>
-
-                </dependencies>
-            </plugin>
--->
             <plugin>
                 <groupId>org.codehaus.mojo</groupId>
                 <artifactId>build-helper-maven-plugin</artifactId>
@@ -560,25 +446,6 @@
                                 <include>*.xsd</include>
                             </includes>
                         </resource>
-                        <!-- Make API documentation available (referenced from the help page) -->
-                        <!--
-                        <resource>
-                            <directory>doc</directory>
-                        </resource>
-                        -->
-                        <!-- Make REST API documentation available -->
-                        <!--
-                        <resource>
-                            <directory>service-doc</directory>
-                            <excludes>
-                                <exclude>*.html</exclude>
-                            </excludes>
-                        </resource>
-                        <resource>
-                            <directory>swagger-ui/dist</directory>
-                            <targetPath>service-doc</targetPath>
-                        </resource>
-                        -->
                         <!-- Include proper shhaa config based on selected profile -->
                         <resource>
                             <directory>${war.shhaa.dir}</directory>
@@ -588,10 +455,8 @@
                             </includes>
                         </resource>
                     </webResources>
-                    <!--outputDirectory>bin</outputDirectory-->
                 </configuration>
             </plugin>
-            <!--<groupId>org.jasig.maven</groupId>-->
                
            <!--https://www.geodienstencentrum.nl/sass-maven-plugin/plugin-info.html-->
             <plugin>
@@ -626,84 +491,6 @@
                     </descriptors>
                 </configuration>
             </plugin>
-<!--
-            <plugin>
-                <groupId>io.openapitools.swagger</groupId>
-                <artifactId>swagger-maven-plugin</artifactId>
-                <version>2.1.5</version>
-                <configuration>
-                    <resourcePackages>
-                        <resourcePackage>eu.clarin.cmdi.virtualcollectionregistry.rest</resourcePackage>
-                    </resourcePackages>
-                    <outputDirectory>${basedir}/service-doc/</outputDirectory>
-                    <outputFilename>swagger</outputFilename>
-                    <outputFormats>JSON,YAML</outputFormats>
-                    <prettyPrint>true</prettyPrint>
-                </configuration>
-                <executions>
-                    <execution>
-                        <phase>prepare-package</phase>
-                        <goals>
-                            <goal>generate</goal>
-                        </goals>
-                    </execution>
-                </executions>
-            </plugin>
--->
-            <!-- Java source version mismatch
-            <plugin>
-                <groupId>org.jacoco</groupId>
-                <artifactId>jacoco-maven-plugin</artifactId>
-                <version>0.8.6</version><</version>
-                <executions>
-                <execution>
-                    <id>default-prepare-agent</id>
-                    <goals>
-                        <goal>prepare-agent</goal>
-                    </goals>
-                </execution>
-                <execution>
-                    <id>default-report</id>
-                    <phase>prepare-package</phase>
-                    <goals>
-                        <goal>report</goal>
-                    </goals>
-                </execution>
-                    <!-
-                <execution>
-                    <id>default-check</id>
-                    <goals>
-                        <goal>check</goal>
-                    </goals>
-                </execution>
-                ->
-                <!-
-                <executions>
-                    <execution>
-                        <id>prepare-agent</id>
-                        <goals>
-                            <goal>prepare-agent</goal>
-                        </goals>
-                        <configuration>
-                            <destFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</destFile>
-                            <propertyName>surefireArgLine</propertyName>
-                        </configuration>
-                    </execution>
-                    <execution>
-                        <id>report</id>
-                        <phase>test</phase>
-                        <goals>
-                            <goal>report</goal>
-                        </goals>
-                        <configuration>
-                            <dataFile>${project.build.directory}/coverage-reports/jacoco-ut.exec</dataFile>
-                            <outputDirectory>${project.reporting.outputDirectory}/jacoco-ut</outputDirectory>
-                        </configuration>
-                    </execution>
-                    ->
-                </executions>
-            </plugin>
-        -->
         </plugins>
         
         <pluginManagement>
@@ -743,21 +530,6 @@
                                         <execute/>
                                     </action>
                                 </pluginExecution>
-                                <!--
-                                <pluginExecution>                                    
-                                    <pluginExecutionFilter>
-                                        <groupId>org.codehaus.mojo</groupId>
-                                        <artifactId>jaxb2-maven-plugin</artifactId>
-                                        <versionRange>[1.6,)</versionRange>
-                                        <goals>
-                                            <goal>xjc</goal>
-                                        </goals>
-                                    </pluginExecutionFilter>
-                                    <action>
-                                        <execute/>
-                                    </action>
-                                </pluginExecution>
-                                            -->
                                 <pluginExecution>
                                     <pluginExecutionFilter>
                                         <groupId>org.jasig.maven</groupId>
@@ -775,22 +547,6 @@
                         </lifecycleMappingMetadata>
                     </configuration>
                 </plugin>
-                <!-- 
-                    JAX-B If we e.g. execute on JDK 1.7, we should compile for
-                    Java 7 to get the same (or higher) JAXB API version as
-                    used during the xjc execution. 
-                -->
-                <!--
-                <plugin>
-                    <groupId>org.apache.maven.plugins</groupId>
-                    <artifactId>maven-compiler-plugin</artifactId>
-                    <configuration>
-                        <source>${maven.compiler.source}</source>
-                        <target>${maven.compiler.source}</target>
-                        <encoding>${project.build.sourceEncoding}</encoding>
-                    </configuration>
-                </plugin>
-                                -->
             </plugins>
         </pluginManagement>
     </build>

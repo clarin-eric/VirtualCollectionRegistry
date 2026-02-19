@@ -24,6 +24,7 @@
     </context-param>
 
     <!-- Persistence -->
+    <!--
     <filter>
         <filter-name>PersistenceFilter</filter-name>
         <filter-class>eu.clarin.cmdi.virtualcollectionregistry.core.PersistenceFilter</filter-class>
@@ -34,7 +35,8 @@
         <servlet-name>REST-Web-Service</servlet-name>
         <url-pattern>/*</url-pattern>
     </filter-mapping>
-
+    -->
+    
     <!-- Character encoding -->
     <filter>
         <filter-name>CharacterEncodingFilter</filter-name>

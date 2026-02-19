@@ -38,7 +38,7 @@ import org.slf4j.LoggerFactory;
  * @author wilelb
  */
 public class RequestBuilder {
-    private final static String SERVICE_URL = "http://localhost:8080/service";
+    private final static String SERVICE_URL = "http://localhost:8080/service/v1";
     
     private WebTarget webTarget;
         
@@ -83,10 +83,11 @@ public class RequestBuilder {
     private Invocation.Builder getInvocationBuilder() {
         String uri = webTarget.getUri().toString();
         logger.debug("Build request: " + uri);
-        Invocation.Builder invocationBuilder = 
-            webTarget
-                .request(MediaType.APPLICATION_JSON);
-        
+        Invocation.Builder 
+            invocationBuilder = 
+                webTarget
+                    .request(MediaType.APPLICATION_JSON)
+                    .accept(MediaType.APPLICATION_JSON);
         if(this.authenticatedUser != null) {
             String jwtToken = jwtUtil.createToken(this.authenticatedUser.getName());
             invocationBuilder.header("Authorization", "Bearer "+jwtToken);

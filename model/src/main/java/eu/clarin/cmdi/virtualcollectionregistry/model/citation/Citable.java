@@ -24,6 +24,7 @@ import java.util.List;
  * @author wilelb
  */
 public interface Citable extends Serializable {
+    public Long getId();
     public List<String> getAuthors();
     public String getYear();
     public String getTitle();

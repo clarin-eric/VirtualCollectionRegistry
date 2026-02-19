@@ -87,7 +87,7 @@ public abstract class AbstractApiKeyFilter implements ContainerRequestFilter {
 
         // Validate the Authorization header
         if (!isTokenBasedAuthentication(authorizationHeader)) {
-            logger.warn("Authentication is not token based: "+authorizationHeader);
+            logger.debug("Authentication is not token based: "+authorizationHeader);
             abortWithUnauthorized(requestContext, allowAnonymousAccess);
             return;
         }

@@ -16,19 +16,10 @@
  */
 package eu.clarin.cmdi.wicket.components.citation;
 
-import de.agilecoders.wicket.core.markup.html.bootstrap.button.BootstrapAjaxLink;
-import de.agilecoders.wicket.core.markup.html.bootstrap.button.Buttons;
-import de.agilecoders.wicket.core.markup.html.bootstrap.dialog.Modal;
-import static de.agilecoders.wicket.extensions.markup.html.bootstrap.icon.FontAwesome6IconType.java;
 import eu.clarin.cmdi.virtualcollectionregistry.model.citation.Citable;
 import eu.clarin.cmdi.wicket.components.BootstrapDialog;
-import eu.clarin.cmdi.wicket.components.DialogButton;
-import java.util.Arrays;
 import java.util.List;
 
-import org.apache.wicket.AttributeModifier;
-import org.apache.wicket.ajax.AjaxRequestTarget;
-import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
@@ -48,7 +39,9 @@ public class CitationDialog extends BootstrapDialog {
     
     private final IModel<Citable> model;
     private final IModel<Citable> latestModel;
-
+ 
+    private final AbstractBody body;
+    
     public CitationDialog(String id, final IModel<Citable> model) {
         this(id, model, null);
     }
@@ -60,38 +53,44 @@ public class CitationDialog extends BootstrapDialog {
         this.latestModel = latestModel;
         
         if(latestModel == null) {
-            add(new Body(BootstrapDialog.CONTENT_PANEL_ID, model.getObject()));
+            body = new Body(BootstrapDialog.CONTENT_PANEL_ID, model.getObject());
         } else {
-            add(new VersionsBody(id, model.getObject(), latestModel.getObject()));
+            body = new VersionsBody(id, model.getObject(), latestModel.getObject());
         }
+        add(body);
     }
     
-    private class VersionsBody extends Panel {
+    public String getCslTargetId() {
+        return body.getCslTargetId();
+    }
+    
+    private abstract class AbstractBody extends Panel {
+        public AbstractBody(String id) {
+            super(id);
+        }
+        
+        public abstract String getCslTargetId();
+    }
+    
+    private class VersionsBody extends AbstractBody {
         public VersionsBody(String id, Citable cite, Citable latest) {
             super(id);
             add(new Body("current", cite));
             add(new Body("latest", latest));
         }
+        
+        @Override
+        public String getCslTargetId() {
+            return "";
+        }
     }
-/*
-    private final static String LBL_TITLE_DETAILS = "Details:";
-    private final static String LBL_TITLE_BIBTEXT = "Bibtex:";
-    private final static String LBL_TITLE = "Title:";
-    private final static String LBL_AUTHORS = "Authors:";
-    private final static String LBL_YEAR = "Year:";
-    private final static String LBL_LINK = "Link:";
-*/
-    private class Body extends Panel {
+
+    private class Body extends AbstractBody {
+        private final Label lblCsl;
+        
         public Body(String id, Citable cite) {
             super(id);
-/*
-            add(new Label("title_details", Model.of(LBL_TITLE_DETAILS)));
-            add(new Label("title_bibtext", Model.of(LBL_TITLE_BIBTEXT)));
-            add(new Label("lbl_title", Model.of(LBL_TITLE)));
-            add(new Label("lbl_authors", Model.of(LBL_AUTHORS)));
-            add(new Label("lbl_year", Model.of(LBL_YEAR)));
-            add(new Label("lbl_link", Model.of(LBL_LINK)));
-*/
+
             add(new Label("title", cite.getTitle()));
             add(new Label("authors", getAuthorsString(cite)));
             add(new Label("year", cite.getYear()));
@@ -99,14 +98,16 @@ public class CitationDialog extends BootstrapDialog {
             lblUri.setOutputMarkupId(true);
             add(lblUri);
             add(new Label("bibtex", getBibTexString(cite)));
-/*
-            WebMarkupContainer btn = new WebMarkupContainer("btnClipboard");
-            btn.add(new AttributeModifier("data-clipboard-target", "#"+lblUri.getMarkupId()));
-            btn.add(new AttributeModifier("title", "Copy to clipboard..."));
-            btn.add(new AttributeModifier("data-original-title", "Copied!!"));
-            add(btn);
-*/  
-    }
+
+            lblCsl = new Label("csl", Model.of(""));
+            lblCsl.setOutputMarkupId(true);
+            add(lblCsl);
+        }
+        
+        @Override
+        public String getCslTargetId() {
+            return lblCsl.getMarkupId();
+        }
         
         private String getAuthorsString(Citable cite) {
             List<String> author_list = cite.getAuthors();
@@ -131,6 +132,7 @@ public class CitationDialog extends BootstrapDialog {
             bib += String.format("}");
             return bib;
         }
+        
         
     }
 }

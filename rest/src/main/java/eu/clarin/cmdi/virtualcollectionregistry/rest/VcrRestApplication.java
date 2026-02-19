@@ -31,7 +31,11 @@ import org.glassfish.jersey.servlet.ServletProperties;
  */
 public class VcrRestApplication extends ResourceConfig {
     public VcrRestApplication() {
-        packages("eu.clarin.cmdi.virtualcollectionregistry.rest");
+        packages(
+            "eu.clarin.cmdi.virtualcollectionregistry.rest", 
+            "eu.clarin.cmdi.virtualcollectionregistry.v1"
+        );
+        
         property(ServletProperties.FILTER_FORWARD_ON_404, true);
     }
 }

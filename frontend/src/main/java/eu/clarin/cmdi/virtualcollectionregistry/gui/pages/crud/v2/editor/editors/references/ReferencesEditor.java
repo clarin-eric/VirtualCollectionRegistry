@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.gui.pages.crud.v2.editor.editors.references;
 
+import eu.clarin.cmdi.vcr.rest.client.VirtualCollectionRegistryReferenceValidatorRestImpl;
 import java.io.Serializable;
 import java.net.MalformedURLException;
 import java.net.URL;
@@ -30,12 +31,10 @@ import eu.clarin.pidmr.client.PidNotFoundException;
 import eu.clarin.pidmr.client.PidmrClientConfig;
 import eu.clarin.pidmr.client.PidmrClientImpl;
 import eu.clarin.pidmr.client.PidmrException;
-import java.net.URI;
 import org.apache.wicket.Component;
 import org.apache.wicket.ajax.AjaxRequestTarget;
 import org.apache.wicket.ajax.form.AjaxFormComponentUpdatingBehavior;
 import org.apache.wicket.ajax.markup.html.AjaxFallbackLink;
-import org.apache.wicket.behavior.AttributeAppender;
 import org.apache.wicket.markup.html.WebMarkupContainer;
 import org.apache.wicket.markup.html.basic.Label;
 import org.apache.wicket.markup.html.form.DropDownChoice;
@@ -216,7 +215,7 @@ public class ReferencesEditor extends ComposedField {
         ajaxWrapper = new WebMarkupContainer("ajaxwrapper");
         ajaxWrapper.setOutputMarkupId(true);
 
-        f = new Filter("filter", Application.get().getRegistry().getReferenceValidator());
+        f = new Filter("filter", new VirtualCollectionRegistryReferenceValidatorRestImpl());//Application.get().getRegistry().getReferenceValidator());
         add(f);
 
         localDialog = new ModalConfirmDialog("references_modal");
