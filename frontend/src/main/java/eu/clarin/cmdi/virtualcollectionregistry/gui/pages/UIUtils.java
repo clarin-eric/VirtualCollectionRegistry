@@ -18,19 +18,29 @@ package eu.clarin.cmdi.virtualcollectionregistry.gui.pages;
 
 import org.apache.wicket.Component;
 import org.apache.wicket.behavior.AttributeAppender;
+import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
 /**
  *
+ * This extends Label so other classes extending this can use the model to insert
+ * html directly into the body (when using setEscapeModelStrings(false)).
+ * 
  * @author wilelb
  */
-public class UIUtils {
+public abstract class UIUtils extends Label {
     
     private static Logger logger = LoggerFactory.getLogger(UIUtils.class);
 
-    public final static String DEFAULT_TOOLTIP_DATA_PLACEMENT = "bottom";
+    public final static String TOOLTIP_TOP = "top";
+    public final static String TOOLTIP_BOTTOM = "bottom";
+    public final static String TOOLTIP_LEFT = "left";
+    public final static String TOOLTIP_RIGHT = "right";
+    public final static String DEFAULT_TOOLTIP_DATA_PLACEMENT = TOOLTIP_BOTTOM;   
+    
     
     public static Component addTooltip(Component comp, String tooltipText) {
         return addTooltip(comp, tooltipText, null, DEFAULT_TOOLTIP_DATA_PLACEMENT);
@@ -52,5 +62,29 @@ public class UIUtils {
             comp.add(new AttributeAppender("data-container", Model.of(viewport)));
         }
         return comp;
+    }
+    
+    public UIUtils(String id, IModel model, String tooltipText, String tooltipPlacement) {
+        this(id, model, tooltipText, null, tooltipPlacement);
+    }
+    
+    public UIUtils(String id, IModel model, String tooltipText, String viewport, String tooltipPlacement) {
+        super(id, model);
+        
+        this.add(new AttributeAppender("data-toggle", Model.of("tooltip")));
+        this.add(new AttributeAppender("data-placement", Model.of(tooltipPlacement)));
+        this.add(new AttributeAppender("data-html", Model.of("true")));
+        this.add(new AttributeAppender("data-trigger", Model.of("hover")));
+        this.add(new AttributeAppender("data-animation", Model.of("true")));
+        this.add(new AttributeAppender("data-delay", Model.of("500")));
+        this.add(new AttributeAppender("title", Model.of(tooltipText)));
+        if(viewport != null) {
+            if(!viewport.startsWith("#")) {
+                viewport = "#"+viewport;
+            }
+            this.add(new AttributeAppender("data-viewport", Model.of(viewport)));
+            this.add(new AttributeAppender("data-container", Model.of(viewport)));
+        }
+        
     }
 }

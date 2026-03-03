@@ -18,9 +18,13 @@ package eu.clarin.cmdi.wicket.components.citation;
 
 import eu.clarin.cmdi.virtualcollectionregistry.model.citation.Citable;
 import eu.clarin.cmdi.wicket.components.BootstrapDialog;
+import java.io.Serializable;
+import java.util.Arrays;
 import java.util.List;
 
 import org.apache.wicket.markup.html.basic.Label;
+import org.apache.wicket.markup.html.form.ChoiceRenderer;
+import org.apache.wicket.markup.html.form.DropDownChoice;
 import org.apache.wicket.markup.html.panel.Panel;
 import org.apache.wicket.model.IModel;
 import org.apache.wicket.model.Model;
@@ -36,10 +40,7 @@ public class CitationDialog extends BootstrapDialog {
     private Logger logger = LoggerFactory.getLogger(CitationDialog.class);
 
     private final static String TITLE = "Citation information";
-    
-    private final IModel<Citable> model;
-    private final IModel<Citable> latestModel;
- 
+
     private final AbstractBody body;
     
     public CitationDialog(String id, final IModel<Citable> model) {
@@ -49,9 +50,7 @@ public class CitationDialog extends BootstrapDialog {
     public CitationDialog(String id, final IModel<Citable> model, final IModel<Citable> latestModel) {
         super(id);
         header(Model.of(TITLE));
-        this.model = model;
-        this.latestModel = latestModel;
-        
+
         if(latestModel == null) {
             body = new Body(BootstrapDialog.CONTENT_PANEL_ID, model.getObject());
         } else {
@@ -63,6 +62,10 @@ public class CitationDialog extends BootstrapDialog {
     public String getCslTargetId() {
         return body.getCslTargetId();
     }
+
+    public String getCslSelectTargetId() {
+        return body.getCslSelectTargetId();
+    }
     
     private abstract class AbstractBody extends Panel {
         public AbstractBody(String id) {
@@ -70,6 +73,7 @@ public class CitationDialog extends BootstrapDialog {
         }
         
         public abstract String getCslTargetId();
+        public abstract String getCslSelectTargetId();
     }
     
     private class VersionsBody extends AbstractBody {
@@ -83,10 +87,18 @@ public class CitationDialog extends BootstrapDialog {
         public String getCslTargetId() {
             return "";
         }
+        
+        @Override
+        public String getCslSelectTargetId() {
+            return "";
+        }
     }
 
     private class Body extends AbstractBody {
         private final Label lblCsl;
+        private final DropDownChoice<Style> styleList;
+        
+        private final static String defaultCitationStyle = "APA";
         
         public Body(String id, Citable cite) {
             super(id);
@@ -97,11 +109,23 @@ public class CitationDialog extends BootstrapDialog {
             Label lblUri = new Label("link", cite.getUri());
             lblUri.setOutputMarkupId(true);
             add(lblUri);
-            add(new Label("bibtex", getBibTexString(cite)));
-
-            lblCsl = new Label("csl", Model.of(""));
+            
+            lblCsl = new Label("bibtex", Model.of(""));
             lblCsl.setOutputMarkupId(true);
             add(lblCsl);
+            
+            ChoiceRenderer<Style> renderer = new ChoiceRenderer<>("name", "name");
+            styleList = new DropDownChoice<>(
+                "csl-style-list", 
+                Model.of(new Style(defaultCitationStyle)), 
+                Arrays.asList(new Style("APA"), new Style("IEEE"), new Style("BibTex")),
+                renderer
+            );
+            styleList.setOutputMarkupId(true);
+            add(styleList);
+            
+            add(new CopyToClipboardButton("btnCopyLinkToClipBoard",lblUri.getMarkupId(),  "Copy link to clipboard", CopyToClipboardButton.TOOLTIP_TOP));
+            add(new CopyToClipboardButton("btnCopyCitationToClipBoard", lblCsl.getMarkupId() ,"Copy citation to clipboard", CopyToClipboardButton.TOOLTIP_TOP));
         }
         
         @Override
@@ -109,8 +133,13 @@ public class CitationDialog extends BootstrapDialog {
             return lblCsl.getMarkupId();
         }
         
+        @Override
+        public String getCslSelectTargetId() {
+            return styleList.getMarkupId();
+        }
+        
         private String getAuthorsString(Citable cite) {
-            List<String> author_list = cite.getAuthors();
+            List<String> author_list = cite.getAuthorNames();
             String authors = "";
             if(author_list.size() >= 1) {
                 authors += author_list.get(0);
@@ -121,18 +150,26 @@ public class CitationDialog extends BootstrapDialog {
             return authors;
         }
         
-        private String getBibTexString(Citable cite) {
-            String id ="<put your id here>";
-            String bib = "";
-            bib += String.format("@misc{%s,\n", id);
-                bib += String.format("author = {%s},\n", getAuthorsString(cite));
-                bib += String.format("title = {%s},\n", cite.getTitle());
-                bib += String.format("url = {%s},\n", cite.getUri());
-                bib += String.format("year = {%s}\n", cite.getYear());
-            bib += String.format("}");
-            return bib;
+        public class Style implements Serializable {
+            private String name;
+            
+            public Style(String name) {
+                this.name = name;
+            }
+
+            /**
+             * @return the name
+             */
+            public String getName() {
+                return name;
+            }
+
+            /**
+             * @param name the name to set
+             */
+            public void setName(String name) {
+                this.name = name;
+            }
         }
-        
-        
     }
 }

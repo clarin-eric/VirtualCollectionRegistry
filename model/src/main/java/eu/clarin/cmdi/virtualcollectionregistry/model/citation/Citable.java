@@ -16,6 +16,7 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.model.citation;
 
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Creator;
 import java.io.Serializable;
 import java.util.List;
 
@@ -25,9 +26,11 @@ import java.util.List;
  */
 public interface Citable extends Serializable {
     public Long getId();
-    public List<String> getAuthors();
+    public List<String> getAuthorNames();
+    public List<Creator> getAuthors();
     public String getYear();
     public String getTitle();
     public String getUri();
     public String getIdentifier();
+    public List<String> getKeywords();
 }

@@ -25,16 +25,76 @@
                 </div>
                 <div class="row">
                     <div class="col-md-2">Link</div>
-                    <div class="col-md-10"><span wicket:id="link"></span></div>
+                    <div class="col-md-8" id="link"><span wicket:id="link"></span></div>
+                    <div class="col-md-2" style="text-align: right"><a wicket:id="btnCopyLinkToClipBoard"></a></div>                    
                 </div>
-                <div class="row">
-                    <div class="col-md-12 bibtex">
-                        <h4>BibTeX</h4>
-                        <pre wicket:id="bibtex"></pre>
+                <div class="row" style="margin-top: 15px">
+                    <div class="col-md-6 bibtex">
+                        <h4>Citation</h4>
+                    </div>
+                    <div class="col-md-6 bibtex" style="text-align: right">
+                        <div> 
+                            <!--Select format:-->
+                            <select 
+                                wicket:id="csl-style-list"
+                                data-toggle="tooltip" 
+                                data-placement="bottom" 
+                                data-html="true" 
+                                data-trigger="hover" 
+                                data-animation="true" 
+                                data-delay="500" 
+                                title="Select a citation format">
+                                <option value="apa">APA</option>
+                                <option value="ieee">IEEE</option>
+                                <option value="bibtex">BibTex</option>
+                            </select>
+                            <a wicket:id="btnCopyCitationToClipBoard"></a>
+                        </div>
+                        
                     </div>
                 </div>
-                <div wicket:id="csl"></div>
+                <div class="row">
+                    <div class="col-md-12 bibtex" id="citation">
+                        <div wicket:id="bibtex"></div>
+                    </div>
+                </div>
+
             </div>
+            
+            <script>
+                async function copyElementContent(event, elementId, tooltipElementId, toolTipPosition = 'top') {
+                    const btn = event.currentTarget;
+                    const element = document.getElementById(elementId);
+                    const ttElement = document.getElementById(tooltipElementId);
+                    
+                    if (!element) {
+                        console.error(`Element with ID "${elementId}" not found.`);
+                        return;
+                    }
+
+                    const textToCopy = element.textContent;
+                    try {
+                        await navigator.clipboard.writeText(textToCopy);
+
+                        //replace current tooltip and fade it away
+                        const tooltip = bootstrap.Tooltip.getOrCreateInstance(btn);
+                        const tooltipOriginalTitle = tooltip._element?.ariaLabel;
+                        tooltip.setContent({ '.tooltip-inner': 'Copied!' });
+                        setTimeout(() => {
+                            tooltip.hide();
+
+                            // Reset the text back to original after it's hidden 
+                            // so it's ready for the next hover
+                            btn.addEventListener('hidden.bs.tooltip', () => {
+                                tooltip.setContent({ '.tooltip-inner': tooltipOriginalTitle ? tooltipOriginalTitle : "Copied to Clipboard" });
+                            }, { once: true });
+                        }, 1000);
+                    } catch (err) {
+                        console.error("Unable to copy", err);
+                    }
+                }
+                
+            </script>
 
         </wicket:panel>
         

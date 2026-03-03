@@ -501,7 +501,21 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         Collections.sort(this.creators);
         return creators;
     }
+    
+    @Override
+    public List<Creator> getAuthors() {
+        return getCreators();
+    }
 
+    @Override
+    public List<String> getAuthorNames() {
+        final Set<String> authors = new HashSet<>();
+        for(Creator c : getCreators()) {
+            authors.add(c.getPerson());
+        }
+        return new ArrayList<>(authors);
+    }
+    
     public VirtualCollection.Purpose getPurpose() {
         return purpose;
     }
@@ -668,16 +682,6 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
             return null;
         }
         return getIdentifier();
-    }
-
-    @Override
-    public List<String> getAuthors() {
-        final Set<String> authors = new HashSet<>();
-        //authors.add(getOwner().getName());
-        for(Creator c : getCreators()) {
-            authors.add(c.getPerson());
-        }
-        return new ArrayList<>(authors);
     }
 
     @Override

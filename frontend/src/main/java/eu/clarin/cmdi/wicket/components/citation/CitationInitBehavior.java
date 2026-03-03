@@ -35,16 +35,60 @@ public class CitationInitBehavior extends Behavior {
     @Override
     public void renderHead(Component component, IHeaderResponse response) {        
         String js = """
-            async function initCiteProc(elementId, vcId, vcCsl) {
+            const cslStyle = {
+                "apa": {"file": "apa.csl"},
+                "ieee": {"file": "ieee.csl"},
+                "bibtex": {"file": "bibtex.csl"}
+            }
                     
+            let elementId;
+            let elSelectId;
+            let vcId;
+            let vcCsl; 
+                   
+            async function initCiteProc(_elementId, _elSelectId, _vcId, _vcCsl) {    
+                elementId = _elementId;
+                vcId = _vcId;
+                vcCsl = _vcCsl;
+                
+                elSelectId = _elSelectId;
+                if(_elSelectId.id) {
+                    elSelectId = _elSelectId.id;
+                }
+                
+                const elStyleList = document.getElementById(elSelectId);     
+                if(!elStyleList.hasChangeListener) {
+                    elStyleList.addEventListener('change', (event) => {
+                        updateCiteProc();
+                    
+                        const source = event.currentTarget;
+                        const tooltip = bootstrap.Tooltip.getOrCreateInstance(source);
+                        if(tooltip) {
+                            tooltip.hide();
+                        }
+                    });
+                    elStyleList.hasChangeListener = true
+                }
+                    
+                await updateCiteProc();
+            }
+                    
+            async function updateCiteProc() {
                 let elId = elementId;
                 if(elementId.id) {
                     elId = elementId.id;
                 }   
                     
-                console.log("initCiteProc elId=", elId);
+                const elStyleList = document.getElementById(elSelectId);
+                const style = elStyleList.value.toLowerCase();
                     
-                const styleAsText = await fetch('/csl/styles/apa.csl').then(r => r.text());
+                if(!cslStyle.hasOwnProperty(style)) {
+                    console.error("Unsupported CSL style: ", style);
+                    return;
+                }
+                let styleFilename = cslStyle[style].file;
+                
+                const styleAsText = await fetch('/csl/styles/'+styleFilename).then(r => r.text());
                 const localeAsText = await fetch('/csl/locales/locales-en-US.xml').then(r => r.text());
 
                 const citeprocSys = {
@@ -60,7 +104,6 @@ public class CitationInitBehavior extends Behavior {
                 document.getElementById(elId).innerHTML = bibResult[1].join('');
             }
          """;
-        //response.render(OnDomReadyHeaderItem.forScript(js));
         
         response.render(
             new FilteredHeaderItem(JavaScriptHeaderItem.forScript(js, "initCiteProcFunction"), 

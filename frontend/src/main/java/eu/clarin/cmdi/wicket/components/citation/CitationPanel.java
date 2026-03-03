@@ -50,8 +50,9 @@ public class CitationPanel extends Panel {
                 citationDialog.show(target);
                 
                 String elTargetId = citationDialog.getCslTargetId();
+                String elSelectTargetId = citationDialog.getCslSelectTargetId();
                 String cslJson = CslJsonGenerator.generateCslJson(model.getObject());
-                String js = String.format("initCiteProc(%s, %s, %s);", elTargetId, model.getObject().getId(), cslJson);
+                String js = String.format("initCiteProc(%s, %s, %s, %s);", elTargetId, elSelectTargetId, model.getObject().getId(), cslJson);
                 target.appendJavaScript(js);
             } 
         };
