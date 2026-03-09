@@ -22,14 +22,6 @@ import org.apache.commons.lang.builder.HashCodeBuilder;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-//"((c.parent IS NULL AND c.child is NULL) OR (c.parent IS NOT NULL AND c.child is NULL)) " +
-/*
-SELECT c.id,c.parent,c.child FROM virtualcollection c
-WHERE c.id IN (
-        SELECT c2.id FROM virtualcollection c2 WHERE c2.state IN (0,2,4) AND c2.owner_id = 28
-    )
-ORDER BY c.id
- */
 @Entity
 @Table(name = "virtualcollection")
 @NamedQueries({
@@ -268,13 +260,14 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     @JsonProperty(value = "generatedBy")
     @Embedded
     private GeneratedBy generatedBy;
-
+    
+/*
     @XmlElement(name = "dateCreated")
     @JsonProperty(value = "dateCreated")
     @Temporal(TemporalType.TIMESTAMP)
     @Column(name = "created", nullable = false, updatable = false)
     private Date dateCreated = new Date();
-
+*/
     @XmlElement(name = "dateModified")
     @JsonProperty(value = "dateModified")
     @Temporal(TemporalType.TIMESTAMP)
@@ -582,7 +575,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
     }
 
     public Date getDateCreated() {
-        return dateCreated;
+        return creationDate;//dateCreated;
     }
 
     public Date getDateModified() {
@@ -1232,7 +1225,7 @@ public class VirtualCollection implements Serializable, IdentifiedEntity, Persis
         if(datePublished != null) {
             return datePublished;
         }
-        return dateCreated;
+        return creationDate;// dateCreated;
     }
     
     public int getPublicationYear() {

@@ -34,6 +34,8 @@
         <xs:element name="Name" type="xs:string"/>
         <xs:element name="Description" type="xs:string" minOccurs="0"/>
         <xs:element name="CreationDate" type="xs:date" minOccurs="0"/>
+        <xs:element name="ModificationDate" type="xs:date" minOccurs="0"/>
+        <xs:element name="PublicationDate" type="xs:date" minOccurs="0"/>
         <xs:element name="Creators" minOccurs="0">
           <xs:complexType>
             <xs:sequence>
@@ -141,10 +143,13 @@
         <xs:simpleType>
           <xs:restriction base="xs:string">
             <xs:enumeration value="private" />
-            <xs:enumeration value="public-pending" />
+            <xs:enumeration value="public_pending" />
             <xs:enumeration value="public" />
+            <xs:enumeration value="public_frozen_pending" />
+            <xs:enumeration value="public_frozen" />
             <xs:enumeration value="deleted" />
             <xs:enumeration value="dead" />
+            <xs:enumeration value="error" />
           </xs:restriction>
         </xs:simpleType>
       </xs:attribute>

@@ -289,7 +289,29 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
             } // synchronized (df)
             writer.writeEndElement(); // "CreationDate" element
         }
+        
+        if ( vc.getDateModified() != null) {
+            writer.writeStartElement("ModificationDate");
+            // XXX: threading vs. performance
+            synchronized (df) {
+                Date input = vc.getDateModified();
+                String output = df.format(input);
+                writer.writeCharacters(output);
+            } // synchronized (df)
+            writer.writeEndElement(); // "ModificationDate" element
+        }
 
+        if ( vc.getDateModified() != null) {
+            writer.writeStartElement("PublicationDate");
+            // XXX: threading vs. performance
+            synchronized (df) {
+                Date input = vc.getDateModified();
+                String output = df.format(input);
+                writer.writeCharacters(output);
+            } // synchronized (df)
+            writer.writeEndElement(); // "ModificationDate" element
+        }
+        
         if ((vc.getCreators() != null) && !vc.getCreators().isEmpty()) {
             writer.writeStartElement("Creators");
             for (Creator creator : vc.getCreators()) {
@@ -610,6 +632,30 @@ public class VirtualCollectionMarshallerImpl implements VirtualCollectionMarshal
                     String input = readString(reader, false);
                     Date output = df.parse(input);
                     vc.setCreationDate(output);
+                } // synchronized df
+            } catch (ParseException e) {
+                throw new XMLStreamException("invalid date format", e);
+            }
+        }
+        if (readStart(reader, "ModificationDate", false, true)) {
+            try {
+                // XXX: threading vs. performance
+                synchronized (df) {
+                    String input = readString(reader, false);
+                    Date output = df.parse(input);
+                    vc.setDateModified(output);
+                } // synchronized df
+            } catch (ParseException e) {
+                throw new XMLStreamException("invalid date format", e);
+            }
+        }
+        if (readStart(reader, "PublicationDate", false, true)) {
+            try {
+                // XXX: threading vs. performance
+                synchronized (df) {
+                    String input = readString(reader, false);
+                    Date output = df.parse(input);
+                    vc.setDatePublished(output);
                 } // synchronized df
             } catch (ParseException e) {
                 throw new XMLStreamException("invalid date format", e);

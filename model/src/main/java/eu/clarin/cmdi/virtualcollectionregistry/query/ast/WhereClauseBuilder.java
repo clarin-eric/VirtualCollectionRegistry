@@ -118,7 +118,7 @@ class WhereClauseBuilder implements QueryParserVisitor {
             break;
         case QueryParserConstants.VC_CREATED:
             predicate = makeDatePredicate(data,
-                    root.get(VirtualCollection_.dateCreated),
+                    root.get(VirtualCollection_.creationDate),
                     node.getOperator(), node.getValue());
             break;
         case QueryParserConstants.VC_MODIFIED:
