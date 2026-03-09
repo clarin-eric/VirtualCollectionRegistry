@@ -34,6 +34,10 @@ CREATE TABLE `resource_scan` (
   PRIMARY KEY(id)
 ) ENGINE=InnoDB DEFAULT CHARSET=utf8mb4;
 
+-- Update existing public rows
+update virtualcollection set public_leaf = true where state = 2; --public
+update virtualcollection set public_leaf = true where state = 3; --public_frozen
+
 --ALTER TABLE resource_scan ADD COLUMN `created` datetime;
 --ALTER TABLE resource_scan ADD COLUMN `exception` varchar(255) NULL;
 --ALTER TABLE resource_scan ADD COLUMN `name_suggestion` varchar(255) NULL;
