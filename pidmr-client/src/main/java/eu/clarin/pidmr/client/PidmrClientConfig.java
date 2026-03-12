@@ -16,11 +16,13 @@
  */
 package eu.clarin.pidmr.client;
 
+import java.io.Serializable;
+
 /**
  *
  * @author wilelb
  */
-public class PidmrClientConfig {
+public class PidmrClientConfig implements Serializable {
     private String apiBaseUrl;
     
     public PidmrClientConfig(String apiBaseUrl) {

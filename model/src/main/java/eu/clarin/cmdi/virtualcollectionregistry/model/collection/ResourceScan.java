@@ -1,5 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.model.collection;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+import com.fasterxml.jackson.annotation.JsonIgnoreProperties;
 import jakarta.validation.constraints.NotNull;
 import jakarta.persistence.*;
 import java.io.Serializable;
@@ -7,11 +9,9 @@ import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Date;
 import java.util.HashMap;
-import java.util.HashSet;
 import java.util.LinkedList;
 import java.util.List;
 import java.util.Map;
-import java.util.Set;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
@@ -46,6 +46,7 @@ import org.slf4j.LoggerFactory;
         @NamedQuery(name = "ResourceScan.findScanRequired",
                 query = "SELECT r FROM ResourceScan r WHERE r.lastScanStart IS NULL")
 })
+@JsonIgnoreProperties
 public class ResourceScan implements Serializable, Comparable<ResourceScan>  {
 
     private final static Logger logger = LoggerFactory.getLogger(ResourceScan.class);
@@ -106,6 +107,7 @@ public class ResourceScan implements Serializable, Comparable<ResourceScan>  {
     @Column(name = "mimetype", nullable = true, length = 255)
     private String mimeType;
         
+    @JsonIgnore
     @OneToMany(cascade = CascadeType.ALL,
                fetch = FetchType.EAGER,
                 mappedBy = "scan")
@@ -138,6 +140,10 @@ public class ResourceScan implements Serializable, Comparable<ResourceScan>  {
         return id;
     }
 
+    public void setId(Long id) {
+        this.id = id;
+    }
+    
     public String getRef() {
         return ref;
     }

@@ -27,8 +27,15 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionList;
 import eu.clarin.cmdi.virtualcollectionregistry.model.info.Info;
+import eu.clarin.cmdi.virtualcollectionregistry.model.rest.ResourceScanFactory;
+import eu.clarin.cmdi.virtualcollectionregistry.model.rest.ResourceScanRequest;
+import eu.clarin.cmdi.virtualcollectionregistry.model.rest.ResourceScanResponse;
 import eu.clarin.cmdi.virtualcollectionregistry.query.QueryFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
+import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.GenericType;
+import jakarta.ws.rs.core.MediaType;
+import jakarta.ws.rs.core.Response;
 import java.security.Principal;
 import java.util.ArrayList;
 import java.util.Date;
@@ -207,68 +214,79 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
         throw new UnsupportedOperationException("Not supported yet.");
     }
 
-    @Override
-    public ResourceScan getResourceScanForRef(String ref) throws VirtualCollectionRegistryException {        
-        logger.warn("Not implemented yet: getResourceScanForRef()");
-        ResourceScan scan = RequestBuilder.setPath("scans", jwtUtil).get(ResourceScan.class);
-        return scan;
+    private List<ResourceScan> fetchAllResourceScans() {
+        Response response = 
+            RequestBuilder
+                .setPath("scans", jwtUtil)
+                .setAuthenticatedUser(authenticatedUser)
+                .get();
+        
+        
+        List<ResourceScanResponse> scansResponse = response.readEntity(new GenericType<List<ResourceScanResponse>>() {});
+        List<ResourceScan> scans = ResourceScanFactory.asResourceScanList(scansResponse);
+        return scans;
     }
-
+    
+    private List<ResourceScan> filterResourceScans(List<ResourceScan> scans, List<String> refs) {
+        List<ResourceScan> result = new ArrayList<>();
+        for(ResourceScan scan : scans) {
+            for(String refToMatch : refs) {
+                if(scan.getRef().equalsIgnoreCase(refToMatch)) {
+                    result.add(scan);
+                }
+            }
+        }
+        return result;
+    }
+    
     @Override
     public List<ResourceScan> getAllResourceScans() throws VirtualCollectionRegistryException {
-        return new AdminDaoRestImpl(authenticatedUser, jwtUtil).getResourceScans();
+        return fetchAllResourceScans();
+    }
+    
+    @Override
+    public ResourceScan getResourceScanForRef(String ref) throws VirtualCollectionRegistryException {        
+        List<ResourceScan> scans = fetchAllResourceScans();
+        List<ResourceScan> filtered = filterResourceScans(scans, List.of(ref));
+        if(!filtered.isEmpty()) {
+            return filtered.get(0);
+        }
+        return null;
     }
 
     @Override
     public List<ResourceScan> getResourceScansForRefs(List<String> refs) throws VirtualCollectionRegistryException {
-        logger.warn("Not implemented yet: getResourceScansForRefs()");
-        
-        ArrayList<ResourceScan> scans = new ArrayList<>();
-        //for(String ref : refs) {
-        for(int i = 0; i < refs.size(); i++) {
-            String ref = refs.get(i);
-        
-            ResourceScan scan = new LocalResourceScanWrapper(i, ref, ref, "1");
-            scan.setHttpResponseCode(200);
-            scan.setHttpResponseMessage("Ok");
-            scan.setCreated(new Date());
-            scan.setLastScan(new Date());
-            scan.setLastScanEnd(new Date());
-            scan.setMimeType("text/html");
-            scans.add(scan);
-        }        
-        return scans;
+        return filterResourceScans(fetchAllResourceScans(), refs);
     }
 
     @Override
     public void addResourceScan(String ref, String resolvedRef, String sessionId, boolean useCache) throws VirtualCollectionRegistryException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        ResourceScanRequest request = new ResourceScanRequest(ref, resolvedRef, sessionId, useCache);
+        Response response = 
+            RequestBuilder
+                .setPath("scans", jwtUtil)
+                .setAuthenticatedUser(authenticatedUser)
+                .post(Entity.entity(request, MediaType.APPLICATION_JSON));
+        if(response.getStatus() != 200) {
+            throw new VirtualCollectionRegistryException("Failed to schedule new resource scan. Http response: " + response.getStatus());
+        }
     }
 
     @Override
     public void rescanResource(String ref, String resolvedRef, String sessionId, boolean useCache) throws VirtualCollectionRegistryException {
-        throw new UnsupportedOperationException("Not supported yet.");
+        ResourceScanRequest request = new ResourceScanRequest(ref, resolvedRef, sessionId, useCache);
+        Response response = 
+            RequestBuilder
+                .setPath("scans", jwtUtil)
+                .setAuthenticatedUser(authenticatedUser)
+                .put(Entity.entity(request, MediaType.APPLICATION_JSON));
+        if(response.getStatus() != 200) {
+            throw new VirtualCollectionRegistryException("Failed to re-schedule new resource scan. Http response: " + response.getStatus());
+        }
     }
 
     @Override
     public void registerDestroyListener(VirtualCollectionRegistryDestroyListener listener) {
         this.destroyListeners.add(listener);
-    }
-    
-    /**
-     * Wrapper around the ResourceScan that allows to set the scan id
-     */
-    public class LocalResourceScanWrapper extends ResourceScan {
-        private final Long id;
-        
-        public LocalResourceScanWrapper(long id, String ref, String resolvedRef, String sessionId) {
-            super(ref, resolvedRef, sessionId);
-            this.id = id;
-        }
-        
-        @Override
-        public Long getId() {
-            return id;
-        }   
     }
 }

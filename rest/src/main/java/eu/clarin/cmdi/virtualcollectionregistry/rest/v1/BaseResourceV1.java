@@ -69,4 +69,10 @@ public class BaseResourceV1 {
             resourceContext.getResource(AdminResource.class);
         return resource;
     }
+    
+    @Path("/scans")
+    public ScanResource getScanResource() {
+        final ScanResource resource = resourceContext.getResource(ScanResource.class);
+        return resource;
+    }
 }

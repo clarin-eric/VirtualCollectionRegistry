@@ -16,6 +16,7 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.model.collection;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
 import java.io.Serializable;
 import jakarta.persistence.CascadeType;
 import jakarta.persistence.Column;
@@ -47,6 +48,7 @@ public class ResourceScanLogKV implements Serializable, Comparable<ResourceScanL
     @Column(name = "v", nullable = false)
     private String value;
     
+    @JsonIgnore
     @ManyToOne(cascade = CascadeType.ALL,
           fetch = FetchType.LAZY,
           optional = true)
@@ -55,6 +57,15 @@ public class ResourceScanLogKV implements Serializable, Comparable<ResourceScanL
             unique = false)
     private ResourceScanLog scanLog;
      
+    public ResourceScanLogKV() {}
+    
+    public ResourceScanLogKV(ResourceScanLog scanLog, Long id, String key, String value) {
+        this.scanLog = scanLog;
+        this.id = id;
+        this.key = key;
+        this.value = value;
+    }
+    
     /**
      * @return the id
      */

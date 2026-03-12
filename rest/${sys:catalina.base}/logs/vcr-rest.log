@@ -1085,3 +1085,143 @@
 2026-03-09 15:29:03,496 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
 2026-03-09 15:29:03,549 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
 2026-03-09 15:29:03,549 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-10 09:10:53,703 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-10 09:10:53,705 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-10 09:10:53,755 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-10 09:10:53,756 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-10 14:13:11,256 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-10 14:13:11,258 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-10 14:13:11,307 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-10 14:13:11,308 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-10 14:13:18,298 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-10 14:13:18,300 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-10 14:13:18,350 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-10 14:13:18,351 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-10 14:14:31,073 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-10 14:14:31,076 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-10 14:14:31,121 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-10 14:14:31,122 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-10 14:14:37,341 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-10 14:14:37,343 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-10 14:14:37,393 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-10 14:14:37,394 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 08:58:57,308 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 08:58:57,311 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 08:58:57,359 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 08:58:57,360 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 08:59:52,516 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 08:59:52,519 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 08:59:52,571 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 08:59:52,572 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 10:23:00,734 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 10:23:00,737 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 10:23:00,783 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 10:23:00,784 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 10:23:31,394 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 10:23:31,397 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 10:23:31,453 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 10:23:31,454 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 10:39:35,661 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 10:39:35,664 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 10:39:35,712 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 10:39:35,713 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 10:41:21,614 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 10:41:21,616 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 10:41:21,667 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 10:41:21,667 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 11:05:22,787 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 11:05:22,791 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 11:05:22,835 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 11:05:22,836 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 11:05:53,432 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 11:05:53,436 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 11:05:53,502 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 11:05:53,502 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 11:24:27,032 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 11:24:27,035 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 11:24:27,085 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 11:24:27,086 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 11:24:47,430 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 11:24:47,433 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 11:24:47,482 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 11:24:47,483 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 11:39:13,709 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 11:39:13,712 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 11:39:13,757 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 11:39:13,758 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 11:39:34,895 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 11:39:34,897 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 11:39:34,946 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 11:39:34,946 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 11:41:11,589 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 11:41:11,592 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 11:41:11,642 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 11:41:11,642 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 11:41:23,533 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 11:41:23,536 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 11:41:23,584 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 11:41:23,585 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 11:48:37,538 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 11:48:37,540 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 11:48:37,590 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 11:48:37,591 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 11:48:47,385 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 11:48:47,388 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 11:48:47,438 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 11:48:47,438 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 11:54:28,394 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 11:54:28,397 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 11:54:28,444 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 11:54:28,444 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 11:59:44,451 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 11:59:44,455 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 11:59:44,506 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 11:59:44,507 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 13:13:17,384 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 13:13:17,387 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 13:13:17,432 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 13:13:17,432 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 13:13:43,067 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 13:13:43,069 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 13:13:43,121 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 13:13:43,122 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 13:21:19,981 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 13:21:19,984 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 13:21:20,029 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 13:21:20,029 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 13:21:27,836 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 13:21:27,839 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 13:21:27,893 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 13:21:27,894 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 14:01:58,072 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 14:01:58,077 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 14:01:58,135 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 14:01:58,136 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 14:04:43,808 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 14:04:43,812 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 14:04:43,868 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 14:04:43,868 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 14:22:56,894 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 14:22:56,897 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 14:22:56,949 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 14:22:56,950 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 14:23:07,562 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 14:23:07,565 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 14:23:07,614 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 14:23:07,615 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 14:42:52,514 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 14:42:52,517 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 14:42:52,578 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 14:42:52,578 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 14:43:02,088 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 14:43:02,090 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 14:43:02,149 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 14:43:02,150 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 15:24:46,103 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 15:24:46,105 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 15:24:46,152 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 15:24:46,153 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
+2026-03-12 15:25:09,200 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=private
+2026-03-12 15:25:09,203 INFO [eu.clarin.cmdi.virtualcollectionregistry.rest.v1.VirtualCollectionResource#setVirtualCollectionState:365] - setVirtualCollectionState(), state=public
+2026-03-12 15:25:09,253 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/metedata/1, adding as url
+2026-03-12 15:25:09,254 DEBUG [eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory#addResource:261] - Resource input: https://www.clarin.eu/resource/1, adding as url
