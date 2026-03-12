@@ -38,7 +38,6 @@ import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.security.Principal;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.LinkedList;
 import java.util.List;
 import org.slf4j.Logger;
@@ -76,6 +75,11 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
     }
     
     @Override
+    public void registerDestroyListener(VirtualCollectionRegistryDestroyListener listener) {
+        this.destroyListeners.add(listener);
+    }
+    
+    @Override
     public void setAuthenticatedUser(Principal user) {
         this.authenticatedUser = user;
     }   
@@ -89,6 +93,8 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
     public boolean hasAuthenticatedUser() {
         return this.authenticatedUser != null;
     }
+    
+//Virtual Collections
     
     @Override
     public VirtualCollectionDao getVirtualCollectionDao() {
@@ -122,12 +128,6 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
     }
 
     @Override
-    public long newVirtualCollectionVersion(Principal principal, long parentId, VirtualCollection newVersion) throws VirtualCollectionRegistryException {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
-
-    
-    @Override
     public VirtualCollection.State getVirtualCollectionState(long id) throws VirtualCollectionRegistryException {
         VirtualCollection vc = getVirtualCollectionDao().getVirtualCollection(id);
         return vc.getState();
@@ -142,16 +142,6 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
     public VirtualCollection retrieveVirtualCollection(long id) throws VirtualCollectionRegistryException {
         return getVirtualCollectionDao().getVirtualCollection(id);
     }
-  
-    @Override
-    public VirtualCollectionList getVirtualCollections(String query, int offset, int count) throws VirtualCollectionRegistryException {
-        throw new UnsupportedOperationException("Not supported client side");
-    }
-
-    @Override
-    public VirtualCollectionList getVirtualCollections(Principal principal, String query, int offset, int count) throws VirtualCollectionRegistryException {
-        throw new UnsupportedOperationException("Not supported client side");
-    }
     
     @Override
     public List<VirtualCollection> getVirtualCollections(int first, int count, QueryFactory qryFactory) throws VirtualCollectionRegistryException {       
@@ -162,15 +152,9 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
     public int getVirtualCollectionCount(QueryFactory qryFactory) throws VirtualCollectionRegistryException {
         return getVirtualCollectionDao().getVirtualCollectionCount(qryFactory);
     }
-    
-    @Override
-    public List<String> getOrigins() throws VirtualCollectionRegistryException {
-        //TODO: propery implement
-        logger.error("getOrigins() not implemented yet");
-        return new LinkedList<>();
-    }
 
-    //Admin only
+//Users
+    
     @Override
     public List<User> getUsers() {
         return new AdminDaoRestImpl(authenticatedUser, jwtUtil).getUsers();
@@ -191,6 +175,8 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
         return getOrCreateUser(principal.getName());
     }
     
+//Info
+    
     @Override
     public String getDbVersion() throws VirtualCollectionRegistryException {        
         return RequestBuilder
@@ -199,20 +185,7 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
                 .get(Info.class).getDbVersion();
     }
     
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    
-    @Override
-    public CreatorService getCreatorService() {
-        throw new UnsupportedOperationException("Not supported yet.");
-    }
+//Resource scanning    
 
     private List<ResourceScan> fetchAllResourceScans() {
         Response response = 
@@ -284,9 +257,37 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
             throw new VirtualCollectionRegistryException("Failed to re-schedule new resource scan. Http response: " + response.getStatus());
         }
     }
+    
+    
+    
+    
+    
+ //Not yet implemented   
+    
+    @Override
+    public long newVirtualCollectionVersion(Principal principal, long parentId, VirtualCollection newVersion) throws VirtualCollectionRegistryException {
+        throw new UnsupportedOperationException("Not supported yet.");
+    }
+    
+    @Override
+    public VirtualCollectionList getVirtualCollections(String query, int offset, int count) throws VirtualCollectionRegistryException {
+        throw new UnsupportedOperationException("Not supported client side");
+    }
 
     @Override
-    public void registerDestroyListener(VirtualCollectionRegistryDestroyListener listener) {
-        this.destroyListeners.add(listener);
+    public VirtualCollectionList getVirtualCollections(Principal principal, String query, int offset, int count) throws VirtualCollectionRegistryException {
+        throw new UnsupportedOperationException("Not supported client side");
+    }
+    
+    @Override
+    public List<String> getOrigins() throws VirtualCollectionRegistryException {
+        //TODO: propery implement
+        logger.error("getOrigins() not implemented yet");
+        return new LinkedList<>();
+    }    
+    
+    @Override
+    public CreatorService getCreatorService() {
+        throw new UnsupportedOperationException("Not supported yet.");
     }
 }
