@@ -20,6 +20,9 @@
       username="vcruser" 
       validationQuery="SELECT 1" />
   
+  <!-- shared jwt secret to allow authentication from wicket to rest backend -->
+  <Parameter name="eu.clarin.cmdi.vcr.jwt.secret" value="ghekjghejkhgjkehjkfhgcilqu;ioqhq!;oijf;qhvbwl"/>
+  
   <!-- set to false to disable maintenance thread running in the background -->
   <Parameter name="eu.clarin.cmdi.vcr.maintenance.enabled" value="true"/>
   

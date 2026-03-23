@@ -293,4 +293,20 @@ public class VirtualCollectionDaoImpl extends TxManager implements VirtualCollec
     public void setVirtualCollectionState(Long id, VirtualCollection.State state) throws VirtualCollectionRegistryException {
         throw new UnsupportedOperationException("Not supported yet.");
     }
+
+    @Override
+    public List<String> getOrigins() throws VirtualCollectionRegistryException {
+        List<String> origins = new ArrayList<>();
+        EntityManager em = datastore.getEntityManager();
+        try {
+            beginTransaction(datastore.getEntityManager());
+            TypedQuery<String> q = em.createNamedQuery("VirtualCollection.findAllPublicOrigins", String.class);
+            origins = q.getResultList();
+        } catch (Exception e) {
+            rollbackActiveTransaction(datastore.getEntityManager(),"error while enumerating virtual collections to get all origins", e);
+        } finally {
+            commitActiveTransaction(datastore.getEntityManager());
+        }
+        return origins;
+    }
 }

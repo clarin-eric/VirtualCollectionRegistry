@@ -29,6 +29,9 @@
               password="vcrpassword"
               url="jdbc:postgresql://localhost:5432/vcr" />
 -->
+    <!-- shared jwt secret to allow authentication from wicket to rest backend -->
+    <Parameter name="eu.clarin.cmdi.vcr.jwt.secret" value="ghekjghejkhgjkehjkfhgcilqu;ioqhq!;oijf;qhvbwl"/>
+  
     <Parameter
                name="eu.clarin.cmdi.virtualcollectionregistry.admindb.basedir"
                value="/Users/wilelb/.vcr/conf" override="false"/>

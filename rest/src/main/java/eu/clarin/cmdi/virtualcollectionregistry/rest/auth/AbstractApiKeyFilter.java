@@ -19,7 +19,9 @@ package eu.clarin.cmdi.virtualcollectionregistry.rest.auth;
 import eu.clarin.cmdi.virtualcollectionregistry.core.apikey.ApiKeyException;
 import eu.clarin.cmdi.virtualcollectionregistry.core.apikey.ApiKeyService;
 import eu.clarin.cmdi.virtualcollectionregistry.core.jwt.JwtUtil;
+import eu.clarin.cmdi.virtualcollectionregistry.model.config.VcrConfig;
 import io.jsonwebtoken.Claims;
+import jakarta.annotation.PostConstruct;
 import jakarta.ws.rs.container.ContainerRequestContext;
 import jakarta.ws.rs.container.ContainerRequestFilter;
 import jakarta.ws.rs.core.HttpHeaders;
@@ -44,14 +46,28 @@ public abstract class AbstractApiKeyFilter implements ContainerRequestFilter {
     @Autowired
     private ApiKeyService apiKeyService;
     
+    @Autowired
+    private VcrConfig vcrConfig;
+    
     //TODO: read this from config
-    private final String secret = "ghekjghejkhgjkehjkfhgcilqu;ioqhq!;oijf;qhvbwl";
-    private final JwtUtil jwtUtil;
+    //private final String secret = "ghekjghejkhgjkehjkfhgcilqu;ioqhq!;oijf;qhvbwl";
+    private JwtUtil jwtUtil;
     
     public AbstractApiKeyFilter() {
-        this.jwtUtil = new JwtUtil(secret);
+    //    this.jwtUtil = new JwtUtil(vcrConfig.getJwtSecret());
     }
+    /*
+    public AbstractApiKeyFilter(ApiKeyService apiKeyService, VcrConfig vcrConfig) {
+        this.jwtUtil = new JwtUtil(vcrConfig.getJwtSecret());
+    }
+    */
     
+    @PostConstruct
+    public void init() {
+        //if(this.jwtUtil == null) {
+            this.jwtUtil = new JwtUtil(vcrConfig.getJwtSecret());
+        //}
+    }
     /**
      * Check the request for availability of an authorization header.
      * 
@@ -81,6 +97,11 @@ public abstract class AbstractApiKeyFilter implements ContainerRequestFilter {
     protected void performFilter(ContainerRequestContext requestContext, boolean allowAnonymousAccess) throws IOException {
         logger.trace("Filtering API key from request");
 
+        //TODO: move back into constructor with autowiring
+        //if(this.jwtUtil == null) {
+        //    this.jwtUtil = new JwtUtil(vcrConfig.getJwtSecret());
+        //}
+        
         // Get the Authorization header from the request
         String authorizationHeader =
                 requestContext.getHeaderString(HttpHeaders.AUTHORIZATION);

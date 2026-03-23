@@ -26,35 +26,42 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionList;
+import eu.clarin.cmdi.virtualcollectionregistry.model.config.VcrConfig;
 import eu.clarin.cmdi.virtualcollectionregistry.model.info.Info;
 import eu.clarin.cmdi.virtualcollectionregistry.model.rest.ResourceScanFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.model.rest.ResourceScanRequest;
 import eu.clarin.cmdi.virtualcollectionregistry.model.rest.ResourceScanResponse;
 import eu.clarin.cmdi.virtualcollectionregistry.query.QueryFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
+import jakarta.annotation.PostConstruct;
+import jakarta.servlet.ServletContext;
 import jakarta.ws.rs.client.Entity;
 import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.security.Principal;
-import java.util.ArrayList;
 import java.util.LinkedList;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.context.ServletContextAware;
         
 /**
  *
  * @author wilelb
  */
 @Service
-public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegistry {
+public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegistry, ServletContextAware {
 
-    //TODO: Read this secret from config
-    private final String secret = "ghekjghejkhgjkehjkfhgcilqu;ioqhq!;oijf;qhvbwl";
-    private final JwtUtil jwtUtil;
+    @Autowired
+    private org.springframework.core.env.Environment env;
+    
+    @Autowired
+    private VcrConfig vcrConfig;
+    
+    private JwtUtil jwtUtil;
     
     @Autowired
     private VirtualCollectionMarshaller marshaller;
@@ -65,13 +72,26 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
     
     private final List<VirtualCollectionRegistryDestroyListener> destroyListeners = new LinkedList<>();
     
-    public VirtualCollectionRegistryRestImpl() {
-        this.jwtUtil = new JwtUtil(secret);
+    public VirtualCollectionRegistryRestImpl() {}
+    
+    public VirtualCollectionRegistryRestImpl(
+            VirtualCollectionMarshaller marshaller, 
+            VcrConfig vcrConfig) {
+        this.marshaller = marshaller;
+        this.vcrConfig = vcrConfig;
+        this.jwtUtil = new JwtUtil(vcrConfig.getJwtSecret());
     }
     
-    public VirtualCollectionRegistryRestImpl(VirtualCollectionMarshaller marshaller) {
-        this.marshaller = marshaller;
-        this.jwtUtil = new JwtUtil(secret);
+    @PostConstruct
+    public void init() {
+        jwtUtil = new JwtUtil(vcrConfig.getJwtSecret());
+    }
+    
+    private ServletContext servletContext;
+
+    @Override
+    public void setServletContext(ServletContext servletContext) {
+        this.servletContext = servletContext;
     }
     
     @Override
@@ -152,13 +172,14 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
     public int getVirtualCollectionCount(QueryFactory qryFactory) throws VirtualCollectionRegistryException {
         return getVirtualCollectionDao().getVirtualCollectionCount(qryFactory);
     }
-
-//Users
     
     @Override
-    public List<User> getUsers() {
-        return new AdminDaoRestImpl(authenticatedUser, jwtUtil).getUsers();
-    }
+    public List<String> getOrigins() throws VirtualCollectionRegistryException {
+        logger.debug("getOrigins()");        
+        return getVirtualCollectionDao().getOrigins();
+    } 
+
+//Users
 
     @Override
     public User getOrCreateUser(String username) throws VirtualCollectionRegistryException {   
@@ -187,40 +208,23 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
     
 //Resource scanning    
 
-    private List<ResourceScan> fetchAllResourceScans() {
+    @Override
+    public List<ResourceScan> getAllResourceScans() throws VirtualCollectionRegistryException {
+        logger.debug("getAllResourceScans()");
         Response response = 
             RequestBuilder
-                .setPath("scans", jwtUtil)
+                .setPath("scans/all", jwtUtil)
                 .setAuthenticatedUser(authenticatedUser)
                 .get();
         
-        
         List<ResourceScanResponse> scansResponse = response.readEntity(new GenericType<List<ResourceScanResponse>>() {});
-        List<ResourceScan> scans = ResourceScanFactory.asResourceScanList(scansResponse);
-        return scans;
-    }
-    
-    private List<ResourceScan> filterResourceScans(List<ResourceScan> scans, List<String> refs) {
-        List<ResourceScan> result = new ArrayList<>();
-        for(ResourceScan scan : scans) {
-            for(String refToMatch : refs) {
-                if(scan.getRef().equalsIgnoreCase(refToMatch)) {
-                    result.add(scan);
-                }
-            }
-        }
-        return result;
+        return ResourceScanFactory.asResourceScanList(scansResponse);
     }
     
     @Override
-    public List<ResourceScan> getAllResourceScans() throws VirtualCollectionRegistryException {
-        return fetchAllResourceScans();
-    }
-    
-    @Override
-    public ResourceScan getResourceScanForRef(String ref) throws VirtualCollectionRegistryException {        
-        List<ResourceScan> scans = fetchAllResourceScans();
-        List<ResourceScan> filtered = filterResourceScans(scans, List.of(ref));
+    public ResourceScan getResourceScanForRef(String ref) throws VirtualCollectionRegistryException {  
+        logger.debug("getAllResourceScans(ref={})", ref);
+        List<ResourceScan> filtered = getResourceScansForRefs(List.of(ref));
         if(!filtered.isEmpty()) {
             return filtered.get(0);
         }
@@ -229,7 +233,16 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
 
     @Override
     public List<ResourceScan> getResourceScansForRefs(List<String> refs) throws VirtualCollectionRegistryException {
-        return filterResourceScans(fetchAllResourceScans(), refs);
+        logger.debug("getResourceScansForRefs(#refs={})", refs.size());
+        Response response = 
+            RequestBuilder
+                .setPath("scans/filter", jwtUtil)
+                .setAuthenticatedUser(authenticatedUser)
+                .post(Entity.entity(refs, MediaType.APPLICATION_JSON));
+        
+        
+        List<ResourceScanResponse> scansResponse = response.readEntity(new GenericType<List<ResourceScanResponse>>() {});
+        return ResourceScanFactory.asResourceScanList(scansResponse);
     }
 
     @Override
@@ -258,9 +271,15 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
         }
     }
     
+//Admin
+
+    @Override
+    public List<User> getUsers() {
+        return new AdminDaoRestImpl(authenticatedUser, jwtUtil).getUsers();
+    }    
+
     
-    
-    
+   
     
  //Not yet implemented   
     
@@ -277,14 +296,7 @@ public class VirtualCollectionRegistryRestImpl implements VirtualCollectionRegis
     @Override
     public VirtualCollectionList getVirtualCollections(Principal principal, String query, int offset, int count) throws VirtualCollectionRegistryException {
         throw new UnsupportedOperationException("Not supported client side");
-    }
-    
-    @Override
-    public List<String> getOrigins() throws VirtualCollectionRegistryException {
-        //TODO: propery implement
-        logger.error("getOrigins() not implemented yet");
-        return new LinkedList<>();
-    }    
+    }   
     
     @Override
     public CreatorService getCreatorService() {

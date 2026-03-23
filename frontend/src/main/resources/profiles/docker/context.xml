@@ -21,6 +21,9 @@
             password="vcrpassword"
             url="jdbc:mysql://database:4306/vcr" />
 
+    <!-- shared jwt secret to allow authentication from wicket to rest backend -->
+    <Parameter name="eu.clarin.cmdi.vcr.jwt.secret" value="ghekjghejkhgjkehjkfhgcilqu;ioqhq!;oijf;qhvbwl"/>
+    
     <Parameter name="eu.clarin.cmdi.virtualcollectionregistry.admindb.basedir"
                value="/conf" />
     

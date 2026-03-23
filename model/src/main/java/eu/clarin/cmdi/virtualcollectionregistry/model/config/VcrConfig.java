@@ -23,6 +23,7 @@ import java.util.Locale;
  * @author wilelb
  */
 public interface VcrConfig {
+    public String getJwtSecret();
     public String getDownloadEndpoint();
     public String getDownloadEndpointPreferedPidType();
     public String getProcessEndpointPreferedPidType();

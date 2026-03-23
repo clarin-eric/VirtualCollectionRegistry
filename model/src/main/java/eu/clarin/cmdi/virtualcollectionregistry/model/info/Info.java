@@ -27,6 +27,18 @@ public class Info {
  
     private String DbVersion;
 
+    private String userName;
+
+    private String userDisplayName;
+    
+    public Info() {}
+    
+    public Info(String DbVersion, String userName, String userDisplayName) {
+        this.DbVersion = DbVersion;
+        this.userName = userName;
+        this.userDisplayName = userDisplayName;
+    }
+    
     /**
      * @return the DbVersion
      */
@@ -40,4 +52,34 @@ public class Info {
     public void setDbVersion(String DbVersion) {
         this.DbVersion = DbVersion;
     }
+
+    /**
+     * @return the userName
+     */
+    public String getUserName() {
+        return userName;
+    }
+
+    /**
+     * @param userName the userName to set
+     */
+    public void setUserName(String userName) {
+        this.userName = userName;
+    }
+
+    /**
+     * @return the userDisplayName
+     */
+    public String getUserDisplayName() {
+        return userDisplayName;
+    }
+
+    /**
+     * @param userDisplayName the userDisplayName to set
+     */
+    public void setUserDisplayName(String userDisplayName) {
+        this.userDisplayName = userDisplayName;
+    }
+
+  
 }

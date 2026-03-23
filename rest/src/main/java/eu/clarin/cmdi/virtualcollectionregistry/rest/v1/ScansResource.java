@@ -16,17 +16,11 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.rest.v1;
 
-import com.fasterxml.jackson.core.JsonProcessingException;
-import com.fasterxml.jackson.databind.ObjectMapper;
-import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
-import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionNotFoundException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
-import eu.clarin.cmdi.virtualcollectionregistry.model.collection.ResourceScan;
 import eu.clarin.cmdi.virtualcollectionregistry.model.rest.ResourceScanFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.model.rest.ResourceScanRequest;
 import eu.clarin.cmdi.virtualcollectionregistry.model.rest.ResourceScanResponse;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.auth.ApiKeyRequired;
-import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
 import io.swagger.v3.oas.annotations.Operation;
 import io.swagger.v3.oas.annotations.media.Content;
 import io.swagger.v3.oas.annotations.responses.ApiResponse;
@@ -35,50 +29,58 @@ import jakarta.ws.rs.Consumes;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.PUT;
+import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.container.ResourceContext;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.SecurityContext;
-import jakarta.ws.rs.core.UriInfo;
 import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * @author wilelb
  */
-public class ScanResource {
+public class ScansResource extends AbstractVcrResource {
     private final static Logger logger = LoggerFactory.getLogger(VirtualCollectionsResource.class);
-    
-    @Autowired
-    private VirtualCollectionRegistry registry;
-    @Autowired
-    private VirtualCollectionMarshaller marshaller;
 
-    @Context
-    private ResourceContext resourceContext;
-    @Context
-    private SecurityContext security;
-    @Context
-    private UriInfo uriInfo;
-    @Context
-    private HttpHeaders headers;
-    
     @ApiKeyRequired
+    @Path("all")
     @GET
     @Produces({MediaType.APPLICATION_JSON})
     @Operation(
         summary = "Retrieve a list of all resource scans",
         description = "Retrieve a list of all resource scans")
     public Response getAllScans() throws VirtualCollectionRegistryException {
+        if(!isAuthenticatedAdminUser()) {
+            return Response.status(Response.Status.FORBIDDEN).build();
+        }
+        
         List<ResourceScanResponse> response = 
             ResourceScanFactory.asResourceScanResponseList(
                 registry.getAllResourceScans()
+            );
+        return Response.ok(response).build();
+    }
+    
+    @ApiKeyRequired
+    @Path("/filter")
+    @POST
+    @Consumes({MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+    @Operation(
+        summary = "Retrieve a list of all resource scans for the provided references",
+        description = "Retrieve a list of all resource scans for the provided references")
+    public Response getAllScansForList(List<String> refs) throws VirtualCollectionRegistryException {
+        if (refs == null || refs.isEmpty()) {
+            return Response.status(Response.Status.BAD_REQUEST)
+                           .entity("List of references cannot be empty")
+                           .build();
+        }
+        List<ResourceScanResponse> response = 
+            ResourceScanFactory.asResourceScanResponseList(
+                registry.getResourceScansForRefs(refs)
             );
         return Response.ok(response).build();
     }

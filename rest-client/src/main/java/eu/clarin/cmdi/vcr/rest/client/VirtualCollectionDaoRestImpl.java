@@ -23,11 +23,13 @@ import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualColle
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionList;
+import eu.clarin.cmdi.virtualcollectionregistry.model.info.Info;
 import eu.clarin.cmdi.virtualcollectionregistry.query.QueryFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.RestResponse;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.utils.RestUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
 import jakarta.ws.rs.client.Entity;
+import jakarta.ws.rs.core.GenericType;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import java.io.IOException;
@@ -60,11 +62,11 @@ public class VirtualCollectionDaoRestImpl implements VirtualCollectionDao {
     public User getOrCreateUser(String username) throws VirtualCollectionRegistryException {
         Response response = 
             RequestBuilder
-                .setPath("user", jwtUtil)
+                .setPath("info", jwtUtil)
                 .setAuthenticatedUser(authenticatedUser)
                 .get();
-        String usernameResponse = response.readEntity(String.class);
-        return new User(usernameResponse);
+        Info info = response.readEntity(Info.class);
+        return new User(info.getUserName(), info.getUserDisplayName());
     }
 
     @Override
@@ -292,5 +294,22 @@ public class VirtualCollectionDaoRestImpl implements VirtualCollectionDao {
         } catch(Exception ex) {
             throw new VirtualCollectionRegistryException("Api communication error", ex);
         }
+    }
+    
+    @Override
+    public List<String> getOrigins() throws VirtualCollectionRegistryException {
+        Response response = 
+            RequestBuilder
+                .setPath("collections/origins", jwtUtil)
+                .setAuthenticatedUser(authenticatedUser)
+                .get();
+        
+        
+        List<String> origins = response.readEntity(new GenericType<List<String>>() {});
+        logger.debug("#origins: {}", origins.size());
+        for(String s :  origins) {
+            logger.debug("Origin: {}", s);
+        }
+        return origins;
     }
 }

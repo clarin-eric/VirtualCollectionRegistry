@@ -1,5 +1,6 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest.v1;
 
+import eu.clarin.cmdi.virtualcollectionregistry.core.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.core.reference.VirtualCollectionValidationException;
@@ -23,7 +24,8 @@ import jakarta.ws.rs.FormParam;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
+import jakarta.ws.rs.container.ResourceContext;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
 import jakarta.ws.rs.core.SecurityContext;
@@ -66,20 +68,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  * 
  * @author twagoo
  */
-public class VirtualCollectionFormSubmissionResource {
-
-    @Autowired
-    private VirtualCollectionRegistry registry;
-    
-    @Context
-    private SecurityContext security;
-    @Context
-    private UriInfo uriInfo;
-
+public class VirtualCollectionFormSubmissionResource extends AbstractVcrResource {
     private final ErrorBuilder errorBuilder;
     
-    //TODO: how to properly wire this?
-    //@SpringBean
     @Autowired
     private PiwikConfig piwikConfig;
      
@@ -88,10 +79,8 @@ public class VirtualCollectionFormSubmissionResource {
     }
     
     // for testing
-    protected VirtualCollectionFormSubmissionResource(VirtualCollectionRegistry registry, SecurityContext security, UriInfo uriInfo) {
-        this.registry = registry;        
-        this.security = security;        
-        this.uriInfo = uriInfo;        
+    protected VirtualCollectionFormSubmissionResource(VirtualCollectionRegistry registry, AdminUsersService adminUsersService, ResourceContext resourceContext, SecurityContext security, UriInfo uriInfo, HttpHeaders headers) {
+        super(registry, adminUsersService, resourceContext, security, uriInfo, headers);
         this.errorBuilder = new ErrorJsonBuilder();
     }
     

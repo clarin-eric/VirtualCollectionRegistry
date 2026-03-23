@@ -18,12 +18,15 @@ package eu.clarin.cmdi.virtualcollectionregistry.rest.v1;
 
 
 import de.mpg.aai.security.auth.model.BasePrincipal;
+import eu.clarin.cmdi.virtualcollectionregistry.core.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollectionFactory;
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.Resource;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.collection.VirtualCollection;
+import jakarta.ws.rs.container.ResourceContext;
+import jakarta.ws.rs.core.HttpHeaders;
 
 import java.io.IOException;
 import java.security.Principal;
@@ -58,9 +61,12 @@ public class VirtualCollectionFormSubmissionResourceTest {
     @Before
     public void setUp() throws Exception {
         registry = context.mock(VirtualCollectionRegistry.class);
+        AdminUsersService adminUsersService = context.mock(AdminUsersService.class);
         uriInfo = context.mock(UriInfo.class);
         security = context.mock(SecurityContext.class);
-        instance = new VirtualCollectionFormSubmissionResource(registry, security, uriInfo);
+        ResourceContext resourceContext = context.mock(ResourceContext.class);
+        HttpHeaders headers = context.mock(HttpHeaders.class);
+        instance = new VirtualCollectionFormSubmissionResource(registry, adminUsersService, resourceContext, security, uriInfo, headers);
     }
     
     @Test

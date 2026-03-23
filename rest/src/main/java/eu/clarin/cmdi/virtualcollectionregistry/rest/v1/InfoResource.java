@@ -16,42 +16,35 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.rest.v1;
 
-import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
+import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User;
 import eu.clarin.cmdi.virtualcollectionregistry.model.info.Info;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.auth.ApiKeyRequired;
+import io.swagger.v3.oas.annotations.Operation;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
-import jakarta.ws.rs.core.SecurityContext;
-import jakarta.ws.rs.core.UriInfo;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * @author wilelb
  */
-public class InfoResource {
-    
-    @Autowired
-    private VirtualCollectionRegistry registry;
-    
-    @Context
-    private SecurityContext security;
-    
-    @Context
-    private UriInfo uriInfo;
+public class InfoResource extends AbstractVcrResource {
     
     @ApiKeyRequired
     @GET
-    @Produces({MediaType.APPLICATION_XML, MediaType.APPLICATION_JSON})
+    @Produces({MediaType.APPLICATION_JSON})
+     @Operation(
+        summary = "Retrieve basic registry information",
+        description = "Retrieve basic registry informatin such as database version and authenticated user")
     public Response getInfo() throws VirtualCollectionRegistryException {
-        security.getUserPrincipal();
-        
-        Info info = new Info();        
-        info.setDbVersion(registry.getDbVersion());
-        return Response.ok(info).build();
+        User user = getAuthenticatedUser();
+        return Response.ok(
+                new Info(
+                    registry.getDbVersion(), 
+                    user.getName(), 
+                    user.getDisplayName())
+            ).build();
     }
 }

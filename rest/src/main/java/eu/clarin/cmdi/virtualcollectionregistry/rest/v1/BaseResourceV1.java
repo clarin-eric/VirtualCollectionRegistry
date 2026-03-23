@@ -34,25 +34,18 @@ public class BaseResourceV1 {
             resourceContext.getResource(VirtualCollectionsResource.class);
         return resource;
     }
-
-    @Path("/my-virtualcollections")
-    public MyVirtualCollectionsResource getMyVirtualCollectionsV1() {
-        final MyVirtualCollectionsResource resource = 
-            resourceContext.getResource(MyVirtualCollectionsResource.class);
-        return resource;
-    }
     
     @Path("/info")
-    public InfoResource getInfoV1() {
+    public InfoResource getInfo() {
         final InfoResource resource = 
             resourceContext.getResource(InfoResource.class);
         return resource;
     }
     
-    @Path("/user")
-    public UserResource getUsersV1() {
-        final UserResource resource = 
-            resourceContext.getResource(UserResource.class);
+    @Path("/users")
+    public UsersResource getUsers() {
+        final UsersResource resource = 
+            resourceContext.getResource(UsersResource.class);
         return resource;
     }
     
@@ -62,17 +55,10 @@ public class BaseResourceV1 {
             resourceContext.getResource(VirtualCollectionFormSubmissionResource.class);
         return resource;
     }
-    
-    @Path("/admin")
-    public AdminResource getAdminV1() {
-        final AdminResource resource = 
-            resourceContext.getResource(AdminResource.class);
-        return resource;
-    }
-    
+
     @Path("/scans")
-    public ScanResource getScanResource() {
-        final ScanResource resource = resourceContext.getResource(ScanResource.class);
+    public ScansResource getScanResource() {
+        final ScansResource resource = resourceContext.getResource(ScansResource.class);
         return resource;
     }
 }

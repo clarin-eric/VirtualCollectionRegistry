@@ -868,51 +868,18 @@ public class VirtualCollectionRegistryImpl extends TxManager implements VirtualC
     @Override
     public int getVirtualCollectionCount(QueryFactory qryFactory) throws VirtualCollectionRegistryException {
         logger.trace("getVirtualCollectionCount()");
-        //int result = -1;
-        //try {
-          //  beginTransaction(datastore.getEntityManager());
-            //qryFactory.addParam("vc_owner", "%%");
-            //result = vcDao.getVirtualCollectionCount(qryFactory);
-            return vcDao.getVirtualCollectionCount(qryFactory);
-        //} catch(Exception ex) {
-         //   rollbackActiveTransaction(datastore.getEntityManager(),"error while fetching virtual collections", ex);
-        //} finally {
-         //   commitActiveTransaction(datastore.getEntityManager());
-       // }
-       // return result;
+        return vcDao.getVirtualCollectionCount(qryFactory);
     }
 
     @Override
     public List<VirtualCollection> getVirtualCollections(int first, int count, QueryFactory qryFactory) throws VirtualCollectionRegistryException {
         logger.trace("getVirtualCollections()");
-        //List<VirtualCollection> result = new LinkedList<>();
-        //try {
-            //beginTransaction(datastore.getEntityManager());
-            //qryFactory.addParam("vc_owner", "%%");
-            //result = vcDao.getVirtualCollections(first, count, qryFactory);
         return vcDao.getVirtualCollections(first, count, qryFactory);
-       // } catch(Exception ex) {
-        //    rollbackActiveTransaction(datastore.getEntityManager(),"error while fetching virtual collections", ex);
-        //} finally {
-         //   commitActiveTransaction(datastore.getEntityManager());
-       // }
-        //return result;
     }
 
     @Override
     public List<String> getOrigins() throws VirtualCollectionRegistryException {
-        List<String> origins = new ArrayList<>();
-        EntityManager em = datastore.getEntityManager();
-        try {
-            beginTransaction(datastore.getEntityManager());
-            TypedQuery<String> q = em.createNamedQuery("VirtualCollection.findAllPublicOrigins", String.class);
-            origins = q.getResultList();
-        } catch (Exception e) {
-            rollbackActiveTransaction(datastore.getEntityManager(),"error while enumerating virtual collections to get all origins", e);
-        } finally {
-            commitActiveTransaction(datastore.getEntityManager());
-        }
-        return origins;
+        return vcDao.getOrigins();
     }
 
     @Override

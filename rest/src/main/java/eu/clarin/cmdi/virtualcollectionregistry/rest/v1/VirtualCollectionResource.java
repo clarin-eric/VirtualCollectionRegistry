@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest.v1;
 
 
+import eu.clarin.cmdi.virtualcollectionregistry.core.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.utils.RestUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
@@ -31,6 +32,7 @@ import jakarta.ws.rs.PUT;
 import jakarta.ws.rs.Path;
 import jakarta.ws.rs.PathParam;
 import jakarta.ws.rs.Produces;
+import jakarta.ws.rs.container.ResourceContext;
 import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
@@ -42,7 +44,6 @@ import jakarta.ws.rs.core.UriInfo;
 import jakarta.ws.rs.core.Variant;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * REST resource representing an individual virtual collection.
@@ -55,20 +56,9 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author twagoo
  */
 //@Path("/virtualcollection")
-public final class VirtualCollectionResource {
+public final class VirtualCollectionResource extends AbstractVcrResourceWithMarshaller {
 
     private final static Logger logger = LoggerFactory.getLogger(VirtualCollectionResource.class);
-    
-    @Autowired
-    private VirtualCollectionRegistry registry;
-    @Autowired
-    private VirtualCollectionMarshaller marshaller;
-    @Context
-    private SecurityContext security;
-    @Context
-    private HttpHeaders headers;
-    @Context
-    private UriInfo uriInfo;
 
     private Long id;
 
@@ -80,12 +70,16 @@ public final class VirtualCollectionResource {
     public VirtualCollectionResource() {}
 
     // for testing
-    protected VirtualCollectionResource(VirtualCollectionRegistry registry, VirtualCollectionMarshaller marshaller, SecurityContext security, HttpHeaders headers, UriInfo uriInfo, Long id) {
-        this.registry = registry;
-        this.marshaller = marshaller;
-        this.security = security;
-        this.headers = headers;
-        this.uriInfo = uriInfo;
+    protected VirtualCollectionResource(
+            VirtualCollectionRegistry registry, 
+            AdminUsersService adminUsersService, 
+            VirtualCollectionMarshaller marshaller,
+            ResourceContext resourceContext,
+            SecurityContext security, 
+            HttpHeaders headers, 
+            UriInfo uriInfo, 
+            Long id) {
+        super(registry, adminUsersService, marshaller, resourceContext, security, uriInfo, headers);
         this.id = id;
     }
 
@@ -308,6 +302,7 @@ public final class VirtualCollectionResource {
      * Collection
      * @throws VirtualCollectionRegistryException
      */
+    /*
     @ApiKeyOptional
     @GET
     @Path("/state")
@@ -323,7 +318,7 @@ public final class VirtualCollectionResource {
         final State result;
         switch (state) {
             case PUBLIC_PENDING:
-            /* FALL-THROUGH */
+            // FALL-THROUGH
             case PUBLIC:
                 result = State.PUBLIC;
                 break;
@@ -336,7 +331,7 @@ public final class VirtualCollectionResource {
         } // switch
         return Response.ok(result).build();
     }
-
+*/
     /**
      * Updates the publication state of the virtual collection referenced by the
      * URI

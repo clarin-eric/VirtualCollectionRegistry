@@ -16,37 +16,34 @@
  */
 package eu.clarin.cmdi.virtualcollectionregistry.rest.v1;
 
+import eu.clarin.cmdi.virtualcollectionregistry.core.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
-import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
-import eu.clarin.cmdi.virtualcollectionregistry.model.collection.User;
-import eu.clarin.cmdi.virtualcollectionregistry.rest.auth.ApiKeyRequired;
-import jakarta.ws.rs.GET;
-import jakarta.ws.rs.Produces;
-import jakarta.ws.rs.core.Context;
-import jakarta.ws.rs.core.MediaType;
-import jakarta.ws.rs.core.Response;
+import eu.clarin.cmdi.virtualcollectionregistry.service.VirtualCollectionMarshaller;
+import jakarta.ws.rs.container.ResourceContext;
+import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.SecurityContext;
-import java.security.Principal;
+import jakarta.ws.rs.core.UriInfo;
 import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  *
  * @author wilelb
  */
-public class UserResource {
-   
+public abstract class AbstractVcrResourceWithMarshaller extends AbstractVcrResource {
     @Autowired
-    private VirtualCollectionRegistry registry;
+    protected VirtualCollectionMarshaller marshaller;
     
-    @Context
-    private SecurityContext security;
+    public AbstractVcrResourceWithMarshaller() {}
     
-    @ApiKeyRequired
-    @GET
-    @Produces({MediaType.APPLICATION_JSON})
-    public Response getUser() throws VirtualCollectionRegistryException {        
-        Principal principal = security.getUserPrincipal();        
-        User user = registry.getOrCreateUser(principal);
-        return Response.ok(user).build();
+    public AbstractVcrResourceWithMarshaller(
+            VirtualCollectionRegistry registry,
+            AdminUsersService adminUsersService,
+            VirtualCollectionMarshaller marshaller,
+            ResourceContext resourceContext,
+            SecurityContext security,
+            UriInfo uriInfo,
+            HttpHeaders headers) {
+        super(registry, adminUsersService, resourceContext, security, uriInfo, headers);
+        this.marshaller = marshaller;
     }
 }

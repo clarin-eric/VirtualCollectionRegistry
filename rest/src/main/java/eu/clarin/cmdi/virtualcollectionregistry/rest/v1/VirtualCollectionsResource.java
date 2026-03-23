@@ -1,6 +1,7 @@
 package eu.clarin.cmdi.virtualcollectionregistry.rest.v1;
 
 import com.fasterxml.jackson.core.JsonProcessingException;
+import eu.clarin.cmdi.virtualcollectionregistry.core.AdminUsersService;
 import eu.clarin.cmdi.virtualcollectionregistry.core.VirtualCollectionRegistry;
 import eu.clarin.cmdi.virtualcollectionregistry.rest.utils.RestUtils;
 import eu.clarin.cmdi.virtualcollectionregistry.model.api.exception.VirtualCollectionRegistryException;
@@ -33,7 +34,6 @@ import jakarta.ws.rs.Produces;
 import jakarta.ws.rs.QueryParam;
 import jakarta.ws.rs.WebApplicationException;
 import jakarta.ws.rs.container.ResourceContext;
-import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
 import jakarta.ws.rs.core.MediaType;
 import jakarta.ws.rs.core.Response;
@@ -45,7 +45,6 @@ import java.util.List;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
-import org.springframework.beans.factory.annotation.Autowired;
 
 /**
  * REST resource representing the collection of virtual collections
@@ -53,39 +52,21 @@ import org.springframework.beans.factory.annotation.Autowired;
  * @author twagoo
  */
 //@Path("/virtualcollections")
-public class VirtualCollectionsResource {
+public class VirtualCollectionsResource extends AbstractVcrResourceWithMarshaller {
 
     private final static Logger logger = LoggerFactory.getLogger(VirtualCollectionsResource.class);
-    
-    @Autowired
-    private VirtualCollectionRegistry registry;
-    @Autowired
-    private VirtualCollectionMarshaller marshaller;
-
-    @Context
-    private ResourceContext resourceContext;
-    @Context
-    private SecurityContext security;
-    @Context
-    private UriInfo uriInfo;
-    @Context
-    private HttpHeaders headers;
 
     public VirtualCollectionsResource() {}
 
     public VirtualCollectionsResource(
             VirtualCollectionRegistry registry,
+            AdminUsersService adminUsersService,
             VirtualCollectionMarshaller marshaller,
             ResourceContext resourceContext,
             SecurityContext security,
             UriInfo uriInfo,
             HttpHeaders headers) {
-        this.registry = registry;
-        this.marshaller = marshaller;
-        this.resourceContext = resourceContext;
-        this.security = security;
-        this.uriInfo= uriInfo;
-        this.headers = headers;
+        super(registry, adminUsersService, marshaller, resourceContext, security, uriInfo, headers);
     }
 
     /**
@@ -166,6 +147,20 @@ public class VirtualCollectionsResource {
         return Response.ok(writer).build();
     }
     
+    @ApiKeyOptional
+    @GET
+    @Path("/origins")
+    @Produces({MediaType.TEXT_XML,
+        MediaType.APPLICATION_XML,
+        MediaType.APPLICATION_JSON})
+    @Operation(
+        summary = "Retrieve a list of public collection origins",
+        description = "Retrieve a list of public collection origins.")
+    public Response getVirtualCollectionOriginss() throws VirtualCollectionRegistryException {
+        List<String> origins = registry.getOrigins();
+        return Response.ok(origins).build();
+    }
+            
     /**
      * A virtual collection will be created based on the representation of the
      * virtual collection sent in the request body.

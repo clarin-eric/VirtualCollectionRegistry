@@ -26,4 +26,5 @@ public interface VirtualCollectionDao {
     Long persist(VirtualCollection vc) throws VirtualCollectionRegistryException;
     Long delete(Long id) throws VirtualCollectionRegistryException;
     void setVirtualCollectionState(Long id, VirtualCollection.State state) throws VirtualCollectionRegistryException;
+    List<String> getOrigins() throws VirtualCollectionRegistryException ;
 }

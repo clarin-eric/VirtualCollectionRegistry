@@ -38,6 +38,9 @@ public class VcrConfigImpl implements VcrConfig, Serializable {
     public final static String ACTION_ENABLE_COLLECTIONS = "COLLECTIONS";
     public final static String ACTION_ENABLE_RESOURCES = "RESOURCES";
 
+    @Value("${eu.clarin.cmdi.vcr.jwt.secret:this_should_be_changes_to_somthing_hard_to_guess}")
+    private String jwtSecret;
+    
     @Value("${eu.clarin.cmdi.vcr.validators.http.timeout:5000}")
     private int httpTimeout;
 
@@ -197,6 +200,7 @@ public class VcrConfigImpl implements VcrConfig, Serializable {
     public String logConfig() {
         StringBuilder result = new StringBuilder();
         result.append("Configuration:\n");
+        result.append("  jwtSecret available:          "+(jwtSecret != null)+"\n");
         result.append("  logoutMode:                   "+logoutMode+"\n");
         result.append("  logoutEnabled:                "+logoutEnabled+"\n");
         result.append("  locale:                       "+locale+"\n");
@@ -232,5 +236,10 @@ public class VcrConfigImpl implements VcrConfig, Serializable {
     @Override
     public boolean isReferenceExamplesEnabled() {
         return referenceExamplesEnabled;
+    }
+
+    @Override
+    public String getJwtSecret() {
+        return jwtSecret;
     }
 }

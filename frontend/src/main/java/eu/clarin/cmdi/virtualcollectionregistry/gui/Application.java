@@ -16,8 +16,13 @@ import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LoginPage;
 import eu.clarin.cmdi.virtualcollectionregistry.gui.pages.auth.LogoutPage;
 import eu.clarin.cmdi.virtualcollectionregistry.model.config.VcrConfig;
 import eu.clarin.cmdi.wicket.theme.ClarinBootstrap5Theme;
+import jakarta.servlet.ServletContext;
+import java.net.MalformedURLException;
+import java.net.URL;
 import java.security.Principal;
 import java.util.Collections;
+import java.util.Enumeration;
+import java.util.Iterator;
 import java.util.Map;
 import org.apache.wicket.Page;
 import org.apache.wicket.RuntimeConfigurationType;
@@ -30,7 +35,6 @@ import org.apache.wicket.markup.head.HeaderItem;
 import org.apache.wicket.markup.head.filter.FilteredHeaderItem;
 import org.apache.wicket.markup.head.filter.FilteringHeaderResponse;
 import org.apache.wicket.markup.head.filter.FilteringHeaderResponse.IHeaderResponseFilter;
-import org.apache.wicket.markup.head.filter.JavaScriptFilteredIntoFooterHeaderResponse;
 import org.apache.wicket.markup.html.WebPage;
 import org.apache.wicket.protocol.http.WebApplication;
 import org.apache.wicket.spring.injection.annot.SpringComponentInjector;
@@ -74,7 +78,30 @@ public class Application extends AuthenticatedWebApplication {
     @Override
     protected void init() {
         super.init();
-        
+        /*
+        try {
+            ServletContext sc = getServletContext();
+            URL contextUrl = sc.getResource("/META-INF/context.xml");
+            
+            Iterator<String> data = sc.getInitParameterNames().asIterator();
+            //Iterator<String> data = sc.getAttributeNames().asIterator();
+            while (data.hasNext()) {
+                String s = data.next();
+                logger.info("Attribute name: {}={}", s, sc.getInitParameter(s));
+            }
+            
+            if (contextUrl != null) {
+                logger.info("Context loaded from: " + contextUrl.getPath());
+            } else {
+                logger.info("context.xml not found in /META-INF/. It may be defined in server.xml or the engine directory.");
+            }
+
+            String fullPath = getServletContext().getRealPath("/META-INF/context.xml");
+            logger.info("Real path: " + fullPath);
+        } catch(MalformedURLException ex) {
+            logger.error("Failed to debug context information", ex); 
+        }
+        */
         //Install bootstrap
         Bootstrap.install(
             this, 

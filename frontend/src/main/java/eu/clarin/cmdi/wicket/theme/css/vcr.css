@@ -10,14 +10,14 @@
   font-family: 'Source Sans Pro';
   font-style: normal;
   font-weight: 400;
-  src: local("Source Sans Pro Regular"), local("SourceSansPro-Regular"), url("../fonts/source-sans-pro-v11-vietnamese_latin-ext_latin-regular.woff2") format("woff2");
+  src: local("Source Sans Pro Regular"), local("SourceSansPro-Regular"), url("/fonts/source-sans-pro-v11-vietnamese_latin-ext_latin-regular.woff2") format("woff2");
   /*unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;*/
 }
 @font-face {
   font-family: 'Source Sans Pro';
   font-style: normal;
   font-weight: 700;
-  src: local("Source Sans Pro Regular"), local("SourceSansPro-Regular"), url("../fonts/source-sans-pro-v11-vietnamese_latin-ext_latin-700.woff2") format("woff2");
+  src: local("Source Sans Pro Regular"), local("SourceSansPro-Regular"), url("/fonts/source-sans-pro-v11-vietnamese_latin-ext_latin-700.woff2") format("woff2");
   /*unicode-range: U+0000-00FF, U+0131, U+0152-0153, U+02BB-02BC, U+02C6, U+02DA, U+02DC, U+2000-206F, U+2074, U+20AC, U+2122, U+2191, U+2193, U+2212, U+2215, U+FEFF, U+FFFD;*/
 }
 @font-face {
@@ -106,14 +106,14 @@ a:visited {
 #header .clarin-top .logo{
     width:10em;
     height:4em;
-    background-image:url('../images/clarin-logo-wide.png');
+    background-image:url('/images/clarin-logo-wide.png');
     background-size:100%;
     background-repeat:no-repeat
 }
 #header .navbar-nav a.clarin-logo{
     min-height:50px;
     width:119px;
-    background-image:url('../images/clarin-logo-wide.png');
+    background-image:url('/images/clarin-logo-wide.png');
     background-size:115px 46px;
     background-position-x:5px;
     background-position-y:2px;
@@ -990,12 +990,12 @@ body {
 }
 
 .beta {
-  background-image: url("../images/clarin_blue_corner_ribbon_beta_small.png");
+  background-image: url("/images/clarin_blue_corner_ribbon_beta_small.png");
   background-size: contain;
 }
 
 .alpha {
-  background-image: url("../images/clarin_blue_corner_ribbon_alpha_small.png");
+  background-image: url("/images/clarin_blue_corner_ribbon_alpha_small.png");
   background-size: contain;
 }
 
@@ -1958,8 +1958,12 @@ h1, h2, h3, h4, h5, h6 {
 
 @font-face{
     font-family:'Glyphicons Halflings';
-    src:url('../fonts/glyphicons-halflings-regular.eot');
-    src:url('../fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'),url('../fonts/glyphicons-halflings-regular.woff2') format('woff2'),url('../fonts/glyphicons-halflings-regular.woff') format('woff'),url('../fonts/glyphicons-halflings-regular.ttf') format('truetype'),url('../fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg')
+    src:url('/fonts/glyphicons-halflings-regular.eot');
+    src:url('/fonts/glyphicons-halflings-regular.eot?#iefix') format('embedded-opentype'),
+        url('/fonts/glyphicons-halflings-regular.woff2') format('woff2'),
+        url('/fonts/glyphicons-halflings-regular.woff') format('woff'),
+        url('/fonts/glyphicons-halflings-regular.ttf') format('truetype'),
+        url('/fonts/glyphicons-halflings-regular.svg#glyphicons_halflingsregular') format('svg')
 }
 .glyphicon{
     position:relative;
